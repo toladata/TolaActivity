@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
+<script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
+
+<script>
+
+$(function () {
+    $('#container').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Program Projects by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
+        },
+        xAxis: {
+            categories: ['Agreements', 'Completions']
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Number of Approved, Pending or Open Projects'
+            }
+        },
+        legend: {
+            reversed: true
+        },
+        plotOptions: {
+            series: {
+                stacking: 'normal',
+                point: {
+                    events: {
+                        click: function () {
+                            location.href = this.options.ownURL;
+                        }
+                    }
+                }
+            }
+        },
+
+        series: [
+        {
+            name: 'Approved',
+            data: [{ y:{{ agreement_approved_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_approved_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+        },
+        {
+            name: 'Pending',
+            data: [{ y:{{ agreement_wait_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_wait_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+        },
+        {
+            name: 'Open',
+            data: [{ y:{{ agreement_open_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_open_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+        },
+
+        ]
+
+    });
+});
+
+
+$(function () {
+
+    $('#indicator').highcharts({
+
+        chart: {
+            polar: true,
+            type: 'line'
+        },
+
+        title: {
+            text: 'Targets vs Actuals',
+            x: -80
+        },
+
+        pane: {
+            size: '80%'
+        },
+
+        xAxis: {
+            categories: [ {% for indicator in getQuantitativeDataSums %}  '{{ indicator.indicator__number }}', {% endfor %} ],
+            tickmarkPlacement: 'on',
+            lineWidth: 0
+        },
+
+        yAxis: {
+            gridLineInterpolation: 'polygon',
+            lineWidth: 0,
+            min: 0
+        },
+
+        tooltip: {
+            shared: true,
+            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
+        },
+
+        legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            y: 70,
+            layout: 'vertical'
+        },
+
+        series: [{
+            name: 'Targets',
+            data: [ {% for indicator in getQuantitativeDataSums %}  {{ indicator.targets }}, {% endfor %}  ],
+            pointPlacement: 'on'
+        }, {
+            name: 'Actuals',
+            data: [ {% for indicator in getQuantitativeDataSums %}  {{ indicator.actuals }}, {% endfor %}   ],
+            pointPlacement: 'on'
+        }]
+
+    });
+});
+
+
+
+
+</script>
+<div class="container">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div style="float:left;">
+                    <h4>Tola-Activity Dashboard</h4>
+                </div>
+                <div style="float:right; display: inline-block; vertical-align: middle;">
+                    <a href="/activitydb/projectagreement_add/" class="btn btn-sm btn-success">Create a Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <!-- Extra small button group -->
+                    <div class="btn-group">
+                      <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        Filter Program List by Sector <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                          <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
+                         {%for sector in getSectors%}
+                            <li class="list-group-item">
+                                <a href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ sector.id }}/">{{ sector.sector }}</a>
+                            </li>
+                        {%endfor%}
+                      </ul>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                    {%for program in programs%}
+                        <li class="list-group-item">
+                            <a href="/activitydb/dashboard/{{ program.id }}/">{{ program.name }}</a>&nbsp;
+                            <button type="button" class="btn btn-xs btn-success" style="float:right; vertical-align: middle;" onclick="location.href='/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/'"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                        </li>
+                    {%endfor%}
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div id="indicator" style=" width: 100%; height: 400px; margin: 0 auto; float:right"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <p><b>Communities {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
+                    <style>
+                        #map { height: 350px; }
+                    </style>
+                    <div id="map"></div>
+
+                    {% include "small_community_map.html" %}
+
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="container" style=" width: 100%; height: 400px; margin: 0 auto; float:right"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-20">
+            <div class="panel panel-info">
+                <div class="panel-heading">Indicators {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</div>
+                <div class="panel-body">
+                {% load render_table from django_tables2 %}
+                {% render_table table %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

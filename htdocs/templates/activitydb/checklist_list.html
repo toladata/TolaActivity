@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block bread_crumb %}
+<ol class="breadcrumb">
+  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/activitydb/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
+  <li class="active">Checklist</li>
+</ol>
+{% endblock %}
+{% block page_title %}Checklist List{% endblock %}
+
+{% block content %}
+<div>
+<a href="/activitydb/checklist_add/{{ project_agreement_id }}/" class="btn btn-large btn-success">New Checklist</a> &nbsp;
+<hr/>
+<br/>
+</div>
+<h3>Checklist Data</h3>
+<ul class="list-group">
+{% for item in getChecklist %}
+    <li class="list-group-item"><b><a href="/activitydb/checklist_update/{{ item.id }}">{{ item.create_date|date }} - {{ item.agreement }} - {{ item.item }}</a></b> &nbsp;<a href="/activitydb/checklist_delete/{{ item.id }}" class="btn-xs btn-danger">Delete Checklist</a></li>
+{% empty %}
+    <li class="list-group-item">No Checklist yet.</li>
+{% endfor %}
+</ul>
+
+{% endblock content %}

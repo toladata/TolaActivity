@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Add/Edit Budget</title>
+</head>
+<body>
+
+<script type="text/javascript">
+    var frm = $('#outputForm');
+    frm.submit(function () {
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                $("#alert-error").html("Success! ");
+            },
+            error: function(data) {
+                $("#alert-error").html("Something went wrong!");
+            }
+        });
+        return false;
+    });
+</script>
+
+    <div class="modal-header">
+
+    <div class="alert alert-error" id="alert-error">
+        <strong>{{ error|escape }}</strong>
+    </div>
+
+    <h4 class="modal-title">{% block page_title %}Import Project Agreement {% endblock %}</h4>
+    <ul class="list-group">
+    {% for row in getAgreements %}
+        <li class="list-group-item">{{ row.read_name }}</li>
+        <li class="list-group-item"><a href="{{ row.read_url }}" class="btn btn-xs btn-warning">Import Data</a>
+    {% empty %}
+        <li class="list-group-item">No data sources.</li>
+    {% endfor %}
+    </ul>
+    <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="parent.location.reload();">Close</button>
+    </div>
+
+</body>
+</html>

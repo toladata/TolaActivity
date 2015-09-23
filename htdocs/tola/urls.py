@@ -1,0 +1,77 @@
+from feed import views
+from tola import views
+from feed.views import UserViewSet, ProposalViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, CommunityViewSet, AgreementViewSet, CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet
+from django.conf.urls import patterns, include, url
+from django.views.generic import TemplateView
+from django.contrib.auth.models import User
+from rest_framework.routers import DefaultRouter
+from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework import routers, serializers, viewsets
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib.auth.views import login, logout
+
+# Uncomment the next two lines to enable the admin:
+from django.contrib import admin
+admin.autodiscover()
+
+#REST FRAMEWORK
+router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
+router.register(r'proposals', ProposalViewSet)
+router.register(r'programs', ProgramViewSet)
+router.register(r'sector', SectorViewSet)
+router.register(r'projecttype', ProjectTypeViewSet)
+router.register(r'office', OfficeViewSet)
+router.register(r'community', CommunityViewSet)
+router.register(r'country', CountryViewSet)
+router.register(r'agreements', AgreementViewSet)
+router.register(r'completes', CompleteViewSet)
+router.register(r'projecttypeother', ProjectTypeOtherViewSet)
+
+
+urlpatterns = patterns('',
+                        #rest framework
+                        url(r'^api/', include(router.urls)),
+                        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+                        #index
+                        url(r'^$', 'tola.views.index', name='index'),
+
+                        #index
+                        url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', 'tola.views.index', name='index'),
+
+                        #base template for layout
+                        url(r'^$', TemplateView.as_view(template_name='base.html')),
+
+                        #ipt app specific urls
+                        #url(r'^indicators/', include('indicators.urls')),
+
+                        #enable admin documentation:
+                        url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
+                        #enable the admin:
+                        url(r'^admin/', include(admin.site.urls)),
+
+                        #home
+                        url(r'^contact', 'tola.views.contact', name='contact'),
+                        url(r'^faq', 'tola.views.faq', name='faq'),
+                        url(r'^documentation', 'tola.views.documentation', name='documentation'),
+
+                        #app include of activitydb urls
+                        url(r'^activitydb/', include('activitydb.urls')),
+
+                        #app include of activitydb urls
+                        url(r'^indicators/', include('indicators.urls')),
+
+                        #local login
+                        (r'^accounts/login/',  login),
+                        url(r'^accounts/logout/$', 'tola.views.logout_view', name='logout'),
+
+                        #accounts
+                        url(r'^accounts/profile/$', 'tola.views.profile', name='profile'),
+                        url(r'^accounts/register/$', 'tola.views.register', name='register'),
+
+
+)  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
