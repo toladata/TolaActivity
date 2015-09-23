@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block page_title %}Indicator Planning {% endblock %}
+
+{% block content %}
+<div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+        Programs
+    <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/0/">-- All --</a></li>
+    {% for program in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% endfor %}
+    </ul>
+    <a href="/indicators/indicator_add/0/" class="btn btn-large btn-success">New Indicator</a>
+    <a href="/indicators/indicator_import/0/" class="btn btn-large btn-info">Import Indicator</a>
+    <br/>
+    <br/>
+</div>
+
+
+<!-- Default panel contents -->
+{% if getProgramsIndicator %}
+    {% for program in getProgramsIndicator %}
+        {% if program.indicator_set.all %}
+            <div class='panel panel-default'>
+                <div class='panel-heading'><h4>{{ program.gaitid }} - {{ program.name }}<span style="float: right;"><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">Grid/Print Report</a></span></h4></div>
+                <!-- Table -->
+                <table class="table table-striped">
+                    <tr>
+                        <th>Date Created</th>
+                        <th>Indicator Type</th>
+                        <th>Indicator Name</th>
+                        <th>Indicator Number</th>
+                        <th>Sector</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    {% for indicator in program.indicator_set.all %}
+                    <tr>
+                        <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.create_date}}</a></td>
+                        <td>{{ indicator.indicator_types}}</td>
+                        <td>{{ indicator.name}}</td>
+                        <td>{{ indicator.number}}</td>
+                        <td>{{ indicator.sector}}</td>
+                        <td><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/collecteddata_add/{{ program.id }}/{{ indicator.id }}" class="btn-xs btn-success">Data</a>&nbsp;<a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn-xs btn-danger">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>No Programs</p>
+{% endif %}
+
+{% endblock content %}

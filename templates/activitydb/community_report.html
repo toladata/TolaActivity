@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block bread_crumb %}
+<ol class="breadcrumb">
+  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/activitydb/report/">Project Report</a></li>
+  <li class="active">Report</li>
+</ol>
+
+{% endblock bread_crumb %}
+{% load render_table from django_tables2 %}
+
+{% block page_title %}Project Report{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+  <li role="presentation"><a href="/activitydb/projectagreement_detail/{{ id }}/">Agreement</a></li>
+  <li role="presentation"><a href="/activitydb/projectcomplete_detail/{{ id }}/">Complete</a></li>
+  <li role="presentation" class="active"><a href="/activitydb/community_report/{{ id }}/">Communities</a></li>
+</ul>
+<h3>{{ proposal.project_name }}</h3>
+<style>
+    #map { height: 480px; }
+</style>
+
+<p><b>{{ country.country }} Communities</b></p>
+<div id="map"></div>
+
+{% include "activitydb/community_map.html" %}
+
+<ul class="list-group">
+{% for item in getCommunity %}
+    <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.name }}</b>
+    <div class="btn-group align-right" role="group" aria-label="...">
+        <a href="/activitydb/community_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Community</a>
+    </div>
+    </li>
+{% empty %}
+    <li class="list-group-item">No communities yet.</li>
+{% endfor %}
+</ul>
+{% endblock content %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block bread_crumb %}
+<ol class="breadcrumb">
+  <li><a href="/indicators/home/0/">Indicators</a></li>
+  <li class="active">Quantitative Outputs List</li>
+</ol>
+{% endblock %}
+{% block page_title %}Quantitative Outputs List{% endblock %}
+
+{% block content %}
+<div>
+<a href="/indicators/quantitative_add/0/" class="btn btn-large btn-success">New Quantitative Output</a> &nbsp;
+<a href="/indicators/quantitative_import/0/" class="btn btn-large btn-info">Import Quantitative Output</a>
+<hr/>
+<br/>
+</div>
+<ul class="list-group">
+{% for item in getQuantitativeOutputs %}
+    <li class="list-group-item"><b><a href="/indicators/quantitative_update/{{ item.id }}">{{ item.create_date|date }} - {{ item.name }}</a></b> &nbsp;<a href="/indicators/quantitative_delete/{{ item.id }}" class="btn-xs btn-danger">Delete Document</a></li>
+{% empty %}
+    <li class="list-group-item">No Quantitative Outputs yet.</li>
+{% endfor %}
+</ul>
+{% endblock content %}
