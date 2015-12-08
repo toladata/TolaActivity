@@ -4,15 +4,44 @@ from django.db import models
 from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager
+
+TITLE_CHOICES = (
+    ('mr', 'Mr.'),
+    ('mrs', 'Mrs.'),
+    ('ms', 'Ms.'),
+)
+
+class TolaUser(models.Model):
+    title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
+    name = models.CharField("Given Name", blank=True, null=True, max_length=100)
+    employee_number = models.IntegerField("Employee Number", blank=True, null=True)
+    user = models.OneToOneField(User, unique=True, related_name='userprofile')
+    country = models.ForeignKey("Country", blank=True, null=True)
+    countries = models.ManyToManyField("Country", verbose_name="Accessible Countires", related_name='countries', blank=True)
+    modified_by = models.ForeignKey(User, related_name='userprofile_modified_by')
+    created = models.DateTimeField(auto_now=False, blank=True, null=True)
+    updated = models.DateTimeField(auto_now=False, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
+
+    @property
+    def countries_list(self):
+        return ', '.join([x.code for x in self.countries.all()])
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps as appropriate'''
+        if kwargs.pop('new_entry', True):
+            self.created = datetime.now()
+        else:
+            self.updated = datetime.now()
+        return super(TolaUser, self).save(*args, **kwargs)
 
 
-class TolaUser(User):
-   class Meta:
-      proxy = True
-
-   def __unicode__(self):
-        return self.first_name + " " + self.last_name
+class TolaUserAdmin(admin.ModelAdmin):
+    list_display = ('country','name','title')
+    display = 'TolaUser'
 
 
 class Country(models.Model):

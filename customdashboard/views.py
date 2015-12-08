@@ -8,8 +8,8 @@ from django.contrib import auth
 from activitydb.models import ProjectAgreement, CustomDashboard ,ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, Feedback, FAQ, DocumentationApp
 from .models import ProjectStatus
 from indicators.models import CollectedData
-from djangocosign.models import UserProfile
-from djangocosign.models import Country
+from activitydb.models import TolaUser as UserProfile
+from activitydb.models import Country
 
 from util import getCountry
 from datetime import datetime

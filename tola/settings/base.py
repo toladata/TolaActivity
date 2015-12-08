@@ -199,6 +199,7 @@ DJANGO_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
+    'social.apps.django_app.default',
 
 )
 
@@ -211,6 +212,7 @@ THIRD_PARTY_APPS = (
     'report_builder',
     'mathfilters',
     'import_export',
+    'requests_oauthlib',
 )
 
 # Apps specific for this project go here.
@@ -218,7 +220,6 @@ LOCAL_APPS = (
     'tola',
     'feed',
     'activitydb',
-    'djangocosign',
     'indicators',
     'customdashboard',
 
@@ -227,6 +228,14 @@ LOCAL_APPS = (
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 ########## END APP CONFIGURATION
+
+####### AUTHENTICATION BAKEND CONFIG ##################
+# https://github.com/django/django/blob/master/django/contrib/auth/backends.py
+AUTHENTICATION_BACKENDS = (
+    'social.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 
 
 ########## LOGGING CONFIGURATION
@@ -314,8 +323,3 @@ WSGI_APPLICATION = '%s.wsgi.application' % SITE_NAME
 ########## END WSGI CONFIGURATION
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
-#Report Builder
-REPORT_BUILDER_INCLUDE = []
-REPORT_BUILDER_EXCLUDE = ['user','groups','read','template','silo','readtoken']
-REPORT_BUILDER_ASYNC_REPORT = False

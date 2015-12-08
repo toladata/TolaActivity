@@ -9,8 +9,8 @@ from django.shortcuts import render
 from django.contrib import auth
 from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, Feedback, FAQ, DocumentationApp
 from indicators.models import CollectedData
-from djangocosign.models import UserProfile
-from djangocosign.models import Country
+from activitydb.models import TolaUser as UserProfile
+from activitydb.models import Country
 from .tables import IndicatorDataTable
 from util import getCountry
 from datetime import datetime
