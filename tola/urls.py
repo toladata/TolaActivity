@@ -1,6 +1,7 @@
 from feed import views
 from tola import views
-from feed.views import UserViewSet, ProposalViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, CommunityViewSet, AgreementViewSet, CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet
+from feed.views import UserViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, SiteProfileViewSet, AgreementViewSet, \
+    CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet, IndicatorViewSet, ReportingFrequencyViewSet, TolaUserViewSet, IndicatorTypeViewSet, ObjectiveViewSet, DisaggregationTypeViewSet, LevelViewSet
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
@@ -18,16 +19,24 @@ admin.autodiscover()
 #REST FRAMEWORK
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'proposals', ProposalViewSet)
 router.register(r'programs', ProgramViewSet)
 router.register(r'sector', SectorViewSet)
 router.register(r'projecttype', ProjectTypeViewSet)
 router.register(r'office', OfficeViewSet)
-router.register(r'community', CommunityViewSet)
+router.register(r'siteprofile', SiteProfileViewSet)
 router.register(r'country', CountryViewSet)
 router.register(r'agreements', AgreementViewSet)
 router.register(r'completes', CompleteViewSet)
 router.register(r'projecttypeother', ProjectTypeOtherViewSet)
+router.register(r'indicator', IndicatorViewSet)
+router.register(r'reportingfrequency', ReportingFrequencyViewSet)
+router.register(r'tolauser', TolaUserViewSet)
+router.register(r'indicatortype', IndicatorTypeViewSet)
+router.register(r'objective', ObjectiveViewSet)
+router.register(r'disaggregationtype', DisaggregationTypeViewSet)
+router.register(r'level', LevelViewSet)
+
+
 
 
 urlpatterns = patterns('',
@@ -63,6 +72,9 @@ urlpatterns = patterns('',
 
                         #app include of activitydb urls
                         url(r'^indicators/', include('indicators.urls')),
+
+                       #app include of customdashboard urls
+                       url(r'^customdashboard/', include('customdashboard.urls')),
 
                         #local login
                         (r'^accounts/login/',  login),

@@ -4,7 +4,7 @@ from django_tables2.utils import A
 
 class IndicatorDataTable(tables.Table):
 
-    #agreement = tables.LinkColumn('projectagreement_update', args=[A('agreement_id')])
+    indicator__name = tables.LinkColumn('indicator_data_report', args=[A('indicator__id')])
 
     class Meta:
         model = CollectedData

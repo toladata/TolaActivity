@@ -7,7 +7,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectProposal, ProjectComplete, Program, Community, Sector,Country as ActivityCountry, Feedback, FAQ, Documentation
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, Feedback, FAQ, DocumentationApp
 from indicators.models import CollectedData
 from djangocosign.models import UserProfile
 from djangocosign.models import Country
@@ -15,9 +15,8 @@ from .tables import IndicatorDataTable
 from util import getCountry
 from datetime import datetime
 from django.shortcuts import get_object_or_404
-from django.db.models import Sum
-from django.db.models import Q
-
+from django.db.models import Sum, Q, Count
+import collections
 from tola.util import getCountry
 
 from django.contrib.auth.decorators import login_required
@@ -34,10 +33,10 @@ def index(request,id=0,sector=0):
     getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
     if int(sector) == 0:
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).exclude(proposal__isnull=True)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).exclude(agreement__isnull=True)
         sectors = Sector.objects.all()
     else:
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector).exclude(proposal__isnull=True)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries, sector=sector).exclude(agreement__isnull=True)
         sectors = Sector.objects.all().filter(id=sector)
 
     if int(program_id) == 0:
@@ -51,10 +50,11 @@ def index(request,id=0,sector=0):
         agreement_wait_count = ProjectAgreement.objects.all().filter(approval='in progress', sector__in=sectors, program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(approval='in progress', project_agreement__sector__in=sectors, program__country__in=countries).count()
         if int(sector) > 0:
-            getCommunity = Community.objects.all().filter(Q(Q(projectagreement__sector__in=sectors)), country__in=countries)
+            getSiteProfile = SiteProfile.objects.all().filter(Q(Q(projectagreement__sector__in=sectors)), country__in=countries)
         else:
-            getCommunity = Community.objects.all().filter(country__in=countries)
-        getQuantitativeDataSums = CollectedData.objects.all().filter(Q(Q(agreement__sector__in=sectors)|Q(agreement__sector__isnull=True)), indicator__country__in=countries).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+            getSiteProfile = SiteProfile.objects.all().filter(country__in=countries)
+        getQuantitativeDataSums = CollectedData.objects.all().filter(Q(Q(agreement__sector__in=sectors)|Q(agreement__sector__isnull=True)),achieved__isnull=False,targeted__isnull=False, indicator__country__in=countries).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
 
     else:
         getFilteredName=Program.objects.get(id=program_id)
@@ -66,8 +66,13 @@ def index(request,id=0,sector=0):
         complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")), program__id=program_id, program__country__in=countries).count()
         agreement_wait_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
         complete_wait_count = ProjectComplete.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
-        getCommunity = Community.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
-        getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id).order_by('indicator__number').values('indicator__number','indicator__name').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        if int(sector) > 0:
+            getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
+        else:
+            getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
+        getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
+
 
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
@@ -79,8 +84,9 @@ def index(request,id=0,sector=0):
                                           'complete_open_count':complete_open_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,\
                                           'complete_wait_count':complete_wait_count,\
-                                          'programs':getPrograms,'getCommunity':getCommunity,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors,\
-                                          'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums
+                                          'programs':getPrograms,'getSiteProfile':getSiteProfile,'country': countries,'getFilteredName':getFilteredName,'getSectors':getSectors,\
+                                          'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums,\
+                                          'count_evidence':count_evidence
                                           })
 
 def contact(request):
@@ -116,7 +122,7 @@ def documentation(request):
     Get Documentation and display them on template
     """
 
-    getDocumentation = Documentation.objects.all()
+    getDocumentation = DocumentationApp.objects.all()
 
     return render(request, 'documentation.html', {'getDocumentation': getDocumentation})
 

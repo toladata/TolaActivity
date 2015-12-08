@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
+<script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
+
+
+<script>
+
+$(function () {
+
+    $(document).ready(function () {
+        $('#status').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: 'Project Agreements by Status'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                name: 'Project Agreements',
+                colorByPoint: true,
+                data: [{
+                    name: 'Approved',
+                    y: {{getApprovedCount}},
+                    sliced: true,
+                    selected: true
+                }, {
+                    name: 'Awaiting Approval',
+                    y: {{getAwaitingApprovalCount}}
+
+                }, {
+                    name: 'In Progress',
+                    y: {{getInProgressCount}}
+                },  {
+                    name: 'Rejected',
+                    y: {{getRejectedCount}}
+                }]
+            }]
+        });
+    });
+});
+
+
+$(function () {
+    $('#budget').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: ''
+        },
+        xAxis: {
+            categories: [{% for project in getProjects %}
+                '{{ project.program_id }}.{{ project.id }}',{%endfor%}'Total'
+            ],
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Activity Budget (in USD)'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.2f} USD</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Estimated',
+            data: [
+            {% for project in getProjects %}{{ project.total_estimated_budget }},{%endfor%} 0]
+
+        },  {
+            name: 'Actual',
+            data: [
+            {% for project in getProjects %}{{ project.total_estimated_budget }},{%endfor%} 0]
+
+        }]
+    });
+});
+
+$(function () {
+
+    $('#indicator').highcharts({
+
+        chart: {
+            polar: true,
+            type: 'line'
+        },
+
+        title: {
+            text: 'Targets vs Actuals',
+            x: -80
+        },
+
+        pane: {
+            size: '80%'
+        },
+
+        xAxis: {
+            categories: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  '{{ indicator.indicator__number }}', {% endfor %} ],
+            tickmarkPlacement: 'on',
+            lineWidth: 0
+        },
+
+        yAxis: {
+            gridLineInterpolation: 'polygon',
+            lineWidth: 0,
+            min: 0
+        },
+
+        tooltip: {
+            shared: true,
+            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
+        },
+
+        legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            y: 70,
+            layout: 'vertical'
+        },
+
+        series: [{
+            name: 'Targets',
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.targets }}, {% endfor %}  ],
+            pointPlacement: 'on'
+        }, {
+            name: 'Actuals',
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.actuals }}, {% endfor %}   ],
+            pointPlacement: 'on'
+        }]
+
+    });
+});
+
+
+</script>
+
+    <div class="row">
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <div style="float:left;">
+
+                    <h4>Project Status {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}{% endif %} </a></h4>
+                    Number of Agreements : <b>{{ getProjectsCount }}</b><br>
+                    <!-- approved count-->
+                   <h4> <span class="label label-success">Approved &nbsp;<span class="badge">{{ getApprovedCount }}</span></span>
+                       <!-- awaiting approval count-->
+                    <span class="label label-success">Awaiting Approval &nbsp;<span class="badge">{{ getAwaitingApprovalCount }}</span></span>
+                    <!-- in progress count-->
+                    <span class="label label-success">In Progress &nbsp;<span class="badge">{{ getInProgressCount }}</span></span>
+                    <!-- rejected count-->
+                    <span class="label label-success">Rejected &nbsp;<span class="badge">{{ getRejectedCount }}</span></span></h4>
+
+                </div>
+                    <!-- Display custom dashboards -->
+                   <div class="btn-group" style="float:right; display: inline-block; vertical-align: middle;">
+                      <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        Program Custom Dashboard <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                          <li role="presentation">
+                              <a role="menuitem" tabindex="-1" href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- 0 - Basic Visuals --</a></li>
+                         {%for customdashboard in getCustomDashboard%}
+                          <li class="list-group-item disabled">
+                                <a href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ customdashboard.id }}/">{{customdashboard.id}} - {{ customdashboard.dashboard_name }}</a>
+                            </li>
+                        {%endfor%}
+                      </ul>
+                   </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+
+                    <!-- show project filter - 'All Projects', 'Approved', 'Rejected', 'In Progress', 'Archived' -->
+
+                    <div class="btn-group">
+                      <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        Filter Project by Status <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                          <li role="presentation">
+                              <a role="menuitem" tabindex="-1" href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All Projects --</a></li>
+                         {% for projectstatus in getProjectStatus %}
+                            <li class="list-group-item">
+                                <a href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ projectstatus.project_status }}/">{{ projectstatus.project_status }} Projects</a>
+                            </li>
+                        {%endfor%}
+                      </ul>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+
+                        <!-- show projects -->
+                    {% for project in getProjects %}
+                        <li class="list-group-item">
+
+                            <a href="/activitydb/dashboard/project/{{ project.id }}/">{{ project.project_name }}</a>&nbsp;
+                            <button type="button" class="btn btn-xs btn-success" style="float:right;" onclick="location.href='/activitydb/dashboard/project/{{ project.id }}'"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div id="indicator" style=" width: 100%; height: 460px; margin: 0 auto; float:right"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+           <!-- removed map div -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div id="status" style=" width: 100%; height: 280px; margin: 0 auto; float:right"></div>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading"><b>Project Activity Budget</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }} </a>{% endif %}</div>
+                <div class="panel-body">
+                <div id="budget" style=" width: 100%; height: 280px; margin: 0 auto; float:right"></div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-20">
+            <div class="panel panel-info">
+                <div class="panel-heading"><b>Project Sites</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}</a> {% endif %}</div>
+                <div class="panel-body">
+
+                    <style>
+                        #map { height: 350px; }
+                    </style>
+                    <div id="map"></div>
+
+                    {% include "small_site_profile_map.html" %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}

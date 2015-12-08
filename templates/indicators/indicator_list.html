@@ -14,8 +14,6 @@
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
     </ul>
-    <a href="/indicators/indicator_add/0/" class="btn btn-large btn-success">New Indicator</a>
-    <a href="/indicators/indicator_import/0/" class="btn btn-large btn-info">Import Indicator</a>
     <br/>
     <br/>
 </div>
@@ -24,32 +22,41 @@
 <!-- Default panel contents -->
 {% if getProgramsIndicator %}
     {% for program in getProgramsIndicator %}
-        {% if program.indicator_set.all %}
-            <div class='panel panel-default'>
-                <div class='panel-heading'><h4>{{ program.gaitid }} - {{ program.name }}<span style="float: right;"><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">Grid/Print Report</a></span></h4></div>
-                <!-- Table -->
-                <table class="table table-striped">
-                    <tr>
-                        <th>Date Created</th>
-                        <th>Indicator Type</th>
-                        <th>Indicator Name</th>
-                        <th>Indicator Number</th>
-                        <th>Sector</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                    {% for indicator in program.indicator_set.all %}
-                    <tr>
-                        <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.create_date}}</a></td>
-                        <td>{{ indicator.indicator_types}}</td>
-                        <td>{{ indicator.name}}</td>
-                        <td>{{ indicator.number}}</td>
-                        <td>{{ indicator.sector}}</td>
-                        <td><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn-xs btn-info">Edit</a>&nbsp;<a href="/indicators/collecteddata_add/{{ program.id }}/{{ indicator.id }}" class="btn-xs btn-success">Data</a>&nbsp;<a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn-xs btn-danger">Delete</a></td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        {% endif %}
+        <div class='panel panel-default'>
+            <div class='panel-heading'><h4><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ program.gaitid }}" target=_new">GAITID: {{ program.gaitid }}</a> - {{ program.name|truncatechars:90 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
+                {% if not program.indicator_set.all %}
+                    <div class='panel-body'>
+                        <h4>No Indicators have been entered for this program</h4>
+                        <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
+                    </div>
+                {% else %}
+                    <!-- Table -->
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Date Created</th>
+                            <th>Indicator Type</th>
+                            <th>Indicator Level</th>
+                            <th>Indicator Name</th>
+                            <th>Indicator Number</th>
+                            <th>Sector</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        {% for indicator in program.indicator_set.all|dictsort:"levels" %}
+                        <tr>
+                            <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.create_date}}</a></td>
+                            <td>{{ indicator.indicator_types}}</td>
+                            <td>{{ indicator.levels }}</td>
+                            <td>{{ indicator.name}}</td>
+                            <td>{{ indicator.number}}</td>
+                            <td>{{ indicator.sector}}</td>
+                            <td width="150"><span class="btn-group" role="group"><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_add/{{ program.id }}/{{ indicator.id }}" class="btn btn-xs btn-success">Data</a><a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a></span></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+
+        </div>
+
     {% endfor %}
 {% else %}
     <p>No Programs</p>

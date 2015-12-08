@@ -6,18 +6,18 @@
   <li class="active">Checklist</li>
 </ol>
 {% endblock %}
-{% block page_title %}Checklist List{% endblock %}
+{% block page_title %}Checklist List Items{% endblock %}
 
 {% block content %}
 <div>
-<a href="/activitydb/checklist_add/{{ project_agreement_id }}/" class="btn btn-large btn-success">New Checklist</a> &nbsp;
+<a href="/activitydb/checklistitem_add/{{ project_agreement_id }}/" class="btn btn-large btn-success">New Checklist Item</a> &nbsp;
 <hr/>
 <br/>
 </div>
-<h3>Checklist Data</h3>
+<h3>Checklist Items</h3>
 <ul class="list-group">
 {% for item in getChecklist %}
-    <li class="list-group-item"><b><a href="/activitydb/checklist_update/{{ item.id }}">{{ item.create_date|date }} - {{ item.agreement }} - {{ item.item }}</a></b> &nbsp;<a href="/activitydb/checklist_delete/{{ item.id }}" class="btn-xs btn-danger">Delete Checklist</a></li>
+    <li class="list-group-item"><b><a href="/activitydb/checklistitem_update/{{ item.id }}">{{ item.create_date|date }} - {{ item.agreement }} - {{ item.item }}</a></b> &nbsp;<a href="/activitydb/checklistitem_delete/{{ item.id }}" class="btn-xs btn-danger">Delete Item</a></li>
 {% empty %}
     <li class="list-group-item">No Checklist yet.</li>
 {% endfor %}

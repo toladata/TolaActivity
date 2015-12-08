@@ -1,9 +1,11 @@
-from .serializers import UserSerializer, ProposalSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, CommunitySerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer
+from .serializers import UserSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, \
+    SiteProfileSerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer, LevelSerializer
 
 from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
-from activitydb.models import ProjectProposal, Program, Sector, ProjectType, Office, Community, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, Level
 
 from django.contrib import messages
 from django.template import RequestContext
@@ -25,15 +27,6 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect, re
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-
-class ProposalViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    """
-    queryset = ProjectProposal.objects.all()
-    serializer_class = ProposalSerializer
 
 
 class ProgramViewSet(viewsets.ModelViewSet):
@@ -72,13 +65,13 @@ class OfficeViewSet(viewsets.ModelViewSet):
     serializer_class = OfficeSerializer
 
 
-class CommunityViewSet(viewsets.ModelViewSet):
+class SiteProfileViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = Community.objects.all()
-    serializer_class = CommunitySerializer
+    queryset = SiteProfile .objects.all()
+    serializer_class = SiteProfileSerializer
 
 
 class CountryViewSet(viewsets.ModelViewSet):
@@ -115,3 +108,59 @@ class ProjectTypeOtherViewSet(viewsets.ModelViewSet):
     """
     queryset = ProjectTypeOther.objects.all()
     serializer_class = ProjectTypeOtherSerializer
+
+class IndicatorViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Indicator.objects.all()
+    serializer_class = IndicatorSerializer
+
+class ReportingFrequencyViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = ReportingFrequency.objects.all()
+    serializer_class = ReportingFrequencySerializer
+
+class TolaUserViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = TolaUser.objects.all()
+    serializer_class = TolaUserSerializer
+
+class IndicatorTypeViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = IndicatorType.objects.all()
+    serializer_class = IndicatorTypeSerializer
+
+class ObjectiveViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Objective.objects.all()
+    serializer_class = ObjectiveSerializer
+
+class DisaggregationTypeViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = DisaggregationType.objects.all()
+    serializer_class = DisaggregationTypeSerializer
+
+class LevelViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Level.objects.all()
+    serializer_class = LevelSerializer

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block bread_crumb %}
+<ol class="breadcrumb">
+  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  {%  if project_agreement_id != 0 %}
+    <li><a href="/activitydb/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
+  {% endif %}
+  <li class="active">Site Profiles</li>
+</ol>
+{% endblock %}
+{% load group_tag %}
+{% block page_title %}Site Profile List{% endblock %}
+
+{% block content %}
+<div class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    Programs
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/siteprofile_list/0/0">-- All --</a></li>
+    {% for program in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/siteprofile_list/{{ program.id }}/0/">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% endfor %}
+  </ul>
+    <a href="/activitydb/siteprofile_add" class="btn btn-large btn-success">New Site Profile</a>
+     <!-- feature not yet enabled
+     <a href="/activitydb/siteprofile_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Site Profile</a> -->
+</div>
+<br/>
+
+<style>
+    #map { height: 480px; }
+</style>
+{% load crispy_forms_tags %}
+{% crispy form form.helper %}
+<h4>Site Profile Map and List</h4>
+<div id="map"></div>
+
+{% include "activitydb/site_profile_map.html" %}
+
+<script>
+    function ZoomToCountry(region){
+        if(region == "Latin America, Caribbean, Balkans, Caucasus"){
+            map.setView([9,-60], 4);
+        }else if(region == "East Asia"){
+            map.setView([30,96], 4);
+        }else if(region == "Central & South Asia"){
+            map.setView([30,80], 4);
+        }else if(region == "East & Southern Africa"){
+            map.setView([10,10], 4);
+        }else if(region == "West & Central Africa"){
+            map.setView([10,10], 4);
+        }else if(region == "Latin America, Caribbean, Balkans, Caucasus"){
+            map.setView([30,20], 4);
+        }else if(region == "Middle East"){
+            map.setView([30,20], 4);
+        }else if(region == "1"){
+            map.setView([10,-10], 2);
+        };
+    }
+</script>
+
+ <!-- Table -->
+<table class="table">
+    <tr>
+        <th>Date Created</th>
+        <th>Profile Name</th>
+        <th>Profile Type</th>
+        <th>Province</th>
+        <th>District</th>
+        <th>Approval</th>
+        <th>&nbsp;</th>
+    </tr>
+    {% for item in getCommunity %}
+    <tr>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date}}</a></td>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name}}</a></td>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type}}</a></td>
+        <td>{{ item.province}}</td>
+        <td>{{ item.district}}</td>
+        <td>{{ item.approval}}</td>
+        <td>
+            <a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
+    </tr>
+    {% empty %}
+        <li class="list-group-item">No Site Profiles yet.</li>
+    {% endfor %}
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div> <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
+
+{% endblock content %}

@@ -9,18 +9,28 @@
 
 {% block content %}
 <div class="dropdown">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-        Programs
-    <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/0/">-- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
-    {% endfor %}
-    </ul>
-    <a href="/indicators/collecteddata_add/0/0/" class="btn btn-large btn-success">New Data</a>
-    <a href="/indicators/collecteddata_import/0/" class="btn btn-large btn-info">Import Data</a>
+    <div class="btn-group" role="group">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+            Programs
+        <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        {% for program in getPrograms %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/0/{{ program.id }}/">{{ program.gaitid}} - {{ program.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="btn-group" role="group">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+            Indicators
+        <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+        {% for item in getIndicators %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ item.id }}/0/">{{ item.number}} - {{ item.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
     <br/>
     <br/>
 </div>
@@ -29,48 +39,42 @@
 
     {% if getCollectedData %}
     <div class='panel panel-default'>
-    {% regroup getCollectedData by program as DataByProgram %}
-    {% for program in DataByProgram %}
-        <div class='panel-heading'><h4>Program: {{ program }} </h4></div>
+        <div class='panel-heading'><h4>{% if filter_program %} Program: {{ filter_program }} {% elif filter_indicator %} Indicator: {{ filter_indicator }} {% endif %}</h4></div>
             <!-- Table -->
             <table class="table">
-            {% regroup program.list by indicator as indicator_list %}
-            {% for indicator in indicator_list %}
-                <tr class="success">
-                    {% if indicator.grouper %}
-                        <td colspan="6"><b>Indicator:</b> {{ indicator.grouper }}</td>
-                    {% else %}
-                        <td colspan="6"><b>No Indicator</b>
-                    {% endif %}
-                </tr>
                 <tr>
+                    <th>Indicator</th>
                     <th>Date Created</th>
                     <th>Date Collected</th>
-                    <th>Agreement</th>
+                    <th>Program</th>
+                    <th>Evidence</th>
                     <th>Target</th>
                     <th>Actual</th>
                     <th>&nbsp;</th>
                 </tr>
                 {% for item in getCollectedData %}
-                {% if item.indicator == indicator.grouper %}
                 <tr>
+                    <td>{{ item.indicator.number }} - {{ item.indicator.name }}</td>
                     <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.create_date}}</a></td>
                     <td>{{ item.date_collected }}</td>
-                    <td>{{ item.agreement }}</td>
+                    <td>{{ item.program }}</td>
+                    <td>{{ item.evidence }} </td>
                     <td>{{ item.targeted }}</td>
                     <td>{{ item.achieved }}</td>
-                    <td><a href="/indicators/collecteddata_add/{% if item.agreement.id %}{{ item.agreement.id }}{% else %}0{% endif %}/{% if item.indicator.id %}{{ item.indicator.id }}{% else %}0{% endif %}/" class="btn-xs btn-success">New</a><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+                    <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
                 </tr>
-
-                {% endif %}
                 {% endfor %}
-
-            {% endfor %}
+                <tr>
+                    <td colspan="5"><span style="float: right;">Sum:</span></td>
+                    <td>{{ collected_sum.targeted__sum }}</td>
+                    <td>{{ collected_sum.achieved__sum }}</td>
+                    <td>&nbsp;</td>
+                </tr>
             </table>
         </div>
-    {% endfor %}
     </div>
     {% else %}
-        <h4>No Data</h4>
+        <h4>No Data Found for <em>"{% if filter_program %}Program: {{ filter_program }}{% elif filter_indicator %} Indicator: {{ filter_indicator }}{% endif %}"</em> </h4>
+        <p>Select a Program or Indicator from the filters above.</p>
     {% endif %}
 {% endblock content %}

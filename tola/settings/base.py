@@ -220,6 +220,7 @@ LOCAL_APPS = (
     'activitydb',
     'djangocosign',
     'indicators',
+    'customdashboard',
 
 )
 

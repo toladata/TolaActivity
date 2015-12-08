@@ -62,64 +62,54 @@ $(function () {
 
 $(function () {
 
-    $('#indicator').highcharts({
-
+    $('#container_column').highcharts({
         chart: {
-            polar: true,
-            type: 'line'
+            type: 'column'
         },
-
         title: {
-            text: 'Targets vs Actuals',
-            x: -80
+            text: 'Targets v. Actuals'
         },
-
-        pane: {
-            size: '80%'
+        subtitle: {
+            text: 'Source: Indicator Results'
         },
-
         xAxis: {
-            categories: [ {% for indicator in getQuantitativeDataSums %}  '{{ indicator.indicator__number }}', {% endfor %} ],
-            tickmarkPlacement: 'on',
-            lineWidth: 0
+            categories: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  '{{ indicator.indicator__number }}', {% endfor %}],
+            crosshair: true
         },
-
         yAxis: {
-            gridLineInterpolation: 'polygon',
-            lineWidth: 0,
-            min: 0
+            min: 0,
+            title: {
+                text: 'Results'
+            }
         },
-
         tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            footerFormat: '</table>',
             shared: true,
-            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
+            useHTML: true
         },
-
-        legend: {
-            align: 'right',
-            verticalAlign: 'top',
-            y: 70,
-            layout: 'vertical'
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
         },
-
         series: [{
             name: 'Targets',
-            data: [ {% for indicator in getQuantitativeDataSums %}  {{ indicator.targets }}, {% endfor %}  ],
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.targets }}, {% endfor %}  ],
             pointPlacement: 'on'
         }, {
             name: 'Actuals',
-            data: [ {% for indicator in getQuantitativeDataSums %}  {{ indicator.actuals }}, {% endfor %}   ],
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.actuals }}, {% endfor %}   ],
             pointPlacement: 'on'
         }]
-
     });
 });
 
-
-
-
 </script>
-<div class="container">
+
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-body">
@@ -127,13 +117,34 @@ $(function () {
                     <h4>Tola-Activity Dashboard</h4>
                 </div>
                 <div style="float:right; display: inline-block; vertical-align: middle;">
-                    <a href="/activitydb/projectagreement_add/" class="btn btn-sm btn-success">Create a Project</a>
+                    <a href="/activitydb/dashboard/project/0/" class="btn btn-sm btn-success">Create a Project</a>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-4">
+             <div class="panel panel-info">
+                <div class="panel-heading">
+                    Indicator Evidence Leaderboard
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <th>Country</th>
+                            <th>Indicator Data</th>
+                            <th>W/Evidence</th>
+                        </tr>
+                    {%for value in count_evidence  %}
+                        <tr>
+                           <td>{{value.indicator__country__country}}</td>
+                           <td>{{value.indicator_count}}</td>
+                           <td>{{value.evidence_count}}</td>
+                        </tr>
+                    {%endfor%}
+                    </table>
+                </div>
+             </div>
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <!-- Extra small button group -->
@@ -156,26 +167,23 @@ $(function () {
                     {%for program in programs%}
                         <li class="list-group-item">
                             <a href="/activitydb/dashboard/{{ program.id }}/">{{ program.name }}</a>&nbsp;
-                            <button type="button" class="btn btn-xs btn-success" style="float:right; vertical-align: middle;" onclick="location.href='/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/'"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                            <button type="button" class="btn btn-xs btn-success" style="float:right;" onclick="location.href='/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/'"><span class="glyphicon glyphicon-arrow-right"></span></button>
                         </li>
                     {%endfor%}
                     </ul>
-                </div>
-                <div class="panel-body">
-                    <div id="indicator" style=" width: 100%; height: 400px; margin: 0 auto; float:right"></div>
                 </div>
             </div>
         </div>
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <p><b>Communities {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
+                    <p><b>Sites {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
                     <style>
                         #map { height: 350px; }
                     </style>
                     <div id="map"></div>
 
-                    {% include "small_community_map.html" %}
+                    {% include "small_site_profile_map.html" %}
 
                 </div>
             </div>
@@ -191,6 +199,7 @@ $(function () {
         <div class="col-md-20">
             <div class="panel panel-info">
                 <div class="panel-heading">Indicators {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</div>
+                <div id="container_column" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
                 <div class="panel-body">
                 {% load render_table from django_tables2 %}
                 {% render_table table %}
@@ -198,7 +207,6 @@ $(function () {
             </div>
         </div>
     </div>
-</div>
 
 
 {% endblock content %}

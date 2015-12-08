@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block bread_crumb %}
+<div>
+<ol class="breadcrumb">
+  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/activitydb/stakeholder_list/0/">Stakeholders</a></li>
+  <li class="active">Stakeholder Form</li>
+</ol>
+</div>
+{% endblock %}
+{% block page_title %}Stakeholder Form{% endblock %}
+
+
+{% block content %}
+    <span style="float: right;"><a onclick="newPopup('https://docs.google.com/document/d/1fX8hC-UxEd1YcXbf7gIkh5WH_ZPQYuhMB9q4uJNmMec/','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
+    {% if form.errors %}
+        <div class="help-block">
+        {% for field in form %}
+            {% for error in field.errors %}
+                    <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
+            {% endfor %}
+        {% endfor %}
+        </div>
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-error">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
+	{% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+
+{% endblock content %}

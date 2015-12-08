@@ -35,6 +35,7 @@
         <th>Project Name</th>
         <th>Activity Code</th>
         <th>Approval Status</th>
+        <th>In Dashboard</th>
         <th>&nbsp;</th>
     </tr>
     {% for item in getDashboard %}
@@ -43,6 +44,7 @@
         <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
         <td>{{ item.activity_code}}</td>
         <td>{% if item.approval %} {{ item.approval}} {% else %} Open {% endif %}</td>
+        <td>{{ item.dashboard_name }}</td>
         <td>
             <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
             <a href="/activitydb/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Agreement</a>

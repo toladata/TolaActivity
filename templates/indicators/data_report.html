@@ -30,9 +30,9 @@
   </ul>
 </div>
 <div class="btn-group" role="group">
-  <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ agreement }}/table/'" name="map">Table</button>&nbsp;
-  <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ agreement }}/map/'" name="map">Map</button>&nbsp;
-  <button class="btn btn-default" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ agreement }}/graph/'" name="map">Graph</button>
+  <button class="btn btn-default {% if 'table' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/table/'" name="table">Table</button>&nbsp;
+  <button class="btn btn-default {% if 'map' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/map/'" name="map">Map</button>&nbsp;
+  <button class="btn btn-default {% if 'graph' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/graph/'" name="graph">Graph</button>
 </div>
 <br/>
 
@@ -46,14 +46,21 @@
 {% load crispy_forms_tags %}
 {% crispy form form.helper %}
 <br/>
-
+{% if indicator_name %}
+    <h4>Filtered by Indicator: {{ indicator_name }}</h4>
+{% elif program_name %}
+    <h4>Filtered by Program : {{ program_name }}</h4>
+{% endif %}
+{% if 'search' in request.get_full_path %}
+    <p>{{ request.GET.urlencode }}</p>
+{% endif %}
 {% if "map" in request.get_full_path %}
     <style>
         #map { height: 350px; }
     </style>
-    <p><b>Communities</b></p>
+    <p><b>Sites</b></p>
     <div id="map"></div>
-    {% include "indicators/community_map.html" %}
+    {% include "indicators/site_profile_map.html" %}
 {% elif "graph" in request.get_full_path %}
     {% include "indicators/indicator_graphs.html" %}
 {% else %}

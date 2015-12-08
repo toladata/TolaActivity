@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
-from activitydb.models import Program, Sector, Community, ProjectAgreement, ProjectComplete, Country, Office
+from activitydb.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime
 
 
 class IndicatorType(models.Model):
     indicator_type = models.CharField(max_length=135, blank=True)
-    description = models.CharField(max_length=765, blank=True)
+    description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -20,31 +20,68 @@ class IndicatorTypeAdmin(admin.ModelAdmin):
     display = 'Indicator Type'
 
 
-class Objective(models.Model):
+class StrategicObjective(models.Model):
     name = models.CharField(max_length=135, blank=True)
     country = models.ForeignKey(Country, null=True, blank=True)
-    description = models.CharField(max_length=765, blank=True)
+    description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        ordering = ('country','name')
+
     def __unicode__(self):
         return self.name
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(StrategicObjective, self).save()
+
+
+class StrategicObjectiveAdmin(admin.ModelAdmin):
+    list_display = ('country','name')
+    search_fields = ('country','name')
+    display = 'Strategic Objectives'
+
+
+class Objective(models.Model):
+    name = models.CharField(max_length=135, blank=True)
+    program = models.ForeignKey(Program, null=True, blank=True)
+    description = models.TextField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('program','name')
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(Objective, self).save()
 
 
 class ObjectiveAdmin(admin.ModelAdmin):
-    list_display = ('name')
+    list_display = ('program','name')
+    search_fields = ('name','program')
     display = 'Objectives'
-
 
 class Level(models.Model):
     name = models.CharField(max_length=135, blank=True)
-    description = models.CharField(max_length=765, blank=True)
+    description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
 
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(Level, self).save()
 
 class LevelAdmin(admin.ModelAdmin):
     list_display = ('name')
@@ -121,8 +158,40 @@ class ReportingPeriod(models.Model):
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
-    list_display = ('frequency','description','create_date','edit_date')
+    list_display = ('frequency','create_date','edit_date')
     display = 'Reporting Frequency'
+
+
+class ExternalService(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    url = models.CharField(max_length=765, blank=True)
+    feed_url = models.CharField(max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class ExternalServiceAdmin(admin.ModelAdmin):
+    list_display = ('name','url','feed_url','create_date','edit_date')
+    display = 'External Indicator Data Service'
+
+
+class ExternalServiceRecord(models.Model):
+    external_service = models.ForeignKey(ExternalService, blank=True, null=True)
+    full_url = models.CharField(max_length=765, blank=True)
+    record_id = models.CharField("Unique ID",max_length=765, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.full_url
+
+
+class ExternalServiceRecordAdmin(admin.ModelAdmin):
+    list_display = ('external_service','full_url','record_id','create_date','edit_date')
+    display = 'Exeternal Indicator Data Service'
 
 
 class Indicator(models.Model):
@@ -130,12 +199,13 @@ class Indicator(models.Model):
     country = models.ForeignKey(Country, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
-    objectives = models.ManyToManyField(Objective, blank=True)
+    objectives = models.ManyToManyField(Objective, blank=True, related_name="obj_indicator")
+    strategic_objectives = models.ManyToManyField(StrategicObjective, blank=True, related_name="strat_indicator")
     name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
-    definition = models.CharField(max_length=255, null=True, blank=True)
-    disaggregation = models.ForeignKey(DisaggregationType, null=True, blank=True)
+    definition = models.TextField(null=True, blank=True)
+    disaggregation = models.ManyToManyField(DisaggregationType, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
     lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)
     means_of_verification = models.CharField(max_length=255, null=True, blank=True)
@@ -144,11 +214,12 @@ class Indicator(models.Model):
     method_of_analysis = models.CharField(max_length=255, null=True, blank=True)
     information_use = models.CharField(max_length=255, null=True, blank=True)
     reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True)
-    comments = models.CharField(max_length=255, null=True, blank=True)
+    comments = models.TextField(max_length=255, null=True, blank=True)
     program = models.ManyToManyField(Program)
     sector = models.ForeignKey(Sector, null=True, blank=True)
-    approved_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="approving_indicator")
-    approval_submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name="indicator_submitted_by")
+    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
+    approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="indicator_submitted_by")
+    external_service_record = models.ForeignKey(ExternalServiceRecord, verbose_name="External Service ID", blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -163,6 +234,14 @@ class Indicator(models.Model):
         super(Indicator, self).save(*args, **kwargs)
 
     @property
+    def objectives_list(self):
+        return ', '.join([x.name for x in self.objectives.all()])
+
+    @property
+    def strategicobjectives_list(self):
+        return ', '.join([x.name for x in self.strategic_objectives.all()])
+
+    @property
     def programs(self):
         return ', '.join([x.name for x in self.program.all()])
 
@@ -170,35 +249,40 @@ class Indicator(models.Model):
     def indicator_types(self):
         return ', '.join([x.indicator_type for x in self.indicator_type.all()])
 
+    @property
+    def levels(self):
+        return ', '.join([x.name for x in self.level.all()])
+
+    @property
+    def disaggregations(self):
+        return ', '.join([x.disaggregation_type for x in self.disaggregation.all()])
+
     def __unicode__(self):
         return self.name
 
 
 class IndicatorAdmin(admin.ModelAdmin):
-    list_display = ('owner','indicator_type','name','sector','description', 'program')
+    list_display = ('owner','indicator_types','name','sector')
+    search_fields = ('name','number','program__name')
+    list_filter = ('sector','country')
     display = 'Indicators'
 
 
 class CollectedData(models.Model):
-    targeted = models.CharField("Targeted", max_length=255, blank=True, null=True)
-    achieved = models.CharField("Achieved", max_length=255, blank=True, null=True)
+    targeted = models.IntegerField("Targeted", blank=True, null=True)
+    achieved = models.IntegerField("Achieved", blank=True, null=True)
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
-    description = models.CharField("Remarks/comments", max_length=255, blank=True, null=True)
+    description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2")
+    program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
     date_collected = models.DateTimeField(null=True, blank=True)
-    comment = models.CharField("Comment/Explanation", max_length=255, blank=True, null=True)
-    method = models.CharField("Method of Data Collection", max_length=255, blank=True, null=True)
-    tool = models.CharField("Tool/Source Developed By", max_length=255, blank=True, null=True)
-    date_of_training = models.DateTimeField("Date of Staff Training", null=True, blank=True)
-    date_of_analysis = models.DateTimeField("Date of Analysis", null=True, blank=True)
-    trainer_name = models.CharField("Name of Trainer", max_length=255, blank=True, null=True)
-    analysis_name = models.CharField("Analysis Done By", max_length=255, blank=True, null=True)
-    office = models.ForeignKey(Office, blank=True, null=True, related_name="q_office")
+    comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
+    evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
+    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-
     class Meta:
         ordering = ('agreement','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
@@ -212,7 +296,7 @@ class CollectedData(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.description
+        return self.indicator
 
     def targeted_sum(self):
         targets=CollectedData.targeted.filter(indicator__id=self).sum('targeted')
@@ -224,5 +308,6 @@ class CollectedData(models.Model):
 
 
 class CollectedDataAdmin(admin.ModelAdmin):
-    list_display = ('description', 'targeted', 'achieved', 'indicator','disaggregation_value','community','sector','date_collected', 'create_date', 'edit_date')
+    list_display = ('indicator','date_collected', 'create_date', 'edit_date')
+    list_filter = ['program__country__country']
     display = 'Indicator Output/Outcome Collected Data'

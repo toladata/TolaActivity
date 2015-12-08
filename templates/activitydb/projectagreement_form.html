@@ -10,7 +10,7 @@
 {% endblock %}
 {% block page_title %}Project Agreement Form{% endblock %}
 {% block content %}
-
+    <span style="float: right;"><a onclick="newPopup('https://docs.google.com/document/d/1xsHzOQ6CuWc9kNDEOHOQzYx8oZjW0zcn0DWe8Uw7ldk/edit?usp=sharing','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}
@@ -28,7 +28,6 @@
     {% load crispy_forms_tags %}
     <form class="form-horizontal" method="post" enctype="multipart/form-data" name="most">
     {% crispy form %}
-    <input type="submit" name="submit" value="Save" class="btn btn-primary btn-default" id="submit-id-submit" onclick="document.most.submit()">
     </form>
 
     <!-- Modal -->

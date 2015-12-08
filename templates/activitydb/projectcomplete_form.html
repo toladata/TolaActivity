@@ -9,6 +9,7 @@
 {% block page_title %}Project Complete Form{% endblock %}
 
 {% block content %}
+    <span style="float: right;"><a onclick="newPopup('https://docs.google.com/document/d/1tDwo3m1ychefNiAMr-8hCZnhEugQlt36AOyUYHlPbVo/edit?usp=sharing','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}

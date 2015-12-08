@@ -1,6 +1,6 @@
 from django.forms import ModelForm
-from indicators.models import Indicator, CollectedData
-from .models import Program, Community
+from indicators.models import Indicator, CollectedData, Objective, StrategicObjective
+from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreement
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -25,11 +25,10 @@ class IndicatorForm(forms.ModelForm):
         model = Indicator
         exclude = ['create_date','edit_date']
 
-    program = forms.ModelMultipleChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
-
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
         self.request = kwargs.pop('request')
+        self.program = kwargs.pop('program')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -43,9 +42,14 @@ class IndicatorForm(forms.ModelForm):
 
             HTML("""<br/>"""),
             TabHolder(
+                Tab('Summary',
+                     Fieldset('',
+                        'program','sector','objectives','strategic_objectives'
+                        ),
+                ),
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name', 'type', 'level', 'objectives', 'number', 'source', 'definition', 'disaggregation','owner', 'country', 'program','sector','indicator_type'
+                        'name', 'type', 'level', 'number', 'source', 'definition', 'disaggregation','owner', 'country','indicator_type'
                         ),
                 ),
                 Tab('Targets',
@@ -69,6 +73,28 @@ class IndicatorForm(forms.ModelForm):
                     ),
                 ),
             ),
+            HTML("""
+                  {% if getExternalServiceRecord %}
+                      <br/>
+                      <div class='panel panel-default'>
+                      <!-- Default panel contents -->
+                      <div class='panel-heading'>External Indicator Service</div>
+                          <!-- Table -->
+                          <table class="table">
+                           <tr>
+                             <th>Service Name</th>
+                             <th>View Guidance</th>
+                           </tr>
+                        {% for item in getExternalServiceRecord %}
+                           <tr>
+                            <td>{{ item.external_service.name }}</td>
+                            <td><a target="_new" href='{{ item.full_url }}'>View</a>
+                           </tr>
+                        {% endfor %}
+                         </table>
+                      </div>
+                  {% endif %}
+             """),
 
             HTML("""<br/>"""),
             FormActions(
@@ -82,6 +108,8 @@ class IndicatorForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['objectives'].queryset = Objective.objects.all().filter(program__id=self.program)
+        self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
 
 
 class CollectedDataForm(forms.ModelForm):
@@ -90,13 +118,12 @@ class CollectedDataForm(forms.ModelForm):
         model = CollectedData
         exclude = ['create_date', 'edit_date']
 
-    date_collected = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    date_of_training = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    date_of_analysis = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    date_collected = forms.DateField(widget=DatePicker.DateInput(), required=True)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
+        self.program = kwargs.pop('program')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -111,8 +138,16 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'description','indicator','date_collected','agreement','comment','method','tool','date_of_training','trainer_name','date_of_analysis','analysis_name','office'
+                'targeted', 'achieved', 'date_collected','indicator', 'program','description',
+
             ),
+
+            HTML("""<br/>"""),
+
+            Fieldset('Evidence',
+                'agreement','method','evidence',
+            ),
+
 
 
                 MultiField(
@@ -173,4 +208,13 @@ class CollectedDataForm(forms.ModelForm):
         )
 
         super(CollectedDataForm, self).__init__(*args, **kwargs)
+
+        #override the program queryset to use request.user for country
+        self.fields['evidence'].queryset = Documentation.objects.filter(program=self.program)
+
+        #override the program queryset to use request.user for country
+        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
+
+        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False)
+
 

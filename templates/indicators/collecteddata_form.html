@@ -2,7 +2,7 @@
 {% block bread_crumb %}
 <ol class="breadcrumb">
   <li><a href="/indicators/home/0/">Indicators</a></li>
-  <li><a href="/indicators/collecteddata/0/"> Data</a></li>
+  <li><a href="/indicators/collecteddata/0/0/"> Data</a></li>
   <li class="active">Output Form</li>
 </ol>
 
@@ -10,6 +10,7 @@
 {% block page_title %}Collected Indicator Data{% endblock %}
 
 {% block content %}
+    <span style="float: right;"><a onclick="newPopup('https://docs.google.com/document/d/1sTBwo-oueQeH9NTGDXpbYZdlBTpRXBBK14IZUS0wN08/','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
 
     {% if form.errors %}
         <div class="help-block">

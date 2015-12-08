@@ -8,8 +8,8 @@ import json
 import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
-from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData
-from activitydb.models import Program, ProjectAgreement, Community
+from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService
+from activitydb.models import Program, ProjectAgreement, SiteProfile, Country, Sector
 from djangocosign.models import UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
@@ -19,11 +19,14 @@ from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
 from activitydb.forms import FilterForm
 from .forms import IndicatorForm
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
+from django.conf import settings
+from django.core import serializers
+import requests
 
 
 class IndicatorList(ListView):
@@ -39,7 +42,7 @@ class IndicatorList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
 
         if int(self.kwargs['pk']) == 0:
-            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name')
             getIndicators = Indicator.objects.select_related().all()
         else:
             getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk'])
@@ -48,9 +51,125 @@ class IndicatorList(ListView):
         return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
+def import_tola_table(tag=None,deserialize=True):
+    """
+    Import a indicators from a web service (the dig only for now)
+    """
+    service = ExternalService.objects.all().filter(id=service_id)
+
+    #hard code the path to the file for now
+    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
+    #response = requests.get(services.feed_url)
+    #get_json = json.loads(response.content)
+    if deserialize == True:
+        data = json.load(get_json) # deserialises it
+    else:
+        #send json data back not deserialized data
+        data = get_json
+    #debug the json data string uncomment dump and print
+    #data2 = json.dumps(json_data) # json formatted string
+    #print data2
+
+    return data
+
+
+def import_indicator(service_id=1,deserialize=True):
+    """
+    Import a indicators from a web service (the dig only for now)
+    """
+    service = ExternalService.objects.all().filter(id=service_id)
+
+    #hard code the path to the file for now
+    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
+    #response = requests.get(services.feed_url)
+    #get_json = json.loads(response.content)
+    if deserialize == True:
+        data = json.load(get_json) # deserialises it
+    else:
+        #send json data back not deserialized data
+        data = get_json
+    #debug the json data string uncomment dump and print
+    #data2 = json.dumps(json_data) # json formatted string
+    #print data2
+
+    return data
+
+
+def indicator_create(request, id=0):
+    """
+    CREATE AN INDICATOR USING A TEMPLATE FIRST
+    """
+    getIndicatorTypes = IndicatorType.objects.all()
+    getCountries = Country.objects.all()
+    countries = getCountry(request.user)
+    country_id = Country.objects.get(country=countries[0]).id
+    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries)
+    getServices = ExternalService.objects.all()
+    program_id = id
+
+    if request.method == 'POST':
+        #set vars from form and get values from user
+
+        type = IndicatorType.objects.get(indicator_type="custom")
+        country = Country.objects.get(id=request.POST['country'])
+        program = Program.objects.get(id=request.POST['program'])
+        service = request.POST['services']
+        level = Level.objects.all()[0]
+        node_id = request.POST['service_indicator']
+        owner = request.user
+        sector = None
+        name = None
+        source = None
+        definition = None
+        external_service_record = None
+
+        #import recursive library for substitution
+        import re
+
+        #checkfor service indicator and update based on values
+        if node_id != None:
+            getImportedIndicators = import_indicator(service)
+            for item in getImportedIndicators:
+                if item['nid'] == node_id:
+                    getSector, created = Sector.objects.get_or_create(sector=item['sector'])
+                    sector=getSector
+                    getLevel, created = Level.objects.get_or_create(name=item['level'].title())
+                    level=getLevel
+                    name=item['title']
+                    source=item['source']
+                    definition=item['definition']
+                    #replace HTML tags if they are in the string
+                    definition = re.sub("<.*?>", "", definition)
+                    getService = ExternalService.objects.get(id=service)
+                    full_url = getService.url + "/" + item['nid']
+                    external_service_record = ExternalServiceRecord(record_id=item['nid'],external_service=getService,full_url=full_url)
+                    external_service_record.save()
+                    getType, created = IndicatorType.objects.get_or_create(indicator_type=item['type'].title())
+                    type=getType
+
+
+
+        #save form
+        new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
+        new_indicator.save()
+        new_indicator.program.add(program)
+        new_indicator.indicator_type.add(type)
+        new_indicator.level.add(level)
+
+        latest = new_indicator.id
+
+        #redirect to update page
+        messages.success(request, 'Success, Basic Indicator Created!')
+        redirect_url = '/indicators/indicator_update/' + str(latest)+ '/'
+        return HttpResponseRedirect(redirect_url)
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/indicator_create.html", {'country_id': country_id, 'program_id':int(program_id),'getCountries':getCountries, 'getPrograms': getPrograms,'getIndicatorTypes':getIndicatorTypes, 'getServices': getServices})
+
+
 class IndicatorCreate(CreateView):
     """
-    indicator Form
+    indicator Form for indicators not using a template or service indicator first
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
@@ -60,6 +179,8 @@ class IndicatorCreate(CreateView):
         user_profile = UserProfile.objects.get(user=self.request.user)
         initial = {
             'country': user_profile.country,
+            'program': self.kwargs['id'],
+            'owner': self.request.user,
             }
 
         return initial
@@ -76,6 +197,8 @@ class IndicatorCreate(CreateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values("program__id")
+        kwargs['program'] = program
         return kwargs
 
     def form_invalid(self, form):
@@ -105,12 +228,21 @@ class IndicatorUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(IndicatorUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+        #get external service data if any
+        try:
+            getExternalServiceRecord = ExternalServiceRecord.objects.all().filter(indicator__id=self.kwargs['pk'])
+        except ExternalServiceRecord.DoesNotExist:
+            getExternalServiceRecord = None
+        context.update({'getExternalServiceRecord': getExternalServiceRecord})
+
         return context
 
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(IndicatorUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values("program__id")
+        kwargs['program'] = program
         return kwargs
 
     def form_invalid(self, form):
@@ -149,7 +281,7 @@ class IndicatorDelete(DeleteView):
     form_class = IndicatorForm
 
 
-def indicatorReport(request, program=0):
+def indicator_report(request, program=0):
     """
     Show LIST of indicators with a filtered search view using django-tables2
     and django-filter
@@ -195,7 +327,7 @@ def programIndicatorReport(request, program=0):
     program = int(program)
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('indicator_type', 'number')
+    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
     getProgram = Program.objects.get(id=program)
 
     if request.method == "GET" and "search" in request.GET:
@@ -211,60 +343,68 @@ def programIndicatorReport(request, program=0):
                                            Q(name__icontains=request.GET["search"]) |
                                            Q(number__icontains=request.GET["search"]) |
                                            Q(definition__startswith=request.GET["search"])
-                                          ).filter(program__id=program).select_related().order_by('indicator_type','number')
+                                          ).filter(program__id=program).select_related().order_by('level','number')
 
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-def indicatorDataReport(request, id=0, program=0, agreement=0):
+def indicator_data_report(request, id=0, program=0):
     """
     Show LIST of indicator based quantitative outputs with a filtered search view using django-tables2
     and django-filter
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-    getAgreements = ProjectAgreement.objects.all().filter(country__in=countries)
     getIndicators = Indicator.objects.select_related().filter(country__in=countries)
+    indicator_name = None
+    program_name = None
+    q = None
 
+    #Build query based on filters and search
     if int(id) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(indicator__id=id).select_related()
-        getCommunity = CollectedData.objects.all().filter(indicator__id=id).select_related()
+        getSiteProfile = Indicator.objects.all().filter(id=id).select_related()
+        q = {
+            'indicator__id': id
+        }
+        indicator_name = Indicator.objects.get(id=id).name
     else:
-        getQuantitativeData = CollectedData.objects.all().select_related().filter(indicator__country__in=countries)
-        getCommunity = Community.objects.all().select_related()
+        getSiteProfile = SiteProfile.objects.all().select_related()
+        q = {
+            'indicator__country__in': countries,
+        }
 
     if int(program) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(agreement__program__id=program).select_related()
-        getCommunity = Community.objects.all().filter(projectagreement__program__id=program).select_related()
-
-    if int(agreement) != 0:
-        getQuantitativeData = CollectedData.objects.all().filter(agreement__id=agreement).select_related()
-        getCommunity = Community.objects.all().filter(projectagreement__id=agreement).select_related()
-
-    table = IndicatorDataTable(getQuantitativeData)
-    table.paginate(page=request.GET.get('page', 1), per_page=20)
+        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program).select_related()
+        program_name = Program.objects.get(id=program).name
+        q = {
+            'program__id':program,
+            'agreement__program__id': program,
+        }
+        #redress the indicator list based on program
+        getIndicators = Indicator.objects.select_related().filter(program=program)
 
     if request.method == "GET" and "search" in request.GET:
-        print "search"
-        #list1 = list()
-        #for obj in filtered:
-        #    list1.append(obj)
         """
          fields = ('targeted', 'achieved', 'description', 'indicator', 'agreement', 'complete')
         """
-        queryset = CollectedData.objects.filter(
+        queryset = CollectedData.objects.filter(**q).filter(
                                            Q(agreement__project_name__contains=request.GET["search"]) |
                                            Q(description__icontains=request.GET["search"]) |
                                            Q(indicator__name__contains=request.GET["search"])
                                           ).select_related()
-        table = IndicatorDataTable(queryset)
+    else:
+        queryset = CollectedData.objects.all().filter(**q).select_related()
+
+    #pass query to table and configure
+    table = IndicatorDataTable(queryset)
+    table.paginate(page=request.GET.get('page', 1), per_page=20)
 
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'getQuantitativeData':getQuantitativeData,'countries':countries, 'getCommunity':getCommunity, 'table': table, 'getAgreements': getAgreements,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'agreement':agreement})
+    return render(request, "indicators/data_report.html", {'getQuantitativeData':queryset,'countries':countries, 'getSiteProfile':getSiteProfile, 'table': table,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'indicator_name':indicator_name, 'program_name': program_name})
 
 
 class CollectedDataList(ListView):
@@ -274,17 +414,66 @@ class CollectedDataList(ListView):
     model = CollectedData
     template_name = 'indicators/collecteddata_list.html'
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(ProjectAgreementUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        getIndicators = Indicator.objects.select_related().filter(country__in=countries).exclude(collecteddata__isnull=True)
+        getCollectedData = None
+        collected_sum = None
 
-        if int(self.kwargs['pk']) == 0:
+        #filter by program or inidcator or both
+        if int(self.kwargs['indicator']) != 0:
+            getCollectedData = CollectedData.objects.all().filter(indicator__id=self.kwargs['indicator'])
+            collected_sum = CollectedData.objects.filter(indicator__id=self.kwargs['indicator']).aggregate(Sum('targeted'),Sum('achieved'))
+        elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) != 0:
+            getCollectedData = CollectedData.objects.all().filter(program=self.kwargs['program'])
+            collected_sum = CollectedData.objects.filter(program=self.kwargs['program']).aggregate(Sum('targeted'),Sum('achieved'))
+            #redress indicator query based on submitted program
+            getIndicators = Indicator.objects.select_related().filter(program=self.kwargs['program']).exclude(collecteddata__isnull=True)
+        elif int(self.kwargs['indicator']) != 0 and int(self.kwargs['program']) != 0:
+            getCollectedData = CollectedData.objects.all().filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator'])
+            collected_sum = CollectedData.objects.filter(program=self.kwargs['program'],indicator__id=self.kwargs['indicator']).aggregate(Sum('targeted'),Sum('achieved'))
+            #redress indicator query based on submitted program
+            getIndicators = Indicator.objects.select_related().filter(program=self.kwargs['program']).exclude(collecteddata__isnull=True)
+        elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
             getCollectedData = CollectedData.objects.all().filter(indicator__country__in=countries)
-        else:
-            getCollectedData = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['pk'])
+            collected_sum = CollectedData.objects.filter(indicator__country__in=countries).aggregate(Sum('targeted'),Sum('achieved'))
 
-        return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms})
+
+        #get details about the filtered indicator or program
+        try:
+            filter_indicator = Indicator.objects.get(id=self.kwargs['indicator'])
+        except Indicator.DoesNotExist:
+            filter_indicator = None
+
+        try:
+            filter_program = Program.objects.get(id=self.kwargs['program'])
+        except Program.DoesNotExist:
+            filter_program = None
+
+        #TEMP CODE to migrate inidcators for Afghanistan that do not have programs but have Agreements
+        if getCollectedData:
+            for data in getCollectedData:
+                set_program = None
+                if data.program is None and data.agreement:
+                    try:
+                        program_from_agreement = ProjectAgreement.objects.get(id=data.agreement.id)
+                        set_program = program_from_agreement.program
+                    except ProjectAgreement.DoesNotExist:
+                        set_program = None
+                    if set_program:
+                        update=CollectedData.objects.filter(id=data.pk).update(program=set_program)
+
+        #END TEMP CODE
+
+        return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms, 'getIndicators':getIndicators,'filter_program':filter_program,'filter_indicator': filter_indicator, 'collected_sum': collected_sum})
 
 
 class CollectedDataCreate(CreateView):
@@ -297,7 +486,7 @@ class CollectedDataCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
-        print self.kwargs['indicator']
+
         try:
             getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
         except DisaggregationLabel.DoesNotExist:
@@ -314,20 +503,19 @@ class CollectedDataCreate(CreateView):
     def get_initial(self):
         initial = {
             'indicator': self.kwargs['indicator'],
-            'agreement': self.kwargs['agreement'],
+            'program': self.kwargs['program'],
 
         }
 
         return initial
 
-    def dispatch(self, request, *args, **kwargs):
-        return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
-
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        kwargs['program'] = self.kwargs['program']
         return kwargs
+
 
     def form_invalid(self, form):
 
@@ -392,8 +580,10 @@ class CollectedDataUpdate(UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
+        program = CollectedData.objects.get(id=self.kwargs['pk']).program
         kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        kwargs['program'] = program
         return kwargs
 
     def form_valid(self, form):
@@ -424,22 +614,16 @@ class CollectedDataDelete(DeleteView):
     CollectedData Delete
     """
     model = CollectedData
-    success_url = '/'
+    success_url = '/indicators/collecteddata/0/0/'
 
-    def form_invalid(self, form):
 
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
+def service_json(request, service):
+    """
+    For populating service indicators in dropdown
+    """
+    service_indicators = import_indicator(service,deserialize=False)
+    return HttpResponse(service_indicators, content_type="application/json")
 
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Data Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = CollectedDataForm
 
 
 def tool(request):

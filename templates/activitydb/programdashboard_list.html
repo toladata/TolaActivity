@@ -15,8 +15,9 @@
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
   </ul>
-  <a href="/activitydb/projectagreement_add" class="btn btn-large btn-success">New Project</a>
-    <a href="/activitydb/projectagreement_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Project</a>
+  <a href="/activitydb/dashboard/project/0/" class="btn btn-sm btn-success">Create a Project</a>
+  <!--<a href="/activitydb/projectagreement_import/" class="btn btn-sm btn-info">Import a Project</a>-->
+
 </div>
 <br/>
 <div>
@@ -24,7 +25,16 @@
     {% for program in getDashboard %}
         {% if program.agreement.all %}
             <div class='panel panel-default'>
-                <div class='panel-heading'><h4><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ program.gaitid }}" target=_new">GAITID: {{ program.gaitid }}</a> - {{ program.name }}</h4></div>
+                <div class='panel-heading'>
+                    <h4>
+
+                       <a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ program.gaitid }}" target=_new">GAITID: {{ program.gaitid }}</a> - {{ program.name|truncatechars:90 }}
+
+                       <span class="float: right">
+                            <a href="/customdashboard/{{program.id }}/" class="btn btn-xs btn-info" style="float:right;">Dashboard Visualization</a>
+                       </span>
+                   </h4>
+                </div>
                 <!-- Table -->
                 <table class="table table-striped">
                     <tr>
@@ -34,6 +44,7 @@
                         <th>Activity Code</th>
                         <th>Office Code</th>
                         <th>Approval Status</th>
+                        <th>In Dashboard</th>
                         <th>&nbsp;</th>
                     </tr>
                     {% for item in program.agreement.all %}
@@ -44,6 +55,7 @@
                         <td>{{ item.activity_code }}</td>
                         <td>{{ item.office }} </td>
                         <td>{% if item.projectcomplete_set.all %} Complete {% else %} Agreement {% if item.approval  %}{{ item.approval }}{% else %} open {% endif %} {% endif %}</td>
+                        <td>{{ item.dashboard_name }}</td>
                         <td>
                             <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
                         </td>

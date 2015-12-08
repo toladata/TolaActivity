@@ -22,7 +22,7 @@ class CommunityTestCase(TestCase):
         new_community.save()
 
     def test_community_exists(self):
-        """Check for Community object"""
+        """Check for Communitybject"""
         get_community = Community.objects.get(name="testcommunity")
         self.assertEqual(Community.objects.filter(id=get_community.id).count(), 1)
 

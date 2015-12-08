@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='projectagreement',
             name='project_description',
-            field=models.TextField(help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto)', null=True, verbose_name='Project Description', blank=True),
+            field=models.TextField(help_text='Description must meet the Criteria.  Will translate description into three languages: English, Dari and Pashto', null=True, verbose_name='Project Description', blank=True),
         ),
         migrations.AlterField(
             model_name='projectcomplete',

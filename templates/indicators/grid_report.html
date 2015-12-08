@@ -21,6 +21,9 @@
     <table class="table table-striped" border="1">
         <tr>
             <th>Indicator type</th>
+            <th>Level</th>
+            <th>Objectives</th>
+            <th>Strategic Objectives</th>
             <th>Number</th>
             <th>Name</th>
             <th>Source</th>
@@ -39,11 +42,14 @@
         {% for indicator in getIndicators %}
         <tr>
             <td>{{ indicator.indicator_types }}</td>
+            <td>{{ indicator.levels }}</td>
+            <td>{{ indicator.objectives_list }}</td>
+            <td>{{ indicator.strategic_objectives_list }}</td>
             <td>{{ indicator.number }}</td>
             <td>{{ indicator.name }}</td>
             <td>{{ indicator.source }}</td>
             <td>{{ indicator.definition }}</td>
-            <td>{{ indicator.disaggregation }}</td>
+            <td>{{ indicator.disaggregations }}</td>
             <td>{{ indicator.baseline }}</td>
             <td>{{ indicator.lop_target }}</td>
             <td>{{ indicator.means_of_verification }}</td>

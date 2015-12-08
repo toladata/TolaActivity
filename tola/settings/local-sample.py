@@ -18,6 +18,11 @@ MANAGERS = ADMINS
 ########## END MANAGER CONFIGURATION
 
 
+########## Allowed HOsts
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = ['localhost','www.mercycorps.org','www.google.com','*.github.com','www.github.com','api.github.com','tola-activity-dev.mercycorps.org','tola-activity-demo.mercycorps.org','tola-activity.mercycorps.org','tola-tables.mercycorps.org']
+
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True

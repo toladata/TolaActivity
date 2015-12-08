@@ -65,13 +65,64 @@ $('input[type="file"]').each(function() {
 
 
 $(document).ready(function() {
+
+
+     /*
+     * Handle change in the indicator services drop-down; updates the province drop-down accordingly.
+     */
+    $("#services").change(function() {
+        var selected_service = $(this).val();
+        if (selected_service == undefined || selected_service == -1 || selected_service == '') {
+            $("#serivce").html("<option>--Service--</option>");
+        } else {
+            var url = "/indicators/service/" + selected_service + "/service_json/";
+            $.getJSON(url, function(service) {
+                var options = '<option value="0">--Indicator--</option>';
+                for (var i = 0; i < service.length; i++) {
+                    options += '<option value="' + service[i].nid + '">' + service[i].type + ' - ' + service[i].level + ' - ' + service[i].title + '</option>';
+                }
+
+                $("#service_indicator").html(options);
+                $("#service_indicator_option:first").attr('selected', 'selected');
+            });
+        }
+
+        // page-specific-action call if a page has implemented the 'country_dropdwon_has_changed' function
+        if(typeof services_dropdwon_has_changed != 'undefined') services_dropdwon_has_changed(selected_service);
+    });
+
     /*
-     * Handle change in the province drop-down; updates the distirct drop-down accordingly.
+     * Handle change in the country drop-down; updates the province drop-down accordingly.
+     */
+    $("select#id_country").change(function() {
+        var selected_country = $(this).val();
+        if (selected_country == undefined || selected_country == -1 || selected_country == '') {
+            $("select#id_country").html("<option>--Country--</option>");
+        } else {
+            var url = "/activitydb/country/" + selected_country + "/country_json/";
+            $.getJSON(url, function(province) {
+                var options = '<option value="0">--Province--</option>';
+                for (var i = 0; i < province.length; i++) {
+                    options += '<option value="' + province[i].pk + '">' + province[i].fields['name'] + '</option>';
+                }
+
+                $("select#id_province").html(options);
+                $("select#id_province_option:first").attr('selected', 'selected');
+            });
+        }
+
+        // page-specific-action call if a page has implemented the 'country_dropdwon_has_changed' function
+        if(typeof country_dropdwon_has_changed != 'undefined') country_dropdwon_has_changed(selected_country);
+    });
+
+
+    /*
+     * Handle change in the province drop-down; updates the district drop-down accordingly.
      */
     $("select#id_province").change(function() {
         var selected_province = $(this).val();
         if (selected_province == undefined || selected_province == -1 || selected_province == '') {
-            $("select#id_district").html("<option>--Province--</option>");
+            $("select#id_province").html("<option>--Province--</option>");
         } else {
             var url = "/activitydb/province/" + selected_province + "/province_json/";
             $.getJSON(url, function(district) {
@@ -163,3 +214,12 @@ $(document).ready(function() {
     })
 });
 
+/*
+* Pop-up window for help docs and guidance on forms
+*/
+
+function newPopup(url, windowName) {
+    return window.open(url,windowName,'height=768,width=1366,left=1200,top=10,titlebar=no,toolbar=no,menubar=no,location=no,directories=no,status=no');
+}
+
+// EXAMPLE: <a onclick="newPopup('https://docs.google.com/document/d/1tDwo3m1ychefNiAMr-8hCZnhEugQlt36AOyUYHlPbVo/edit?usp=sharing','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a>

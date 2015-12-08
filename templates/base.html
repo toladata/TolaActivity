@@ -8,7 +8,7 @@
         <meta name="description" content="Mercy Corps Application">
         <meta name="author" content="Mercy Corps">
 
-        <title>{% block title %} Tola-Activity {% endblock %}</title>
+        <title>{% block title %} TolaActivity {% endblock %}</title>
 
         <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png">
 
@@ -44,16 +44,9 @@
         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
                 <a class="navbar-brand" href="{% url 'index' %}">
                     <img style="margin-top: -18px" width="150px" height="61px" src="{{ STATIC_URL }}/img/logo.gif" />
                 </a>
-
             </div>
             <div class="navbar-collapse collapse" role=navigation">
                 <ul class="nav navbar-nav">
@@ -69,9 +62,8 @@
                             <li><a href="/activitydb/projectcomplete_list/0/"><span class="glyphicon glyphicon-th-list"></span> Project Complete</a></li>
                             -->
                             <li><a href="/activitydb/documentation_list/0/"><span class="glyphicon glyphicon-th-list"></span> Documents</a></li>
-                            <li><a href="/activitydb/community_list/0/0/"><span class="glyphicon glyphicon-th-list"></span> Communities</a></li>
-                            <li><a href="/activitydb/training_list/0/"><span class="glyphicon glyphicon-th-list"></span> Training</a></li>
-                            <li><a href="/activitydb/beneficiary_list/0/"><span class="glyphicon glyphicon-th-list"></span> Beneficiaries</a></li>
+                            <li><a href="/activitydb/siteprofile_list/0/0/"><span class="glyphicon glyphicon-th-list"></span> Sites</a></li>
+                            <li><a href="/activitydb/stakeholder_list/0/"><span class="glyphicon glyphicon-th-list"></span> Stakeholders</a></li>
                         </ul>
                     </li>
 
@@ -79,38 +71,45 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Indicators<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="/indicators/home/0/"><span class="glyphicon glyphicon-dashboard"></span> Indicator Planning</a></li>
+                            <li><a href="/indicators/collecteddata/0/0/"><span class="glyphicon glyphicon-th-list"></span> Indicator Data</a></li>
                             <li><a href="/indicators/report/0/"><span class="glyphicon glyphicon-check"></span> Indicator Library</a></li>
-                            <li><a href="/indicators/collecteddata/0/"><span class="glyphicon glyphicon-th-list"></span> Indicator Data</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Form Library<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/activitydb/training_list/0/"><span class="glyphicon glyphicon-th-list"></span> Training</a></li>
+                            <li><a href="/activitydb/beneficiary_list/0/"><span class="glyphicon glyphicon-th-list"></span> Beneficiaries</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activty Report</a></li>
+                            <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activity Report</a></li>
                             <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-check"></span> Indicator Data Report</a></li>
                             <li><a href="/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-check"></span> Report Builder</a></li>
                         </ul>
                     </li>
-
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/documentation">Documentation</a></li>
-                            <li><a href="/faq">FAQ</a></li>
-                            <li><a href="/contact">Contact</a></li>
-                        </ul>
-                    </li>
-
                 </ul>
-                {% if user.is_authenticated  %}
-                <span>{{ request.session.country }}</span>
                 <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated  %}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{ user.userprofile.name }}<b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {% if "demo" in request.build_absolute_uri %}
+                                <span class="label label-danger">DEMO SERVER</span>
+                            {% elif  "127." in request.build_absolute_uri %}
+                                <span class="label label-danger">LOCAL SERVER</span>
+                            {% elif "dev" in request.build_absolute_uri %}
+                                <span class="label label-danger">DEV SERVER</span>
+                            {% endif %}
+                            <span class="glyphicon glyphicon-user"></span> {{ user.userprofile.name }}<b class="caret"></b>
+                        </a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-lock"></span> Logout</a></li>
                             <li><a href="{% url 'profile' %}"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+                            <li><a href="{% url 'profile' %}"><span>{{ user.userprofile.countries_list }}</span></a></li>
                         </ul>
                     </li><!-- .dropdown collapse -->
                 </ul>
@@ -133,9 +132,7 @@
             </div><!-- .container collapse -->
         </div><!-- .navbar collapse -->
         <br/>
-        <br/>
         <div class="container">
-            <br/>
             <br/>
             <div>{% block bread_crumb %}{% endblock %}</div>
             <div id = "alerts">
@@ -162,18 +159,19 @@
         </div><!-- .container collapse -->
 
         <div id = "loading" class="modal"> </div>
-        <div id="footer"><!-- Sticky Footer -->
+        <div id="footer">
+            <!-- Sticky Footer -->
             <div class="container">
-                <span style="float: left;" class="text-muted">
-                    <a href="https://github.com/mercycorps/tola-activity/blob/master/LICENSE">GNU GENERAL PUBLIC LICENSE Version 2</a>
-                </span>
-                <span style="float:right;" class="text-muted">
-                  <a href="{% url 'documentation' %}" class="text-muted">Documentation</a> |
-			            <a href="{% url 'faq' %}" class="text-muted">FAQ</a> |
-			            <a href="{% url 'contact' %}" class="text-muted">Feedback</a>
-                </span>
+                <div class="col-md-4 text-left">
+                    <a href="https://github.com/mercycorps/tola-activity/blob/master/LICENSE" class="text-muted">GNU GENERAL PUBLIC LICENSE Version 2</a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
+                </div>
+                <div class="col-md-4 text-right">
+                    <a href="{% url 'documentation' %}" class="text-muted">Documentation</a> | <a href="{% url 'faq' %}" class="text-muted">FAQ</a> | <a onclick="newPopup('http://tola.work/helpdesk/tickets/submit/','Tola Work - New Ticket'); return false;" href="#" class="text-muted">Feedback</a>
+                </div>
             </div>
-
         </div><!-- .footer collapse -->
 
         <!-- jQuery UI (necessary for datepicker as well as dataTables library -->
