@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect
 from django.db import models
 from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService
 from activitydb.models import Program, ProjectAgreement, SiteProfile, Country, Sector
-from djangocosign.models import UserProfile
+from activitydb.models import TolaUser as UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
 from django.contrib import messages

@@ -3,7 +3,7 @@ from .models import Country, Province, Office, Village, Program, Documentation, 
      ProgramDashboard, CustomDashboard, ProjectAgreement, ProjectAgreementAdmin,ProjectComplete, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
-    Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin
+    Contact,TolaUser, TolaUserAdmin, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin
 
 
 admin.site.register(Country)
@@ -42,6 +42,7 @@ admin.site.register(StakeholderType)
 admin.site.register(FormLibrary,FormLibraryAdmin)
 admin.site.register(FormEnabled,FormEnabledAdmin)
 admin.site.register(Feedback,FeedbackAdmin)
+admin.site.register(TolaUser, TolaUserAdmin)
 
 
 
