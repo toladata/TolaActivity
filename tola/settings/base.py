@@ -97,6 +97,7 @@ STATIC_ROOT = normpath(join(SITE_ROOT, 'assets'))
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
 STATIC_URL = '/static/'
 
+
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = (
     normpath(join(SITE_ROOT, 'static')),
@@ -143,6 +144,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
+    'tola.processor.report_server_check',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
@@ -200,7 +202,6 @@ DJANGO_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'social.apps.django_app.default',
-
 )
 
 THIRD_PARTY_APPS = (
@@ -209,10 +210,11 @@ THIRD_PARTY_APPS = (
     'crispy_forms',
     'floppyforms',
     'django_extensions',
-    'report_builder',
     'mathfilters',
     'import_export',
-    'requests_oauthlib',
+    'django_wysiwyg',
+    'ckeditor',
+    'ckeditor_uploader',
 )
 
 # Apps specific for this project go here.
@@ -220,6 +222,7 @@ LOCAL_APPS = (
     'tola',
     'feed',
     'activitydb',
+    'djangocosign',
     'indicators',
     'customdashboard',
 
@@ -235,7 +238,11 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+############ END OF AUTHENTICATION BACKEND ##############
 
+########## Login redirect ###########
+LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 
 
 ########## LOGGING CONFIGURATION
@@ -323,3 +330,20 @@ WSGI_APPLICATION = '%s.wsgi.application' % SITE_NAME
 ########## END WSGI CONFIGURATION
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+#Report Builder
+REPORT_BUILDER_INCLUDE = []
+REPORT_BUILDER_EXCLUDE = ['user','groups','read','template','silo','readtoken']
+REPORT_BUILDER_ASYNC_REPORT = False
+
+#wysiwyg settings
+DJANGO_WYSIWYG_FLAVOR = "ckeditor"
+CKEDITOR_UPLOAD_PATH = "media/uploads/"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': 300,
+    },
+}

@@ -8,12 +8,19 @@
     var country=[];
     var country_lat=[];
     var country_long=[];
-    {% for item in country %}
-        country[{{forloop.counter}}] = "{{ item.country }}";
-        country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
-        country_long[{{forloop.counter}}] = "{{ item.longitude }}";
-    {% endfor %}
-
+    {% if selected_countries_list %}
+        {% for item in selected_countries_list %}
+            country[{{forloop.counter}}] = "{{ item.country }}";
+            country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
+            country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+        {% endfor %}
+    {%else%}
+        {% for item in countries %}
+            country[{{forloop.counter}}] = "{{ item.country }}";
+            country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
+            country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+        {% endfor %}
+    {% endif %}
 
     var osmLink = '<a href="https://openstreetmap.org">OpenStreetMap</a>',
         thunLink = '<a href="https://thunderforest.com/">Thunderforest</a>';

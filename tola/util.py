@@ -5,7 +5,7 @@ import json
 import base64
 import sys
 
-from activitydb.models import TolaUser as UserProfile, Country
+from djangocosign.models import UserProfile, Country
 from activitydb.models import Country as ActivityCountry
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
 from django.contrib.auth.models import User
@@ -33,7 +33,7 @@ def getCountry(user):
         # get users country from django cosign module
         user_countries = UserProfile.objects.all().filter(user=user).values('countries')
         # get the country name from django cosign module
-        get_cosign_country = Country.objects.all().filter(id__in=user_countries).values('country')
+        get_cosign_country = Country.objects.all().filter(id__in=user_countries).values('name')
         # get the id from the activitydb model
         get_countries = ActivityCountry.objects.all().filter(country__in=get_cosign_country)
 
@@ -83,18 +83,25 @@ def getTolaDataSilos(user):
         return silos
 
 
-def emailGroup(group,link,subject,message):
-        #email incident to admins
-        getGroupEmails = User.objects.all().filter(groups__name=group).values_list('email', flat=True)
-        email_link = link
-        formatted_email = email_link
-        subject = str(subject)
-        message = str(message) + formatted_email
-        to = [str(item) for item in getGroupEmails]
+def emailGroup(country,group,link,subject,message,submiter=None):
+        #email incident to admins in each country assoicated with the projects program
+        for single_country in country.all():
+            country = Country.objects.all().filter(name=single_country)
+            getGroupEmails = User.objects.all().filter(groups__name=group,userprofile__country=country).values_list('email', flat=True)
+            print getGroupEmails
+            email_link = link
+            formatted_email = email_link
+            subject = str(subject)
+            message = str(message) + formatted_email
 
-        email = EmailMessage(subject, message, 'systems-incident@mercycorps.org',
-                to)
+            to = [str(item) for item in getGroupEmails]
+            if submiter:
+                to.append(submiter)
+            print to
 
-        email.send()
+            email = EmailMessage(subject, message, 'systems@mercycorps.org',
+                    to)
+
+            email.send()
 
         mail_admins(subject, message, fail_silently=False)

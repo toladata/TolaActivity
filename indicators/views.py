@@ -8,9 +8,9 @@ import json
 import unicodedata
 from django.http import HttpResponseRedirect
 from django.db import models
-from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService
+from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
 from activitydb.models import Program, ProjectAgreement, SiteProfile, Country, Sector
-from activitydb.models import TolaUser as UserProfile
+from djangocosign.models import UserProfile
 from indicators.forms import IndicatorForm, CollectedDataForm
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -27,6 +27,8 @@ from django.views.generic.detail import View, DetailView
 from django.conf import settings
 from django.core import serializers
 import requests
+from activitydb.mixins import AjaxableResponseMixin
+from export import IndicatorResource, CollectedDataResource
 
 
 class IndicatorList(ListView):
@@ -39,7 +41,7 @@ class IndicatorList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded")
+        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
 
         if int(self.kwargs['pk']) == 0:
             getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name')
@@ -51,43 +53,21 @@ class IndicatorList(ListView):
         return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
-def import_tola_table(tag=None,deserialize=True):
+def import_indicator(service=1,deserialize=True):
     """
     Import a indicators from a web service (the dig only for now)
     """
-    service = ExternalService.objects.all().filter(id=service_id)
-
+    service = ExternalService.objects.get(id=service)
     #hard code the path to the file for now
-    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
-    #response = requests.get(services.feed_url)
-    #get_json = json.loads(response.content)
+    #get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
+    #print service.feed_url
+    response = requests.get(service.feed_url)
+
     if deserialize == True:
-        data = json.load(get_json) # deserialises it
+        data = json.loads(response.content) # deserialises it
     else:
         #send json data back not deserialized data
-        data = get_json
-    #debug the json data string uncomment dump and print
-    #data2 = json.dumps(json_data) # json formatted string
-    #print data2
-
-    return data
-
-
-def import_indicator(service_id=1,deserialize=True):
-    """
-    Import a indicators from a web service (the dig only for now)
-    """
-    service = ExternalService.objects.all().filter(id=service_id)
-
-    #hard code the path to the file for now
-    get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
-    #response = requests.get(services.feed_url)
-    #get_json = json.loads(response.content)
-    if deserialize == True:
-        data = json.load(get_json) # deserialises it
-    else:
-        #send json data back not deserialized data
-        data = get_json
+        data = response
     #debug the json data string uncomment dump and print
     #data2 = json.dumps(json_data) # json formatted string
     #print data2
@@ -103,7 +83,7 @@ def indicator_create(request, id=0):
     getCountries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries).distinct()
     getServices = ExternalService.objects.all()
     program_id = id
 
@@ -126,8 +106,9 @@ def indicator_create(request, id=0):
         #import recursive library for substitution
         import re
 
+        print node_id
         #checkfor service indicator and update based on values
-        if node_id != None:
+        if node_id != None and int(node_id) != 0:
             getImportedIndicators = import_indicator(service)
             for item in getImportedIndicators:
                 if item['nid'] == node_id:
@@ -287,7 +268,7 @@ def indicator_report(request, program=0):
     and django-filter
     """
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
     if int(program) == 0:
         getIndicators = Indicator.objects.all().select_related().filter(country__in=countries)
@@ -326,7 +307,7 @@ def programIndicatorReport(request, program=0):
     """
     program = int(program)
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
     getProgram = Program.objects.get(id=program)
 
@@ -356,7 +337,7 @@ def indicator_data_report(request, id=0, program=0):
     and django-filter
     """
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.select_related().filter(country__in=countries)
     indicator_name = None
     program_name = None
@@ -423,7 +404,7 @@ class CollectedDataList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         getIndicators = Indicator.objects.select_related().filter(country__in=countries).exclude(collecteddata__isnull=True)
         getCollectedData = None
         collected_sum = None
@@ -486,7 +467,6 @@ class CollectedDataCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
-
         try:
             getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
         except DisaggregationLabel.DoesNotExist:
@@ -498,13 +478,14 @@ class CollectedDataCreate(CreateView):
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'indicator_id': self.kwargs['indicator']})
+        context.update({'program_id': self.kwargs['program']})
+
         return context
 
     def get_initial(self):
         initial = {
             'indicator': self.kwargs['indicator'],
             'program': self.kwargs['program'],
-
         }
 
         return initial
@@ -514,6 +495,7 @@ class CollectedDataCreate(CreateView):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['program'] = self.kwargs['program']
+
         return kwargs
 
 
@@ -542,8 +524,8 @@ class CollectedDataCreate(CreateView):
         form.save()
         messages.success(self.request, 'Success, Data Created!')
 
-        form = ""
-        return self.render_to_response(self.get_context_data(form=form))
+        redirect_url = '/indicators/home/0/'
+        return HttpResponseRedirect(redirect_url)
 
 
 class CollectedDataUpdate(UpdateView):
@@ -572,6 +554,7 @@ class CollectedDataUpdate(UpdateView):
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
         context.update({'indicator_id': getIndicator.indicator_id})
+
         return context
 
     def form_invalid(self, form):
@@ -617,6 +600,61 @@ class CollectedDataDelete(DeleteView):
     success_url = '/indicators/collecteddata/0/0/'
 
 
+def merge_two_dicts(x, y):
+    '''Given two dicts, merge them into a new dict as a shallow copy.'''
+    z = x.copy()
+    z.update(y)
+    return z
+
+
+def collecteddata_import(request):
+    """
+    import collected data from Tola Tables
+    """
+    owner = request.user
+    service = ExternalService.objects.get(name="TolaTables")
+
+    #add filter to get just the users tables only
+    user_filter_url = service.feed_url + "&owner__username=" + str(owner)
+    #public_filter_url = service.feed_url + "&public=True"
+    #shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
+
+    response = requests.get(user_filter_url)
+    user_json = json.loads(response.content)
+
+    data = user_json
+
+    #debug the json data string uncomment dump and print
+    #data2 = json.dumps(data) # json formatted string
+    #print data2
+
+    if request.method == 'POST':
+        id = request.POST['service_table']
+        filter_url = service.feed_url + "&id=" + id
+        response = requests.get(filter_url)
+        get_json = json.loads(response.content)
+        data = get_json
+        for item in data['results']:
+            name = item['name']
+            url = item['data']
+            remote_owner = item['owner']['username']
+
+        check_for_existence = TolaTable.objects.all().filter(name=name,owner=owner)
+        if check_for_existence:
+            result = "error"
+        else:
+            create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
+            create_table.save()
+            result = "success"
+
+        #send result back as json
+        message = result
+        return HttpResponse(json.dumps(message), content_type='application/json')
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/collecteddata_import.html", {'getTables': data})
+
+
 def service_json(request, service):
     """
     For populating service indicators in dropdown
@@ -625,8 +663,53 @@ def service_json(request, service):
     return HttpResponse(service_indicators, content_type="application/json")
 
 
+def collected_data_json(AjaxableResponseMixin, indicator,program):
+    """
+    For populating service indicators in dropdown
+    """
+    template_name = 'indicators/collected_data_table.html'
+    collecteddata = CollectedData.objects.all().filter(indicator=indicator)
+    collected_sum = CollectedData.objects.filter(indicator=indicator).aggregate(Sum('targeted'),Sum('achieved'))
+    return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum, 'indicator_id': indicator, 'program_id': program})
+
 
 def tool(request):
 
     return render(request, 'indicators/tool.html')
 
+
+class IndicatorExport(View):
+    """
+    Export all incidents to a CSV file called from a button at the bottom of the incidentList table
+    """
+
+    def get(self, *args, **kwargs ):
+        queryset = Indicator.objects.all().filter(program=self.kwargs['program'])
+        dataset = IndicatorResource().export(queryset)
+        response = HttpResponse(dataset, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=indicator.csv'
+        return response
+
+
+class CollectedDataExport(View):
+    """
+    Export all incidents to a CSV file called from a button at the bottom of the incidentList table
+    """
+
+    def get(self, *args, **kwargs ):
+        #filter by program or indicator
+        print int(self.kwargs['program'])
+        print int(self.kwargs['indicator'])
+        if int(self.kwargs['program']) != 0 and int(self.kwargs['indicator']) == 0:
+            print "Program"
+            queryset = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['program'])
+        elif int(self.kwargs['program']) == 0 and int(self.kwargs['indicator']) != 0:
+            print "Indicator"
+            queryset = CollectedData.objects.all().filter(indicator__id=self.kwargs['indicator'])
+        else:
+            countries = getCountry(self.request.user)
+            queryset = CollectedData.objects.all().filter(indicator__country__in=countries)
+        dataset = CollectedDataResource().export(queryset)
+        response = HttpResponse(dataset, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        return response

@@ -7,7 +7,7 @@ from widgets import GoogleMapsWidget
 import floppyforms.__future__ as forms
 from django.contrib.auth.models import Permission, User, Group
 from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Sector, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser
-from .models import TolaUser as UserProfile
+from djangocosign.models import UserProfile
 from indicators.models import CollectedData, Indicator
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
@@ -409,7 +409,7 @@ class ProjectAgreementForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
 
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
@@ -531,17 +531,17 @@ class ProjectCompleteForm(forms.ModelForm):
                     ),
                     Fieldset(
                         'Dates',
-                        'expected_start_date','expected_end_date', 'expected_duration', 'actual_start_date', 'actual_end_date', 'actual_duration',
+                        'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
                         PrependedText('on_time', ''), 'no_explanation',
 
                     ),
                 ),
                 Tab('Budget',
                     Fieldset(
-                        '','account_code','lin_code',
-                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00'), 'budget_variance', 'explanation_of_variance',
+                        '',
+                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00'),'actual_cost_date', 'budget_variance', 'explanation_of_variance',
                         PrependedAppendedText('total_cost','$', '.00'), PrependedAppendedText('agency_cost','$', '.00'),
-                        AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'exchange_rate','exchange_rate_date',
+                        AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'account_code','lin_code','exchange_rate','exchange_rate_date',
                     ),
 
                 ),
@@ -620,15 +620,10 @@ class ProjectCompleteForm(forms.ModelForm):
                         ),
                     ),
                     Fieldset(
-                        '','actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','community_handover'
+                        '',AppendedText('progress_against_targets','%'),'actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
                     ),
                 ),
-                Tab('Lessons Learned',
-                    Fieldset(
-                        '', 'issues_and_challenges', 'lessons_learned',
-                    ),
 
-                ),
                 Tab('Approval',
                     Fieldset('Approval',
                              'approval', 'approved_by',
@@ -981,6 +976,7 @@ class StakeholderForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.request = kwargs.pop('request')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -993,12 +989,15 @@ class StakeholderForm(forms.ModelForm):
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
-
-                'name', 'type', 'contact',HTML("""<a href="/activitydb/contact_add/0/" target="_new">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
+            'name', 'type', 'contact', HTML("""<a href="/activitydb/contact_add/0/" target="_new">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
 
         )
 
         super(StakeholderForm, self).__init__(*args, **kwargs)
+
+        countries = getCountry(self.request.user)
+        self.fields['contact'].queryset = Contact.objects.filter(country__in=countries)
+
 
 
 class BeneficiaryForm(forms.ModelForm):

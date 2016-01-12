@@ -1,0 +1,266 @@
+{% extends "publicdashboards.html" %}
+{% block content %}
+<script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
+<script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+
+<link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
+<script src="{{ STATIC_URL }}publicdashboard/js/vendor/modernizr-2.8.3.min.js"></script>
+<script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/vendor/leaflet.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/leaflet-google.js"></script>
+<!--- if cartodb layer -->
+<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.css" />
+<!--[if lte IE 8]>
+<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v2/themes/css/cartodb.ie.css" />
+<![endif]-->
+<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+<link rel="borders" type="application/json" href="js/world_borders.geojson">
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700' rel='stylesheet' type='text/css'>
+
+<script>
+$(function () {
+    $('#indicator').highcharts({
+        chart: {
+            type: 'areaspline'
+        },
+        title: {
+            text: ''
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            verticalAlign: 'top',
+            x: 150,
+            y: 100,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+        },
+        xAxis: {
+            categories: [
+                '1.1.1',
+                '1.1.2',
+                '1.1.3',
+                '1.1.4',
+                '1.1.5',
+                '1.1.6',
+                '1.1.7',
+                '1.1.8',
+                '1.1.9'
+            ],
+
+        },
+        yAxis: {
+            title: {
+                text: 'Values'
+            }
+        },
+        tooltip: {
+            shared: true
+        },
+        credits: {
+            enabled: false
+        },
+        plotOptions: {
+            areaspline: {
+                fillOpacity: 0.5
+            }
+        },
+        series: [{
+            name: 'Targets',
+            data: [3, 4, 3, 5, 4, 10, 12, 8, 6]
+        }, {
+            name: 'Actuals',
+            data: [1, 3, 4, 3, 3, 5, 4, 9, 3]
+        }]
+    });
+});
+
+$(function () {
+
+    $(document).ready(function () {
+        $('#projects').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: ''
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                name: 'Project Agreements',
+                colorByPoint: true,
+                data: [{
+                    name: 'Approved ({{ approved }})',
+                    y: {{ approved }},
+                    sliced: true,
+                    selected: true
+                }, {
+                    name: 'Awaiting Approval ({{ awaiting }})',
+                    y: {{ awaiting }}
+
+                }, {
+                    name: 'In Progress ({{ in_progress }})',
+                    y: {{ in_progress }}
+                },  {
+                    name: 'Rejected ({{ rejected }})',
+                    y: {{ rejected }}
+                }]
+            }]
+        });
+    });
+});
+
+$(function () {
+
+    $('#surveys').highcharts({
+
+        chart: {
+            polar: true,
+            type: 'line'
+        },
+
+        title: {
+            text: 'Perception Survey',
+            x: -80
+        },
+
+        pane: {
+            size: '80%'
+        },
+
+        xAxis: {
+            categories: ['Helpful','Friendly','Kind','Rude','Slow','Frustrating'],
+            tickmarkPlacement: 'on',
+            lineWidth: 0
+        },
+
+        yAxis: {
+            gridLineInterpolation: 'polygon',
+            lineWidth: 0,
+            min: 0
+        },
+
+        tooltip: {
+            shared: true,
+            pointFormat: '<span style="color:{series.color}">{series.name}: <b>${point.y:,.0f}</b><br/>'
+        },
+
+        legend: {
+            align: 'right',
+            verticalAlign: 'top',
+            y: 70,
+            layout: 'vertical'
+        },
+
+        series: [{
+            name: 'Baseline',
+            data: [430, 190, 600, 350, 170, 100],
+            pointPlacement: 'on'
+        }, {
+            name: 'Mid Term',
+            data: [500, 390, 420, 310, 260, 140],
+            pointPlacement: 'on'
+        }]
+
+    });
+});
+
+</script>
+{% if getProgram %}<h3>{{ getProgram }}</h3>{% endif %}
+    <div class="row">
+        <div class="col-md-20">
+            <div class="panel panel-info">
+                <div class="panel-heading"><b>Map of Project Sites</b></div>
+                <div class="panel-body">
+
+                    <style>
+                        #map { height: 350px; }
+                    </style>
+                    <div id="map"></div>
+                    <script>
+                        var country=[];
+                        var country_lat=[];
+                        var country_long=[];
+                        {% for item in countries %}
+                            country[{{forloop.counter}}] = "{{ item.country }}";
+                            country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
+                            country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+                        {% endfor %}
+                        var cities = new L.LayerGroup();
+                        {% for item in getSiteProfile %}
+                            L.marker([{{ item.latitude }}, {{ item.longitude }}]).addTo(cities).bindPopup("" + "<b>{{ item.country }}</b> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
+                        {%   endfor %}
+                        var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                        mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ';
+                        var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
+                        streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
+                        var map = L.map('map', {
+                        center: [country_lat[1], country_long[1]],
+                        zoom: 5,
+                        layers: [grayscale, cities]
+                        });
+                        var baseLayers = {
+                        "Grayscale": grayscale,
+                        "Streets": streets,
+                        };
+                        var overlays = {
+                        "Project Sites": cities,
+                        };
+                        L.control.layers(baseLayers, overlays).addTo(map);
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-info">
+                <div class="panel-heading"><b>Total # of Project Agreements :</b> <span class="badge">{{ total_projects }}</span></div>
+                <div class="panel-body">
+                <div id="projects" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+           <div class="panel panel-info">
+                <div class="panel-heading"><b>Perception Surveys</b></div>
+                <div class="panel-body">
+                <div id="surveys" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+<div class="row">
+        <div class="col-md-20">
+            <div class="panel panel-info">
+                <div class="panel-heading"><b>Key Performance Indicators</b> for {% if getProgram %}{{ getProgram }}{% endif %}</div>
+                <div class="panel-body">
+
+                    <div id="indicator" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+                           </div>
+            </div>
+        </div>
+</div>
+{% endblock content %}

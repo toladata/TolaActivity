@@ -49,7 +49,7 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name', 'type', 'level', 'number', 'source', 'definition', 'disaggregation','owner', 'country','indicator_type'
+                        'name', 'type', 'level', 'number', 'source', 'definition', 'disaggregation','owner', 'country','indicator_type',PrependedText('key_performance_indicator','')
                         ),
                 ),
                 Tab('Targets',
@@ -145,7 +145,9 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Evidence',
-                'agreement','method','evidence',
+                'agreement','method','evidence','tola_table',
+                HTML("""<a class="output" data-toggle="modal" data-target="#myModal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>"""),
+
             ),
 
 
@@ -215,6 +217,10 @@ class CollectedDataForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
 
-        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False)
+        #override the program queryset to use request.user for country
+        countries = getCountry(self.request.user)
+        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+
+        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, country__in=countries)
 
 

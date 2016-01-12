@@ -27,8 +27,6 @@ $(function () {
 
 //custom jquery to trigger date picker, info pop-over and print category text
 $(document).ready(function() {
-
-
     //Check for chrome and don't provide a datetime pickers for it
     var browser = navigator.userAgent;
 
@@ -64,11 +62,30 @@ $('input[type="file"]').each(function() {
 });
 
 
+/*
+*  Load the collected data for an indicator on the results page
+*/
+function loadCollected(indicator,program){
+    var indicator;
+    $('.ajaxLoader').show();
+    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
+        $('#hidden-' + indicator).html(data);
+      });
+    $('.ajaxLoader').hide();
+};
+
+
 $(document).ready(function() {
 
+    /*
+    *  Reload page if country dropdown changes on main dashboard
+    */
+    $('#something').click(function() {
+        load(url, data, loadComplete);
+    });
 
      /*
-     * Handle change in the indicator services drop-down; updates the province drop-down accordingly.
+     * Handle change in the indicator services drop-down; updates the indicator drop-down accordingly.
      */
     $("#services").change(function() {
         var selected_service = $(this).val();
@@ -90,6 +107,7 @@ $(document).ready(function() {
         // page-specific-action call if a page has implemented the 'country_dropdwon_has_changed' function
         if(typeof services_dropdwon_has_changed != 'undefined') services_dropdwon_has_changed(selected_service);
     });
+
 
     /*
      * Handle change in the country drop-down; updates the province drop-down accordingly.
@@ -223,3 +241,8 @@ function newPopup(url, windowName) {
 }
 
 // EXAMPLE: <a onclick="newPopup('https://docs.google.com/document/d/1tDwo3m1ychefNiAMr-8hCZnhEugQlt36AOyUYHlPbVo/edit?usp=sharing','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a>
+
+$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+  e.target // activated tab
+  e.relatedTarget // previous tab
+})

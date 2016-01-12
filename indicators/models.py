@@ -3,6 +3,25 @@ from django.contrib import admin
 from django.conf import settings
 from activitydb.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime
+from django.contrib.auth.models import User
+
+
+class TolaTable(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    table_id = models.IntegerField(blank=True, null=True)
+    owner = models.ForeignKey('auth.User')
+    remote_owner = models.CharField(max_length=255, blank=True)
+    url = models.CharField(max_length=255, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class TolaTablesAdmin(admin.ModelAdmin):
+    list_display = ('name','owner','url','create_date','edit_date')
+    display = 'Tola Table'
 
 
 class IndicatorType(models.Model):
@@ -217,6 +236,7 @@ class Indicator(models.Model):
     comments = models.TextField(max_length=255, null=True, blank=True)
     program = models.ManyToManyField(Program)
     sector = models.ForeignKey(Sector, null=True, blank=True)
+    key_performance_indicator = models.BooleanField("Key Performance Indicator for this program?",default=False)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
     approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="indicator_submitted_by")
     external_service_record = models.ForeignKey(ExternalServiceRecord, verbose_name="External Service ID", blank=True, null=True)
@@ -232,6 +252,10 @@ class Indicator(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Indicator, self).save(*args, **kwargs)
+
+    @property
+    def name_clean(self):
+        return self.name.encode('ascii', 'ignore')
 
     @property
     def objectives_list(self):
@@ -275,12 +299,13 @@ class CollectedData(models.Model):
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
-    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2")
+    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
     program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data")
+    tola_table = models.ForeignKey(TolaTable, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     class Meta:
@@ -296,7 +321,7 @@ class CollectedData(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.indicator
+        return self.description
 
     def targeted_sum(self):
         targets=CollectedData.targeted.filter(indicator__id=self).sum('targeted')

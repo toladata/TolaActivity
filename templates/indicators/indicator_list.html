@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block page_title %}Indicator Planning {% endblock %}
+{% block page_title %}Program Indicators{% endblock %}
 
 {% block content %}
 <div class="dropdown">
@@ -49,7 +49,15 @@
                             <td>{{ indicator.name}}</td>
                             <td>{{ indicator.number}}</td>
                             <td>{{ indicator.sector}}</td>
-                            <td width="150"><span class="btn-group" role="group"><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_add/{{ program.id }}/{{ indicator.id }}" class="btn btn-xs btn-success">Data</a><a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a></span></td>
+                            <td width="150"><span class="btn-group" role="group"><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info">Edit</a><a onclick="loadCollected({{ indicator.id }}, {{ program.id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ indicator.id }}">Data</a><a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a></span></td>
+                        </tr>
+                        <tr>
+                            <td colspan="7" class="hiddenRow">
+                                <div id="hidden-{{ indicator.id }}" class="accordian-body collapse">
+                                    <!-- Table -->
+                                    {% include "indicators/collected_data_table.html" %}
+                                </div>
+                            </td>
                         </tr>
                         {% endfor %}
                     </table>

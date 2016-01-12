@@ -7,7 +7,7 @@ import floppyforms.__future__ as forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserChangeForm
 from activitydb.models import Country, Feedback
-from activitydb.models import TolaUser as UserProfile
+from djangocosign.models import UserProfile
 
 
 class FeedbackForm(forms.ModelForm):

@@ -51,50 +51,62 @@
             <div class="navbar-collapse collapse" role=navigation">
                 <ul class="nav navbar-nav">
                     <li class="{{ home_tab }}"><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+                    {% if report_server == True%}
+                        {% if user.is_authenticated  %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activity Report</a></li>
+                                    <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-check"></span> Indicator Data Report</a></li>
+                                    <li><a href="/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-check"></span> Report Builder</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dashboards<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/customdashboard/program_list/0/"><span class="glyphicon glyphicon-check"></span> Public Dashboards</a></li>
+                                {% if user.is_authenticated  %}
+                                    <li><a href="/customdashboard/internal_dashboard/0/"><span class="glyphicon glyphicon-check"></span> Internal Dashboards</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Workflow<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/activitydb/dashboard/0/"><span class="glyphicon glyphicon-dashboard"></span> Program Dashboard</a></li>
+                                <li><a href="/activitydb/documentation_list/0/"><span class="glyphicon glyphicon-th-list"></span> Documents</a></li>
+                                <li><a href="/activitydb/siteprofile_list/0/0/"><span class="glyphicon glyphicon-th-list"></span> Sites</a></li>
+                                <li><a href="/activitydb/stakeholder_list/0/"><span class="glyphicon glyphicon-th-list"></span> Stakeholders</a></li>
+                            </ul>
+                        </li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Workflow<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/activitydb/dashboard/0/"><span class="glyphicon glyphicon-dashboard"></span> Program Dashboard</a></li>
-                            <!-- CONFUSING TO USER FOR NOW TAKING OUT MAY ADD BACK IN IF NEEDED
-                            <li><a href="/activitydb/projectproposal_list/0/"><span class="glyphicon glyphicon-th-list"></span> Project Proposal</a></li>
-                            <li><a href="/activitydb/projectagreement_list/0/"><span class="glyphicon glyphicon-th-list"></span> Project Agreement</a></li>
-                            <li><a href="/activitydb/projectcomplete_list/0/"><span class="glyphicon glyphicon-th-list"></span> Project Complete</a></li>
-                            -->
-                            <li><a href="/activitydb/documentation_list/0/"><span class="glyphicon glyphicon-th-list"></span> Documents</a></li>
-                            <li><a href="/activitydb/siteprofile_list/0/0/"><span class="glyphicon glyphicon-th-list"></span> Sites</a></li>
-                            <li><a href="/activitydb/stakeholder_list/0/"><span class="glyphicon glyphicon-th-list"></span> Stakeholders</a></li>
-                        </ul>
-                    </li>
+                        <li><a href="/indicators/home/0/">Indicators</a></li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Indicators<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/indicators/home/0/"><span class="glyphicon glyphicon-dashboard"></span> Indicator Planning</a></li>
-                            <li><a href="/indicators/collecteddata/0/0/"><span class="glyphicon glyphicon-th-list"></span> Indicator Data</a></li>
-                            <li><a href="/indicators/report/0/"><span class="glyphicon glyphicon-check"></span> Indicator Library</a></li>
-                        </ul>
-                    </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Form Library<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/activitydb/training_list/0/"><span class="glyphicon glyphicon-th-list"></span> Training</a></li>
+                                <li><a href="/activitydb/beneficiary_list/0/"><span class="glyphicon glyphicon-th-list"></span> Beneficiaries</a></li>
+                            </ul>
+                        </li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Form Library<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/activitydb/training_list/0/"><span class="glyphicon glyphicon-th-list"></span> Training</a></li>
-                            <li><a href="/activitydb/beneficiary_list/0/"><span class="glyphicon glyphicon-th-list"></span> Beneficiaries</a></li>
-                        </ul>
-                    </li>
-
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activity Report</a></li>
-                            <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-check"></span> Indicator Data Report</a></li>
-                            <li><a href="/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-check"></span> Report Builder</a></li>
-                        </ul>
-                    </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activity Report</a></li>
+                                <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-check"></span> Indicator Data Report</a></li>
+                                <li><a href="/indicators/collecteddata/0/0/"><span class="glyphicon glyphicon-th-list"></span> Indicator Data</a></li>
+                                <li><a href="/indicators/report/0/"><span class="glyphicon glyphicon-check"></span> Indicator Library</a></li>
+                                <li><a href="https://tola-report.mercycorps.org/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-check"></span> Report Builder</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
+
                 {% if user.is_authenticated  %}
+                <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             {% if "demo" in request.build_absolute_uri %}
@@ -103,6 +115,8 @@
                                 <span class="label label-danger">LOCAL SERVER</span>
                             {% elif "dev" in request.build_absolute_uri %}
                                 <span class="label label-danger">DEV SERVER</span>
+                            {% elif "report" in request.build_absolute_uri %}
+                                <span class="label label-info">REPORT SERVER</span>
                             {% endif %}
                             <span class="glyphicon glyphicon-user"></span> {{ user.userprofile.name }}<b class="caret"></b>
                         </a>
@@ -114,19 +128,40 @@
                     </li><!-- .dropdown collapse -->
                 </ul>
                 {% else %}
-                <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'django.contrib.auth.views.login' %}">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <input type="hidden" name="next" value="{{ next }}" />
-                    </div>
-                    <div class="form-group">
-                        <input type="text" name="username" placeholder="Username" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" name="password" placeholder="Password" class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-success">Sign in</button>
-                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> Login <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <div class="navbar-text">
+                                    {% if report_server == True%}
+                                        Login via
+                                        <div class="social-buttons">
+                                            <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-go"><i class="fa fa-google"></i> Google</a>
+                                        </div>
+                                        or
+                                    {% endif %}
+                                    <a href="{% url 'login' %}">Login with Tola Account</a><br/>
+
+                                    <form class="form" role="form" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <input type="hidden" name="next" value="{{ next }}" />
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" name="username" placeholder="Username" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" name="password" placeholder="Password" class="form-control">
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Sign in</button>
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
+                    </li><!-- .dropdown collapse -->
+                 </ul>
                 {% endif %}
             </div><!-- .navbar-header collapse -->
             </div><!-- .container collapse -->
@@ -169,7 +204,7 @@
                     <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
                 </div>
                 <div class="col-md-4 text-right">
-                    <a href="{% url 'documentation' %}" class="text-muted">Documentation</a> | <a href="{% url 'faq' %}" class="text-muted">FAQ</a> | <a onclick="newPopup('http://tola.work/helpdesk/tickets/submit/','Tola Work - New Ticket'); return false;" href="#" class="text-muted">Feedback</a>
+                    <a href="http://tola.work/documentation" class="text-muted">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a>
                 </div>
             </div>
         </div><!-- .footer collapse -->
