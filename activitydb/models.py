@@ -764,7 +764,7 @@ class ProjectAgreement(models.Model):
     approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="submitted_by_agreement")
     approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
     justification_background = models.TextField("General Background and Problem Statement", blank=True, null=True)
-    risks_assumptions = models.TextField("Ricks and Assumptions", blank=True, null=True)
+    risks_assumptions = models.TextField("Risks and Assumptions", blank=True, null=True)
     justification_description_community_selection = models.TextField("Description of Stakeholder Selection Criteria", blank=True, null=True)
     description_of_project_activities = models.TextField(blank=True, null=True)
     description_of_government_involvement = models.TextField(blank=True, null=True)
