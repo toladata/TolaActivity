@@ -2,15 +2,19 @@ from django.test import TestCase
 from django.test import RequestFactory
 from django.test import Client
 from indicators.models import Indicator, IndicatorType, Objective, DisaggregationType, ReportingFrequency, CollectedData
-from activitydb.models import Program, Sector
+from activitydb.models import Program, Sector, Country
 from django.contrib.auth.models import User
 
 
 class IndicatorTestCase(TestCase):
 
+    fixtures = ['fixtures/country.json']
 
     def setUp(self):
-        new_program = Program.objects.create(name="testprogram")
+        new_country = Country.objects.create(country="testcountry")
+        new_country.save()
+        get_country = Country.objects.get(country="testcountry")
+        new_program = Program.objects.create(name="testprogram", country=get_country)
         new_program.save()
         get_program = Program.objects.get(name="testprogram")
         new_indicator_type = IndicatorType.objects.create(indicator_type="testtype")
@@ -26,8 +30,13 @@ class IndicatorTestCase(TestCase):
         user.save()
         get_user = User.objects.get(username='john')
         new_indicator = Indicator.objects.create(name="testindicator",number="1.2.3",source="testing",
-                                                 disaggregation=get_disaggregation, baseline="10",lop_target="10", reporting_frequency=get_frequency,owner=get_user)
+                                                 baseline="10",lop_target="10", reporting_frequency=get_frequency,owner=get_user)
         new_indicator.save()
+        new_indicator.disaggregation.add(get_disaggregation)
+        new_indicator.indicator_type.add(get_indicator_type)
+        new_indicator.country.add(get_country)
+        new_indicator.program.add(get_program)
+
         get_indicator = Indicator.objects.get(name="testindicator")
         new_collected = CollectedData.objects.create(targeted="12",achieved="20", description="somevaluecollected", indicator=get_indicator)
         new_collected.save()

@@ -242,6 +242,7 @@ class ProjectAgreementForm(forms.ModelForm):
                     Fieldset(
                         'Justification',
                         Field('effect_or_impact',rows="4", css_class='input-xlarge', label="Anticipated Outcome and Goal"),
+                        Field('risks_assumptions',rows="4", css_class='input-xlarge', label="Risks and Assumptions"),
                     ),
                 ),
                 Tab('M&E',

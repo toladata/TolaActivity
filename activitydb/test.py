@@ -1,10 +1,11 @@
 from django.test import TestCase
 from django.test import RequestFactory
 from django.test import Client
-from activitydb.models import Program, Country, Province, Village, District, ProjectAgreement, Sector, ProjectComplete, ProjectType, Community, Office, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget
-from activitydb.views import CommunityUpdate
+from activitydb.models import Program, Country, Province, Village, District, ProjectAgreement, Sector, ProjectComplete, ProjectType, SiteProfile, Office, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget
+from activitydb.views import SiteProfileUpdate
 
-class CommunityTestCase(TestCase):
+
+class SiteProfileTestCase(TestCase):
 
     fixtures = ['fixtures/country.json','fixtures/province.json','fixtures/district.json','fixtures/district.json','fixtures/profile_type.json']
 
@@ -18,13 +19,13 @@ class CommunityTestCase(TestCase):
         new_office = Office.objects.create(name="testoffice",province=new_province)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
-        new_community = Community.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
+        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
         new_community.save()
 
     def test_community_exists(self):
-        """Check for Communitybject"""
-        get_community = Community.objects.get(name="testcommunity")
-        self.assertEqual(Community.objects.filter(id=get_community.id).count(), 1)
+        """Check for SiteProfile Object"""
+        get_community = SiteProfile.objects.get(name="testcommunity")
+        self.assertEqual(SiteProfile.objects.filter(id=get_community.id).count(), 1)
 
 
 class AgreementTestCase(TestCase):
@@ -44,9 +45,9 @@ class AgreementTestCase(TestCase):
         new_office = Office.objects.create(name="testoffice",province=new_province)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
-        new_community = Community.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
+        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
         new_community.save()
-        get_community = Community.objects.get(name="testcommunity")
+        get_community = SiteProfile.objects.get(name="testcommunity")
         #load from fixtures
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
@@ -54,7 +55,7 @@ class AgreementTestCase(TestCase):
                                                       activity_code="111222",office=get_office,
                                                       sector=get_sector)
         new_agreement.save()
-        new_agreement.community.add(get_community)
+        new_agreement.site.add(get_community)
 
         new_benchmarks = Benchmarks.objects.create(percent_complete="1234", percent_cumulative="14",agreement=new_agreement)
         new_benchmarks.save()
@@ -103,23 +104,23 @@ class CompleteTestCase(TestCase):
         new_office = Office.objects.create(name="testoffice",province=new_province)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
-        new_community = Community.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
+        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
         new_community.save()
-        get_community = Community.objects.get(name="testcommunity")
+        get_community = SiteProfile.objects.get(name="testcommunity")
         #load from fixtures
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
         new_agreement = ProjectAgreement.objects.create(program=get_program, project_name="testproject", project_type=get_project_type,
-                                                      activity_code="111222",office=get_office,
-                                                      sector=get_sector)
+                                                        activity_code="111222", office=get_office, community_handover=1,
+                                                        sector=get_sector)
         new_agreement.save()
-        new_agreement.community.add(get_community)
+        new_agreement.site.add(get_community)
         get_agreement = ProjectAgreement.objects.get(project_name="testproject")
         new_complete = ProjectComplete.objects.create(program=get_program, project_name="testproject",
                                                       activity_code="111222",office=get_office,on_time=True,
                                                       project_agreement=get_agreement)
         new_complete.save()
-        new_complete.community.add(get_community)
+        new_complete.site_profile.add(get_community)
 
     def test_complete_exists(self):
         """Check for Complete object"""
