@@ -76,6 +76,9 @@ urlpatterns = patterns('',
                         #app include of customdashboard urls
                         url(r'^customdashboard/', include('customdashboard.urls')),
 
+                        #app include of customdashboard urls
+                        url(r'^reports/', include('reports.urls')),
+
                         #local login
                         url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
                         url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),

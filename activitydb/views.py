@@ -108,9 +108,9 @@ class ProgramDash(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
         if int(self.kwargs['pk']) == 0:
-            getDashboard = Program.objects.all().select_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
+            getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
         else:
-            getDashboard = Program.objects.all().filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
+            getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
 
         return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms})
 
@@ -2092,8 +2092,6 @@ def import_service(service_id=1, deserialize=True):
         data = get_json
     #debug the json data string uncomment dump and print
     data2 = json.dumps(data) # json formatted string
-    print data2
-    print "HELP!"
 
     return data
 
