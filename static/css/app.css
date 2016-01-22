@@ -33,6 +33,10 @@ body {
     color: white !important;
 }
 
+.dropdown-menu li a{
+    color: rgb(232, 148, 36) !important;
+}
+
 /* Login buttons for Social */
 .social-buttons{
     margin:12px 0
