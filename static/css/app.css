@@ -21,6 +21,17 @@ body {
     vertical-align: top;
 }
 
+
+/* header changes */
+
+.navbar-default{
+    background-color: rgb(232, 148, 36);
+    color: white;
+}
+.navbar-nav li a{
+    color: white !important;
+}
+
 /* Login buttons for Social */
 .social-buttons{
     margin:12px 0
