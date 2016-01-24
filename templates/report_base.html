@@ -48,7 +48,7 @@
                     <img style="margin-top: -18px" width="150px" height="61px" src="{{ STATIC_URL }}/img/logo.gif" />
                 </a>
             </div>
-            <div class="navbar-collapse collapse" role=navigation">
+            <div class="navbar-collapse collapse" role="navigation">
                 <ul class="nav navbar-nav">
                     <li class="{{ home_tab }}"><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
 
@@ -182,6 +182,10 @@
 
         <!-- Bootstrap compiled javascript plugins -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+
+        <!-- Typekit (Fonts) -->
+        <script src="https://use.typekit.net/lmu1xjz.js"></script>
+        <script>try{Typekit.load({ async: true });}catch(e){}</script>
 
         {% block extra_js_in_body %}{% endblock %}
     </body>
