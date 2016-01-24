@@ -22,7 +22,7 @@ from os.path import join, normpath
 ########## MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = (
-    ('glind', 'glind@mercycorps.org'),
+    ('test', 'test@test.com'),
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#managers
@@ -49,10 +49,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'systems@mercycorps.org'
-EMAIL_HOST_PASSWORD = 'MCSys2015'
-DEFAULT_FROM_EMAIL = 'systems@mercycorps.org'
-SERVER_EMAIL = "glind@mercycorps.org"
+EMAIL_HOST_USER = 'test@test.com'
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = 'test@test.com'
+SERVER_EMAIL = "test@test.com"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #DEFAULT_TO_EMAIL = 'to email'
 
@@ -66,9 +66,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 ########## END DATABASE CONFIGURATION
 
 ########## GOOGLE CLIENT CONFIG ###########
-GOOGLE_STEP2_URI = 'http://tola.mercycorps.org/gwelcome'
-GOOGLE_CLIENT_ID = '617113120802.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = '9reM29qpGFPyI8TBuB54Z4fk'
+GOOGLE_STEP2_URI = ''
+GOOGLE_CLIENT_ID = ''
+GOOGLE_CLIENT_SECRET = ''
 
 
 ########## CACHE CONFIGURATION
@@ -80,12 +80,6 @@ CACHES = {
 }
 ########## END CACHE CONFIGURATION
 
-########## LOCAL DEV APPS
-DEV_APPS = (
-    'debug_toolbar',
-)
-
-INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
 
 
 
