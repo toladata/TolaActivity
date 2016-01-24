@@ -38,6 +38,7 @@ class AgreementTestCase(TestCase):
         get_country = Country.objects.get(country="testcountry")
         new_program = Program.objects.create(name="testprogram")
         new_program.save()
+        new_program.country.add(get_country)
         get_program = Program.objects.get(name="testprogram")
         new_province = Province.objects.create(name="testprovince", country=get_country)
         new_province.save()
