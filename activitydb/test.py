@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.test import RequestFactory
 from django.test import Client
 from activitydb.models import Program, Country, Province, Village, District, ProjectAgreement, Sector, ProjectComplete, ProjectType, SiteProfile, Office, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget
-from activitydb.views import SiteProfileUpdate
 
 
 class SiteProfileTestCase(TestCase):
