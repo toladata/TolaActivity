@@ -23,19 +23,42 @@ body {
 }
 
 
-/* header changes */
+/* Bootstrap Overrides */
 
-.navbar-default{
-    background-color: rgb(232, 148, 36);
-    color: white;
-}
-.navbar-nav li a{
-    color: white !important;
+*,
+*:focus,
+*:target,
+a:focus,
+input:focus,
+button:focus,
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus {
+  outline: none;
 }
 
-.dropdown-menu li a{
-    color: rgb(232, 148, 36) !important;
+.navbar-tola {
+  /* TolaActivity Brand Color: */
+  background-color: rgb(232, 148, 36);
+  border: none;
 }
+
+.navbar-tola .navbar-nav > li > a {
+  color: #fff;
+}
+
+.navbar-tola .navbar-nav > li > a:hover,
+.navbar-tola .navbar-nav > li > a:focus,
+.navbar-tola .navbar-nav > li.active > a,
+.navbar-tola .navbar-nav > li.active > a:hover,
+.navbar-tola .navbar-nav > li.active > a:focus,
+.navbar-tola .navbar-nav .dropdown.open a.dropdown-toggle {
+  color: #fff;
+  background-color: rgba(0, 0, 0, .15);
+}
+
+/* - End Bootstrap Overrides */
+
 
 /* Login buttons for Social */
 .social-buttons{
