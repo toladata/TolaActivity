@@ -74,4 +74,13 @@ CACHES = {
 }
 ########## END CACHE CONFIGURATION
 
+########## LOCAL DEV APPS
+DEV_APPS = (
+    'reports',
+    'debug_toolbar',
+    'report_builder',
+    'djangocosign',
+)
+
+INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
 

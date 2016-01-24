@@ -222,7 +222,6 @@ LOCAL_APPS = (
     'tola',
     'feed',
     'activitydb',
-    'djangocosign',
     'indicators',
     'customdashboard',
 
