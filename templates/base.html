@@ -45,10 +45,10 @@
             <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand" href="{% url 'index' %}">
-                    <img style="margin-top: -18px" width="150px" height="61px" src="{{ STATIC_URL }}/img/logo.gif" />
+                    <img style="margin-top: -8px" src="{{ STATIC_URL }}/img/rsz-logo-plain.png" />
                 </a>
             </div>
-            <div class="navbar-collapse collapse" role=navigation">
+            <div class="navbar-collapse collapse" role="navigation">
                 <ul class="nav navbar-nav">
                     <li class="{{ home_tab }}"><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
                     {% if report_server == True%}
@@ -56,6 +56,7 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reports<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
+                                    <li><a href="/reports/"><span class="glyphicon glyphicon-check"></span> Reports</a></li>
                                     <li><a href="/activitydb/report/"><span class="glyphicon glyphicon-check"></span> Activity Report</a></li>
                                     <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-check"></span> Indicator Data Report</a></li>
                                     <li><a href="/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-check"></span> Report Builder</a></li>
@@ -197,14 +198,11 @@
         <div id="footer">
             <!-- Sticky Footer -->
             <div class="container">
-                <div class="col-md-4 text-left">
-                    <a href="https://github.com/mercycorps/tola-activity/blob/master/LICENSE" class="text-muted">GNU GENERAL PUBLIC LICENSE Version 2</a>
-                </div>
-                <div class="col-md-4 text-center">
+                <div class="col-md-6 text-left">
                     <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
                 </div>
-                <div class="col-md-4 text-right">
-                    <a href="http://tola.work/documentation" class="text-muted">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a>
+                <div class="col-md-6 text-right">
+                    <a href="http://tola.work/documentation" class="text-muted">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a> | <a href="https://github.com/toladata/TolaActivity/blob/master/LICENSE" class="text-muted">License</a>
                 </div>
             </div>
         </div><!-- .footer collapse -->
@@ -217,6 +215,10 @@
 
         <!-- Bootstrap compiled javascript plugins -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+
+        <!-- Typekit (Fonts) -->
+        <script src="https://use.typekit.net/lmu1xjz.js"></script>
+        <script>try{Typekit.load({ async: true });}catch(e){}</script>
 
         {% block extra_js_in_body %}{% endblock %}
     </body>

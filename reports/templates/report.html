@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div id="program_sectors_data_div" style="display: none;">{{ program_sectors|safe }}</div>
+    <div id="program_sectors_drilldown_data_div" style="display: none;">{{ donors|safe }}</div>
+    <div id="program_chart_data_div" style="display: none;">{{ regions|safe }}</div>
+    <div id="program_chart_drilldown_data_div" style="display: none;">{{ regions_drilldown|safe }}</div>
+    <div id = "criteria_raw_div" style="display:none;">{{ criteria|safe }}</div>
+
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="panel panel-primary">
+                <div class="panel-heading"><span class="glyphicon glyphicon-filter"> </span> Filter options </div>
+                <div class="panel-body">
+                    {% crispy form form.helper %}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div id='criteria-panel' class="panel panel-success" style="display: none;">
+                <div class="panel-heading"> Filter Criteria </div>
+                <div class="panel-body" id="criteria" style="padding:5px;"> No criteria specified </div>
+            </div>
+            <div id='criteria-panel' class="panel panel-primary">
+                <div class="panel-heading"> Program </div>
+                <div class="panel-body" style="padding:15px;">
+                    <div id="program_chart"></div>
+                    <div id="program_table_div" class="table-responsive"> </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        var criteria_raw =  $("#criteria_raw_div").html();
+        var criteria = $.parseJSON(criteria_raw);
+        var formatted_criteria = format_criteria(criteria);
+        $("#criteria").html(formatted_criteria);
+        $("#criteria-panel").show();
+
+    });
+
+    // Upon search form submission, format filter values so Django understands it.
+    $('#filter_form').on('submit', function(e) {
+        e.preventDefault();
+        var filters = {};
+        $('#filter_form *').filter(':input').each(function() {
+            if (this.name != 'submit' && this.name != 'reset' && this.value && this.name != '') {
+                var values_array = new Array($(this).val());
+                filters[this.name] = values_array.join(",");
+            }
+        });
+
+        $.getJSON("/reports/report_data/", filters, function(data) {
+            if (Object.keys(data['program']).length > 0) {
+                $("#program_chart_div").append(JSON.stringify(data['program']));
+                $("#program_data_div").append(JSON.stringify(data['program']));
+            } else {
+                $("#program_chart").empty();
+                $("#program_data_div").empty();
+                createAlert("warning dynamic-alert", "There is no data available for the 'Grant per Donor Category and Donor Chart'");
+            }
+
+            var criteria = data['criteria'];
+            var formatted_criteria = format_criteria(criteria);
+
+            $("#criteria").html(formatted_criteria);
+            $("#criteria-panel").show();
+
+        });
+    });
+
+    // Format the criteria from the search form in a more readable fashion.
+    function format_criteria(criteria) {
+        var formatted_criteria = '';
+        $.each(criteria, function(key, value) {
+            key = key.replace('__in', '=');
+            key = key.replace('__gte', '>=');
+            key = key.replace('__gt', '>');
+            key = key.replace('__lt', '<');
+            key = key.replace('_id', '');
+            key = key.split("__");
+            key = key[key.length - 1];
+            switch (key) {
+                case 'country=':
+                    key = "Country=";
+                    var values = $( "#id_country option:selected" ).map(function() {
+                        return $(this).text();
+                    }).get().join(', ');
+                    value = values;
+                    //value = $( "#id_country option:selected" ).text();
+                    break;
+                case 'program=':
+                    key = "Program=";
+                    var values = $( "#id_program option:selected" ).map(function() {
+                        return $(this).text();
+                    }).get().join(', ');
+                    value = values;
+                    break;
+                case 'sector':
+                    key =  "Sector=";
+                    value = $("#id_sector option:selected").text();
+                    break;
+                case 'submission_date>':
+                    key = "Submission Date > ";
+                    break;
+                case 'submission_date<':
+                    key = "Submission Date < ";
+                    break;
+                default:
+                    break;
+            }
+            console.log(key);
+            if (key == 'Submission Date > ') {
+                formatted_criteria += '<span id="submission_date_span" class="label label-default" style="margin-left:2px; white-space:normal; line-height:2;" data-toggle="tooltip" data-placement="bottom" title="Submission date defaults to a rolling three years back from today date">' + key + value + '</span>';
+            } else {
+                formatted_criteria += '<span class="label label-default" style="margin-left:2px; white-space:normal; line-height:2;">' + key + value + '</span>';
+            }
+        });
+        return formatted_criteria;
+
+    }
+
+
+
+</script>
+{% endblock content %}

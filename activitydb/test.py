@@ -97,6 +97,7 @@ class CompleteTestCase(TestCase):
         get_country = Country.objects.get(country="testcountry")
         new_program = Program.objects.create(name="testprogram")
         new_program.save()
+        new_program.country.add(get_country)
         get_program = Program.objects.get(name="testprogram")
         new_province = Province.objects.create(name="testprovince", country=get_country)
         new_province.save()
@@ -111,14 +112,14 @@ class CompleteTestCase(TestCase):
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
         new_agreement = ProjectAgreement.objects.create(program=get_program, project_name="testproject", project_type=get_project_type,
-                                                        activity_code="111222", office=get_office, community_handover=1,
+                                                        activity_code="111222", office=get_office,
                                                         sector=get_sector)
         new_agreement.save()
         new_agreement.site.add(get_community)
         get_agreement = ProjectAgreement.objects.get(project_name="testproject")
         new_complete = ProjectComplete.objects.create(program=get_program, project_name="testproject",
                                                       activity_code="111222",office=get_office,on_time=True,
-                                                      project_agreement=get_agreement)
+                                                       community_handover=1, project_agreement=get_agreement)
         new_complete.save()
         new_complete.site_profile.add(get_community)
 
