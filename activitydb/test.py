@@ -121,7 +121,6 @@ class CompleteTestCase(TestCase):
                                                       activity_code="111222",office=get_office,on_time=True,
                                                        community_handover=1, project_agreement=get_agreement)
         new_complete.save()
-        new_complete.site_profile.add(get_community)
 
     def test_complete_exists(self):
         """Check for Complete object"""
