@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
 Tola Activity
 ====
 http://mercycorps.github.io/tola-activity
