@@ -50,7 +50,6 @@
             </div>
             <div class="navbar-collapse collapse" role="navigation">
                 <ul class="nav navbar-nav">
-                    <li class="{{ home_tab }}"><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
                     {% if report_server == True%}
                         {% if user.is_authenticated  %}
                             <li class="dropdown">
