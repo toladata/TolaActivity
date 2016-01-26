@@ -11,22 +11,18 @@ and exporting of project specific data from 3rd party data sources or excel
 files.  
 
 ## USING virtualenv
-mkdir frds_project
-cd frds_project
 (Install virtualenv)
 pip install virtualenv
 
-cd frds_project
-
 # Create Virtualenv
-virtualenv —no-site-packages frds-venv
+virtualenv —no-site-packages venv
 * use no site packages to prevent virtualenv from seeing your global packages
 
-. frds-venv/bin/activate
+. venv/bin/activate
 * allows us to just use pip from command line by adding to the path rather then full path
 
 ##Activate Virtualenv
-source frds-venv/bin/activate
+source venv/bin/activate
 
 ## Fix probable mysql path issue (for mac)
 export PATH=$PATH:/usr/local/mysql/bin
@@ -35,7 +31,7 @@ export PATH=$PATH:/usr/local/mysql/bin
 pip install -r requirements.txt
 
 ## Set up DB
-python manage.py syncdb
+python manage.py migrate
 
 # Run App
 If your using more then one settings file change manage.py to point to local or dev file first
