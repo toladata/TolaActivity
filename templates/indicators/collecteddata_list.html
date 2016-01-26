@@ -41,31 +41,33 @@
     <div class='panel panel-default'>
         <div class='panel-heading'><h4>{% if filter_program %} Program: {{ filter_program }} {% elif filter_indicator %} Indicator: {{ filter_indicator }} {% endif %}</h4></div>
             <!-- Table -->
-            <table class="table">
+            <table class="table table-striped">
                 <tr>
-                    <th>Indicator</th>
-                    <th>Date Created</th>
-                    <th>Date Collected</th>
+                    <th>Strat. Objective</th>
                     <th>Program</th>
+                    <th>Objective</th>
+                    <th>Indicator</th>
+                    <th>Date Collected</th>
                     <th>Evidence</th>
                     <th>Target</th>
                     <th>Actual</th>
-                    <th>&nbsp;</th>
                 </tr>
                 {% for item in getCollectedData %}
                 <tr>
-                    <td>{{ item.indicator.number }} - {{ item.indicator.name }}</td>
-                    <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.create_date}}</a></td>
-                    <td>{{ item.date_collected }}</td>
+
+                    <td>{{ item.indicator.strategic_objectives_list }}</td>
                     <td>{{ item.program }}</td>
+                    <td>{{ item.indicator.objectives_list }}</td>
+                    <td>{{ item.indicator.number }} - {{ item.indicator.name }}</td>
+                    <td>{{ item.date_collected|date:"SHORT_DATE_FORMAT" }}</td>
                     <td>{{ item.evidence }} </td>
                     <td>{{ item.targeted }}</td>
                     <td>{{ item.achieved }}</td>
-                    <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+
                 </tr>
                 {% endfor %}
                 <tr>
-                    <td colspan="5"><span style="float: right;">Sum:</span></td>
+                    <td colspan="6"><span style="float: right;">Sum:</span></td>
                     <td>{{ collected_sum.targeted__sum }}</td>
                     <td>{{ collected_sum.achieved__sum }}</td>
                     <td>&nbsp;</td>
