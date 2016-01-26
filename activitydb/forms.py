@@ -196,7 +196,7 @@ class ProjectAgreementForm(forms.ModelForm):
                         'exchange_rate','exchange_rate_date','estimation_date','other_budget','account_code','lin_code',
                     ),
                     Fieldset("Other Budget Contributions:",
-                        MultiField(
+                        Div(
                                 "",
                                 HTML("""
 
@@ -247,7 +247,7 @@ class ProjectAgreementForm(forms.ModelForm):
                 Tab('M&E',
                     Fieldset(
                         '',
-                        MultiField(
+                        Div(
                             '',
                              HTML("""
                                     <div class='panel panel-default'>
@@ -314,7 +314,7 @@ class ProjectAgreementForm(forms.ModelForm):
                     ),
                     Fieldset(
                         '',
-                        MultiField(
+                        Div(
                             '',
                             HTML("""
                                     <br/>
@@ -370,7 +370,7 @@ class ProjectAgreementForm(forms.ModelForm):
 
             Fieldset(
                 'Project Files',
-                MultiField(
+                Div(
                     '',
                     HTML("""
 
@@ -547,7 +547,7 @@ class ProjectCompleteForm(forms.ModelForm):
                 ),
                 Tab('Budget Other',
                     Fieldset("Other Budget Contributions:",
-                        MultiField(
+                        Div(
                                 "",
                                 HTML("""
 
@@ -585,7 +585,7 @@ class ProjectCompleteForm(forms.ModelForm):
                 Tab('Impact',
                     Fieldset(
                         '',
-                        MultiField(
+                        Div(
                             '',
                              HTML("""
                                     <div class='panel panel-default'>

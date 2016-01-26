@@ -152,7 +152,7 @@ class CollectedDataForm(forms.ModelForm):
 
 
 
-                MultiField(
+                Div(
                         "",
                         HTML("""<br/>
                                 {% if getDisaggregationLabel and not getDisaggregationValue%}
