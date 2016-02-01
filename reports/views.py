@@ -27,20 +27,6 @@ from tola.util import getCountry
 from django.contrib.auth.decorators import login_required
 
 
-def get_countries(criteria):
-    """
-    Get a list of countries along with grants grouped by won and lost
-    """
-    kwargs = prepare_related_donor_fields_to_lookup_fields(criteria, 'grants__')
-    countries = Country.objects.filter(**kwargs)
-
-    # get the drilldowns for win_rates per country
-    for c in countries:
-        programs = Program.object.all().filter(country=c)
-    drilldown_series = programs
-    return drilldown_series
-
-
 class ReportHome(TemplateView):
     template_name='report.html'
 
@@ -73,7 +59,7 @@ def filter_json(request, service, **kwargs):
     For populating service indicators in dropdown
     """
     print request.GET
-    print kwagrs
+    print kwargs
     final_dict = {
     'criteria': kwargs}
     return HttpResponse(final_dict, content_type="application/json")

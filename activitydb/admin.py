@@ -18,7 +18,6 @@ class ProjectAgreementResource(resources.ModelResource):
                 'expected_start_date': {'format': '%d/%m/%Y'},
                 }
 
-
 class ProjectAgreementAdmin(ImportExportModelAdmin):
     resource_class = ProjectAgreementResource
     pass

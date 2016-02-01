@@ -6,6 +6,7 @@ from django.conf import settings
 from datetime import datetime
 from django.contrib.auth.models import User
 from decimal import Decimal
+import uuid
 
 
 class TolaUser(User):
@@ -691,6 +692,7 @@ class StakeholderAdmin(admin.ModelAdmin):
 
 
 class ProjectAgreement(models.Model):
+    agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
     program = models.ForeignKey(Program, related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)

@@ -4,6 +4,7 @@ from django.conf import settings
 from activitydb.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime
 from django.contrib.auth.models import User
+import uuid
 
 
 class TolaTable(models.Model):
@@ -61,6 +62,7 @@ class StrategicObjective(models.Model):
 class StrategicObjectiveAdmin(admin.ModelAdmin):
     list_display = ('country','name')
     search_fields = ('country','name')
+    list_filter = ('country__country',)
     display = 'Strategic Objectives'
 
 
@@ -85,8 +87,10 @@ class Objective(models.Model):
 
 class ObjectiveAdmin(admin.ModelAdmin):
     list_display = ('program','name')
-    search_fields = ('name','program')
+    search_fields = ('name','program__name')
+    list_filter = ('program__country__country',)
     display = 'Objectives'
+
 
 class Level(models.Model):
     name = models.CharField(max_length=135, blank=True)
@@ -101,6 +105,7 @@ class Level(models.Model):
         if self.create_date is None:
             self.create_date = datetime.now()
         super(Level, self).save()
+
 
 class LevelAdmin(admin.ModelAdmin):
     list_display = ('name')
@@ -214,6 +219,7 @@ class ExternalServiceRecordAdmin(admin.ModelAdmin):
 
 
 class Indicator(models.Model):
+    indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
     owner = models.ForeignKey('auth.User')
     country = models.ForeignKey(Country, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
@@ -308,6 +314,7 @@ class CollectedData(models.Model):
     tola_table = models.ForeignKey(TolaTable, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    site = models.ForeignKey(SiteProfile, null=True, blank=True)
     class Meta:
         ordering = ('agreement','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"

@@ -157,6 +157,6 @@ for country in getCountries:
     safe_country = urllib.quote_plus(country.country)
     program_url = "http://mcapi.mercycorps.org/gaitprogram/?country=%s&format=json" % (safe_country)
     print program_url
-    getAllData(program_url, "Program", country.id)
+    getAllData(program_url, "Program", int(country.id))
 
 print "Alright, all done."

@@ -2082,7 +2082,7 @@ def import_service(service_id=1, deserialize=True):
     """
     service = ExternalService.objects.all().filter(id=service_id)
 
-    response = requests.get(services.feed_url)
+    response = requests.get(service.feed_url)
     get_json = json.loads(response.content)
 
     if deserialize == True:

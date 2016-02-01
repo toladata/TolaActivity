@@ -671,8 +671,8 @@ class IndicatorExport(View):
     def get(self, *args, **kwargs ):
         queryset = Indicator.objects.all().filter(program=self.kwargs['program'])
         dataset = IndicatorResource().export(queryset)
-        response = HttpResponse(dataset, content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=indicator.csv'
+        response = HttpResponse(dataset, content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=indicator.xls'
         return response
 
 
@@ -683,8 +683,6 @@ class CollectedDataExport(View):
 
     def get(self, *args, **kwargs ):
         #filter by program or indicator
-        print int(self.kwargs['program'])
-        print int(self.kwargs['indicator'])
         if int(self.kwargs['program']) != 0 and int(self.kwargs['indicator']) == 0:
             print "Program"
             queryset = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['program'])
@@ -695,6 +693,7 @@ class CollectedDataExport(View):
             countries = getCountry(self.request.user)
             queryset = CollectedData.objects.all().filter(indicator__country__in=countries)
         dataset = CollectedDataResource().export(queryset)
-        response = HttpResponse(dataset, content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        print dataset
+        response = HttpResponse(dataset, content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=indicator_data.xls'
         return response
