@@ -138,7 +138,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'date_collected','indicator', 'program','description',
+                'targeted', 'achieved', 'date_collected','indicator', 'program','description','site',
 
             ),
 
@@ -220,6 +220,9 @@ class CollectedDataForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+
+        #override the program queryset to use request.user for country
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, country__in=countries)
 
