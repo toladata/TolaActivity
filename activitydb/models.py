@@ -455,7 +455,8 @@ class SiteProfile(models.Model):
     country = models.ForeignKey(Country)
     province = models.ForeignKey(Province, verbose_name="Administrative Level 1", null=True, blank=True)
     district = models.ForeignKey(District, verbose_name="Administrative Level 2", null=True, blank=True)
-    village = models.CharField("Administrative Level 3", help_text="", max_length=255, null=True, blank=True)
+    admin_level_three = models.ForeignKey(AdminLevelThree, verbose_name="Administrative Level 3", null=True, blank=True)
+    village = models.CharField("Administrative Level 4", help_text="", max_length=255, null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=14,max_digits=25, default=Decimal("0.00"))
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=14,max_digits=25, default=Decimal("0.00"))
 
@@ -497,6 +498,8 @@ class SiteProfile(models.Model):
 
 class CommunityAdmin(admin.ModelAdmin):
     list_display = ('name', 'code','office', 'country', 'district', 'province', 'village', 'cluster', 'longitude', 'latitude', 'create_date', 'edit_date')
+    list_filter = ('country__country')
+    search_fields = ('code','office__code','country__country')
     display = 'SiteProfile'
 
 
