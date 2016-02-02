@@ -14,10 +14,10 @@ class IndicatorResource(resources.ModelResource):
     indicator_type = ManyToManyWidget(IndicatorType, separator=" | ", field="indicator_type")
     objective = ManyToManyWidget(Objective, separator=" | ", field="objective")
     strategic_objective = ManyToManyWidget(StrategicObjective, separator=" | ", field="strategic_objective")
-    level = fields.Field(column_name='level', attribute='level', widget=ForeignKeyWidget(Level, 'name'))
+    level = ManyToManyWidget(Level, separator=" | ", field="level")
     reporting_frequency = fields.Field(column_name='reporting_frequency', attribute='reporting_frequency', widget=ForeignKeyWidget(ReportingFrequency, 'frequency'))
     sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
-    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
+    program = ManyToManyWidget(Program, separator=" | ", field="name")
 
 
     class Meta:
