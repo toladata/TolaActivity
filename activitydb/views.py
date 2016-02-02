@@ -596,12 +596,14 @@ class ProjectCompleteDetail(DetailView):
             data = ProjectComplete.objects.all().filter(project_agreement__id=self.kwargs['pk'])
         except ProjectComplete.DoesNotExist:
             data = None
+        """
         getData = serializers.serialize('python', data)
         #return just the fields and skip the object name
         justFields = [d['fields'] for d in getData]
         #temp name fiels
         jsonData =json.dumps(justFields, default=date_handler)
         context.update({'jsonData': jsonData})
+        """
         context.update({'id':self.kwargs['pk']})
 
         return context
