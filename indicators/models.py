@@ -315,7 +315,7 @@ class CollectedData(models.Model):
     tola_table = models.ForeignKey(TolaTable, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    site = models.ForeignKey(SiteProfile, null=True, blank=True)
+    site = models.ManyToManyField(SiteProfile, blank=True)
     class Meta:
         ordering = ('agreement','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"

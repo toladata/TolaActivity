@@ -389,8 +389,12 @@ $(function () {
                         #map { height: 350px; }
                     </style>
                     <div id="map"></div>
-
-                    {% include "small_site_profile_map.html" %}
+                    {{ server_up }}
+                    {% if server_up == True %}
+                        {% include "small_site_profile_map.html" %}
+                    {% else %}
+                        <h2>Offline (No map provided)</h2>
+                    {% endif %}
 
                 </div>
             </div>
