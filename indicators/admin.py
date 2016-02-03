@@ -25,7 +25,7 @@ class IndicatorResource(resources.ModelResource):
         fields = ('id','country','indicator_type','level','objective','strategic_objective','name','number',\
                   'source','definition','baseline','lop_target','means_of_verification','data_collection_method','responsible_person',\
                   'method_of_analysis','information_use','reporting_frequency','comments','disaggregation','sector','program','key_performance_indicator')
-        import_id_fields = ['id']
+        #import_id_fields = ['id']
 
 
 class IndicatorAdmin(ImportExportModelAdmin):

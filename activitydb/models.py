@@ -371,6 +371,7 @@ class ProfileTypeAdmin(admin.ModelAdmin):
     list_display = ('profile', 'create_date', 'edit_date')
     display = 'ProfileType'
 
+
 # Add land classification - 'Rural', 'Urban', 'Peri-Urban', tola-help issue #162
 class LandType(models.Model):
     classify_land = models.CharField("Land Classification", help_text="Rural, Urban, Peri-Urban", max_length=100, blank=True)
@@ -391,38 +392,21 @@ class LandType(models.Model):
     def __unicode__(self):
         return self.classify_land
 
+
 class LandTypeAdmin(admin.ModelAdmin):
     list_display = ('classify_land', 'create_date', 'edit_date')
     display = 'Land Type'
+
 
 class SiteProfile(models.Model):
     name = models.CharField("Site Name", max_length=255, blank=False)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
     office = models.ForeignKey(Office, default="1")
-
-    # Removed Shura, CDC checkbox from profile description
-    # existing_village = models.BooleanField("Is There an existing shura or CDC?", default="False")
-    # existing_village_descr = models.CharField("If Yes please describe", max_length=255, blank=True, null=True)
-
-    # Change the word 'Community' to 'Contact' and remove 'malik/Elder'
     contact_leader = models.CharField("Contact Name", max_length=255, blank=True, null=True)
-
-    # Remove Head of Shura/Institution field from Site Profile Form
-    # head_of_institution = models.CharField("Head of Shura/Institution", max_length=255, blank=True, null=True)
-
     date_of_firstcontact = models.DateTimeField(null=True, blank=True)
     contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
     num_members = models.CharField("Number of Members", max_length=255, blank=True, null=True)
-
-    # Added a Data Source field, if any of the Demographic Information is added
     info_source = models.CharField("Data Source",max_length=255, blank=True, null=True)
-
-    # Removed 'distance from' fields in location tab
-    # distance_district_capital = models.IntegerField("Distance from District Capital", help_text="In KM", null=True, blank=True)
-    # distance_site_camp = models.IntegerField("Distance from Site Camp", help_text="In KM", null=True, blank=True)
-    # distance_field_office = models.IntegerField("Distance from MC Field Office", help_text="In KM", null=True, blank=True)
-
-    # Retained all the fields in the 'For Geographical Sites' tab
     total_num_households = models.IntegerField("Total # Households", help_text="", null=True, blank=True)
     avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, default=Decimal("0.00"))
     male_0_14 = models.IntegerField("Male age 0-14", null=True, blank=True)
@@ -446,12 +430,9 @@ class SiteProfile(models.Model):
     literate_females = models.IntegerField("% of Literate Females", help_text="%", null=True, blank=True)
     literacy_rate = models.IntegerField("Literacy Rate (%)", help_text="%", null=True, blank=True)
     populations_owning_land = models.IntegerField("Households Owning Land", help_text="(%)", null=True, blank=True)
-
-    # Allow for decimal input to average landholding size
     avg_landholding_size = models.DecimalField("Average Landholding Size", decimal_places=14,max_digits=25, help_text="In hectares/jeribs", default=Decimal("0.00"))
     households_owning_livestock = models.IntegerField("Households Owning Livestock", help_text="(%)", null=True, blank=True)
     animal_type = models.CharField("Animal Types", help_text="List Animal Types", max_length=255, null=True, blank=True)
-
     country = models.ForeignKey(Country)
     province = models.ForeignKey(Province, verbose_name="Administrative Level 1", null=True, blank=True)
     district = models.ForeignKey(District, verbose_name="Administrative Level 2", null=True, blank=True)
@@ -459,11 +440,6 @@ class SiteProfile(models.Model):
     village = models.CharField("Administrative Level 4", help_text="", max_length=255, null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=14,max_digits=25, default=Decimal("0.00"))
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=14,max_digits=25, default=Decimal("0.00"))
-
-    # remove altitude and precision fields from location tab
-    # altitude = models.DecimalField("Altitude (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
-    # precision = models.DecimalField("Precision (in meters)", decimal_places=14,max_digits=25, blank=True, null=True)
-
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
     filled_by = models.ForeignKey(TolaUser, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
