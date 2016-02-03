@@ -399,6 +399,7 @@ class LandTypeAdmin(admin.ModelAdmin):
 
 
 class SiteProfile(models.Model):
+    profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
     name = models.CharField("Site Name", max_length=255, blank=False)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
     office = models.ForeignKey(Office, default="1")

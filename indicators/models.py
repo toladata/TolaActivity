@@ -299,6 +299,7 @@ class IndicatorAdmin(admin.ModelAdmin):
 
 
 class CollectedData(models.Model):
+    data_key = models.UUIDField(default=uuid.uuid4, unique=True),
     targeted = models.IntegerField("Targeted", blank=True, null=True)
     achieved = models.IntegerField("Achieved", blank=True, null=True)
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)

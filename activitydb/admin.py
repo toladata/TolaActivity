@@ -41,7 +41,7 @@ class SiteProfileResource(resources.ModelResource):
                  'longitude','latitude')
         skip_unchanged = True
         report_skipped = False
-        import_id_fields = ['id']
+        #import_id_fields = ['id']
 
 
 class SiteProfileAdmin(ImportExportModelAdmin):
