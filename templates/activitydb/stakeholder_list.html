@@ -14,11 +14,31 @@
 <br/>
 </div>
 <h3>Stakeholder</h3>
-<ul class="list-group">
-{% for item in getStakeholders %}
-    <li class="list-group-item"><b><a href="/activitydb/stakeholder_update/{{ item.id }}">{{ item.create_date|date }} - {{ item.name }}</a></b> &nbsp;<a href="/activitydb/stakeholder_delete/{{ item.id }}" class="btn-xs btn-danger">Delete Stakeholder</a></li>
-{% empty %}
-    <li class="list-group-item">No data yet.</li>
-{% endfor %}
-</ul>
+
+<!-- Table -->
+<table class="table">
+    <tr>
+        <th>Date Created</th>
+        <th>Stakeholder Name</th>
+        <th>Stakeholder Type</th>
+        <th>Sector</th>
+        <th>Contacts</th>
+        <th>&nbsp;</th>
+    </tr>
+    {% for item in getStakeholders %}
+    <tr>
+        <td><a href="/activitydb/stakeholder_update/{{ item.id }}">{{ item.create_date}}</a></td>
+        <td><a href="/activitydb/stakeholder_update/{{ item.id }}">{{ item.name}}</a></td>
+        <td><a href="/activitydb/stakeholder_update/{{ item.id }}">{{ item.type}}</a></td>
+        <td>{{ item.sector}}</td>
+        <td><a href="/activitydb/contact_list/{{ item.id }}" class="btn btn-xs btn-info">Contacts</a></td>
+        <td>
+            <a href="/activitydb/stakeholder_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Stakeholder</a></td>
+    </tr>
+    {% empty %}
+        <li class="list-group-item">No Stakeholders.</li>
+    {% endfor %}
+</table>
+
+
 {% endblock content %}

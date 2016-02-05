@@ -10,10 +10,10 @@ import uuid
 
 
 class TolaUser(User):
-   class Meta:
+    class Meta:
       proxy = True
 
-   def __unicode__(self):
+    def __unicode__(self):
         return self.first_name + " " + self.last_name
 
 

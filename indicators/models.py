@@ -304,7 +304,7 @@ class CollectedData(models.Model):
     achieved = models.IntegerField("Achieved", blank=True, null=True)
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
-    indicator = models.ForeignKey(Indicator, blank=True, null=True)
+    indicator = models.ForeignKey(Indicator)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
     program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
@@ -316,6 +316,7 @@ class CollectedData(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
+
     class Meta:
         ordering = ('agreement','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"

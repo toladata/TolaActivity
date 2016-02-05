@@ -349,5 +349,3 @@ CKEDITOR_CONFIGS = {
 
 #Ping Tola servers
 ACTIVITY_UP = os.system("ping -c 1 " + "http://www.google.com")
-
-print ACTIVITY_UP

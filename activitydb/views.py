@@ -650,15 +650,19 @@ class DocumentationList(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        project_agreement_id = self.kwargs['pk']
+        project_agreement_id = self.kwargs['project']
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
-        if int(self.kwargs['pk']) == 0:
-            countries = getCountry(request.user)
-            getDocumentation = Documentation.objects.all().filter(program__country__in=countries)
+        if int(self.kwargs['program']) != 0 & int(self.kwargs['project']) == 0:
+            getDocumentation = Documentation.objects.all().prefetch_related('program','project').filter(program__id=self.kwargs['program'])
+        elif int(self.kwargs['project']) != 0:
+            getDocumentation = Documentation.objects.all().prefetch_related('program','project').filter(project__id=self.kwargs['project'])
         else:
-            getDocumentation = Documentation.objects.all().filter(project__id=self.kwargs['pk'])
+            countries = getCountry(request.user)
+            getDocumentation = Documentation.objects.all().prefetch_related('program','project').filter(program__country__in=countries)
 
-        return render(request, self.template_name, {'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
+        return render(request, self.template_name, {'getPrograms': getPrograms, 'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
 
 
 class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):
@@ -680,13 +684,16 @@ class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(DocumentationAgreementCreate, self).get_context_data(**kwargs)
         getProject = ProjectAgreement.objects.get(id=self.kwargs['id'])
+        context.update({'program': getProject.program})
         context.update({'project': getProject})
         context.update({'id': self.kwargs['id']})
         return context
 
     def get_initial(self):
+        getProject = ProjectAgreement.objects.get(id=self.kwargs['id'])
         initial = {
             'project': self.kwargs['id'],
+            'program': getProject.program,
             }
 
         return initial
@@ -1226,13 +1233,15 @@ class ContactList(ListView):
 
         project_agreement_id = self.kwargs['pk']
 
+        getProject = ProjectAgreement.objects.all().filter(id=project_agreement_id)
+
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
         else:
-            getContacts = Contact.objects.all().filter(projectagreement=self.kwargs['pk'])
+            getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
 
-        return render(request, self.template_name, {'getContacts': getContacts})
+        return render(request, self.template_name, {'getContacts': getContacts, 'getProject': getProject})
 
 
 class ContactCreate(CreateView):

@@ -20,7 +20,7 @@
         <tr>
             <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.date_collected }}</a></td>
             <td>{{ item.program }}</td>
-            <td>{{ item.evidence }} </td>
+            <td>{% if item.evidence %} {{ item.evidence }} {%endif%} {% if item.tola_table %} {{ item.tola_table }} {% endif %}</td>
             <td>{{ item.targeted }}</td>
             <td>{{ item.achieved }}</td>
             <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>

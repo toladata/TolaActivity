@@ -7,7 +7,7 @@
 <body>
 
 <script type="text/javascript">
-    var frm = $('#outputForm');
+    var frm = $('#documentForm');
     frm.submit(function () {
         $.ajax({
             type: frm.attr('method'),
@@ -34,9 +34,9 @@
     </div>
     <div class="modal-body">
     {% if "/activitydb/documentation_agreement_add/" in request.get_full_path  %}
-        <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/documentation_agreement_add/{{ id }}/">
+        <form class="form-horizontal" method="post" id="documentForm" action="/activitydb/documentation_agreement_add/{{ id }}/">
     {% else %}
-        <form class="form-horizontal" method="post" id="outputForm" action="/activitydb/documentation_agreement_update/{{ pk }}/{{ id }}/">
+        <form class="form-horizontal" method="post" id="documentForm" action="/activitydb/documentation_agreement_update/{{ pk }}/{{ id }}/">
     {% endif %}
     {% load crispy_forms_tags %}
     {% csrf_token %}

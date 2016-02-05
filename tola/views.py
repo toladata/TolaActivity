@@ -18,7 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
 import collections
 from tola.util import getCountry
-from settings.local import REPORT_SERVER
+
 
 from django.contrib.auth.decorators import login_required
 
@@ -86,7 +86,7 @@ def index(request,selected_countries=None,id=0,sector=0):
         getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__program__id=program_id)
         getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     #Evidence and Objectives are for the global leader dashboard items and are the same every time
-    count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
+    count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True) + Count('tola_table', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
     getObjectives = CollectedData.objects.all().filter(indicator__strategic_objectives__isnull=False, indicator__country__in=selected_countries).exclude(achieved=None,targeted=None).order_by('indicator__strategic_objectives__name').values('indicator__strategic_objectives__name').annotate(indicators=Count('pk', distinct=True),targets=Sum('targeted'), actuals=Sum('achieved'))
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)

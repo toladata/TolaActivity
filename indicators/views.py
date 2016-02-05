@@ -538,6 +538,7 @@ class CollectedDataUpdate(UpdateView):
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
+        print getIndicator.indicator_id
         context.update({'indicator_id': getIndicator.indicator_id})
 
         return context
