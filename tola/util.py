@@ -24,18 +24,18 @@ def siloToDict(silo):
 def getCountry(user):
         """
         Returns the object the view is displaying.
-
         """
         # get users country from django cosign module
-        user_countries = TolaUser.objects.all().filter(id=user.id).values('countries')
+        user_countries = TolaUser.objects.all().filter(user__id=user.id).values('countries')
 
-        return user_countries
+        get_countries = Country.objects.all().filter(id__in=user_countries)
+
+        return get_countries
 
 
 def getTolaDataSilos(user):
         """
         Returns a list of silos from TolaData that the logged in user has access to
-
         """
         url="https://tola-data.mercycorps.org/api/silo/?format=json"
         # set url for json feed here
