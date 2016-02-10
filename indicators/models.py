@@ -218,6 +218,11 @@ class ExternalServiceRecordAdmin(admin.ModelAdmin):
     display = 'Exeternal Indicator Data Service'
 
 
+class IndicatorManager(models.Manager):
+    def get_queryset(self):
+        return super(IndicatorManager, self).get_queryset().prefetch_related('program','owner','country').select_related('sector')
+
+
 class Indicator(models.Model):
     indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
     owner = models.ForeignKey('auth.User')
@@ -248,6 +253,8 @@ class Indicator(models.Model):
     external_service_record = models.ForeignKey(ExternalServiceRecord, verbose_name="External Service ID", blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    #optimize query for class based views etc.
+    objects = IndicatorManager()
 
     class Meta:
         ordering = ('create_date',)
@@ -298,6 +305,11 @@ class IndicatorAdmin(admin.ModelAdmin):
     display = 'Indicators'
 
 
+class CollectedDataManager(models.Manager):
+    def get_queryset(self):
+        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('program','indicator','agreement','complete','evidence','tola_table')
+
+
 class CollectedData(models.Model):
     data_key = models.UUIDField(default=uuid.uuid4, unique=True),
     targeted = models.IntegerField("Targeted", blank=True, null=True)
@@ -316,6 +328,7 @@ class CollectedData(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
+    objects = CollectedDataManager()
 
     class Meta:
         ordering = ('agreement','indicator','date_collected','create_date')

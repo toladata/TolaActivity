@@ -1,7 +1,6 @@
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.dispatch import receiver
 from django.conf import settings
-from djangocosign.models import UserProfile
 from importlib import import_module
 
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore

@@ -35,31 +35,36 @@
 {% load crispy_forms_tags %}
 {% crispy form form.helper %}
 <h4>Site Profile Map and List</h4>
-<div id="map"></div>
 
-{% include "activitydb/site_profile_map.html" %}
+{% if offline_mode %}
+    <h2>Offline (No map provided)</h2>
+{% else %}
+    <div id="map"></div>
 
-<script>
-    function ZoomToCountry(region){
-        if(region == "Latin America, Caribbean, Balkans, Caucasus"){
-            map.setView([9,-60], 4);
-        }else if(region == "East Asia"){
-            map.setView([30,96], 4);
-        }else if(region == "Central & South Asia"){
-            map.setView([30,80], 4);
-        }else if(region == "East & Southern Africa"){
-            map.setView([10,10], 4);
-        }else if(region == "West & Central Africa"){
-            map.setView([10,10], 4);
-        }else if(region == "Latin America, Caribbean, Balkans, Caucasus"){
-            map.setView([30,20], 4);
-        }else if(region == "Middle East"){
-            map.setView([30,20], 4);
-        }else if(region == "1"){
-            map.setView([10,-10], 2);
-        };
-    }
-</script>
+    {% include "activitydb/site_profile_map.html" %}
+
+    <script>
+        function ZoomToCountry(region){
+            if(region == "Latin America, Caribbean, Balkans, Caucasus"){
+                map.setView([9,-60], 4);
+            }else if(region == "East Asia"){
+                map.setView([30,96], 4);
+            }else if(region == "Central & South Asia"){
+                map.setView([30,80], 4);
+            }else if(region == "East & Southern Africa"){
+                map.setView([10,10], 4);
+            }else if(region == "West & Central Africa"){
+                map.setView([10,10], 4);
+            }else if(region == "Latin America, Caribbean, Balkans, Caucasus"){
+                map.setView([30,20], 4);
+            }else if(region == "Middle East"){
+                map.setView([30,20], 4);
+            }else if(region == "1"){
+                map.setView([10,-10], 2);
+            };
+        }
+    </script>
+{% endif %}
 
  <!-- Table -->
 <table class="table">

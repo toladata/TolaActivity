@@ -1,33 +1,24 @@
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
-from django.template import Context, loader
-from datetime import date
-import os
-import urllib2
+
 import json
-import unicodedata
 from django.http import HttpResponseRedirect
-from django.db import models
-from models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from activitydb.models import Program, ProjectAgreement, SiteProfile, Country, Sector
-from djangocosign.models import UserProfile
-from indicators.forms import IndicatorForm, CollectedDataForm
+from .models import TolaUser, Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
+from activitydb.models import Program, SiteProfile, Country, Sector
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry
 from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
 from activitydb.forms import FilterForm
-from .forms import IndicatorForm
+from .forms import IndicatorForm, CollectedDataForm
 from django.db.models import Count, Sum
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
-from django.conf import settings
-from django.core import serializers
+
 import requests
-from activitydb.mixins import AjaxableResponseMixin
 from export import IndicatorResource, CollectedDataResource
 
 
@@ -44,7 +35,7 @@ class IndicatorList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
 
         if int(self.kwargs['pk']) == 0:
-            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name')
+            getProgramsIndicator = Program.objects.all().prefetch_related().filter(funding_status="Funded", country__in=countries).order_by('name')
             getIndicators = Indicator.objects.all()
         else:
             getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk'])
@@ -106,7 +97,6 @@ def indicator_create(request, id=0):
         #import recursive library for substitution
         import re
 
-        print node_id
         #checkfor service indicator and update based on values
         if node_id != None and int(node_id) != 0:
             getImportedIndicators = import_indicator(service)
@@ -157,7 +147,7 @@ class IndicatorCreate(CreateView):
 
     #pre-populate parts of the form
     def get_initial(self):
-        user_profile = UserProfile.objects.get(user=self.request.user)
+        user_profile = TolaUser.objects.get(user=self.request.user)
         initial = {
             'country': user_profile.country,
             'program': self.kwargs['id'],
@@ -538,7 +528,6 @@ class CollectedDataUpdate(UpdateView):
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
-        print getIndicator.indicator_id
         context.update({'indicator_id': getIndicator.indicator_id})
 
         return context
@@ -685,16 +674,16 @@ class CollectedDataExport(View):
     def get(self, *args, **kwargs ):
         #filter by program or indicator
         if int(self.kwargs['program']) != 0 and int(self.kwargs['indicator']) == 0:
-            print "Program"
+            #print "Program"
             queryset = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['program'])
         elif int(self.kwargs['program']) == 0 and int(self.kwargs['indicator']) != 0:
-            print "Indicator"
+            #print "Indicator"
             queryset = CollectedData.objects.all().filter(indicator__id=self.kwargs['indicator'])
         else:
             countries = getCountry(self.request.user)
             queryset = CollectedData.objects.all().filter(indicator__country__in=countries)
         dataset = CollectedDataResource().export(queryset)
-        print dataset
+        #print dataset
         response = HttpResponse(dataset, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator_data.xls'
         return response

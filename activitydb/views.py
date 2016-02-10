@@ -285,11 +285,10 @@ class ProjectAgreementUpdate(UpdateView):
         #get the approval status of the form before it was submitted
         check_agreement_status = ProjectAgreement.objects.get(id=str(self.kwargs['pk']))
         is_approved = str(form.instance.approval)
-
+        getProgram = Program.objects.get(agreement__id=check_agreement_status.id)
+        country = getProgram.country
         #check to see if the approval status has changed
         if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
-            getProgram = Program.objects.get(agreement__id=check_agreement_status.id)
-            country = getProgram.country
             budget = form.instance.total_estimated_budget
             if getProgram.budget_check == True:
                 try:
@@ -660,7 +659,7 @@ class DocumentationList(ListView):
             getDocumentation = Documentation.objects.all().prefetch_related('program','project').filter(project__id=self.kwargs['project'])
         else:
             countries = getCountry(request.user)
-            getDocumentation = Documentation.objects.all().prefetch_related('program','project').filter(program__country__in=countries)
+            getDocumentation = Documentation.objects.all().prefetch_related('program','project','project__office').filter(program__country__in=countries)
 
         return render(request, self.template_name, {'getPrograms': getPrograms, 'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
 
@@ -818,6 +817,7 @@ class DocumentationUpdate(UpdateView):
     Documentation Form
     """
     model = Documentation
+    queryset = Documentation.objects.select_related()
 
      # add the request to the kwargs
     def get_form_kwargs(self):
@@ -889,7 +889,6 @@ class SiteProfileList(ListView):
         if activity_id != 0:
             getCommunity = SiteProfile.objects.all().filter(projectagreement__id=activity_id).distinct()
         elif program_id != 0:
-            print "program"
             getCommunity = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id)).distinct()
         else:
             getCommunity = SiteProfile.objects.all().filter(country__in=countries).distinct()

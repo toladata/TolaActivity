@@ -208,7 +208,6 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'django_tables2',
     'crispy_forms',
-    'floppyforms',
     'django_extensions',
     'mathfilters',
     'import_export',
@@ -346,6 +345,3 @@ CKEDITOR_CONFIGS = {
         'width': 300,
     },
 }
-
-#Ping Tola servers
-ACTIVITY_UP = os.system("ping -c 1 " + "http://www.google.com")

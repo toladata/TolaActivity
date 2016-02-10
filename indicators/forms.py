@@ -1,4 +1,3 @@
-from django.forms import ModelForm
 from indicators.models import Indicator, CollectedData, Objective, StrategicObjective
 from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreement
 from crispy_forms.helper import FormHelper
@@ -6,7 +5,7 @@ from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
-import floppyforms.__future__ as forms
+from django import forms
 from tola.util import getCountry
 
 

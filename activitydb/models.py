@@ -2,19 +2,11 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib import admin
-from django.conf import settings
-from datetime import datetime
 from django.contrib.auth.models import User
 from decimal import Decimal
+import datetime
 import uuid
-
-
-class TolaUser(User):
-    class Meta:
-      proxy = True
-
-    def __unicode__(self):
-        return self.first_name + " " + self.last_name
+from django.utils.timezone import utc
 
 
 class Country(models.Model):
@@ -46,6 +38,47 @@ class Country(models.Model):
 class CountryAdmin(admin.ModelAdmin):
     list_display = ('name', 'create_date', 'edit_date')
     display = 'Country'
+
+
+TITLE_CHOICES = (
+    ('mr', 'Mr.'),
+    ('mrs', 'Mrs.'),
+    ('ms', 'Ms.'),
+)
+
+
+class TolaUser(models.Model):
+    title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
+    name = models.CharField("Given Name", blank=True, null=True, max_length=100)
+    employee_number = models.IntegerField("Employee Number", blank=True, null=True)
+    user = models.OneToOneField(User, unique=True, related_name='tola_user')
+    country = models.ForeignKey(Country, blank=True, null=True)
+    countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
+    modified_by = models.ForeignKey(User, related_name='tola_mod')
+    created = models.DateTimeField(auto_now=False, blank=True, null=True)
+    updated = models.DateTimeField(auto_now=False, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
+
+    @property
+    def countries_list(self):
+        return ', '.join([x.iso_two_letters_code for x in self.countries.all()])
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps as appropriate'''
+        if kwargs.pop('new_entry', True):
+            self.created = datetime.datetime.utcnow().replace(tzinfo=utc)
+        else:
+            self.updated = datetime.datetime.utcnow().replace(tzinfo=utc)
+        return super(TolaUser, self).save(*args, **kwargs)
+
+
+class TolaUserAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country')
+    display = 'Tola User'
+    list_filter = ('name','country')
+    search_fields = ('name','country','title')
 
 
 class Sector(models.Model):
@@ -197,7 +230,7 @@ class ApprovalAuthority(models.Model):
 
     #displayed in admin templates
     def __unicode__(self):
-        return self.approval_user.first_name + " " + self.approval_user.last_name
+        return self.approval_user.user.first_name + " " + self.approval_user.user.last_name
 
 
 class ApprovalAuthorityAdmin(admin.ModelAdmin):
@@ -398,6 +431,11 @@ class LandTypeAdmin(admin.ModelAdmin):
     display = 'Land Type'
 
 
+class SiteProfileManager(models.Manager):
+    def get_queryset(self):
+        return super(SiteProfileManager, self).get_queryset().prefetch_related().select_related('country','province','district','admin_level_three','type')
+
+
 class SiteProfile(models.Model):
     profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
     name = models.CharField("Site Name", max_length=255, blank=False)
@@ -445,10 +483,11 @@ class SiteProfile(models.Model):
     approved_by = models.ForeignKey(TolaUser,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
     filled_by = models.ForeignKey(TolaUser, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
     location_verified_by = models.ForeignKey(TolaUser, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
-
-
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+
+    #optimize query
+    objects = SiteProfileManager()
 
     class Meta:
         ordering = ('name',)
@@ -637,6 +676,11 @@ class TemplateAdmin(admin.ModelAdmin):
     display = 'Template'
 
 
+class StakeholderManagmer(models.Manager):
+    def get_queryset(self):
+        return super(StakeholderManagmer, self).get_queryset().prefetch_related('contact').select_related('country','sector','type','formal_relationship_document','vetting_document')
+
+
 class Stakeholder(models.Model):
     name = models.CharField("Stakeholder/Organization Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
@@ -648,6 +692,8 @@ class Stakeholder(models.Model):
     vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, blank=True, related_name="vetting_document")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    #optimize query
+    objects = StakeholderManagmer()
 
     class Meta:
         ordering = ('country','name','type')
@@ -669,6 +715,11 @@ class StakeholderAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'country', 'create_date')
     display = 'Stakeholders'
     list_filter = ('create_date','country','type','sector')
+
+
+class ProjectAgreementManager(models.Manager):
+    def get_queryset(self):
+        return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
 
 
 class ProjectAgreement(models.Model):
@@ -754,6 +805,8 @@ class ProjectAgreement(models.Model):
     community_project_description = models.TextField("Describe the project you would like the program to consider",blank=True, null=True, help_text="Description must describe how the Community Proposal meets the project criteria")
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
+    #optimize base query for all classbasedviews
+    objects = ProjectAgreementManager()
 
     class Meta:
         ordering = ('create_date',)

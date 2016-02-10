@@ -1,21 +1,10 @@
-from django.contrib import messages
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import logout
-from django.http import HttpResponseRedirect
 from django.views.generic.list import ListView
 
 from django.shortcuts import render
-from django.contrib import auth
-from activitydb.models import ProjectAgreement, CustomDashboard ,ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, Feedback, FAQ, DocumentationApp
+from activitydb.models import ProjectAgreement, CustomDashboard, Program, SiteProfile,Country
 from .models import ProjectStatus, Gallery
 from indicators.models import CollectedData
-from djangocosign.models import UserProfile
-from djangocosign.models import Country
 
-from util import getCountry
-from datetime import datetime
-from django.shortcuts import get_object_or_404
 from django.db.models import Sum
 from django.db.models import Q
 
@@ -86,7 +75,7 @@ def PublicDashboard(request,id=0):
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
     #get all countires
-    countires = ActivityCountry.objects.all()
+    countires = Country.objects.all()
 
     return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
                                                                      'getSiteProfile':getSiteProfile,

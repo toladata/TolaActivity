@@ -1,14 +1,10 @@
 import unicodedata
-import datetime
 import urllib2
 import json
-import base64
 import sys
 
-from djangocosign.models import UserProfile, Country
-from activitydb.models import Country as ActivityCountry
+from activitydb.models import Country, TolaUser
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
-from django.contrib.auth.models import User
 
 #CREATE NEW DATA DICTIONARY OBJECT 
 def siloToDict(silo):
@@ -31,13 +27,9 @@ def getCountry(user):
 
         """
         # get users country from django cosign module
-        user_countries = UserProfile.objects.all().filter(user=user).values('countries')
-        # get the country name from django cosign module
-        get_cosign_country = Country.objects.all().filter(id__in=user_countries).values('name')
-        # get the id from the activitydb model
-        get_countries = ActivityCountry.objects.all().filter(country__in=get_cosign_country)
+        user_countries = TolaUser.objects.all().filter(id=user.id).values('countries')
 
-        return get_countries
+        return user_countries
 
 
 def getTolaDataSilos(user):

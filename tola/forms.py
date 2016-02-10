@@ -2,12 +2,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset
-import floppyforms.__future__ as forms
-
-from django.contrib.auth.models import User
+from django import forms
 from django.contrib.auth.forms import UserChangeForm
-from activitydb.models import Country, Feedback
-from djangocosign.models import UserProfile
+from activitydb.models import Feedback, TolaUser
 
 
 class FeedbackForm(forms.ModelForm):
@@ -46,7 +43,7 @@ class RegistrationForm(UserChangeForm):
         del self.fields['password']
 
     class Meta:
-        model = UserProfile
+        model = TolaUser
         fields = '__all__'
 
 

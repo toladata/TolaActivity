@@ -3,7 +3,7 @@ from .models import Country, Province, Office, Village, Program, ProgramAdmin, D
      ProgramDashboard, CustomDashboard, ProjectAgreement, ProjectAgreementAdmin,ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ApprovalAuthorityAdmin, ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
-    Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin
+    Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin
 from import_export import resources, fields, widgets
 from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportModelAdmin
@@ -88,6 +88,7 @@ admin.site.register(StakeholderType)
 admin.site.register(FormLibrary,FormLibraryAdmin)
 admin.site.register(FormEnabled,FormEnabledAdmin)
 admin.site.register(Feedback,FeedbackAdmin)
+admin.site.register(TolaUser,TolaUserAdmin)
 
 
 

@@ -1,22 +1,15 @@
 from django.shortcuts import render
 from .forms import FeedbackForm, RegistrationForm
 from django.contrib import messages
-from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.contrib import auth
-from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, Feedback, FAQ, DocumentationApp
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, FAQ, DocumentationApp, TolaUser
 from indicators.models import CollectedData
-from djangocosign.models import UserProfile
-from djangocosign.models import Country
 from .tables import IndicatorDataTable
-from util import getCountry
-from datetime import datetime
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
-import collections
 from tola.util import getCountry
 
 
@@ -166,7 +159,7 @@ def profile(request):
     otherwise redirect them to registration version
     """
     if request.user.is_authenticated():
-        obj = get_object_or_404(UserProfile, user=request.user)
+        obj = get_object_or_404(TolaUser, user=request.user)
         form = RegistrationForm(request.POST or None, instance=obj,initial={'username': request.user})
 
         if request.method == 'POST':
