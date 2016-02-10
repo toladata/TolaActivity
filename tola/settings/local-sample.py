@@ -34,7 +34,11 @@ TEMPLATE_DEBUG = DEBUG
 
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#FOR PRODUCTION USE THIS
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#FOR DEV AND TEST
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = '/tmp/tola-messages' # change this to a proper location
 ########## END EMAIL CONFIGURATION
 
 
@@ -83,4 +87,8 @@ DEV_APPS = (
 )
 
 INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
+
+######## If report server then limit navigation and allow access to public dashboards
+REPORT_SERVER = False
+OFFLINE_MODE = True
 
