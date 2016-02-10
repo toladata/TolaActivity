@@ -5,13 +5,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country as ActivityCountry, FAQ, DocumentationApp, TolaUser
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser
 from indicators.models import CollectedData
 from .tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
 from tola.util import getCountry
-
 
 from django.contrib.auth.decorators import login_required
 
@@ -24,11 +23,12 @@ def index(request,selected_countries=None,id=0,sector=0):
     """
     program_id = id
     user_countries = getCountry(request.user)
+    print user_countries
     if not selected_countries:
         selected_countries = user_countries
         selected_countries_list = None
     else:
-        selected_countries_list = ActivityCountry.objects.all().filter(id__in=selected_countries)
+        selected_countries_list = Country.objects.all().filter(id__in=selected_countries)
 
     getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
