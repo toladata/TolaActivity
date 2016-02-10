@@ -118,12 +118,12 @@
                             {% elif "report" in request.build_absolute_uri %}
                                 <span class="label label-info">REPORT SERVER</span>
                             {% endif %}
-                            <span class="glyphicon glyphicon-user"></span> {{ user.userprofile.name }}<b class="caret"></b>
+                            <span class="glyphicon glyphicon-user"></span> {{ user.tola_user.name }} <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-lock"></span> Logout</a></li>
                             <li><a href="{% url 'profile' %}"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
-                            <li><a href="{% url 'profile' %}"><span>{{ user.userprofile.countries_list }}</span></a></li>
+                            <li><a href="{% url 'profile' %}"><span>{{ user.tola_user.countries_list }}</span></a></li>
                         </ul>
                     </li><!-- .dropdown collapse -->
                 </ul>

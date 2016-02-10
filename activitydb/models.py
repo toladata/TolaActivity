@@ -63,7 +63,7 @@ class TolaUser(models.Model):
 
     @property
     def countries_list(self):
-        return ', '.join([x.iso_two_letters_code for x in self.countries.all()])
+        return ', '.join([x.code for x in self.countries.all()])
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps as appropriate'''
