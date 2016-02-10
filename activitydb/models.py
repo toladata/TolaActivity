@@ -68,9 +68,9 @@ class TolaUser(models.Model):
     def save(self, *args, **kwargs):
         ''' On save, update timestamps as appropriate'''
         if kwargs.pop('new_entry', True):
-            self.created = datetime.datetime.utcnow().replace(tzinfo=utc)
+            self.created = datetime.now()
         else:
-            self.updated = datetime.datetime.utcnow().replace(tzinfo=utc)
+            self.updated = datetime.now()
         return super(TolaUser, self).save(*args, **kwargs)
 
 
@@ -202,13 +202,6 @@ class Program(models.Model):
         return self.name
 
 
-class ProgramAdmin(admin.ModelAdmin):
-    list_display = ('countries','name','gaitid', 'description','budget_check')
-    search_fields = ('name','gaitid')
-    list_filter = ('funding_status','country','budget_check')
-    display = 'Program'
-
-
 class ApprovalAuthority(models.Model):
     approval_user = models.ForeignKey(TolaUser,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
     budget_limit = models.IntegerField(null=True, blank=True)
@@ -231,13 +224,6 @@ class ApprovalAuthority(models.Model):
     #displayed in admin templates
     def __unicode__(self):
         return self.approval_user.user.first_name + " " + self.approval_user.user.last_name
-
-
-class ApprovalAuthorityAdmin(admin.ModelAdmin):
-    list_display = ('approval_user','budget_limit','fund','country')
-    display = 'Approval Authority'
-    search_fields = ('approval_user','country')
-    list_filter = ('create_date','country')
 
 
 class Province(models.Model):

@@ -1,12 +1,13 @@
 from django.contrib import admin
-from .models import Country, Province, Office, Village, Program, ProgramAdmin, Documentation, Template,District, Sector, \
-     ProgramDashboard, CustomDashboard, ProjectAgreement, ProjectAgreementAdmin,ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
+from .models import Country, Province, Office, Village, Program, Documentation, Template,District, Sector, \
+     ProgramDashboard, CustomDashboard, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
-    ApprovalAuthorityAdmin, ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
+    ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin
 from import_export import resources, fields, widgets
 from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportModelAdmin
+from tola.util import getCountry
 
 
 class ProjectAgreementResource(resources.ModelResource):
@@ -51,6 +52,25 @@ class SiteProfileAdmin(ImportExportModelAdmin):
     list_filter = ('country__country',)
     search_fields = ('office__code','country__country')
     pass
+
+
+class ProgramAdmin(admin.ModelAdmin):
+    list_display = ('countries','name','gaitid', 'description','budget_check')
+    search_fields = ('name','gaitid')
+    list_filter = ('funding_status','country','budget_check')
+    display = 'Program'
+
+
+class ApprovalAuthorityAdmin(admin.ModelAdmin):
+    list_display = ('approval_user','budget_limit','fund','country')
+    display = 'Approval Authority'
+    search_fields = ('approval_user','country')
+    list_filter = ('create_date','country')
+
+    def queryset(self, request):
+        qs = super(ApprovalAuthorityAdmin, self).queryset(request)
+        countries = getCountry(request.user)
+        return qs.filter(country__in=countries)
 
 
 admin.site.register(Country)
