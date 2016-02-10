@@ -287,10 +287,7 @@ class ProjectAgreementUpdate(UpdateView):
         is_approved = str(form.instance.approval)
         getProgram = Program.objects.get(agreement__id=check_agreement_status.id)
         country = getProgram.country
-<<<<<<< HEAD
-=======
 
->>>>>>> 251b5a74eb83240009943c86a66eb63d22bcd766
         #check to see if the approval status has changed
         if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
             budget = form.instance.total_estimated_budget
