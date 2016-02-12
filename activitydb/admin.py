@@ -10,6 +10,18 @@ from import_export.admin import ImportExportModelAdmin
 from tola.util import getCountry
 
 
+class GroupPermission(admin.ModelAdmin):
+
+    def has_add_permission(self, request):
+        return request.user.groups.filter(name='Editor').exists()
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.groups.filter(name='Editor').exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.groups.filter(name='Editor').exists()
+
+
 class ProjectAgreementResource(resources.ModelResource):
 
     class Meta:
@@ -45,7 +57,7 @@ class SiteProfileResource(resources.ModelResource):
         #import_id_fields = ['id']
 
 
-class SiteProfileAdmin(ImportExportModelAdmin):
+class SiteProfileAdmin(GroupPermission, ImportExportModelAdmin):
 
     resource_class = SiteProfileResource
     list_display = ('name','office', 'country', 'province','district','admin_level_three','village')
@@ -54,23 +66,29 @@ class SiteProfileAdmin(ImportExportModelAdmin):
     pass
 
 
-class ProgramAdmin(admin.ModelAdmin):
+class ProgramAdmin(GroupPermission, admin.ModelAdmin):
     list_display = ('countries','name','gaitid', 'description','budget_check')
     search_fields = ('name','gaitid')
     list_filter = ('funding_status','country','budget_check')
     display = 'Program'
 
+    def queryset(self, request):
+        return super(ProgramAdmin, self).queryset(request)
 
-class ApprovalAuthorityAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        qs = super(ProgramAdmin, self).queryset(request)
+        if request.user.is_superuser:
+            return qs
+
+        countries = getCountry(request.user)
+        return qs.filter(country__in=countries)
+
+
+class ApprovalAuthorityAdmin(GroupPermission, admin.ModelAdmin):
     list_display = ('approval_user','budget_limit','fund','country')
     display = 'Approval Authority'
     search_fields = ('approval_user','country')
     list_filter = ('create_date','country')
-
-    def queryset(self, request):
-        qs = super(ApprovalAuthorityAdmin, self).queryset(request)
-        countries = getCountry(request.user)
-        return qs.filter(country__in=countries)
 
 
 admin.site.register(Country)

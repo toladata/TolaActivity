@@ -77,7 +77,7 @@ class TolaUser(models.Model):
 class TolaUserAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
     display = 'Tola User'
-    list_filter = ('name','country')
+    list_filter = ('country',)
     search_fields = ('name','country','title')
 
 

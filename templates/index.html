@@ -60,8 +60,8 @@ $(function () {
 });
 
 
-$(function () {
 
+$(function () {
     $('#container_column').highcharts({
         chart: {
             type: 'column'
@@ -69,12 +69,8 @@ $(function () {
         title: {
             text: 'Targets v. Actuals'
         },
-        subtitle: {
-            text: 'Source: Indicator Results'
-        },
         xAxis: {
-            categories: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  '{{ indicator.indicator__number }}', {% endfor %}],
-            crosshair: true
+            categories: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  '{{ indicator.indicator__number }}', {% endfor %}]
         },
         yAxis: {
             min: 0,
@@ -83,30 +79,24 @@ $(function () {
             }
         },
         tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.0f}</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
+            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
+            shared: true
         },
         plotOptions: {
             column: {
-                pointPadding: 0.2,
-                borderWidth: 0
+                stacking: 'normal'
             }
         },
         series: [{
             name: 'Targets',
-            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.targets }}, {% endfor %}  ],
-            pointPlacement: 'on'
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.targets }}, {% endfor %}  ]
         }, {
             name: 'Actuals',
-            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.actuals }}, {% endfor %}   ],
-            pointPlacement: 'on'
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.actuals }}, {% endfor %}   ]
         }]
     });
 });
+
 
 //SPARKLINE CHART
 $(function () {
