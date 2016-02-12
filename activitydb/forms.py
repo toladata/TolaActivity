@@ -699,7 +699,7 @@ class SiteProfileForm(forms.ModelForm):
                 ),
                 Tab('Location',
                     Fieldset('Places',
-                        'country','province','district','village', Field('latitude', step="any"), Field('longitude', step="any"),
+                        'country','province','district','admin_level_three','village', Field('latitude', step="any"), Field('longitude', step="any"),
                     ),
                     Fieldset('Map',
                         'map',

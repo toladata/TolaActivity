@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Country, Province, Office, Village, Program, Documentation, Template,District, Sector, \
+from .models import Country, Province, Office,OfficeAdmin, Village, Program, Documentation, Template,District, Sector, \
      ProgramDashboard, CustomDashboard, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
@@ -20,6 +20,24 @@ class GroupPermission(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return request.user.groups.filter(name='Editor').exists()
+
+
+class DocumentationResource(resources.ModelResource):
+
+    class Meta:
+        model = Documentation
+        widgets = {
+                'create_date': {'format': '%d/%m/%Y'},
+                'edit_date': {'format': '%d/%m/%Y'},
+                'expected_start_date': {'format': '%d/%m/%Y'},
+                }
+
+
+class DocumentationAdmin(ImportExportModelAdmin):
+    resource_class = DocumentationResource
+    list_display = ('program','project_name')
+    list_filter = ('program__country','office')
+    pass
 
 
 class ProjectAgreementResource(resources.ModelResource):
@@ -93,7 +111,7 @@ class ApprovalAuthorityAdmin(GroupPermission, admin.ModelAdmin):
 
 admin.site.register(Country)
 admin.site.register(Province, ProvinceAdmin)
-admin.site.register(Office)
+admin.site.register(Office, OfficeAdmin)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
 admin.site.register(Village)

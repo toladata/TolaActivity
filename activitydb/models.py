@@ -334,7 +334,7 @@ class Office(models.Model):
 
 
 class OfficeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
+    list_display = ('name', 'code', 'province__country', 'create_date', 'edit_date')
     search_fields = ('name','province')
     list_filter = ('create_date','province')
     display = 'Office'
