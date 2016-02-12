@@ -14,22 +14,23 @@ import unicodedata
 import sys
 import urllib2
 from datetime import date
-from activitydb.models import Country, Province, District, AdminLevelThree
+from activitydb.models import Country, Province, District, AdminLevelThree, Village
 
 def run():
     print "Uploading Country Admin data"
 
 getCountry = Country.objects.get(id=4)
+file_name = "fixtures/mali-admin.csv"
 
 def getAllData():
 
-    with open('fixtures/lebanon-admin-districts.csv', 'rb') as csvfile:
+    with open(file_name, 'rb') as csvfile:
         country = csv.reader(csvfile, delimiter=',', quotechar='"')
         #check for province and add new ones
         for row in country:
             column_num = 0
             for column in row:
-                if column_num == 0:
+                if column_num == 1:
                     print "Province="
                     print column
                     try:
@@ -40,7 +41,7 @@ def getAllData():
                     print column
                 column_num = column_num + 1
 
-    with open('fixtures/lebanon-admin-districts.csv', 'rb') as csvfile2:
+    with open(file_name, 'rb') as csvfile2:
         country2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
         #check for distrcit and add new one
         for row in country2:
@@ -48,10 +49,10 @@ def getAllData():
             column_num = 0
             new_district = ""
             for column in row:
-                if column_num == 0:
+                if column_num == 1:
                     getProvince = Province.objects.get(name=column, country=getCountry)
 
-                if column_num == 1:
+                if column_num == 2:
                     print "District="
                     print column
 
@@ -63,7 +64,7 @@ def getAllData():
 
                 column_num = column_num + 1
 
-    with open('fixtures/lebanon-admin-districts.csv', 'rb') as csvfile2:
+    with open(file_name, 'rb') as csvfile2:
         country2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
         #check for distrcit and add new one
         for row in country2:
@@ -71,18 +72,47 @@ def getAllData():
             column_num = 0
             new_district = ""
             for column in row:
-                if column_num == 0:
+                if column_num == 1:
                     getProvince = Province.objects.get(name=column, country=getCountry)
 
-                if column_num == 1:
+                if column_num == 2:
                     getDistrict = District.objects.get(name=column, province=getProvince)
 
-                if column_num == 2:
+                if column_num == 3:
                     print "AdminLevelThree="
                     print column
 
                     try:
                         AdminLevelThree.objects.get(name=column, district=getDistrict)
+                    except AdminLevelThree.DoesNotExist:
+                        new_level_3 = AdminLevelThree(name=column, district=getDistrict)
+                        new_level_3.save()
+
+                column_num = column_num + 1
+
+    with open(file_name, 'rb') as csvfile2:
+        country2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
+        #check for distrcit and add new one
+        for row in country2:
+            print "take2"
+            column_num = 0
+            new_district = ""
+            for column in row:
+                if column_num == 1:
+                    getProvince = Province.objects.get(name=column, country=getCountry)
+
+                if column_num == 2:
+                    getDistrict = District.objects.get(name=column, province=getProvince)
+
+                if column_num == 3:
+                    getAdminLevel3 = AdminLevelThree.objects.get(name=column, district=getDistrict)
+
+                if column_num == 4:
+                    print "Village="
+                    print column
+
+                    try:
+                        Village.objects.get(name=column, district=getDistrict)
                     except AdminLevelThree.DoesNotExist:
                         new_level_3 = AdminLevelThree(name=column, district=getDistrict)
                         new_level_3.save()

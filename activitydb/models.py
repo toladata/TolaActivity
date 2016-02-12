@@ -342,7 +342,8 @@ class OfficeAdmin(admin.ModelAdmin):
 
 class Village(models.Model):
     name = models.CharField("Admin Level 4", max_length=255, blank=True)
-    district = models.ForeignKey(District)
+    district = models.ForeignKey(District,null=True,blank=True)
+    admin_3 = models.ForeignKey(AdminLevelThree,null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
