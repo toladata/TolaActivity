@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import IndicatorType, Indicator, ReportingFrequency, DisaggregationType, DisaggregationLabel,\
     CollectedData, Objective, Level, IndicatorAdmin, ObjectiveAdmin, StrategicObjective, StrategicObjectiveAdmin, ExternalService, \
-    ExternalServiceAdmin, ExternalServiceRecord, ExternalServiceRecordAdmin, CollectedDataAdmin
+    ExternalServiceAdmin, ExternalServiceRecord, ExternalServiceRecordAdmin, CollectedDataAdmin, TolaTable
 from activitydb.models import Sector, Country, Program
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
@@ -37,6 +37,38 @@ class IndicatorAdmin(ImportExportModelAdmin):
     pass
 
 
+class TolaTableResource(resources.ModelResource):
+
+    class Meta:
+        model = TolaTable
+        fields = ('id','name','table_id','owner','remote_owner','url')
+        #import_id_fields = ['id']
+
+
+class TolaTableAdmin(ImportExportModelAdmin):
+    resource_class = TolaTableResource
+    list_display = ('owner','name','url')
+    search_fields = ('name','owner__username')
+    list_filter = ('owner',)
+    display = 'Linked Tola Tables'
+    pass
+
+class CollectedDataResource(resources.ModelResource):
+
+    class Meta:
+        model = CollectedData
+        #import_id_fields = ['id']
+
+
+class CollectedDataAdmin(ImportExportModelAdmin):
+    resource_class = CollectedDataResource
+    list_display = ('indicator','program','agreement')
+    search_fields = ('indicator','agreement','program','owner__username')
+    list_filter = ('indicator__country__country','program','approved_by')
+    display = 'Collected Data on Indicators'
+    pass
+
+
 admin.site.register(IndicatorType)
 admin.site.register(Indicator,IndicatorAdmin)
 admin.site.register(ReportingFrequency)
@@ -48,5 +80,6 @@ admin.site.register(StrategicObjective, StrategicObjectiveAdmin)
 admin.site.register(Level)
 admin.site.register(ExternalService, ExternalServiceAdmin)
 admin.site.register(ExternalServiceRecord, ExternalServiceRecordAdmin)
+admin.site.register(TolaTable, TolaTableAdmin)
 
 

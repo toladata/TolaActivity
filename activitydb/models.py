@@ -278,7 +278,7 @@ class District(models.Model):
 class DistrictAdmin(admin.ModelAdmin):
     list_display = ('name', 'province', 'create_date')
     search_fields = ('create_date','province')
-    list_filter = ('create_date','province')
+    list_filter = ('province__country__country','province')
     display = 'District'
 
 
@@ -306,7 +306,7 @@ class AdminLevelThree(models.Model):
 class AdminLevelThreeAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date')
     search_fields = ('name','district')
-    list_filter = ('create_date','district')
+    list_filter = ('district__province__country__country','district')
     display = 'Admin Level Three'
 
 
@@ -334,9 +334,9 @@ class Office(models.Model):
 
 
 class OfficeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'province__country', 'create_date', 'edit_date')
+    list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
     search_fields = ('name','province')
-    list_filter = ('create_date','province')
+    list_filter = ('create_date','province__country__country')
     display = 'Office'
 
 
@@ -364,6 +364,7 @@ class Village(models.Model):
 
 class VillageAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date', 'edit_date')
+    list_filter = ('district__province__country__country','district')
     display = 'Village'
 
 

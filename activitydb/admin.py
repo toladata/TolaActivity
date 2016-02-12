@@ -10,19 +10,12 @@ from import_export.admin import ImportExportModelAdmin
 from tola.util import getCountry
 
 
-class GroupPermission(admin.ModelAdmin):
-
-    def has_add_permission(self, request):
-        return request.user.groups.filter(name='Editor').exists()
-
-    def has_change_permission(self, request, obj=None):
-        return request.user.groups.filter(name='Editor').exists()
-
-    def has_delete_permission(self, request, obj=None):
-        return request.user.groups.filter(name='Editor').exists()
-
-
 class DocumentationResource(resources.ModelResource):
+    country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
+    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
+    project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(ProjectAgreement, 'name'))
+
+
 
     class Meta:
         model = Documentation
@@ -35,8 +28,8 @@ class DocumentationResource(resources.ModelResource):
 
 class DocumentationAdmin(ImportExportModelAdmin):
     resource_class = DocumentationResource
-    list_display = ('program','project_name')
-    list_filter = ('program__country','office')
+    list_display = ('program','project')
+    list_filter = ('program__country',)
     pass
 
 
@@ -54,7 +47,7 @@ class ProjectAgreementResource(resources.ModelResource):
 class ProjectAgreementAdmin(ImportExportModelAdmin):
     resource_class = ProjectAgreementResource
     list_display = ('program','project_name')
-    list_filter = ('program__country','office')
+    list_filter = ('program__country',)
     pass
 
 
@@ -68,14 +61,12 @@ class SiteProfileResource(resources.ModelResource):
 
     class Meta:
         model = SiteProfile
-        fields = ('id','country','name','office','district','province','admin_level_three','village',\
-                 'longitude','latitude')
         skip_unchanged = True
         report_skipped = False
         #import_id_fields = ['id']
 
 
-class SiteProfileAdmin(GroupPermission, ImportExportModelAdmin):
+class SiteProfileAdmin(ImportExportModelAdmin):
 
     resource_class = SiteProfileResource
     list_display = ('name','office', 'country', 'province','district','admin_level_three','village')
@@ -84,25 +75,15 @@ class SiteProfileAdmin(GroupPermission, ImportExportModelAdmin):
     pass
 
 
-class ProgramAdmin(GroupPermission, admin.ModelAdmin):
+class ProgramAdmin(admin.ModelAdmin):
     list_display = ('countries','name','gaitid', 'description','budget_check')
     search_fields = ('name','gaitid')
     list_filter = ('funding_status','country','budget_check')
     display = 'Program'
 
-    def queryset(self, request):
-        return super(ProgramAdmin, self).queryset(request)
-
-    def get_queryset(self, request):
-        qs = super(ProgramAdmin, self).queryset(request)
-        if request.user.is_superuser:
-            return qs
-
-        countries = getCountry(request.user)
-        return qs.filter(country__in=countries)
 
 
-class ApprovalAuthorityAdmin(GroupPermission, admin.ModelAdmin):
+class ApprovalAuthorityAdmin(admin.ModelAdmin):
     list_display = ('approval_user','budget_limit','fund','country')
     display = 'Approval Authority'
     search_fields = ('approval_user','country')
@@ -120,7 +101,7 @@ admin.site.register(CustomDashboard)
 admin.site.register(Sector)
 admin.site.register(ProjectAgreement, ProjectAgreementAdmin)
 admin.site.register(ProjectComplete, ProjectCompleteAdmin)
-admin.site.register(Documentation)
+admin.site.register(Documentation,DocumentationAdmin)
 admin.site.register(Template)
 admin.site.register(SiteProfile, SiteProfileAdmin)
 admin.site.register(Capacity)
