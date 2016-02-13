@@ -1,0 +1,39 @@
+<div class="ajaxLoader">
+    <p>
+        Loading please wait...
+        <br/>
+        <img src="/static/img/ajax-loader.gif">
+    </p>
+</div>
+
+
+<table class="table table-striped hiddenTable">
+    <tr>
+        <th>Indicator Type</th>
+        <th>Indicator Level</th>
+        <th>Indicator Name</th>
+        <th>Indicator Number</th>
+        <th>LOP Target</th>
+        <th>Sector</th>
+        <th>&nbsp;</th>
+    </tr>
+    {% for indicator in indicators|dictsort:"levels" %}
+    <tr>
+        <td>{{ indicator.indicator_types}}</td>
+        <td>{{ indicator.levels }}</td>
+        <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.name}}</a></td>
+        <td>{{ indicator.number}}</td>
+        <td>{{ indicator.lop_target}}</td>
+        <td>{{ indicator.sector}}</td>
+        <td width="150"><span class="btn-group" role="group"><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info">Edit</a><a onclick="loadCollected({{ indicator.id }}, {{ program_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ indicator.id }}">Data {{ indicator.data_count }} </a><a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a></span></td>
+    </tr>
+    <tr>
+        <td colspan="7" class="hiddenRow">
+            <div id="hidden-{{ indicator.id }}" class="accordian-body collapse">
+                <!-- Table -->
+                {% include "indicators/collected_data_table.html" %}
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

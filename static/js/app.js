@@ -74,6 +74,25 @@ function loadCollected(indicator,program){
     $('.ajaxLoader').hide();
 };
 
+/*
+*  Load the collected data for an indicator on the results page
+*/
+function loadIndicators(program){
+    var program;
+    $('.ajaxLoader').show();
+    $.get('/indicators/program_indicators/' + program + '/', function(data){
+        $('#hidden-' + program).html(data);
+      });
+    $('.ajaxLoader').hide();
+    $('#hidden-' + program).on('shown', function () {
+       $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
+    });
+
+    $('#hidden-' + program).on('hidden', function () {
+       $(".icon-chevron-up").removeClass("icon-chevron-up").addClass("icon-chevron-down");
+    });
+};
+
 
 $(document).ready(function() {
 

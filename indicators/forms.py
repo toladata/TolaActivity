@@ -1,4 +1,4 @@
-from indicators.models import Indicator, CollectedData, Objective, StrategicObjective
+from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable
 from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreement
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
@@ -224,5 +224,7 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, country__in=countries)
+
+        self.fields['tola_table'].queryset = TolaTable.objects.filter(owner=self.request.user)
 
 

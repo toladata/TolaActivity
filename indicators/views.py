@@ -35,13 +35,11 @@ class IndicatorList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
 
         if int(self.kwargs['pk']) == 0:
-            getProgramsIndicator = Program.objects.all().prefetch_related().filter(funding_status="Funded", country__in=countries).order_by('name')
-            getIndicators = Indicator.objects.all()
+            getProgramsIndicator = Program.objects.all().prefetch_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
         else:
             getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk'])
-            getIndicators = Indicator.objects.all().filter(program__id=self.kwargs['pk']).select_related()
 
-        return render(request, self.template_name, {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
+        return render(request, self.template_name, {'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
 
 def import_indicator(service=1,deserialize=True):
@@ -646,6 +644,17 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
     collecteddata = CollectedData.objects.all().filter(indicator=indicator)
     collected_sum = CollectedData.objects.filter(indicator=indicator).aggregate(Sum('targeted'),Sum('achieved'))
     return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum, 'indicator_id': indicator, 'program_id': program})
+
+
+def program_indicators_json(AjaxableResponseMixin,program):
+    """
+    For populating indicators for a program
+    """
+    template_name = 'indicators/program_indicators_table.html'
+    indicators = Indicator.objects.all().filter(program=program).annotate(data_count=Count('collecteddata'))
+    return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
+
+
 
 
 def tool(request):

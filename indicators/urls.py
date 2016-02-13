@@ -44,5 +44,6 @@ urlpatterns = patterns('',
     #ajax calls
     url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
     url(r'^collected_data_table/(?P<indicator>[-\w]+)/(?P<program>[-\w]+)/', 'indicators.views.collected_data_json', name='collected_data_json'),
+    url(r'^program_indicators/(?P<program>[-\w]+)/', 'indicators.views.program_indicators_json', name='program_indicators_json'),
 
 )
