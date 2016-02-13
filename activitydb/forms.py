@@ -394,7 +394,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="documents" data-toggle="modal" data-target="#myModal" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
+                                <a class="documents" data-toggle="modal" data-target="#myModal" onclick="this.form.submit()" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
                               </div>
                             </div>
                              """),
@@ -721,7 +721,7 @@ class SiteProfileForm(forms.ModelForm):
                              'info_source'
                     ),
                 ),
-                 Tab('Approvals',
+                Tab('Approvals',
                     Fieldset('',
                         'approval','approved_by','filled_by',
                     ),
@@ -988,8 +988,19 @@ class StakeholderForm(forms.ModelForm):
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
-            'name', 'type', 'contact', HTML("""<a href="/activitydb/contact_add/0/" target="_new">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
+            TabHolder(
+                Tab('Details',
+                    Fieldset('Details',
+                        'name', 'type', 'contact', HTML("""<a href="/activitydb/contact_add/0/" target="_new">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
+                    ),
+                ),
 
+                Tab('Approvals',
+                    Fieldset('Approval',
+                        'approval','approved_by','filled_by',
+                    ),
+                ),
+            ),
         )
 
         super(StakeholderForm, self).__init__(*args, **kwargs)
