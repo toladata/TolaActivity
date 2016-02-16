@@ -38,43 +38,46 @@
 
 
     {% if getCollectedData %}
-    <div class='panel panel-default'>
-        <div class='panel-heading'><h4>{% if filter_program %} Program: {{ filter_program }} {% elif filter_indicator %} Indicator: {{ filter_indicator }} {% endif %}</h4></div>
-            <!-- Table -->
-            <table class="table table-striped">
-                <tr>
-                    <th>Strat. Objective</th>
-                    <th>Program</th>
-                    <th>Objective</th>
-                    <th>Indicator</th>
-                    <th>Date Collected</th>
-                    <th>Evidence</th>
-                    <th>Target</th>
-                    <th>Actual</th>
-                </tr>
-                {% for item in getCollectedData %}
-                <tr>
+        <div class='panel panel-default'>
+            <div class='panel-heading'><h4>{% if filter_program %} Program: {{ filter_program }} {% elif filter_indicator %} Indicator: {{ filter_indicator }} {% endif %}</h4></div>
+                <!-- Table -->
+                <table class="table table-striped">
+                    <tr>
+                        <th>Strat. Objective</th>
+                        <th>Program</th>
+                        <th>Objective</th>
+                        <th>Indicator</th>
+                        <th>Date Collected</th>
+                        <th>Evidence</th>
+                        <th>Target</th>
+                        <th>Actual</th>
+                    </tr>
+                    {% for item in getCollectedData %}
+                    <tr>
 
-                    <td>{{ item.indicator.strategic_objectives_list }}</td>
-                    <td>{{ item.program }}</td>
-                    <td>{{ item.indicator.objectives_list }}</td>
-                    <td>{{ item.indicator.number }} - {{ item.indicator.name }}</td>
-                    <td>{{ item.date_collected|date:"d-m-Y" }}</td>
-                    <td>{{ item.evidence }} {{ item.tola_table}}</td>
-                    <td>{{ item.targeted }}</td>
-                    <td>{{ item.achieved }}</td>
+                        <td>{{ item.indicator.strategic_objectives_list }}</td>
+                        <td>{{ item.program }}</td>
+                        <td>{{ item.indicator.objectives_list }}</td>
+                        <td>{{ item.indicator.number }} - {{ item.indicator.name }}</td>
+                        <td>{{ item.date_collected|date:"d-m-Y" }}</td>
+                        <td>{{ item.evidence }} {{ item.tola_table}}</td>
+                        <td>{{ item.targeted }}</td>
+                        <td>{{ item.achieved }}</td>
 
-                </tr>
-                {% endfor %}
-                <tr>
-                    <td colspan="6"><span style="float: right;">Sum:</span></td>
-                    <td>{{ collected_sum.targeted__sum }}</td>
-                    <td>{{ collected_sum.achieved__sum }}</td>
-                    <td>&nbsp;</td>
-                </tr>
-            </table>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="6"><span style="float: right;">Sum:</span></td>
+                        <td>{{ collected_sum.targeted__sum }}</td>
+                        <td>{{ collected_sum.achieved__sum }}</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                </table>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-success" onClick="location.href='/indicators/collecteddata/{% if filter_indicator %}{{ filter_indicator.id }}{%else%}0{%endif%}/{% if filter_program %}{{ filter_program.id }}{%else%}0{%endif%}/?export=True'">Export All</button>
         </div>
-    </div>
+
     {% else %}
         <h4>No Data Found for <em>"{% if filter_program %}Program: {{ filter_program }}{% elif filter_indicator %} Indicator: {{ filter_indicator }}{% endif %}"</em> </h4>
         <p>Select a Program or Indicator from the filters above.</p>

@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     url(r'^collecteddata_import/$', 'indicators.views.collecteddata_import', name='collecteddata_import'),
     url(r'^collecteddata_update/(?P<pk>\w+)/$', CollectedDataUpdate.as_view(), name='collecteddata_update'),
     url(r'^collecteddata_delete/(?P<pk>\w+)/$', CollectedDataDelete.as_view(), name='collecteddata_delete'),
-    url(r'^collecteddata_export/(?P<program>\w+)/$', CollectedDataExport.as_view(), name='collecteddata_export'),
+    url(r'^collecteddata_export/(?P<program>\w+)/(?P<indicator>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
 
     #Indicator Data Report
     url(r'^data/(?P<id>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),

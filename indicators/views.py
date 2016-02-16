@@ -383,12 +383,6 @@ class CollectedDataList(ListView):
     model = CollectedData
     template_name = 'indicators/collecteddata_list.html'
 
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(ProjectAgreementUpdate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
@@ -426,6 +420,12 @@ class CollectedDataList(ListView):
             filter_program = Program.objects.get(id=self.kwargs['program'])
         except Program.DoesNotExist:
             filter_program = None
+
+        if self.request.GET.get('export'):
+            dataset = CollectedDataResource().export(getCollectedData)
+            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=indicator_data.xls'
+            return response
 
         return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms, 'getIndicators':getIndicators,'filter_program':filter_program,'filter_indicator': filter_indicator, 'collected_sum': collected_sum})
 
@@ -672,27 +672,6 @@ class IndicatorExport(View):
         response['Content-Disposition'] = 'attachment; filename=indicator.xls'
         return response
 
-class CollectedDataExport(View):
-    """
-    Export all incidents to a CSV file called from a button at the bottom of the incidentList table
-    """
-
-    def get(self, *args, **kwargs ):
-        #filter by program or indicator
-        if int(self.kwargs['program']) != 0 and int(self.kwargs['indicator']) == 0:
-            #print "Program"
-            queryset = CollectedData.objects.filter(indicator__program__id=self.kwargs['program'])
-        elif int(self.kwargs['program']) == 0 and int(self.kwargs['indicator']) != 0:
-            #print "Indicator"
-            queryset = CollectedData.objects.filter(indicator__id=self.kwargs['indicator'])
-        else:
-            countries = getCountry(self.request.user)
-            queryset = CollectedData.objects.filter(indicator__country__in=countries)
-        dataset = CollectedDataResource().export(queryset)
-        #print dataset
-        response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=indicator_data.xls'
-        return response
 
 class CountryExport(View):
 
