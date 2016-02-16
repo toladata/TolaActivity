@@ -666,12 +666,11 @@ class IndicatorExport(View):
     """
 
     def get(self, *args, **kwargs ):
-        queryset = Indicator.objects.all().filter(program=self.kwargs['program'])
+        queryset = Indicator.objects.filter(program=self.kwargs['program'])
         dataset = IndicatorResource().export(queryset)
-        response = HttpResponse(dataset, content_type='application/ms-excel')
+        response = HttpResponse(dataset.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator.xls'
         return response
-
 
 class CollectedDataExport(View):
     """
@@ -682,15 +681,23 @@ class CollectedDataExport(View):
         #filter by program or indicator
         if int(self.kwargs['program']) != 0 and int(self.kwargs['indicator']) == 0:
             #print "Program"
-            queryset = CollectedData.objects.all().filter(indicator__program__id=self.kwargs['program'])
+            queryset = CollectedData.objects.filter(indicator__program__id=self.kwargs['program'])
         elif int(self.kwargs['program']) == 0 and int(self.kwargs['indicator']) != 0:
             #print "Indicator"
-            queryset = CollectedData.objects.all().filter(indicator__id=self.kwargs['indicator'])
+            queryset = CollectedData.objects.filter(indicator__id=self.kwargs['indicator'])
         else:
             countries = getCountry(self.request.user)
-            queryset = CollectedData.objects.all().filter(indicator__country__in=countries)
+            queryset = CollectedData.objects.filter(indicator__country__in=countries)
         dataset = CollectedDataResource().export(queryset)
         #print dataset
-        response = HttpResponse(dataset, content_type='application/ms-excel')
+        response = HttpResponse(dataset.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator_data.xls'
+        return response
+
+class CountryExport(View):
+
+    def get(self, *args, **kwargs ):
+        dataset = CountryResource().export()
+        response = HttpResponse(dataset.csv, content_type="csv")
+        response['Content-Disposition'] = 'attachment; filename=filename.csv'
         return response
