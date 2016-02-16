@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import FeedbackForm, RegistrationForm
+from .forms import FeedbackForm, RegistrationForm, NewUserRegistrationForm,NewTolaUserRegistrationForm
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
@@ -142,14 +142,20 @@ def register(request):
     Register a new User profile using built in Django Users Model
     """
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
+        uf = NewUserRegistrationForm(request.POST)
+        tf = NewTolaUserRegistrationForm(request.POST)
+        if uf.is_valid() * tf.is_valid():
+            user = uf.save()
+            tolauser = tf.save(commit=False)
+            tolauser.user = user
+            tolauser.save()
+            messages.error(request, 'Thank you, You have been registered as a new user.', fail_silently=False)
             return HttpResponseRedirect("/")
     else:
-        form = UserCreationForm()
+        uf = NewUserRegistrationForm()
+        tf = NewTolaUserRegistrationForm()
     return render(request, "registration/register.html", {
-        'form': form,
+        'userform': uf,'tolaform': tf, 'helper': RegistrationForm.helper
     })
 
 

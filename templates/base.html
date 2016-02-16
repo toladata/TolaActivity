@@ -135,7 +135,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <div class="navbar-text">
-                                    {% if report_server == True%}
+                                    {% if report_server == True or non_ldap == True%}
                                         Login via
                                         <div class="social-buttons">
                                             <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-go"><i class="fa fa-google"></i> Google</a>

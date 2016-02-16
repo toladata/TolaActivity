@@ -54,7 +54,6 @@ class TolaUser(models.Model):
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
-    modified_by = models.ForeignKey(User, related_name='tola_mod')
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
     updated = models.DateTimeField(auto_now=False, blank=True, null=True)
 
