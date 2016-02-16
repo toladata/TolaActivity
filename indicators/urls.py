@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
-    IndicatorList, IndicatorExport, CollectedDataExport
+    IndicatorList, IndicatorExport
 
 
 urlpatterns = patterns('',
