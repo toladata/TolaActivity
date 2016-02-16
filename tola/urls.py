@@ -72,14 +72,17 @@ urlpatterns = patterns('',
                         #app include of activitydb urls
                         url(r'^activitydb/', include('activitydb.urls')),
 
-                        #app include of activitydb urls
+                        #app include of indicator urls
                         url(r'^indicators/', include('indicators.urls')),
 
                         #app include of customdashboard urls
                         url(r'^customdashboard/', include('customdashboard.urls')),
 
-                        #app include of customdashboard urls
+                        #app include of reports urls
                         url(r'^reports/', include('reports.urls')),
+
+                        #app include of tables urls
+                        url(r'^tables/', include('tables.urls')),
 
                         #local login
                         url(r'^login/$', 'django.contrib.auth.views.login', name='login'),

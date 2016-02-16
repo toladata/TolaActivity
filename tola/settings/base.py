@@ -223,6 +223,7 @@ LOCAL_APPS = (
     'activitydb',
     'indicators',
     'customdashboard',
+    'tables',
 
 )
 

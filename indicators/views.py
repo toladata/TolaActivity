@@ -37,7 +37,7 @@ class IndicatorList(ListView):
         if int(self.kwargs['pk']) == 0:
             getProgramsIndicator = Program.objects.all().prefetch_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
         else:
-            getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk'])
+            getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk']).order_by('name').annotate(indicator_count=Count('indicator'))
 
         return render(request, self.template_name, {'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
 
@@ -653,8 +653,6 @@ def program_indicators_json(AjaxableResponseMixin,program):
     template_name = 'indicators/program_indicators_table.html'
     indicators = Indicator.objects.all().filter(program=program).annotate(data_count=Count('collecteddata'))
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
-
-
 
 
 def tool(request):
