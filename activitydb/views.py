@@ -293,7 +293,7 @@ class ProjectAgreementUpdate(UpdateView):
             budget = form.instance.total_estimated_budget
             if getProgram.budget_check == True:
                 try:
-                    user_budget_approval = ApprovalAuthority.objects.get(approval_user=self.request.user)
+                    user_budget_approval = ApprovalAuthority.objects.get(approval_user__user=self.request.user)
                 except ApprovalAuthority.DoesNotExist:
                     user_budget_approval = None
             #compare budget amount to users approval amounts
