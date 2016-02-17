@@ -89,7 +89,7 @@ def emailGroup(country,group,link,subject,message,submiter=None):
 
             to = [str(item) for item in getGroupEmails]
             if submiter:
-                to.append(submiter + ", ")
+                to.append(submiter)
             print to
 
             email = EmailMessage(subject, message, 'systems@mercycorps.org',
