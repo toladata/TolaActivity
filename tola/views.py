@@ -146,6 +146,8 @@ def register(request):
         tf = NewTolaUserRegistrationForm(request.POST)
         if uf.is_valid() * tf.is_valid():
             user = uf.save()
+            user.groups.add(Group.objects.get(name='ViewOnly'))
+
             tolauser = tf.save(commit=False)
             tolauser.user = user
             tolauser.save()
