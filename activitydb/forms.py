@@ -147,10 +147,10 @@ class ProjectAgreementForm(forms.ModelForm):
     documentation_government_approval = forms.FileField(required=False)
     documentation_community_approval = forms.FileField(required=False)
 
-    effect_or_impact = forms.CharField(help_text="Please do not include outputs and keep less than 120 words", widget=forms.Textarea, required=False)
+    effect_or_impact = forms.CharField(help_text="Please do not include outputs and keep less than 120 words. Describe the logic that will link this project/activity to the proposed desired outcome/goal. Note any assumptions that are critical in this logic chain.", widget=forms.Textarea, required=False)
     justification_background = forms.CharField(help_text="As someone would write a background and problem statement in a proposal, this should be described here. What is the situation in this community where the project is proposed and what is the problem facing them that this project will help solve", widget=forms.Textarea, required=False)
     justification_description_community_selection = forms.CharField(help_text="How was this community selected for this project. It may be it was already selected as part of the project (like CDP-2, KIWI-2), but others may need to describe, out of an entire cluster, why this community? This can't be just 'because they wanted it', or 'because they are poor.' It must refer to a needs assessment, some kind of selection criteria, maybe identification by the government, or some formal process.", widget=forms.Textarea, required=False)
-    description_of_project_activities = forms.CharField(help_text="How was this community selected for this project. It may be it was already selected as part of the project (like CDP-2, KIWI-2), but others may need to describe, out of an entire cluster, why this community? This can't be just 'because they wanted it', or 'because they are poor.' It must refer to a needs assessment, some kind of selection criteria, maybe identification by the government, or some formal process.", widget=forms.Textarea, required=False)
+    description_of_project_activities = forms.CharField(help_text="Briefly describe the day to day work you plan to complete in order to accomplish this project. Include rationale for budget, scope, timeframe as well as staff and stakeholders that will be necessary to seeing this project is effectively implemented. Site any documentation/monitoring efforts that you'll need to do before completion.", widget=forms.Textarea, required=False)
     description_of_government_involvement = forms.CharField(help_text="This is an open-text field for describing the project. It does not need to be too long, but this is where you will be the main description and the main description that will be in the database.  Please make this a description from which someone can understand what this project is doing. You do not need to list all activities, such as those that will appear on your benchmark list. Just describe what you are doing. You should attach technical drawings, technical appraisals, bill of quantity or any other appropriate documentation", widget=forms.Textarea, required=False)
     documentation_government_approval = forms.CharField(help_text="Check the box if there IS documentation to show government request for or approval of the project. This should be attached to the proposal, and also kept in the program file.", widget=forms.Textarea, required=False)
     description_of_community_involvement = forms.CharField(help_text="How the community is involved in the planning, approval, or implementation of this project should be described. Indicate their approval (copy of a signed MOU, or their signed Project Prioritization request, etc.). But also describe how they will be involved in the implementation - supplying laborers, getting training, etc.", widget=forms.Textarea, required=False)
@@ -175,6 +175,7 @@ class ProjectAgreementForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = True
+        self.helper.form_id = "agreement"
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
@@ -285,7 +286,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                           <table class="table">
                                             <tr>
                                             <th>Percent Complete</th>
-                                            <th>Percent Cumlative Completion</th>
+                                            <th>Percent Cumulative Completion</th>
                                             <th>Description</th>
                                             <th>View</th>
                                             </tr>
@@ -394,7 +395,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="documents" data-toggle="modal" data-target="#myModal" onclick="this.form.submit()" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
+                                <a class="documents" data-toggle="modal" data-target="#myModal" onclick="document.getElementById('agreement').submit()" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
                               </div>
                             </div>
                              """),
