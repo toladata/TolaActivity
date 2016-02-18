@@ -193,8 +193,8 @@ $(document).ready(function() {
                     options += '<option value="' + adminthree[i].pk + '">' + adminthree[i].fields['name'] + '</option>';
                 }
 
-                $("select#id_adminthree").html(options);
-                $("select#id_adminthree option:first").attr('selected', 'selected');
+                $("select#id_admin_level_three").html(options);
+                $("select#id_admin_level_three option:first").attr('selected', 'selected');
             });
         }
 
