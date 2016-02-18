@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
 from django.views.generic import TemplateView
-from .models import ProgramDashboard, Program, Country, Province, Village, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
+from .models import ProgramDashboard, Program, Country, Province, Village, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
@@ -2082,9 +2082,9 @@ def district_json(request, district):
     For populating the office dropdown based  country dropdown value
     """
     selected_district = District.objects.get(id=district)
-    village = Village.objects.all().filter(district=selected_district)
-    villages_json = serializers.serialize("json", village)
-    return HttpResponse(villages_json, content_type="application/json")
+    adminthree = AdminLevelThree.objects.all().filter(district=selected_district)
+    adminthree_json = serializers.serialize("json", adminthree)
+    return HttpResponse(adminthree_json, content_type="application/json")
 
 
 def import_service(service_id=1, deserialize=True):
