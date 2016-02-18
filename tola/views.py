@@ -131,7 +131,6 @@ def documentation(request):
     """
     Get Documentation and display them on template
     """
-
     getDocumentation = DocumentationApp.objects.all()
 
     return render(request, 'documentation.html', {'getDocumentation': getDocumentation})
