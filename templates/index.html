@@ -271,6 +271,7 @@ $(function () {
                     <div class="btn-group" role="group">
                         <div class="btn-group" role="group">
                             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                {{ selected_countries_list }}
                                 {% if selected_countries_list %} {% for item in selected_countries_list %} {{ item.country }} {%endfor%}{%else%} Country {% endif %}Dashboard
                                 <span class="caret"></span>
                             </button>
