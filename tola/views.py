@@ -23,12 +23,15 @@ def index(request,selected_countries=None,id=0,sector=0):
     """
     program_id = id
     user_countries = getCountry(request.user)
-    print user_countries
+
     if not selected_countries:
         selected_countries = user_countries
         selected_countries_list = None
     else:
         selected_countries_list = Country.objects.all().filter(id__in=selected_countries)
+        #transform to list if a submitted country
+        selected_countries = [selected_countries]
+
 
     getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
@@ -83,7 +86,7 @@ def index(request,selected_countries=None,id=0,sector=0):
     getObjectives = CollectedData.objects.all().filter(indicator__strategic_objectives__isnull=False, indicator__country__in=selected_countries).exclude(achieved=None,targeted=None).order_by('indicator__strategic_objectives__name').values('indicator__strategic_objectives__name').annotate(indicators=Count('pk', distinct=True),targets=Sum('targeted'), actuals=Sum('achieved'))
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
-    print selected_countries_list
+
     return render(request, "index.html", {'agreement_total_count':agreement_total_count,\
                                           'agreement_approved_count':agreement_approved_count,\
                                           'agreement_open_count':agreement_open_count,\
