@@ -153,10 +153,10 @@
                     {{ item.item }}
                 </td>
                 <td>
-                    {% if item.in_file == True%} <a href="/activitydb/checklist_update_link/{{ item.id }}/in_file/0"><span class="glyphicon glyphicon-check"></span></a>{% else %}<a href="/activitydb/checklist_update_link/{{ item.id }}/in_file/1"><span class="glyphicon glyphicon-unchecked"></span></a>{% endif %}
+                    {% if item.in_file == True%} <a onclick="tasklistChange('{{ item.id }}','in_file','0')"><span id="in_file_{{ item.id }}" class="glyphicon glyphicon-check"></span></a>{% else %}<a onclick="tasklistChange('{{ item.id }}','in_file','1')"><span id="in_file_{{ item.id }}" class="glyphicon glyphicon-unchecked"></span></a>{% endif %}
                 </td>
                 <td>
-                    {% if item.not_applicable == True%} <a href="/activitydb/checklist_update_link/{{ item.id }}/not_applicable/0"><span class="glyphicon glyphicon-check"></span></a>{% else %}<a href="/activitydb/checklist_update_link/{{ item.id }}/not_applicable/1"><span class="glyphicon glyphicon-unchecked"></span></a>{% endif %}
+                    {% if item.not_applicable == True%} <a onclick="tasklistChange('{{ item.id }}','not_applicable','0')"><span id="not_applicable_{{ item.id }}" class="glyphicon glyphicon-check"></span></a>{% else %}<a onclick="tasklistChange('{{ item.id }}','not_applicable','1')"><span id="not_applicable_{{ item.id }}" class="glyphicon glyphicon-unchecked"></span></a>{% endif %}
                 </td>
             </tr>
             {% endfor %}

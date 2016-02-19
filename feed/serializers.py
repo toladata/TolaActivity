@@ -1,6 +1,6 @@
 from django.forms import widgets
 from rest_framework import serializers
-from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther, Stakeholder
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, Level
 from django.contrib.auth.models import User
 
@@ -100,3 +100,8 @@ class LevelSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Level
+
+class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Stakeholder

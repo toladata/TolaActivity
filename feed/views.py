@@ -1,17 +1,19 @@
 from .serializers import UserSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, \
-    SiteProfileSerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer, LevelSerializer
+    SiteProfileSerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, \
+    ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer, LevelSerializer, \
+    StakeholderSerializer
 
 from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
-from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther
+from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther, Stakeholder
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, Level
 
 from django.contrib import messages
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
-from rest_framework import renderers,viewsets
+from rest_framework import renderers, viewsets
 
 import operator
 import csv
@@ -164,3 +166,11 @@ class LevelViewSet(viewsets.ModelViewSet):
     """
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
+
+class StakeholderViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Stakeholder.objects.all()
+    serializer_class = StakeholderSerializer

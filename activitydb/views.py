@@ -1962,7 +1962,7 @@ class ChecklistItemUpdate(UpdateView):
     form_class = ChecklistItemForm
 
 
-def checklist_update_link(request,pk,type,value):
+def checklist_update_link(AjaxableResponseMixin,pk,type,value):
     """
     Checklist Update from Link To Update if a Task is Done
     """
@@ -1973,8 +1973,7 @@ def checklist_update_link(request,pk,type,value):
     elif type == "not_applicable":
         update = ChecklistItem.objects.filter(id=pk).update(not_applicable=value)
 
-
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    return HttpResponse(value)
 
 
 class ChecklistItemDelete(DeleteView):

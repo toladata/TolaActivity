@@ -36,30 +36,24 @@ $(document).ready(function() {
 });
 
 
-$('input[type="file"]').each(function() {
-    var $file = $(this), $form = $file.closest('.upload-form');
-    $file.ajaxSubmitInput({
-        url: '/incident/add/', //URL where you want to post the form
-        beforeSubmit: function($input) {
-            //manipulate the form before posting
-        },
-        onComplete: function($input, iframeContent, options) {
-            if (iframeContent) {
-                $input.closest('form')[0].reset();
-                if (!iframeContent) {
-                    return;
-                }
-                var iframeJSON;
-                try {
-                    iframeJSON = $.parseJSON(iframeContent);
-                    //use the response data
-                } catch(err) {
-                    console.log(err)
-                }
-            }
-        }
-    });
-});
+
+/*
+* Save the task checkbox state
+*/
+function tasklistChange(pk,type,value){
+    // send true or false back to the update and set the checkbox class
+    if ($('#' + type + '_' + pk ).hasClass( "glyphicon glyphicon-check") == true ) {
+        $.get('/activitydb/checklist_update_link/' + pk + '/' + type + '/0/', function(data){
+            $('#' + type + '_' + pk ).removeClass("glyphicon glyphicon-check").addClass("glyphicon glyphicon-unchecked");
+        });
+    }else{
+        $.get('/activitydb/checklist_update_link/' + pk + '/' + type + '/1/', function(data){
+            $('#' + type + '_' + pk ).removeClass("glyphicon glyphicon-unchecked").addClass("glyphicon glyphicon-check");
+        });
+    }
+
+}
+
 
 
 /*
@@ -70,7 +64,7 @@ function loadCollected(indicator,program){
     $('.ajaxLoader').show();
     $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
         $('#hidden-' + indicator).html(data);
-      });
+    });
     $('.ajaxLoader').hide();
 };
 
