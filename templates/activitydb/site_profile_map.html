@@ -163,6 +163,22 @@
 
      });
 
+    // Define an icon called cssIcon
+    var projectIcon = L.divIcon({
+      // Specify a class name we can refer to in CSS.
+      // Set marker width and height
+      html:'<div class="map-marker"></div>',
+      iconSize: [0,0]
+    });
+
+    var indicatorIcon = L.divIcon({
+      // Specify a class name we can refer to in CSS.
+      className: 'map-marker',
+      // Set marker width and height
+      html:'<div class="map-marker indicator"></div>',
+      iconSize: [0,0]
+    });
+
     {% for item in getSiteProfile %}
         L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Project Site<br><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
     {%   endfor %}
