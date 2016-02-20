@@ -888,21 +888,25 @@ class SiteProfileList(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
         #Filter SiteProfile list and map by activity or program
         if activity_id != 0:
-            getCommunity = SiteProfile.objects.all().filter(projectagreement__id=activity_id).distinct()
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=activity_id).distinct()
         elif program_id != 0:
-            getCommunity = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id)).distinct()
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id)).distinct()
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__program__id=program_id))
+
         else:
-            getCommunity = SiteProfile.objects.all().filter(country__in=countries).distinct()
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(collecteddata__program__country__in=countries)
+
 
         if request.method == "GET" and "search" in request.GET:
             """
              fields = ('name', 'office')
             """
-            getCommunity = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
+            getSiteProfile = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
 
-        return render(request, self.template_name, {'getCommunity':getCommunity,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+        return render(request, self.template_name, {'getSiteProfile':getSiteProfile,'getSiteProfileIndicator':getSiteProfileIndicator,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
 class SiteProfileReport(ListView):
