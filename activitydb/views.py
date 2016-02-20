@@ -890,7 +890,7 @@ class SiteProfileList(ListView):
         if activity_id != 0:
             getCommunity = SiteProfile.objects.all().filter(projectagreement__id=activity_id).distinct()
         elif program_id != 0:
-            getCommunity = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id)).distinct()
+            getCommunity = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id)).distinct()
         else:
             getCommunity = SiteProfile.objects.all().filter(country__in=countries).distinct()
 
