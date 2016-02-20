@@ -32,27 +32,54 @@
                     country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
                     country_long[{{forloop.counter}}] = "{{ item.longitude }}";
                 {% endfor %}
-                var cities = new L.LayerGroup();
+                var projects = new L.LayerGroup();
+                var indicators = new L.LayerGroup();
+
+                // Define an icon called cssIcon
+                var projectIcon = L.divIcon({
+                  // Specify a class name we can refer to in CSS.
+                  // Set marker width and height
+                  html:'<div class="map-marker"></div>',
+                  iconSize: [0,0]
+                });
+
+                var indicatorIcon = L.divIcon({
+                  // Specify a class name we can refer to in CSS.
+                  className: 'map-marker',
+                  // Set marker width and height
+                  html:'<div class="map-marker indicator"></div>',
+                  iconSize: [0,0]
+                });
+
+
                 {% for item in getSiteProfile %}
-                    L.marker([{{ item.latitude }}, {{ item.longitude }}]).addTo(cities).bindPopup("" + "<b>{{ item.country }}</b> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
+                    L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(projects).bindPopup("" + "<b>{{ item.country }}</b><br/>Project Site<br><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
                 {%   endfor %}
+
+                {% if getSiteProfileIndicator %}
+                    {% for item in getSiteProfileIndicator %}
+                        L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(indicators).bindPopup("" + "<b>{{ item.country }}</b><br/>Collected Indicator Data Site<br> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
+                    {%   endfor %}
+                {% endif %}
+
                 var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
                 '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-                mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ';
+                'Imagery &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+                mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
                 var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
                 streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
                 var map = L.map('map', {
                 center: [country_lat[1], country_long[1]],
                 zoom: 5,
-                layers: [grayscale, cities]
+                layers: [grayscale, projects, indicators]
                 });
                 var baseLayers = {
                 "Grayscale": grayscale,
                 "Streets": streets,
                 };
                 var overlays = {
-                "Project Sites": cities,
+                "Project Sites": projects,
+                "Collected Indicator Sites": indicators,
                 };
                 L.control.layers(baseLayers, overlays).addTo(map);
                </script>
@@ -176,32 +203,32 @@ var kpi_options = {
     onAnimationComplete : null,
 };
 var kpi_data = {
-    //labels : [{% for program in getQuantitativeDataSums_2 %} "{{ program.indicator__source }}", {% endfor %}],
-    labels : ["1.1.1","1.1.2","1.1.3","1.1.4","1.1.5","1.1.6","1.1.7"],
+    labels : [{% for program in getQuantitativeDataSums %} "{{ program.indicator__number }}", {% endfor %}],
+    //labels : ["1.1.1","1.1.2","1.1.3","1.1.4","1.1.5","1.1.6","1.1.7"],
     datasets : [
         {
             label: "KPI Targets",
-            fillColor : "rgba(155,210,230,.05)",
-            strokeColor : "rgb(115,180,190)",
-            pointColor : "#424647",
-            pointStrokeColor : "rgb(115,180,190)",
-            //data : [ {% for project in getProjects %} {{ project.mc_estimated_budget }},{% endfor %} ]
-            data : [65,59,90,41,56,55,40]
+            fillColor: "rgba(220,220,220,0.5)",
+            strokeColor: "rgba(220,220,220,0.8)",
+            highlightFill: "rgba(220,220,220,0.75)",
+            highlightStroke: "rgba(220,220,220,1)",
+            data: [{% for program in getQuantitativeDataSums %} "{{ program.targets }}", {% endfor %}],
+            //data : [65,59,90,41,56,55,40]
         },
         {
             label: "KPI Actuals",
-            fillColor : "rgba(235,145,145,.05)",
-            strokeColor : "rgb(180,100,100)",
-            pointColor : "#424647",
-            pointStrokeColor : "rgb(180,100,100)",
-            //data : [{% for project in getProjects %} {{ project.mc_estimated_budget }},{% endfor %}]
-            data : [28,48,40,19,96,27,100]
+            fillColor: "rgba(151,187,205,0.5)",
+            strokeColor: "rgba(151,187,205,0.8)",
+            highlightFill: "rgba(151,187,205,0.75)",
+            highlightStroke: "rgba(151,187,205,1)",
+            data: [{% for program in getQuantitativeDataSums %} "{{ program.actuals }}", {% endfor %}],
+            //data : [28,48,40,19,96,27,100]
         }
     ]
 }
 //retrieve kpi_canvas, pass the kpi_JSON into a Line_chart
 var ctx = document.getElementById("kpi").getContext("2d");
-var kpiChart = new Chart(ctx).Line(kpi_data, kpi_options);
+var kpiChart = new Chart(ctx).Bar(kpi_data, kpi_options);
 document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
 
 //render program_expenditure on bar_chart
@@ -213,26 +240,26 @@ document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
     };
     var expenditure_data = {
     //labels : [{% for program in getQuantitativeDataSums_2 %} "{{ program.indicator__source }}", {% endfor %}],
-    labels: ["1.1.1", "1.1.2", "1.1.3", "1.1.4", "1.1.5", "1.1.6", "1.1.7"],
+    labels: [{% for project in getProjects %} {{ project.agreement.activity_code }},{% endfor %}],
     datasets: [
-    {
-        label: "Budgeted",
-        fillColor: "rgba(220,220,220,0.5)",
-        strokeColor: "rgba(220,220,220,0.8)",
-        highlightFill: "rgba(220,220,220,0.75)",
-        highlightStroke: "rgba(220,220,220,1)",
-        //data : [{% for project in getProjects %} {{ project.mc_estimated_budget }},{% endfor %}]
-        data: [6500, 5900, 8000, 8100, 5600, 5500, 4000]
-    },
-    {
-        label: "Actuals",
-        fillColor: "rgba(151,187,205,0.5)",
-        strokeColor: "rgba(151,187,205,0.8)",
-        highlightFill: "rgba(151,187,205,0.75)",
-        highlightStroke: "rgba(151,187,205,1)",
-        //data : [{% for project in getProjects %} {{ project.mc_estimated_budget }},{% endfor %}]
-        data: [2800, 4800, 4000, 1900, 8600, 2700, 9000]
-    }
+        {
+            label: "Budgeted",
+            fillColor: "rgba(220,220,220,0.5)",
+            strokeColor: "rgba(220,220,220,0.8)",
+            highlightFill: "rgba(220,220,220,0.75)",
+            highlightStroke: "rgba(220,220,220,1)",
+            data : [{% for project in getProjects %} {{ project.agreement.total_estimated_budget }},{% endfor %}]
+            //data: [6500, 5900, 8000, 8100, 5600, 5500, 4000]
+        },
+        {
+            label: "Actuals",
+            fillColor: "rgba(151,187,205,0.5)",
+            strokeColor: "rgba(151,187,205,0.8)",
+            highlightFill: "rgba(151,187,205,0.75)",
+            highlightStroke: "rgba(151,187,205,1)",
+            data : [{% for project in getProjects %} {{ project.actual_budget }},{% endfor %}]
+            //data: [2800, 4800, 4000, 1900, 8600, 2700, 9000]
+        }
     ]
 };
     //retrieve expenditure_canvas, pass the expenditure_JSON into a bar_chart
@@ -259,14 +286,5 @@ document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
     new Chart(ctx).Radar(survey_data);
 </script>
 
-<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-<script>
-    (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-    function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-    e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-    e.src='https://www.google-analytics.com/analytics.js';
-    r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-    ga('create','UA-XXXXX-X','auto');ga('send','pageview');
-</script>
 
 {% endblock content %}

@@ -112,11 +112,11 @@ $(function () {
 
         chart: {
             polar: true,
-            type: 'line'
+            type: 'bar'
         },
 
         title: {
-            text: 'Targets vs Actuals',
+            text: 'KPI - TvA',
             x: -80
         },
 
@@ -147,7 +147,12 @@ $(function () {
             y: 70,
             layout: 'vertical'
         },
-
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
         series: [{
             name: 'Targets',
             data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.targets }}, {% endfor %}  ],

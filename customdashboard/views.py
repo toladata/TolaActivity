@@ -1,7 +1,7 @@
 from django.views.generic.list import ListView
 
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, CustomDashboard, Program, SiteProfile,Country
+from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country
 from .models import ProjectStatus, Gallery
 from indicators.models import CollectedData
 
@@ -22,7 +22,11 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     program_id = id
 
     countries = getCountry(request.user)
-    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+
+    #transform to list if a submitted country
+    selected_countries_list = Country.objects.all().filter(program__id=program_id)
+
+    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False, indicator__key_performance_indicator=True).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getFilteredName=Program.objects.get(id=program_id)
     getProjectStatus = ProjectStatus.objects.all()
 
@@ -33,8 +37,8 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected', program__country__in=countries).count()
     getInProgressCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='in progress', program__country__in=countries).count()
 
-    getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id, projectagreement__sector__id=sector)
-
+    getSiteProfile = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id))
+    getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
 
 
     if (status) =='Approved':
@@ -56,7 +60,8 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
                                                                      'country': countries, 'getProjectStatus': getProjectStatus, 'getAwaitingApprovalCount':getAwaitingApprovalCount,
                                                                      'getFilteredName': getFilteredName,'getProjects': getProjects, 'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,
-                                                                     'getCustomDashboard': getCustomDashboard, 'getProjectsCount': getProjectsCount})
+                                                                     'getCustomDashboard': getCustomDashboard, 'getProjectsCount': getProjectsCount, 'selected_countries_list': selected_countries_list,
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator})
 
 
 
@@ -65,8 +70,9 @@ def PublicDashboard(request,id=0):
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getProgram = Program.objects.all().get(id=program_id)
-    getProjects = ProjectAgreement.objects.all().filter(program_id=program_id)
+    getProjects = ProjectComplete.objects.all().filter(program_id=program_id)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
+    getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
 
     getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id).count()
     getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='awaiting approval').count()
@@ -75,17 +81,18 @@ def PublicDashboard(request,id=0):
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
     #get all countires
-    countires = Country.objects.all()
+    countries = Country.objects.all().filter(program__id=program_id)
 
     return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
                                                                      'getSiteProfile':getSiteProfile,
-                                                                     'countries': countires,
+                                                                     'countries': countries,
                                                                      'awaiting':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
                                                                      'approved': getApprovedCount,
                                                                      'rejected': getRejectedCount,
                                                                      'in_progress': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
-                                                                     'getQuantitativeDataSums': getQuantitativeDataSums})
+                                                                     'getQuantitativeDataSums': getQuantitativeDataSums,
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator})
 
 
 def Gallery(request,id=0):

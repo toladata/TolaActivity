@@ -475,3 +475,38 @@ RESPONSIVE CODE
         page-break-after: avoid;
     }
 }
+
+/*General marker style*/
+.map-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50% 50% 50% 0;
+  background: rgb(232, 148, 36);
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -20px 0 0 -20px;
+}
+
+.map-marker.indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50% 50% 50% 0;
+  background: #00cae9;
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -20px 0 0 -20px;
+}
+
+.map-marker:after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  margin: 5px 0 0 5px;
+  background: #e6e6e6;
+  position: absolute;
+  border-radius: 50%;
+}
