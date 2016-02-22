@@ -58,8 +58,7 @@ def filter_json(request, service, **kwargs):
     """
     For populating service indicators in dropdown
     """
-    print request.GET
-    print kwargs
     final_dict = {
     'criteria': kwargs}
-    return HttpResponse(final_dict, content_type="application/json")
+    print final_dict
+    JsonResponse(final_dict, safe=False)

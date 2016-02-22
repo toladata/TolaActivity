@@ -487,6 +487,7 @@ RESPONSIVE CODE
   left: 50%;
   top: 50%;
   margin: -20px 0 0 -20px;
+  box-shadow: 3px 3px 1px #888888;
 }
 
 .map-marker.indicator {
@@ -499,6 +500,7 @@ RESPONSIVE CODE
   left: 50%;
   top: 50%;
   margin: -20px 0 0 -20px;
+  box-shadow: 3px 3px 1px #888888;
 }
 
 .map-marker:after {
