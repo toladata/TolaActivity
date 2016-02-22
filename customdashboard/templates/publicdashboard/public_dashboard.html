@@ -175,7 +175,7 @@ var kpi_options = {
     maintainAspectRatio: false,
     responsive: true,
     scaleOverlay : false,
-    scaleOverride : true,
+
     scaleSteps : 10,
     scaleStepWidth : 10,
     scaleStartValue : 0,
@@ -239,8 +239,7 @@ document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
         multiTooltipTemplate: "<%= value + ' USD' %>",
     };
     var expenditure_data = {
-    //labels : [{% for program in getQuantitativeDataSums_2 %} "{{ program.indicator__source }}", {% endfor %}],
-    labels: [{% for project in getProjects %} {{ project.agreement.activity_code }},{% endfor %}],
+    labels: [{% for project in getProjects %} {{ project.agreement.id }},{% endfor %}],
     datasets: [
         {
             label: "Budgeted",
