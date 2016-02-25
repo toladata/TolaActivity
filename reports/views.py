@@ -19,7 +19,6 @@ from django.db.models import Q
 from activitydb.mixins import AjaxableResponseMixin
 from django.http import HttpResponse, JsonResponse
 
-
 import json
 
 from tola.util import getCountry
@@ -45,7 +44,7 @@ class ReportData(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
         print(self.request.GET)
 
-        program = Program.objects.all().filter(**kwargs).values('id', 'gaitid', 'name','funding_status','cost_center','country','sector')
+        program = Program.objects.all().filter(**kwargs).values('gaitid', 'name','funding_status','cost_center','country','sector')
 
         program_serialized = json.dumps(list(program))
 

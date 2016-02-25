@@ -424,7 +424,7 @@ class CollectedDataList(ListView):
         if self.request.GET.get('export'):
             dataset = CollectedDataResource().export(getCollectedData)
             response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename=indicator_data.xls'
+            response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
             return response
 
         return render(request, self.template_name, {'getCollectedData': getCollectedData, 'getPrograms': getPrograms, 'getIndicators':getIndicators,'filter_program':filter_program,'filter_indicator': filter_indicator, 'collected_sum': collected_sum})
@@ -669,7 +669,7 @@ class IndicatorExport(View):
         queryset = Indicator.objects.filter(program=self.kwargs['program'])
         dataset = IndicatorResource().export(queryset)
         response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=indicator.xls'
+        response['Content-Disposition'] = 'attachment; filename=indicator.csv'
         return response
 
 

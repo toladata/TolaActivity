@@ -3,8 +3,6 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <!-- datatables library for HTML tables -->
-    <script type="text/javascript" src="{% static 'js/datatables.min.js' %}"></script>
 
     <div id="program_sectors_data_div" style="display: none;">{{ program_sectors|safe }}</div>
     <div id="program_sectors_drilldown_data_div" style="display: none;">{{ donors|safe }}</div>
@@ -30,7 +28,22 @@
                 <div class="panel-heading"> Program </div>
                 <div class="panel-body" style="padding:15px;">
                     <div id="program_chart"></div>
-                    <div id="program_table_div" class="table-responsive"> <table class="display"></table></div>
+                    <div id="program_table_div">
+                        <table id="program_table">
+                            <thead>
+                                <th data-dynatable-column="sector">Sector</th>
+                                <th data-dynatable-column="name">Name</th>
+                                <th data-dynatable-column="country">Country</th>
+                                <th data-dynatable-column="cost_center">Cost Center</th>
+                                <th data-dynatable-column="gaitid">Gaitid</th>
+                                <th data-dynatable-column="funding_status">Funding Status</th>
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -51,9 +64,12 @@
 
             //Show the program table
             function show_program_table(drillupdown_data) {
-                $("#program_table_div").empty();
-                $("#program_table_div").append(drillupdown_data);
-                $('.display').DataTable(drillupdown_data);
+               $('#program_table').dynatable({
+                  dataset: {
+                    //defaultColumnIdStyle: 'underscore',
+                    records: drillupdown_data,
+                  }
+                });
             }
 
             // Upon search form submission, format filter values so Django understands it.
@@ -79,8 +95,8 @@
 
                     var criteria = data['criteria'];
                     console.log(data['criteria']);
-                    console.log(data);
-                    show_program_table(data);
+                    console.log(data['program']);
+                    show_program_table(JSON.stringify(data['program']));
                     var formatted_criteria = format_criteria(criteria);
 
                 $("#criteria").html(formatted_criteria);
