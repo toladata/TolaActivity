@@ -3,6 +3,201 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
+    <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+    <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
+    <script type="text/javascript">
+
+    $(document).ready(function() {
+        $("#id_country").select2({ placeholder: "Country", allowClear: true });
+        $("#id_sector").select2({placeholder: "Sector", allowClear: true,});
+        $("#id_program").select2({placeholder: "Program", allowClear: true,});
+        $('.dateinput').datepicker({  dateFormat: 'yy-mm-dd', });
+
+        var criteria_raw =  $("#criteria_raw_div").html();
+        var criteria = $.parseJSON(criteria_raw);
+        var formatted_criteria = format_criteria(criteria);
+        $("#criteria").html(formatted_criteria);
+        $("#criteria-panel").show();
+
+
+            //Show the program table
+            function show_program_table(drillupdown_data) {
+                myRecords = JSON.parse(drillupdown_data);
+                //First destroy any old version of the table to refresh anew
+                if ( $.fn.dataTable.isDataTable( '#program_table' ) ) {
+                    table.destroy();
+                };
+                table = $('#program_table').DataTable( {
+                    retrieve: true,
+                    data: myRecords,
+                    columns: [
+                        { title: "Sector" ,data: "sector__sector"},
+                        { title: "Name" ,data: "name"},
+                        { title: "Country" ,data: "country__country"},
+                        { title: "Cost Center" ,data: "cost_center"},
+                        { title: "Gaitid" ,data: "gaitid"},
+                        { title: "Funding Status" ,data: "funding_status"}
+                        ]
+                } );
+
+            }
+
+            function show_program_charts(project_count,approval_count,approved_count,inprogress_count,rejected_count) {
+                //render project_status in a doughnut chart
+                var status_options = {
+                    // single tooltip
+                    tooltipTemplate: "<%=label + ' Projects' %>",
+                };
+                var status_data = [
+                    {
+                    value: approved_count,
+                    color:"#637b85",
+                    label: "Approved " + approved_count
+                    },
+                    {
+                    value : approval_count,
+                    color : "#2c9c69",
+                    label: "Waiting " + approval_count
+                    },
+                    {
+                    value : rejected_count,
+                    color : "#dbba34",
+                    label: "Rejected " + rejected_count
+                    },
+                    {
+                    value : inprogress_count,
+                    color : "#c62f29",
+                    label: "In Progress " + inprogress_count
+                    }
+                ];
+                var ctx = document.getElementById("status").getContext("2d");
+                var statusChart = new Chart(ctx).Doughnut(status_data,status_options);
+                document.getElementById('status-legend').innerHTML = statusChart.generateLegend();
+
+                $("#status").click(
+                    function(evt){
+                        var activePoints = statusChart.getSegmentsAtEvent(evt);
+                        var url = "/reports/report/" + activePoints[0].label + "&value=" + activePoints[0].value;
+                        alert(url);
+                    }
+                );
+            };
+
+            function show_indicator_charts(indicator_count,evidence_count) {
+                //render indicator data in a doughnut chart
+                var indicator_options = {
+                    // single tooltip
+                    tooltipTemplate: "<%=label + ' Indicator' %>",
+                };
+
+                var indicator_data = [
+
+                    {
+                    value: indicator_count,
+                    color:"#637b85",
+                    label: "Indicators " + indicator_count
+                    },
+                    {
+                    value: evidence_count,
+                    color:"#2c9c69",
+                    label: "Evidence " + evidence_count
+                    },
+                ];
+                var ctx = document.getElementById("indicator").getContext("2d");
+                var indicatorChart = new Chart(ctx).Doughnut(indicator_data,indicator_options);
+                document.getElementById('indicator-legend').innerHTML = indicatorChart.generateLegend();
+
+                $("#indicator").click(
+                    function(evt){
+                        var activePoints = indicatorChart.getSegmentsAtEvent(evt);
+                        var url = "/reports/report/" + activePoints[0].label + "&value=" + activePoints[0].value;
+                        alert(url);
+                    }
+                );
+            };
+
+
+            // Upon search form submission, format filter values so Django understands it.
+            $('#filter_form').on('submit', function(e) {
+                e.preventDefault();
+                var filters = {};
+                $('#filter_form *').filter(':input').each(function() {
+                    if (this.name != 'submit' && this.name != 'reset' && this.value && this.name != '') {
+                        var values_array = new Array($(this).val());
+                        filters[this.name] = values_array.join(",");
+                    }
+                });
+                $.getJSON("/reports/report_data/", filters, function(data) {
+
+                    var criteria = data['criteria'];
+
+                    //console.log(data['program']);
+                    show_program_table(data['program']);
+                    show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count']);
+                    show_indicator_charts(data['indicator_count'], data['evidence_count']);
+                    var formatted_criteria = format_criteria(criteria);
+
+                $("#criteria").html(formatted_criteria);
+                $("#criteria-panel").show();
+
+            });
+        });
+
+        // Format the criteria from the search form in a more readable fashion.
+        function format_criteria(criteria) {
+            var formatted_criteria = '';
+            $.each(criteria, function(key, value) {
+                console.log(key);
+                console.log(value);
+                key = key.replace('__in', '=');
+                key = key.replace('__gte', '>=');
+                key = key.replace('__gt', '>');
+                key = key.replace('__lt', '<');
+                key = key.replace('_id', '');
+                key = key.split("__");
+                key = key[key.length - 1];
+                switch (key) {
+                    case 'country=':
+                        key = "Country=";
+                        var values = $( "#id_country option:selected" ).map(function() {
+                            return $(this).text();
+                        }).get().join(', ');
+                        value = values;
+                        break;
+                    case 'program=':
+                        key = "Program=";
+                        var values = $( "#id_program option:selected" ).map(function() {
+                            return $(this).text();
+                        }).get().join(', ');
+                        value = values;
+                        break;
+                    case 'sector':
+                        key =  "Sector=";
+                        value = $("#id_sector option:selected").text();
+                        break;
+                    case 'submission_date>':
+                        key = "Start Date > ";
+                        break;
+                    case 'submission_date<':
+                        key = "End Date < ";
+                        break;
+                    default:
+                        break;
+                }
+                console.log(key);
+                if (key == 'Submission Date > ') {
+                    formatted_criteria += '<span id="submission_date_span" class="label label-default" style="margin-left:2px; white-space:normal; line-height:2;" data-toggle="tooltip" data-placement="bottom" title="Submission date defaults to a rolling three years back from today date">' + key + value + '</span>';
+                } else {
+                    formatted_criteria += '<span class="label label-default" style="margin-left:2px; white-space:normal; line-height:2;">' + key + value + '</span>';
+                }
+            });
+            return formatted_criteria;
+
+
+        }
+    });
+</script>
 
     <div id="program_sectors_data_div" style="display: none;">{{ program_sectors|safe }}</div>
     <div id="program_sectors_drilldown_data_div" style="display: none;">{{ donors|safe }}</div>
@@ -24,145 +219,39 @@
                 <div class="panel-heading"> Filter Criteria </div>
                 <div class="panel-body" id="criteria" style="padding:5px;"> No criteria specified </div>
             </div>
-            <div id='criteria-panel' class="panel panel-primary">
+            <div id='data-panel' class="panel panel-primary">
                 <div class="panel-heading"> Program </div>
                 <div class="panel-body" style="padding:15px;">
-                    <div id="program_chart"></div>
+                    <div id="program_chart">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-7">
+                                        <canvas id="status" width="200" height="200"></canvas>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div id="status-legend" class="chart-legend"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <canvas id="indicator" width="200" height="200"></canvas>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div id="indicator-legend" class="chart-legend"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div id="program_table_div">
-                        <table id="program_table">
-                            <thead>
-                                <th data-dynatable-column="sector">Sector</th>
-                                <th data-dynatable-column="name">Name</th>
-                                <th data-dynatable-column="country">Country</th>
-                                <th data-dynatable-column="cost_center">Cost Center</th>
-                                <th data-dynatable-column="gaitid">Gaitid</th>
-                                <th data-dynatable-column="funding_status">Funding Status</th>
-                            </thead>
-
-                            <tbody>
-                            </tbody>
-
+                        <table class="table table-bordered" id="program_table">
                         </table>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-
-
-<script type="text/javascript">
-
-    $(document).ready(function() {
-
-        var criteria_raw =  $("#criteria_raw_div").html();
-        var criteria = $.parseJSON(criteria_raw);
-        var formatted_criteria = format_criteria(criteria);
-        $("#criteria").html(formatted_criteria);
-        $("#criteria-panel").show();
-
-
-            //Show the program table
-            function show_program_table(drillupdown_data) {
-               $('#program_table').dynatable({
-                  dataset: {
-                    //defaultColumnIdStyle: 'underscore',
-                    records: drillupdown_data,
-                  }
-                });
-            }
-
-            // Upon search form submission, format filter values so Django understands it.
-            $('#filter_form').on('submit', function(e) {
-                e.preventDefault();
-                var filters = {};
-                $('#filter_form *').filter(':input').each(function() {
-                    if (this.name != 'submit' && this.name != 'reset' && this.value && this.name != '') {
-                        var values_array = new Array($(this).val());
-                        filters[this.name] = values_array.join(",");
-                    }
-                });
-
-                $.getJSON("/reports/report_data/", filters, function(data) {
-                    if (Object.keys(data['program']).length > 0) {
-                        $("#program_chart_div").append(JSON.stringify(data['program']));
-                        $("#program_data_div").append(JSON.stringify(data['program']));
-                    } else {
-                        $("#program_chart").empty();
-                        $("#program_data_div").empty();
-                        createAlert("warning dynamic-alert", "There is no data available for this report'");
-                    }
-
-                    var criteria = data['criteria'];
-                    console.log(data['criteria']);
-                    console.log(data['program']);
-                    show_program_table(JSON.stringify(data['program']));
-                    var formatted_criteria = format_criteria(criteria);
-
-                $("#criteria").html(formatted_criteria);
-                $("#criteria-panel").show();
-
-            });
-        });
-
-        // Format the criteria from the search form in a more readable fashion.
-        function format_criteria(criteria) {
-            var formatted_criteria = '';
-            console.log("hello");
-            console.log(criteria);
-            $.each(criteria, function(key, value) {
-                console.log(key);
-                console.log(value);
-                key = key.replace('__in', '=');
-                key = key.replace('__gte', '>=');
-                key = key.replace('__gt', '>');
-                key = key.replace('__lt', '<');
-                key = key.replace('_id', '');
-                key = key.split("__");
-                key = key[key.length - 1];
-                switch (key) {
-                    case 'country=':
-                        key = "Country=";
-                        var values = $( "#id_country option:selected" ).map(function() {
-                            return $(this).text();
-                        }).get().join(', ');
-                        value = values;
-                        //value = $( "#id_country option:selected" ).text();
-                        break;
-                    case 'program=':
-                        key = "Program=";
-                        var values = $( "#id_program option:selected" ).map(function() {
-                            return $(this).text();
-                        }).get().join(', ');
-                        value = values;
-                        break;
-                    case 'sector':
-                        key =  "Sector=";
-                        value = $("#id_sector option:selected").text();
-                        break;
-                    case 'submission_date>':
-                        key = "Submission Date > ";
-                        break;
-                    case 'submission_date<':
-                        key = "Submission Date < ";
-                        break;
-                    default:
-                        break;
-                }
-                console.log(key);
-                if (key == 'Submission Date > ') {
-                    formatted_criteria += '<span id="submission_date_span" class="label label-default" style="margin-left:2px; white-space:normal; line-height:2;" data-toggle="tooltip" data-placement="bottom" title="Submission date defaults to a rolling three years back from today date">' + key + value + '</span>';
-                } else {
-                    formatted_criteria += '<span class="label label-default" style="margin-left:2px; white-space:normal; line-height:2;">' + key + value + '</span>';
-                }
-            });
-            return formatted_criteria;
-
-
-        }
-    });
-
-
-
-</script>
 {% endblock content %}

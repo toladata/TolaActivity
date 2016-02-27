@@ -37,13 +37,12 @@ class FilterForm(forms.Form):
         self.helper.form_id = "filter_form"
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Field('region', css_class="input-sm"),
             Field('country', css_class="input-sm"),
             Field('program', css_class="input-sm"),
             Field('sector', css_class='input-sm'),
         )
         self.helper.form_method = 'get'
-        self.helper.form_action = '/reports/filter/'
+        self.helper.form_action = '/reports/report/'
         self.helper.add_input(Submit('submit', 'Submit', css_class='btn-sm'))
         self.helper.add_input(Reset('reset', 'Reset', css_id='id_search_form_reset_btn', css_class='btn-warning btn-sm'))
         super(FilterForm, self).__init__(*args, **kwargs)

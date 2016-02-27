@@ -9,10 +9,10 @@
  * Date: Tue Jan 02 2014
  */
 th a {
-  color: #fff;
+  color: #000000;
 }
 th a:hover {
-  color: #fff;
+  color: #000000;
   text-decoration: underline;
 }
 

@@ -9,4 +9,5 @@ urlpatterns = patterns('',
                        #display reports
                        url(r'^report/$', ReportHome.as_view(), name='report_home'),
                        url(r'^report_data/', ReportData.as_view(), name='report_data'),
+                       url(r'^report_data/', ReportData.as_view(), name='report_data'),
                        )

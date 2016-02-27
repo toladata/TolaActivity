@@ -173,7 +173,7 @@ class Program(models.Model):
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
     description = models.TextField("Program Description", max_length=765, null=True, blank=True)
-    sector = models.ForeignKey(Sector, null=True,blank=True)
+    sector = models.ManyToManyField(Sector, blank=True)
     dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)

@@ -12,13 +12,19 @@
 
         <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png">
 
+        <!-- Datatables css for HTML tables -->
+        <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet" type="text/css" />
+
         <!-- Bootstrap -->
         <link href="{{ STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 
         <!-- JQuery UI CSS -->
         <link href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.10.4.min.css" rel="stylesheet" type="text/css" />
 
-        <!-- Custom Footer CSS -->
+        <!--- Dynatable --->
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
+
+        <!-- Custom CSS -->
         <link href="{{ STATIC_URL }}css/app.css" rel="stylesheet" type="text/css">
 
         <!--- Django Tables2 css -->
@@ -26,9 +32,6 @@
 
         <!--- Hosted Leaflet CSS --->
         <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
-
-        <!-- Datatables css for HTML tables -->
-        <link href="{% static 'css/jquery.dynatable.css' %}" rel="stylesheet" type="text/css" />
 
         {% block extra_js_in_header %}
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -213,7 +216,7 @@
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.4.min.js"></script>
 
         <!-- data tables jquery javascript library -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dynatable.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/datatables.min.js"></script>
 
         <!-- Bootstrap compiled javascript plugins -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
