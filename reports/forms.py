@@ -26,8 +26,9 @@ class FilterForm(forms.Form):
     )
     sector = forms.ModelChoiceField(
         queryset = Sector.objects.all(),
-        empty_label = '',
         required = False,
+        empty_label = None,
+        widget = forms.SelectMultiple(),
     )
 
     def __init__(self, *args, **kwargs):
@@ -37,7 +38,8 @@ class FilterForm(forms.Form):
         self.helper.form_id = "filter_form"
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Field('country', css_class="input-sm"),
+            # set custom id for country becasue of javascript reuse of default id
+            Field('country', css_class="input-sm", id="countries"),
             Field('program', css_class="input-sm"),
             Field('sector', css_class='input-sm'),
         )

@@ -224,3 +224,8 @@ body > .container {
   border-radius: 5px;
 }
 
+.chart-title {
+  display: block;
+  text-align: center;
+}
+

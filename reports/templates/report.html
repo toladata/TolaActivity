@@ -9,17 +9,10 @@
     <script type="text/javascript">
 
     $(document).ready(function() {
-        $("#id_country").select2({ placeholder: "Country", allowClear: true });
+        $("#countries").select2({ placeholder: "Country", allowClear: true });
         $("#id_sector").select2({placeholder: "Sector", allowClear: true,});
         $("#id_program").select2({placeholder: "Program", allowClear: true,});
         $('.dateinput').datepicker({  dateFormat: 'yy-mm-dd', });
-
-        var criteria_raw =  $("#criteria_raw_div").html();
-        var criteria = $.parseJSON(criteria_raw);
-        var formatted_criteria = format_criteria(criteria);
-        $("#criteria").html(formatted_criteria);
-        $("#criteria-panel").show();
-
 
             //Show the program table
             function show_program_table(drillupdown_data) {
@@ -44,6 +37,7 @@
             }
 
             function show_program_charts(project_count,approval_count,approved_count,inprogress_count,rejected_count) {
+                document.getElementById('doughnut1-header').innerHTML = "Project Status";
                 //render project_status in a doughnut chart
                 var status_options = {
                     // single tooltip
@@ -71,11 +65,11 @@
                     label: "In Progress " + inprogress_count
                     }
                 ];
-                var ctx = document.getElementById("status").getContext("2d");
+                var ctx = document.getElementById("doughnut1").getContext("2d");
                 var statusChart = new Chart(ctx).Doughnut(status_data,status_options);
-                document.getElementById('status-legend').innerHTML = statusChart.generateLegend();
+                document.getElementById('doughnut1-legend').innerHTML = statusChart.generateLegend();
 
-                $("#status").click(
+                $("#doughnut1").click(
                     function(evt){
                         var activePoints = statusChart.getSegmentsAtEvent(evt);
                         var url = "/reports/report/" + activePoints[0].label + "&value=" + activePoints[0].value;
@@ -85,18 +79,22 @@
             };
 
             function show_indicator_charts(indicator_count,evidence_count) {
+                document.getElementById('doughnut2-header').innerHTML = "Indicator Chart";
                 //render indicator data in a doughnut chart
                 var indicator_options = {
                     // single tooltip
                     tooltipTemplate: "<%=label + ' Indicator' %>",
                 };
 
+                //adjust indicator count
+                adjusted_indicator_count = indicator_count - evidence_count
+
                 var indicator_data = [
 
                     {
-                    value: indicator_count,
+                    value: adjusted_indicator_count,
                     color:"#637b85",
-                    label: "Indicators " + indicator_count
+                    label: "Indicators " + adjusted_indicator_count
                     },
                     {
                     value: evidence_count,
@@ -104,11 +102,11 @@
                     label: "Evidence " + evidence_count
                     },
                 ];
-                var ctx = document.getElementById("indicator").getContext("2d");
+                var ctx = document.getElementById("doughnut2").getContext("2d");
                 var indicatorChart = new Chart(ctx).Doughnut(indicator_data,indicator_options);
-                document.getElementById('indicator-legend').innerHTML = indicatorChart.generateLegend();
+                document.getElementById('doughnut2-legend').innerHTML = indicatorChart.generateLegend();
 
-                $("#indicator").click(
+                $("#doughnut2").click(
                     function(evt){
                         var activePoints = indicatorChart.getSegmentsAtEvent(evt);
                         var url = "/reports/report/" + activePoints[0].label + "&value=" + activePoints[0].value;
@@ -120,6 +118,13 @@
 
             // Upon search form submission, format filter values so Django understands it.
             $('#filter_form').on('submit', function(e) {
+                //show panels for data after submit
+                $("#welcome-panel").hide();
+                $('#data-panel').removeClass('hidden');
+                $("#data-panel").show();
+                $('#criteria-panel').removeClass('hidden');
+                $("#criteria-panel").show();
+
                 e.preventDefault();
                 var filters = {};
                 $('#filter_form *').filter(':input').each(function() {
@@ -128,6 +133,7 @@
                         filters[this.name] = values_array.join(",");
                     }
                 });
+
                 $.getJSON("/reports/report_data/", filters, function(data) {
 
                     var criteria = data['criteria'];
@@ -144,69 +150,11 @@
             });
         });
 
-        // Format the criteria from the search form in a more readable fashion.
-        function format_criteria(criteria) {
-            var formatted_criteria = '';
-            $.each(criteria, function(key, value) {
-                console.log(key);
-                console.log(value);
-                key = key.replace('__in', '=');
-                key = key.replace('__gte', '>=');
-                key = key.replace('__gt', '>');
-                key = key.replace('__lt', '<');
-                key = key.replace('_id', '');
-                key = key.split("__");
-                key = key[key.length - 1];
-                switch (key) {
-                    case 'country=':
-                        key = "Country=";
-                        var values = $( "#id_country option:selected" ).map(function() {
-                            return $(this).text();
-                        }).get().join(', ');
-                        value = values;
-                        break;
-                    case 'program=':
-                        key = "Program=";
-                        var values = $( "#id_program option:selected" ).map(function() {
-                            return $(this).text();
-                        }).get().join(', ');
-                        value = values;
-                        break;
-                    case 'sector':
-                        key =  "Sector=";
-                        value = $("#id_sector option:selected").text();
-                        break;
-                    case 'submission_date>':
-                        key = "Start Date > ";
-                        break;
-                    case 'submission_date<':
-                        key = "End Date < ";
-                        break;
-                    default:
-                        break;
-                }
-                console.log(key);
-                if (key == 'Submission Date > ') {
-                    formatted_criteria += '<span id="submission_date_span" class="label label-default" style="margin-left:2px; white-space:normal; line-height:2;" data-toggle="tooltip" data-placement="bottom" title="Submission date defaults to a rolling three years back from today date">' + key + value + '</span>';
-                } else {
-                    formatted_criteria += '<span class="label label-default" style="margin-left:2px; white-space:normal; line-height:2;">' + key + value + '</span>';
-                }
-            });
-            return formatted_criteria;
-
-
-        }
     });
 </script>
 
-    <div id="program_sectors_data_div" style="display: none;">{{ program_sectors|safe }}</div>
-    <div id="program_sectors_drilldown_data_div" style="display: none;">{{ donors|safe }}</div>
-    <div id="program_chart_data_div" style="display: none;">{{ regions|safe }}</div>
-    <div id="program_chart_drilldown_data_div" style="display: none;">{{ regions_drilldown|safe }}</div>
-    <div id = "criteria_raw_div" style="display:none;">{{ criteria|safe }}</div>
-
     <div class="row">
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             <div class="panel panel-primary">
                 <div class="panel-heading"><span class="glyphicon glyphicon-filter"> </span> Filter options </div>
                 <div class="panel-body">
@@ -214,33 +162,35 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-10">
-            <div id='criteria-panel' class="panel panel-success" style="display: none;">
-                <div class="panel-heading"> Filter Criteria </div>
-                <div class="panel-body" id="criteria" style="padding:5px;"> No criteria specified </div>
+        <div class="col-sm-9">
+            <div id='welcome-panel' class="panel panel-success">
+                <div class="panel-heading"> Program Filter Reports</div>
+                <div class="panel-body" id="welcome" style="padding:5px;"> Filter your search in the panel on the left to see results.</div>
             </div>
-            <div id='data-panel' class="panel panel-primary">
-                <div class="panel-heading"> Program </div>
+            <div id='data-panel' class="panel panel-primary" style="display: none;">
+                <div class="panel-heading"></div>
                 <div class="panel-body" style="padding:15px;">
                     <div id="program_chart">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="row">
+                                    <h4 class="chart-title" id="doughnut1-header"></h4>
                                     <div class="col-md-7">
-                                        <canvas id="status" width="200" height="200"></canvas>
+                                        <canvas id="doughnut1" width="200" height="200"></canvas>
                                     </div>
                                     <div class="col-md-3">
-                                        <div id="status-legend" class="chart-legend"></div>
+                                        <div id="doughnut1-legend" class="chart-legend"></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="row">
-                                    <div class="col-md-8">
-                                        <canvas id="indicator" width="200" height="200"></canvas>
+                                    <h4 class="chart-title" id="doughnut2-header"></h4>
+                                    <div class="col-md-7">
+                                        <canvas id="doughnut2" width="200" height="200"></canvas>
                                     </div>
-                                    <div class="col-md-2">
-                                        <div id="indicator-legend" class="chart-legend"></div>
+                                    <div class="col-md-3">
+                                        <div id="doughnut2-legend" class="chart-legend"></div>
                                     </div>
                                 </div>
                             </div>

@@ -36,17 +36,17 @@ def make_filter(my_request):
     query_attrs['indicator'] = {}
     for param, val in my_request.iteritems():
         if param == 'program':
-            query_attrs['program']['id__in'] = val
-            query_attrs['project']['program__id__in'] = val
-            query_attrs['indicator']['program__id__in'] = val
+            query_attrs['program']['id__in'] = val.split(',')
+            query_attrs['project']['program__id__in'] = val.split(',')
+            query_attrs['indicator']['program__id__in'] = val.split(',')
         elif param == 'sector':
-            query_attrs['program']['sector__in'] = val
-            query_attrs['project']['sector__in'] = val
-            query_attrs['indicator']['sector__in'] = val
+            query_attrs['program']['sector__in'] = val.split(',')
+            query_attrs['project']['sector__in'] = val.split(',')
+            query_attrs['indicator']['sector__in'] = val.split(',')
         elif param == 'country':
-            query_attrs['program']['country__in'] = val
-            query_attrs['project']['program__country__in'] = val
-            query_attrs['indicator']['program__country__in'] = val
+            query_attrs['program']['country__id__in'] = val.split(',')
+            query_attrs['project']['program__country__in'] = val.split(',')
+            query_attrs['indicator']['program__country__in'] = val.split(',')
         else:
             query_attrs['program'][param] = val
             query_attrs['project'][param] = val
@@ -81,7 +81,7 @@ class ReportData(View, AjaxableResponseMixin):
         project_filter = filter['project']
         indicator_filter = filter['indicator']
 
-        print program_filter
+        #print program_filter
 
         program = Program.objects.all().filter(**program_filter).values('gaitid', 'name','funding_status','cost_center','country__country','sector__sector')
         approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
@@ -90,7 +90,12 @@ class ReportData(View, AjaxableResponseMixin):
         inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(program__funding_status="Funded") & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
         indicator_count = Indicator.objects.all().filter(**indicator_filter).count()
-        indicator_evidence_count = CollectedData.objects.all().filter(**indicator_filter).count()
+        indicator_evidence_count = Indicator.objects.all().filter(**indicator_filter).annotate(count=Count('collecteddata'))
+
+        if indicator_evidence_count:
+            evidence_count = indicator_evidence_count[0].count
+        else:
+            evidence_count = 0
 
         program_serialized = json.dumps(list(program))
 
@@ -101,7 +106,59 @@ class ReportData(View, AjaxableResponseMixin):
             'rejected_count': rejected_count,
             'inprogress_count': inprogress_count,
             'indicator_count': indicator_count,
-            'evidence_count': indicator_evidence_count
+            'evidence_count': evidence_count
+        }
+
+        return JsonResponse(final_dict, safe=False)
+
+
+class ProjectReportData(View, AjaxableResponseMixin):
+    """
+    Project based report view
+    """
+    def get(self, request, *args, **kwargs):
+        filter = make_filter(self.request.GET)
+        project_filter = filter['project']
+
+        #print project_filter
+
+        project = ProjectAgreement.objects.all().filter(**project_filter).values()
+        approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
+        approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
+        rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
+        inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(program__funding_status="Funded") & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
+
+        project_serialized = json.dumps(list(project))
+
+        final_dict = {
+            'criteria': project_filter, 'project': project_serialized,
+            'approval_count': approval_count,
+            'approved_count': approved_count,
+            'rejected_count': rejected_count,
+            'inprogress_count': inprogress_count,
+            'indicator_count': indicator_count,
+            'evidence_count': evidence_count
+        }
+
+        return JsonResponse(final_dict, safe=False)
+
+
+class IndicatorReportData(View, AjaxableResponseMixin):
+    """
+    Indicator based report view
+    """
+    def get(self, request, *args, **kwargs):
+        filter = make_filter(self.request.GET)
+        indicator_filter = filter['indicator']
+
+        #print indicator_filter
+
+        indicator = Indicator.objects.all().filter(**indicator_filter).values()
+
+        indicator_serialized = json.dumps(list(indicator))
+
+        final_dict = {
+            'criteria': indicator_filter, 'indicator': indicator_serialized,
         }
 
         return JsonResponse(final_dict, safe=False)
