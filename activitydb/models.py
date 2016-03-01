@@ -734,7 +734,7 @@ class ProjectAgreement(models.Model):
     dashboard_name = models.ForeignKey(CustomDashboard, blank=True, null=True)
     project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
     account_code = models.CharField("Account Code", help_text='', max_length=255, blank=True, null=True)
-    lin_code = models.CharField("LIN Sub Code", help_text='', max_length=255, blank=True, null=True)
+    lin_code = models.CharField("LIN Code", help_text='', max_length=255, blank=True, null=True)
     staff_responsible = models.CharField("Staff Responsible", max_length=255, blank=True, null=True)
     partners = models.BooleanField("Are there partners involved?", default=0)
     name_of_partners = models.CharField("Name of Partners", max_length=255, blank=True, null=True)

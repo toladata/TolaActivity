@@ -70,10 +70,20 @@ class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Indicator
 
+
+class NoLinkIndicatorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ['program','name','levels','strategic_objectives','objectives','key_performance_indicator']
+        model = Indicator
+        depth = 1
+
+
 class ReportingFrequencySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = ReportingFrequency
+
 
 class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
 

@@ -18,8 +18,10 @@ from django.db.models import Sum, Count
 from django.db.models import Q
 from activitydb.mixins import AjaxableResponseMixin
 from django.http import HttpResponse, JsonResponse
+from feed.serializers import NoLinkIndicatorSerializer
 
 import json
+import simplejson
 
 from tola.util import getCountry
 
@@ -76,12 +78,13 @@ class ReportData(View, AjaxableResponseMixin):
     Main report view
     """
     def get(self, request, *args, **kwargs):
+        print self.request.GET
         filter = make_filter(self.request.GET)
         program_filter = filter['program']
         project_filter = filter['project']
         indicator_filter = filter['indicator']
 
-        #print program_filter
+        print program_filter
 
         program = Program.objects.all().filter(**program_filter).values('gaitid', 'name','funding_status','cost_center','country__country','sector__sector')
         approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
@@ -119,16 +122,24 @@ class ProjectReportData(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
         filter = make_filter(self.request.GET)
         project_filter = filter['project']
+        indicator_filter = filter['indicator']
 
         #print project_filter
 
-        project = ProjectAgreement.objects.all().filter(**project_filter).values()
+        project = ProjectAgreement.objects.all().filter(**project_filter).values('program__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','approval')
         approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
         approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
         rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
         inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(program__funding_status="Funded") & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
+        indicator_count = Indicator.objects.all().filter(**indicator_filter).count()
+        indicator_evidence_count = Indicator.objects.all().filter(**indicator_filter).annotate(my_count=Count('collecteddata'))
 
-        project_serialized = json.dumps(list(project))
+        if indicator_evidence_count:
+            evidence_count = indicator_evidence_count[0].my_count
+        else:
+            evidence_count = 0
+
+        project_serialized = simplejson.dumps(list(project))
 
         final_dict = {
             'criteria': project_filter, 'project': project_serialized,
@@ -147,18 +158,29 @@ class IndicatorReportData(View, AjaxableResponseMixin):
     """
     Indicator based report view
     """
+
     def get(self, request, *args, **kwargs):
         filter = make_filter(self.request.GET)
         indicator_filter = filter['indicator']
 
         #print indicator_filter
+        indicator = Indicator.objects.all().filter(**indicator_filter).values('program__name','program__id','name','indicator_type', 'sector__sector','strategic_objectives','level','lop_target','external_service_record','key_performance_indicator')
+        indicator_count = Indicator.objects.all().filter(**indicator_filter).count()
+        indicator_evidence_count = Indicator.objects.all().filter(**indicator_filter).annotate(my_count=Count('collecteddata'))
 
-        indicator = Indicator.objects.all().filter(**indicator_filter).values()
+        if indicator_evidence_count:
+            evidence_count = indicator_evidence_count[0].my_count
+        else:
+            evidence_count = 0
 
         indicator_serialized = json.dumps(list(indicator))
 
+        print indicator_serialized
+
         final_dict = {
             'criteria': indicator_filter, 'indicator': indicator_serialized,
+            'indicator_count': indicator_count,
+            'evidence_count': evidence_count
         }
 
         return JsonResponse(final_dict, safe=False)

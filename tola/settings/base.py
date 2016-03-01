@@ -215,6 +215,7 @@ THIRD_PARTY_APPS = (
     'django_wysiwyg',
     'ckeditor',
     'ckeditor_uploader',
+    'simplejson',
 )
 
 # Apps specific for this project go here.
