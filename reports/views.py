@@ -61,7 +61,7 @@ class ReportHome(TemplateView):
     """
     List of available reports
     """
-    template_name='report.html'
+    template_name='reports/report.html'
 
     def get_context_data(self, **kwargs):
         context = super(ReportHome, self).get_context_data(**kwargs)
