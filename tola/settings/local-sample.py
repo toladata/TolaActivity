@@ -91,4 +91,4 @@ INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
 ######## If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = False
 OFFLINE_MODE = True
-
+NON_LDAP = True

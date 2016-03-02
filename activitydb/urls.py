@@ -94,6 +94,7 @@ urlpatterns = patterns('',
                        url(r'^budget_update/(?P<pk>\w+)/$', BudgetUpdate.as_view(), name='budget_update'),
                        url(r'^budget_delete/(?P<pk>\w+)/$', BudgetDelete.as_view(), name='budget_delete'),
 
+                       url(r'^report/export/$', 'activitydb.views.report', name='report'),
                        url(r'^report/', 'activitydb.views.report', name='report'),
 
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),

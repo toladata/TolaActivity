@@ -2033,8 +2033,7 @@ class FormLibraryList(ListView):
 
 def report(request):
     """
-    Show LIST of submitted incidents with a filtered search view using django-tables2
-    and django-filter
+    project agreement list report
     """
     countries=getCountry(request.user)
     getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries)
@@ -2055,9 +2054,11 @@ def report(request):
         table = ProjectAgreementTable(queryset)
 
     RequestConfig(request).configure(table)
+    if export:
 
-    # send the keys and vars
-    return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
+    else:
+        # send the keys and vars
+        return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
 
 
 def country_json(request, country):
