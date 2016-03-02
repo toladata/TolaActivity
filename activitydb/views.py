@@ -37,6 +37,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from tola.util import getCountry, emailGroup
 from mixins import AjaxableResponseMixin
+from export import ProjectAgreementResource
 
 
 def date_handler(obj):
@@ -2048,18 +2049,18 @@ def report(request):
         """
          fields = 'program','community'
         """
-        queryset = ProjectAgreement.objects.filter(
+        getAgreements = ProjectAgreement.objects.filter(
                                            Q(project_name__contains=request.GET["search"]) |
                                            Q(activity_code__contains=request.GET["search"]))
-        table = ProjectAgreementTable(queryset)
+        table = ProjectAgreementTable(getAgreements)
 
     RequestConfig(request).configure(table)
 
-    if self.request.GET.get('export'):
-            dataset = ProjectAgreementResource().export(getAgreements)
-            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
-            return response
+    if request.GET.get('export'):
+        dataset = ProjectAgreementResource().export(getAgreements)
+        response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        return response
 
     # send the keys and vars
     return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
