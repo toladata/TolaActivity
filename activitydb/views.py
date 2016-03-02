@@ -2054,11 +2054,15 @@ def report(request):
         table = ProjectAgreementTable(queryset)
 
     RequestConfig(request).configure(table)
-    if export:
 
-    else:
-        # send the keys and vars
-        return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
+    if self.request.GET.get('export'):
+            dataset = ProjectAgreementResource().export(getAgreements)
+            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+            return response
+
+    # send the keys and vars
+    return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
 
 
 def country_json(request, country):
