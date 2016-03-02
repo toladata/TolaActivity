@@ -33,3 +33,4 @@ python-social-auth==0.2.12
 MySQL-python==1.2.5
 django-uuidfield==0.5.0
 docutils==0.12
+simplejson==3.8.2
