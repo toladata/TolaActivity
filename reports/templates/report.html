@@ -13,7 +13,7 @@
         $("#countries").select2({ placeholder: "Country", allowClear: true });
         $("#id_sector").select2({placeholder: "Sector", allowClear: true,});
         $("#id_program").select2({placeholder: "Program", allowClear: true,});
-        $('.dateinput').datepicker({  dateFormat: 'yy-mm-dd', });
+        $('.dateinput').datepicker({  dateFormat: 'yyyy-mm-dd', });
 
         //Show the program table
         function show_program_table(program_data,filters) {
@@ -194,9 +194,9 @@
         function indicator_report(filters) {
             document.getElementById('report_type').innerHTML = "Indicator Report";
             $.getJSON("/reports/report_data/indicator/", filters, function(data) {
-                //console.log(data['indicator']);
-                show_indicator_table(data['indicator']);
-                show_indicator_charts(data['indicator_count'], data['evidence_count']);
+                //console.log(data['indicator'],filters);
+                show_indicator_table(data['indicator'],filters);
+                show_indicator_charts(data['indicator_count'], data['evidence_count'],filters);
             });
         }
 

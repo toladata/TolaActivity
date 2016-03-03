@@ -61,7 +61,7 @@ class ReportHome(TemplateView):
     """
     List of available reports
     """
-    template_name='reports/report.html'
+    template_name = 'report.html'
 
     def get_context_data(self, **kwargs):
         context = super(ReportHome, self).get_context_data(**kwargs)
@@ -160,6 +160,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
     """
 
     def get(self, request, *args, **kwargs):
+        print self.request.GET
         filter = make_filter(self.request.GET)
         indicator_filter = filter['indicator']
 
@@ -175,7 +176,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
 
         indicator_serialized = json.dumps(list(indicator))
 
-        print indicator_serialized
+        print indicator_filter
 
         final_dict = {
             'criteria': indicator_filter, 'indicator': indicator_serialized,
