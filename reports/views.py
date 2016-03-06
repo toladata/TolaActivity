@@ -113,13 +113,8 @@ class ReportData(View, AjaxableResponseMixin):
         inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
         nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(program__funding_status="Funded") & Q(Q(approval=None) | Q(approval=""))).count()
 
-        indicator_count = Indicator.objects.all().filter(**indicator_filter).count()
-        indicator_data_count = Indicator.objects.all().filter(**indicator_filter).annotate(count=Count('collecteddata'))
-
-        if indicator_data_count:
-            data_count = indicator_data_count[0].count
-        else:
-            data_count = 0
+        indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
+        indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
 
         program_serialized = json.dumps(list(program))
 
@@ -131,7 +126,7 @@ class ReportData(View, AjaxableResponseMixin):
             'inprogress_count': inprogress_count,
             'nostatus_count':nostatus_count,
             'indicator_count': indicator_count,
-            'data_count': data_count
+            'data_count': indicator_data_count
         }
 
         if request.GET.get('export'):
@@ -159,13 +154,8 @@ class ProjectReportData(View, AjaxableResponseMixin):
         rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
         inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
         nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(program__funding_status="Funded") & Q(Q(approval=None) | Q(approval=""))).count()
-        indicator_count = Indicator.objects.all().filter(**indicator_filter).count()
-        indicator_data_count = Indicator.objects.all().filter(**indicator_filter).annotate(my_count=Count('collecteddata'))
-
-        if indicator_data_count:
-            data_count = indicator_data_count[0].my_count
-        else:
-            data_count = 0
+        indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
+        indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
 
         project_serialized = simplejson.dumps(list(project))
 
@@ -180,7 +170,7 @@ class ProjectReportData(View, AjaxableResponseMixin):
             'inprogress_count': inprogress_count,
             'nostatus_count': nostatus_count,
             'indicator_count': indicator_count,
-            'data_count': data_count
+            'data_count': indicator_data_count,
         }
 
         if request.GET.get('export'):
@@ -203,24 +193,19 @@ class IndicatorReportData(View, AjaxableResponseMixin):
         filter = make_filter(self.request.GET)
         indicator_filter = filter['indicator']
 
-        indicator = Indicator.objects.all().filter(**indicator_filter).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','collecteddata__id','key_performance_indicator')
-        indicator_count = Indicator.objects.all().filter(**indicator_filter).count()
-        indicator_data_count = Indicator.objects.all().filter(**indicator_filter).annotate(my_count=Count('collecteddata__id'))
-
-        if indicator_data_count:
-            data_count = indicator_data_count[0].my_count
-        else:
-            data_count = 0
+        indicator = Indicator.objects.all().filter(**indicator_filter).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','collecteddata','key_performance_indicator')
+        indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
+        indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
 
         indicator_serialized = json.dumps(list(indicator))
 
-        #print indicator_filter
-        #print indicator.query
+        print indicator_filter
+        print indicator.query
 
         final_dict = {
             'criteria': indicator_filter, 'indicator': indicator_serialized,
             'indicator_count': indicator_count,
-            'data_count': data_count
+            'data_count': indicator_data_count
         }
 
         if request.GET.get('export'):

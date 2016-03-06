@@ -50,8 +50,8 @@
                 $('#data_table').empty();
             };
 
-            //go back to a program report if cliecks
-            $("#program_reset").on('click',function(){
+            //go back to a program report if clicks
+            $("#id_search_form_reset_btn").on('click',function(){
                 program_report(filters);
             });
 
@@ -68,11 +68,11 @@
                     { title: "Level", data: "level__name"},
                     { title: "Type", data: "indicator_type__indicator_type"},
                     { title: "Sector", data: "sector__sector"},
-                    { title: "Supporting Data", data: "collecteddata__id","sDefaultContent": "",
+                    { title: "Supporting Data", data: "collecteddata",
                               "mRender": function (data, type, row) {
                                     console.log(data);
                                     if (data != ""){
-                                        return '<a id="collecteddata" name=' + row.id + '>Collected Data</a>';
+                                        return '<a class="collecteddata" name=' + row.id + '>Collected Data</a>';
                                     };
                                 }
                         },
@@ -82,7 +82,7 @@
 
             // provide export button url for indicator
             $('#export').click(function(){ do_export(filters,"indicator"); });
-            $('#collecteddata').click(function(){ data_report(filters,this.name); });
+            $('.collecteddata').click(function(){ data_report(filters,this.name); });
             $('#program_report').click(function(){ program_report(filters,this.name); });
 
         }
@@ -98,7 +98,7 @@
             };
 
             //go back to a program report if clicks
-            $("#program_reset").on('click',function(){
+            $("#id_search_form_reset_btn").on('click',function(){
                 program_report(filters);
             });
 
@@ -204,15 +204,13 @@
                 tooltipTemplate: "<%=label + ' Indicator' %>",
             };
 
-            // adjust indicator count
-            adjusted_indicator_count = indicator_count - data_count
 
             var indicator_data = [
 
                 {
-                value: adjusted_indicator_count,
+                value: indicator_count,
                 color:"#637b85",
-                label: "Indicators " + adjusted_indicator_count
+                label: "Indicators " + indicator_count
                 },
                 {
                 value: data_count,
@@ -228,9 +226,9 @@
                 function(evt){
                     var activePoints = indicatorChart.getSegmentsAtEvent(evt);
                     // add evidence filter if they clicked on that
-                    if (activePoints[0].label.indexOf("With Supporting Data " + data_count) > -1){
+                    if (activePoints[0].label.indexOf("With Supporting Data") > -1){
                         filters.collecteddata__isnull="True";
-                    } else if (activePoints[0].label.indexOf("Indicators " + adjusted_indicator_count) > -1){
+                    } else if (activePoints[0].label.indexOf("Indicators") > -1){
                         filters.collecteddata__isnull="False";
                     }
                     console.log("filters:" + JSON.stringify(filters));
@@ -241,13 +239,75 @@
 
 
         function show_collecteddata_charts(data,filters) {
-            document.getElementById('doughnut2-header').innerHTML = "Collected Data Chart";
+            document.getElementById('bar-header').innerHTML = "Collected Data Chart";
+
+            //KPI JSON data object
+            var kpi_options = {
+                maintainAspectRatio: false,
+                responsive: true,
+                scaleOverlay : false,
+
+                scaleSteps : 10,
+                scaleStepWidth : 10,
+                scaleStartValue : 0,
+                scaleLineColor : "rgba(0,0,0,.25)",
+                scaleLineWidth : 1,
+                scaleShowLabels : true,
+                scaleLabel : "<%=value%>",
+                scaleFontFamily : "'Lato'",
+                scaleFontSize : 12,
+                scaleFontStyle : "800",
+                scaleFontColor : "#222",
+                scaleShowGridLines : true,
+                scaleGridLineColor : "rgba(0,0,0,.1)",
+                scaleGridLineWidth : 1,
+                bezierCurve : true,
+                pointDot : true,
+                pointDotRadius : 5,
+                pointDotStrokeWidth : 1,
+                datasetStroke : true,
+                datasetStrokeWidth : 1,
+                datasetFill : true,
+                animation : true,
+                animationSteps : 120,
+                animationEasing : "easeOutQuart",
+                onAnimationComplete : null,
+            };
+            var kpi_data = {
+                labels : [],
+                datasets : [
+                    {
+                        label: "KPI Targets",
+                        fillColor: "rgba(220,220,220,0.5)",
+                        strokeColor: "rgba(220,220,220,0.8)",
+                        highlightFill: "rgba(220,220,220,0.75)",
+                        highlightStroke: "rgba(220,220,220,1)",
+                        data: [],
+                        //data : [65,59,90,41,56,55,40]
+                    },
+                    {
+                        label: "KPI Actuals",
+                        fillColor: "rgba(151,187,205,0.5)",
+                        strokeColor: "rgba(151,187,205,0.8)",
+                        highlightFill: "rgba(151,187,205,0.75)",
+                        highlightStroke: "rgba(151,187,205,1)",
+                        data: [],
+                        //data : [28,48,40,19,96,27,100]
+                    }
+                ]
+            }
+            //retrieve kpi_canvas, pass the kpi_JSON into a Line_chart
+            var ctx = document.getElementById("kpi").getContext("2d");
+            var kpiChart = new Chart(ctx).Bar(kpi_data, kpi_options);
+            document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
 
         };
 
         // PROGRAM REPORT
         function program_report(filters) {
             document.getElementById('report_type').innerHTML = "Program Report";
+            $("#bar-chart").hide();
+            $("#doughnut-chart").show();
             $.getJSON("/reports/report_data/", filters, function(data) {
                 //console.log(filters);
                 show_program_table(data['program'],filters);
@@ -260,6 +320,8 @@
         // INDICATOR REPORT
         function indicator_report(filters) {
             document.getElementById('report_type').innerHTML = "Indicator Report";
+            $("#bar-chart").hide();
+            $("#doughnut-chart").hide();
             $.getJSON("/reports/report_data/indicator/", filters, function(data) {
                 //console.log(filters);
                 show_indicator_table(data['indicator'],filters);
@@ -270,6 +332,8 @@
         // DATA REPORT
         function data_report(filters,indicator) {
             document.getElementById('report_type').innerHTML = "Indicator Data Report";
+            $("#bar-chart").show();
+            $("#doughnut-chart").hide();
             $.getJSON("/reports/report_data/collecteddata/", filters, function(data) {
                 console.log(filters);
                 show_collecteddata_table(data['collecteddata'],filters);
@@ -280,6 +344,8 @@
         // PROJECT REPORT
         function project_report(filters) {
             document.getElementById('report_type').innerHTML = "Project Report";
+            $("#bar-chart").hide();
+            $("#doughnut-chart").show();
             $.getJSON("/reports/report_data/project/", filters, function(data) {
                 console.log(filters);
                 show_project_table(data['project'],filters);
@@ -329,6 +395,9 @@
             } else if (document.getElementById('report_type').innerHTML.valueOf == "Indicator Report") {
                 // first time do the program report
                 indicator_report(filters);
+            } else if (document.getElementById('report_type').innerHTML.valueOf == "Collected Data Report") {
+                // first time do the program report
+                indicator_report(filters);
             } else {
                 // first time do the program report
                 program_report(filters);
@@ -356,7 +425,7 @@
                 <div class="panel-heading"></div>
                 <div class="panel-body" style="padding:15px;">
                     <div id="program_chart">
-                        <div class="row">
+                        <div class="row" id="doughnut-chart">
                             <div class="col-md-6">
                                 <div class="row">
                                     <h4 class="chart-title" id="doughnut1-header"></h4>
@@ -379,6 +448,16 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row" id="bar-chart" style="display: none;">
+                          <div class="chart-legend">
+                              <h4 class="chart-title" id="bar-header"></h4>
+                              <div id="kpi-legend"></div>
+                              <p><span>Targets</span> Vs <strong>Actuals</strong></p>
+                          </div>
+                            <div class="canvas-container">
+                              <canvas id="kpi"></canvas>
+                          </div>
                         </div>
                     </div>
                     <div id="program_table_div">
