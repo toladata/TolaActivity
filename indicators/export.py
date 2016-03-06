@@ -2,7 +2,7 @@ from import_export import resources
 from .models import Indicator, CollectedData, Country, IndicatorType, Objective, StrategicObjective, Program, Sector, DisaggregationValue
 from activitydb.models import ProjectAgreement, ProjectComplete
 from import_export.admin import ImportExportModelAdmin
-from import_export.widgets import ForeignKeyWidget
+from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export import fields
 
 
@@ -31,7 +31,7 @@ class CollectedDataResource(resources.ModelResource):
     agreement = fields.Field(column_name='agreement', attribute='agreement',  widget=ForeignKeyWidget(ProjectAgreement, 'project_name_clean'))
     complete = fields.Field(column_name='complete', attribute='complete',  widget=ForeignKeyWidget(ProjectComplete, 'project_name_clean'))
     program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
-    disaggregation_value = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(DisaggregationValue, 'value'))
+    disaggregation_value = fields.Field(column_name='disaggregation_value', attribute='disaggregation_value', widget=ManyToManyWidget(DisaggregationValue, 'value'))
 
     class Meta:
         model = CollectedData

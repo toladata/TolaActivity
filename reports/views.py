@@ -46,14 +46,17 @@ def make_filter(my_request):
             query_attrs['program']['id__in'] = val.split(',')
             query_attrs['project']['program__id__in'] = val.split(',')
             query_attrs['indicator']['program__id__in'] = val.split(',')
+            query_attrs['collecteddata']['indicator__program__id__in'] = val.split(',')
         elif param == 'sector':
             query_attrs['program']['sector__in'] = val.split(',')
             query_attrs['project']['sector__in'] = val.split(',')
             query_attrs['indicator']['sector__in'] = val.split(',')
+            query_attrs['collecteddata']['indicator__sector__in'] = val.split(',')
         elif param == 'country':
             query_attrs['program']['country__id__in'] = val.split(',')
             query_attrs['project']['program__country__in'] = val.split(',')
             query_attrs['indicator']['program__country__in'] = val.split(',')
+            query_attrs['collecteddata']['program__country__in'] = val.split(',')
         elif param == 'approval':
             query_attrs['project']['approval'] = val
         elif param == 'collecteddata__isnull':
@@ -200,7 +203,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
         filter = make_filter(self.request.GET)
         indicator_filter = filter['indicator']
 
-        indicator = Indicator.objects.all().filter(**indicator_filter).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','collecteddata','key_performance_indicator')
+        indicator = Indicator.objects.all().filter(**indicator_filter).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','collecteddata__id','key_performance_indicator')
         indicator_count = Indicator.objects.all().filter(**indicator_filter).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).annotate(my_count=Count('collecteddata__id'))
 
@@ -252,7 +255,7 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
         }
 
         if request.GET.get('export'):
-            collecteddata_export = CollectedData.objects.all().filter(**indicator_filter)
+            collecteddata_export = CollectedData.objects.all().filter(**collecteddata_filter)
             dataset = CollectedDataResource().export(collecteddata_export)
             response = HttpResponse(dataset.csv, content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=collecteddata_data.csv'

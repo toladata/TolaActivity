@@ -68,9 +68,12 @@
                     { title: "Level", data: "level__name"},
                     { title: "Type", data: "indicator_type__indicator_type"},
                     { title: "Sector", data: "sector__sector"},
-                    { title: "Supporting Data", data: "collecteddata",
+                    { title: "Supporting Data", data: "collecteddata__id","sDefaultContent": "",
                               "mRender": function (data, type, row) {
-                                    return '<a id="collecteddata" name=' + row.id + '>Collected Data</a>';
+                                    console.log(data);
+                                    if (data != ""){
+                                        return '<a id="collecteddata" name=' + row.id + '>Collected Data</a>';
+                                    };
                                 }
                         },
                     { title: "KPI",data: "key_performance_indicator"}
@@ -103,6 +106,7 @@
                 retrieve: true,
                 data: collecteddata_records,
                 columns: [
+                    { title: "Program", data: "indicator__program__name"},
                     { title: "Indicator", data: "indicator__name"},
                     { title: "Targets", data: "targeted"},
                     { title: "Actuals", data: "achieved"},
@@ -235,6 +239,12 @@
             );
         };
 
+
+        function show_collecteddata_charts(data,filters) {
+            document.getElementById('doughnut2-header').innerHTML = "Collected Data Chart";
+
+        };
+
         // PROGRAM REPORT
         function program_report(filters) {
             document.getElementById('report_type').innerHTML = "Program Report";
@@ -263,7 +273,7 @@
             $.getJSON("/reports/report_data/collecteddata/", filters, function(data) {
                 console.log(filters);
                 show_collecteddata_table(data['collecteddata'],filters);
-                show_collecteddata_charts(data['data_count'],filters);
+                show_collecteddata_charts(data['collecteddata'],filters);
             });
         }
 
@@ -285,6 +295,8 @@
                 new_location='/reports/report_data/project?export=true&' + param_filters;
             } else if (type == "indicator") {
                 new_location='/reports/report_data/indicator?export=true&' + param_filters;
+            } else if (type == "collecteddata") {
+                new_location='/reports/report_data/collecteddata?export=true&' + param_filters;
             } else {
                 new_location='/reports/report_data?export=true&' + param_filters ;
             }
