@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import TrainingAttendance, Beneficiary, ProjectAgreement
+from .models import TrainingAttendance, Beneficiary, ProjectAgreement, Program
 
 
 class TrainingAttendanceResource(resources.ModelResource):
@@ -18,3 +18,9 @@ class ProjectAgreementResource(resources.ModelResource):
 
     class Meta:
         model = ProjectAgreement
+
+
+class ProgramResource(resources.ModelResource):
+
+    class Meta:
+        model = Program
