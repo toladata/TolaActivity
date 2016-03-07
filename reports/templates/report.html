@@ -70,7 +70,6 @@
                     { title: "Sector", data: "sector__sector"},
                     { title: "Supporting Data", data: "collecteddata",
                               "mRender": function (data, type, row) {
-                                    console.log(data);
                                     if (data != ""){
                                         return '<a class="collecteddata" name=' + row.id + '>Collected Data</a>';
                                     };
@@ -204,9 +203,7 @@
                 tooltipTemplate: "<%=label + ' Indicator' %>",
             };
 
-
             var indicator_data = [
-
                 {
                 value: indicator_count,
                 color:"#637b85",
@@ -227,9 +224,9 @@
                     var activePoints = indicatorChart.getSegmentsAtEvent(evt);
                     // add evidence filter if they clicked on that
                     if (activePoints[0].label.indexOf("With Supporting Data") > -1){
-                        filters.collecteddata__isnull="True";
-                    } else if (activePoints[0].label.indexOf("Indicators") > -1){
                         filters.collecteddata__isnull="False";
+                    } else if (activePoints[0].label.indexOf("Indicators") > -1){
+                        filters.collecteddata__isnull="True";
                     }
                     console.log("filters:" + JSON.stringify(filters));
                     indicator_report(filters);
@@ -241,58 +238,49 @@
         function show_collecteddata_charts(data,filters) {
             document.getElementById('bar-header').innerHTML = "Collected Data Chart";
 
+            var obj = JSON.parse(data);
+
+            var labels="";
+            var targeted="";
+            var achieved="";
+            for(i = 0; i < obj.length; i++) {
+                labels += obj[i].indicator__number + ',';
+                targeted += obj[i].targeted  + ',';
+                achieved += obj[i].achieved + ',';
+            }
+
+            labels = JSON.stringify(labels);
+            targeted = JSON.stringify(targeted);
+            achieved = JSON.stringify(achieved);
+
+            console.log(labels);
+            console.log(targeted);
+            console.log(achieved);
+
             //KPI JSON data object
             var kpi_options = {
                 maintainAspectRatio: false,
                 responsive: true,
                 scaleOverlay : false,
-
-                scaleSteps : 10,
-                scaleStepWidth : 10,
-                scaleStartValue : 0,
-                scaleLineColor : "rgba(0,0,0,.25)",
-                scaleLineWidth : 1,
-                scaleShowLabels : true,
-                scaleLabel : "<%=value%>",
-                scaleFontFamily : "'Lato'",
-                scaleFontSize : 12,
-                scaleFontStyle : "800",
-                scaleFontColor : "#222",
-                scaleShowGridLines : true,
-                scaleGridLineColor : "rgba(0,0,0,.1)",
-                scaleGridLineWidth : 1,
-                bezierCurve : true,
-                pointDot : true,
-                pointDotRadius : 5,
-                pointDotStrokeWidth : 1,
-                datasetStroke : true,
-                datasetStrokeWidth : 1,
-                datasetFill : true,
-                animation : true,
-                animationSteps : 120,
-                animationEasing : "easeOutQuart",
-                onAnimationComplete : null,
             };
             var kpi_data = {
-                labels : [],
+                labels : labels,
                 datasets : [
                     {
-                        label: "KPI Targets",
+                        label: "Targets",
                         fillColor: "rgba(220,220,220,0.5)",
                         strokeColor: "rgba(220,220,220,0.8)",
                         highlightFill: "rgba(220,220,220,0.75)",
                         highlightStroke: "rgba(220,220,220,1)",
-                        data: [],
-                        //data : [65,59,90,41,56,55,40]
+                        data: targeted,
                     },
                     {
-                        label: "KPI Actuals",
+                        label: "Actuals",
                         fillColor: "rgba(151,187,205,0.5)",
                         strokeColor: "rgba(151,187,205,0.8)",
                         highlightFill: "rgba(151,187,205,0.75)",
                         highlightStroke: "rgba(151,187,205,1)",
-                        data: [],
-                        //data : [28,48,40,19,96,27,100]
+                        data: achieved,
                     }
                 ]
             }
@@ -332,10 +320,10 @@
         // DATA REPORT
         function data_report(filters,indicator) {
             document.getElementById('report_type').innerHTML = "Indicator Data Report";
-            $("#bar-chart").show();
+            $("#bar-chart").hide();
             $("#doughnut-chart").hide();
             $.getJSON("/reports/report_data/collecteddata/", filters, function(data) {
-                console.log(filters);
+                //console.log(filters);
                 show_collecteddata_table(data['collecteddata'],filters);
                 show_collecteddata_charts(data['collecteddata'],filters);
             });
@@ -347,7 +335,7 @@
             $("#bar-chart").hide();
             $("#doughnut-chart").show();
             $.getJSON("/reports/report_data/project/", filters, function(data) {
-                console.log(filters);
+                //console.log(filters);
                 show_project_table(data['project'],filters);
                 show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count'],filters);
                 show_indicator_charts(data['indicator_count'], data['data_count'],filters);
@@ -397,7 +385,7 @@
                 indicator_report(filters);
             } else if (document.getElementById('report_type').innerHTML.valueOf == "Collected Data Report") {
                 // first time do the program report
-                indicator_report(filters);
+                collecteddata_report(filters);
             } else {
                 // first time do the program report
                 program_report(filters);
@@ -450,14 +438,11 @@
                             </div>
                         </div>
                         <div class="row" id="bar-chart" style="display: none;">
-                          <div class="chart-legend">
-                              <h4 class="chart-title" id="bar-header"></h4>
-                              <div id="kpi-legend"></div>
-                              <p><span>Targets</span> Vs <strong>Actuals</strong></p>
-                          </div>
+                            <h4 class="chart-title" id="bar-header"></h4>
                             <div class="canvas-container">
                               <canvas id="kpi"></canvas>
-                          </div>
+                            </div>
+                            <div id="kpi-legend" class="chart-legend"></div>
                         </div>
                     </div>
                     <div id="program_table_div">
