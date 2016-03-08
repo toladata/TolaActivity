@@ -1,4 +1,4 @@
-{# datepicker.html #}
+{# dateslider.html #}
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -7,7 +7,13 @@
       var options = {
         dateFormat: 'yy-mm-dd'
       };
-      $('#{{ attrs.id }}').datepicker(options);
+      $('#{{ attrs.id }}').dateRangeSlider();
     }
   });
 </script>
+
+<article style="padding:50px 20px">
+
+<div id="slider"></div>
+
+</article>

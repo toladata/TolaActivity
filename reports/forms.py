@@ -8,6 +8,15 @@ from crispy_forms.bootstrap import *
 
 from .models import *
 from activitydb.models import Country, Program, Sector
+from functools import partial
+
+class DatePicker(forms.DateInput):
+    """
+    Use in form to create a Jquery datepicker element
+    """
+    template_name = 'dateslider.html'
+
+    DateInput = partial(forms.DateInput, {'class': 'slider'})
 
 
 class FilterForm(forms.Form):
@@ -30,6 +39,8 @@ class FilterForm(forms.Form):
         empty_label = None,
         widget = forms.SelectMultiple(),
     )
+    start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -42,6 +53,9 @@ class FilterForm(forms.Form):
             Field('country', css_class="input-sm", id="countries"),
             Field('program', css_class="input-sm"),
             Field('sector', css_class='input-sm'),
+            #Field('start_date', css_class='input-sm'),
+            #Field('end_date', css_class='input-sm'),
+
         )
         self.helper.form_method = 'get'
         self.helper.form_action = '/reports/report/'

@@ -1,13 +1,13 @@
-from .serializers import UserSerializer, ProgramSerializer, SectorSerializer, ProjectTypeSerializer, OfficeSerializer, \
-    SiteProfileSerializer, CountrySerializer, AgreementSerializer, CompleteSerializer, ProjectTypeOtherSerializer, IndicatorSerializer, \
-    ReportingFrequencySerializer, TolaUserSerializer, IndicatorTypeSerializer, ObjectiveSerializer, DisaggregationTypeSerializer, LevelSerializer, \
-    StakeholderSerializer
+from .serializers import *
 
 from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
-from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, ProjectAgreement, ProjectTypeOther, Stakeholder
-from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, Level
+from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
+    ProjectAgreement, ProjectTypeOther, Stakeholder, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
+    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
+from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
+    Level, ExternalService, ExternalServiceRecord, StrategicObjective
 
 from django.contrib import messages
 from django.template import RequestContext
@@ -135,6 +135,7 @@ class TolaUserViewSet(viewsets.ModelViewSet):
     queryset = TolaUser.objects.all()
     serializer_class = TolaUserSerializer
 
+
 class IndicatorTypeViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -142,6 +143,7 @@ class IndicatorTypeViewSet(viewsets.ModelViewSet):
     """
     queryset = IndicatorType.objects.all()
     serializer_class = IndicatorTypeSerializer
+
 
 class ObjectiveViewSet(viewsets.ModelViewSet):
     """
@@ -151,6 +153,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
     queryset = Objective.objects.all()
     serializer_class = ObjectiveSerializer
 
+
 class DisaggregationTypeViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -158,6 +161,7 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
     """
     queryset = DisaggregationType.objects.all()
     serializer_class = DisaggregationTypeSerializer
+
 
 class LevelViewSet(viewsets.ModelViewSet):
     """
@@ -167,6 +171,7 @@ class LevelViewSet(viewsets.ModelViewSet):
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
 
+
 class StakeholderViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -174,3 +179,139 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     """
     queryset = Stakeholder.objects.all()
     serializer_class = StakeholderSerializer
+
+
+class CustomDashboardViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = CustomDashboard.objects.all()
+    serializer_class = CustomDashboardSerializer
+
+
+class ExternalServiceViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = ExternalService.objects.all()
+    serializer_class = ExternalServiceSerializer
+
+
+class ExternalServiceRecordViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = ExternalServiceRecord.objects.all()
+    serializer_class = ExternalServiceRecordSerializer
+
+
+class StrategicObjectiveViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = StrategicObjective.objects.all()
+    serializer_class = StrategicObjectiveSerializer
+
+
+class StakeholderViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Stakeholder.objects.all()
+    serializer_class = StakeholderSerializer
+
+
+class StakeholderTypeViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = StakeholderType.objects.all()
+    serializer_class = StakeholderTypeSerializer
+
+
+class CapacityViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Capacity.objects.all()
+    serializer_class = CapacitySerializer
+
+
+class EvaluateViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Evaluate.objects.all()
+    serializer_class = EvaluateSerializer
+
+
+class ProfileTypeViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = ProfileType.objects.all()
+    serializer_class = ProfileTypeSerializer
+
+
+class ProvinceViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Province.objects.all()
+    serializer_class = ProvinceSerializer
+
+
+class DistrictViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = District.objects.all()
+    serializer_class = DistrictSerializer
+
+
+class AdminLevelThreeViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = AdminLevelThree.objects.all()
+    serializer_class = AdminLevelThreeSerializer
+
+
+class VillageViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Village.objects.all()
+    serializer_class = VillageSerializer
+
+
+class ContactViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+
+
+class DocumentationViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = Documentation.objects.all()
+    serializer_class = DocumentationSerializer
+

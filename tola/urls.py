@@ -1,7 +1,6 @@
 from feed import views
 from tola import views
-from feed.views import UserViewSet, ProgramViewSet, SectorViewSet, ProjectTypeViewSet, OfficeViewSet, SiteProfileViewSet, AgreementViewSet, \
-    CompleteViewSet, CountryViewSet, ProjectTypeOtherViewSet, IndicatorViewSet, ReportingFrequencyViewSet, TolaUserViewSet, IndicatorTypeViewSet, ObjectiveViewSet, DisaggregationTypeViewSet, LevelViewSet
+from feed.views import *
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
@@ -36,8 +35,21 @@ router.register(r'indicatortype', IndicatorTypeViewSet)
 router.register(r'objective', ObjectiveViewSet)
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
 router.register(r'level', LevelViewSet)
-
-
+router.register(r'customdashboard', CustomDashboardViewSet)
+router.register(r'externalservice', ExternalServiceViewSet)
+router.register(r'externalservicerecord', ExternalServiceRecordViewSet)
+router.register(r'strategicobjective', StrategicObjectiveViewSet)
+router.register(r'stakeholder', StakeholderViewSet)
+router.register(r'stakeholdertype', StakeholderTypeViewSet)
+router.register(r'capacity', CapacityViewSet)
+router.register(r'evaluate', EvaluateViewSet)
+router.register(r'profiletype', ProfileTypeViewSet)
+router.register(r'province', ProvinceViewSet)
+router.register(r'district', DistrictViewSet)
+router.register(r'adminlevelthree', AdminLevelThreeViewSet)
+router.register(r'village', VillageViewSet)
+router.register(r'contact', ContactViewSet)
+router.register(r'documentation', DocumentationViewSet)
 
 
 urlpatterns = patterns('',

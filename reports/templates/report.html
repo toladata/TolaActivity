@@ -106,6 +106,7 @@
                 data: collecteddata_records,
                 columns: [
                     { title: "Program", data: "indicator__program__name"},
+                    { title: "Indicator Num.", data: "indicator__number"},
                     { title: "Indicator", data: "indicator__name"},
                     { title: "Targets", data: "targeted"},
                     { title: "Actuals", data: "achieved"},
@@ -240,18 +241,14 @@
 
             var obj = JSON.parse(data);
 
-            var labels="";
-            var targeted="";
-            var achieved="";
+            var labels=[];
+            var targeted=[];
+            var achieved=[];
             for(i = 0; i < obj.length; i++) {
-                labels += obj[i].indicator__number + ',';
-                targeted += obj[i].targeted  + ',';
-                achieved += obj[i].achieved + ',';
+                labels.push(obj[i].indicator__number);
+                targeted.push(obj[i].targeted);
+                achieved.push(obj[i].achieved);
             }
-
-            labels = JSON.stringify(labels);
-            targeted = JSON.stringify(targeted);
-            achieved = JSON.stringify(achieved);
 
             console.log(labels);
             console.log(targeted);
@@ -320,7 +317,7 @@
         // DATA REPORT
         function data_report(filters,indicator) {
             document.getElementById('report_type').innerHTML = "Indicator Data Report";
-            $("#bar-chart").hide();
+            $("#bar-chart").show();
             $("#doughnut-chart").hide();
             $.getJSON("/reports/report_data/collecteddata/", filters, function(data) {
                 //console.log(filters);

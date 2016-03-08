@@ -18,7 +18,6 @@ from django.db.models import Sum, Count
 from django.db.models import Q
 from activitydb.mixins import AjaxableResponseMixin
 from django.http import HttpResponse, JsonResponse
-from feed.serializers import NoLinkIndicatorSerializer
 
 import json
 import simplejson
