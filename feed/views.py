@@ -12,8 +12,10 @@ from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser
 from django.contrib import messages
 from django.template import RequestContext
 from django.contrib.auth.models import User
+from tola.util import getCountry
 
-from rest_framework import renderers, viewsets
+from rest_framework import renderers, viewsets, filters
+from rest_framework.response import Response
 
 import operator
 import csv
@@ -35,7 +37,17 @@ class ProgramViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
+    search by country name and program name
+    limit to users logged in country permissions
     """
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = Program.objects.all().filter(country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('country__country','program__name')
+    filter_backends = (filters.DjangoFilterBackend,)
     queryset = Program.objects.all()
     serializer_class = ProgramSerializer
 
@@ -71,7 +83,17 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
+    Search by country name and program name
+    limit to users logged in country permissions
     """
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = SiteProfile.objects.all().filter(country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('country__country','program__name')
+    filter_backends = (filters.DjangoFilterBackend,)
     queryset = SiteProfile .objects.all()
     serializer_class = SiteProfileSerializer
 
@@ -89,7 +111,17 @@ class AgreementViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
+    Search by country name and program name
+    limit to users logged in country permissions
     """
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = ProjectAgreement.objects.all().filter(program__country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('program__country__country','program__name')
+    filter_backends = (filters.DjangoFilterBackend,)
     queryset = ProjectAgreement.objects.all()
     serializer_class = AgreementSerializer
 
@@ -98,7 +130,17 @@ class CompleteViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
+    Search by country name and program name
+    limit to users logged in country permissions
     """
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = ProjectComplete.objects.all().filter(program__country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('program__country__country','program__name')
+    filter_backends = (filters.DjangoFilterBackend,)
     queryset = ProjectComplete.objects.all()
     serializer_class = CompleteSerializer
 
@@ -115,7 +157,17 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
+    Search by country name and program name
+    limit to users logged in country permissions
     """
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = Indicator.objects.all().filter(country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('country__country','program__name')
+    filter_backends = (filters.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
 
@@ -176,7 +228,17 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
+    Search by Country
+    Limited to logged in users accessible countires
     """
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = Stakeholder.objects.all().filter(country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('country__country')
+    filter_backends = (filters.DjangoFilterBackend,)
     queryset = Stakeholder.objects.all()
     serializer_class = StakeholderSerializer
 
@@ -215,15 +277,6 @@ class StrategicObjectiveViewSet(viewsets.ModelViewSet):
     """
     queryset = StrategicObjective.objects.all()
     serializer_class = StrategicObjectiveSerializer
-
-
-class StakeholderViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    """
-    queryset = Stakeholder.objects.all()
-    serializer_class = StakeholderSerializer
 
 
 class StakeholderTypeViewSet(viewsets.ModelViewSet):

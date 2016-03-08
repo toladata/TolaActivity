@@ -8,6 +8,17 @@ from datetime import datetime
 import uuid
 from django.utils.timezone import utc
 
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+#New user created generate a token
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+
 
 class Country(models.Model):
     country = models.CharField("Country Name", max_length=255, blank=True)
