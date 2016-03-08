@@ -10,6 +10,7 @@ from rest_framework import routers, serializers, viewsets
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import login, logout
+from rest_framework.authtoken import views as auth_views
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -56,6 +57,7 @@ urlpatterns = patterns('',
                         #rest framework
                         url(r'^api/', include(router.urls)),
                         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+                        url(r'^api-token-auth/', auth_views.obtain_auth_token),
 
                         #index
                         url(r'^$', 'tola.views.index', name='index'),
