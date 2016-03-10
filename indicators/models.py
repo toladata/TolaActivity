@@ -225,7 +225,6 @@ class IndicatorManager(models.Manager):
 
 class Indicator(models.Model):
     indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
-    owner = models.ForeignKey('auth.User')
     country = models.ForeignKey(Country, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)

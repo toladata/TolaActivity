@@ -30,7 +30,7 @@ class IndicatorResource(resources.ModelResource):
 
 class IndicatorAdmin(ImportExportModelAdmin):
     resource_class = IndicatorResource
-    list_display = ('owner','indicator_types','name','sector')
+    list_display = ('indicator_types','name','sector')
     search_fields = ('name','number','program__name')
     list_filter = ('country','sector')
     display = 'Indicators'

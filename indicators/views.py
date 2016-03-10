@@ -35,7 +35,7 @@ class IndicatorList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
 
         if int(self.kwargs['pk']) == 0:
-            getProgramsIndicator = Program.objects.all().prefetch_related().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
+            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
         else:
             getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk']).order_by('name').annotate(indicator_count=Count('indicator'))
 
@@ -85,7 +85,6 @@ def indicator_create(request, id=0):
         service = request.POST['services']
         level = Level.objects.all()[0]
         node_id = request.POST['service_indicator']
-        owner = request.user
         sector = None
         name = None
         source = None
@@ -119,7 +118,7 @@ def indicator_create(request, id=0):
 
 
         #save form
-        new_indicator = Indicator(country=country, owner=owner,sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
+        new_indicator = Indicator(country=country,sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
         new_indicator.save()
         new_indicator.program.add(program)
         new_indicator.indicator_type.add(type)
@@ -149,7 +148,6 @@ class IndicatorCreate(CreateView):
         initial = {
             'country': user_profile.country,
             'program': self.kwargs['id'],
-            'owner': self.request.user,
             }
 
         return initial

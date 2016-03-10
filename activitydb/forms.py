@@ -409,6 +409,10 @@ class ProjectAgreementForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
+        self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
+        self.fields['reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
+        self.fields['finance_reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
+        self.fields['me_reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
         #override the office queryset to use request.user for country

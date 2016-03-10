@@ -1,5 +1,5 @@
 from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable
-from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreement
+from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreement, TolaUser
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -43,7 +43,7 @@ class IndicatorForm(forms.ModelForm):
             TabHolder(
                 Tab('Summary',
                      Fieldset('',
-                        'program','sector','objectives','strategic_objectives','owner', 'country',
+                        'program','sector','objectives','strategic_objectives', 'country',
                         ),
                 ),
                 Tab('Performance',
@@ -68,7 +68,7 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Approval',
                     Fieldset('Approval',
-                        'approval', 'filled_by', 'approved_by',
+                        'approval', 'approval_submitted_by', 'approved_by',
                     ),
                 ),
             ),
@@ -109,6 +109,8 @@ class IndicatorForm(forms.ModelForm):
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['objectives'].queryset = Objective.objects.all().filter(program__id=self.program)
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
+        self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
+        self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
 
 class CollectedDataForm(forms.ModelForm):
