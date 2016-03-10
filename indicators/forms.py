@@ -103,14 +103,14 @@ class IndicatorForm(forms.ModelForm):
         )
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
-        
+
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['objectives'].queryset = Objective.objects.all().filter(program__id=self.program)
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
-        self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
+        self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
 
 class CollectedDataForm(forms.ModelForm):
@@ -228,5 +228,3 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, country__in=countries)
 
         self.fields['tola_table'].queryset = TolaTable.objects.filter(owner=self.request.user)
-
-

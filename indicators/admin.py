@@ -81,5 +81,3 @@ admin.site.register(Level)
 admin.site.register(ExternalService, ExternalServiceAdmin)
 admin.site.register(ExternalServiceRecord, ExternalServiceRecordAdmin)
 admin.site.register(TolaTable, TolaTableAdmin)
-
-

@@ -220,7 +220,7 @@ class ExternalServiceRecordAdmin(admin.ModelAdmin):
 
 class IndicatorManager(models.Manager):
     def get_queryset(self):
-        return super(IndicatorManager, self).get_queryset().prefetch_related('program','owner','country').select_related('sector')
+        return super(IndicatorManager, self).get_queryset().prefetch_related('program','country').select_related('sector')
 
 
 class Indicator(models.Model):
@@ -298,7 +298,7 @@ class Indicator(models.Model):
 
 
 class IndicatorAdmin(admin.ModelAdmin):
-    list_display = ('owner','indicator_types','name','sector')
+    list_display = ('indicator_types','name','sector')
     search_fields = ('name','number','program__name')
     list_filter = ('sector','country')
     display = 'Indicators'
