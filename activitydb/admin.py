@@ -15,8 +15,6 @@ class DocumentationResource(resources.ModelResource):
     program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
     project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(ProjectAgreement, 'name'))
 
-
-
     class Meta:
         model = Documentation
         widgets = {
@@ -48,6 +46,20 @@ class ProjectAgreementAdmin(ImportExportModelAdmin):
     resource_class = ProjectAgreementResource
     list_display = ('program','project_name')
     list_filter = ('program__country',)
+    filter_horizontal = ('capacity','evaluate','site','stakeholder')
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        # Filter by logged in users allowable countries
+        user_countries = getCountry(request.user)
+        #if not request.user.user.is_superuser:
+        return queryset.filter(country__in=user_countries)
+
+
     pass
 
 

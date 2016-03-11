@@ -34,6 +34,7 @@ class IndicatorAdmin(ImportExportModelAdmin):
     search_fields = ('name','number','program__name')
     list_filter = ('country','key_performance_indicator','sector')
     display = 'Indicators'
+    filter_horizontal = ('objectives','strategic_objectives','disaggregation','program')
     pass
 
 

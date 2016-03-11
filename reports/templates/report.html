@@ -70,10 +70,8 @@
                     { title: "Sector", data: "sector__sector"},
                     { title: "Supporting Data", data: "collecteddata",
                               "mRender": function (data, type, row) {
-                                    if (data != ""){
-                                        return '<a class="collecteddata" name=' + row.id + '>Collected Data</a>';
-                                    };
-                                }
+                                return '<a class="collecteddata" name=' + row.id + '>Collected Data</a>';
+                              }
                         },
                     { title: "KPI",data: "key_performance_indicator"}
                     ]
@@ -235,7 +233,6 @@
             );
         };
 
-
         function show_collecteddata_charts(data,filters) {
             document.getElementById('bar-header').innerHTML = "Collected Data Chart";
 
@@ -316,6 +313,9 @@
 
         // DATA REPORT
         function data_report(filters,indicator) {
+            if (indicator){
+                filters.indicator__id = indicator
+            }
             document.getElementById('report_type').innerHTML = "Indicator Data Report";
             $("#bar-chart").show();
             $("#doughnut-chart").hide();

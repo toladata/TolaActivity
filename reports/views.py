@@ -56,6 +56,9 @@ def make_filter(my_request):
             query_attrs['project']['program__country__in'] = val.split(',')
             query_attrs['indicator']['program__country__in'] = val.split(',')
             query_attrs['collecteddata']['program__country__in'] = val.split(',')
+        elif param == 'indicator__id':
+            query_attrs['indicator']['id'] = val
+            query_attrs['collecteddata']['indicator__id'] = val
         elif param == 'approval':
             query_attrs['project']['approval'] = val
         elif param == 'collecteddata__isnull':
