@@ -31,7 +31,7 @@ class IndicatorTestCase(TestCase):
         user.save()
         get_user = User.objects.get(username='john')
         new_indicator = Indicator.objects.create(name="testindicator",number="1.2.3",source="testing",
-                                                 baseline="10",lop_target="10", reporting_frequency=get_frequency,owner=get_user,
+                                                 baseline="10",lop_target="10", reporting_frequency=get_frequency,
                                                  country=get_country)
         new_indicator.save()
         new_indicator.disaggregation.add(get_disaggregation)
@@ -51,4 +51,3 @@ class IndicatorTestCase(TestCase):
         """Check for CollectedData object"""
         get_collected = CollectedData.objects.get(description="somevaluecollected")
         self.assertEqual(CollectedData.objects.filter(id=get_collected.id).count(), 1)
-
