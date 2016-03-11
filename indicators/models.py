@@ -299,9 +299,9 @@ class Indicator(models.Model):
 
 
 class IndicatorAdmin(admin.ModelAdmin):
-    list_display = ('indicator_types','name','sector')
+    list_display = ('indicator_types','name','sector','key_performance_indicator')
     search_fields = ('name','number','program__name')
-    list_filter = ('sector','country')
+    list_filter = ('sector','country','key_performance_indicator')
     display = 'Indicators'
 
 
