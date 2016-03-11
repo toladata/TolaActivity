@@ -289,7 +289,8 @@ $(function () {
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
+          <div class="col-md-4">
+             {% if report_server == True%}
              <div class="panel panel-info">
                 <div class="panel-heading">
                     Indicator Evidence Leaderboard
@@ -310,7 +311,34 @@ $(function () {
                     {%endfor%}
                     </table>
                 </div>
-             </div>
+            </div>
+            {% else %}
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Indicator Evidence
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Country</th>
+                            <th>Indicator Data</th>
+                            <th>W/Evidence</th>
+                        </tr>
+                    {%for value in count_evidence  %}
+                        {%for item in countries  %}
+                            {% if item.country == value.indicator__country__country %}
+                            <tr>
+                               <td>{{value.indicator__country__country}}</td>
+                               <td>{{value.indicator_count}}</td>
+                               <td>{{value.evidence_count}}</td>
+                            </tr>
+                            {% endif %}
+                        {%endfor%}
+                    {%endfor%}
+                    </table>
+                </div>
+            </div>
+            {% endif %}   
             <div class="panel panel-info">
                 <div class="panel-heading">
                     Strategic Objectives
