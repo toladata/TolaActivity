@@ -248,6 +248,12 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.associate_by_email',  # <--- enable this one
+)
+
+
 ############ END OF AUTHENTICATION BACKEND ##############
 
 ########## Login redirect ###########

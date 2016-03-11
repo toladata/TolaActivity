@@ -190,6 +190,7 @@ class Program(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
     budget_check = models.BooleanField("Enable Approval Authority Matrix", default=False)
     country = models.ManyToManyField(Country)
+    user_access = models.ManyToManyField(TolaUser, blank=True)
 
     class Meta:
         ordering = ('name',)
