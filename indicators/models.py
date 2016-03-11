@@ -140,6 +140,7 @@ class DisaggregationLabel(models.Model):
 class DisaggregationLabelAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_type','label','create_date','edit_date')
     display = 'Disaggregation Label'
+    list_filter = ('disaggregation_type__disaggregation_type',)
 
 
 class DisaggregationValue(models.Model):

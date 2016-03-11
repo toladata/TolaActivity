@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import IndicatorType, Indicator, ReportingFrequency, DisaggregationType, DisaggregationLabel,\
     CollectedData, Objective, Level, IndicatorAdmin, ObjectiveAdmin, StrategicObjective, StrategicObjectiveAdmin, ExternalService, \
-    ExternalServiceAdmin, ExternalServiceRecord, ExternalServiceRecordAdmin, CollectedDataAdmin, TolaTable
+    ExternalServiceAdmin, ExternalServiceRecord, ExternalServiceRecordAdmin, CollectedDataAdmin, TolaTable, DisaggregationLabelAdmin
 from activitydb.models import Sector, Country, Program
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
@@ -30,9 +30,9 @@ class IndicatorResource(resources.ModelResource):
 
 class IndicatorAdmin(ImportExportModelAdmin):
     resource_class = IndicatorResource
-    list_display = ('indicator_types','name','sector')
+    list_display = ('indicator_types','name','sector','key_performance_indicator')
     search_fields = ('name','number','program__name')
-    list_filter = ('country','sector')
+    list_filter = ('country','key_performance_indicator','sector')
     display = 'Indicators'
     pass
 
@@ -73,7 +73,7 @@ admin.site.register(IndicatorType)
 admin.site.register(Indicator,IndicatorAdmin)
 admin.site.register(ReportingFrequency)
 admin.site.register(DisaggregationType)
-admin.site.register(DisaggregationLabel)
+admin.site.register(DisaggregationLabel, DisaggregationLabelAdmin)
 admin.site.register(CollectedData, CollectedDataAdmin)
 admin.site.register(Objective,ObjectiveAdmin)
 admin.site.register(StrategicObjective, StrategicObjectiveAdmin)
