@@ -46,7 +46,7 @@ class ProgramViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country','program__name')
+    filter_fields = ('country__country','name')
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = Program.objects.all()
     serializer_class = ProgramSerializer
