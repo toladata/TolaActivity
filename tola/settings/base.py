@@ -309,31 +309,27 @@ LOGGING = {
             'format': '%(levelname)s %(message)s'
         },
     },
+
     'handlers': {
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(PROJECT_PATH, 'error.log'),
-            'formatter': 'verbose'
-        },
-        'console':{
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
+      'logstash': {
+          'level': 'DEBUG',
+          'class': 'logstash.LogstashHandler',
+          'host': '82.196.12.89',
+          'port': 5959, # Default value: 5959
+          'version': 1, # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
+          'message_type': 'logstash',  # 'type' field in logstash message. Default value: 'logstash'.
+          'fqdn': False, # Fully qualified domain name. Default value: false.
+          'tags': ['tag1', 'tag2'], # list of tags. Default: None.
+      },
     },
     'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'epro': {
-            'handlers': ['file'],
-            'level': 'WARNING',
-            'propagate': True,
-        },
-    }
+      'django.request': {
+          'handlers': ['logstash'],
+          'level': 'DEBUG',
+          'propagate': True,
+      },
+    },
+
 }
 
 

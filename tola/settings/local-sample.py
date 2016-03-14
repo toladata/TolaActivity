@@ -68,6 +68,10 @@ GOOGLE_STEP2_URI = 'http://tola.mercycorps.org/gwelcome'
 GOOGLE_CLIENT_ID = '617113120802.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '9reM29qpGFPyI8TBuB54Z4fk'
 
+########## SOCIAL GOOGLE AUTH
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "234234blah.apps.googleusercontent.com"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "2345435346345fsgwegr"
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = "mercycorps.org"
 
 ########## CACHE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
