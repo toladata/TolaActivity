@@ -230,7 +230,7 @@ class Indicator(models.Model):
     country = models.ForeignKey(Country, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
-    objectives = models.ManyToManyField(Objective, blank=True, related_name="obj_indicator")
+    objectives = models.ManyToManyField(Objective, blank=True, verbose_name="Program Objective", related_name="obj_indicator")
     strategic_objectives = models.ManyToManyField(StrategicObjective, verbose_name="Country Strategic Objective", blank=True, related_name="strat_indicator")
     name = models.CharField(max_length=255, null=True, blank=True)
     number = models.CharField(max_length=255, null=True, blank=True)
