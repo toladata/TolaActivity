@@ -82,6 +82,7 @@ class NewUserRegistrationForm(UserCreationForm):
     helper.help_text_inline = True
     helper.html5_required = True
 
+
 class NewTolaUserRegistrationForm(forms.ModelForm):
     """
     Form for registering a new account.

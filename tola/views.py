@@ -164,7 +164,7 @@ def register(request):
         uf = NewUserRegistrationForm()
         tf = NewTolaUserRegistrationForm()
     return render(request, "registration/register.html", {
-        'userform': uf,'tolaform': tf, 'helper': RegistrationForm.helper
+        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper
     })
 
 

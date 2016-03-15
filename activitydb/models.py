@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib import admin
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from decimal import Decimal
 from datetime import datetime
 import uuid
@@ -19,6 +20,38 @@ from simple_history.models import HistoricalRecords
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+class TolaSites(models.Model):
+    name = models.CharField(blank=True, null=True, max_length="255")
+    agency_name = models.CharField(blank=True, null=True, max_length="255")
+    agency_url = models.CharField(blank=True, null=True, max_length="255")
+    site = models.ForeignKey(Site)
+    privacy_disclaimer = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now=False, blank=True, null=True)
+    updated = models.DateTimeField(auto_now=False, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.name
+
+    @property
+    def countries_list(self):
+        return ', '.join([x.code for x in self.countries.all()])
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps as appropriate'''
+        if kwargs.pop('new_entry', True):
+            self.created = datetime.now()
+        else:
+            self.updated = datetime.now()
+        return super(TolaSites, self).save(*args, **kwargs)
+
+
+class TolaSitesAdmin(admin.ModelAdmin):
+    list_display = ('name', 'agency_name')
+    display = 'Tola Site'
+    list_filter = ('name',)
+    search_fields = ('name','agency_name')
 
 
 class Country(models.Model):
@@ -67,6 +100,7 @@ class TolaUser(models.Model):
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
+    privacy_disclaimer_accepted = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
     updated = models.DateTimeField(auto_now=False, blank=True, null=True)
 
