@@ -5,6 +5,7 @@ from activitydb.models import Program, Sector, SiteProfile, ProjectAgreement, Pr
 from datetime import datetime
 from django.contrib.auth.models import User
 import uuid
+from simple_history.models import HistoricalRecords
 
 
 class TolaTable(models.Model):
@@ -253,6 +254,7 @@ class Indicator(models.Model):
     external_service_record = models.ForeignKey(ExternalServiceRecord, verbose_name="External Service ID", blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    history = HistoricalRecords()
     #optimize query for class based views etc.
     objects = IndicatorManager()
 
@@ -328,6 +330,7 @@ class CollectedData(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
+    history = HistoricalRecords()
     objects = CollectedDataManager()
 
     class Meta:

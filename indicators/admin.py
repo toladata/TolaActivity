@@ -6,6 +6,7 @@ from activitydb.models import Sector, Country, Program
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export.admin import ImportExportModelAdmin
+from simple_history.admin import SimpleHistoryAdmin
 
 
 class IndicatorResource(resources.ModelResource):
@@ -28,7 +29,7 @@ class IndicatorResource(resources.ModelResource):
         #import_id_fields = ['id']
 
 
-class IndicatorAdmin(ImportExportModelAdmin):
+class IndicatorAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
     resource_class = IndicatorResource
     list_display = ('indicator_types','name','sector','key_performance_indicator')
     search_fields = ('name','number','program__name')
@@ -61,7 +62,7 @@ class CollectedDataResource(resources.ModelResource):
         #import_id_fields = ['id']
 
 
-class CollectedDataAdmin(ImportExportModelAdmin):
+class CollectedDataAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
     resource_class = CollectedDataResource
     list_display = ('indicator','program','agreement')
     search_fields = ('indicator','agreement','program','owner__username')

@@ -12,6 +12,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from simple_history.models import HistoricalRecords
 
 #New user created generate a token
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -65,6 +66,7 @@ class TolaUser(models.Model):
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
+    tables_api_token = models.CharField(blank=True, null=True, max_length=255)
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
     updated = models.DateTimeField(auto_now=False, blank=True, null=True)
 
@@ -484,7 +486,7 @@ class SiteProfile(models.Model):
     location_verified_by = models.ForeignKey(TolaUser, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-
+    history = HistoricalRecords()
     #optimize query
     objects = SiteProfileManager()
 
@@ -807,6 +809,7 @@ class ProjectAgreement(models.Model):
     community_project_description = models.TextField("Describe the project you would like the program to consider", blank=True, null=True, help_text="Description must describe how the Community Proposal meets the project criteria")
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
+    history = HistoricalRecords()
     #optimize base query for all classbasedviews
     objects = ProjectAgreementManager()
 
@@ -921,6 +924,7 @@ class ProjectComplete(models.Model):
     approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ('create_date',)
@@ -1061,7 +1065,7 @@ class Budget(models.Model):
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, on_delete=models.SET_NULL)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-
+    history = HistoricalRecords()
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:

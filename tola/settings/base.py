@@ -171,6 +171,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 
@@ -225,6 +226,7 @@ THIRD_PARTY_APPS = (
     'ckeditor',
     'ckeditor_uploader',
     'simplejson',
+    'simple_history',
 )
 
 # Apps specific for this project go here.
