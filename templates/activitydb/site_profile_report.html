@@ -31,7 +31,7 @@
 {% for item in getCommunity %}
     <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.name }}</b>
     <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/activitydb/site_profile_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Sites</a>>
+        <a href="/activitydb/siteprofile_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Sites</a>
     </div>
     </li>
 {% empty %}
