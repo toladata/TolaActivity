@@ -361,3 +361,5 @@ CKEDITOR_CONFIGS = {
         'width': 300,
     },
 }
+
+EMAIL_SUBJECT_PREFIX = "[TolaData] "
