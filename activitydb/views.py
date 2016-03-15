@@ -2059,7 +2059,7 @@ def report(request):
     if request.GET.get('export'):
         dataset = ProjectAgreementResource().export(getAgreements)
         response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+        response['Content-Disposition'] = 'attachment; filename=activity_report.csv'
         return response
 
     # send the keys and vars
