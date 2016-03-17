@@ -1,4 +1,4 @@
-/* App Specific CSS */
+#App Specific CSS
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -17,10 +17,78 @@ body {
     /* Set the fixed height of the footer here */
     height: 40px;
     border-top: 1px solid #f5f5f5;
-    background-color: #e5e5e5;
+    background-color: rgb(215, 215, 215);
     vertical-align: top;
+    color: rgb(50, 50, 50);
 }
 
+
+/* Bootstrap Overrides */
+
+*,
+*:focus,
+*:target,
+a:focus,
+input:focus,
+button:focus,
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus {
+  outline: none;
+}
+
+.navbar-tola {
+  /* TolaActivity Brand Color: */
+  background-color: rgb(232, 148, 36);
+  border: none;
+}
+
+.navbar-tola .navbar-nav > li > a {
+  color: #fff;
+}
+
+.navbar-tola .navbar-nav > li > a:hover,
+.navbar-tola .navbar-nav > li > a:focus,
+.navbar-tola .navbar-nav > li.active > a,
+.navbar-tola .navbar-nav > li.active > a:hover,
+.navbar-tola .navbar-nav > li.active > a:focus,
+.navbar-tola .navbar-nav .dropdown.open a.dropdown-toggle {
+  color: #fff;
+  background-color: rgba(0, 0, 0, .15);
+}
+
+/* - End Bootstrap Overrides */
+
+
+/* Login buttons for Social */
+.social-buttons{
+    margin:12px 0
+}
+
+.btn-fb{
+    color: #fff;
+    background-color:#3b5998;
+}
+.btn-fb:hover{
+    color: #fff;
+    background-color:#496ebc
+}
+.btn-tw{
+    color: #fff;
+    background-color:#55acee;
+}
+.btn-tw:hover{
+    color: #fff;
+    background-color:#59b5fa;
+}
+.btn-go{
+    color: #fff;
+    background-color:#55acee;
+}
+.btn-go:hover{
+    color: #fff;
+    background-color:#59b5fa;
+}
 
 /* Custom page CSS
 -------------------------------------------------- */
@@ -73,4 +141,91 @@ body > .container {
     float: right;
 }
 
+.ajaxLoader{
+    display: none;
+    min-width: 10px;
+    padding: 3px 7px;
+    vertical-align: baseline;
+    white-space: nowrap;
+    text-align: center;
+    background-color: lightgoldenrodyellow;
+    border-radius: 2px
+}
+
+/*General marker style*/
+.map-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50% 50% 50% 0;
+  background: rgb(232, 148, 36);
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -20px 0 0 -20px;
+  box-shadow: 2px 1px 1px #888888;
+}
+
+.map-marker.indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50% 50% 50% 0;
+  background: #00cae9;
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -20px 0 0 -20px;
+  box-shadow: 2px 1px 1px #888888;
+}
+
+.map-marker:after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  margin: 5px 0 0 5px;
+  background: #e6e6e6;
+  position: absolute;
+  border-radius: 50%;
+}
+
+/* Chart.js legends */
+
+.chart-legend {
+  list-style: none;
+  position: relative;
+  right: 8px;
+  top: 0;
+}
+.chart-legend li {
+  display: block;
+  padding-left: 30px;
+  position: relative;
+  margin-bottom: 4px;
+  border-radius: 5px;
+  padding: 2px 8px 2px 28px;
+  font-size: 14px;
+  cursor: default;
+  -webkit-transition: background-color 200ms ease-in-out;
+  -moz-transition: background-color 200ms ease-in-out;
+  -o-transition: background-color 200ms ease-in-out;
+  transition: background-color 200ms ease-in-out;
+}
+.chart-legend li:hover {
+  background-color: #fafafa;
+}
+.chart-legend li span {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.chart-title {
+  display: block;
+  text-align: center;
+}
 

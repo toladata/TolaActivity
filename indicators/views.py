@@ -218,6 +218,13 @@ class IndicatorUpdate(UpdateView):
 
     def form_valid(self, form):
         form.save()
+
+        if self.request.POST.has_key('_addanother'):
+            url = "/indicators/indicator_create/"
+            program = request.POST['program']
+            qs = program + "/"
+            return HttpResponseRedirect(''.join((url, qs)))
+
         messages.success(self.request, 'Success, Indicator Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))

@@ -23,9 +23,9 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 
 class TolaSites(models.Model):
-    name = models.CharField(blank=True, null=True, max_length="255")
-    agency_name = models.CharField(blank=True, null=True, max_length="255")
-    agency_url = models.CharField(blank=True, null=True, max_length="255")
+    name = models.CharField(blank=True, null=True, max_length=255)
+    agency_name = models.CharField(blank=True, null=True, max_length=255)
+    agency_url = models.CharField(blank=True, null=True, max_length=255)
     site = models.ForeignKey(Site)
     privacy_disclaimer = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
@@ -124,7 +124,7 @@ class TolaUserAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
     display = 'Tola User'
     list_filter = ('country',)
-    search_fields = ('name','country','title')
+    search_fields = ('name','country__country','title')
 
 
 class Sector(models.Model):
@@ -252,7 +252,7 @@ class Program(models.Model):
 class ApprovalAuthority(models.Model):
     approval_user = models.ForeignKey(TolaUser,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
     budget_limit = models.IntegerField(null=True, blank=True)
-    fund = models.CharField("Fund",max_length="255",null=True, blank=True)
+    fund = models.CharField("Fund",max_length=255,null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -806,16 +806,16 @@ class ProjectAgreement(models.Model):
     estimate_female_trained = models.IntegerField("Estimated # of Female Trained",blank=True,null=True)
     estimate_total_trained = models.IntegerField("Estimated Total # Trained",blank=True,null=True)
     estimate_trainings = models.IntegerField("Estimated # of Trainings Conducted",blank=True,null=True)
-    distribution_type = models.CharField("Type of Items Distributed",max_length="255",null=True,blank=True)
-    distribution_uom = models.CharField("Unit of Measure",max_length="255",null=True,blank=True)
-    distribution_estimate = models.CharField("Estimated # of Items Distributed",max_length="255",null=True,blank=True)
+    distribution_type = models.CharField("Type of Items Distributed",max_length=255,null=True,blank=True)
+    distribution_uom = models.CharField("Unit of Measure",max_length=255,null=True,blank=True)
+    distribution_estimate = models.CharField("Estimated # of Items Distributed",max_length=255,null=True,blank=True)
     cfw_estimate_male = models.IntegerField("Estimated # of Male Laborers",blank=True,null=True)
     cfw_estimate_female = models.IntegerField("Estimated # of Female Laborers",blank=True,null=True)
     cfw_estimate_total = models.IntegerField("Estimated Total # of Laborers",blank=True,null=True)
     cfw_estimate_project_days = models.IntegerField("Estimated # of Project Days",blank=True,null=True)
     cfw_estimate_person_days = models.IntegerField("Estimated # of Person Days",blank=True,null=True)
-    cfw_estimate_cost_materials = models.CharField("Estimated Total Cost of Materials",max_length="255",blank=True,null=True)
-    cfw_estimate_wages_budgeted= models.CharField("Estimated Wages Budgeted",max_length="255",blank=True,null=True)
+    cfw_estimate_cost_materials = models.CharField("Estimated Total Cost of Materials",max_length=255,blank=True,null=True)
+    cfw_estimate_wages_budgeted= models.CharField("Estimated Wages Budgeted",max_length=255,blank=True,null=True)
     estimation_date = models.DateTimeField(blank=True, null=True)
     estimated_by = models.ForeignKey(TolaUser, blank=True, null=True,verbose_name="Originated By", related_name="estimating")
     estimated_by_date = models.DateTimeField("Date Originated", null=True, blank=True)

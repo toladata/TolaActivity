@@ -1,7 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
-from crispy_forms.layout import Layout, Submit, Reset
+from crispy_forms.layout import Layout, Submit, Reset, Div
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from activitydb.models import Feedback, TolaUser
@@ -81,6 +81,7 @@ class NewUserRegistrationForm(UserCreationForm):
     helper.error_text_inline = True
     helper.help_text_inline = True
     helper.html5_required = True
+    helper.form_tag = False
 
 
 class NewTolaUserRegistrationForm(forms.ModelForm):
@@ -89,7 +90,7 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     """
     class Meta:
         model = TolaUser
-        fields = ['title', 'country']
+        fields = ['title', 'country', 'privacy_disclaimer_accepted']
 
     def __init__(self, *args, **kwargs):
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
@@ -103,5 +104,10 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     helper.error_text_inline = True
     helper.help_text_inline = True
     helper.html5_required = True
-    helper.layout = Layout(Fieldset('','title', 'country'))
+    helper.form_tag = False
+    helper.layout = Layout(
+        Fieldset('Information','title', 'country'),
+        Fieldset('Privacy Statement','privacy_disclaimer_accepted',),
+
+    )
 

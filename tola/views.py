@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites
 from indicators.models import CollectedData
 from .tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
@@ -148,9 +148,11 @@ def register(request):
     """
     Register a new User profile using built in Django Users Model
     """
+    privacy = TolaSites.objects.all().filter(id=1)
     if request.method == 'POST':
         uf = NewUserRegistrationForm(request.POST)
         tf = NewTolaUserRegistrationForm(request.POST)
+
         if uf.is_valid() * tf.is_valid():
             user = uf.save()
             user.groups.add(Group.objects.get(name='ViewOnly'))
@@ -163,8 +165,9 @@ def register(request):
     else:
         uf = NewUserRegistrationForm()
         tf = NewTolaUserRegistrationForm()
+
     return render(request, "registration/register.html", {
-        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper
+        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,'privacy':privacy
     })
 
 

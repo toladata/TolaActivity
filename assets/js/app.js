@@ -36,33 +36,67 @@ $(document).ready(function() {
 });
 
 
-$('input[type="file"]').each(function() {
-    var $file = $(this), $form = $file.closest('.upload-form');
-    $file.ajaxSubmitInput({
-        url: '/incident/add/', //URL where you want to post the form
-        beforeSubmit: function($input) {
-            //manipulate the form before posting
-        },
-        onComplete: function($input, iframeContent, options) {
-            if (iframeContent) {
-                $input.closest('form')[0].reset();
-                if (!iframeContent) {
-                    return;
-                }
-                var iframeJSON;
-                try {
-                    iframeJSON = $.parseJSON(iframeContent);
-                    //use the response data
-                } catch(err) {
-                    console.log(err)
-                }
-            }
-        }
+
+/*
+* Save the task checkbox state
+*/
+function tasklistChange(pk,type,value){
+    // send true or false back to the update and set the checkbox class
+    if ($('#' + type + '_' + pk ).hasClass( "glyphicon glyphicon-check") == true ) {
+        $.get('/activitydb/checklist_update_link/' + pk + '/' + type + '/0/', function(data){
+            $('#' + type + '_' + pk ).removeClass("glyphicon glyphicon-check").addClass("glyphicon glyphicon-unchecked");
+        });
+    }else{
+        $.get('/activitydb/checklist_update_link/' + pk + '/' + type + '/1/', function(data){
+            $('#' + type + '_' + pk ).removeClass("glyphicon glyphicon-unchecked").addClass("glyphicon glyphicon-check");
+        });
+    }
+
+}
+
+
+
+/*
+*  Load the collected data for an indicator on the results page
+*/
+function loadCollected(indicator,program){
+    var indicator;
+    $('.ajaxLoader').show();
+    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
+        $('#hidden-' + indicator).html(data);
     });
-});
+    $('.ajaxLoader').hide();
+};
+
+/*
+*  Load the collected data for an indicator on the results page
+*/
+function loadIndicators(program){
+    var program;
+    $('.ajaxLoader').show();
+    $.get('/indicators/program_indicators/' + program + '/', function(data){
+        $('#hidden-' + program).html(data);
+      });
+    $('.ajaxLoader').hide();
+    $('#hidden-' + program).on('shown', function () {
+       $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
+    });
+
+    $('#hidden-' + program).on('hidden', function () {
+       $(".icon-chevron-up").removeClass("icon-chevron-up").addClass("icon-chevron-down");
+    });
+};
 
 
 $(document).ready(function() {
+
+    /*
+    *  Reload page if country dropdown changes on main dashboard
+    */
+    $('#something').click(function() {
+        load(url, data, loadComplete);
+    });
+
      /*
      * Handle change in the indicator services drop-down; updates the indicator drop-down accordingly.
      */
@@ -98,7 +132,7 @@ $(document).ready(function() {
         } else {
             var url = "/activitydb/country/" + selected_country + "/country_json/";
             $.getJSON(url, function(province) {
-                var options = '<option value="0">--Province--</option>';
+                var options = '<option value="0">--Level 1--</option>';
                 for (var i = 0; i < province.length; i++) {
                     options += '<option value="' + province[i].pk + '">' + province[i].fields['name'] + '</option>';
                 }
@@ -109,7 +143,7 @@ $(document).ready(function() {
         }
 
         // page-specific-action call if a page has implemented the 'country_dropdwon_has_changed' function
-        if(typeof country_dropdwon_has_changed != 'undefined') country_dropdwon_has_changed(selected_country);
+        if(typeof country_dropdown_has_changed != 'undefined') country_dropdown_has_changed(selected_country);
     });
 
 
@@ -119,11 +153,11 @@ $(document).ready(function() {
     $("select#id_province").change(function() {
         var selected_province = $(this).val();
         if (selected_province == undefined || selected_province == -1 || selected_province == '') {
-            $("select#id_province").html("<option>--Province--</option>");
+            $("select#id_province").html("<option>--Level 1--</option>");
         } else {
             var url = "/activitydb/province/" + selected_province + "/province_json/";
             $.getJSON(url, function(district) {
-                var options = '<option value="0">--District--</option>';
+                var options = '<option value="0">--Level 2--</option>';
                 for (var i = 0; i < district.length; i++) {
                     options += '<option value="' + district[i].pk + '">' + district[i].fields['name'] + '</option>';
                 }
@@ -134,8 +168,34 @@ $(document).ready(function() {
         }
 
         // page-specific-action call if a page has implemented the 'country_dropdwon_has_changed' function
-        if(typeof country_dropdwon_has_changed != 'undefined') country_dropdwon_has_changed(selected_country);
+        if(typeof country_dropdown_has_changed != 'undefined') country_dropdown_has_changed(selected_country);
     });
+
+
+        /*
+     * Handle change in the province drop-down; updates the district drop-down accordingly.
+     */
+    $("select#id_district").change(function() {
+        var selected_district = $(this).val();
+        if (selected_district == undefined || selected_district == -1 || selected_district == '') {
+            $("select#id_district").html("<option>--Level 2--</option>");
+        } else {
+            var url = "/activitydb/district/" + selected_district + "/district_json/";
+            $.getJSON(url, function(adminthree) {
+                var options = '<option value="0">--Level 3--</option>';
+                for (var i = 0; i < adminthree.length; i++) {
+                    options += '<option value="' + adminthree[i].pk + '">' + adminthree[i].fields['name'] + '</option>';
+                }
+
+                $("select#id_admin_level_three").html(options);
+                $("select#id_admin_level_three option:first").attr('selected', 'selected');
+            });
+        }
+
+        // page-specific-action call if a page has implemented the 'country_dropdwon_has_changed' function
+        if(typeof country_dropdown_has_changed != 'undefined') country_dropdown_has_changed(selected_country);
+    });
+
 
     /*
      * Handle change in office drop-down

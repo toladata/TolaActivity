@@ -52,66 +52,59 @@ router.register(r'village', VillageViewSet)
 router.register(r'contact', ContactViewSet)
 router.register(r'documentation', DocumentationViewSet)
 
+urlpatterns = [ # rest framework
+                url(r'^api/', include(router.urls)),
+                url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+                url(r'^api-token-auth/', auth_views.obtain_auth_token),
 
-urlpatterns = patterns('',
-                        #rest framework
-                        url(r'^api/', include(router.urls)),
-                        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-                        url(r'^api-token-auth/', auth_views.obtain_auth_token),
+                # index
+                url(r'^$', views.index, name='index'),
+                # enable the admin:
+                url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+                url(r'^admin/', include(admin.site.urls)),
+                url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
 
-                        #index
-                        url(r'^$', 'tola.views.index', name='index'),
-                        #enable the admin:
-                        url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-                        url(r'^admin/', include(admin.site.urls)),
-                        url(r'^(?P<selected_countries>\w+)/$', 'tola.views.index', name='index'),
+                # index
+                url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', 'tola.views.index', name='index'),
 
-                        #index
-                        url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', 'tola.views.index', name='index'),
+                # base template for layout
+                url(r'^$', TemplateView.as_view(template_name='base.html')),
 
-                        #base template for layout
-                        url(r'^$', TemplateView.as_view(template_name='base.html')),
+                # enable admin documentation:
+                url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-                        #ipt app specific urls
-                        #url(r'^indicators/', include('indicators.urls')),
+                # home
+                url(r'^contact', views.contact, name='contact'),
+                url(r'^faq', views.faq, name='faq'),
+                url(r'^documentation', views.documentation, name='documentation'),
 
-                        #enable admin documentation:
-                        url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+                # app include of activitydb urls
+                url(r'^activitydb/', include('activitydb.urls')),
 
-                        #home
-                        url(r'^contact', 'tola.views.contact', name='contact'),
-                        url(r'^faq', 'tola.views.faq', name='faq'),
-                        url(r'^documentation', 'tola.views.documentation', name='documentation'),
+                # app include of indicator urls
+                url(r'^indicators/', include('indicators.urls')),
 
-                        #app include of activitydb urls
-                        url(r'^activitydb/', include('activitydb.urls')),
+                # app include of customdashboard urls
+                url(r'^customdashboard/', include('customdashboard.urls')),
 
-                        #app include of indicator urls
-                        url(r'^indicators/', include('indicators.urls')),
+                # app include of reports urls
+                url(r'^reports/', include('reports.urls')),
 
-                        #app include of customdashboard urls
-                        url(r'^customdashboard/', include('customdashboard.urls')),
+                # app include of tables urls
+                url(r'^tables/', include('tables.urls')),
 
-                        #app include of reports urls
-                        url(r'^reports/', include('reports.urls')),
+                # local login
+                url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
+                url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),
+                url(r'^accounts/logout/$', views.logout_view, name='logout'),
 
-                        #app include of tables urls
-                        url(r'^tables/', include('tables.urls')),
+                # accounts
+                url(r'^accounts/profile/$', views.profile, name='profile'),
+                url(r'^accounts/register/$', views.register, name='register'),
 
-                        #local login
-                        url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
-                        url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),
-                        url(r'^accounts/logout/$', 'tola.views.logout_view', name='logout'),
+                # Auth backend URL's
+                url('', include('django.contrib.auth.urls', namespace='auth')),
+                url('', include('social.apps.django_app.urls', namespace='social')),
 
-                        #accounts
-                        url(r'^accounts/profile/$', 'tola.views.profile', name='profile'),
-                        url(r'^accounts/register/$', 'tola.views.register', name='register'),
-
-                        #Auth backend URL's
-                        url('', include('django.contrib.auth.urls', namespace='auth')),
-                        url('', include('social.apps.django_app.urls', namespace='social')),
-
-
-
-)  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

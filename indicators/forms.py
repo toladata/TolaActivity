@@ -98,6 +98,7 @@ class IndicatorForm(forms.ModelForm):
             HTML("""<br/>"""),
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
+                Submit('submit', 'Save & Add Another >>', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
             )
         )

@@ -6,11 +6,13 @@ from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, Pr
     ChecklistItemList, BudgetCreate, BudgetUpdate, BudgetDelete, StakeholderList, StakeholderCreate, StakeholderDelete, StakeholderUpdate, ContactCreate, ContactList, ContactUpdate, ContactDelete,\
     FormLibraryList
 
+from activitydb import views
+
 from django.conf.urls import *
 
 # place app url patterns here
 
-urlpatterns = patterns('',
+urlpatterns = [
                        url(r'^report_builder/', include('report_builder.urls')),
                        ###activitydb
                        url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
@@ -105,4 +107,4 @@ urlpatterns = patterns('',
                        url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
 
 
-                       )
+                       ]

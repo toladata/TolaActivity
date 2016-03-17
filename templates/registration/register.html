@@ -23,8 +23,18 @@
 
   <form action="" method="post">
       {% csrf_token %}
-      {{ userform.as_p }}
-      {{ tolaform.as_p }}
+      {% load crispy_forms_tags %}
+      {{ userform|crispy }}
+      {{ tolaform|crispy }}
+      <h6>Notice/Disclaimer:</h6>
+      {{ privacy }} {{ privacy.name }}
+      {{ privacy.privacy_disclaimer }}
+      <iframe hidden="hidden" width="400" height="200" scrolling="True">
+          <p>
+      {{ privacy.privacy_disclaimer }}
+          </p>
+      </iframe>
+
       <input type="submit" value="Create the account">
   </form>
 {% endblock %}

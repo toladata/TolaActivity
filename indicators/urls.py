@@ -4,7 +4,7 @@ from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, 
     IndicatorList, IndicatorExport
 
 
-urlpatterns = patterns('',
+urlpatterns = [
 
     ###INDICATOR PLANING TOOL
     #Home
@@ -45,4 +45,4 @@ urlpatterns = patterns('',
     url(r'^collected_data_table/(?P<indicator>[-\w]+)/(?P<program>[-\w]+)/', 'indicators.views.collected_data_json', name='collected_data_json'),
     url(r'^program_indicators/(?P<program>[-\w]+)/', 'indicators.views.program_indicators_json', name='program_indicators_json'),
 
-)
+]
