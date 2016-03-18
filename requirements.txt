@@ -4,7 +4,7 @@ django-crispy-forms==1.6.0
 django-extensions==1.4.9
 django-filter==0.10.0
 django-geojson==2.5.0
-django-import-export==0.2.7
+django-import-export==0.4.3
 django-leaflet==0.13.4
 django-localflavor==1.0
 django-mathfilters==0.3.0
