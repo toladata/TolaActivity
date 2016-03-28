@@ -111,7 +111,7 @@ def SurveyPublicDashboard(request,id=0):
     tola_is = []
     for item in data:
         meaning.append(item['tola_is_a_pashto_word_meaning_'])
-        # mulitple choice
+        # multiple choice
         join.append(list(x for x in item['thanks_for_coming_what_made_you_join_us_today_'].split()))
         # multiple choice
         tola_is.append(list(x for x in item['tola_is_a_system_for_'].split()))
@@ -121,7 +121,7 @@ def SurveyPublicDashboard(request,id=0):
     tola_is: adaptive_manag an_indicator_t a_data_managem option_4 all_of_the_abo
     """
     # print meaning
-    # print join
+    print join
     # print tola_is
 
     meaningcount = {}
@@ -145,13 +145,13 @@ def SurveyPublicDashboard(request,id=0):
     joincount['to_meet_the_team'] = 0
     joincount['not_sure'] = 0
     for answer in join:
-        if answer == "tola_is_a_myst":
+        if "tola_is_a_myst" in answer:
             joincount['tola_is_a_mystery'] = joincount['tola_is_a_mystery'] + 1
-        if answer == "i_like_beer":
+        if "i_like_beer" in answer:
             joincount['i_like_beer'] = joincount['i_like_beer'] + 1
-        if answer == "to_meet_the_team":
+        if "to_meet_the_team" in answer:
             joincount['to_meet_the_team'] = joincount['to_meet_the_team'] + 1
-        if answer == "not_sure_what_":
+        if "not_sure_what_" in answer:
             joincount['not_sure'] = joincount['not_sure'] + 1
 
     tolacount = {}
