@@ -236,7 +236,7 @@ class IndicatorDelete(DeleteView):
     indicator Delete
     """
     model = Indicator
-    success_url = '/'
+    success_url = '/indicators/home/0/'
 
     def form_invalid(self, form):
 
@@ -248,7 +248,7 @@ class IndicatorDelete(DeleteView):
 
         form.save()
 
-        messages.success(self.request, 'Success, Data Deleted!')
+        messages.success(self.request, 'Success, Indicator Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = IndicatorForm
