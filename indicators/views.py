@@ -108,14 +108,13 @@ def indicator_create(request, id=0):
                     definition=item['definition']
                     #replace HTML tags if they are in the string
                     definition = re.sub("<.*?>", "", definition)
+                    
                     getService = ExternalService.objects.get(id=service)
                     full_url = getService.url + "/" + item['nid']
                     external_service_record = ExternalServiceRecord(record_id=item['nid'],external_service=getService,full_url=full_url)
                     external_service_record.save()
                     getType, created = IndicatorType.objects.get_or_create(indicator_type=item['type'].title())
                     type=getType
-
-
 
         #save form
         new_indicator = Indicator(country=country,sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)

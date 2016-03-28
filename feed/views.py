@@ -120,6 +120,16 @@ class AgreementViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    """
+    def post(self,request):
+
+        for each agreement
+            insert int and string fields direct
+            if FK field
+
+        return blank
+    """
+
     filter_fields = ('program__country__country','program__name')
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = ProjectAgreement.objects.all()
