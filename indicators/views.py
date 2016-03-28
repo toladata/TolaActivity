@@ -108,7 +108,7 @@ def indicator_create(request, id=0):
                     definition=item['definition']
                     #replace HTML tags if they are in the string
                     definition = re.sub("<.*?>", "", definition)
-                    
+
                     getService = ExternalService.objects.get(id=service)
                     full_url = getService.url + "/" + item['nid']
                     external_service_record = ExternalServiceRecord(record_id=item['nid'],external_service=getService,full_url=full_url)
