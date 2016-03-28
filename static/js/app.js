@@ -27,12 +27,7 @@ $(function () {
 
 //custom jquery to trigger date picker, info pop-over and print category text
 $(document).ready(function() {
-    //Check for chrome and don't provide a datetime pickers for it
-    var browser = navigator.userAgent;
-
-    if(browser.indexOf("Chrome") < 0){
-       $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
-    }
+    $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
 });
 
 
