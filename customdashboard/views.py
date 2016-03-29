@@ -172,8 +172,18 @@ def SurveyPublicDashboard(request,id=0):
         if "all_of_the_abo" in answer:
             tolacount['all_of_the_abo'] = tolacount['all_of_the_abo'] + 1
 
+    dashboard = True
 
-    return render(request, "publicdashboard/survey_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'countries': countries})
+    return render(request, "publicdashboard/survey_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'countries': countries, 'dashboard':dashboard})
+
+
+def ReportPublicDashboard(request,id=0):
+
+    # get all countires
+    countries = Country.objects.all()
+    report = True
+
+    return render(request, "publicdashboard/survey_public_dashboard.html", {'countries': countries, 'report':report})
 
 
 def Gallery(request,id=0):
@@ -199,6 +209,7 @@ class ProgramList(ListView):
             getProgram = Program.objects.all().filter(dashboard_name__is_public=1, country__id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
+
 
 class InternalDashboard(ListView):
     """
