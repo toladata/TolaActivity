@@ -604,7 +604,11 @@ def collecteddata_import(request):
 
     user_json = json.loads(response.content)
     shared_json = json.loads(response2.content)
-    data = user_json + shared_json
+    if shared_json:
+        data = user_json.copy()
+        data.update(shared_json)
+    else:
+        data = user_json
 
     # debug the json data string uncomment dump and print
     # data2 = json.dumps(data) # json formatted string
