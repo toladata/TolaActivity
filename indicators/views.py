@@ -17,6 +17,7 @@ from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
+from settings.local import TOLA_TABLES_TOKEN
 
 import requests
 from export import IndicatorResource, CollectedDataResource
@@ -591,27 +592,34 @@ def collecteddata_import(request):
     owner = request.user
     service = ExternalService.objects.get(name="TolaTables")
 
-    #add filter to get just the users tables only
+    # add filter to get just the users tables only
     user_filter_url = service.feed_url + "&owner__username=" + str(owner)
-    #public_filter_url = service.feed_url + "&public=True"
-    #shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
+    shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
 
-    response = requests.get(user_filter_url)
+    headers = {'content-type': 'application/json',
+               'Authorization': 'Token ' + TOLA_TABLES_TOKEN}
+
+    response = requests.get(user_filter_url, headers=headers, verify=False)
+    response2 = requests.get(shared_filter_url, headers=headers, verify=False)
+
     user_json = json.loads(response.content)
+    shared_json = json.loads(response2.content)
+    data = user_json + shared_json
 
-    data = user_json
-
-    #debug the json data string uncomment dump and print
-    #data2 = json.dumps(data) # json formatted string
-    #print data2
+    # debug the json data string uncomment dump and print
+    # data2 = json.dumps(data) # json formatted string
+    # print data2
 
     if request.method == 'POST':
         id = request.POST['service_table']
         filter_url = service.feed_url + "&id=" + id
-        response = requests.get(filter_url)
+        headers = {'content-type': 'application/json',
+               'Authorization': 'Token ' + TOLA_TABLES_TOKEN}
+
+        response = requests.get(filter_url, headers=headers, verify=False)
         get_json = json.loads(response.content)
         data = get_json
-        for item in data['results']:
+        for item in data:
             name = item['name']
             url = item['data']
             remote_owner = item['owner']['username']
@@ -624,7 +632,7 @@ def collecteddata_import(request):
             create_table.save()
             result = "success"
 
-        #send result back as json
+        # send result back as json
         message = result
         return HttpResponse(json.dumps(message), content_type='application/json')
 

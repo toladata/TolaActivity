@@ -73,6 +73,10 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "234234blah.apps.googleusercontent.com"
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "2345435346345fsgwegr"
 SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = "mercycorps.org"
 
+########## TOLA TABLES AUTH
+TOLA_TABLES_USER = "tolaactivity"
+TOLA_TABLES_TOKEN = "qAAdNMQy77Vwqgj4YgOu20f7"
+
 ########## CACHE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
 CACHES = {
@@ -82,9 +86,8 @@ CACHES = {
 }
 ########## END CACHE CONFIGURATION
 
-########## LOCAL DEV APPS
+########## LOCAL APPS DEPENDING ON SERVER DEBUG FOR DEV BOXES, REPORT BUILDER FOR REPORT SERVER
 DEV_APPS = (
-    'reports',
     'debug_toolbar',
     'report_builder',
     'djangocosign',

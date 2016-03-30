@@ -67,11 +67,10 @@
         <div class="panel-body">
             <form class="form-horizontal" method="post" enctype="multipart/form-data" id="importForm" name="most" action="/indicators/collecteddata_import/" role="form">
               {% csrf_token %}
-
               <div class="form-group">
                   <label for="service_table">Tola Tables </label>
                   <select name="service_table" id="service_table" class="form-control">
-                      {% for table in getTables.results %}
+                      {% for table in getTables %}
                       <option value="{{ table.id }}"> {{ table.owner.username }} - {{ table.name }} </option>
                       {% endfor %}
                   </select>

@@ -10,7 +10,7 @@ from django.utils.timezone import utc
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 
-logger = logging.getLogger("epro")
+logger = logging.getLogger("tola")
 
 class CosignBackend(RemoteUserBackend):
     """

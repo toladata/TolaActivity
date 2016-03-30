@@ -6,6 +6,7 @@ import sys
 from activitydb.models import Country, TolaUser
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
+from settings.local import TOLA_TABLES_TOKEN
 
 
 #CREATE NEW DATA DICTIONARY OBJECT 
@@ -40,8 +41,12 @@ def getTolaDataSilos(user):
         Returns a list of silos from TolaData that the logged in user has access to
         """
         url="https://tola-data.mercycorps.org/api/silo/?format=json"
+        headers = {'content-type': 'application/json',
+               'Authorization': 'Token ' + TOLA_TABLES_TOKEN}
+
+        response = requests.get(url,headers=headers, verify=False)
         # set url for json feed here
-        json_file = urllib2.urlopen(url)
+        json_file = response
 
         print "JSON FILE:"
         print json_file.read()
@@ -113,7 +118,10 @@ def import_table(request):
     #public_filter_url = service.feed_url + "&public=True"
     #shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
 
-    response = requests.get(user_filter_url)
+    headers = {'content-type': 'application/json',
+               'Authorization': 'Token ' + TOLA_TABLES_TOKEN}
+
+    response = requests.get(user_filter_url,headers=headers, verify=False)
     user_json = json.loads(response.content)
 
     data = user_json
