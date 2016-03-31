@@ -605,8 +605,7 @@ def collecteddata_import(request):
     user_json = json.loads(response.content)
     shared_json = json.loads(response2.content)
     if shared_json:
-        data = user_json.copy()
-        data.update(shared_json)
+        data = user_json + shared_json
     else:
         data = user_json
 
