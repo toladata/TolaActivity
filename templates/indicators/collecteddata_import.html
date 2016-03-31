@@ -70,7 +70,7 @@
               <div class="form-group">
                   <label for="service_table">Tola Tables </label>
                   <select name="service_table" id="service_table" class="form-control">
-                      {% for table in getTables %}
+                      {% for table in getTables.results %}
                       <option value="{{ table.id }}"> {{ table.owner.username }} - {{ table.name }} </option>
                       {% endfor %}
                   </select>

@@ -631,7 +631,7 @@ def collecteddata_import(request):
         response = requests.get(filter_url, headers=headers, verify=False)
         get_json = json.loads(response.content)
         data = get_json
-        for item in data:
+        for item in data['results']:
             name = item['name']
             url = item['data']
             remote_owner = item['owner']['username']
