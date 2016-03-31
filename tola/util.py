@@ -3,10 +3,9 @@ import urllib2
 import json
 import sys
 
-from activitydb.models import Country, TolaUser
+from activitydb.models import Country, TolaUser, TolaSites
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
-from settings.local import TOLA_TABLES_TOKEN
 
 
 #CREATE NEW DATA DICTIONARY OBJECT 
@@ -40,9 +39,10 @@ def getTolaDataSilos(user):
         """
         Returns a list of silos from TolaData that the logged in user has access to
         """
+        token = TolaSites.objects.get(site_id=1).value("tola_tables_token")
         url="https://tola-data.mercycorps.org/api/silo/?format=json"
         headers = {'content-type': 'application/json',
-               'Authorization': 'Token ' + TOLA_TABLES_TOKEN}
+               'Authorization': 'Token ' + token}
 
         response = requests.get(url,headers=headers, verify=False)
         # set url for json feed here
@@ -118,8 +118,13 @@ def import_table(request):
     #public_filter_url = service.feed_url + "&public=True"
     #shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
 
-    headers = {'content-type': 'application/json',
-               'Authorization': 'Token ' + TOLA_TABLES_TOKEN}
+    token = TolaSites.objects.get(site_id=1)
+    if token.tola_tables_token:
+        headers = {'content-type': 'application/json',
+               'Authorization': 'Token ' + token.tola_tables_token}
+    else:
+        headers = {'content-type': 'application/json'}
+        print "Token Not Found"
 
     response = requests.get(user_filter_url,headers=headers, verify=False)
     user_json = json.loads(response.content)

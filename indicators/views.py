@@ -3,8 +3,8 @@ from django.shortcuts import render, get_object_or_404
 
 import json
 from django.http import HttpResponseRedirect
-from .models import TolaUser, Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from activitydb.models import Program, SiteProfile, Country, Sector
+from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
+from activitydb.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry
@@ -17,7 +17,6 @@ from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View, DetailView
-from settings.local import TOLA_TABLES_TOKEN
 
 import requests
 from export import IndicatorResource, CollectedDataResource
@@ -25,7 +24,7 @@ from export import IndicatorResource, CollectedDataResource
 
 class IndicatorList(ListView):
     """
-    indicator List
+    Indicator List
     """
     model = Indicator
     template_name = 'indicators/indicator_list.html'
@@ -595,16 +594,21 @@ def collecteddata_import(request):
     # add filter to get just the users tables only
     user_filter_url = service.feed_url + "&owner__username=" + str(owner)
     shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
-
-    headers = {'content-type': 'application/json',
-               'Authorization': 'Token ' + TOLA_TABLES_TOKEN}
+    token = TolaSites.objects.get(site_id=1)
+    if token.tola_tables_token:
+        headers = {'content-type': 'application/json',
+               'Authorization': 'Token ' + token.tola_tables_token}
+    else:
+        headers = {'content-type': 'application/json'}
+        print "Token Not Found"
 
     response = requests.get(user_filter_url, headers=headers, verify=False)
     response2 = requests.get(shared_filter_url, headers=headers, verify=False)
 
     user_json = json.loads(response.content)
     shared_json = json.loads(response2.content)
-    if shared_json:
+
+    if type(shared_json) is not dict:
         data = user_json + shared_json
     else:
         data = user_json
@@ -616,8 +620,13 @@ def collecteddata_import(request):
     if request.method == 'POST':
         id = request.POST['service_table']
         filter_url = service.feed_url + "&id=" + id
-        headers = {'content-type': 'application/json',
-               'Authorization': 'Token ' + TOLA_TABLES_TOKEN}
+        token = TolaSites.objects.get(site_id=1)
+        if token.tola_tables_token:
+            headers = {'content-type': 'application/json',
+                   'Authorization': 'Token ' + token.tola_tables_token}
+        else:
+            headers = {'content-type': 'application/json'}
+            print "Token Not Found"
 
         response = requests.get(filter_url, headers=headers, verify=False)
         get_json = json.loads(response.content)
@@ -626,12 +635,13 @@ def collecteddata_import(request):
             name = item['name']
             url = item['data']
             remote_owner = item['owner']['username']
-
+        # get the users country
+        countries = getCountry(request.user)
         check_for_existence = TolaTable.objects.all().filter(name=name,owner=owner)
         if check_for_existence:
             result = "error"
         else:
-            create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
+            create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url, country=countries)
             create_table.save()
             result = "success"
 

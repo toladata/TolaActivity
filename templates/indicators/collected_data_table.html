@@ -9,7 +9,6 @@
 <table class="table table-bordered">
     <tr>
         <th>Date Collected</th>
-        <th>Program</th>
         <th>Evidence</th>
         <th>Target</th>
         <th>Actual</th>
@@ -19,7 +18,6 @@
         {% for item in collecteddata %}
         <tr>
             <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.date_collected|date:"m-d-Y" }}</a></td>
-            <td>{{ item.program }}</td>
             <td>{% if item.evidence %} {{ item.evidence }} {%endif%} {% if item.tola_table %} {{ item.tola_table }} {% endif %}</td>
             <td>{{ item.targeted }}</td>
             <td>{{ item.achieved }}</td>
@@ -27,14 +25,14 @@
         </tr>
         {% endfor %}
         <tr>
-            <td colspan="3"><span style="float: right;">Sum:</span></td>
+            <td colspan="2"><span style="float: right;">Sum:</span></td>
             <td>{{ collected_sum.targeted__sum }}</td>
             <td>{{ collected_sum.achieved__sum }}</td>
             <td><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info">New Data</a></td>
         </tr>
     {% else %}
         <tr>
-            <td colspan="5">No Data Collected</td>
+            <td colspan="4">No Data Collected</td>
             <td><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info">New Data</a></td>
         </tr>
     {% endif %}

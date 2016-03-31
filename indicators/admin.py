@@ -13,7 +13,7 @@ class IndicatorResource(resources.ModelResource):
 
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     indicator_type = ManyToManyWidget(IndicatorType, separator=" | ", field="indicator_type")
-    objective = ManyToManyWidget(Objective, separator=" | ", field="objective")
+    objective = ManyToManyWidget(Objective, separator=" | ", field="objective"),
     strategic_objective = ManyToManyWidget(StrategicObjective, separator=" | ", field="strategic_objective")
     level = ManyToManyWidget(Level, separator=" | ", field="level")
     reporting_frequency = fields.Field(column_name='reporting_frequency', attribute='reporting_frequency', widget=ForeignKeyWidget(ReportingFrequency, 'frequency'))
@@ -48,11 +48,10 @@ class TolaTableResource(resources.ModelResource):
 
 
 class TolaTableAdmin(ImportExportModelAdmin):
-    resource_class = TolaTableResource
-    list_display = ('owner','name','url')
-    search_fields = ('name','owner__username')
-    list_filter = ('owner',)
-    display = 'Linked Tola Tables'
+    list_display = ('name','owner','url','create_date','edit_date')
+    search_fields = ('country__country','name')
+    list_filter = ('country__country',)
+    display = 'Tola Table'
     pass
 
 class CollectedDataResource(resources.ModelResource):

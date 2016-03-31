@@ -13,6 +13,7 @@ class TolaTable(models.Model):
     table_id = models.IntegerField(blank=True, null=True)
     owner = models.ForeignKey('auth.User')
     remote_owner = models.CharField(max_length=255, blank=True)
+    country = models.ManyToManyField(Country, blank=True)
     url = models.CharField(max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -21,8 +22,10 @@ class TolaTable(models.Model):
         return self.name
 
 
-class TolaTablesAdmin(admin.ModelAdmin):
-    list_display = ('name','owner','url','create_date','edit_date')
+class TolaTableAdmin(admin.ModelAdmin):
+    list_display = ('name','country','owner','url','create_date','edit_date')
+    search_fields = ('country','name')
+    list_filter = ('country__country',)
     display = 'Tola Table'
 
 
