@@ -166,7 +166,6 @@ class ProjectAgreementCreate(CreateView):
     model = ProjectAgreement
     template_name = 'activitydb/projectagreement_form.html'
 
-    @method_decorator(group_required(['Editor','Reviewer','Approver'],url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectAgreementCreate, self).dispatch(request, *args, **kwargs)
 
@@ -238,7 +237,6 @@ class ProjectAgreementUpdate(UpdateView):
     """
     model = ProjectAgreement
 
-    @method_decorator(group_required(group_names=['Approver','Editor','Reviewer'], url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
 
@@ -1226,7 +1224,6 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
     """
     model = Benchmarks
     success_url = '/'
-
 
     def get_context_data(self, **kwargs):
         context = super(BenchmarkDelete, self).get_context_data(**kwargs)
