@@ -38,6 +38,7 @@ from django.contrib.auth.decorators import user_passes_test
 from tola.util import getCountry, emailGroup
 from mixins import AjaxableResponseMixin
 from export import ProjectAgreementResource
+from django.core.exceptions import PermissionDenied
 
 
 def date_handler(obj):
@@ -50,6 +51,7 @@ def group_required(*group_names, **url):
         if u.is_authenticated():
             if bool(u.groups.filter(name__in=group_names)) | u.is_superuser:
                 return True
+            raise PermissionDenied
         return False
     return user_passes_test(in_groups)
 
@@ -164,6 +166,10 @@ class ProjectAgreementCreate(CreateView):
     model = ProjectAgreement
     template_name = 'activitydb/projectagreement_form.html'
 
+    @method_decorator(group_required(['Editor','Reviewer','Approver'],url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProjectAgreementCreate, self).dispatch(request, *args, **kwargs)
+
      # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(ProjectAgreementCreate, self).get_form_kwargs()
@@ -231,6 +237,10 @@ class ProjectAgreementUpdate(UpdateView):
     :param id: project_agreement_id
     """
     model = ProjectAgreement
+
+    @method_decorator(group_required(group_names=['Approver','Editor','Reviewer'], url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)
@@ -374,6 +384,10 @@ class ProjectAgreementDelete(DeleteView):
     """
     model = ProjectAgreement
     success_url = '/activitydb/projectagreement_list/0/'
+
+    @method_decorator(group_required('Editor',url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProjectAgreementDelete, self).dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
 
@@ -617,6 +631,10 @@ class ProjectCompleteDelete(DeleteView):
     model = ProjectComplete
     success_url = '/activitydb/projectcomplete_list/0/'
 
+    @method_decorator(group_required('Editor',url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ProjectCompleteDelete, self).dispatch(request, *args, **kwargs)
+
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -821,7 +839,7 @@ class DocumentationUpdate(UpdateView):
     model = Documentation
     queryset = Documentation.objects.select_related()
 
-     # add the request to the kwargs
+    # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(DocumentationUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
@@ -1013,6 +1031,10 @@ class SiteProfileDelete(DeleteView):
     """
     model = SiteProfile
     success_url = "/activitydb/siteprofile_list/0/0/"
+
+    @method_decorator(group_required('Editor',url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(SiteProfileDelete, self).dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
 
@@ -1365,6 +1387,7 @@ class StakeholderCreate(CreateView):
     """
     model = Stakeholder
 
+    @method_decorator(group_required('Editor',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(StakeholderCreate, self).dispatch(request, *args, **kwargs)
 

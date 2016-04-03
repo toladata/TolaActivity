@@ -9,6 +9,7 @@ class LoggedInMixin(object):
     def dispatch(self, *args, **kwargs):
         return super(LoggedInMixin, self).dispatch(*args, **kwargs)
 
+
 class AjaxableResponseMixin(object):
     """
     Mixin to add AJAX support to a form.
