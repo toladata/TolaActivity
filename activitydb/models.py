@@ -1037,6 +1037,13 @@ class DocumentationAdmin(admin.ModelAdmin):
 class Benchmarks(models.Model):
     percent_complete = models.IntegerField("% complete", blank=True, null=True)
     percent_cumulative = models.IntegerField("% cumulative completion", blank=True, null=True)
+    est_start_date = models.DateTimeField(null=True, blank=True)
+    est_end_date = models.DateTimeField(null=True, blank=True)
+    actual_start_date = models.DateTimeField(null=True, blank=True)
+    actual_end_date = models.DateTimeField(null=True, blank=True)
+    site = models.ForeignKey(SiteProfile, null=True, blank=True)
+    budget = models.IntegerField("Estimated Budget", blank=True, null=True)
+    cost = models.IntegerField("Actual Cost", blank=True, null=True)
     description = models.CharField("Description", max_length=255, blank=True)
     agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True)
     complete = models.ForeignKey(ProjectComplete,blank=True, null=True)
@@ -1045,7 +1052,7 @@ class Benchmarks(models.Model):
 
     class Meta:
         ordering = ('description',)
-        verbose_name_plural = "Benchmarks"
+        verbose_name_plural = "Project Components"
 
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1060,8 +1067,8 @@ class Benchmarks(models.Model):
 
 
 class BenchmarksAdmin(admin.ModelAdmin):
-    list_display = ('description', 'percent_complete', 'percent_cumulative', 'create_date', 'edit_date')
-    display = 'Benchmarks'
+    list_display = ('description', 'agreement__name', 'create_date', 'edit_date')
+    display = 'Project Components'
 
 
 class Monitor(models.Model):

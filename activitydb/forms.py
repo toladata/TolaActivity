@@ -181,13 +181,47 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
+                    Fieldset('Project Details', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
                              'project_type', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date',
-                    ),
+                        ),
 
-                ),
+                    ),
+                Tab('Components',
+                    Fieldset("Project Components",
+                        HTML("""
+
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Benchmarks</div>
+                              {% if getBenchmark %}
+                                  <!-- Table -->
+                                  <table class="table">
+                                    <tr>
+                                    <th>Percent Complete</th>
+                                    <th>Percent Cumulative Completion</th>
+                                    <th>Description</th>
+                                    <th>View</th>
+                                    </tr>
+                                    {% for item in getBenchmark %}
+                                    <tr>
+                                        <td>{{ item.percent_complete}}</td>
+                                        <td>{{ item.percent_cumulative}}</td>
+                                        <td>{{ item.description}}</td>
+                                        <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                  </table>
+                              {% endif %}
+                              <div class="panel-footer">
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Benchmarks</a>
+                              </div>
+                            </div>
+
+                            """),
+                        ),
+                    ),
                 Tab('Budget',
-                     Fieldset(
+                    Fieldset(
                         'Budget',
                         PrependedAppendedText('total_estimated_budget','$', '.00'), PrependedAppendedText('mc_estimated_budget','$', '.00'),
                         AppendedText('local_total_estimated_budget', '.00'), AppendedText('local_mc_estimated_budget', '.00'),
@@ -195,53 +229,53 @@ class ProjectAgreementForm(forms.ModelForm):
                     ),
                     Fieldset("Other Budget Contributions:",
                         Div(
-                                "",
-                                HTML("""
+                            "",
+                            HTML("""
 
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Budget Contributions</div>
-                                      {% if getBudget %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Contributor</th>
-                                            <th>Description</th>
-                                            <th>Proposed Value</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getBudget %}
-                                            <tr>
-                                                <td>{{ item.contributor}}</td>
-                                                <td>{{ item.description_of_contribution}}</td>
-                                                <td>{{ item.proposed_value}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
-                                      </div>
-                                    </div>
-                                     """),
+                                <div class='panel panel-default'>
+                                  <!-- Default panel contents -->
+                                  <div class='panel-heading'>Budget Contributions</div>
+                                  {% if getBudget %}
+                                      <!-- Table -->
+                                      <table class="table">
+                                        <tr>
+                                        <th>Contributor</th>
+                                        <th>Description</th>
+                                        <th>Proposed Value</th>
+                                        <th>View</th>
+                                        </tr>
+                                        {% for item in getBudget %}
+                                        <tr>
+                                            <td>{{ item.contributor}}</td>
+                                            <td>{{ item.description_of_contribution}}</td>
+                                            <td>{{ item.proposed_value}}</td>
+                                            <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
+                                        </tr>
+                                        {% endfor %}
+                                      </table>
+                                  {% endif %}
+                                  <div class="panel-footer">
+                                    <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
+                                  </div>
+                                </div>
+                                 """),
+                            ),
                         ),
-                    ),
 
-                ),
+                    ),
 
                 Tab('Justification and Description',
                      Fieldset(
                         'Description',
                         Field('description_of_project_activities', rows="4", css_class='input-xlarge'),
 
-                    ),
+                        ),
                     Fieldset(
                         'Justification',
                         Field('effect_or_impact',rows="4", css_class='input-xlarge', label="Anticipated Outcome and Goal"),
                         Field('risks_assumptions',rows="4", css_class='input-xlarge', label="Risks and Assumptions"),
+                        ),
                     ),
-                ),
                 Tab('M&E',
                     Fieldset(
                         '',
@@ -274,37 +308,6 @@ class ProjectAgreementForm(forms.ModelForm):
                                         <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
-                                     """),
-
-                             HTML("""
-
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Benchmarks</div>
-                                      {% if getBenchmark %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Percent Complete</th>
-                                            <th>Percent Cumulative Completion</th>
-                                            <th>Description</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getBenchmark %}
-                                            <tr>
-                                                <td>{{ item.percent_complete}}</td>
-                                                <td>{{ item.percent_cumulative}}</td>
-                                                <td>{{ item.description}}</td>
-                                                <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Benchmarks</a>
-                                      </div>
-                                    </div>
-
                                      """),
 
                             'capacity',
@@ -345,18 +348,18 @@ class ProjectAgreementForm(forms.ModelForm):
                                      """),
 
                             'evaluate',
+                            ),
                         ),
                     ),
-                ),
 
                 Tab('Approval',
                     Fieldset('Approval',
                              'approval', 'estimated_by', 'reviewed_by',
                              'finance_reviewed_by','finance_reviewed_by_date','me_reviewed_by','me_reviewed_by_date','approved_by', 'approved_by_date',
                              Field('approval_remarks', rows="3", css_class='input-xlarge')
+                        ),
                     ),
                 ),
-            ),
 
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
@@ -540,6 +543,40 @@ class ProjectCompleteForm(forms.ModelForm):
 
                     ),
                 ),
+                Tab('Components',
+                    Fieldset("Project Components",
+                        HTML("""
+
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Benchmarks</div>
+                              {% if getBenchmark %}
+                                  <!-- Table -->
+                                  <table class="table">
+                                    <tr>
+                                    <th>Percent Complete</th>
+                                    <th>Percent Cumulative Completion</th>
+                                    <th>Description</th>
+                                    <th>View</th>
+                                    </tr>
+                                    {% for item in getBenchmark %}
+                                    <tr>
+                                        <td>{{ item.percent_complete}}</td>
+                                        <td>{{ item.percent_cumulative}}</td>
+                                        <td>{{ item.description}}</td>
+                                        <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                  </table>
+                              {% endif %}
+                              <div class="panel-footer">
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Benchmarks</a>
+                              </div>
+                            </div>
+
+                             """),
+                        )
+                    ),
                 Tab('Budget',
                     Fieldset(
                         '',

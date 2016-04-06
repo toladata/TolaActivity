@@ -86,7 +86,8 @@ def indicator_create(request, id=0):
         level = Level.objects.all()[0]
         node_id = request.POST['service_indicator']
         sector = None
-        name = None
+        # add a temp name for custom indicators
+        name = "Temporary"
         source = None
         definition = None
         external_service_record = None

@@ -75,17 +75,16 @@ class CosignBackend(RemoteUserBackend):
         """
         create_params = {
             'created': datetime.datetime.utcnow().replace(tzinfo=utc),
-            'name': ldap_info['country_name']
+            'country': ldap_info['country_name']
             }
         country, new = Country.objects.get_or_create(
-            iso_two_letters_code = ldap_info['country_id'],
+            code = ldap_info['country_id'],
             defaults = create_params)
         if new == True:
             country.save()
 
         create_params2 = {
             'created': datetime.datetime.utcnow().replace(tzinfo=utc),
-            'modified_by': user
             }
         userprofile, created = TolaUser.objects.get_or_create(
             user = user,
