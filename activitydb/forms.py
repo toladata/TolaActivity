@@ -192,28 +192,30 @@ class ProjectAgreementForm(forms.ModelForm):
 
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
-                              <div class='panel-heading'>Benchmarks</div>
+                              <div class='panel-heading'>Components</div>
                               {% if getBenchmark %}
                                   <!-- Table -->
                                   <table class="table">
                                     <tr>
-                                    <th>Percent Complete</th>
-                                    <th>Percent Cumulative Completion</th>
                                     <th>Description</th>
+                                    <th>Site</th>
+                                    <th>Est. Start Date</th>
+                                    <th>Est. End Date<</th>
                                     <th>View</th>
                                     </tr>
                                     {% for item in getBenchmark %}
                                     <tr>
-                                        <td>{{ item.percent_complete}}</td>
-                                        <td>{{ item.percent_cumulative}}</td>
                                         <td>{{ item.description}}</td>
+                                        <td>{{ item.site__name}}</td>
+                                        <td>{{ item.start_date}}</td>
+                                        <td>{{ item.end_date}}</td>
                                         <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                     </tr>
                                     {% endfor %}
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Benchmarks</a>
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Component</a>
                               </div>
                             </div>
 
@@ -899,8 +901,7 @@ class BenchmarkForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'percent_complete', 'percent_cumulative', Field('description', rows="3", css_class='input-xlarge'), 'agreement',
-                'file_field'
+                Field('description', rows="3", css_class='input-xlarge'),'est_start_date','est_end_date','agreement','budget'
 
         )
 

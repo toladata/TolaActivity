@@ -17,7 +17,7 @@ class BeneficiaryResource(resources.ModelResource):
 
 
 class ProjectAgreementResource(resources.ModelResource):
-    sites = fields.Field(column_name='sites', attribute='sites', widget=ManyToManyWidget(SiteProfile, 'name'))
+    site = fields.Field(column_name='site', attribute='site', widget=ManyToManyWidget(SiteProfile, 'name'))
     capacity = fields.Field(column_name='capacity', attribute='capacity', widget=ManyToManyWidget(Capacity, 'capacity'))
     evaluate = fields.Field(column_name='evaluate', attribute='evaluate', widget=ManyToManyWidget(Evaluate, 'evaluate'))
     stakeholder = fields.Field(column_name='stakeholder', attribute='stakeholder', widget=ManyToManyWidget(Stakeholder, 'name'))
