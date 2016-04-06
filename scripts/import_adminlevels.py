@@ -19,8 +19,8 @@ from activitydb.models import Country, Province, District, AdminLevelThree, Vill
 def run():
     print "Uploading Country Admin data"
 
-getCountry = Country.objects.get(id=3)
-file_name = "fixtures/Jordan admin data - Province.csv"
+getCountry = Country.objects.get(id=9)
+file_name = "fixtures/nepal-admin.csv"
 
 def getAllData():
 

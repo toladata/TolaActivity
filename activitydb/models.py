@@ -301,7 +301,7 @@ class ProvinceAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'create_date')
     search_fields = ('name','country')
     list_filter = ('create_date','country')
-    display = 'Province'
+    display = 'Admin Level 1'
 
 
 class District(models.Model):
@@ -329,7 +329,7 @@ class DistrictAdmin(admin.ModelAdmin):
     list_display = ('name', 'province', 'create_date')
     search_fields = ('create_date','province')
     list_filter = ('province__country__country','province')
-    display = 'District'
+    display = 'Admin Level 2'
 
 
 class AdminLevelThree(models.Model):
@@ -357,7 +357,7 @@ class AdminLevelThreeAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date')
     search_fields = ('name','district')
     list_filter = ('district__province__country__country','district')
-    display = 'Admin Level Three'
+    display = 'Admin Level 3'
 
 
 class Office(models.Model):
@@ -415,7 +415,7 @@ class Village(models.Model):
 class VillageAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date', 'edit_date')
     list_filter = ('district__province__country__country','district')
-    display = 'Village'
+    display = 'Admin Level 4'
 
 
 class ProfileType(models.Model):

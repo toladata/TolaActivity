@@ -459,7 +459,7 @@ class ProjectCompleteCreate(CreateView):
 
         try:
             getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
-            site = {'site': [o for o in getSites],}
+            site = {'site': [o for o in getSites], }
             initial = pre_initial.copy()
             initial.update(site)
         except SiteProfile.DoesNotExist:
@@ -1688,6 +1688,7 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
     """
     model = CollectedData
     template_name = 'activitydb/quantitativeoutputs_form.html'
+
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
         getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
