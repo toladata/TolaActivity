@@ -200,15 +200,17 @@ class ProjectAgreementForm(forms.ModelForm):
                                     <th>Description</th>
                                     <th>Site</th>
                                     <th>Est. Start Date</th>
-                                    <th>Est. End Date<</th>
+                                    <th>Est. End Date</th>
+                                    <th>Budget</th>
                                     <th>View</th>
                                     </tr>
                                     {% for item in getBenchmark %}
                                     <tr>
                                         <td>{{ item.description}}</td>
-                                        <td>{{ item.site__name}}</td>
-                                        <td>{{ item.start_date}}</td>
-                                        <td>{{ item.end_date}}</td>
+                                        <td>{{ item.site }}</td>
+                                        <td>{{ item.est_start_date }}</td>
+                                        <td>{{ item.est_end_date }}</td>
+                                        <td>{{ item.budget }}</td>
                                         <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                     </tr>
                                     {% endfor %}
@@ -536,48 +538,59 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'project_activity','site'
-                    ),
+                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector',
+                             'project_name', 'project_activity','site',
+                        ),
                     Fieldset(
                         'Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
                         PrependedText('on_time', ''), 'no_explanation',
 
+                        ),
                     ),
-                ),
                 Tab('Components',
                     Fieldset("Project Components",
                         HTML("""
 
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
-                              <div class='panel-heading'>Benchmarks</div>
+                              <div class='panel-heading'>Components</div>
                               {% if getBenchmark %}
                                   <!-- Table -->
                                   <table class="table">
                                     <tr>
-                                    <th>Percent Complete</th>
-                                    <th>Percent Cumulative Completion</th>
                                     <th>Description</th>
+                                    <th>Site</th>
+                                    <th>Est. Start Date</th>
+                                    <th>Est. End Date</th>
+                                    <th>Actual Start Date</th>
+                                    <th>Actual End Date</th>
+                                    <th>Budget</th>
+                                    <th>Actual Cost</th>
                                     <th>View</th>
                                     </tr>
                                     {% for item in getBenchmark %}
                                     <tr>
-                                        <td>{{ item.percent_complete}}</td>
-                                        <td>{{ item.percent_cumulative}}</td>
                                         <td>{{ item.description}}</td>
+                                        <td>{{ item.site__name }}</td>
+                                        <td>{{ item.est_start_date}}</td>
+                                        <td>{{ item.est_end_date}}</td>
+                                        <td>{{ item.actual_start_date}}</td>
+                                        <td>{{ item.actual_end_date}}</td>
+                                        <td>{{ item.budget}}</td>
+                                        <td>{{ item.cost}}</td>
                                         <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                     </tr>
                                     {% endfor %}
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Benchmarks</a>
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Component</a>
                               </div>
                             </div>
 
-                             """),
-                        )
+                            """),
+                        ),
                     ),
                 Tab('Budget',
                     Fieldset(
@@ -814,6 +827,7 @@ class SiteProfileForm(forms.ModelForm):
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
         self.fields['province'].queryset = Province.objects.filter(country__in=countries)
 
+
 class DocumentationForm(forms.ModelForm):
 
     class Meta:
@@ -887,6 +901,9 @@ class BenchmarkForm(forms.ModelForm):
         model = Benchmarks
         exclude = ['create_date', 'edit_date']
 
+    est_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    est_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -901,11 +918,14 @@ class BenchmarkForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                Field('description', rows="3", css_class='input-xlarge'),'est_start_date','est_end_date','agreement','budget'
+            Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date','budget','agreement',
 
         )
 
         super(BenchmarkForm, self).__init__(*args, **kwargs)
+
+        #override the community queryset to use request.user for country
+        self.fields['site'].queryset = SiteProfile.objects.filter(projectagreement__id=kwargs['initial']['agreement'])
 
 
 class MonitorForm(forms.ModelForm):

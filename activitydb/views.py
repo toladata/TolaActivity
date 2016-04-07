@@ -258,7 +258,7 @@ class ProjectAgreementUpdate(UpdateView):
         context.update({'getMonitor': getMonitor})
 
         try:
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('percent_cumulative')
+            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('description')
         except Benchmarks.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
@@ -465,6 +465,7 @@ class ProjectCompleteCreate(CreateView):
         except SiteProfile.DoesNotExist:
             getSites = None
 
+
         return initial
 
     def get_context_data(self, **kwargs):
@@ -498,6 +499,9 @@ class ProjectCompleteCreate(CreateView):
         #update the other budget items
         Budget.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
 
+        #update the benchmarks
+        Benchmarks.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
+
         #update main compelte fields
         ProjectComplete.objects.filter(id=getComplete.id).update(account_code=getAgreement.account_code, lin_code=getAgreement.lin_code)
 
@@ -524,19 +528,26 @@ class ProjectCompleteUpdate(UpdateView):
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
-        #get budget data
+        # get budget data
         try:
             getBudget = Budget.objects.all().filter(complete__id=self.kwargs['pk'])
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
 
-        #get Quantitative data
+        # get Quantitative data
         try:
             getQuantitative = CollectedData.objects.all().filter(complete__id=self.kwargs['pk']).order_by('indicator')
         except CollectedData.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
+
+        # get benchmark or project components
+        try:
+            getBenchmark = Benchmarks.objects.all().filter(complete__id=self.kwargs['pk']).order_by('description')
+        except Benchmarks.DoesNotExist:
+            getBenchmark = None
+        context.update({'getBenchmark': getBenchmark})
 
         return context
 
