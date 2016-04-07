@@ -61,6 +61,11 @@ urlpatterns = [
                        url(r'^benchmark_update/(?P<pk>\w+)/$', BenchmarkUpdate.as_view(), name='benchmark_update'),
                        url(r'^benchmark_delete/(?P<pk>\w+)/$', BenchmarkDelete.as_view(), name='benchmark_delete'),
 
+                       # urls for projectcomplete version of popup
+                       url(r'^benchmark_complete_add/(?P<id>\w+)/$', BenchmarkCreate.as_view(), name='benchmark_add'),
+                       url(r'^benchmark_complete_update/(?P<pk>\w+)/$', BenchmarkUpdate.as_view(), name='benchmark_update'),
+                       url(r'^benchmark_complete_delete/(?P<pk>\w+)/$', BenchmarkDelete.as_view(), name='benchmark_delete'),
+
                        url(r'^training_list/(?P<pk>\w+)/$', TrainingList.as_view(), name='training_list'),
                        url(r'^training_add/(?P<id>\w+)/$', TrainingCreate.as_view(), name='training_add'),
                        url(r'^training_update/(?P<pk>\w+)/$', TrainingUpdate.as_view(), name='training_update'),

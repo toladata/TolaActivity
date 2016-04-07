@@ -1176,6 +1176,19 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
     """
     model = Benchmarks
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        try:
+            getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['id'])
+        except ProjectComplete.DoesNotExist:
+            getComplete = None
+
+        kwargs = super(BenchmarkCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        kwargs['agreement'] = self.kwargs['id']
+        kwargs['complete'] = getComplete.id
+        return kwargs
+
     def dispatch(self, request, *args, **kwargs):
         return super(BenchmarkCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1185,9 +1198,18 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
         return context
 
     def get_initial(self):
+        try:
+            getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['id'])
+        except ProjectComplete.DoesNotExist:
+            getComplete = None
+
+
         initial = {
             'agreement': self.kwargs['id'],
+            'complete': getComplete.id,
             }
+
+        print initial
 
         return initial
 
@@ -1215,6 +1237,20 @@ class BenchmarkUpdate(AjaxableResponseMixin, UpdateView):
         context = super(BenchmarkUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(BenchmarkUpdate, self).get_form_kwargs()
+        try:
+            getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['pk'])
+            kwargs['complete'] = getComplete.id
+        except ProjectComplete.DoesNotExist:
+            kwargs['complete'] = None
+
+        kwargs['request'] = self.request
+        kwargs['agreement'] = self.kwargs['pk']
+
+        return kwargs
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)

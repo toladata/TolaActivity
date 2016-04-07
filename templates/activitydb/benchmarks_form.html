@@ -23,6 +23,8 @@
         };
         $('#id_est_start_date').datepicker(options);
         $('#id_est_end_date').datepicker(options);
+        $('#id_actual_end_date').datepicker(options);
+        $('#id_actual_end_date').datepicker(options);
     });
 </script>
 
@@ -37,7 +39,7 @@
     </div>
     <div class="modal-body">
         {% load crispy_forms_tags %}
-        {% if "/activitydb/benchmark_add/" in request.get_full_path %}
+        {% if "/activitydb/benchmark_add/" in request.get_full_path or "benchmark_complete_add" in request.get_full_path %}
             <form class="form-horizontal" method="post" id="benchmarkForm" action="/activitydb/benchmark_add/{{ id }}/">
         {% else %}
             <form class="form-horizontal" method="post" id="benchmarkForm" action="/activitydb/benchmark_update/{{ id }}/">

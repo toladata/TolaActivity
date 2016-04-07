@@ -579,13 +579,13 @@ class ProjectCompleteForm(forms.ModelForm):
                                         <td>{{ item.actual_end_date}}</td>
                                         <td>{{ item.budget}}</td>
                                         <td>{{ item.cost}}</td>
-                                        <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                        <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_complete_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_complete_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                     </tr>
                                     {% endfor %}
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_add/{{ pk }}">Add Component</a>
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_complete_add/{{ id }}/">Add Component</a>
                               </div>
                             </div>
 
@@ -907,6 +907,9 @@ class BenchmarkForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.request = kwargs.pop('request')
+        self.agreement = kwargs.pop('agreement')
+        self.complete = kwargs.pop('complete')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -916,16 +919,19 @@ class BenchmarkForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = False
-        self.helper.layout = Layout(
 
-            Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date','budget','agreement',
-
-        )
-
+        if "benchmark_complete" in self.request.path:
+            self.helper.layout = Layout(
+                Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date','actual_start_date','actual_end_date','budget','cost','agreement','complete',
+            )
+        else:
+            self.helper.layout = Layout(
+                Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date','budget','agreement',
+            )
         super(BenchmarkForm, self).__init__(*args, **kwargs)
 
-        #override the community queryset to use request.user for country
-        self.fields['site'].queryset = SiteProfile.objects.filter(projectagreement__id=kwargs['initial']['agreement'])
+        # override the site queryset to use request.user for country
+        self.fields['site'].queryset = SiteProfile.objects.all().filter(projectagreement__id=self.agreement)
 
 
 class MonitorForm(forms.ModelForm):
