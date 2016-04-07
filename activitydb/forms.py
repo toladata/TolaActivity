@@ -904,6 +904,8 @@ class BenchmarkForm(forms.ModelForm):
     est_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     est_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
+    actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

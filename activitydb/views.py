@@ -1239,14 +1239,14 @@ class BenchmarkUpdate(AjaxableResponseMixin, UpdateView):
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(BenchmarkUpdate, self).get_form_kwargs()
-        try:
-            getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['pk'])
-            kwargs['complete'] = getComplete.id
-        except ProjectComplete.DoesNotExist:
-            kwargs['complete'] = None
+        getBenchmark = Benchmarks.objects.all().get(id=self.kwargs['pk'])
 
         kwargs['request'] = self.request
-        kwargs['agreement'] = self.kwargs['pk']
+        kwargs['agreement'] = getBenchmark.agreement.id
+        if getBenchmark.complete:
+            kwargs['complete'] = getBenchmark.complete.id
+        else:
+            kwargs['complete'] = None
 
         return kwargs
 

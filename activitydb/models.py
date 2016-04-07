@@ -104,8 +104,8 @@ class TolaUser(models.Model):
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
     privacy_disclaimer_accepted = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now=False, blank=True, null=True)
-    updated = models.DateTimeField(auto_now=False, blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -114,13 +114,12 @@ class TolaUser(models.Model):
     def countries_list(self):
         return ', '.join([x.code for x in self.countries.all()])
 
+    #onsave add create date or update edit date
     def save(self, *args, **kwargs):
-        ''' On save, update timestamps as appropriate'''
-        if kwargs.pop('new_entry', True):
-            self.created = datetime.now()
-        else:
-            self.updated = datetime.now()
-        return super(TolaUser, self).save(*args, **kwargs)
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(TolaUser, self).save()
 
 
 class TolaUserAdmin(admin.ModelAdmin):
