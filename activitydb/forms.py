@@ -572,7 +572,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                     {% for item in getBenchmark %}
                                     <tr>
                                         <td>{{ item.description}}</td>
-                                        <td>{{ item.site__name }}</td>
+                                        <td>{{ item.site }}</td>
                                         <td>{{ item.est_start_date|date:"m-d-Y"}}</td>
                                         <td>{{ item.est_end_date|date:"m-d-Y"}}</td>
                                         <td>{{ item.actual_start_date|date:"m-d-Y"}}</td>
