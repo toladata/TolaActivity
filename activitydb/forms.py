@@ -208,8 +208,8 @@ class ProjectAgreementForm(forms.ModelForm):
                                     <tr>
                                         <td>{{ item.description}}</td>
                                         <td>{{ item.site }}</td>
-                                        <td>{{ item.est_start_date }}</td>
-                                        <td>{{ item.est_end_date }}</td>
+                                        <td>{{ item.est_start_date|date:"m-d-Y" }}</td>
+                                        <td>{{ item.est_end_date|date:"m-d-Y" }}</td>
                                         <td>{{ item.budget }}</td>
                                         <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                     </tr>
@@ -573,10 +573,10 @@ class ProjectCompleteForm(forms.ModelForm):
                                     <tr>
                                         <td>{{ item.description}}</td>
                                         <td>{{ item.site__name }}</td>
-                                        <td>{{ item.est_start_date}}</td>
-                                        <td>{{ item.est_end_date}}</td>
-                                        <td>{{ item.actual_start_date}}</td>
-                                        <td>{{ item.actual_end_date}}</td>
+                                        <td>{{ item.est_start_date|date:"m-d-Y"}}</td>
+                                        <td>{{ item.est_end_date|date:"m-d-Y"}}</td>
+                                        <td>{{ item.actual_start_date|date:"m-d-Y"}}</td>
+                                        <td>{{ item.actual_end_date|date:"m-d-Y"}}</td>
                                         <td>{{ item.budget}}</td>
                                         <td>{{ item.cost}}</td>
                                         <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/activitydb/benchmark_complete_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/activitydb/benchmark_complete_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
