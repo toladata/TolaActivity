@@ -1200,16 +1200,14 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
     def get_initial(self):
         try:
             getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['id'])
+            initial = {
+                'agreement': self.kwargs['id'],
+                'complete': getComplete.id,
+                }
         except ProjectComplete.DoesNotExist:
-            getComplete = None
-
-
-        initial = {
-            'agreement': self.kwargs['id'],
-            'complete': getComplete.id,
-            }
-
-        print initial
+            initial = {
+                'agreement': self.kwargs['id'],
+                }
 
         return initial
 
