@@ -164,10 +164,15 @@
      });
 
 
-    {% for item in getCommunity %}
-        {{ item.agreement }}
-        L.marker([{{ item.agreement.community.latitude }}, {{ item.agreement.community.longitude }}]).addTo(map).bindPopup("" + "<b>{{ item.agreement.community.country }}</b> <a href='/activitydb/community_update/{{ item.agreement.community.id }}'>{{ item.agreement.community.name }}</a> <br/>Province: {{ item.agreement.community.province }} <br/>District: {{ item.agreement.community.district }} <br/> Village: {{ item.agreement.community.village }} <br/> SiteProfile{{ item.agreement.community.name }} <br/> ").openPopup();
+    {% for item in getSiteProfile %}
+        L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Project Site<br><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
     {%   endfor %}
+
+    {% if getSiteProfileIndicator %}
+        {% for item in getSiteProfileIndicator %}
+            L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Collected Indicator Data Site<br> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
+        {%   endfor %}
+    {% endif %}
 
 
 </script>

@@ -145,7 +145,7 @@
 
         }
 
-        function show_program_charts(project_count,approval_count,approved_count,inprogress_count,rejected_count,filters) {
+        function show_program_charts(project_count,approval_count,approved_count,inprogress_count,rejected_count,nostatus_count,filters) {
             document.getElementById('doughnut1-header').innerHTML = "Project Status";
             //render project_status in a doughnut chart
             var status_options = {
@@ -172,6 +172,11 @@
                 value : inprogress_count,
                 color : "#c62f29",
                 label: "In Progress " + inprogress_count
+                },
+                {
+                value : nostatus_count,
+                color : "#ccffcc",
+                label: "New " + nostatus_count
                 }
             ];
             var ctx = document.getElementById("doughnut1").getContext("2d");
@@ -188,6 +193,8 @@
                         filters.approval = "in progress"
                     } else if (activePoints[0].label.indexOf("Waiting ") > -1){
                         filters.approval = "awaiting approval"
+                    } else if (activePoints[0].label.indexOf("New ") > -1){
+                        filters.approval = "new"
                     }
                     project_report(filters);
                 }
@@ -293,7 +300,7 @@
             $.getJSON("/reports/report_data/", filters, function(data) {
                 //console.log(filters);
                 show_program_table(data['program'],filters);
-                show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count'],filters);
+                show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count'],data['nostatus_count'],filters);
                 show_indicator_charts(data['indicator_count'], data['data_count'],filters);
 
             });
@@ -334,7 +341,7 @@
             $.getJSON("/reports/report_data/project/", filters, function(data) {
                 //console.log(filters);
                 show_project_table(data['project'],filters);
-                show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count'],filters);
+                show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count'],data['nostatus_count'],filters);
                 show_indicator_charts(data['indicator_count'], data['data_count'],filters);
             });
         }

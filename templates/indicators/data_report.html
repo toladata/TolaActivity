@@ -60,14 +60,12 @@
     </style>
     <p><b>Sites</b></p>
     <div id="map"></div>
-    {% include "indicators/site_profile_map.html" %}
+    {% include "small_site_profile_map.html" %}
 {% elif "graph" in request.get_full_path %}
     {% include "indicators/indicator_graphs.html" %}
 {% else %}
     {% render_table table %}
 {% endif %}
 <br/>
-
-<button type="submit" class="btn btn-success" onClick="location.href='/indicators/export/{{ id }}/{{ program }}/'">Export All</button>
 
 {% endblock content %}

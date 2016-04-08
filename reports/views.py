@@ -53,14 +53,17 @@ def make_filter(my_request):
             query_attrs['collecteddata']['indicator__sector__in'] = val.split(',')
         elif param == 'country':
             query_attrs['program']['country__id__in'] = val.split(',')
-            query_attrs['project']['program__country__in'] = val.split(',')
+            query_attrs['project']['program__country__id__in'] = val.split(',')
             query_attrs['indicator']['program__country__in'] = val.split(',')
             query_attrs['collecteddata']['program__country__in'] = val.split(',')
         elif param == 'indicator__id':
             query_attrs['indicator']['id'] = val
             query_attrs['collecteddata']['indicator__id'] = val
         elif param == 'approval':
-            query_attrs['project']['approval'] = val
+            if val == "new":
+                query_attrs['project']['approval'] = ""
+            else:
+                query_attrs['project']['approval'] = val
         elif param == 'collecteddata__isnull':
             if val == "True":
                 query_attrs['indicator']['collecteddata__isnull'] = True
@@ -100,20 +103,18 @@ class ReportData(View, AjaxableResponseMixin):
     Main report view
     """
     def get(self, request, *args, **kwargs):
-        print self.request.GET
+
         filter = make_filter(self.request.GET)
         program_filter = filter['program']
         project_filter = filter['project']
         indicator_filter = filter['indicator']
 
-        print program_filter
-
         program = Program.objects.all().filter(**program_filter).values('gaitid', 'name','funding_status','cost_center','country__country','sector__sector')
-        approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
-        approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
-        rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
-        inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
-        nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(program__funding_status="Funded") & Q(Q(approval=None) | Q(approval=""))).count()
+        approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='awaiting approval').count()
+        approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='approved').count()
+        rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='rejected').count()
+        inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='in progress').count()
+        nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
 
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
@@ -126,7 +127,7 @@ class ReportData(View, AjaxableResponseMixin):
             'approved_count': approved_count,
             'rejected_count': rejected_count,
             'inprogress_count': inprogress_count,
-            'nostatus_count':nostatus_count,
+            'nostatus_count': nostatus_count,
             'indicator_count': indicator_count,
             'data_count': indicator_data_count
         }
@@ -150,19 +151,18 @@ class ProjectReportData(View, AjaxableResponseMixin):
         project_filter = filter['project']
         indicator_filter = filter['indicator']
 
+        print project_filter
+
         project = ProjectAgreement.objects.all().filter(**project_filter).values('program__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','approval')
         approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
         approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
         rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
         inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
-        nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(program__funding_status="Funded") & Q(Q(approval=None) | Q(approval=""))).count()
+        nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
 
         project_serialized = simplejson.dumps(list(project))
-
-        print project_filter
-        print project.query
 
         final_dict = {
             'criteria': project_filter, 'project': project_serialized,

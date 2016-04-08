@@ -290,7 +290,7 @@ def indicator_report(request, program=0):
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/report.html", {'get_agreements': table, 'getPrograms': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+    return render(request, "indicators/report.html", {'program': program, 'get_agreements': table, 'getPrograms': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
 def programIndicatorReport(request, program=0):
@@ -691,19 +691,46 @@ class IndicatorExport(View):
     """
     Export all indicators to a CSV file
     """
-
     def get(self, *args, **kwargs ):
-        queryset = Indicator.objects.filter(program=self.kwargs['program'])
-        dataset = IndicatorResource().export(queryset)
-        response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+
+        if int(kwargs['id']) == 0:
+            del kwargs['id']
+        if int(kwargs['program']) == 0:
+            del kwargs['program']
+
+        print kwargs
+
+        queryset = Indicator.objects.filter(**kwargs)
+        indicator = IndicatorResource().export(queryset)
+        response = HttpResponse(indicator.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator.csv'
+        return response
+
+
+class IndicatorDataExport(View):
+    """
+    Export all indicators to a CSV file
+    """
+    def get(self, *args, **kwargs ):
+
+        if int(kwargs['indicator']) == 0:
+            del kwargs['indicator']
+        if int(kwargs['program']) == 0:
+            del kwargs['program']
+
+        print kwargs
+
+        queryset = CollectedData.objects.filter(**kwargs)
+        dataset = CollectedDataResource().export(queryset)
+        response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
         return response
 
 
 class CountryExport(View):
 
     def get(self, *args, **kwargs ):
-        dataset = CountryResource().export()
-        response = HttpResponse(dataset.csv, content_type="csv")
-        response['Content-Disposition'] = 'attachment; filename=filename.csv'
+        country = CountryResource().export()
+        response = HttpResponse(country.csv, content_type="csv")
+        response['Content-Disposition'] = 'attachment; filename=country.csv'
         return response
