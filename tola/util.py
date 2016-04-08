@@ -157,3 +157,21 @@ def import_table(request):
         #send result back as json
         message = result
         return json.dumps(message)
+
+
+def user_to_tola(backend, user, response, *args, **kwargs):
+
+    # Add a google auth user to the tola profile
+    default_country = Country.objects.get(id=1)
+    userprofile, created = TolaUser.objects.get_or_create(
+        user = user)
+
+    userprofile.country = default_country
+
+    userprofile.name = response.get('displayName')
+
+    userprofile.email = response.get('emails["value"]')
+
+    userprofile.save()
+    #add user to country permissions table
+    userprofile.countries.add(default_country)

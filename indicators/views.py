@@ -689,7 +689,7 @@ def tool(request):
 
 class IndicatorExport(View):
     """
-    Export all incidents to a CSV file called from a button at the bottom of the incidentList table
+    Export all indicators to a CSV file
     """
 
     def get(self, *args, **kwargs ):
