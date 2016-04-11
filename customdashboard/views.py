@@ -65,7 +65,6 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator})
 
 
-
 def PublicDashboard(request,id=0):
     program_id = id
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
@@ -120,10 +119,6 @@ def SurveyPublicDashboard(request,id=0):
     join: tola_is_a_myst, i_like_beer,to_meet_the_team,not_sure_what_
     tola_is: adaptive_manag an_indicator_t a_data_managem option_4 all_of_the_abo
     """
-    # print meaning
-    print join
-    # print tola_is
-
     meaningcount = {}
     meaningcount['peaceful'] = 0
     meaningcount['is_global'] = 0
