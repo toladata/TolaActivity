@@ -100,7 +100,7 @@ class ProgramAdmin(admin.ModelAdmin):
 class ApprovalAuthorityAdmin(admin.ModelAdmin):
     list_display = ('approval_user','budget_limit','fund','country')
     display = 'Approval Authority'
-    search_fields = ('approval_user','country')
+    search_fields = ('approval_user__user__first_name', 'approval_user__user__last_name', 'country__country')
     list_filter = ('create_date','country')
 
 
