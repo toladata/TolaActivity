@@ -370,7 +370,7 @@ $(function () {
                 {% endif %}
                  </div>
              </div>
-
+            {% if report_server != True%}
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <!-- Extra small button group -->
@@ -399,7 +399,36 @@ $(function () {
                     </ul>
                 </div>
             </div>
+            {% endif %}
         </div>
+        {% if report_server == True%}
+        <div class="col-md-8">
+            <h2>{% for country in selected_countries_label_list %}{{ country.country }}{%endfor%} Country Rollout Report</h2>
+            <br/>
+            <table class="table striped">
+                <tr>
+                    <th>
+                        Milestones:
+                    </th>
+                    <th>
+                        Current Adoption
+                    </th>
+                </tr>
+                <tr>
+                    <td>Adoption of Workflow</td>
+                    <td bgcolor="{{ workflow_adoption }}">Total Programs: {{ count_program}} <br/>Using Workflow: {{ count_program_agreement }} </td>
+                </tr>
+                <tr>
+                    <td>Adoption of Indicator</td>
+                    <td bgcolor="{{ indicator_adoption }}">Total Programs: {{ count_program}} <br/>Using Indicator Plans: {{ count_indicator }} </td>
+                </tr>
+                <tr>
+                    <td>Indicators w/ Evidence</td>
+                    <td bgcolor="{{ evidence_adoption }}">Total Collected Data: {{ count_indicator_data }} <br/>Evidence: {{ count_evidence_adoption }} </td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-body">

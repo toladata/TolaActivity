@@ -6,7 +6,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites
-from indicators.models import CollectedData
+from indicators.models import CollectedData, Indicator
 from .tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required(login_url='/accounts/login/')
-def index(request,selected_countries=None,id=0,sector=0):
+def index(request, selected_countries=None, id=0, sector=0):
     """
     Home page
     get count of agreements approved and total for dashboard
@@ -27,10 +27,12 @@ def index(request,selected_countries=None,id=0,sector=0):
     if not selected_countries:
         selected_countries = user_countries
         selected_countries_list = None
+        selected_countries_label_list = None
     else:
         #transform to list if a submitted country
         selected_countries = [selected_countries]
         selected_countries_list = Country.objects.all().filter(id__in=selected_countries)
+        selected_countries_label_list = Country.objects.all().filter(id__in=selected_countries).values('country')
 
     getAgencySite = TolaSites.objects.all().filter(id=1)
 
@@ -91,6 +93,43 @@ def index(request,selected_countries=None,id=0,sector=0):
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
 
+    count_program = Program.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
+    count_program_agreement = ProjectAgreement.objects.all().filter(program__country__in=selected_countries,program__funding_status='Funded').values('program').distinct().count()
+    count_indicator = Indicator.objects.all().filter(program__country__in=selected_countries,program__funding_status='Funded').values('program').distinct().count()
+    count_evidence_adoption = CollectedData.objects.all().filter(indicator__isnull=False,indicator__country__in=selected_countries).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True) + Count('tola_table', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
+    count_program = int(count_program)
+    count_program_agreement = int(count_program_agreement)
+
+    if count_program_agreement >= count_program - (count_program/2):
+        workflow_adoption = "Green"
+    elif count_program_agreement >= count_program - (count_program/4) and count_program_agreement < count_program - (count_program/2):
+        workflow_adoption = "Yellow"
+    else:
+        workflow_adoption = "Red"
+
+    print count_evidence_adoption
+
+    total_evidence_adoption_count = 0
+    total_indicator_data_count = 0
+    for country in count_evidence_adoption:
+        total_evidence_adoption_count = total_evidence_adoption_count + country['evidence_count']
+        total_indicator_data_count = total_indicator_data_count + country['indicator_count']
+
+    if total_evidence_adoption_count >= total_indicator_data_count - (total_indicator_data_count/2):
+        indicator_adoption = "Green"
+    elif total_evidence_adoption_count >= total_indicator_data_count- (total_indicator_data_count/4) and total_evidence_adoption_count < total_indicator_data_count - (total_indicator_data_count/2):
+        indicator_adoption = "Yellow"
+    else:
+        indicator_adoption = "Red"
+
+    if count_evidence_adoption >= count_program - (count_program/2):
+        evidence_adoption = "Green"
+    elif count_evidence_adoption >= count_program - (count_program/4) and count_evidence_adoption < count_program - (count_program/2):
+        evidence_adoption = "Yellow"
+    else:
+        evidence_adoption = "Red"
+
+
     return render(request, "index.html", {'agreement_total_count':agreement_total_count,\
                                           'agreement_approved_count':agreement_approved_count,\
                                           'agreement_open_count':agreement_open_count,\
@@ -104,7 +143,16 @@ def index(request,selected_countries=None,id=0,sector=0):
                                           'getObjectives':getObjectives,
                                           'selected_countries_list': selected_countries_list,
                                           'getSiteProfileIndicator': getSiteProfileIndicator,
-                                          'getAgencySite': getAgencySite
+                                          'getAgencySite': getAgencySite,
+                                          'workflow_adoption': workflow_adoption,
+                                          'count_program': count_program,
+                                          'count_program_agreement': count_program_agreement,
+                                          'indicator_adoption': indicator_adoption,
+                                          'count_indicator': count_indicator,
+                                          'evidence_adoption': evidence_adoption,
+                                          'count_evidence_adoption':total_evidence_adoption_count,
+                                          'count_indicator_data':total_indicator_data_count,
+                                          'selected_countries_label_list':selected_countries_label_list,
                                           })
 
 
