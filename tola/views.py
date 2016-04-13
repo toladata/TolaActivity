@@ -107,7 +107,12 @@ def index(request, selected_countries=None, id=0, sector=0):
     else:
         workflow_adoption = "Red"
 
-    print count_evidence_adoption
+    if count_indicator >= count_program - (count_program/2):
+        indicator_adoption = "Green"
+    elif count_indicator >= count_program - (count_program/4) and count_indicator < count_program - (count_program/2):
+        indicator_adoption = "Yellow"
+    else:
+        indicator_adoption = "Red"
 
     total_evidence_adoption_count = 0
     total_indicator_data_count = 0
@@ -116,15 +121,8 @@ def index(request, selected_countries=None, id=0, sector=0):
         total_indicator_data_count = total_indicator_data_count + country['indicator_count']
 
     if total_evidence_adoption_count >= total_indicator_data_count - (total_indicator_data_count/2):
-        indicator_adoption = "Green"
-    elif total_evidence_adoption_count >= total_indicator_data_count- (total_indicator_data_count/4) and total_evidence_adoption_count < total_indicator_data_count - (total_indicator_data_count/2):
-        indicator_adoption = "Yellow"
-    else:
-        indicator_adoption = "Red"
-
-    if count_evidence_adoption >= count_program - (count_program/2):
         evidence_adoption = "Green"
-    elif count_evidence_adoption >= count_program - (count_program/4) and count_evidence_adoption < count_program - (count_program/2):
+    elif total_evidence_adoption_count >= total_indicator_data_count- (total_indicator_data_count/4) and total_evidence_adoption_count < total_indicator_data_count - (total_indicator_data_count/2):
         evidence_adoption = "Yellow"
     else:
         evidence_adoption = "Red"
