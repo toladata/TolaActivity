@@ -698,8 +698,6 @@ class IndicatorExport(View):
         if int(kwargs['program']) == 0:
             del kwargs['program']
 
-        print kwargs
-
         queryset = Indicator.objects.filter(**kwargs)
         indicator = IndicatorResource().export(queryset)
         response = HttpResponse(indicator.csv, content_type='application/ms-excel')

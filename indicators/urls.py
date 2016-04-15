@@ -40,7 +40,6 @@ urlpatterns = [
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/table/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^export/(?P<id>\w+)/(?P<program>\w+)/$', IndicatorExport.as_view(), name='indicator_export'),
-    url(r'^export/(?P<program>\w+)/$', IndicatorExport.as_view(), name='indicator_export'),
     url(r'^export/$', IndicatorExport.as_view(), name='indicator_export'),
 
     #ajax calls
