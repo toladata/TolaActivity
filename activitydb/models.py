@@ -479,7 +479,7 @@ class SiteProfile(models.Model):
     type = models.ForeignKey(ProfileType, blank=True, null=True)
     office = models.ForeignKey(Office, default="1")
     contact_leader = models.CharField("Contact Name", max_length=255, blank=True, null=True)
-    date_of_firstcontact = models.DateTimeField(null=True, blank=True)
+    date_of_firstcontact = models.DateTimeField("Date of First Contact", null=True, blank=True)
     contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
     num_members = models.CharField("Number of Members", max_length=255, blank=True, null=True)
     info_source = models.CharField("Data Source",max_length=255, blank=True, null=True)
