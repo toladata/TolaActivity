@@ -411,20 +411,20 @@ $(function () {
                         Milestones:
                     </th>
                     <th>
-                        Current Adoption
+                        <span title="Red: Requires Attention, Orange: Behind Schedule, Green: On Track">Current Adoption Status</span>
                     </th>
                 </tr>
                 <tr>
                     <td>Adoption of Workflow</td>
-                    <td bgcolor="{{ workflow_adoption }}">Total Programs: {{ count_program}} <br/>Using Workflow: {{ count_program_agreement }} </td>
+                    <td class="status" bgcolor="{{ workflow_adoption }}">Total Programs: {{ count_program}} <br/>Using Workflow: {{ count_program_agreement }} </td>
                 </tr>
                 <tr>
                     <td>Adoption of Indicator</td>
-                    <td bgcolor="{{ indicator_adoption }}">Total Programs: {{ count_program}} <br/>Using Indicator Plans: {{ count_indicator }} </td>
+                    <td class="status" bgcolor="{{ indicator_adoption }}">Total Programs: {{ count_program}} <br/>Using Indicator Plans: {{ count_indicator }} </td>
                 </tr>
                 <tr>
                     <td>Indicators w/ Evidence</td>
-                    <td bgcolor="{{ evidence_adoption }}">Total Collected Data: {{ count_indicator_data }} <br/>Evidence: {{ count_evidence_adoption }} </td>
+                    <td class="status" bgcolor="{{ evidence_adoption }}">Total Collected Data: {{ count_indicator_data }} <br/>Evidence: {{ count_evidence_adoption }} </td>
                 </tr>
             </table>
         </div>
