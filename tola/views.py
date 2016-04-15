@@ -108,14 +108,14 @@ def index(request, selected_countries=None, id=0, sector=0):
 
     if count_program_agreement >= float(count_program/1.5):
         workflow_adoption = green
-    elif count_program_agreement <= count_program/3 and count_program_agreement > count_program/4:
+    elif count_program_agreement < count_program/1.5 and count_program_agreement > count_program/4:
         workflow_adoption = yellow
     elif count_program_agreement <= count_program/4:
         workflow_adoption = red
 
     if count_indicator >= float(count_program/1.5):
         indicator_adoption = green
-    elif count_indicator <= count_program/3 and count_indicator > count_program/4:
+    elif count_indicator < count_program/1.5 and count_indicator > count_program/4:
         indicator_adoption = yellow
     elif count_indicator <= count_program/4:
         indicator_adoption = red
@@ -129,7 +129,7 @@ def index(request, selected_countries=None, id=0, sector=0):
 
     if total_evidence_adoption_count >= float(total_indicator_data_count/1.5):
         evidence_adoption = green
-    elif total_evidence_adoption_count <= total_indicator_data_count/3 and total_evidence_adoption_count > total_indicator_data_count/4:
+    elif total_evidence_adoption_count < total_indicator_data_count/1.5 and total_evidence_adoption_count > total_indicator_data_count/4:
         evidence_adoption = yellow
     elif total_evidence_adoption_count <= total_indicator_data_count/4:
         evidence_adoption = red
