@@ -216,11 +216,38 @@ class CustomDashboardAdmin(admin.ModelAdmin):
     display = 'Custom Dashboard'
 
 
+# For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'
+class FundCode(models.Model):
+    name = models.CharField("Fund Code", max_length=255, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    #onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(FundCode, self).save()
+
+    #displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class FundCodeAdmin(admin.ModelAdmin):
+    list_display = ('name','program__name', 'create_date', 'edit_date')
+    display = 'Fund Code'
+
+
 class Program(models.Model):
     gaitid = models.CharField("GAITID", max_length=255, blank=True, unique=True)
     name = models.CharField("Program Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
+    fund_code = models.ManyToManyField(FundCode, blank=True)
     description = models.TextField("Program Description", max_length=765, null=True, blank=True)
     sector = models.ManyToManyField(Sector, blank=True)
     dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)

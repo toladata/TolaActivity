@@ -651,6 +651,8 @@ def collecteddata_import(request):
         message = result
         return HttpResponse(json.dumps(message), content_type='application/json')
 
+    print data
+
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/collecteddata_import.html", {'getTables': data})
 

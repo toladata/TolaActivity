@@ -40,8 +40,14 @@ class RegistrationForm(UserChangeForm):
     Form for registering a new account.
     """
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('initial')
         super(RegistrationForm, self).__init__(*args, **kwargs)
         del self.fields['password']
+        print user['username'].is_superuser
+        # if they aren't a super user or User Admin don't let them change countries form field
+        if 'User Admin' not in user['username'].groups.values_list('name', flat=True) and not user['username'].is_superuser:
+            self.fields['countries'].widget.attrs['disabled'] = "disabled"
+            self.fields['country'].widget.attrs['disabled'] = "disabled"
 
     class Meta:
         model = TolaUser
@@ -57,7 +63,10 @@ class RegistrationForm(UserChangeForm):
     helper.error_text_inline = True
     helper.help_text_inline = True
     helper.html5_required = True
-    helper.layout = Layout(Fieldset('','title', 'name', 'employee_number', 'user', 'username', 'country', 'countries','modified_by','created','updated'), Submit('submit', 'Submit', css_class='btn-default'), Reset('reset', 'Reset', css_class='btn-warning'))
+    helper.layout = Layout(Fieldset('','title', 'name', 'employee_number', 'user', 'username',
+                                    'country', 'countries','modified_by','created','updated'),
+                           Submit('submit', 'Submit', css_class='btn-default'),
+                           Reset('reset', 'Reset', css_class='btn-warning'))
 
 
 class NewUserRegistrationForm(UserCreationForm):
