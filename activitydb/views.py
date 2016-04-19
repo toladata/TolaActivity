@@ -875,7 +875,7 @@ class DocumentationDelete(DeleteView):
     Documentation Form
     """
     model = Documentation
-    success_url = '/activitydb/documentation_list/0/'
+    success_url = '/activitydb/documentation_list/0/0/'
 
     def form_invalid(self, form):
 
