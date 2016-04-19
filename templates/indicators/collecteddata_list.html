@@ -58,7 +58,7 @@
                         <td>{{ item.indicator.strategic_objectives_list }}</td>
                         <td>{{ item.program }}</td>
                         <td>{{ item.indicator.objectives_list }}</td>
-                        <td>{{ item.indicator.number }} - {{ item.indicator.name }}</td>
+                        <td>{{ item.indicator.number }} - {{ item.indicator.name }} {% if item.indicator.key_performance_indicator %} <span class="badge">KPI</span>{% endif %}</td>
                         <td>{{ item.date_collected|date:"d-m-Y" }}</td>
                         <td>{{ item.evidence }} {{ item.tola_table}}</td>
                         <td>{{ item.targeted }}</td>

@@ -21,7 +21,7 @@
     <tr>
         <td>{{ indicator.indicator_types}}</td>
         <td>{{ indicator.levels }}</td>
-        <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.name}}</a></td>
+        <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.name}}</a>&nbsp {% if indicator.key_performance_indicator %} <span class="badge">KPI</span>{% endif %}</td>
         <td>{{ indicator.number}}</td>
         <td>{{ indicator.lop_target}}</td>
         <td>{{ indicator.sector}}</td>
