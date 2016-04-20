@@ -264,13 +264,14 @@ $(function () {
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-5">
                     <h4>Tola-Activity Dashboard</h4>
                 </div>
-                <div class="col-md-4">
+
+                <div class="col-md-7">
                     <div class="btn-group" role="group">
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="btn-group">
+                            <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                 {% if selected_countries_list %} {% for item in selected_countries_list %} {{ item.country }} {%endfor%}{%else%} Country {% endif %}Dashboard
                                 <span class="caret"></span>
                             </button>
@@ -282,7 +283,33 @@ $(function () {
                               <li><a href="/">All</a></li>
                             </ul>
                         </div>
-                        <a href="/activitydb/dashboard/project/0/" class="btn btn-default btn-success">Create a Project</a>
+                        <div class="btn-group">
+                            <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="false">
+                            Filter by Program <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
+                                {%for program in programs%}
+                                <li class="list-group-item">
+                                    <a href="/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/">{{ program.name }}</a>
+                                </li>
+                                {%endfor%}
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="false">
+                            Filter by Sector <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
+                                {%for sector in getSectors%}
+                                <li class="list-group-item">
+                                    <a href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ sector.id }}/">{{ sector.sector }}</a>
+                                </li>
+                                {%endfor%}
+                            </ul>
+                        </div>
+                        <a href="/activitydb/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a Project</a>
                     </div>
                 </div>
             </div>
@@ -370,36 +397,6 @@ $(function () {
                 {% endif %}
                  </div>
              </div>
-            {% if report_server != True%}
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    <!-- Extra small button group -->
-                    <div class="btn-group">
-                      <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                        Filter Program List by Sector <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                          <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
-                         {%for sector in getSectors%}
-                            <li class="list-group-item">
-                                <a href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ sector.id }}/">{{ sector.sector }}</a>
-                            </li>
-                        {%endfor%}
-                      </ul>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <ul class="list-group">
-                    {%for program in programs%}
-                        <li class="list-group-item">
-                            <a href="/activitydb/dashboard/{{ program.id }}/">{{ program.name }}</a>&nbsp;
-                            <button type="button" class="btn btn-xs btn-success" style="float:right;" onclick="location.href='/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/'"><span class="glyphicon glyphicon-arrow-right"></span></button>
-                        </li>
-                    {%endfor%}
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
         </div>
         {% if report_server == True%}
         <div class="col-md-8">
