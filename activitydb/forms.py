@@ -1039,7 +1039,6 @@ class ContactForm(forms.ModelForm):
 
 
 class StakeholderForm(forms.ModelForm):
-
     class Meta:
         model = Stakeholder
         exclude = ['create_date', 'edit_date']
@@ -1078,11 +1077,11 @@ class StakeholderForm(forms.ModelForm):
 
         countries = getCountry(self.request.user)
         self.fields['contact'].queryset = Contact.objects.filter(country__in=countries)
-
+        self.fields['formal_relationship_document'].queryset = Documentation.objects.filter(program__country__in=countries)
+        self.fields['vetting_document'].queryset = Documentation.objects.filter(program__country__in=countries)
 
 
 class BeneficiaryForm(forms.ModelForm):
-
     class Meta:
         model = Beneficiary
         exclude = ['create_date', 'edit_date']

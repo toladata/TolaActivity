@@ -26,6 +26,7 @@
             <th>Strategic Objectives</th>
             <th>Number</th>
             <th>Name</th>
+            <th>KPI</th>
             <th>Source</th>
             <th>Definition</th>
             <th>Disaggregation</th>
@@ -46,7 +47,8 @@
             <td>{{ indicator.objectives_list }}</td>
             <td>{{ indicator.strategic_objectives_list }}</td>
             <td>{{ indicator.number }}</td>
-            <td>{{ indicator.name }} {% if indicator.key_performance_indicator %} <span class="badge">KPI</span>{% endif %}</td>
+            <td>{{ indicator.name }}</td>
+            <td>{{ indicator.key_performance_indicator }}</td>
             <td>{{ indicator.source }}</td>
             <td>{{ indicator.definition }}</td>
             <td>{{ indicator.disaggregations }}</td>
