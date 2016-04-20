@@ -35,7 +35,6 @@ def index(request, selected_countries=None, id=0, sector=0):
         selected_countries_label_list = Country.objects.all().filter(id__in=selected_countries).values('country')
 
     getAgencySite = TolaSites.objects.all().filter(id=1)
-
     getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
 
     #limit the programs by the selected sector
@@ -61,7 +60,7 @@ def index(request, selected_countries=None, id=0, sector=0):
             complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), project_agreement__sector__in=sectors, program__country__in=selected_countries).count()
             agreement_wait_count = ProjectAgreement.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), sector__in=sectors, program__country__in=selected_countries).count()
             complete_wait_count = ProjectComplete.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), project_agreement__sector__in=sectors, program__country__in=selected_countries).count()
-            getQuantitativeDataSums = CollectedData.objects.all().filter(Q(agreement__sector__in=sectors), indicator__key_performance_indicator=True, achieved__isnull=False, targeted__isnull=False, indicator__country__in=selected_countries).exclude(achieved=None,targeted=None).order_by('indicator__program','indicator__number').values('indicator__program__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+            getQuantitativeDataSums = CollectedData.objects.all().filter(Q(agreement__sector__in=sectors), indicator__key_performance_indicator=True, achieved__isnull=False, targeted__isnull=False, indicator__country__in=selected_countries).exclude(achieved=None,targeted=None,program__funding_status="Archived").order_by('indicator__program','indicator__number').values('indicator__program__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=selected_countries)
             getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__program__country__in=selected_countries))
@@ -73,7 +72,7 @@ def index(request, selected_countries=None, id=0, sector=0):
             complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), program__country__in=selected_countries).count()
             agreement_wait_count = ProjectAgreement.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), program__country__in=selected_countries).count()
             complete_wait_count = ProjectComplete.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")),program__country__in=selected_countries).count()
-            getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, achieved__isnull=False, targeted__isnull=False, indicator__country__in=selected_countries).exclude(achieved=None,targeted=None).order_by('indicator__program','indicator__number').values('indicator__program__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+            getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, achieved__isnull=False, targeted__isnull=False, indicator__country__in=selected_countries).exclude(achieved=None,targeted=None,program__funding_status="Archived").order_by('indicator__program','indicator__number').values('indicator__program__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     else:
         getFilteredName=Program.objects.get(id=program_id)
         agreement_total_count = ProjectAgreement.objects.all().filter(program__id=program_id).count()
@@ -86,7 +85,7 @@ def index(request, selected_countries=None, id=0, sector=0):
         complete_wait_count = ProjectComplete.objects.all().filter(Q(program__id=program_id), Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
         getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__program__id=program_id)
         getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__program__id=program_id))
-        getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__program','indicator__number').values('indicator__program__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+        getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None,program__funding_status="Archived").order_by('indicator__program','indicator__number').values('indicator__program__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     #Evidence and Objectives are for the global leader dashboard items and are the same every time
     count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__country__country").annotate(evidence_count=Count('evidence', distinct=True) + Count('tola_table', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
     getObjectives = CollectedData.objects.all().filter(indicator__strategic_objectives__isnull=False, indicator__country__in=selected_countries).exclude(achieved=None,targeted=None).order_by('indicator__strategic_objectives__name').values('indicator__strategic_objectives__name').annotate(indicators=Count('pk', distinct=True),targets=Sum('targeted'), actuals=Sum('achieved'))
@@ -126,14 +125,12 @@ def index(request, selected_countries=None, id=0, sector=0):
         total_evidence_adoption_count = total_evidence_adoption_count + country['evidence_count']
         total_indicator_data_count = total_indicator_data_count + country['indicator_count']
 
-
     if total_evidence_adoption_count >= float(total_indicator_data_count/1.5):
         evidence_adoption = green
     elif total_evidence_adoption_count < total_indicator_data_count/1.5 and total_evidence_adoption_count > total_indicator_data_count/4:
         evidence_adoption = yellow
     elif total_evidence_adoption_count <= total_indicator_data_count/4:
         evidence_adoption = red
-
 
     return render(request, "index.html", {'agreement_total_count':agreement_total_count,\
                                           'agreement_approved_count':agreement_approved_count,\
