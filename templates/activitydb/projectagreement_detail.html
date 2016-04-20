@@ -180,18 +180,22 @@
         </tr>
         {% endfor %}
     </table>
-    <h4>Benchmarks</h4>
+    <h4>Components</h4>
     <table class="table" border="1">
         <tr>
             <th>Description</th>
-            <th>% Completion</th>
-            <th>% Cumulative completion</th>
+            <th>Site</th>
+            <th>Est. Start Date</th>
+            <th>Est. End Date</th>
+            <th>Budget</th>
         </tr>
         {% for benchmark in getBenchmarks %}
         <tr>
-            <td>{{ benchmark.description }}</td>
-            <td>{{ benchmark.complete }}</td>
-            <td>{{ benchmark.percent_cumulative }}</td>
+            <td>{{ benchmark.description}}</td>
+            <td>{{ benchmark.site }}</td>
+            <td>{{ benchmark.est_start_date|date:"m-d-Y" }}</td>
+            <td>{{ benchmark.est_end_date|date:"m-d-Y" }}</td>
+            <td>{{ benchmark.budget }}</td>
         </tr>
         {% endfor %}
     </table>

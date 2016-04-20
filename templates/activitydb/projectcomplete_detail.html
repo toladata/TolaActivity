@@ -93,7 +93,36 @@
 </div>
 <div class="panel panel-info">
     <!-- Default panel contents -->
-    <div class="panel-heading">Part I: Executive Summary (Budget</div>
+    <div class="panel-heading">Part II: Components</div>
+
+    <table class="table" border="1">
+        <tr>
+            <th>Description</th>
+            <th>Site</th>
+            <th>Est. Start Date</th>
+            <th>Est. End Date</th>
+            <th>Actual Start Date</th>
+            <th>Actual End Date</th>
+            <th>Budget</th>
+            <th>Cost</th>
+        </tr>
+        {% for benchmark in getBenchmarks %}
+        <tr>
+            <td>{{ benchmark.description}}</td>
+            <td>{{ benchmark.site }}</td>
+            <td>{{ benchmark.est_start_date|date:"m-d-Y" }}</td>
+            <td>{{ benchmark.est_end_date|date:"m-d-Y" }}</td>
+            <td>{{ benchmark.actual_start_date|date:"m-d-Y" }}</td>
+            <td>{{ benchmark.actual_end_date|date:"m-d-Y" }}</td>
+            <td>{{ benchmark.budget }}</td>
+            <td>{{ benchmark.cost }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="panel panel-info">
+    <!-- Default panel contents -->
+    <div class="panel-heading">Part III: Budget</div>
     <!-- Table -->
     <table class="table" border="1">
         <tr>
@@ -111,48 +140,9 @@
     <table class="table" border="1">
         <tr>
             <th>Explanation of Budget Variance</th>
-            <th>Actual Direct Beneficiaries</th>
         </tr>
         <tr>
             <td>{{ complete.budget_variance_explanation }}</td>
-            <td>{{ complete.direct_beneficiaries }}</td>
-        </tr>
-    </table>
-    <br/>
-    <h4>Jobs</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>Number of Jobs Created</th>
-            <th>Part Time Jobs</th>
-            <th>Full Time Jobs</th>
-        </tr>
-        <tr>
-            <td>{{ complete.jobs_created }}</td>
-            <td>{{ complete.jobs_part_time }}</td>
-            <td>{{ complete.jobs_full_time }}</td>
-        </tr>
-    </table>
-    <br/>
-    <table class="table" border="1">
-        <tr>
-            <th>Government Involvement</th>
-            <th>What capacity was built to ensure sustainability?</th>
-        </tr>
-        <tr>
-            <td>{{ complete.government_involvement }}</td>
-            <td>{{ complete.sustainability }}</td>
-        </tr>
-    </table>
-    <br/>
-    <h4>Issues</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>List any issues or challenges faced(include reasons for dealys)</th>
-            <th>Lessons learned</th>
-        </tr>
-        <tr>
-            <td>{{ complete.issues_challenges }}</td>
-            <td>{{ complete.lessones_learned }}</td>
         </tr>
     </table>
     <br/>
@@ -170,19 +160,10 @@
         </tr>
     </table>
     <br/>
-     <table class="table" border="1">
-        <tr>
-            <th>Project Type Other</th>
-        </tr>
-        <tr>
-            <td>{{ complete.project_type_other }}</td>
-        </tr>
-    </table>
-    <br/>
 </div>
 <div class="panel panel-info">
     <!-- Default panel contents -->
-    <div class="panel-heading">Part III: Project Planning</div>
+    <div class="panel-heading">Part IV: Impact</div>
     <!-- Table -->
     <h4> Expected Indicator Outputs</h4>
     <table class="table" border="1">
@@ -199,6 +180,49 @@
             <td>{{ complete.in_logframe }}</td>
         </tr>
     </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Progress Against Targets </th>
+            <th>Actual Contribution</th>
+            <th>Beneficiary Type</th>
+            <th>Direct Beneficiaries</th>
+        </tr>
+        <tr>
+            <td>{{ complete.progress_against_targets }}</td>
+            <td>{{ complete.actual_contribution }}</td>
+            <td>{{ complete.beneficiary_type }}</td>
+            <td>{{ complete.direct_beneficiaries }}</td>
+        </tr>
+    </table>
+    <br/>
+    <table class="table" border="1">
+        <tr>
+            <th>Average Household Size</th>
+            <th>Indirect Beneficiaries</th>
+            <th>Capacity Built</th>
+            <th>Quality Assured</th>
+        </tr>
+        <tr>
+            <td>{{ complete.average_household_size }}</td>
+            <td>{{ complete.indirect_beneficiaries }}</td>
+            <td>{{ complete.capacity_built }}</td>
+            <td>{{ complete.quality_assured }}</td>
+        </tr>
+    </table>
+    <br/>
+    <h4>Issues</h4>
+    <table class="table" border="1">
+        <tr>
+            <th>List any issues or challenges faced(include reasons for dealys)</th>
+            <th>Lessons learned</th>
+        </tr>
+        <tr>
+            <td>{{ complete.issues_challenges }}</td>
+            <td>{{ complete.lessones_learned }}</td>
+        </tr>
+    </table>
+    <br/>
 </div>
 <div class="panel panel-warning">
     <!-- Default panel contents -->

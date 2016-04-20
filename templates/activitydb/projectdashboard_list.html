@@ -52,8 +52,8 @@
                 </li>
                 <li class="list-group-item">
                     <div class="btn-group" role="group" aria-label="...">
-                        <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ getAgreement.id }}'">Update Agreement</button>
                         {% if getAgreement.approval == "approved" %}
+                            <button data-toggle="tooltip" data-placement="top" title="Agreement has been approved and can no longer be edited." type="button" class="btn btn-sm btn-frozen" onclick="location.href='/activitydb/projectagreement_detail/{{ getAgreement.id }}'">View Agreement</button>
                             <button data-toggle="tooltip" data-placement="top" title="Agreement has been approved and can no longer be deleted." type="button" class="btn btn-sm btn-frozen">Delete Agreement</button>
                             {% if getComplete%}
                                 <button data-toggle="tooltip" data-placement="top" title="A completion form has already been created for the project" type="button" class="btn btn-sm btn-frozen">Complete Project</button>
@@ -61,6 +61,7 @@
                                 <button type="button" class="btn btn-sm btn-info" onclick="location.href='/activitydb/projectcomplete_add/{{ getAgreement.id }}'">Complete Project</button>
                             {% endif %}
                         {% else %}
+                            <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ getAgreement.id }}'">Update Agreement</button>
                             <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectagreement_delete/{{ getAgreement.id }}'">Delete Agreement</button>
                             <button data-toggle="tooltip" data-placement="top" title="Once Approved you will be able to click here and complete the project" type="button" class="btn btn-sm btn-frozen">Complete Project</button>
                         {% endif %}
