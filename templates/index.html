@@ -296,19 +296,6 @@ $(function () {
                                 {%endfor%}
                             </ul>
                         </div>
-                        <div class="btn-group">
-                            <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="false">
-                            Filter by Sector <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
-                                {%for sector in getSectors%}
-                                <li class="list-group-item">
-                                    <a href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ sector.id }}/">{{ sector.sector }}</a>
-                                </li>
-                                {%endfor%}
-                            </ul>
-                        </div>
                         <a href="/activitydb/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a Project</a>
                     </div>
                 </div>
