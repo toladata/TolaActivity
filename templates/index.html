@@ -67,7 +67,7 @@ $(function () {
             type: 'column'
         },
         title: {
-            text: 'Targets v. Actuals'
+            text: 'KPI Targets v. Actuals'
         },
         xAxis: {
             categories: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  '{{ indicator.indicator__number }}', {% endfor %}]
