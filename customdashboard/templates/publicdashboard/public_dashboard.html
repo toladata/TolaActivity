@@ -2,135 +2,252 @@
 {% load humanize %}
 {% block content %}
 
-        <link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/main.css">
-                <!--- Hosted Leaflet CSS --->
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
-        <script src="{{ STATIC_URL }}publicdashboard/js/vendor/modernizr-2.8.3.min.js"></script>
-        <script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
-        <script src="{{ STATIC_URL }}publicdashboard/js/vendor/leaflet.js"></script>
-        <script src="{{ STATIC_URL }}publicdashboard/js/leaflet-google.js"></script>
+<!--- Hosted Leaflet CSS --->
+<link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
+<link rel="borders" type="application/json" href="js/world_borders.geojson">
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/main.css">
 
-        <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/vendor/modernizr-2.8.3.min.js"></script>
+<script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/vendor/leaflet.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/leaflet-google.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/leaflet-providers.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/jquery-1.11.3.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
 
-        <link rel="borders" type="application/json" href="js/world_borders.geojson">
-        <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700' rel='stylesheet' type='text/css'>
+<div class="wrapper">
+    <h3>{% if getProgram %}{{ getProgram.name }}{% endif %}</h3>
+    <div class="widget">
+        <div id="map"></div>
+        <script>
+            var country=[],country_lat=[],country_long=[];
 
-        <div class="wrapper">
+            //read country GPS data into arrays
+            {% for item in countries %}
+                country[{{forloop.counter}}] = "{{ item.country }}";
+                country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
+                country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+            {% endfor %}
 
-          <div class="container clearfix">
-            <div class="widget">
-              <h3>Project Sites for {% if getProgram %}{{ getProgram.name }}{% endif %}</h3>
-              <style>
-                  #map { height: 350px; }
-              </style>
-              <div id="map"></div>
-              <script>
-                var country=[];
-                var country_lat=[];
-                var country_long=[];
-                {% for item in countries %}
-                    country[{{forloop.counter}}] = "{{ item.country }}";
-                    country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
-                    country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+             //overlay groups
+            var projects = new L.LayerGroup(), indicators = new L.LayerGroup(), VTC = new L.LayerGroup(), partners = new L.LayerGroup();
+
+            //define icons for overlay markers
+            var projectIcon = L.divIcon({
+              className: 'map-marker',
+              html:'<div class="map-marker project"></div>',
+              iconSize: [50,50]
+            });
+            var indicatorIcon = L.divIcon({
+              className: 'map-marker',
+              html:'<div class="map-marker indicator"></div>',
+              iconSize: [50,50]
+            });
+            var VTCIcon = L.divIcon({
+              className: 'map-marker',
+              html:'<div class="map-marker project"></div>',
+              iconSize: [50,50]
+            });
+            var partnerIcon = L.divIcon({
+              className: 'map-marker',
+              html:'<div class="map-marker project"></div>',
+              iconSize: [50,50]
+            });
+
+            //partner markers
+            {% for item in getSiteProfile %}
+                L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon})
+                    .addTo(partners)
+                    .bindPopup("" + "<b>{{ item.country }}</b>
+                                <br/>Project Site:
+                                <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
+                                <br/>Province: {{ item.province }}
+                                <br/>District: {{ item.district }}
+                                <br/>Village: {{ item.village }}
+                                <br/>SiteProfile{{ item.name }}
+                                <br/> "
+                               );
+            {% endfor %}
+
+            {% if getSiteProfileIndicator %}
+                //indicator markers
+                {% for item in getSiteProfileIndicator %}
+                    L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon})
+                            .addTo(indicators)
+                            .bindPopup("" + "<b>{{ item.country }}</b>
+                                        <br/>Collected Indicator Data Site:
+                                        <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
+                                        <br/>Province: {{ item.province }}
+                                        <br/>District: {{ item.district }}
+                                        <br/> Village: {{ item.village }}
+                                        <br/> SiteProfile{{ item.name }}
+                                        <br/> "
+                                       );
                 {% endfor %}
-                var projects = new L.LayerGroup();
-                var indicators = new L.LayerGroup();
+            {% endif %}
 
-                // Define an icon called cssIcon
-                var projectIcon = L.divIcon({
-                  // Specify a class name we can refer to in CSS.
-                  // Set marker width and height
-                  html:'<div class="map-marker"></div>',
-                  iconSize: [0,0]
-                });
+            var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                        'Imagery &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
 
-                var indicatorIcon = L.divIcon({
-                  // Specify a class name we can refer to in CSS.
-                  className: 'map-marker',
-                  // Set marker width and height
-                  html:'<div class="map-marker indicator"></div>',
-                  iconSize: [0,0]
-                });
+            //basemaps from mapbox URL and leaflet-providers.js
+            mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+            var baseMap = L.tileLayer.provider('OpenStreetMap.Mapnik');
+
+            var baseMap = L.tileLayer.provider('OpenStreetMap.Mapnik'),
+                grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
+                opentopomap = L.tileLayer.provider('OpenTopoMap');
 
 
-                {% for item in getSiteProfile %}
-                    L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(projects).bindPopup("" + "<b>{{ item.country }}</b><br/>Project Site<br><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
-                {%   endfor %}
+            var map = L.map('map',
+                       {
+                        center: [country_lat[1], country_long[1]],
+                        zoom: 5,
+                        //preselected layers
+                        layers: [baseMap, projects, indicators]
+                        });
 
-                {% if getSiteProfileIndicator %}
-                    {% for item in getSiteProfileIndicator %}
-                        L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(indicators).bindPopup("" + "<b>{{ item.country }}</b><br/>Collected Indicator Data Site<br> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
-                    {%   endfor %}
-                {% endif %}
+            var baseLayers = {"OpenStreet": baseMap,
+                              "GrayScale": grayscale,
+                              "Topography": opentopomap,
 
-                var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-                mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-                var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
-                streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
-                var map = L.map('map', {
-                center: [country_lat[1], country_long[1]],
-                zoom: 5,
-                layers: [grayscale, projects, indicators]
-                });
-                var baseLayers = {
-                "Grayscale": grayscale,
-                "Streets": streets,
-                };
-                var overlays = {
-                "Project Sites": projects,
-                "Collected Indicator Sites": indicators,
-                };
-                L.control.layers(baseLayers, overlays).addTo(map);
-               </script>
+                              };
+            var overlays = {"Khandahar VTC Locations": projects,"Collected Indicator Sites": indicators,
+                            "VTC in Spin Boldack": VTC,"INVEST Partner Locations": partners,};
+
+            L.control.layers(baseLayers, overlays).addTo(map);
+
+            //invest_khandahar.geoJSON data (from http://earthquake.usgs.gov) - TODO - prepare INVEST-in-Khandahar geoJSON
+           function addDataToMap(data, map){
+               var dataLayer = L.geoJson(data, {onEachFeature: function(feature, layer) {
+               var popupText = "Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place + "<br><a href='" + feature.properties.url + "'>More info</a>";
+               layer.bindPopup(popupText); }});
+               dataLayer.addTo(projects);
+            }
+            $.getJSON("{{ STATIC_URL }}publicdashboard/js/invest_khandahar.geojson", function(data){ addDataToMap(data, map); });
+        </script>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row tools">
+            <h3>Project Status and Key Performance Indicators</h3>
+
+            <div class="list-group col-md-6">
+
+                                    <h4>What is the current project status? </h4>
+
+                                    Number of Agreements : <b>{{ getProjectsCount }}</b><br>
+
+                                   <h4>
+                                       <span class="label label-success">Approved &nbsp;<span class="badge">0</span></span>
+                                       <span class="label label-success">Awaiting Approval &nbsp;<span class="badge">0</span></span>
+                                       <span class="label label-success">In Progress &nbsp;<span class="badge">0</span></span>
+                                       <span class="label label-success">Rejected &nbsp;<span class="badge">0</span></span>
+
+                                      </a>
+                                    </h4>
+
+                      </div>
+                      <div class="list-group  col-md-6">
+                          <div class="panel-heading home-paneltitle">
+                          <table class="table table-striped">
+                                  <tr>
+                                      <td colspan="5"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#summary" href="#collapse2"><b><span class="glyphicon glyphicon-plus-sign"></span></b>
+                                          At what stages are these project agreements at?</a></h4></td>
+                                  </tr>
+                                  <tr>
+                                      <td colspan="5">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#summary" href="#collapse1">
+                                            <b><span class="glyphicon glyphicon-plus-sign"></span></b> Key Performance Indicators (KPIs) </a>
+                                         </h4>
+                                      </td>
+                                  </tr>
+
+                          </table>
+                          </div>
+                      </div>
             </div>
-          </div>
+                <div class="panel-group" id="summary">
+                        <div class="panel home-panel">
+                          <div id="collapse2" class="panel-collapse collapse">
+                              <table class="table table-striped">
+                                  <tr>
+                                      <td colspan="5"><b>Summary of project agreements for - {% if getProgram %}{{ getProgram.name }}{% endif %}</b></td>
+                                  </tr>
+                                  <tr>
+                                      <th>Agreement#</th>
+                                      <th>Title</th>
+                                      <th>Status</th>
+                                      <th>Date</th>
+                                      <th>AAM</th>
+                                  </tr>
+                                  {% for item in recent_tickets %}
+                                  <tr>
+                                      <td>{% if item.status == 1 %} Open {%elif item.status == 2%}Re-Opened{% elif item.status == 3%}Resolved{% elif item.status == 4%}Closed{% elif item.status == 5%}Duplicate{% endif %}</td>
+                                      <td>{{ item.queue }}</td>
+                                      <td><a href="/helpdesk/tickets/{{ item.id }}/">{{ item.title }}</a></td>
+                                      <td>{{ item.created }}</td>
+                                      <td>{{ item.created }}</td>
+                                  </tr>
+                                  {% endfor %}
+                              </table>
+                              <div class="container clearfix">
+                                  <div class="third widget doughnut">
+                                      <h4>
 
-            <div class="container clearfix">
-                <div class="widget">
-                  <div class="chart-legend">
-                      <h3>Key Performance Indicators (KPIs)</h3>
-                      <div id="kpi-legend"></div>
-                      <p><span>Targets</span> Vs <strong>Actuals</strong></p>
-                      {% if getProgram %}{{ getProgram.name }}{% endif %}
-                  </div>
-                    <div class="canvas-container">
-                      <canvas id="kpi"></canvas>
-                  </div>
-              </div>
-            </div>
-            <div class="container clearfix">
-              <div class="third widget doughnut">
-                  <h3>Project Status </h3>
-                    <div id="status-legend" class="chart-legend"></div>
-                  <div class="canvas-container-fixed">
-                      <canvas id="status"></canvas>
-                  </div>
-                  <b>Total number of Projects:</b> ( {{ total_projects }} )
-              </div>
-              <div class="third widget line">
-                <div class="chart-legend">
-                    <h3>Program Expenditure</h3>
-                    <div class="canvas-container-fixed">
-                        <canvas id="expenditure_canvas"></canvas>
+                                          Project Status
+                                      </h4>
+                                        <div id="status-legend" class="chart-legend"></div>
+                                      <div class="canvas-container-fixed">
+                                          <canvas id="status"></canvas>
+                                      </div>
+                                      <b>Total number of Projects:</b> ( {{ total_projects }} )
+                                  </div>
+                                  <div class="third widget line">
+                                    <div class="chart-legend">
+                                        <h4>Program Expenditure</h4>
+                                        <div class="canvas-container-fixed">
+                                            <canvas id="expenditure_canvas"></canvas>
+                                        </div>
+                                        <div id="exp-legend"></div>
+                                    </div>
+                                  </div>
+                                  <div class="third widget">
+                                      <div class="chart-legend">
+                                          <h4>Survey Responses</h4>
+                                          <span>How do you rate our program team ?</span>
+                                      </div>
+                                      <div class="canvas-container-fixed">
+                                          <canvas id="surveys"></canvas>
+                                      </div>
+                                  </div>
+                            </div>
+
+                          </div><!-- end of collapse2 -->
                     </div>
-                    <div id="exp-legend"></div>
-                </div>
+                    <div class="panel home-panel">
+                      <div id="collapse1" class="panel-collapse collapse">
+                          <div class="container clearfix widget">
+
+                                    <div class="chart-legend">
+                                        <h4>Key Performance Indicators (KPIs)</h4>
+                                        <div id="kpi-legend"></div>
+                                        <p><span>Targets</span> Vs <strong>Actuals</strong></p>
+                                        {% if getProgram %}{{ getProgram.name }}{% endif %}
+                                    </div>
+                                    <div class="canvas-container">
+                                        <canvas id="kpi"></canvas>
+                                    </div>
+
+                          </div>
+                      </div>
+                    </div>
+
               </div>
-              <div class="third widget">
-                  <div class="chart-legend">
-                      <h3>Survey Responses</h3>
-                      <span>How do you rate our program team ?</span>
-                  </div>
-                  <div class="canvas-container-fixed">
-                      <canvas id="surveys"></canvas>
-                  </div>
-              </div>
-            </div>
             <div class="push"></div>
         </div>
-
         <script src="{{ STATIC_URL }}publicdashboard/js/vendor/jquery-1.11.1.min.js"></script>
         <script src="{{ STATIC_URL }}publicdashboard/js/plugins.js"></script>
         <script>
@@ -305,5 +422,5 @@ document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
     new Chart(ctx).Radar(survey_data);
 </script>
 
-
+</div>
 {% endblock content %}
