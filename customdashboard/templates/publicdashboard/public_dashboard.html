@@ -17,48 +17,12 @@
 <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
 
 <div class="wrapper">
-    <style>
-    .legend label,
-    .legend span {
-      display:block;
-      float:left;
-      height:15px;
-      width:20%;
-      text-align:center;
-      font-size:9px;
-      color:#808080;
-      }
-    </style>
 
-<!-- Set the display of this container to none so we can
-     add it programmatically to `legendControl` -->
-<div id='legend' style='display:none;'>
-  <strong>The Title or Explanation of your Map</strong>
-  <nav class='legend clearfix'>
-    <span style='background:#F1EEF6;'></span>
-    <span style='background:#BDC9E1;'></span>
-    <span style='background:#74A9CF;'></span>
-    <span style='background:#2B8CBE;'></span>
-    <span style='background:#045A8D;'></span>
-    <label>0 - 20%</label>
-    <label>40%</label>
-    <label>60%</label>
-    <label>80%</label>
-    <label>100%</label>
-    <small>Source: <a href="#link to source">Name of source</a></small>
-  </nav>
-</div>
     <h3>{% if getProgram %}{{ getProgram.name }}{% endif %}</h3>
     <div class="widget">
         <div id="map"></div>
         <script>
-  var map = L.mapbox.map('map');
-  map.legendControl
-    .addLegend(document.getElementById('legend').innerHTML)
-    .setPosition('topright');
-</script>
-        <script>
-            var country=[],country_lat=[],country_long=[];
+            var country=[],country_lat=[],country_long=[], narrativeTitle=[], narrativeTXT=[], overlay=[];
 
             //read country GPS data into arrays
             {% for item in countries %}
@@ -68,7 +32,9 @@
             {% endfor %}
 
              //overlay groups
-            var projects = new L.LayerGroup(), indicators = new L.LayerGroup(), VTC = new L.LayerGroup(), partners = new L.LayerGroup();
+             {% for group in getOverlayGroups %}
+                var {{ group.overlay_group }} = new L.LayerGroup();
+             {% endfor %}
 
             //define icons for overlay markers
             var projectIcon = L.divIcon({
@@ -79,16 +45,6 @@
             var indicatorIcon = L.divIcon({
               className: 'map-marker',
               html:'<div class="map-marker indicator"></div>',
-              iconSize: [50,50]
-            });
-            var VTCIcon = L.divIcon({
-              className: 'map-marker',
-              html:'<div class="map-marker project"></div>',
-              iconSize: [50,50]
-            });
-            var partnerIcon = L.divIcon({
-              className: 'map-marker',
-              html:'<div class="map-marker project"></div>',
               iconSize: [50,50]
             });
 
@@ -150,8 +106,10 @@
                               "Topography": opentopomap,
 
                               };
-            var overlays = {"INVEST-in-Khandahar": projects,"Khandahar VTC Locations": VTC,
-                            "Collected Indicator Sites": indicators,"INVEST Partner Locations": partners,};
+
+            var overlays = { {% for narrative in getOverlayNarrative %}
+                                "{{narrative.overlay_title}}": {{narrative.overlay_group.overlay_group}},
+                             {% endfor %} };
 
             L.control.layers(baseLayers, overlays).addTo(map);
 
@@ -165,39 +123,44 @@
             $.getJSON("{{ STATIC_URL }}publicdashboard/js/invest_khandahar.geojson", function(data){ addDataToMap(data, map); });
 
             //narrative placeholders
-            var investNarrative = L.control({position: 'bottomleft'});
-            var kandharNarrative = L.control({position: 'bottomleft'});
+            {% for text in getOverlayNarrative %}
+                narrativeTitle[{{forloop.counter}}] = "{{text.narrative_title}}";
+                narrativeTXT[{{forloop.counter}}] = "{{text.narrative}}";
+                overlay[{{forloop.counter}}] = "{{text.overlay_title}}";
+            {% endfor %}
 
-            investNarrative.onAdd = function (map) {
+            var testNarrative = L.control({position: 'bottomleft'}),
+                dashNarrative = L.control({position: 'bottomleft'});
+
+            dashNarrative.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info narrative');
                 div.innerHTML +=
-                'Kandahar Province is at the center of Afghanistan’s IDP crisis. <br/>Nearly 90,000 people are currently displaced in the province <br/>due to conflict and drought.';
-            return div;
-                };
-            kandharNarrative.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'info narrative');
-                div.innerHTML += "INVEST-in-Kandahar is a 36-month long skills<br/> development program designed to facilitate <br/>the reintegration of Afghan youth, women and <br/>internally displaced people (IDP) into communities <br/>by expanding their opportunities through enhanced<br/>vocational and life skills. INVEST seeks to address<br/> the longer-term needs identified by IDPs <br/>by providing vocational training linked to economic <br/>opportunities within the locale, and by delivering <br/>life skills modules to further support graduates and <br/>aid repatriation to home provinces. The program will <br/>deliver market-specific vocational and life skills <br/>training to 7,500 vulnerable individuals in Kandahar, <br/>Afghanistan by 2017.";
+                "<strong>"+narrativeTitle[1]+":</strong><br/>" + narrativeTXT[1];
                 return div;
-            };
-            kandharNarrative.addTo(map);
+                };
+
+            testNarrative.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info narrative');
+                div.innerHTML +=
+                "<strong>"+narrativeTitle[2]+":</strong><br/>" + narrativeTXT[2];
+                return div;
+                };
+
+            dashNarrative.addTo(map);
+
             map.on('overlayadd', function (eventLayer) {
-                if (eventLayer.name === 'Khandahar VTC Locations') {
-                    this.removeControl(kandharNarrative);
-                    investNarrative.addTo(this);
+                if (eventLayer.name === overlay[2]) {
+                    this.removeControl(dashNarrative);
+                    testNarrative.addTo(this);
                 }
             });
             map.on('overlayremove', function (eventLayer) {
-                if (eventLayer.name === 'Khandahar VTC Locations') {
-                    this.removeControl(investNarrative);
-                    kandharNarrative.addTo(this);
+                if (eventLayer.name === overlay[2]) {
+                    this.removeControl(testNarrative);
+                    dashNarrative.addTo(this);
                 }
             });
-            map.on('overlayremove', function (eventLayer) {
-                if (eventLayer.name === 'INVEST-in-Khandahar') {
-                    this.removeControl(investNarrative);
-                    kandharNarrative.addTo(this);
-                }
-            });
+
         </script>
     </div>
 
