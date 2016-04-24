@@ -194,7 +194,7 @@ img.help-tooltip {
 }
 
 p img, h1 img, h2 img, h3 img, h4 img, td img {
-    vertical-align: middle;
+    vertical-align: left;
 }
 
 .quiet, a.quiet:link, a.quiet:visited {
