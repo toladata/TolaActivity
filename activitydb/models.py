@@ -381,7 +381,7 @@ class AdminLevelThree(models.Model):
 
 class AdminLevelThreeAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date')
-    search_fields = ('name','district')
+    search_fields = ('name','district__name')
     list_filter = ('district__province__country__country','district')
     display = 'Admin Level 3'
 
