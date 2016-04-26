@@ -643,7 +643,7 @@ def collecteddata_import(request):
             result = "error"
         else:
             create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
-            create_table.country.add(countries)
+            create_table.country.add(countries[0].id)
             create_table.save()
             result = "success"
 
