@@ -181,7 +181,7 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details', 'activity_code', 'office', 'sector','program', 'project_name', 'project_activity',
+                    Fieldset('Project Details', 'activity_code','account_code','lin_code','office', 'sector','program', 'project_name', 'project_activity',
                              'project_type', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date',
                         ),
 
@@ -229,7 +229,7 @@ class ProjectAgreementForm(forms.ModelForm):
                         'Budget',
                         PrependedAppendedText('total_estimated_budget','$', '.00'), PrependedAppendedText('mc_estimated_budget','$', '.00'),
                         AppendedText('local_total_estimated_budget', '.00'), AppendedText('local_mc_estimated_budget', '.00'),
-                        'exchange_rate','exchange_rate_date','estimation_date','other_budget','account_code','lin_code',
+                        'exchange_rate','exchange_rate_date','estimation_date','other_budget',
                     ),
                     Fieldset("Other Budget Contributions:",
                         Div(
