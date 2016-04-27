@@ -15,10 +15,10 @@ class ProjectAgreementTable(tables.Table):
     class Meta:
         model = ProjectAgreement
         attrs = {"class": "paleblue"}
-        fields = ('program', 'project_proposal','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
-                             'project_type', 'account_code', 'sub_code','mc_staff_responsible','total_estimated_budget','mc_estimated_budget')
-        sequence = ('program', 'project_proposal','community', 'activity_code', 'office_code', 'project_name', 'sector', 'project_activity',
-                             'project_type', 'account_code', 'sub_code','mc_staff_responsible','total_estimated_budget','mc_estimated_budget')
+        fields = ('program', 'project_name','sites', 'activity_code', 'office', 'project_name', 'sector', 'project_activity',
+                             'project_type', 'account_code', 'lin_code','estimated_by','total_estimated_budget','mc_estimated_budget')
+        sequence = ('program', 'project_name','sites', 'activity_code', 'office', 'project_name', 'sector', 'project_activity',
+                             'project_type', 'account_code', 'lin_code','estimated_by','total_estimated_budget','mc_estimated_budget')
 
 TEMPLATE2 = '''
    <a class="btn btn-default btn-xs" role="button" href="/incident/{{ record.id }}/print">Print</a>
