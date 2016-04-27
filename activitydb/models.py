@@ -830,7 +830,6 @@ class ProjectAgreement(models.Model):
     local_mc_estimated_budget = models.DecimalField("Estimated Organization Total in Local Currency", decimal_places=2,max_digits=12, help_text="Total portion of estimate for your agency", default=Decimal("0.00"),blank=True)
     exchange_rate = models.CharField(help_text="Local Currency exchange rate to USD", max_length=255, blank=True, null=True)
     exchange_rate_date = models.DateField(help_text="Date of exchange rate", blank=True, null=True)
-    project_type_other = models.ForeignKey(ProjectTypeOther, blank=True, null=True)
     estimate_male_trained = models.IntegerField("Estimated # of Male Trained",blank=True,null=True)
     estimate_female_trained = models.IntegerField("Estimated # of Female Trained",blank=True,null=True)
     estimate_total_trained = models.IntegerField("Estimated Total # Trained",blank=True,null=True)
