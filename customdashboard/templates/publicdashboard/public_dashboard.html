@@ -7,6 +7,9 @@
 <link rel="borders" type="application/json" href="js/world_borders.geojson">
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/main.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/Leaflet.Photo.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/map.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/MarkerCluster.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/leaflet-sidebar.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}js/highcharts/api/css/font-awesome.css">
 
@@ -16,6 +19,9 @@
 <script src="{{ STATIC_URL }}js/leaflet-sidebar.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/vendor/AFG.geo.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/leaflet-google.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/leaflet.markercluster.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/Leaflet.Photo.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/reqwest.min.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/leaflet-providers.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/jquery-1.11.3.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
@@ -302,6 +308,45 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
                     dashNarrative.addTo(this);
                 }
             });
+
+            var photoLayer = L.photo.cluster().on('click', function (evt) {
+		        var photo = evt.layer.photo,
+			        template = '<a><img src="{url}"/></a><p>{caption}</p>';
+
+		        if (photo.video && (!!document.createElement('video').canPlayType('video/mp4; codecs=avc1.42E01E,mp4a.40.2'))) {
+			        template = '<video autoplay controls poster="{url}"><source src="{video}" type="video/mp4"/></video>';
+		            };
+
+		    evt.layer.bindPopup(L.Util.template(template, photo), {
+			    className: 'leaflet-popup-photo',
+			    minWidth: 400
+		        }).openPopup();
+	        });
+
+	        reqwest({
+		        url: 'https://picasaweb.google.com/data/feed/api/user/114670224825998987940/albumid/6277837931786391457?alt=json-in-script',
+		        type: 'jsonp',
+		        success: function (data) {
+			        var photos = [];
+			        data = data.feed.entry;
+			            for (var i = 0; i < data.length; i++) {
+				            var photo = data[i];
+				            if (photo['georss$where']) {
+					            var pos = photo['georss$where']['gml$Point']['gml$pos']['$t'].split(' ');
+					            photos.push({
+						                lat: pos[0],
+						                lng: pos[1],
+						                url: photo['media$group']['media$content'][0].url,
+						                caption: photo['media$group']['media$description']['$t'],
+						                thumbnail: photo['media$group']['media$thumbnail'][0].url,
+						                video: (photo['media$group']['media$content'][1] ? photo['media$group']['media$content'][1].url : null)
+					                    });
+				            };
+			}
+			photoLayer.add(photos).addTo(VTC);
+			map.fitBounds(photoLayer.getBounds());
+		}
+	});
         </script>
     </div>
 
