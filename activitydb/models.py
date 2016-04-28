@@ -15,7 +15,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from simple_history.models import HistoricalRecords
 
-#New user created generate a token
+# New user created generate a token
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
@@ -71,14 +71,14 @@ class Country(models.Model):
         verbose_name_plural = "Countries"
         app_label = 'activitydb'
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Country, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.country
 
@@ -114,7 +114,7 @@ class TolaUser(models.Model):
     def countries_list(self):
         return ', '.join([x.code for x in self.countries.all()])
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
@@ -137,14 +137,14 @@ class Sector(models.Model):
     class Meta:
         ordering = ('sector',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Sector, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.sector
 
@@ -169,14 +169,14 @@ class Contact(models.Model):
         ordering = ('country','name','title')
         verbose_name_plural = "Contact"
 
-    #onsave add create date or update edit date
+    # onsave add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Contact, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.title + " " + self.name
 
@@ -191,7 +191,7 @@ class ContactAdmin(admin.ModelAdmin):
 # For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'
 class CustomDashboard(models.Model):
     dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
-    dashboard_description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard displays to the user?")
+    dashboard_description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard display to the user?")
     is_public = models.BooleanField("External Public Dashboard", default=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -199,14 +199,14 @@ class CustomDashboard(models.Model):
     class Meta:
         ordering = ('dashboard_name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(CustomDashboard, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.dashboard_name
 
@@ -225,14 +225,14 @@ class FundCode(models.Model):
     class Meta:
         ordering = ('name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(FundCode, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -260,7 +260,7 @@ class Program(models.Model):
     class Meta:
         ordering = ('name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if not 'force_insert' in kwargs:
             kwargs['force_insert'] = False
@@ -273,7 +273,7 @@ class Program(models.Model):
     def countries(self):
         return ', '.join([x.country for x in self.country.all()])
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -290,14 +290,14 @@ class ApprovalAuthority(models.Model):
         ordering = ('approval_user',)
         verbose_name_plural = "Approval Authority"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(ApprovalAuthority, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.approval_user.user.first_name + " " + self.approval_user.user.last_name
 
@@ -311,14 +311,14 @@ class Province(models.Model):
     class Meta:
         ordering = ('name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Province, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -339,14 +339,14 @@ class District(models.Model):
     class Meta:
         ordering = ('name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(District, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -367,14 +367,14 @@ class AdminLevelThree(models.Model):
     class Meta:
         ordering = ('name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(AdminLevelThree, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -396,14 +396,14 @@ class Office(models.Model):
     class Meta:
         ordering = ('name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Office, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
         return new_name
@@ -426,14 +426,14 @@ class Village(models.Model):
     class Meta:
         ordering = ('name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Village, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -452,14 +452,14 @@ class ProfileType(models.Model):
     class Meta:
         ordering = ('profile',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(ProfileType, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.profile
 
@@ -478,14 +478,14 @@ class LandType(models.Model):
     class Meta:
         ordering = ('classify_land',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(LandType, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.classify_land
 
@@ -557,7 +557,7 @@ class SiteProfile(models.Model):
         ordering = ('name',)
         verbose_name_plural = "Site Profiles"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
 
         # Check if a create date has been specified. If not, display today's date in create_date and edit_date
@@ -570,7 +570,7 @@ class SiteProfile(models.Model):
 
         super(SiteProfile, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         new_name = str(self.province) + " - " + str(self.name)
         return new_name
@@ -592,14 +592,14 @@ class Capacity(models.Model):
         ordering = ('capacity',)
         verbose_name_plural = "Capacity"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Capacity, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.capacity
 
@@ -618,14 +618,14 @@ class StakeholderType(models.Model):
         ordering = ('name',)
         verbose_name_plural = "Stakeholder Types"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(StakeholderType, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -646,14 +646,14 @@ class Evaluate(models.Model):
         ordering = ('evaluate',)
         verbose_name_plural = "Evaluate"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Evaluate, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.evaluate
 
@@ -669,7 +669,7 @@ class ProjectType(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
@@ -688,31 +688,6 @@ class ProjectTypeAdmin(admin.ModelAdmin):
     display = 'Project Type'
 
 
-class ProjectTypeOther(models.Model):
-    name = models.CharField("Type of Activity", max_length=135)
-    description = models.CharField(max_length=765)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    #onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ProjectTypeOther, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ('name',)
-
-
-class ProjectTypeOtherAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'create_date', 'edit_date')
-    display = 'Activity Type Other'
-
-
 class Template(models.Model):
     name = models.CharField("Name of Document", max_length=135)
     documentation_type = models.CharField("Type (File or URL)", max_length=135)
@@ -721,7 +696,7 @@ class Template(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
@@ -740,9 +715,9 @@ class TemplateAdmin(admin.ModelAdmin):
     display = 'Template'
 
 
-class StakeholderManagmer(models.Manager):
+class StakeholderManager(models.Manager):
     def get_queryset(self):
-        return super(StakeholderManagmer, self).get_queryset().prefetch_related('contact').select_related('country','sector','type','formal_relationship_document','vetting_document')
+        return super(StakeholderManager, self).get_queryset().prefetch_related('contact').select_related('country','sector','type','formal_relationship_document','vetting_document')
 
 
 class Stakeholder(models.Model):
@@ -760,20 +735,20 @@ class Stakeholder(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     #optimize query
-    objects = StakeholderManagmer()
+    objects = StakeholderManager()
 
     class Meta:
         ordering = ('country','name','type')
         verbose_name_plural = "Stakeholders"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Stakeholder, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -881,7 +856,7 @@ class ProjectAgreement(models.Model):
             ("can_approve", "Can approve agreement"),
         )
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
@@ -918,7 +893,7 @@ class ProjectAgreement(models.Model):
     def evaluations(self):
         return ', '.join([x.evaluate for x in self.evaluate.all()])
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
         return new_name
@@ -992,7 +967,7 @@ class ProjectComplete(models.Model):
         ordering = ('create_date',)
         verbose_name_plural = "Project Completions"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
@@ -1012,7 +987,7 @@ class ProjectComplete(models.Model):
         self.edit_date = datetime.now()
         super(ProjectComplete, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
         return new_name
@@ -1039,7 +1014,7 @@ class Documentation(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
-     #onsave add create date or update edit date
+     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
@@ -1079,14 +1054,14 @@ class Benchmarks(models.Model):
         ordering = ('description',)
         verbose_name_plural = "Project Components"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Benchmarks, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.description
 
@@ -1109,14 +1084,14 @@ class Monitor(models.Model):
         ordering = ('type',)
         verbose_name_plural = "Monitors"
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Monitor, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return self.responsible_person
 
@@ -1135,7 +1110,7 @@ class Budget(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     history = HistoricalRecords()
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
@@ -1176,7 +1151,7 @@ class ProgramDashboard(models.Model):
     class Meta:
         ordering = ('program',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self):
         if self.create_date == None:
             self.create_date = datetime.now()
@@ -1219,14 +1194,14 @@ class TrainingAttendance(models.Model):
     class Meta:
         ordering = ('training_name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(TrainingAttendance, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.training_name)
 
@@ -1251,14 +1226,14 @@ class Beneficiary(models.Model):
     class Meta:
         ordering = ('beneficiary_name',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Beneficiary, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.beneficiary_name)
 
@@ -1275,14 +1250,14 @@ class FormLibrary(models.Model):
     class Meta:
         ordering = ('name','create_date')
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(FormLibrary, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.name)
 
@@ -1302,14 +1277,14 @@ class FormEnabled(models.Model):
     class Meta:
         ordering = ('country','agreement')
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(FormEnabled, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.form)
 
@@ -1328,14 +1303,14 @@ class Checklist(models.Model):
     class Meta:
         ordering = ('agreement',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Checklist, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.agreement)
 
@@ -1357,14 +1332,14 @@ class ChecklistItem(models.Model):
     class Meta:
         ordering = ('item',)
 
-    #onsave add create date or update edit date
+    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(ChecklistItem, self).save()
 
-    #displayed in admin templates
+    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.item)
 

@@ -1,17 +1,18 @@
 from django.contrib import admin
 from .models import Country, Province, Office,OfficeAdmin, Village, Program, Documentation, Template,District, Sector, \
-     ProgramDashboard, CustomDashboard, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
-    Benchmarks, Evaluate, ProjectType, ProjectTypeOther, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
+    CustomDashboard, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
+    Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
     TolaSites, TolaSitesAdmin
 
-from import_export import resources, fields, widgets
+from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportModelAdmin
 from tola.util import getCountry
 
 
+# Resource for CSV export
 class DocumentationResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
@@ -33,6 +34,7 @@ class DocumentationAdmin(ImportExportModelAdmin):
     pass
 
 
+# Resource for CSV export
 class ProjectAgreementResource(resources.ModelResource):
 
     class Meta:
@@ -61,10 +63,10 @@ class ProjectAgreementAdmin(ImportExportModelAdmin):
         #if not request.user.user.is_superuser:
         return queryset.filter(country__in=user_countries)
 
-
     pass
 
 
+# Resource for CSV export
 class SiteProfileResource(resources.ModelResource):
 
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
@@ -96,7 +98,6 @@ class ProgramAdmin(admin.ModelAdmin):
     display = 'Program'
 
 
-
 class ApprovalAuthorityAdmin(admin.ModelAdmin):
     list_display = ('approval_user','budget_limit','fund','country')
     display = 'Approval Authority'
@@ -122,8 +123,7 @@ admin.site.register(Capacity)
 admin.site.register(Monitor)
 admin.site.register(Benchmarks)
 admin.site.register(Evaluate)
-admin.site.register(ProjectType)
-admin.site.register(ProjectTypeOther)
+admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(TrainingAttendance)
 admin.site.register(Beneficiary)
 admin.site.register(Budget)

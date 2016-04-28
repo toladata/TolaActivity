@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
 from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
-    ProjectAgreement, ProjectTypeOther, Stakeholder, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
+    ProjectAgreement, Stakeholder, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective
@@ -155,14 +155,6 @@ class CompleteViewSet(viewsets.ModelViewSet):
     serializer_class = CompleteSerializer
 
 
-class ProjectTypeOtherViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    """
-    queryset = ProjectTypeOther.objects.all()
-    serializer_class = ProjectTypeOtherSerializer
-
 class IndicatorViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -181,6 +173,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
 
+
 class ReportingFrequencyViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -188,6 +181,7 @@ class ReportingFrequencyViewSet(viewsets.ModelViewSet):
     """
     queryset = ReportingFrequency.objects.all()
     serializer_class = ReportingFrequencySerializer
+
 
 class TolaUserViewSet(viewsets.ModelViewSet):
     """
