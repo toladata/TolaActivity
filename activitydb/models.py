@@ -764,6 +764,7 @@ class ProjectAgreementManager(models.Manager):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
 
 
+# Project Agreements, admin is handled in the admin.py
 class ProjectAgreement(models.Model):
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
     program = models.ForeignKey(Program, verbose_name="Program", related_name="agreement")
@@ -899,12 +900,6 @@ class ProjectAgreement(models.Model):
         return new_name
 
 
-class ProjectAgreementAdmin(admin.ModelAdmin):
-    list_display = ('program','project_name')
-    list_filter = ('program__country','office')
-    display = 'project_name'
-
-
 class ProjectComplete(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
     project_agreement = models.OneToOneField(ProjectAgreement)
@@ -1003,6 +998,7 @@ class ProjectCompleteAdmin(admin.ModelAdmin):
     display = 'project_name'
 
 
+# Project Documents, admin is handled in the admin.py
 class Documentation(models.Model):
     name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
     url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=135)
@@ -1027,11 +1023,6 @@ class Documentation(models.Model):
     class Meta:
         ordering = ('name',)
         verbose_name_plural = "Documentation"
-
-
-class DocumentationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'documentation_type', 'file_field', 'program_id', 'create_date', 'edit_date')
-    display = 'Documentation'
 
 
 class Benchmarks(models.Model):

@@ -68,7 +68,6 @@ class ProjectAgreementAdmin(ImportExportModelAdmin):
 
 # Resource for CSV export
 class SiteProfileResource(resources.ModelResource):
-
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     office = fields.Field(column_name='office', attribute='office', widget=ForeignKeyWidget(Office, 'code'))
     district = fields.Field(column_name='admin level 2', attribute='district', widget=ForeignKeyWidget(District, 'name'))
@@ -83,7 +82,6 @@ class SiteProfileResource(resources.ModelResource):
 
 
 class SiteProfileAdmin(ImportExportModelAdmin):
-
     resource_class = SiteProfileResource
     list_display = ('name','office', 'country', 'province','district','admin_level_three','village')
     list_filter = ('country__country',)
