@@ -147,7 +147,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Evidence',
-                'agreement','method','evidence','tola_table',
+                'agreement','method','evidence','tola_table','update_count_tola_table',
                 HTML("""<a class="output" data-toggle="modal" data-target="#myModal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>"""),
 
             ),
