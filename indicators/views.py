@@ -7,7 +7,7 @@ from .models import Indicator, DisaggregationLabel, DisaggregationValue, Collect
 from activitydb.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser
 from django.shortcuts import render_to_response
 from django.contrib import messages
-from tola.util import getCountry
+from tola.util import getCountry, get_table
 from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
 from activitydb.forms import FilterForm
@@ -489,6 +489,12 @@ class CollectedDataCreate(CreateView):
         getCollectedData = CollectedData.objects.get(id=latest.id)
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
 
+        # update the count with the value of Table unique count
+        getTableCount = TolaTable.objects.all().filter(id=self.request.POST['tola_table'])
+
+        if form.instance.update_count_tola_table:
+            form.instance.achieved = getTableCount[0].unique_count
+
         for label in getDisaggregationLabel:
             for key, value in self.request.POST.iteritems():
                 if key == label.id:
@@ -512,7 +518,6 @@ class CollectedDataUpdate(UpdateView):
     """
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
-
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
@@ -551,11 +556,16 @@ class CollectedDataUpdate(UpdateView):
 
         getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
+        getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
+        # update the count with the value of Table unique count
+        if form.instance.update_count_tola_table:
+            count = getTableCount(self.request.POST['tola_table'])
+            form.instance.achieved = count
 
-        #save the form then update manytomany relationships
+        # save the form then update manytomany relationships
         form.save()
 
-        #Insert or update disagg values
+        # Insert or update disagg values
         for label in getDisaggregationLabel:
             for key, value in self.request.POST.iteritems():
                 if key == str(label.id):
@@ -565,7 +575,8 @@ class CollectedDataUpdate(UpdateView):
 
         messages.success(self.request, 'Success, Data Updated!')
 
-        return self.render_to_response(self.get_context_data(form=form))
+        redirect_url = '/indicators/home/0/#hidden-' + str(getIndicator.program.id)
+        return HttpResponseRedirect(redirect_url)
 
     form_class = CollectedDataForm
 
@@ -578,8 +589,29 @@ class CollectedDataDelete(DeleteView):
     success_url = '/indicators/collecteddata/0/0/'
 
 
+def getTableCount(table_id):
+    """
+    :param table_id: The TolaTable ID to update count from and return
+    :return: count : count of rows from TolaTable
+    """
+    service = ExternalService.objects.get(name="TolaTables")
+    filter_url = service.feed_url + "&id=" + table_id
+
+    # loop over the result table and count the number of records for actuals
+    actual_data = get_table(filter_url)
+    count = 0
+    for item in actual_data:
+        count = count + 1
+
+    # update with new count
+    TolaTable.objects.filter(table_id = table_id).update(unique_count=count)
+
+    return count
+
 def merge_two_dicts(x, y):
-    '''Given two dicts, merge them into a new dict as a shallow copy.'''
+    """
+    Given two dicts, merge them into a new dict as a shallow copy.
+    """
     z = x.copy()
     z.update(y)
     return z
@@ -587,7 +619,7 @@ def merge_two_dicts(x, y):
 
 def collecteddata_import(request):
     """
-    import collected data from Tola Tables
+    Import collected data from Tola Tables
     """
     owner = request.user
     service = ExternalService.objects.get(name="TolaTables")
@@ -632,17 +664,26 @@ def collecteddata_import(request):
         response = requests.get(filter_url, headers=headers, verify=False)
         get_json = json.loads(response.content)
         data = get_json
+        # Get Data Info
         for item in data:
             name = item['name']
             url = item['data']
             remote_owner = item['owner']['username']
+
+        # loop over the result table and count the number of records for actuals
+        actual_data = get_table(item['data'])
+        count = 0
+        for item in actual_data:
+            count = count +1
+
+
         # get the users country
         countries = getCountry(request.user)
         check_for_existence = TolaTable.objects.all().filter(name=name,owner=owner)
         if check_for_existence:
             result = "error"
         else:
-            create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
+            create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url, unique_count=count)
             create_table.country.add(countries[0].id)
             create_table.save()
             result = "success"
@@ -650,8 +691,6 @@ def collecteddata_import(request):
         # send result back as json
         message = result
         return HttpResponse(json.dumps(message), content_type='application/json')
-
-    print data
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/collecteddata_import.html", {'getTables': data})

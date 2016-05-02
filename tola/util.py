@@ -2,6 +2,7 @@ import unicodedata
 import urllib2
 import json
 import sys
+import requests
 
 from activitydb.models import Country, TolaUser, TolaSites
 from django.contrib.auth.models import User
@@ -106,18 +107,10 @@ def emailGroup(country,group,link,subject,message,submiter=None):
         mail_admins(subject, message, fail_silently=False)
 
 
-def import_table(request):
+def get_table(url):
     """
-    import collected data from Tola Tables
+    import data from Tola Tables
     """
-    owner = request.user
-    service = ExternalService.objects.get(name="TolaTables")
-
-    #add filter to get just the users tables only
-    user_filter_url = service.feed_url + "&owner__username=" + str(owner)
-    #public_filter_url = service.feed_url + "&public=True"
-    #shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
-
     token = TolaSites.objects.get(site_id=1)
     if token.tola_tables_token:
         headers = {'content-type': 'application/json',
@@ -126,37 +119,12 @@ def import_table(request):
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
-    response = requests.get(user_filter_url,headers=headers, verify=False)
+    response = requests.get(url,headers=headers, verify=False)
     user_json = json.loads(response.content)
 
     data = user_json
 
-    #debug the json data string uncomment dump and print
-    #data2 = json.dumps(data) # json formatted string
-    #print data2
-
-    if request.method == 'POST':
-        id = request.POST['service_table']
-        filter_url = service.feed_url + "&id=" + id
-        response = requests.get(filter_url)
-        get_json = json.loads(response.content)
-        data = get_json
-        for item in data['results']:
-            name = item['name']
-            url = item['data']
-            remote_owner = item['owner']['username']
-
-        check_for_existence = TolaTable.objects.all().filter(name=name,owner=owner)
-        if check_for_existence:
-            result = "error"
-        else:
-            create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url)
-            create_table.save()
-            result = "success"
-
-        #send result back as json
-        message = result
-        return json.dumps(message)
+    return json.dumps(data)
 
 
 def user_to_tola(backend, user, response, *args, **kwargs):
