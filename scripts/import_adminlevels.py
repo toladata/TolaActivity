@@ -5,22 +5,18 @@ country records
 Install module django-extensions
 Runs twice via function calls at bottom once
 """
-from django.db import connection, transaction
+from django.db import connection
 
 cursor = connection.cursor()
-from os.path import exists
 import csv
-import unicodedata
-import sys
-import urllib2
-from datetime import date
 from activitydb.models import Country, Province, District, AdminLevelThree, Village
 
 def run():
     print "Uploading Country Admin data"
 
-getCountry = Country.objects.get(id=9)
-file_name = "fixtures/nepal-admin.csv"
+getCountry = Country.objects.get(id=13)
+file_name = "fixtures/turkey-admin2.csv"
+
 
 def getAllData():
 

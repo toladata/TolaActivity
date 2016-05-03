@@ -383,7 +383,7 @@ class ProjectAgreementDelete(DeleteView):
     model = ProjectAgreement
     success_url = '/activitydb/projectagreement_list/0/'
 
-    @method_decorator(group_required('Editor',url='activitydb/permission'))
+    @method_decorator(group_required('Country',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectAgreementDelete, self).dispatch(request, *args, **kwargs)
 
@@ -640,7 +640,7 @@ class ProjectCompleteDelete(DeleteView):
     model = ProjectComplete
     success_url = '/activitydb/projectcomplete_list/0/'
 
-    @method_decorator(group_required('Editor',url='activitydb/permission'))
+    @method_decorator(group_required('Country',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectCompleteDelete, self).dispatch(request, *args, **kwargs)
 
@@ -965,7 +965,6 @@ class SiteProfileCreate(CreateView):
     """
     model = SiteProfile
 
-    @method_decorator(group_required('Editor',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(SiteProfileCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1042,7 +1041,7 @@ class SiteProfileDelete(DeleteView):
     model = SiteProfile
     success_url = "/activitydb/siteprofile_list/0/0/"
 
-    @method_decorator(group_required('Editor',url='activitydb/permission'))
+    @method_decorator(group_required('Country',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(SiteProfileDelete, self).dispatch(request, *args, **kwargs)
 
@@ -1430,7 +1429,6 @@ class StakeholderCreate(CreateView):
     """
     model = Stakeholder
 
-    @method_decorator(group_required('Editor',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(StakeholderCreate, self).dispatch(request, *args, **kwargs)
 
