@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 
 import json
 from django.http import HttpResponseRedirect
@@ -16,10 +16,25 @@ from django.db.models import Count, Sum
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from django.views.generic.detail import View, DetailView
+from django.views.generic.detail import View
+
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import PermissionDenied
 
 import requests
 from export import IndicatorResource, CollectedDataResource
+
+
+def group_excluded(*group_names, **url):
+    # If user is in the group passed in permission denied
+    def in_groups(u):
+        if u.is_authenticated():
+            if not bool(u.groups.filter(name__in=group_names)):
+                return True
+            raise PermissionDenied
+        return False
+    return user_passes_test(in_groups)
 
 
 class IndicatorList(ListView):
@@ -157,6 +172,7 @@ class IndicatorCreate(CreateView):
         context.update({'id': self.kwargs['id']})
         return context
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(IndicatorCreate, self).dispatch(request, *args, **kwargs)
 
@@ -191,6 +207,9 @@ class IndicatorUpdate(UpdateView):
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(IndicatorCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(IndicatorUpdate, self).get_context_data(**kwargs)
@@ -238,6 +257,10 @@ class IndicatorDelete(DeleteView):
     """
     model = Indicator
     success_url = '/indicators/home/0/'
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(IndicatorDelete, self).dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
 
@@ -443,6 +466,10 @@ class CollectedDataCreate(CreateView):
     template_name = 'indicators/collecteddata_form.html'
     form_class = CollectedDataForm
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
         try:
@@ -519,6 +546,10 @@ class CollectedDataUpdate(UpdateView):
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CollectedDataUpdate, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
         #get the indicator_id for the collected data
@@ -586,7 +617,11 @@ class CollectedDataDelete(DeleteView):
     CollectedData Delete
     """
     model = CollectedData
-    success_url = '/indicators/collecteddata/0/0/'
+    success_url = '/indicators/home/0/'
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CollectedDataDelete, self).dispatch(request, *args, **kwargs)
 
 
 def getTableCount(table_id):

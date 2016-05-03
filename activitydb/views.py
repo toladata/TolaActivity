@@ -1,33 +1,24 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from django.views.generic.detail import View, DetailView
-from django.views.generic import TemplateView
-from .models import ProgramDashboard, Program, Country, Province, Village, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
+from django.views.generic.detail import DetailView
+from .models import ProgramDashboard, Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
-from django.contrib import messages
-from django.http import HttpResponseRedirect
 from django.utils import timezone
 from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 import logging
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import connections
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db.models import Q
-from django.contrib.auth.decorators import permission_required
 from tables import ProjectAgreementTable
 from django_tables2 import RequestConfig
 from filters import ProjectAgreementFilter
-from datetime import datetime
 import json
-import urllib2
 import requests
-from django.shortcuts import get_object_or_404
 
 from django.core import serializers
-from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseRedirect
 
 # Get an instance of a logger
@@ -46,13 +37,25 @@ def date_handler(obj):
 
 
 def group_required(*group_names, **url):
-    #Requires user membership in at least one of the groups passed in.
+    # Requires user membership in at least one of the groups passed in.
     def in_groups(u):
         if u.is_authenticated():
             if bool(u.groups.filter(name__in=group_names)) | u.is_superuser:
                 return True
             raise PermissionDenied
         return False
+    return user_passes_test(in_groups)
+
+
+def group_excluded(*group_names, **url):
+    # If user is in the group passed in permission denied
+    def in_groups(u):
+        if u.is_authenticated():
+            if not bool(u.groups.filter(name__in=group_names)):
+                return True
+            raise PermissionDenied
+        return False
+
     return user_passes_test(in_groups)
 
 
@@ -163,9 +166,11 @@ class ProjectAgreementCreate(CreateView):
     :param request:
     :param id:
     """
+
     model = ProjectAgreement
     template_name = 'activitydb/projectagreement_form.html'
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectAgreementCreate, self).dispatch(request, *args, **kwargs)
 
@@ -237,6 +242,7 @@ class ProjectAgreementUpdate(UpdateView):
     """
     model = ProjectAgreement
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
 
@@ -700,6 +706,7 @@ class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):
     model = Documentation
     template_name = 'activitydb/documentation_popup_form.html'
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(DocumentationAgreementCreate, self).dispatch(request, *args, **kwargs)
 
@@ -749,6 +756,7 @@ class DocumentationAgreementUpdate(AjaxableResponseMixin, UpdateView):
     model = Documentation
     template_name = 'activitydb/documentation_popup_form.html'
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(DocumentationAgreementUpdate, self).dispatch(request, *args, **kwargs)
 
@@ -817,6 +825,7 @@ class DocumentationCreate(CreateView):
     """
     model = Documentation
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(DocumentationCreate, self).get_form_kwargs()
@@ -847,6 +856,10 @@ class DocumentationUpdate(UpdateView):
     """
     model = Documentation
     queryset = Documentation.objects.select_related()
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(DocumentationUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
     def get_form_kwargs(self):
@@ -965,6 +978,7 @@ class SiteProfileCreate(CreateView):
     """
     model = SiteProfile
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(SiteProfileCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1008,6 +1022,10 @@ class SiteProfileUpdate(UpdateView):
     SiteProfile Form Update an existing site profile
     """
     model = SiteProfile
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(SiteProfileUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
     def get_form_kwargs(self):
@@ -1319,6 +1337,7 @@ class ContactCreate(CreateView):
     """
     model = Contact
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ContactCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1358,6 +1377,10 @@ class ContactUpdate(UpdateView):
     """
     model = Contact
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ContactUpdate, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(ContactUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
@@ -1382,6 +1405,10 @@ class ContactDelete(DeleteView):
     """
     model = Contact
     success_url = '/'
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ContactDelete, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ContactDelete, self).get_context_data(**kwargs)
@@ -1429,6 +1456,7 @@ class StakeholderCreate(CreateView):
     """
     model = Stakeholder
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(StakeholderCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1475,6 +1503,10 @@ class StakeholderUpdate(UpdateView):
     Stakeholder Form
     """
     model = Stakeholder
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(StakeholderUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
     def get_form_kwargs(self):
@@ -1553,6 +1585,7 @@ class TrainingCreate(CreateView):
     """
     model = TrainingAttendance
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(TrainingCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1590,6 +1623,10 @@ class TrainingUpdate(UpdateView):
     Training Form
     """
     model = TrainingAttendance
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(TrainingUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
     def get_form_kwargs(self):
@@ -1658,6 +1695,7 @@ class BeneficiaryCreate(CreateView):
     """
     model = Beneficiary
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(BeneficiaryCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1690,6 +1728,10 @@ class BeneficiaryUpdate(UpdateView):
     """
     model = Beneficiary
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(BeneficiaryUpdate, self).dispatch(request, *args, **kwargs)
+
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
@@ -1709,6 +1751,10 @@ class BeneficiaryDelete(DeleteView):
     """
     model = Beneficiary
     success_url = reverse_lazy('training_list')
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(BeneficiaryDelete, self).dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
 
@@ -1740,6 +1786,7 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
         context.update({'program': getProgram})
         return context
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1774,6 +1821,10 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     """
     model = CollectedData
     template_name = 'activitydb/quantitativeoutputs_form.html'
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(QuantitativeOutputsUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
         """
@@ -1811,6 +1862,10 @@ class QuantitativeOutputsDelete(AjaxableResponseMixin, DeleteView):
     """
     model = CollectedData
     success_url = '/'
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(QuantitativeOutputsDelete, self).dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
 
@@ -1859,6 +1914,7 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
         context.update({'id': self.kwargs['id']})
         return context
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(BudgetCreate, self).dispatch(request, *args, **kwargs)
 
@@ -1891,6 +1947,10 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
     """
     model = Budget
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(BudgetUpdate, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(BudgetUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
@@ -1916,6 +1976,9 @@ class BudgetDelete(AjaxableResponseMixin, DeleteView):
     model = Budget
     success_url = '/'
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(BudgetDelete, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(BudgetDelete, self).get_context_data(**kwargs)
@@ -1974,6 +2037,7 @@ class ChecklistItemCreate(CreateView):
         kwargs['request'] = self.request
         return kwargs
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ChecklistItemCreate, self).dispatch(request, *args, **kwargs)
 
@@ -2007,6 +2071,10 @@ class ChecklistItemUpdate(UpdateView):
     Checklist Form
     """
     model = ChecklistItem
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ChecklistItemUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ChecklistItemUpdate, self).get_context_data(**kwargs)
@@ -2053,6 +2121,9 @@ class ChecklistItemDelete(DeleteView):
     model = ChecklistItem
     success_url = '/'
 
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ChecklistItemDelete, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ChecklistItemDelete, self).get_context_data(**kwargs)
