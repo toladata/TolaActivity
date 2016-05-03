@@ -209,7 +209,7 @@ class IndicatorUpdate(UpdateView):
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
-        return super(IndicatorCreate, self).dispatch(request, *args, **kwargs)
+        return super(IndicatorUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(IndicatorUpdate, self).get_context_data(**kwargs)
@@ -517,10 +517,9 @@ class CollectedDataCreate(CreateView):
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
 
         # update the count with the value of Table unique count
-        getTableCount = TolaTable.objects.all().filter(id=self.request.POST['tola_table'])
-
-        if form.instance.update_count_tola_table:
-            form.instance.achieved = getTableCount[0].unique_count
+        if form.instance.update_count_tola_table and form.instance.tola_table:
+            count = getTableCount(self.request.POST['tola_table'])
+            form.instance.achieved = count
 
         for label in getDisaggregationLabel:
             for key, value in self.request.POST.iteritems():
@@ -588,8 +587,9 @@ class CollectedDataUpdate(UpdateView):
         getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
         getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
+
         # update the count with the value of Table unique count
-        if form.instance.update_count_tola_table:
+        if form.instance.update_count_tola_table and form.instance.tola_table:
             count = getTableCount(self.request.POST['tola_table'])
             form.instance.achieved = count
 
