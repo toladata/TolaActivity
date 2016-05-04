@@ -110,7 +110,8 @@ def getAllData(getCountry,file_name):
 
                 column_num = column_num + 1
 
-
+"""
+UNCOMMENT AND UPDATE TO IMPORT
 # Turkey
 print "IMPORTING TURKEY !!!!!!"
 getCountry = Country.objects.get(id=13)
@@ -127,3 +128,4 @@ print "IMPORTING SYRIA !!!!!!"
 getCountry = Country.objects.get(id=15)
 file_name = "fixtures/syria-admin.csv"
 getAllData(getCountry, file_name)
+"""
