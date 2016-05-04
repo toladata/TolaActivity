@@ -46,7 +46,7 @@ class CosignBackend(RemoteUserBackend):
             logger.error("Could not retrieve info for %s in ldap" % user.username)
             return user
         # add user to ViewOnly group by default
-        user.groups.add(Group.objects.get(name='ViewOnly'))
+        #user.groups.add(Group.objects.get(name='ViewOnly'))
         user.first_name = ldap_info['first_name']
         user.last_name = ldap_info['last_name']
         user.email = ldap_info['email']
