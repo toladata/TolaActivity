@@ -1,8 +1,7 @@
-from django.db import connection
-from django.contrib.auth.models import User,Permission
+from django.contrib.auth.models import User,Group
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
-import sys, traceback, datetime, ldap, re, logging
+import datetime, ldap, re, logging
 from activitydb.models import Country, TolaUser
 
 from django.utils.timezone import utc
@@ -81,6 +80,8 @@ class RemoteUserBackend(object):
         userprofile.employee_number = user_info['employee_number']
 
         if created:
+            # add user to ViewOnly group by default
+            user.groups.add(Group.objects.get(name='ViewOnly'))
             logger.info("First time logging in")
         else:
             logger.info("Updating record for userprofile %s" % user_info['full_name'])
