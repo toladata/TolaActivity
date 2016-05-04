@@ -1,7 +1,5 @@
-from django.shortcuts import render
 from .forms import FeedbackForm, RegistrationForm, NewUserRegistrationForm,NewTolaUserRegistrationForm
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -11,6 +9,7 @@ from .tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
 from tola.util import getCountry
+from django.contrib.auth.models import Group
 
 from django.contrib.auth.decorators import login_required
 

@@ -1,16 +1,13 @@
-from django.db import connection
-from django.contrib.auth.models import User,Permission
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User,Permission, Group
 from django.conf import settings
-import sys, traceback, datetime, ldap, re, logging
+import datetime, ldap, re, logging
 from activitydb.models import TolaUser, Country
 
 from django.contrib.auth.backends import RemoteUserBackend
 from django.utils.timezone import utc
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
 
 logger = logging.getLogger("tola")
+
 
 class CosignBackend(RemoteUserBackend):
     """
@@ -48,12 +45,8 @@ class CosignBackend(RemoteUserBackend):
         if not ldap_info:
             logger.error("Could not retrieve info for %s in ldap" % user.username)
             return user
-
-        # The following could be used to put users in a particular
-        is_member = ldap_info['member']
-        is_admin = ldap_info['admin']
-        #logger.error("User: %s is_member: %r and is_admin: %r" % (user.username, is_member, is_admin))
-
+        # add user to ViewOnly group by default
+        user.groups.add(Group.objects.get(name='ViewOnly'))
         user.first_name = ldap_info['first_name']
         user.last_name = ldap_info['last_name']
         user.email = ldap_info['email']

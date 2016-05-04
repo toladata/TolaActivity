@@ -14,14 +14,12 @@ from activitydb.models import Country, Province, District, AdminLevelThree, Vill
 def run():
     print "Uploading Country Admin data"
 
-getCountry = Country.objects.get(id=13)
-file_name = "fixtures/turkey-admin2.csv"
 
-
-def getAllData():
+def getAllData(getCountry,file_name):
 
     with open(file_name, 'rb') as csvfile:
         country = csv.reader(csvfile, delimiter=',', quotechar='"')
+        print "PROVINCE (LEVEL 1) !!!!!!"
         #check for province and add new ones
         for row in country:
             column_num = 0
@@ -41,9 +39,8 @@ def getAllData():
         country2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
         #check for distrcit and add new one
         for row in country2:
-            print "take2"
+            print "DISTRICTS (LEVEL 2) !!!!!!"
             column_num = 0
-            new_district = ""
             for column in row:
                 if column_num == 1:
                     getProvince = Province.objects.get(name=column, country=getCountry)
@@ -62,11 +59,10 @@ def getAllData():
 
     with open(file_name, 'rb') as csvfile2:
         country2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
-        #check for distrcit and add new one
+        #check for level3 and add new one
         for row in country2:
-            print "take2"
+            print "LEVEL 3 !!!!!!"
             column_num = 0
-            new_district = ""
             for column in row:
                 if column_num == 1:
                     getProvince = Province.objects.get(name=column, country=getCountry)
@@ -88,11 +84,10 @@ def getAllData():
 
     with open(file_name, 'rb') as csvfile2:
         country2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
-        #check for distrcit and add new one
+        #check for village and add new one
         for row in country2:
-            print "take2"
+            print "VILLAGE !!!!!"
             column_num = 0
-            new_district = ""
             for column in row:
                 if column_num == 1:
                     getProvince = Province.objects.get(name=column, country=getCountry)
@@ -108,12 +103,27 @@ def getAllData():
                     print column
 
                     try:
-                        Village.objects.get(name=column, district=getDistrict)
-                    except AdminLevelThree.DoesNotExist:
-                        new_level_3 = AdminLevelThree(name=column, district=getDistrict)
+                        Village.objects.get(name=column, admin_3=getAdminLevel3)
+                    except Village.DoesNotExist:
+                        new_level_3 = Village(name=column, admin_3=getAdminLevel3)
                         new_level_3.save()
 
                 column_num = column_num + 1
 
 
-getAllData()
+# Turkey
+print "IMPORTING TURKEY !!!!!!"
+getCountry = Country.objects.get(id=13)
+file_name = "fixtures/turkey-admin.csv"
+getAllData(getCountry, file_name)
+
+# Iraq
+print "IMPORTING IRAQ !!!!!!"
+getCountry = Country.objects.get(id=8)
+file_name = "fixtures/iraq-admin.csv"
+getAllData(getCountry, file_name)
+# Syria
+print "IMPORTING SYRIA !!!!!!"
+getCountry = Country.objects.get(id=15)
+file_name = "fixtures/syria-admin.csv"
+getAllData(getCountry, file_name)
