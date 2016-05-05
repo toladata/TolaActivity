@@ -131,10 +131,10 @@ class RemoteUserBackend(object):
 
         # finally update the password to match the one in ldap
         user.password = make_password(password)
-        user.save()
         if created:
             # add user to ViewOnly group by default
             user.groups.add(Group.objects.get(name='ViewOnly'))
+        user.save()
         logger.info("Saved user: %s %s" % (user.first_name, user.last_name))
         return user
 

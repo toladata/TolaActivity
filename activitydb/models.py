@@ -325,7 +325,7 @@ class Province(models.Model):
 
 class ProvinceAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'create_date')
-    search_fields = ('name','country')
+    search_fields = ('name','country__country')
     list_filter = ('create_date','country')
     display = 'Admin Level 1'
 
