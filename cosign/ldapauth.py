@@ -80,8 +80,6 @@ class RemoteUserBackend(object):
         userprofile.employee_number = user_info['employee_number']
 
         if created:
-            # add user to ViewOnly group by default
-            user.groups.add(Group.objects.get(name='ViewOnly'))
             logger.info("First time logging in")
         else:
             logger.info("Updating record for userprofile %s" % user_info['full_name'])
@@ -104,7 +102,7 @@ class RemoteUserBackend(object):
 
     """
     --------------------------------------------------------------------------------
-    When a use logs in to the api, this method checks if s/he has an account in ldap
+    When a user logs in to the api, this method checks if s/he has an account in ldap
     It creates an account in the auth_user table of the django if an account exist in
     ldap but not in the django app; otherwise, it updates it
     --------------------------------------------------------------------------------
@@ -115,6 +113,8 @@ class RemoteUserBackend(object):
         user, created = User.objects.get_or_create(username=ldap_info['uid'])
         if created:
             logger.info("AFTER: Created new user: %s created: %r" % (ldap_info['full_name'], created))
+            # add user to ViewOnly group by default
+            user.groups.add(Group.objects.get(name='ViewOnly'))
         else:
             logger.info("Existing user: %s created: %r" % (ldap_info['full_name'], created))
 
