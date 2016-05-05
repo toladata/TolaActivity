@@ -27,7 +27,12 @@ from export import IndicatorResource, CollectedDataResource
 
 
 def group_excluded(*group_names, **url):
-    # If user is in the group passed in permission denied
+    """
+    If user is in the group passed in permission denied
+    :param group_names:
+    :param url:
+    :return: Bool True or False is users passes test
+    """
     def in_groups(u):
         if u.is_authenticated():
             if not bool(u.groups.filter(name__in=group_names)):
@@ -39,7 +44,7 @@ def group_excluded(*group_names, **url):
 
 class IndicatorList(ListView):
     """
-    Indicator List
+    Main Indicator Home Page, displays a list of Indicators Filterable by Program
     """
     model = Indicator
     template_name = 'indicators/indicator_list.html'
@@ -60,6 +65,9 @@ class IndicatorList(ListView):
 def import_indicator(service=1,deserialize=True):
     """
     Import a indicators from a web service (the dig only for now)
+    :param service:
+    :param deserialize:
+    :return:
     """
     service = ExternalService.objects.get(id=service)
     #hard code the path to the file for now
@@ -81,7 +89,11 @@ def import_indicator(service=1,deserialize=True):
 
 def indicator_create(request, id=0):
     """
-    CREATE AN INDICATOR USING A TEMPLATE FIRST
+    Create an Indicator with a service template first, or custom.  Step one in Inidcator creation.
+    Passed on to IndicatorCreate to do the creation
+    :param request:
+    :param id:
+    :return:
     """
     getIndicatorTypes = IndicatorType.objects.all()
     getCountries = Country.objects.all()
@@ -152,7 +164,8 @@ def indicator_create(request, id=0):
 
 class IndicatorCreate(CreateView):
     """
-    indicator Form for indicators not using a template or service indicator first
+    Indicator Form for indicators not using a template or service indicator first as well as the post reciever
+    for creating an indicator.  Then redirect back to edit view in IndicatorUpdate.
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
@@ -202,7 +215,7 @@ class IndicatorCreate(CreateView):
 
 class IndicatorUpdate(UpdateView):
     """
-    indicator Form
+    Update and Edit Indicators.
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
@@ -253,7 +266,7 @@ class IndicatorUpdate(UpdateView):
 
 class IndicatorDelete(DeleteView):
     """
-    indicator Delete
+    Delete and Indicator
     """
     model = Indicator
     success_url = '/indicators/home/0/'
@@ -280,8 +293,12 @@ class IndicatorDelete(DeleteView):
 
 def indicator_report(request, program=0):
     """
-    Show LIST of indicators with a filtered search view using django-tables2
-    and django-filter
+    This is the indicator library report.  List of all indicators across a country or countries filtered by
+    program.  Lives in the "Report" navigation.
+    URL: indicators/report/0/
+    :param request:
+    :param program:
+    :return:
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
@@ -318,8 +335,12 @@ def indicator_report(request, program=0):
 
 def programIndicatorReport(request, program=0):
     """
-    Show LIST of indicators with a filtered search view using django-tables2
-    and django-filter
+    This is the GRID report or indicator plan for a program.  Shows a simple list of indicators sorted by level
+    and number. Lives in the "Indicator" home page as a link.
+    URL: indicators/program_report/[program_id]/
+    :param request:
+    :param program:
+    :return:
     """
     program = int(program)
     countries = getCountry(request.user)
@@ -349,8 +370,13 @@ def programIndicatorReport(request, program=0):
 
 def indicator_data_report(request, id=0, program=0):
     """
-    Show LIST of indicator based quantitative outputs with a filtered search view using django-tables2
-    and django-filter
+    This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
+    and sums it at the bottom.  Lives in the "Reports" navigation.
+    URL: indicators/data/[indicator_id]/[program_id]/
+    :param request:
+    :param id: Indicator ID
+    :param program:
+    :return:
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
@@ -383,9 +409,6 @@ def indicator_data_report(request, id=0, program=0):
         getIndicators = Indicator.objects.select_related().filter(program=program)
 
     if request.method == "GET" and "search" in request.GET:
-        """
-         fields = ('targeted', 'achieved', 'description', 'indicator', 'agreement', 'complete')
-        """
         queryset = CollectedData.objects.filter(**q).filter(
                                            Q(agreement__project_name__contains=request.GET["search"]) |
                                            Q(description__icontains=request.GET["search"]) |
@@ -626,6 +649,7 @@ class CollectedDataDelete(DeleteView):
 
 def getTableCount(table_id):
     """
+    Count the number of rowns in a TolaTable
     :param table_id: The TolaTable ID to update count from and return
     :return: count : count of rows from TolaTable
     """
@@ -643,9 +667,13 @@ def getTableCount(table_id):
 
     return count
 
+
 def merge_two_dicts(x, y):
     """
-    Given two dicts, merge them into a new dict as a shallow copy.
+    Given two dictionary Items, merge them into a new dict as a shallow copy.
+    :param x: Dict 1
+    :param y: Dict 2
+    :return: Merge of the 2 Dicts
     """
     z = x.copy()
     z.update(y)
@@ -655,6 +683,8 @@ def merge_two_dicts(x, y):
 def collecteddata_import(request):
     """
     Import collected data from Tola Tables
+    :param request:
+    :return:
     """
     owner = request.user
     service = ExternalService.objects.get(name="TolaTables")
@@ -731,9 +761,11 @@ def collecteddata_import(request):
     return render(request, "indicators/collecteddata_import.html", {'getTables': data})
 
 
-def service_json(request, service):
+def service_json(service):
     """
     For populating service indicators in dropdown
+    :param service: The remote data service
+    :return: JSON object of the indicators from the service
     """
     service_indicators = import_indicator(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
@@ -741,7 +773,12 @@ def service_json(request, service):
 
 def collected_data_json(AjaxableResponseMixin, indicator,program):
     """
-    For populating service indicators in dropdown
+    Displayed on the Indicator home page as a table of collected data entries related to an indicator
+    Called from Indicator "data" button onClick
+    :param AjaxableResponseMixin:
+    :param indicator:
+    :param program:
+    :return: List of CollectedData entries and sum of there achieved & Targets as well as related indicator and program
     """
     template_name = 'indicators/collected_data_table.html'
     collecteddata = CollectedData.objects.all().filter(indicator=indicator)
@@ -751,7 +788,11 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
 
 def program_indicators_json(AjaxableResponseMixin,program):
     """
-    For populating indicators for a program
+    Displayed on the Indicator home page as a table of indicators related to a Program
+    Called from Program "Indicator" button onClick
+    :param AjaxableResponseMixin:
+    :param program:
+    :return: List of Indicators and the Program they are related to
     """
     template_name = 'indicators/program_indicators_table.html'
     indicators = Indicator.objects.all().filter(program=program).annotate(data_count=Count('collecteddata'))
@@ -759,7 +800,11 @@ def program_indicators_json(AjaxableResponseMixin,program):
 
 
 def tool(request):
-
+    """
+    Placeholder for Indicator planning Tool TBD
+    :param request:
+    :return:
+    """
     return render(request, 'indicators/tool.html')
 
 

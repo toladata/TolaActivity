@@ -72,7 +72,7 @@ class SiteProfileResource(resources.ModelResource):
     office = fields.Field(column_name='office', attribute='office', widget=ForeignKeyWidget(Office, 'code'))
     district = fields.Field(column_name='admin level 2', attribute='district', widget=ForeignKeyWidget(District, 'name'))
     province = fields.Field(column_name='admin level 1', attribute='province', widget=ForeignKeyWidget(Province, 'name'))
-    admin_level_three = fields.Field(column_name='admin level 3', attribute='admin_level_three__name', widget=ForeignKeyWidget(AdminLevelThree, 'name'))
+    admin_level_three = fields.Field(column_name='admin level 3', attribute='admin_level_three', widget=ForeignKeyWidget(AdminLevelThree, 'name'))
 
     class Meta:
         model = SiteProfile
