@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
-    IndicatorList, IndicatorExport
+    IndicatorList, IndicatorExport, IndicatorReportData
 
 
 urlpatterns = [
@@ -25,7 +25,6 @@ urlpatterns = [
     url(r'^collecteddata/(?P<indicator>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/(?P<agreement>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
-
     url(r'^collecteddata_add/(?P<program>\w+)/(?P<indicator>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
     url(r'^collecteddata_import/$', 'indicators.views.collecteddata_import', name='collecteddata_import'),
     url(r'^collecteddata_update/(?P<pk>\w+)/$', CollectedDataUpdate.as_view(), name='collecteddata_update'),
@@ -40,6 +39,7 @@ urlpatterns = [
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/table/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^export/(?P<id>\w+)/(?P<program>\w+)/$', IndicatorExport.as_view(), name='indicator_export'),
+    url(r'^report_data/$', IndicatorReportData.as_view(), name='indicator_report_data'),
 
     #ajax calls
     url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),

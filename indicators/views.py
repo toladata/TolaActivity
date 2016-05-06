@@ -1,7 +1,5 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-
-import json
 from django.http import HttpResponseRedirect
 from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
 from activitydb.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser
@@ -12,15 +10,18 @@ from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
 from activitydb.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
+
 from django.db.models import Count, Sum
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View
-
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+
+from activitydb.mixins import AjaxableResponseMixin
+import json
 
 import requests
 from export import IndicatorResource, CollectedDataResource
@@ -425,6 +426,35 @@ def indicator_data_report(request, id=0, program=0):
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/data_report.html", {'getQuantitativeData':queryset,'countries':countries, 'getSiteProfile':getSiteProfile, 'table': table,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'indicator_name':indicator_name, 'program_name': program_name})
+
+
+class IndicatorReportData(View, AjaxableResponseMixin):
+    """
+    Indicator based report view
+    """
+
+    def get(self, request):
+
+        indicator = Indicator.objects.all().values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','baseline','collecteddata','key_performance_indicator')
+        indicator_count = Indicator.objects.all().filter(collecteddata__isnull=True).count()
+        indicator_data_count = Indicator.objects.all().filter(collecteddata__isnull=False).count()
+
+        indicator_serialized = json.dumps(list(indicator))
+
+        final_dict = {
+            'indicator': indicator_serialized,
+            'indicator_count': indicator_count,
+            'data_count': indicator_data_count
+        }
+
+        if request.GET.get('export'):
+            indicator_export = Indicator.objects.all().filter(**indicator_filter)
+            dataset = IndicatorResource().export(indicator_export)
+            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+            return response
+
+        return JsonResponse(final_dict, safe=False)
 
 
 class CollectedDataList(ListView):
