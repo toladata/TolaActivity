@@ -9,8 +9,7 @@ from django.utils.timezone import utc
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('activitydb', '0073_auto_20160317_1329'),
-        ('customdashboard', '0006_overlaygroups_overlaynarratives'),
+        ('customdashboard', '0002_overlaygroups_overlaynarratives'),
     ]
 
     operations = [
