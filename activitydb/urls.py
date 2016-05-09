@@ -13,7 +13,7 @@ from django.conf.urls import *
 # place app url patterns here
 
 urlpatterns = [
-                       url(r'^report_builder/', include('report_builder.urls')),
+                       #url(r'^report_builder/', include('report_builder.urls')),
                        ###activitydb
                        url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)/$', ProjectDash.as_view(), name='project_dashboard'),
