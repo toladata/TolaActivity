@@ -643,6 +643,7 @@ class CollectedDataUpdate(UpdateView):
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
+            print self.request.POST['tola_table']
             count = getTableCount(self.request.POST['tola_table'])
             form.instance.achieved = count
 
@@ -687,10 +688,11 @@ def getTableCount(table_id):
     filter_url = service.feed_url + "&id=" + table_id
 
     # loop over the result table and count the number of records for actuals
-    actual_data = get_table(filter_url)
+    actual_data = get_table(filter_url,count=True)
     count = 0
-    for item in actual_data:
-        count = count + 1
+    if actual_data:
+        for item in actual_data:
+            count = count + 1
 
     # update with new count
     TolaTable.objects.filter(table_id = table_id).update(unique_count=count)

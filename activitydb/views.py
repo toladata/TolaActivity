@@ -826,6 +826,9 @@ class DocumentationCreate(CreateView):
     model = Documentation
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(DocumentationCreate, self).dispatch(request, *args, **kwargs)
+
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(DocumentationCreate, self).get_form_kwargs()

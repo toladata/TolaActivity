@@ -66,7 +66,7 @@ class StrategicObjective(models.Model):
 
 class StrategicObjectiveAdmin(admin.ModelAdmin):
     list_display = ('country','name')
-    search_fields = ('country','name')
+    search_fields = ('country__country','name')
     list_filter = ('country__country',)
     display = 'Strategic Objectives'
 
