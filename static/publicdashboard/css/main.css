@@ -169,10 +169,9 @@ header .button {
 
 .widget {
    position: relative;
-   margin-bottom: 80px;
    background: #efefef;
-   padding: 12px;
-   margin-bottom: 30px;
+   padding: 6px;
+   margin-bottom: 0px;
    -webkit-box-sizing: border-box;
    -moz-box-sizing: border-box;
    box-sizing: border-box;
@@ -474,7 +473,9 @@ RESPONSIVE CODE
         page-break-after: avoid;
     }
 }
-
+#map {
+  height: 400px;
+}
 /*General marker style*/
 .map-marker {
   width: 20px;
