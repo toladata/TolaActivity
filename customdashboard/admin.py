@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ProjectStatus, ProjectStatusAdmin, Gallery, GalleryAdmin, ProgramLinks,ProgramLinksAdmin, Link, LinkAdmin
+from .models import ProjectStatus, ProjectStatusAdmin, Gallery, GalleryAdmin, ProgramLinks,ProgramLinksAdmin, Link, LinkAdmin, OverlayGroups, OverlayGroupsAdmin, OverlayNarratives, OverlayNarrativesAdmin
 
 
 class GalleryAdmin(admin.ModelAdmin):
@@ -10,6 +10,8 @@ admin.site.register(ProjectStatus, ProjectStatusAdmin)
 admin.site.register(Gallery, GalleryAdmin)
 admin.site.register(ProgramLinks, ProgramLinksAdmin)
 admin.site.register(Link, LinkAdmin)
+admin.site.register(OverlayGroups, OverlayGroupsAdmin)
+admin.site.register(OverlayNarratives, OverlayNarrativesAdmin)
 
 
 
