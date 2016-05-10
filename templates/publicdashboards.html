@@ -16,23 +16,17 @@
         <link href="{{ STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 
         <!-- JQuery UI CSS -->
-        <link href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.10.4.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ STATIC_URL }}css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 
         <!-- Custom Footer CSS -->
         <link href="{{ STATIC_URL }}css/app.css" rel="stylesheet" type="text/css">
-
-        <!--- Django Tables2 css -->
-        <link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
 
         <!--- Hosted Leaflet CSS --->
         <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
 
         {% block extra_js_in_header %}
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.11.1.min.js"></script>
-
-        <!-- App specific Javascript -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/app.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 
         <!-- Hosted Leaflet -->
         <script src="{{ STATIC_URL }}js/leaflet.js"></script>
@@ -103,18 +97,19 @@
             </div>
         </div><!-- .footer collapse -->
 
-        <!-- jQuery UI (necessary for datepicker as well as dataTables library -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.4.min.js"></script>
 
         <!-- data tables jquery javascript library -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
 
         <!-- Bootstrap compiled javascript plugins -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-
-        <!-- Typekit (Fonts) -->
-        <script src="https://use.typekit.net/lmu1xjz.js"></script>
-        <script>try{Typekit.load({ async: true });}catch(e){}</script>
+        {% if offline_mode %}
+            <!--- offline mode so don't try andload the external fonts --->
+        {% else %}
+            <!-- Typekit (Fonts) -->
+            <script src="https://use.typekit.net/shi4wqr.js"></script>
+            <script>try{Typekit.load({ async: true });}catch(e){}</script>
+        {% endif %}
 
         {% block extra_js_in_body %}{% endblock %}
     </body>
