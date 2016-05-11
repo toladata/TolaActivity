@@ -67,6 +67,21 @@ class ProjectAgreementAdmin(ImportExportModelAdmin):
 
 
 # Resource for CSV export
+class CountryResource(resources.ModelResource):
+
+    class Meta:
+        model = Country
+
+
+class CountryAdmin(ImportExportModelAdmin):
+    resource_class = CountryResource
+
+    list_display = ('country','code', 'create_date', 'edit_date')
+    list_filter = ('country','code')
+    pass
+
+
+# Resource for CSV export
 class SiteProfileResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     type = fields.Field(column_name='type', attribute='type', widget=ForeignKeyWidget(ProfileType, 'profile'))
@@ -104,7 +119,7 @@ class ApprovalAuthorityAdmin(admin.ModelAdmin):
     list_filter = ('create_date','country')
 
 
-admin.site.register(Country)
+admin.site.register(Country, CountryAdmin)
 admin.site.register(Province, ProvinceAdmin)
 admin.site.register(Office, OfficeAdmin)
 admin.site.register(District, DistrictAdmin)
