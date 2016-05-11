@@ -1,7 +1,7 @@
 from django.views.generic.list import ListView
 
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country
+from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
 from customdashboard.models import OverlayGroups, OverlayNarratives
 from .models import ProjectStatus, Gallery
 from indicators.models import CollectedData
@@ -104,7 +104,15 @@ def SurveyPublicDashboard(request,id=0):
     countries = Country.objects.all()
 
     filter_url = "https://tola-tables.mercycorps.org/api/silo/430/data/"
-    response = requests.get(filter_url)
+    token = TolaSites.objects.get(site_id=1)
+    if token.tola_tables_token:
+        headers = {'content-type': 'application/json',
+                   'Authorization': 'Token ' + token.tola_tables_token}
+    else:
+        headers = {'content-type': 'application/json'}
+        print "Token Not Found"
+
+    response = requests.get(filter_url, headers=headers, verify=False)
     get_json = json.loads(response.content)
     data = get_json
     # print data
@@ -173,6 +181,91 @@ def SurveyPublicDashboard(request,id=0):
     dashboard = True
 
     return render(request, "publicdashboard/survey_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'countries': countries, 'dashboard':dashboard})
+
+
+def SurveyTalkPublicDashboard(request,id=0):
+
+    # get all countires
+    countries = Country.objects.all()
+
+    filter_url = "http://tables.toladata.io/api/silo/9/data/"
+
+    headers = {'content-type': 'application/json',
+               'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
+
+
+    response = requests.get(filter_url, headers=headers, verify=False)
+    get_json = json.loads(response.content)
+    data = get_json
+    # print data
+    meaning = []
+    join = []
+    tola_is = []
+    country_from = []
+    for item in data:
+        meaning.append(item['tola_is_a_pashto_word_meaning_'])
+        # multiple choice
+        join.append(list(x for x in item['thanks_for_coming_what_made_you_join_us_today_'].split()))
+        # multiple choice
+        tola_is.append(list(x for x in item['tola_is_a_system_for_'].split()))
+        # country
+        country_from.append(item['what_country_were_you_in_last'])
+    """
+    meaning: all_or_complet,peaceful,global,i_give_up
+    join: tola_is_a_myst, i_like_a_good_power_point,data_is_king,not_sure_what_
+    tola_is: adaptive_manag an_indicator_t a_data_managem option_4 all_of_the_abo
+    """
+    meaningcount = {}
+    meaningcount['peaceful'] = 0
+    meaningcount['is_global'] = 0
+    meaningcount['i_give_up'] = 0
+    meaningcount['all_or_complete'] = 0
+    for answer in meaning:
+        if answer == "all_or_complet":
+            meaningcount['all_or_complete'] = meaningcount['all_or_complete'] + 1
+        if answer == "global":
+            meaningcount['is_global'] = meaningcount['is_global'] + 1
+        if answer == "i_give_up":
+            meaningcount['i_give_up'] = meaningcount['i_give_up'] + 1
+        if answer == "peaceful":
+            meaningcount['peaceful'] = meaningcount['peaceful'] + 1
+
+    joincount = {}
+    joincount['tola_is_a_mystery'] = 0
+    joincount['i_like_a_good_power_point'] = 0
+    joincount['data_is_king'] = 0
+    joincount['not_sure'] = 0
+    for answer in join:
+        if "tola_is_a_myst" in answer:
+            joincount['tola_is_a_mystery'] = joincount['tola_is_a_mystery'] + 1
+        if "i_like_a_good_power_point" in answer:
+            joincount['i_like_a_good_power_point'] = joincount['i_like_a_good_power_point'] + 1
+        if "data_is_king" in answer:
+            joincount['data_is_king'] = joincount['data_is_king'] + 1
+        if "not_sure_what_" in answer:
+            joincount['not_sure'] = joincount['not_sure'] + 1
+
+    tolacount = {}
+    tolacount['adaptive_manag'] = 0
+    tolacount['an_indicator_t'] = 0
+    tolacount['a_data_managem'] = 0
+    tolacount['option_4'] = 0
+    tolacount['all_of_the_abo'] = 0
+    for answer in tola_is:
+        if "adaptive_manag" in answer:
+            tolacount['adaptive_manag'] = tolacount['adaptive_manag'] + 1
+        if "an_indicator_t" in answer:
+            tolacount['an_indicator_t'] = tolacount['an_indicator_t'] + 1
+        if "a_data_managem" in answer:
+            tolacount['a_data_managem'] = tolacount['a_data_managem'] + 1
+        if "option_4" in answer:
+            tolacount['option_4'] = tolacount['option_4'] + 1
+        if "all_of_the_abo" in answer:
+            tolacount['all_of_the_abo'] = tolacount['all_of_the_abo'] + 1
+
+    dashboard = True
+
+    return render(request, "publicdashboard/survey_talk_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'country_from': country_from, 'countries': countries, 'dashboard':dashboard})
 
 
 def ReportPublicDashboard(request,id=0):

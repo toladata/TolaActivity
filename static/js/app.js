@@ -4,7 +4,8 @@ $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
     if (hash) {
-        $('.nav-tabs a[href='+hash+']').tab('show');
+    console.log(hash);
+    $('.nav-tabs a[href='+hash+']').tab('show');
     }
 
     // Change hash for page-reload
@@ -67,7 +68,6 @@ function loadCollected(indicator,program){
 */
 function loadIndicators(program){
     var program;
-    console.log(program)
     $('.ajaxLoader').show();
     $.get('/indicators/program_indicators/' + program + '/', function(data){
         $('#hidden-' + program).html(data);
@@ -264,22 +264,12 @@ $(document).ready(function() {
     $('.dropdown-menu a').on('click', function(){
         $(this).parent().parent().prev().html($(this).html() + '<span class="caret"></span>');
     })
-
-    /*
-    * Expand accordion down to location hash and then load collected data
-    */
-    if(location.hash != null && location.hash != ""){
-        $('.collapse').removeClass('in');
-        $(location.hash + '.collapse').collapse('show');
-        indicator_id = location.hash.split('-')
-        console.log(indicator_id)
-        loadIndicators(indicator_id[1])
-    }
 });
 
 /*
 * Pop-up window for help docs and guidance on forms
 */
+
 function newPopup(url, windowName) {
     return window.open(url,windowName,'height=768,width=1366,left=1200,top=10,titlebar=no,toolbar=no,menubar=no,location=no,directories=no,status=no');
 }
@@ -290,4 +280,3 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
   e.target // activated tab
   e.relatedTarget // previous tab
 })
-
