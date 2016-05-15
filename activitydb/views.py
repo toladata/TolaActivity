@@ -1575,7 +1575,7 @@ class TrainingList(ListView):
         project_agreement_id = self.kwargs['pk']
         countries = getCountry(request.user)
         if int(self.kwargs['pk']) == 0:
-            getTraining = TrainingAttendance.objects.all().filter(country__in=countries)
+            getTraining = TrainingAttendance.objects.all().filter(program__country__in=countries)
         else:
             getTraining = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk'])
 
