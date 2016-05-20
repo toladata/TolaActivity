@@ -236,10 +236,10 @@ def SurveyTalkPublicDashboard(request,id=0):
     joincount['data_is_king'] = 0
     joincount['not_sure'] = 0
     for answer in join:
-        if "tola_is_a_myst" in answer:
+        if "tola_is_a_mystery" in answer:
             joincount['tola_is_a_mystery'] = joincount['tola_is_a_mystery'] + 1
-        if "i_like_a_good_power_point" in answer:
-            joincount['i_like_a_good_power_point'] = joincount['i_like_a_good_power_point'] + 1
+        if "i_like_power_point_templates" in answer:
+            joincount['i_like_power_point_templates'] = joincount['i_like_power_point_templates '] + 1
         if "data_is_king" in answer:
             joincount['data_is_king'] = joincount['data_is_king'] + 1
         if "not_sure_what_" in answer:

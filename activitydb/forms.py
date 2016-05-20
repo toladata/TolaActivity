@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser
+from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -53,13 +53,6 @@ class Formset(LayoutObject):
         form_class = 'form-horizontal'
 
         return render_to_string(self.template, Context({'wrapper': self, 'formset': self.formset_name_in_context, 'form_class': form_class}))
-
-
-class ProgramDashboardForm(forms.ModelForm):
-
-    class Meta:
-        model = ProgramDashboard
-        fields = '__all__'
 
 
 class DatePicker(forms.DateInput):
@@ -1039,9 +1032,16 @@ class ContactForm(forms.ModelForm):
 
 
 class StakeholderForm(forms.ModelForm):
+
     class Meta:
         model = Stakeholder
         exclude = ['create_date', 'edit_date']
+
+    approval = forms.ChoiceField(
+        choices=APPROVALS,
+        initial='in progress',
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -1088,6 +1088,7 @@ class BeneficiaryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.request = kwargs.pop('request')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -1099,6 +1100,8 @@ class BeneficiaryForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
+        countries = getCountry(self.request.user)
+        self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
 
 
 class FilterForm(forms.Form):

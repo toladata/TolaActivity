@@ -288,7 +288,7 @@ class ApprovalAuthority(models.Model):
 
     class Meta:
         ordering = ('approval_user',)
-        verbose_name_plural = "Approval Authority"
+        verbose_name_plural = "Tola Approval Authority"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1118,41 +1118,6 @@ class Budget(models.Model):
 class BudgetAdmin(admin.ModelAdmin):
     list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
     display = 'Budget'
-
-
-class MergeMap(models.Model):
-    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=False)
-    project_completion = models.ForeignKey(ProjectComplete, null=True, blank=False)
-    from_column = models.CharField(max_length=255, blank=True)
-    to_column = models.CharField(max_length=255, blank=True)
-
-
-class MergeMapAdmin(admin.ModelAdmin):
-    list_display = ('project_agreement', 'project_completion', 'from_column', 'to_column')
-    display = 'project_agreement'
-
-# Default dashboard when no custom dashboard is specified on a program
-class ProgramDashboard(models.Model):
-    program = models.ForeignKey(Program, null=True, blank=True)
-    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    project_completion = models.ForeignKey(ProjectComplete, null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('program',)
-
-    # on save add create date or update edit date
-    def save(self):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ProgramDashboard, self).save()
-
-
-class ProgramDashboardAdmin(admin.ModelAdmin):
-    list_display = ('program', 'create_date', 'edit_date')
-    display = 'Program Dashboard'
 
 
 class TrainingAttendance(models.Model):
