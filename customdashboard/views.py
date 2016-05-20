@@ -232,7 +232,7 @@ def SurveyTalkPublicDashboard(request,id=0):
 
     joincount = {}
     joincount['tola_is_a_mystery'] = 0
-    joincount['i_like_a_good_power_point'] = 0
+    joincount['i_like_power_point_templates'] = 0
     joincount['data_is_king'] = 0
     joincount['not_sure'] = 0
     for answer in join:
