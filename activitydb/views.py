@@ -1642,7 +1642,8 @@ class TrainingDelete(DeleteView):
     Training Delete
     """
     model = TrainingAttendance
-    success_url = reverse_lazy('training_list')
+    success_url = '/activitydb/training_list/0/'
+    template_name = 'activitydb/training_confirm_delete.html'
 
     def form_invalid(self, form):
 
@@ -1740,7 +1741,7 @@ class BeneficiaryDelete(DeleteView):
     Beneficiary Delete
     """
     model = Beneficiary
-    success_url = reverse_lazy('training_list')
+    success_url = reverse_lazy('beneficiary_list')
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
