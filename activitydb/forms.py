@@ -1088,6 +1088,7 @@ class BeneficiaryForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.request = kwargs.pop('request')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -1099,6 +1100,8 @@ class BeneficiaryForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
+        countries = getCountry(self.request.user)
+        self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
 
 
 class FilterForm(forms.Form):
