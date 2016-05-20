@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProgramDashboard, ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser
+from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -53,13 +53,6 @@ class Formset(LayoutObject):
         form_class = 'form-horizontal'
 
         return render_to_string(self.template, Context({'wrapper': self, 'formset': self.formset_name_in_context, 'form_class': form_class}))
-
-
-class ProgramDashboardForm(forms.ModelForm):
-
-    class Meta:
-        model = ProgramDashboard
-        fields = '__all__'
 
 
 class DatePicker(forms.DateInput):

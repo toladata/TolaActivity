@@ -1,13 +1,13 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import ProgramDashboard, Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
+from .models import Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
-from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
+from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 import logging
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Count
@@ -66,7 +66,6 @@ class ProjectDash(ListView):
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-        form = ProgramDashboardForm
         project_id = int(self.kwargs['pk'])
 
         if project_id == 0:
@@ -95,7 +94,7 @@ class ProjectDash(ListView):
         else:
             getProgram =Program.objects.get(agreement__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
+        return render(request, self.template_name, {'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
                                                     'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id, 'getChecklist': getChecklist})
 
@@ -215,9 +214,6 @@ class ProjectAgreementCreate(CreateView):
 
         #create a new dashbaord entry for the project
         getProgram = Program.objects.get(id=latest.program_id)
-
-        create_dashboard_entry = ProgramDashboard(program=getProgram, project_agreement=getAgreement)
-        create_dashboard_entry.save()
 
         create_checklist = Checklist(agreement=getAgreement)
         create_checklist.save()
@@ -497,8 +493,6 @@ class ProjectCompleteCreate(CreateView):
         getComplete = ProjectComplete.objects.get(id=latest.id)
         getAgreement = ProjectAgreement.objects.get(id=self.request.POST['project_agreement'])
 
-        ProgramDashboard.objects.filter(project_agreement__id=self.request.POST['project_agreement']).update(project_completion=getComplete)
-
         #update the quantitative data fields to include the newly created complete
         CollectedData.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
 
@@ -591,14 +585,7 @@ class ProjectCompleteUpdate(UpdateView):
     def form_valid(self, form):
 
         form.save()
-        context = self.get_context_data()
         self.object = form.save()
-
-        is_approved = self.request.GET.get('approved')
-
-        if is_approved:
-            update_dashboard = ProgramDashboard.objects.filter(project_completion__id=self.request.GET.get('id')).update(project_completion_approved=True)
-
 
         messages.success(self.request, 'Success, form updated!')
 
