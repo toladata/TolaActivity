@@ -1039,9 +1039,16 @@ class ContactForm(forms.ModelForm):
 
 
 class StakeholderForm(forms.ModelForm):
+
     class Meta:
         model = Stakeholder
         exclude = ['create_date', 'edit_date']
+
+    approval = forms.ChoiceField(
+        choices=APPROVALS,
+        initial='in progress',
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
