@@ -37,7 +37,7 @@
 {% else %}
     <br/>
     <ul class="list-group">
-    <h3><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ getProgram.gaitid }}" target=_new">GAITID: {{ getProgram.gaitid }}</a> {{ getProgram.name|truncatechars:70 }}<span style="float: right;"><a href="/activitydb/projectagreement_detail/{{ getAgreement.id }}/" class="btn btn-sm btn-info">Print View</a></span></h3>
+    <h3><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ getProgram.gaitid }}" target=_new">ID: {{ getProgram.gaitid }}</a> {{ getProgram.name|truncatechars:70 }}<span style="float: right;"><a href="/activitydb/projectagreement_detail/{{ getAgreement.id }}/" class="btn btn-sm btn-info">Print View</a></span></h3>
         {% if getAgreement %}
         <div class="jumbotron">
             <ul class="list-group">

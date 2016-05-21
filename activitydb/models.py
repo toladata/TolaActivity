@@ -34,15 +34,14 @@ class TolaSites(models.Model):
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
     updated = models.DateTimeField(auto_now=False, blank=True, null=True)
 
+    class Meta:
+        verbose_name_plural = "Tola Sites"
+
     def __unicode__(self):
         return self.name
 
-    @property
-    def countries_list(self):
-        return ', '.join([x.code for x in self.countries.all()])
-
     def save(self, *args, **kwargs):
-        ''' On save, update timestamps as appropriate'''
+        ''' On save, update timestamps as appropriate '''
         if kwargs.pop('new_entry', True):
             self.created = datetime.now()
         else:
@@ -243,7 +242,7 @@ class FundCodeAdmin(admin.ModelAdmin):
 
 
 class Program(models.Model):
-    gaitid = models.CharField("GAITID", max_length=255, blank=True, unique=True)
+    gaitid = models.CharField("ID", max_length=255, blank=True, unique=True)
     name = models.CharField("Program Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
@@ -310,6 +309,8 @@ class Province(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = "Admin Level 1"
+        verbose_name_plural = "Admin Level 1"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -338,6 +339,8 @@ class District(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = "Admin Level 2"
+        verbose_name_plural = "Admin Level 2"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -366,6 +369,8 @@ class AdminLevelThree(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = "Admin Level 3"
+        verbose_name_plural = "Admin Level 3"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -425,6 +430,8 @@ class Village(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = "Admin Level 4"
+        verbose_name_plural = "Admin Level 4"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
