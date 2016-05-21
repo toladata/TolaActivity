@@ -333,7 +333,7 @@ class ProvinceAdmin(admin.ModelAdmin):
 
 class District(models.Model):
     name = models.CharField("Admin Level 2", max_length=255, blank=True)
-    province = models.ForeignKey(Province)
+    province = models.ForeignKey("Admin Level 1",Province)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
