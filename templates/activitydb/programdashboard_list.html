@@ -12,7 +12,7 @@
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/0">-- All --</a></li>
     {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/{{ program.id }}">{{ program.name }}</a></li>
     {% endfor %}
   </ul>
   <a href="/activitydb/dashboard/project/0/" class="btn btn-sm btn-success">Create a Project</a>
@@ -28,11 +28,10 @@
                 <div class='panel-heading'>
                     <h4>
 
-                       <a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ program.gaitid }}" target=_new">ID: {{ program.gaitid }}</a> - {{ program.name|truncatechars:80 }}
+                       {{ program.name|truncatechars:80 }}
 
                        <span class="float: right">
                            <a href="/customdashboard/{{program.id }}/" class="btn btn-xs btn-info" style="float:right;">Dashboard Visualization</a>
-
                        </span>
                    </h4>
                 </div>

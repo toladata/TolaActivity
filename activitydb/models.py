@@ -242,7 +242,7 @@ class FundCodeAdmin(admin.ModelAdmin):
 
 
 class Program(models.Model):
-    gait_id = models.CharField("ID", max_length=255, blank=True, unique=True)
+    gaitid = models.CharField("ID", max_length=255, blank=True, unique=True)
     name = models.CharField("Program Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
