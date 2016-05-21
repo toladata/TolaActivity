@@ -189,9 +189,9 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
                     .bindPopup("<b>{{ item.country }}</b>
                                 <br/>Project Site:
                                 <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
-                                <br/>Province: {{ item.province }}
-                                <br/>District: {{ item.district }}
-                                <br/>Village: {{ item.village }}
+                                <br/>ADM1: {{ item.province }}
+                                <br/>ADM2: {{ item.district }}
+                                <br/>ADM3: {{ item.village }}
                                 <br/>SiteProfile{{ item.name }}
                                 <br/> "
                                );
@@ -205,10 +205,10 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
                             .bindPopup("" + "<b>{{ item.country }}</b>
                                         <br/>Collected Indicator Data Site:
                                         <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
-                                        <br/>Province: {{ item.province }}
-                                        <br/>District: {{ item.district }}
-                                        <br/> Village: {{ item.village }}
-                                        <br/> SiteProfile{{ item.name }}
+                                        <br/>ADM1: {{ item.province }}
+                                        <br/>ADM2: {{ item.district }}
+                                        <br/>ADM3: {{ item.village }}
+                                        <br/>SiteProfile{{ item.name }}
                                         <br/> "
                                        );
                 {% endfor %}
