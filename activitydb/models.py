@@ -394,7 +394,7 @@ class AdminLevelThreeAdmin(admin.ModelAdmin):
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
     code = models.CharField("Office Code", max_length=255, blank=True)
-    province = models.ForeignKey(Province)
+    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
