@@ -2099,7 +2099,7 @@ class ChecklistItemUpdate(UpdateView):
 
 def checklist_update_link(AjaxableResponseMixin,pk,type,value):
     """
-    Checklist Update from Link To Update if a Task is Done
+    Checklist Update from Link
     """
     value = int(value)
 
