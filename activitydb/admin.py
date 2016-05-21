@@ -106,8 +106,8 @@ class SiteProfileAdmin(ImportExportModelAdmin):
 
 
 class ProgramAdmin(admin.ModelAdmin):
-    list_display = ('countries','name','program_id', 'description','budget_check')
-    search_fields = ('name','program_id')
+    list_display = ('countries','name','gait_id', 'description','budget_check')
+    search_fields = ('name','gait_id')
     list_filter = ('funding_status','country','budget_check')
     display = 'Program'
 

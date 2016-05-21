@@ -56,15 +56,6 @@ class Migration(migrations.Migration):
             name='village',
             options={'ordering': ('name',), 'verbose_name': 'Admin Level 4', 'verbose_name_plural': 'Admin Level 4'},
         ),
-        migrations.RemoveField(
-            model_name='program',
-            name='gaitid',
-        ),
-        migrations.AddField(
-            model_name='program',
-            name='program_id',
-            field=models.CharField(blank=True, max_length=255, unique=True, verbose_name='ID'),
-        ),
         migrations.DeleteModel(
             name='MergeMap',
         ),
