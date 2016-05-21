@@ -333,7 +333,7 @@ class ProvinceAdmin(admin.ModelAdmin):
 
 class District(models.Model):
     name = models.CharField("Admin Level 2", max_length=255, blank=True)
-    province = models.ForeignKey("Admin Level 1",Province)
+    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -363,7 +363,7 @@ class DistrictAdmin(admin.ModelAdmin):
 
 class AdminLevelThree(models.Model):
     name = models.CharField("Admin Level 3", max_length=255, blank=True)
-    district = models.ForeignKey(District)
+    district = models.ForeignKey(District,verbose_name="Admin Level 2")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -424,7 +424,7 @@ class OfficeAdmin(admin.ModelAdmin):
 class Village(models.Model):
     name = models.CharField("Admin Level 4", max_length=255, blank=True)
     district = models.ForeignKey(District,null=True,blank=True)
-    admin_3 = models.ForeignKey(AdminLevelThree,null=True,blank=True)
+    admin_3 = models.ForeignKey(AdminLevelThree,verbose_name="Admin Level 3",null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
