@@ -580,8 +580,6 @@ class CollectedDataCreate(CreateView):
 
     def form_valid(self, form):
 
-        latest = CollectedData.objects.latest('id')
-        getCollectedData = CollectedData.objects.get(id=latest.id)
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
 
         # update the count with the value of Table unique count
