@@ -26,7 +26,7 @@
 
 {% block page_title %}Project Agreement Form{% endblock %}
 {% block content %}
-    <span style="float: right;"><a onclick="newPopup('https://drive.google.com/open?id=111BzD3uHlJpaj4MSk7l8XApvrpu69QgimWPnfXbBUT4','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
+    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}

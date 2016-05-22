@@ -1383,3 +1383,27 @@ class FAQAdmin(admin.ModelAdmin):
     display = 'FAQ'
 
 
+# Form Guidance
+class FormGuidance(models.Model):
+    form = models.CharField(max_length=135,null=True, blank=True)
+    guidance_link = models.URLField(max_length=200, null=True, blank=True)
+    guidance = models.TextField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('create_date',)
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(FormGuidance, self).save()
+
+    def __unicode__(self):
+        return unicode(self.form)
+
+
+class FormGuidanceAdmin(admin.ModelAdmin):
+    list_display = ( 'form', 'guidance', 'guidance_link', 'create_date',)
+    display = 'Form Guidance'
+
+

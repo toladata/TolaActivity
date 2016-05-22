@@ -4,7 +4,7 @@ from .models import Country, Province, Office,OfficeAdmin, Village, Program, Doc
     Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
-    TolaSites, TolaSitesAdmin
+    TolaSites, TolaSitesAdmin, FormGuidance, FormGuidanceAdmin
 
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
@@ -155,6 +155,7 @@ admin.site.register(FormEnabled,FormEnabledAdmin)
 admin.site.register(Feedback,FeedbackAdmin)
 admin.site.register(TolaUser,TolaUserAdmin)
 admin.site.register(TolaSites,TolaSitesAdmin)
+admin.site.register(FormGuidance,FormGuidanceAdmin)
 
 
 

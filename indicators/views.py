@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from activitydb.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser
+from activitydb.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry, get_table
@@ -171,6 +171,11 @@ class IndicatorCreate(CreateView):
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
+    try:
+        guidance = FormGuidance.objects.get(form="Indicator")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     #pre-populate parts of the form
     def get_initial(self):
         user_profile = TolaUser.objects.get(user=self.request.user)
@@ -220,6 +225,11 @@ class IndicatorUpdate(UpdateView):
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="Indicator")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -519,6 +529,11 @@ class CollectedDataCreate(CreateView):
     template_name = 'indicators/collecteddata_form.html'
     form_class = CollectedDataForm
 
+    try:
+        guidance = FormGuidance.objects.get(form="CollectedData")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
@@ -597,6 +612,11 @@ class CollectedDataUpdate(UpdateView):
     """
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="CollectedData")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
