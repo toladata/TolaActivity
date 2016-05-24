@@ -133,7 +133,6 @@ class ProjectAgreementList(ListView):
     template_name = 'activitydb/projectagreement_list.html'
 
     def get(self, request, *args, **kwargs):
-        form = ProgramDashboardForm
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
@@ -396,7 +395,7 @@ class ProjectAgreementDelete(DeleteView):
     Project Agreement Delete
     """
     model = ProjectAgreement
-    success_url = '/activitydb/projectagreement_list/0/'
+    success_url = 'activitydb/dashboard/0/'
 
     @method_decorator(group_required('Country',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
