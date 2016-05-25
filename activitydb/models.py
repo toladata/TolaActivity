@@ -583,7 +583,7 @@ class SiteProfile(models.Model):
         return new_name
 
 
-class CommunityAdmin(admin.ModelAdmin):
+class SiteProfileAdmin(admin.ModelAdmin):
     list_display = ('name', 'code','office', 'country', 'district', 'province', 'village', 'cluster', 'longitude', 'latitude', 'create_date', 'edit_date')
     list_filter = ('country__country')
     search_fields = ('code','office__code','country__country')
