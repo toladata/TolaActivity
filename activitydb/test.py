@@ -6,7 +6,7 @@ from activitydb.models import Program, Country, Province, Village, District, Pro
 
 class SiteProfileTestCase(TestCase):
 
-    fixtures = ['fixtures/country.json','fixtures/province.json','fixtures/district.json','fixtures/district.json','fixtures/profile_type.json']
+    fixtures = ['fixtures/country.json','fixtures/province.json','fixtures/district.json','fixtures/district.json','fixtures/profiletypes.json']
 
     def setUp(self):
         new_country = Country.objects.create(country="testcountry")

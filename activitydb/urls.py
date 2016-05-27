@@ -1,12 +1,4 @@
-from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
-    ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, SiteProfileList, SiteProfileCreate, SiteProfileUpdate, SiteProfileDelete,\
-    DocumentationList, DocumentationCreate, DocumentationAgreementCreate,DocumentationAgreementUpdate,DocumentationAgreementDelete, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
-    BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
-    BeneficiaryDelete, ProjectCompleteDetail, SiteProfileReport, ChecklistItemCreate, ChecklistItemDelete, ChecklistItemUpdate, BudgetList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
-    ChecklistItemList, BudgetCreate, BudgetUpdate, BudgetDelete, StakeholderList, StakeholderCreate, StakeholderDelete, StakeholderUpdate, ContactCreate, ContactList, ContactUpdate, ContactDelete,\
-    FormLibraryList
-
-from activitydb import views
+from .views import *
 
 from django.conf.urls import *
 

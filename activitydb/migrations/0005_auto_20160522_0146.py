@@ -13,19 +13,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='FormGuidance',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('form', models.CharField(blank=True, max_length=135, null=True)),
-                ('guidance_link', models.URLField(blank=True, null=True)),
-                ('guidance', models.TextField(blank=True, null=True)),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'ordering': ('create_date',),
-            },
-        ),
         migrations.AlterField(
             model_name='adminlevelthree',
             name='district',
