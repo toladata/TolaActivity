@@ -5,7 +5,7 @@
   {% if pk %}
     <li><a href="/activitydb/dashboard/project/{{ pk }}/">Project Dashboard</a></li>
   {% endif %}
-  <li class="active">Project Agreement Form</li>
+  <li class="active">Project Initiation Form</li>
 </ol>
 {% endblock %}
 
@@ -24,7 +24,7 @@
 
 {% endblock %}
 
-{% block page_title %}Project Agreement Form{% endblock %}
+{% block page_title %}Project Initiation Form{% endblock %}
 {% block content %}
     {% include "form_guidance.html" %}
     {% if form.errors %}

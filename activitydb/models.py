@@ -860,8 +860,9 @@ class ProjectAgreement(models.Model):
 
     class Meta:
         ordering = ('create_date',)
+        verbose_name_plural = "Project Initiation"
         permissions = (
-            ("can_approve", "Can approve agreement"),
+            ("can_approve", "Can approve initiation"),
         )
 
     # on save add create date or update edit date
@@ -967,7 +968,7 @@ class ProjectComplete(models.Model):
 
     class Meta:
         ordering = ('create_date',)
-        verbose_name_plural = "Project Completions"
+        verbose_name_plural = "Project Tracking"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
