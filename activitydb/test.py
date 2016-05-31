@@ -29,7 +29,7 @@ class SiteProfileTestCase(TestCase):
 
 class AgreementTestCase(TestCase):
 
-    fixtures = ['fixtures/project_type.json','fixtures/sector.json']
+    fixtures = ['fixtures/projecttype.json','fixtures/sectors.json']
 
     def setUp(self):
         new_country = Country.objects.create(country="testcountry")
@@ -89,7 +89,7 @@ class AgreementTestCase(TestCase):
 
 class CompleteTestCase(TestCase):
 
-    fixtures = ['fixtures/project_type.json','fixtures/sector.json']
+    fixtures = ['fixtures/projecttype.json','fixtures/sectors.json']
 
     def setUp(self):
         new_country = Country.objects.create(country="testcountry")
