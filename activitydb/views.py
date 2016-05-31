@@ -426,18 +426,17 @@ class ProjectCompleteList(ListView):
     template_name = 'activitydb/projectcomplete_list.html'
 
     def get(self, request, *args, **kwargs):
-        form = ProgramDashboardForm
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
             getDashboard = ProjectComplete.objects.all().filter(program__country__in=countries)
-            return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
+            return render(request, self.template_name, {'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
             getDashboard = ProjectComplete.objects.all().filter(program__id=self.kwargs['pk'])
             getProgram =Program.objects.get(id=self.kwargs['pk'])
 
-            return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})
+            return render(request, self.template_name, {'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})
 
 
 class ProjectCompleteCreate(CreateView):
