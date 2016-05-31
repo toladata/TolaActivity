@@ -859,7 +859,7 @@ class ProjectAgreement(models.Model):
     objects = ProjectAgreementManager()
 
     class Meta:
-        ordering = ('create_date',)
+        ordering = ('project_name',)
         verbose_name_plural = "Project Initiation"
         permissions = (
             ("can_approve", "Can approve initiation"),
@@ -910,7 +910,7 @@ class ProjectAgreement(models.Model):
 
 class ProjectComplete(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
-    project_agreement = models.OneToOneField(ProjectAgreement)
+    project_agreement = models.OneToOneField(ProjectAgreement, verbose_name="Project Initiation")
     activity_code = models.CharField("Project Code", max_length=255, blank=True, null=True)
     project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
@@ -918,10 +918,10 @@ class ProjectComplete(models.Model):
     office = models.ForeignKey(Office, null=True, blank=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
     dashboard_name = models.ForeignKey(CustomDashboard, blank=True, null=True)
-    expected_start_date = models.DateTimeField(help_text="Imported Project Agreement", blank=True, null=True)
-    expected_end_date = models.DateTimeField(help_text="Imported Project Agreement", blank=True, null=True)
-    expected_duration = models.CharField("Expected Duration", max_length=255, help_text="Imported from Project Agreement", blank=True, null=True)
-    actual_start_date = models.DateTimeField(help_text="Imported from Project Agreement", blank=True, null=True)
+    expected_start_date = models.DateTimeField(help_text="Imported from Project Initiation", blank=True, null=True)
+    expected_end_date = models.DateTimeField(help_text="Imported Project Initiation", blank=True, null=True)
+    expected_duration = models.CharField("Expected Duration", max_length=255, help_text="Imported from Project Initiation", blank=True, null=True)
+    actual_start_date = models.DateTimeField(help_text="Imported from Project Initiation", blank=True, null=True)
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=None)
@@ -967,7 +967,7 @@ class ProjectComplete(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        ordering = ('create_date',)
+        ordering = ('project_name',)
         verbose_name_plural = "Project Tracking"
 
     # on save add create date or update edit date
@@ -1044,7 +1044,7 @@ class Benchmarks(models.Model):
     budget = models.IntegerField("Estimated Budget", blank=True, null=True)
     cost = models.IntegerField("Actual Cost", blank=True, null=True)
     description = models.CharField("Description", max_length=255, blank=True)
-    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True)
+    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True, verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete,blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1074,7 +1074,7 @@ class Monitor(models.Model):
     responsible_person = models.CharField("Person Responsible", max_length=25, blank=True, null=True)
     frequency = models.CharField("Frequency", max_length=25, blank=True, null=True)
     type = models.TextField("Type", null=True, blank=True)
-    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True)
+    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True, verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete,blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1104,7 +1104,7 @@ class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True)
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
     proposed_value = models.IntegerField(default=0, blank=True, null=True)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True)
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, on_delete=models.SET_NULL)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1131,7 +1131,7 @@ class BudgetAdmin(admin.ModelAdmin):
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
-    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
+    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
     total_participants = models.IntegerField(null=True, blank=True)
@@ -1206,60 +1206,9 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
 
 
-class FormLibrary(models.Model):
-    name = models.CharField("Form Name", max_length=255, null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name','create_date')
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(FormLibrary, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return unicode(self.name)
-
-
-class FormLibraryAdmin(admin.ModelAdmin):
-    list_display = ('name','create_date')
-
-
-class FormEnabled(models.Model):
-    form = models.ForeignKey(FormLibrary)
-    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    country = models.ForeignKey(Country,null=True,blank=True)
-    enabled = models.BooleanField(default=False)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('country','agreement')
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(FormEnabled, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return unicode(self.form)
-
-
-class FormEnabledAdmin(admin.ModelAdmin):
-    list_display = ('form','agreement','country')
-
-
 class Checklist(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True,default="Checklist")
-    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
+    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     country = models.ForeignKey(Country,null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1320,7 +1269,7 @@ class DocumentationApp(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('create_date',)
+        ordering = ('name',)
 
     def save(self):
         if self.create_date is None:

@@ -84,9 +84,6 @@ urlpatterns = [
                        url(r'^beneficiary_update/(?P<pk>\w+)/$', BeneficiaryUpdate.as_view(), name='beneficiary_update'),
                        url(r'^beneficiary_delete/(?P<pk>\w+)/$', BeneficiaryDelete.as_view(), name='beneficiary_delete'),
 
-                       url(r'^formlibrary_list/(?P<pk>\w+)/$', FormLibraryList.as_view(), name='formlibrary_list'),
-                       url(r'^formlibrary_list/$', FormLibraryList.as_view(), name='formlibrary_list'),
-
                        url(r'^budget_list/(?P<pk>\w+)/$', BudgetList.as_view(), name='budget_list'),
                        url(r'^budget_add/(?P<id>\w+)/$', BudgetCreate.as_view(), name='budget_add'),
                        url(r'^budget_update/(?P<pk>\w+)/$', BudgetUpdate.as_view(), name='budget_update'),

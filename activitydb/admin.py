@@ -3,7 +3,7 @@ from .models import Country, Province, Office,OfficeAdmin, Village, Program, Doc
     CustomDashboard, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
-    Contact, StakeholderAdmin, ContactAdmin, FormLibrary, FormLibraryAdmin, FormEnabled, FormEnabledAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
+    Contact, StakeholderAdmin, ContactAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
     TolaSites, TolaSitesAdmin, FormGuidance, FormGuidanceAdmin
 
 from import_export import resources, fields
@@ -150,8 +150,6 @@ admin.site.register(DocumentationApp)
 admin.site.register(Stakeholder, StakeholderAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(StakeholderType)
-admin.site.register(FormLibrary,FormLibraryAdmin)
-admin.site.register(FormEnabled,FormEnabledAdmin)
 admin.site.register(Feedback,FeedbackAdmin)
 admin.site.register(TolaUser,TolaUserAdmin)
 admin.site.register(TolaSites,TolaSitesAdmin)

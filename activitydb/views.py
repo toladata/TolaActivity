@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, \
     Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, \
-    Stakeholder, Contact, FormLibrary, FormEnabled, FormGuidance
+    Stakeholder, Contact, FormGuidance
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
@@ -2242,28 +2242,6 @@ class ChecklistItemDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ChecklistItemForm
-
-
-class FormLibraryList(ListView):
-    """
-    List of all available forms and what forms are enabled for a project
-    """
-    model = FormLibrary
-    template_name = 'activitydb/formlibrary_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        project_agreement_id = self.kwargs['pk']
-
-        if int(self.kwargs['pk']) == 0:
-            getForms = FormLibrary.objects.all()
-            getAgreementForms = None
-        else:
-            getForms = FormLibrary.objects.all()
-            getAgreementForms = FormEnabled.objects.all().filter(agreement_id=self.kwargs['pk'])
-
-
-        return render(request, self.template_name, {'getForms': getForms,'getAgreementForms': getAgreementForms,'project_agreement_id': project_agreement_id})
 
 
 def report(request):
