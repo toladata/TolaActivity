@@ -910,7 +910,7 @@ class ProjectAgreement(models.Model):
 class ProjectComplete(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
     project_agreement = models.OneToOneField(ProjectAgreement)
-    activity_code = models.CharField("Activity Code", max_length=255, blank=True, null=True)
+    activity_code = models.CharField("Project Code", max_length=255, blank=True, null=True)
     project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
     project_type = models.ForeignKey(ProjectType, max_length=255, blank=True, null=True)

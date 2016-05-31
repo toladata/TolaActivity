@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 import json as simplejson
 from tola.util import siloToDict
 from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
-    ProjectAgreement, Stakeholder, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
+    ProjectAgreement, Stakeholder, CustomDashboard, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective
@@ -241,7 +241,7 @@ class StakeholderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country')
+    filter_fields = ('country__country',)
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = Stakeholder.objects.all()
     serializer_class = StakeholderSerializer

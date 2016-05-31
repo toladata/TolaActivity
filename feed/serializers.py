@@ -1,7 +1,6 @@
-from django.forms import widgets
 from rest_framework import serializers
 from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
-    ProjectAgreement, Stakeholder, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
+    ProjectAgreement, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective
@@ -133,12 +132,6 @@ class StrategicObjectiveSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = StrategicObjective
-
-
-class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Stakeholder
 
 
 class StakeholderTypeSerializer(serializers.HyperlinkedModelSerializer):

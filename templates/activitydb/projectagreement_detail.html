@@ -25,12 +25,16 @@
     <!-- Table -->
     <table class="table" border="1">
         <tr>
-            <th>Activity Code</th>
+            <th>Project Code</th>
+            <th>Account Code</th>
+            <th>LIN Code</th>
             <th>Office</th>
             <th>Sector</th>
         </tr>
         <tr>
             <td>{{ agreement.activity_code }}</td>
+            <td>{{ agreement.account_code }}</td>
+            <td>{{ agreement.lin_code }}</td>
             <td>{{ agreement.office }}</td>
             <td>{{ agreement.sector }}</td>
         </tr>
@@ -81,8 +85,7 @@
     <!-- Table -->
     <table class="table" border="1">
         <tr>
-            <th>Account Code</th>
-            <th>LIN sub Code</th>
+
             <th>Total Estimated Budget, in USD</th>
             <th>Agency Estimated Budget, in USD</th>
             <th>Total Estimated Budget, in Local Currency</th>
@@ -92,8 +95,6 @@
             <th>Estimation Date</th>
         </tr>
         <tr>
-            <td>{{ agreement.account_code }}</td>
-            <td>{{ agreement.lin_code }}</td>
             <td>{{ agreement.total_estimated_budget }}</td>
             <td>{{ agreement.mc_estimated_budget }}</td>
             <td>{{ agreement.local_total_estimated_budget }}</td>
