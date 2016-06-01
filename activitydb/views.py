@@ -1820,6 +1820,12 @@ class BeneficiaryUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(BeneficiaryUpdate, self).dispatch(request, *args, **kwargs)
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(BeneficiaryUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
