@@ -323,7 +323,7 @@ class CollectedData(models.Model):
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
     program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
     date_collected = models.DateTimeField(null=True, blank=True)

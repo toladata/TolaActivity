@@ -59,37 +59,6 @@ button:focus,
 
 /* - End Bootstrap Overrides */
 
-
-/* Login buttons for Social */
-.social-buttons{
-    margin:12px 0
-}
-
-.btn-fb{
-    color: #fff;
-    background-color:#3b5998;
-}
-.btn-fb:hover{
-    color: #fff;
-    background-color:#496ebc
-}
-.btn-tw{
-    color: #fff;
-    background-color:#55acee;
-}
-.btn-tw:hover{
-    color: #fff;
-    background-color:#59b5fa;
-}
-.btn-go{
-    color: #fff;
-    background-color:#55acee;
-}
-.btn-go:hover{
-    color: #fff;
-    background-color:#59b5fa;
-}
-
 /* Custom page CSS
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
@@ -229,3 +198,32 @@ body > .container {
   text-align: center;
 }
 
+/* Login buttons for Social */
+.social-buttons{
+    margin:12px 0
+}
+
+.btn-fb{
+    color: #fff;
+    background-color:#3b5998;
+}
+.btn-fb:hover{
+    color: #fff;
+    background-color:#496ebc
+}
+.btn-tw{
+    color: #fff;
+    background-color:#55acee;
+}
+.btn-tw:hover{
+    color: #fff;
+    background-color:#59b5fa;
+}
+.btn-go{
+    color: #fff;
+    background-color:#55acee;
+}
+.btn-go:hover{
+    color: #fff;
+    background-color:#59b5fa;
+}

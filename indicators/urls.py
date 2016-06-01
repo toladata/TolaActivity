@@ -33,13 +33,16 @@ urlpatterns = [
 
 
     #Indicator Data Report
-    url(r'^data/(?P<id>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/map/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/graph/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/table/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
+    url(r'^data/(?P<id>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^export/(?P<id>\w+)/(?P<program>\w+)/$', IndicatorExport.as_view(), name='indicator_export'),
-    url(r'^report_data/$', IndicatorReportData.as_view(), name='indicator_report_data'),
+    url(r'^report_data/(?P<id>\w+)/(?P<program>\w+)/$', IndicatorReportData.as_view(), name='indicator_report_data'),
+    url(r'^report_data/(?P<id>\w+)/(?P<program>\w+)/export/$', IndicatorExport.as_view(), name='indicator_export'),
+
 
     #ajax calls
     url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),

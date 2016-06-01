@@ -1,12 +1,4 @@
-from .views import ProgramDash, ProjectAgreementCreate, ProjectAgreementList, ProjectAgreementUpdate, ProjectAgreementDetail, ProjectAgreementDelete, ProjectAgreementImport, ProjectCompleteCreate, ProjectCompleteUpdate,\
-    ProjectCompleteList, ProjectCompleteDelete, ProjectCompleteImport, SiteProfileList, SiteProfileCreate, SiteProfileUpdate, SiteProfileDelete,\
-    DocumentationList, DocumentationCreate, DocumentationAgreementCreate,DocumentationAgreementUpdate,DocumentationAgreementDelete, DocumentationUpdate, DocumentationDelete,ProjectDash, MonitorList,MonitorCreate, MonitorDelete, MonitorUpdate,\
-    BenchmarkCreate, BenchmarkDelete, BenchmarkUpdate, TrainingUpdate, TrainingCreate, TrainingDelete, TrainingList, BeneficiaryList, BeneficiaryCreate, BeneficiaryUpdate,\
-    BeneficiaryDelete, ProjectCompleteDetail, SiteProfileReport, ChecklistItemCreate, ChecklistItemDelete, ChecklistItemUpdate, BudgetList, QuantitativeOutputsCreate, QuantitativeOutputsUpdate, QuantitativeOutputsDelete,\
-    ChecklistItemList, BudgetCreate, BudgetUpdate, BudgetDelete, StakeholderList, StakeholderCreate, StakeholderDelete, StakeholderUpdate, ContactCreate, ContactList, ContactUpdate, ContactDelete,\
-    FormLibraryList
-
-from activitydb import views
+from .views import *
 
 from django.conf.urls import *
 
@@ -91,9 +83,6 @@ urlpatterns = [
                        url(r'^beneficiary_add/(?P<id>\w+)/$', BeneficiaryCreate.as_view(), name='beneficiary_add'),
                        url(r'^beneficiary_update/(?P<pk>\w+)/$', BeneficiaryUpdate.as_view(), name='beneficiary_update'),
                        url(r'^beneficiary_delete/(?P<pk>\w+)/$', BeneficiaryDelete.as_view(), name='beneficiary_delete'),
-
-                       url(r'^formlibrary_list/(?P<pk>\w+)/$', FormLibraryList.as_view(), name='formlibrary_list'),
-                       url(r'^formlibrary_list/$', FormLibraryList.as_view(), name='formlibrary_list'),
 
                        url(r'^budget_list/(?P<pk>\w+)/$', BudgetList.as_view(), name='budget_list'),
                        url(r'^budget_add/(?P<id>\w+)/$', BudgetCreate.as_view(), name='budget_add'),

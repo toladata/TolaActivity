@@ -531,8 +531,8 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector',
-                             'project_name', 'project_activity','site',
+                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code','account_code','lin_code',\
+                             'office', 'sector','project_name', 'project_activity','site',
                         ),
                     Fieldset(
                         'Dates',
@@ -590,7 +590,7 @@ class ProjectCompleteForm(forms.ModelForm):
                         '',
                         PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00'),'actual_cost_date', 'budget_variance', 'explanation_of_variance',
                         PrependedAppendedText('total_cost','$', '.00'), PrependedAppendedText('agency_cost','$', '.00'),
-                        AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'account_code','lin_code','exchange_rate','exchange_rate_date',
+                        AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'exchange_rate','exchange_rate_date',
                     ),
 
                 ),
@@ -687,6 +687,7 @@ class ProjectCompleteForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
@@ -819,6 +820,8 @@ class SiteProfileForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
         self.fields['province'].queryset = Province.objects.filter(country__in=countries)
+        self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
+        self.fields['filled_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
 
 class DocumentationForm(forms.ModelForm):
@@ -843,7 +846,7 @@ class DocumentationForm(forms.ModelForm):
 
             HTML("""<br/>"""),
 
-                'name', 'url', Field('description', rows="3", css_class='input-xlarge'),'file_field',
+                'name', 'url', Field('description', rows="3", css_class='input-xlarge'),
                 'project','program',
 
             FormActions(
@@ -879,7 +882,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted','indicator','agreement','program'
+                'targeted','achieved','indicator','agreement','program'
 
         )
 

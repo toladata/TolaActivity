@@ -5,12 +5,12 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Mercy Corps Application">
-        <meta name="author" content="Mercy Corps">
+        <meta name="description" content="TolaData - TolaActivity: Putting Adaptive Management into Practice">
+        <meta name="author" content="TolaData">
 
         <title>{% block title %} TolaActivity {% endblock %}</title>
 
-        <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png">
+        <link rel="icon" href="{{ STATIC_URL }}img/favicon.ico?v=2" />
 
         <!-- Datatables css for HTML tables -->
         <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet" type="text/css" />
@@ -108,7 +108,6 @@
                                     <li><a href="/indicators/collecteddata/0/0/"><span class="glyphicon glyphicon-list-alt"></span> Indicator Data Report</a></li>
                                     <li><a href="/indicators/data/0/"><span class="glyphicon glyphicon-list-alt"></span> Indicator Visual Report</a></li>
                                     <li><a href="/indicators/report/0/"><span class="glyphicon glyphicon-list-alt"></span> Indicator Library</a></li>
-                                    <li><a href="https://tola-report.mercycorps.org/activitydb/report_builder" target="_new"><span class="glyphicon glyphicon-list-alt"></span> Report Builder</a></li>
                                 </ul>
                             </li>
                         {% endif %}
@@ -207,7 +206,7 @@
             <!-- Sticky Footer -->
             <div class="container">
                 <div class="col-md-6 text-left">
-                    <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
+                    <a href="http://www.toladata.com" class="text-muted"><b>Tola</b>Data: Built by</a> <a href="http://www.mercycorps.org" class="text-muted">MercyCorps</a>
                 </div>
                 <div class="col-md-6 text-right">
                     <a href="http://tola.work/documentation" class="text-muted">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a> | <a href="https://github.com/toladata/TolaActivity/blob/master/LICENSE" class="text-muted">License</a>

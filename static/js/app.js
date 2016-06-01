@@ -127,7 +127,7 @@ $(document).ready(function() {
         } else {
             var url = "/activitydb/country/" + selected_country + "/country_json/";
             $.getJSON(url, function(province) {
-                var options = '<option value="0">--Level 1--</option>';
+                var options = '<option value="">--Level 1--</option>';
                 for (var i = 0; i < province.length; i++) {
                     options += '<option value="' + province[i].pk + '">' + province[i].fields['name'] + '</option>';
                 }
@@ -152,7 +152,7 @@ $(document).ready(function() {
         } else {
             var url = "/activitydb/province/" + selected_province + "/province_json/";
             $.getJSON(url, function(district) {
-                var options = '<option value="0">--Level 2--</option>';
+                var options = '<option value="">--Level 2--</option>';
                 for (var i = 0; i < district.length; i++) {
                     options += '<option value="' + district[i].pk + '">' + district[i].fields['name'] + '</option>';
                 }
@@ -167,7 +167,7 @@ $(document).ready(function() {
     });
 
 
-        /*
+    /*
      * Handle change in the province drop-down; updates the district drop-down accordingly.
      */
     $("select#id_district").change(function() {
@@ -177,7 +177,7 @@ $(document).ready(function() {
         } else {
             var url = "/activitydb/district/" + selected_district + "/district_json/";
             $.getJSON(url, function(adminthree) {
-                var options = '<option value="0">--Level 3--</option>';
+                var options = '<option value="">--Level 3--</option>';
                 for (var i = 0; i < adminthree.length; i++) {
                     options += '<option value="' + adminthree[i].pk + '">' + adminthree[i].fields['name'] + '</option>';
                 }

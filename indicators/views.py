@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from activitydb.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser
+from activitydb.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry, get_table
@@ -171,6 +171,11 @@ class IndicatorCreate(CreateView):
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
+    try:
+        guidance = FormGuidance.objects.get(form="Indicator")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     #pre-populate parts of the form
     def get_initial(self):
         user_profile = TolaUser.objects.get(user=self.request.user)
@@ -220,6 +225,11 @@ class IndicatorUpdate(UpdateView):
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="Indicator")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -373,10 +383,10 @@ def indicator_data_report(request, id=0, program=0):
     """
     This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
     and sums it at the bottom.  Lives in the "Reports" navigation.
-    URL: indicators/data/[indicator_id]/[program_id]/
+    URL: indicators/data/[id]/[program]/
     :param request:
     :param id: Indicator ID
-    :param program:
+    :param program: Program ID
     :return:
     """
     countries = getCountry(request.user)
@@ -384,18 +394,19 @@ def indicator_data_report(request, id=0, program=0):
     getIndicators = Indicator.objects.select_related().filter(country__in=countries)
     indicator_name = None
     program_name = None
-    q = None
+    q = {'indicator__id__isnull': False}
+    z = None
 
     #Build query based on filters and search
     if int(id) != 0:
         getSiteProfile = Indicator.objects.all().filter(id=id).select_related()
-        q = {
+        indicator_name = Indicator.objects.get(id=id).name
+        z = {
             'indicator__id': id
         }
-        indicator_name = Indicator.objects.get(id=id).name
     else:
         getSiteProfile = SiteProfile.objects.all().select_related()
-        q = {
+        z = {
             'indicator__country__in': countries,
         }
 
@@ -408,6 +419,9 @@ def indicator_data_report(request, id=0, program=0):
         }
         #redress the indicator list based on program
         getIndicators = Indicator.objects.select_related().filter(program=program)
+
+    if z:
+        q.update(z)
 
     if request.method == "GET" and "search" in request.GET:
         queryset = CollectedData.objects.filter(**q).filter(
@@ -430,14 +444,30 @@ def indicator_data_report(request, id=0, program=0):
 
 class IndicatorReportData(View, AjaxableResponseMixin):
     """
-    Indicator based report view
+    This is the Indicator Visual report data, returns a json object of report data to be displayed in the table report
+    URL: indicators/report_data/[id]/[program]/
+    :param request:
+    :param id: Indicator ID
+    :param program: Program ID
+    :return: json dataset
     """
 
-    def get(self, request):
-
-        indicator = Indicator.objects.all().values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','baseline','collecteddata','key_performance_indicator')
-        indicator_count = Indicator.objects.all().filter(collecteddata__isnull=True).count()
-        indicator_data_count = Indicator.objects.all().filter(collecteddata__isnull=False).count()
+    def get(self, request,program,id):
+        q = {'program__id__isnull': False}
+        if int(program) != 0:
+            q = {
+                'program__id': program,
+            }
+        # if we have an indicator id append it to the query filter
+        if int(id) != 0:
+            r ={
+                    'id': id,
+                }
+            q.update(r)
+        countries = getCountry(request.user)
+        indicator = Indicator.objects.all().filter(country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','baseline','collecteddata','key_performance_indicator')
+        indicator_count = Indicator.objects.all().filter(country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
+        indicator_data_count = Indicator.objects.all().filter(country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
 
         indicator_serialized = json.dumps(list(indicator))
 
@@ -519,6 +549,11 @@ class CollectedDataCreate(CreateView):
     template_name = 'indicators/collecteddata_form.html'
     form_class = CollectedDataForm
 
+    try:
+        guidance = FormGuidance.objects.get(form="CollectedData")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
@@ -565,8 +600,6 @@ class CollectedDataCreate(CreateView):
 
     def form_valid(self, form):
 
-        latest = CollectedData.objects.latest('id')
-        getCollectedData = CollectedData.objects.get(id=latest.id)
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
 
         # update the count with the value of Table unique count
@@ -597,6 +630,11 @@ class CollectedDataUpdate(UpdateView):
     """
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="CollectedData")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):

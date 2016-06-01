@@ -13,6 +13,7 @@
 {% block page_title %}Checklist Form{% endblock %}
 
 {% block content %}
+    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}
