@@ -49,7 +49,10 @@
 
     //Init map with default zoom and coordinates of logged in users country
     var map = L.map('map', {
-            layers: [googleLayer] // only add one!
+            layers: [positron], // only add one!
+            dragging: false,
+            touchZoom: false,
+            scrollWheelZoom: false,
         }).setView([country_lat[1],country_long[1]], 5);
 
     L.control.layers(baseLayers).addTo(map);
