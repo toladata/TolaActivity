@@ -3,10 +3,10 @@
 <ol class="breadcrumb">
   <li><a href="/activitydb/dashboard/0/">Program Dashboard</a></li>
   {% if id %}<li><a href="/activitydb/dashboard/project/{{ id }}/">Project Dashboard</a></li>{% endif %}
-  <li class="active">Project Complete Form</li>
+  <li class="active">Project Tracking Form</li>
 </ol>
 {%  endblock %}
-{% block page_title %}Project Complete Form{% endblock %}
+{% block page_title %}Project Tracking Form{% endblock %}
 
 {% block extra_js_in_body %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
