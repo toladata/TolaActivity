@@ -53,8 +53,8 @@
                 <li class="list-group-item">
                     <div class="btn-group" role="group" aria-label="...">
                         {% if getAgreement.approval == "approved" %}
-                            <button data-toggle="tooltip" data-placement="top" title="Agreement has been approved and can no longer be edited." type="button" class="btn btn-sm btn-frozen" onclick="location.href='/activitydb/projectagreement_detail/{{ getAgreement.id }}'">View Initiation</button>
-                            <button data-toggle="tooltip" data-placement="top" title="Agreement has been approved and can no longer be deleted." type="button" class="btn btn-sm btn-frozen">Delete Initiation</button>
+                            <button data-toggle="tooltip" data-placement="top" title="Initiation has been approved and can no longer be edited." type="button" class="btn btn-sm btn-frozen" onclick="location.href='/activitydb/projectagreement_detail/{{ getAgreement.id }}'">View Initiation</button>
+                            <button data-toggle="tooltip" data-placement="top" title="Initiation has been approved and can no longer be deleted." type="button" class="btn btn-sm btn-frozen">Delete Initiation</button>
                             {% if getComplete%}
                                 <button data-toggle="tooltip" data-placement="top" title="A completion form has already been created for the project" type="button" class="btn btn-sm btn-frozen">Project Initiation</button>
                             {% else %}
@@ -63,7 +63,7 @@
                         {% else %}
                             <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ getAgreement.id }}'">Update Initiation</button>
                             <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectagreement_delete/{{ getAgreement.id }}'">Delete Initiation</button>
-                            <button data-toggle="tooltip" data-placement="top" title="Once Approved you will be able to click here and complete the project" type="button" class="btn btn-sm btn-frozen">Start tracking your project</button>
+                            <button data-toggle="tooltip" data-placement="top" title="Once Approved you will be able to click here and start tracking the project" type="button" class="btn btn-sm btn-frozen">Start tracking your project</button>
                         {% endif %}
                     </div>
                 </li>
