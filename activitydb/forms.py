@@ -882,7 +882,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted','indicator','agreement','program'
+                'targeted','achieved','indicator','agreement','program'
 
         )
 
