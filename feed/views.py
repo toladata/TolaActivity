@@ -92,7 +92,7 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country','program__name')
+    filter_fields = ('country__country',)
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = SiteProfile .objects.all()
     serializer_class = SiteProfileSerializer
