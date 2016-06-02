@@ -423,7 +423,7 @@ class TolaTableViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'indicator__program__name')
+    filter_fields = ('country__country', 'collecteddata__indicator__program__name')
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = TolaTable.objects.all()
     serializer_class = TolaTableSerializer
