@@ -3,7 +3,7 @@ from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile,
     ProjectAgreement, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective
+    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
 from django.contrib.auth.models import User
 
 
@@ -192,3 +192,21 @@ class DocumentationSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Documentation
+
+
+class CollectedDataSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = CollectedData
+
+
+class TolaTableSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = TolaTable
+
+
+class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = DisaggregationValue

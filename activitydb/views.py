@@ -230,7 +230,7 @@ class ProjectAgreementCreate(CreateView):
         for item in get_globals:
             ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
 
-        messages.success(self.request, 'Success, Agreement Created!')
+        messages.success(self.request, 'Success, Initiation Created!')
         redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
@@ -239,7 +239,7 @@ class ProjectAgreementCreate(CreateView):
 
 class ProjectAgreementUpdate(UpdateView):
     """
-    Project Agreement Form
+    Project Initiation Form
     :param request:
     :param id: project_agreement_id
     """
@@ -522,7 +522,7 @@ class ProjectCompleteCreate(CreateView):
         ProjectComplete.objects.filter(id=getComplete.id).update(account_code=getAgreement.account_code, lin_code=getAgreement.lin_code)
 
 
-        messages.success(self.request, 'Success, Completion Form Created!')
+        messages.success(self.request, 'Success, Tracking Form Created!')
         redirect_url = '/activitydb/projectcomplete_update/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
@@ -531,7 +531,7 @@ class ProjectCompleteCreate(CreateView):
 
 class ProjectCompleteUpdate(UpdateView):
     """
-    Project Complete Form
+    Project Tracking Form
     """
     model = ProjectComplete
     template_name = 'activitydb/projectcomplete_form.html'
