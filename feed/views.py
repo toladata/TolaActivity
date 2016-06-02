@@ -7,7 +7,7 @@ from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile,
     ProjectAgreement, Stakeholder, CustomDashboard, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective
+    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
 
 from django.contrib import messages
 from django.template import RequestContext
@@ -16,6 +16,7 @@ from tola.util import getCountry
 
 from rest_framework import renderers, viewsets, filters
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 import operator
 import csv
@@ -25,6 +26,24 @@ from django.http import HttpResponseForbidden,\
     HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest,\
     HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404, redirect, render
+
+
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 1000
+    page_size_query_param = 'page_size'
+    max_page_size = 10000
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
+class SmallResultsSetPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 50
 
 
 # API Classes
@@ -371,4 +390,61 @@ class DocumentationViewSet(viewsets.ModelViewSet):
     """
     queryset = Documentation.objects.all()
     serializer_class = DocumentationSerializer
+
+
+class CollectedDataViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = CollectedData.objects.all().filter(program__country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('indicator__program__country__country', 'indicator__program__name')
+    filter_backends = (filters.DjangoFilterBackend,)
+    queryset = CollectedData.objects.all()
+    serializer_class = CollectedDataSerializer
+    pagination_class = SmallResultsSetPagination
+
+
+class TolaTableViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = TolaTable.objects.all().filter(country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('country__country', 'indicator__program__name')
+    filter_backends = (filters.DjangoFilterBackend,)
+    queryset = TolaTable.objects.all()
+    serializer_class = TolaTableSerializer
+    pagination_class = StandardResultsSetPagination
+
+
+class DisaggregationValueViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = DisaggregationValue.objects.all().filter(country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('country__country', 'indicator__program__name')
+    filter_backends = (filters.DjangoFilterBackend,)
+    queryset = DisaggregationValue.objects.all()
+    serializer_class = DisaggregationValueSerializer
+    pagination_class = StandardResultsSetPagination
 

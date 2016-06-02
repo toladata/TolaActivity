@@ -50,6 +50,12 @@ router.register(r'adminlevelthree', AdminLevelThreeViewSet)
 router.register(r'village', VillageViewSet)
 router.register(r'contact', ContactViewSet)
 router.register(r'documentation', DocumentationViewSet)
+router.register(r'collecteddata', CollectedDataViewSet)
+router.register(r'tolatable', TolaTableViewSet)
+router.register(r'disaggregationvalue', DisaggregationValueViewSet)
+
+
+
 
 urlpatterns = [ # rest framework
                 url(r'^api/', include(router.urls)),
