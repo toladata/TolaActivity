@@ -51,11 +51,11 @@
                     {% for item in program.agreement.all %}
                     <tr>
                         <td>{{ item.create_date}}</td>
-                        <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
-                        <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_activity}}</a></td>
+                        <td>{% if item.approval  %}{{ item.project_name}}{% else %}<a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a>{% endif %}</td>
+                        <td>{% if item.approval  %}{{ item.project_activity}}{% else %}<a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_activity}}</a>{% endif %}</td>
                         <td>{{ item.activity_code }}</td>
                         <td>{{ item.office }} </td>
-                        <td>{% if item.projectcomplete %} Complete {% if item.projectcomplete.approval  %}{{ item.projectcomplete.approval|capfirst }}{% else %}Open{% endif %}{% else %} Agreement {% if item.approval  %}{{ item.approval|capfirst }}{% else %} Open {% endif %} {% endif %}</td>
+                        <td>{% if item.projectcomplete %} Complete {% if item.projectcomplete.approval  %}{{ item.projectcomplete.approval|capfirst }}{% else %}Open{% endif %}{% else %} Agreement {% if item.approval  %}<strong>{{ item.approval|capfirst }}</strong>{% else %} Open {% endif %} {% endif %}</td>
                         <td>{{ item.dashboard_name }}</td>
                         <td>
                             <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
