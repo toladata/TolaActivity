@@ -163,6 +163,11 @@ body > .container {
   border-radius: 50%;
 }
 
+.leaflet-div-icon {
+  border: 0!important;
+  display: none;
+}
+
 /* Chart.js legends */
 
 .chart-legend {
