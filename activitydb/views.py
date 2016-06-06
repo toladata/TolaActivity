@@ -1,13 +1,17 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import ProgramDashboard, Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, Stakeholder, Contact, FormLibrary, FormEnabled
+from .models import Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, \
+    Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, \
+    Stakeholder, Contact, FormGuidance
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
-from .forms import ProgramDashboardForm, ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
+from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
+    SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, \
+    ChecklistItemForm, StakeholderForm, ContactForm
 import logging
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Count
@@ -66,7 +70,6 @@ class ProjectDash(ListView):
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-        form = ProgramDashboardForm
         project_id = int(self.kwargs['pk'])
 
         if project_id == 0:
@@ -95,7 +98,7 @@ class ProjectDash(ListView):
         else:
             getProgram =Program.objects.get(agreement__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
+        return render(request, self.template_name, {'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
                                                     'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id, 'getChecklist': getChecklist})
 
@@ -130,7 +133,6 @@ class ProjectAgreementList(ListView):
     template_name = 'activitydb/projectagreement_list.html'
 
     def get(self, request, *args, **kwargs):
-        form = ProgramDashboardForm
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
@@ -169,6 +171,10 @@ class ProjectAgreementCreate(CreateView):
 
     model = ProjectAgreement
     template_name = 'activitydb/projectagreement_form.html'
+    try:
+        guidance = FormGuidance.objects.get(form="Agreement")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -216,9 +222,6 @@ class ProjectAgreementCreate(CreateView):
         #create a new dashbaord entry for the project
         getProgram = Program.objects.get(id=latest.program_id)
 
-        create_dashboard_entry = ProgramDashboard(program=getProgram, project_agreement=getAgreement)
-        create_dashboard_entry.save()
-
         create_checklist = Checklist(agreement=getAgreement)
         create_checklist.save()
 
@@ -227,7 +230,7 @@ class ProjectAgreementCreate(CreateView):
         for item in get_globals:
             ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
 
-        messages.success(self.request, 'Success, Agreement Created!')
+        messages.success(self.request, 'Success, Initiation Created!')
         redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
@@ -236,11 +239,16 @@ class ProjectAgreementCreate(CreateView):
 
 class ProjectAgreementUpdate(UpdateView):
     """
-    Project Agreement Form
+    Project Initiation Form
     :param request:
     :param id: project_agreement_id
     """
     model = ProjectAgreement
+
+    try:
+        guidance = FormGuidance.objects.get(form="Agreement")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -315,28 +323,28 @@ class ProjectAgreementUpdate(UpdateView):
 
             if getProgram.budget_check:
                 if not user_budget_approval or int(budget) > int(user_budget_approval.budget_limit):
-                    messages.success(self.request, 'You do not appear to have permissions to approve this agreement')
+                    messages.success(self.request, 'You do not appear to have permissions to approve this initiation')
                     form.instance.approval = 'awaiting approval'
                 else:
-                    messages.success(self.request, 'Success, Agreement and Budget Approved')
+                    messages.success(self.request, 'Success, Initiation and Budget Approved')
                     form.instance.approval = 'approved'
             else:
-                messages.success(self.request, 'Success, Agreement Approved')
+                messages.success(self.request, 'Success, Initiation Approved')
                 form.instance.approval = 'approved'
 
             if form.instance.approval == 'approved':
                 #email the approver group so they know this was approved
                 link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
-                subject = "Project Agreement Approved: " + str(form.instance.project_name)
-                message = "A new agreement was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+                subject = "Project Initiation Approved: " + str(form.instance.project_name)
+                message = "A new initiation was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
                 getSubmiter = User.objects.get(username=self.request.user)
                 emailGroup(submiter=getSubmiter.email, country=country,group="Approver",link=link,subject=subject,message=message)
         elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
-            messages.success(self.request, 'Success, Agreement has been saved and is now Awaiting Approval (Notifications have been Sent)')
+            messages.success(self.request, 'Success, Initiation has been saved and is now Awaiting Approval (Notifications have been Sent)')
             #email the approver group so they know this was approved
             link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
-            subject = "Project Agreement Waiting for Approval: " + str(form.instance.project_name)
-            message = "A new agreement was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+            subject = "Project Initiation Waiting for Approval: " + str(form.instance.project_name)
+            message = "A new initiation was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
             emailGroup(country=country,group="Approver",link=link,subject=subject,message=message)
         else:
             messages.success(self.request, 'Success, form updated!')
@@ -387,7 +395,7 @@ class ProjectAgreementDelete(DeleteView):
     Project Agreement Delete
     """
     model = ProjectAgreement
-    success_url = '/activitydb/projectagreement_list/0/'
+    success_url = 'activitydb/dashboard/0/'
 
     @method_decorator(group_required('Country',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -418,18 +426,17 @@ class ProjectCompleteList(ListView):
     template_name = 'activitydb/projectcomplete_list.html'
 
     def get(self, request, *args, **kwargs):
-        form = ProgramDashboardForm
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
             getDashboard = ProjectComplete.objects.all().filter(program__country__in=countries)
-            return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
+            return render(request, self.template_name, {'getDashboard':getDashboard,'getPrograms':getPrograms})
         else:
             getDashboard = ProjectComplete.objects.all().filter(program__id=self.kwargs['pk'])
             getProgram =Program.objects.get(id=self.kwargs['pk'])
 
-            return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})
+            return render(request, self.template_name, {'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})
 
 
 class ProjectCompleteCreate(CreateView):
@@ -438,6 +445,11 @@ class ProjectCompleteCreate(CreateView):
     """
     model = ProjectComplete
     template_name = 'activitydb/projectcomplete_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="Complete")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     # add the request to the kwargs
     def get_form_kwargs(self):
@@ -497,8 +509,6 @@ class ProjectCompleteCreate(CreateView):
         getComplete = ProjectComplete.objects.get(id=latest.id)
         getAgreement = ProjectAgreement.objects.get(id=self.request.POST['project_agreement'])
 
-        ProgramDashboard.objects.filter(project_agreement__id=self.request.POST['project_agreement']).update(project_completion=getComplete)
-
         #update the quantitative data fields to include the newly created complete
         CollectedData.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
 
@@ -512,7 +522,7 @@ class ProjectCompleteCreate(CreateView):
         ProjectComplete.objects.filter(id=getComplete.id).update(account_code=getAgreement.account_code, lin_code=getAgreement.lin_code)
 
 
-        messages.success(self.request, 'Success, Completion Form Created!')
+        messages.success(self.request, 'Success, Tracking Form Created!')
         redirect_url = '/activitydb/projectcomplete_update/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
@@ -521,10 +531,15 @@ class ProjectCompleteCreate(CreateView):
 
 class ProjectCompleteUpdate(UpdateView):
     """
-    Project Complete Form
+    Project Tracking Form
     """
     model = ProjectComplete
     template_name = 'activitydb/projectcomplete_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="Complete")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
@@ -591,14 +606,7 @@ class ProjectCompleteUpdate(UpdateView):
     def form_valid(self, form):
 
         form.save()
-        context = self.get_context_data()
         self.object = form.save()
-
-        is_approved = self.request.GET.get('approved')
-
-        if is_approved:
-            update_dashboard = ProgramDashboard.objects.filter(project_completion__id=self.request.GET.get('id')).update(project_completion_approved=True)
-
 
         messages.success(self.request, 'Success, form updated!')
 
@@ -706,6 +714,11 @@ class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):
     model = Documentation
     template_name = 'activitydb/documentation_popup_form.html'
 
+    try:
+        guidance = FormGuidance.objects.get(form="Documentation")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(DocumentationAgreementCreate, self).dispatch(request, *args, **kwargs)
@@ -755,6 +768,11 @@ class DocumentationAgreementUpdate(AjaxableResponseMixin, UpdateView):
     """
     model = Documentation
     template_name = 'activitydb/documentation_popup_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="Documentation")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -825,6 +843,11 @@ class DocumentationCreate(CreateView):
     """
     model = Documentation
 
+    try:
+        guidance = FormGuidance.objects.get(form="Documentation")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(DocumentationCreate, self).dispatch(request, *args, **kwargs)
@@ -859,6 +882,11 @@ class DocumentationUpdate(UpdateView):
     """
     model = Documentation
     queryset = Documentation.objects.select_related()
+
+    try:
+        guidance = FormGuidance.objects.get(form="Documentation")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -981,6 +1009,11 @@ class SiteProfileCreate(CreateView):
     """
     model = SiteProfile
 
+    try:
+        guidance = FormGuidance.objects.get(form="SiteProfile")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(SiteProfileCreate, self).dispatch(request, *args, **kwargs)
@@ -1025,6 +1058,11 @@ class SiteProfileUpdate(UpdateView):
     SiteProfile Form Update an existing site profile
     """
     model = SiteProfile
+
+    try:
+        guidance = FormGuidance.objects.get(form="SiteProfile")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1340,6 +1378,11 @@ class ContactCreate(CreateView):
     """
     model = Contact
 
+    try:
+        guidance = FormGuidance.objects.get(form="Contact")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ContactCreate, self).dispatch(request, *args, **kwargs)
@@ -1379,6 +1422,11 @@ class ContactUpdate(UpdateView):
     Contact Form
     """
     model = Contact
+
+    try:
+        guidance = FormGuidance.objects.get(form="Contact")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1459,6 +1507,11 @@ class StakeholderCreate(CreateView):
     """
     model = Stakeholder
 
+    try:
+        guidance = FormGuidance.objects.get(form="Stakeholder")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(StakeholderCreate, self).dispatch(request, *args, **kwargs)
@@ -1506,6 +1559,11 @@ class StakeholderUpdate(UpdateView):
     Stakeholder Form
     """
     model = Stakeholder
+
+    try:
+        guidance = FormGuidance.objects.get(form="Stakeholder")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1575,7 +1633,7 @@ class TrainingList(ListView):
         project_agreement_id = self.kwargs['pk']
         countries = getCountry(request.user)
         if int(self.kwargs['pk']) == 0:
-            getTraining = TrainingAttendance.objects.all().filter(country__in=countries)
+            getTraining = TrainingAttendance.objects.all().filter(program__country__in=countries)
         else:
             getTraining = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk'])
 
@@ -1587,6 +1645,11 @@ class TrainingCreate(CreateView):
     Training Form
     """
     model = TrainingAttendance
+
+    try:
+        guidance = FormGuidance.objects.get(form="Training")
+    except FormGuidance.DoesNotExist:
+        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1627,6 +1690,11 @@ class TrainingUpdate(UpdateView):
     """
     model = TrainingAttendance
 
+    try:
+        guidance = FormGuidance.objects.get(form="Training")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(TrainingUpdate, self).dispatch(request, *args, **kwargs)
@@ -1655,7 +1723,8 @@ class TrainingDelete(DeleteView):
     Training Delete
     """
     model = TrainingAttendance
-    success_url = reverse_lazy('training_list')
+    success_url = '/activitydb/training_list/0/'
+    template_name = 'activitydb/training_confirm_delete.html'
 
     def form_invalid(self, form):
 
@@ -1698,6 +1767,11 @@ class BeneficiaryCreate(CreateView):
     """
     model = Beneficiary
 
+    try:
+        guidance = FormGuidance.objects.get(form="Beneficiary")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(BeneficiaryCreate, self).dispatch(request, *args, **kwargs)
@@ -1708,6 +1782,12 @@ class BeneficiaryCreate(CreateView):
             }
 
         return initial
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(BeneficiaryCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
 
@@ -1731,9 +1811,20 @@ class BeneficiaryUpdate(UpdateView):
     """
     model = Beneficiary
 
+    try:
+        guidance = FormGuidance.objects.get(form="Beneficiary")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(BeneficiaryUpdate, self).dispatch(request, *args, **kwargs)
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(BeneficiaryUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -1753,7 +1844,7 @@ class BeneficiaryDelete(DeleteView):
     Beneficiary Delete
     """
     model = Beneficiary
-    success_url = reverse_lazy('training_list')
+    success_url = reverse_lazy('beneficiary_list')
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -2029,6 +2120,11 @@ class ChecklistItemCreate(CreateView):
     """
     model = ChecklistItem
 
+    try:
+        guidance = FormGuidance.objects.get(form="ChecklistItem")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     def get_context_data(self, **kwargs):
         context = super(ChecklistItemCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
@@ -2075,6 +2171,11 @@ class ChecklistItemUpdate(UpdateView):
     """
     model = ChecklistItem
 
+    try:
+        guidance = FormGuidance.objects.get(form="ChecklistItem")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(ChecklistItemUpdate, self).dispatch(request, *args, **kwargs)
@@ -2105,7 +2206,7 @@ class ChecklistItemUpdate(UpdateView):
 
 def checklist_update_link(AjaxableResponseMixin,pk,type,value):
     """
-    Checklist Update from Link To Update if a Task is Done
+    Checklist Update from Link
     """
     value = int(value)
 
@@ -2147,28 +2248,6 @@ class ChecklistItemDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ChecklistItemForm
-
-
-class FormLibraryList(ListView):
-    """
-    List of all available forms and what forms are enabled for a project
-    """
-    model = FormLibrary
-    template_name = 'activitydb/formlibrary_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        project_agreement_id = self.kwargs['pk']
-
-        if int(self.kwargs['pk']) == 0:
-            getForms = FormLibrary.objects.all()
-            getAgreementForms = None
-        else:
-            getForms = FormLibrary.objects.all()
-            getAgreementForms = FormEnabled.objects.all().filter(agreement_id=self.kwargs['pk'])
-
-
-        return render(request, self.template_name, {'getForms': getForms,'getAgreementForms': getAgreementForms,'project_agreement_id': project_agreement_id})
 
 
 def report(request):

@@ -138,7 +138,9 @@ def index(request, selected_countries=None, id=0, sector=0):
                                           'complete_open_count':complete_open_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,\
                                           'complete_wait_count':complete_wait_count,\
-                                          'programs':getPrograms,'getSiteProfile':getSiteProfile,'countries': user_countries,'selected_countries':selected_countries,'getFilteredName':getFilteredName,'getSectors':getSectors,\
+                                          'programs':getPrograms,'getSiteProfile':getSiteProfile,\
+                                          'countries': user_countries,'selected_countries':selected_countries,\
+                                          'getFilteredName':getFilteredName,'getSectors':getSectors,\
                                           'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums,\
                                           'count_evidence':count_evidence,
                                           'getObjectives':getObjectives,

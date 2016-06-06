@@ -110,22 +110,10 @@ def getAllData(getCountry,file_name):
 
                 column_num = column_num + 1
 
-"""
-UNCOMMENT AND UPDATE TO IMPORT
-# Turkey
-print "IMPORTING TURKEY !!!!!!"
-getCountry = Country.objects.get(id=13)
-file_name = "fixtures/turkey-admin.csv"
-getAllData(getCountry, file_name)
 
-# Iraq
-print "IMPORTING IRAQ !!!!!!"
-getCountry = Country.objects.get(id=8)
-file_name = "fixtures/iraq-admin.csv"
+# UNCOMMENT AND UPDATE TO IMPORT
+# Kenya
+print "IMPORTING Kenya !!!!!!"
+getCountry = Country.objects.get(country="Kenya")
+file_name = "fixtures/kenya-admin.csv"
 getAllData(getCountry, file_name)
-# Syria
-print "IMPORTING SYRIA !!!!!!"
-getCountry = Country.objects.get(id=15)
-file_name = "fixtures/syria-admin.csv"
-getAllData(getCountry, file_name)
-"""

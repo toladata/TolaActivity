@@ -15,7 +15,7 @@
 {% block page_title %}Site Profile Form{% endblock %}
 
 {% block content %}
-    <span style="float: right;"><a onclick="newPopup('https://drive.google.com/open?id=18nGr_uk1VSzitwjkstxvjGWxtINzlITUgBGFP_s-b9o','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
+    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}
