@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load mathfilters %}
+{% block page_title %}Program Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="dropdown">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    Programs
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/0">-- All --</a></li>
+    {% for program in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/{{ program.id }}">{{ program.name }}</a></li>
+    {% endfor %}
+  </ul>
+  <a href="/activitydb/dashboard/project/0/" class="btn btn-sm btn-success">Create a Project</a>
+  <!--<a href="/activitydb/projectagreement_import/" class="btn btn-sm btn-info">Import a Project</a>-->
+
+</div>
+<br/>
+<div>
+{% if getDashboard %}
+    {% for program in getDashboard %}
+        {% if program.agreement.all %}
+            <div class='panel panel-default'>
+                <div class='panel-heading'>
+                    <h4>
+
+                       {{ program.name|truncatechars:80 }}
+
+                       <span class="float: right">
+                           <a href="/customdashboard/{{program.id }}/" class="btn btn-xs btn-info" style="float:right;">Dashboard Visualization</a>
+                       </span>
+                   </h4>
+                </div>
+                <!-- Table -->
+                <table class="table table-striped">
+                    <tr>
+                        <th>Date Created</th>
+                        <th>Project Name</th>
+                        <th>Project Code</th>
+                        <th>Office Code</th>
+                        <th>Approval Status</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    {% for item in program.agreement.all %}
+                    <tr>
+                        <td>{{ item.create_date}}</td>
+                        <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
+                        <td>{{ item.activity_code }}</td>
+                        <td>{{ item.office }} </td>
+                        <td>{% if item.projectcomplete %} Tracking {% if item.projectcomplete.approval  %}{{ item.projectcomplete.approval|capfirst }}{% else %}Open{% endif %}{% else %} Initiation {% if item.approval  %}{{ item.approval|capfirst }}{% else %} Open {% endif %} {% endif %}</td>
+                        <td>
+                            <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                        <li class="list-group-item">No projects yet.</li>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>No Programs</p>
+{% endif %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div> <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
+{% endblock content %}

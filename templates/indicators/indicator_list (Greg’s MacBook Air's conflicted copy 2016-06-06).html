@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block page_title %}Program Indicators{% endblock %}
+
+{% block content %}
+<div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+        Programs
+    <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/0/">-- All --</a></li>
+    {% for program in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% endfor %}
+    </ul>
+    <br/>
+    <br/>
+</div>
+
+<!-- Default panel contents -->
+{% if getProgramsIndicator %}
+    {% for program in getProgramsIndicator %}
+        <div class='panel panel-default'>
+            <div class='panel-heading'><h4>{{ program.name|truncatechars:85 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
+            {% if not program.indicator_set.all %}
+                <div class='panel-body'>
+                    <h4>No Indicators have been entered for this program</h4>
+                    <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
+                </div>
+            {% else %}
+                <div class='panel-body'>
+                    <a onclick="loadIndicators({{ program.id }})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
+                </div>
+                <div id="hidden-{{ program.id }}" class="accordian-body collapse">
+                    {% include "indicators/program_indicators_table.html" %}
+                </div>
+            {% endif %}
+        </div>
+
+    {% endfor %}
+{% else %}
+    <p>No Programs</p>
+{% endif %}
+
+{% endblock content %}
