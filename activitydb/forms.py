@@ -375,7 +375,7 @@ class ProjectAgreementForm(forms.ModelForm):
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
                               <div class='panel-heading'>Documentation</div>
-                              {% if getMonitor %}
+                              {% if getDocuments %}
                                   <!-- Table -->
                                   <table class="table">
                                     <tr>
