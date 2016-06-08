@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
+<script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/vendor/jquery-1.11.1.min.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/plugins.js"></script>
+<script> $(function(){ //DOM Ready
+
+   var gridster = $(".gridster ul").gridster().data('gridster');
+
+});</script>
+
+{% endblock content %}

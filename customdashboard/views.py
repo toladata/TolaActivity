@@ -86,7 +86,7 @@ def PublicDashboard(request,id=0):
     #get all countires
     countries = Country.objects.all().filter(program__id=program_id)
 
-    return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
+    return render(request, "customdashboard/themes/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
                                                                      'getSiteProfile':getSiteProfile, 'getOverlayGroups':getOverlayGroups,
                                                                      'countries': countries, 'getOverlayNarrative': getOverlayNarrative,
                                                                      'awaiting':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
@@ -180,7 +180,7 @@ def SurveyPublicDashboard(request,id=0):
 
     dashboard = True
 
-    return render(request, "publicdashboard/survey_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'countries': countries, 'dashboard':dashboard})
+    return render(request, "customdashboard/themes/survey_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'countries': countries, 'dashboard':dashboard})
 
 
 def SurveyTalkPublicDashboard(request,id=0):
@@ -265,7 +265,7 @@ def SurveyTalkPublicDashboard(request,id=0):
 
     dashboard = True
 
-    return render(request, "publicdashboard/survey_talk_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'country_from': country_from, 'countries': countries, 'dashboard':dashboard})
+    return render(request, "customdashboard/themes/survey_talk_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'country_from': country_from, 'countries': countries, 'dashboard':dashboard})
 
 
 def ReportPublicDashboard(request,id=0):
@@ -274,7 +274,7 @@ def ReportPublicDashboard(request,id=0):
     countries = Country.objects.all()
     report = True
 
-    return render(request, "publicdashboard/survey_public_dashboard.html", {'countries': countries, 'report':report})
+    return render(request, "customdashboard/themes/survey_public_dashboard.html", {'countries': countries, 'report':report})
 
 
 def Gallery(request,id=0):
@@ -289,7 +289,7 @@ class ProgramList(ListView):
     Documentation
     """
     model = Program
-    template_name = 'customdashboard/program_list.html'
+    template_name = 'customdashboard/themes/program_list.html'
 
     def get(self, request, *args, **kwargs):
         getCountry = Country.objects.all()
@@ -307,7 +307,7 @@ class InternalDashboard(ListView):
     Internal Dashboard for user.is_authenticated
     """
     model = Program
-    template_name = 'customdashboard/internal_dashboard.html'
+    template_name = 'customdashboard/themes/internal_dashboard.html'
 
     def get(self, request, *args, **kwargs):
         getCountry = Country.objects.all()
