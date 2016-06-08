@@ -3,10 +3,10 @@
 <ol class="breadcrumb">
   <li><a href="/activitydb/dashboard/0/">Program Dashboard</a></li>
   {% if id %}<li><a href="/activitydb/dashboard/project/{{ id }}/">Project Dashboard</a></li>{% endif %}
-  <li class="active">Project Complete Form</li>
+  <li class="active">Project Tracking Form</li>
 </ol>
 {%  endblock %}
-{% block page_title %}Project Complete Form{% endblock %}
+{% block page_title %}Project Tracking Form{% endblock %}
 
 {% block extra_js_in_body %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
@@ -24,7 +24,7 @@
 
 
 {% block content %}
-    <span style="float: right;"><a onclick="newPopup('https://docs.google.com/document/d/1tDwo3m1ychefNiAMr-8hCZnhEugQlt36AOyUYHlPbVo/edit?usp=sharing','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
+    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}

@@ -37,33 +37,33 @@
 {% else %}
     <br/>
     <ul class="list-group">
-    <h3><a href="https://gait.mercycorps.org/editgrant.vm?GrantID={{ getProgram.gaitid }}" target=_new">GAITID: {{ getProgram.gaitid }}</a> {{ getProgram.name|truncatechars:80 }}<span style="float: right;"><a href="/activitydb/projectagreement_detail/{{ getAgreement.id }}/" class="btn btn-sm btn-info">Print View</a></span></h3>
+    <h3>{{ getProgram.name|truncatechars:70 }}<span style="float: right;"><a href="/activitydb/projectagreement_detail/{{ getAgreement.id }}/" class="btn btn-sm btn-info">Print View</a></span></h3>
         {% if getAgreement %}
         <div class="jumbotron">
             <ul class="list-group">
                 <li class="list-group-item list-group-item-info">
-                    <h4>Project Agreement</h4>
+                    <h4>Project Initiation</h4>
                     <span></span>
                 </li>
 
                 <li class="list-group-item"><b>Name: </b>{{ getAgreement.project_name }}<br/>
-                    <b>Activity Code: </b>{{ getAgreement.activity_code }}<br/>
+                    <b>Project Code: </b>{{ getAgreement.activity_code }}<br/>
                     <b>Created:</b> <span class="date-badge">{{ getAgreement.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ getAgreement.edit_date|date }}</span>
                 </li>
                 <li class="list-group-item">
                     <div class="btn-group" role="group" aria-label="...">
                         {% if getAgreement.approval == "approved" %}
-                            <button data-toggle="tooltip" data-placement="top" title="Agreement has been approved and can no longer be edited." type="button" class="btn btn-sm btn-frozen" onclick="location.href='/activitydb/projectagreement_detail/{{ getAgreement.id }}'">View Agreement</button>
-                            <button data-toggle="tooltip" data-placement="top" title="Agreement has been approved and can no longer be deleted." type="button" class="btn btn-sm btn-frozen">Delete Agreement</button>
+                            <button data-toggle="tooltip" data-placement="top" title="Initiation has been approved and can no longer be edited." type="button" class="btn btn-sm btn-frozen" onclick="location.href='/activitydb/projectagreement_detail/{{ getAgreement.id }}'">View Initiation</button>
+                            <button data-toggle="tooltip" data-placement="top" title="Initiation has been approved and can no longer be deleted." type="button" class="btn btn-sm btn-frozen">Delete Initiation</button>
                             {% if getComplete%}
-                                <button data-toggle="tooltip" data-placement="top" title="A completion form has already been created for the project" type="button" class="btn btn-sm btn-frozen">Complete Project</button>
+                                <button data-toggle="tooltip" data-placement="top" title="A completion form has already been created for the project" type="button" class="btn btn-sm btn-frozen">Project Initiation</button>
                             {% else %}
-                                <button type="button" class="btn btn-sm btn-info" onclick="location.href='/activitydb/projectcomplete_add/{{ getAgreement.id }}'">Complete Project</button>
+                                <button type="button" class="btn btn-sm btn-info" onclick="location.href='/activitydb/projectcomplete_add/{{ getAgreement.id }}'">Start tracking your project</button>
                             {% endif %}
                         {% else %}
-                            <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ getAgreement.id }}'">Update Agreement</button>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectagreement_delete/{{ getAgreement.id }}'">Delete Agreement</button>
-                            <button data-toggle="tooltip" data-placement="top" title="Once Approved you will be able to click here and complete the project" type="button" class="btn btn-sm btn-frozen">Complete Project</button>
+                            <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectagreement_update/{{ getAgreement.id }}'">Update Initiation</button>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectagreement_delete/{{ getAgreement.id }}'">Delete Initiation</button>
+                            <button data-toggle="tooltip" data-placement="top" title="Once Approved you will be able to click here and start tracking the project" type="button" class="btn btn-sm btn-frozen">Start tracking your project</button>
                         {% endif %}
                     </div>
                 </li>
@@ -87,16 +87,16 @@
         {% if getComplete %}
             <ul class="list-group">
                 <li class="list-group-item list-group-item-info">
-                    <h4>Project Completion</h4>
+                    <h4>Project Tracking</h4>
                 </li>
                 <li class="list-group-item"><b>Name: </b>{{ getComplete.project_name }}<br/>
-                    <b>Activity Code: </b>{{ getComplete.activity_code }}<br/>
+                    <b>Project Code: </b>{{ getComplete.activity_code }}<br/>
                     <b>Created:</b> <span class="date-badge">{{ getComplete.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ getComplete.edit_date|date }}</span>
                 </li>
                 <li class="list-group-item">
                     <div class="btn-group" role="group" aria-label="...">
-                        <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectcomplete_update/{{ getComplete.id }}'">Update Completion</button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectcomplete_delete/{{ getComplete.id }}'">Delete Completion</button>
+                        <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/activitydb/projectcomplete_update/{{ getComplete.id }}'">Update Tracking</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/activitydb/projectcomplete_delete/{{ getComplete.id }}'">Delete Tracking</button>
                     </div>
                 </li>
                 <li class="list-group-item">
@@ -159,7 +159,6 @@
             </tr>
             {% endfor %}
         </table>
-        </a>
     </div>
 
 {% endif %}

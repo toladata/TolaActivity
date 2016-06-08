@@ -7,7 +7,7 @@
 </ol>
 </div>
 {% endblock %}
-{% block page_title %}Project Agreement List{% endblock %}
+{% block page_title %}Project Initiation List{% endblock %}
 
 {% block content %}
 
@@ -47,11 +47,11 @@
         <td>{{ item.dashboard_name }}</td>
         <td>
             <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
-            <a href="/activitydb/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Agreement</a>
+            <a href="/activitydb/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Initiation</a>
         </td>
     </tr>
     {% empty %}
-        <li class="list-group-item">No agreements yet.</li>
+        <li class="list-group-item">No initiations yet.</li>
     {% endfor %}
 </table>
 
