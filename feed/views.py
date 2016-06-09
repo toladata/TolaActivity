@@ -1,31 +1,17 @@
 from .serializers import *
 
-from django.contrib.auth.decorators import login_required
-import json as simplejson
-from tola.util import siloToDict
 from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, CustomDashboard, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
 
-from django.contrib import messages
-from django.template import RequestContext
 from django.contrib.auth.models import User
 from tola.util import getCountry
 
 from rest_framework import renderers, viewsets, filters
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-
-import operator
-import csv
-
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseForbidden,\
-    HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest,\
-    HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404, redirect, render
 
 
 class LargeResultsSetPagination(PageNumberPagination):

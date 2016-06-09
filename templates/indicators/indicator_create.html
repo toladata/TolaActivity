@@ -44,7 +44,7 @@
     <div class='jumbotron'>
 
         <h4>Create an Indicator from an External Template.</h4>
-        <p>External template indicators include DIG indicators from the <a href="https://thedig.mercycorps.org">DIG website</a> or donor required indicators from a web service.  Skip The service section if creating a "custom" indicator.</p>
+        <p>External template indicators include agency standard indicator feeds or donor required indicators from a web service.  Skip The service section if creating a "custom" indicator.</p>
         <div class="panel-body">
             <form class="form-horizontal" method="post" enctype="multipart/form-data" name="most" action="/indicators/indicator_create/{{ program_id }}/" role="form">
               {% csrf_token %}
@@ -56,7 +56,7 @@
                       <option value="{{ item.id }}"> {{ item.name }}</option>
                       {% endfor %}
                   </select>
-                  <span id="helpBlock" class="help-block">Select an indicator service (The DIG, donor etc) to select a pre-defined indicator from.</span>
+                  <span id="helpBlock" class="help-block">Select an indicator service to select a pre-defined indicator from.</span>
               </div>
 
               <div class="form-group">
