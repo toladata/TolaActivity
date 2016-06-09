@@ -319,3 +319,44 @@ class InternalDashboard(ListView):
 
         return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
 
+# def AnalyticsDashboard(request,id=0):
+
+#     # get all countires
+#     countries = Country.objects.all()
+#     report = True
+
+#     return render(request, "customdashboard/themes/analytics_dashboard.html", {'countries': countries, 'report':report})
+
+# def GalleryDashboard(request,id=0):
+
+#     # get all countires
+#     countries = Country.objects.all()
+#     report = True
+
+#     return render(request, "customdashboard/themes/gallery_dashboard.html", {'countries': countries, 'report':report})
+
+# def LocationDashboard(request,id=0):
+
+#     # get all countires
+#     countries = Country.objects.all()
+#     report = True
+
+#     return render(request, "customdashboard/themes/location_dashboard.html", {'countries': countries, 'report':report})
+
+# def NarrativeDashboard(request,id=0):
+
+#     # get all countires
+#     countries = Country.objects.all()
+#     report = True
+
+#     return render(request, "customdashboard/themes/narrative_dashboard.html", {'countries': countries, 'report':report})
+
+# def TimelineDashboard(request,id=0):
+
+#     # get all countires
+#     countries = Country.objects.all()
+#     report = True
+
+#     return render(request, "customdashboard/themes/timeline_dashboard.html", {'countries': countries, 'report':report})
+
+    
