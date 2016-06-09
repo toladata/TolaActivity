@@ -24,6 +24,11 @@ body {
 
 
 /* Bootstrap Overrides */
+@media print {
+  a[href]:after {
+    content: none;
+  }
+}
 
 *,
 *:focus,
@@ -158,6 +163,11 @@ body > .container {
   border-radius: 50%;
 }
 
+.leaflet-div-icon {
+  border: 0!important;
+  display: none;
+}
+
 /* Chart.js legends */
 
 .chart-legend {
@@ -198,26 +208,10 @@ body > .container {
   text-align: center;
 }
 
+=======
 /* Login buttons for Social */
 .social-buttons{
     margin:12px 0
-}
-
-.btn-fb{
-    color: #fff;
-    background-color:#3b5998;
-}
-.btn-fb:hover{
-    color: #fff;
-    background-color:#496ebc
-}
-.btn-tw{
-    color: #fff;
-    background-color:#55acee;
-}
-.btn-tw:hover{
-    color: #fff;
-    background-color:#59b5fa;
 }
 .btn-go{
     color: #fff;
@@ -227,3 +221,4 @@ body > .container {
     color: #fff;
     background-color:#59b5fa;
 }
+\

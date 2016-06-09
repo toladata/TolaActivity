@@ -387,6 +387,12 @@ class ProjectAgreementDetail(DetailView):
             getBudget = None
         context.update({'getBudget': getBudget})
 
+        try:
+            getDocuments = Documentation.objects.all().filter(project__id=self.kwargs['pk']).order_by('name')
+        except Documentation.DoesNotExist:
+            getDocuments = None
+        context.update({'getDocuments': getDocuments})
+
         return context
 
 
@@ -483,7 +489,6 @@ class ProjectCompleteCreate(CreateView):
         except SiteProfile.DoesNotExist:
             getSites = None
 
-
         return initial
 
     def get_context_data(self, **kwargs):
@@ -520,7 +525,6 @@ class ProjectCompleteCreate(CreateView):
 
         #update main compelte fields
         ProjectComplete.objects.filter(id=getComplete.id).update(account_code=getAgreement.account_code, lin_code=getAgreement.lin_code)
-
 
         messages.success(self.request, 'Success, Tracking Form Created!')
         redirect_url = '/activitydb/projectcomplete_update/' + str(latest.id)
@@ -569,6 +573,14 @@ class ProjectCompleteUpdate(UpdateView):
         except Benchmarks.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
+
+        # get documents from the original agreement (documents are not seperate in complete)
+        try:
+            getDocuments = Documentation.objects.all().filter(project__id=getComplete.project_agreement_id).order_by('name')
+        except Documentation.DoesNotExist:
+            getDocuments = None
+        context.update({'getDocuments': getDocuments})
+
 
         return context
 

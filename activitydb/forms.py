@@ -375,7 +375,7 @@ class ProjectAgreementForm(forms.ModelForm):
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
                               <div class='panel-heading'>Documentation</div>
-                              {% if getMonitor %}
+                              {% if getDocuments %}
                                   <!-- Table -->
                                   <table class="table">
                                     <tr>
@@ -678,6 +678,49 @@ class ProjectCompleteForm(forms.ModelForm):
                              'approval', 'approved_by',
                              Field('approval_remarks', rows="3", css_class='input-xlarge')
                     ),
+                ),
+            ),
+
+            FormActions(
+                Submit('submit', 'Save', css_class='btn-default'),
+                Reset('reset', 'Reset', css_class='btn-warning')
+            ),
+
+            HTML("""<br/>"""),
+
+            Fieldset(
+                'Project Files',
+                Div(
+                    '',
+                    HTML("""
+
+                        <div class='panel panel-default'>
+                          <!-- Default panel contents -->
+                          <div class='panel-heading'>Documentation</div>
+                          {% if getDocuments %}
+                              <!-- Table -->
+                              <table class="table">
+                                <tr>
+                                <th>Name</th>
+                                <th>Link(URL)</th>
+                                <th>Description</th>
+                                <th>&nbsp;</th>
+                                </tr>
+                                {% for item in getDocuments %}
+                                <tr>
+                                    <td>{{ item.name}}</td>
+                                    <td><a href="{{ item.url}}" target="_new">{{ item.url}}</a></td>
+                                    <td>{{ item.description}}</td>
+                                    <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/activitydb/documentation_agreement_update/{{ item.id }}/{{ pk }}/'>Edit</a> | <a class="monitoring" href='/activitydb/documentation_agreement_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
+                                </tr>
+                                {% endfor %}
+                              </table>
+                          {% endif %}
+                          <div class="panel-footer">
+                            <a class="documents" data-toggle="modal" data-target="#myModal" onclick="document.getElementById('agreement').submit()" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
+                          </div>
+                        </div>
+                         """),
                 ),
             ),
 
