@@ -4,7 +4,7 @@ required:
 * dataset[] for values
 * labels[] for labels
 * elementID HTML/CSS document id for placement on dashboard
---->
+
 <script>
     //render on radar_chart
     var data = {
@@ -21,4 +21,7 @@ required:
     }
     var ctx = document.getElementById(" {{ elementID }}").getContext("2d");
     new Chart(ctx).Radar(survey_data);
+
+//new code 
+var tolaBubbleChart = new Chart(ctx, {type:"pie", data: data, options: options});  
 </script>

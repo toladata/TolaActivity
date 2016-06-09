@@ -6,7 +6,7 @@ required:
 * elementID for placement on dashboard
 * legendID for placement of legend for graph
 * tooltip to append to tool tip i.e. (USD, KM, LBS, etc.)
---->
+
 
 <script>
 //render project_status in a doughnut chart
@@ -37,6 +37,10 @@ var data = [
     }
 ];
 var ctx = document.getElementById("status").getContext("2d");
-var statusChart = new Chart(ctx).Doughnut(data,options);
+
 document.getElementById('status-legend').innerHTML = statusChart.generateLegend();
-</script>
+
+//new code 
+var tolaDoughnutChart = new Chart(ctx, {type:"doughnut", data: data, options: options}); 
+
+</script> -->

@@ -6,9 +6,10 @@ required:
 * elementID for placement on dashboard
 * legendID for placement of legend for graph
 * tooltip to append to tool tip i.e. (USD, KM, LBS, etc.)
---->
+
 <script>
     //render bar_chart
+
     var options = {
         maintainAspectRatio: false,
         responsive: true,
@@ -64,6 +65,11 @@ required:
     };
     //retrieve expenditure_canvas, pass the into a bar_chart
     var ctx = document.getElementById("expenditure_canvas").getContext("2d");
-    var expChart = new Chart(ctx).Bar(data,options);
     document.getElementById('exp-legend').innerHTML = expChart.generateLegend();
+
+    //new code
+    var tolaBarChart = new Chart(ctx, {type: 'bar', data: data, options: options});
+
+
+
 </script>
