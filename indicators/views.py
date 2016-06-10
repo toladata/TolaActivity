@@ -776,15 +776,27 @@ def collecteddata_import(request):
     user_json = json.loads(response.content)
     shared_json = json.loads(response2.content)
 
+    print response.content
+    print response.headers
+    print response.status_code
+    print response.raw
+
     if type(shared_json) is not dict:
         data = user_json + shared_json
     else:
         data = user_json
 
     # debug the json data string uncomment dump and print
-    # data2 = json.dumps(data) # json formatted string
-    # print data2
-
+    print response
+    print response2
+    print user_filter_url
+    print shared_filter_url
+    print user_json
+    print shared_json
+    print data
+    data2 = json.dumps(user_json) # json formatted string
+    print data2
+    print response.json()
     if request.method == 'POST':
         id = request.POST['service_table']
         filter_url = service.feed_url + "&id=" + id
