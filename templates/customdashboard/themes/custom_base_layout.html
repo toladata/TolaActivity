@@ -50,10 +50,18 @@
 	                </ul>
 	            </div><!-- .navbar-header collapse -->
             </div><!-- .container collapse -->
-
+        </div>
 <!-- main container goes here/ add basic grid system layout here -->
+        <div class="container">
+            <div>{% block bread_crumb %}{% endblock %}</div>
 
-<!-- footer
+            <!-- Page title  -->
+            <h2>{% block page_title %}{% endblock %}</h2>
+
+            <!-- Main body content -->
+            <p>{% block content %}{% endblock %}</p>
+        </div>
+<!-- footer -->
 		<div id="footer">
 		    <!-- Sticky Footer -->
 		    <div class="container">
@@ -64,9 +72,9 @@
 		            <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
 		        </div>
 		    </div>
-		</div><!-- .footer collapse -->
+		</div><!-- .footer collapse
 
-        <!-- data tables jquery javascript library -->
+        <!- data tables jquery javascript library -->
         <!-- <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script> -->
 
 <!--         {% if offline_mode %}
