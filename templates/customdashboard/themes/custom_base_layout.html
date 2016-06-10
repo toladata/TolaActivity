@@ -67,18 +67,17 @@
 		</div><!-- .footer collapse -->
 
         <!-- data tables jquery javascript library -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+        <!-- <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script> -->
 
-        <!-- Bootstrap compiled javascript plugins -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-        {% if offline_mode %}
-            <!--- offline mode so don't try andload the external fonts -->
-        {% else %}
-            <!-- Typekit (Fonts) -->
-            <script src="https://use.typekit.net/shi4wqr.js"></script>
+<!--         {% if offline_mode %}
+            <!- offline mode so don't try andload the external fonts -->
+<!--         {% else %}
+            <!- Typekit (Fonts) -->
+<!--             <script src="https://use.typekit.net/shi4wqr.js"></script>
             <script>try{Typekit.load({ async: true });}catch(e){}</script>
-        {% endif %}
+        {% endif %}   -->
 
-        {% block extra_js_in_body %}{% endblock %}
+        <!-- {% block extra_js_in_body %} -->
+        {% endblock %}
     </body>
 </html>

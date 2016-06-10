@@ -27,7 +27,8 @@ urlpatterns = patterns('',
 
                        #gallery
                        url(r'^public/(?P<id>\w+)/gallery/([0-9]+)/$', 'customdashboard.views.Gallery', name='gallery'),
-                       url(r'^public/(?P<id>\w+)/([0-9]+)/gallery/([0-9]+)/$', 'customdashboard.views.Gallery', name='gallery'),
-                       )
 
+                       #dashboard schemes
+                       url(r'^(?P<id>[0-9]+)/data/public/$', 'customdashboard.views.AnalyticsDashboard', name='analytics_custom_dashboard'),
+                       )
 
