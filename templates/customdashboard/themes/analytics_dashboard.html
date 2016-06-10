@@ -1,4 +1,8 @@
-<!-- import chart.js -->
+<!-- LAYOUT TEMPLATE: ANALYTICS, 3 COLUMN VIEW
+Data-focused analytics layout with a page-wide title bar
+Layout takes 3 input "component" templates to display each of the column graphics -->
+
+import chart.js
 
 <!-- load basic layout -->
 {% extends "custom_base_layout.html" %}
@@ -15,7 +19,9 @@
 		input form needs to capture narrative_selection as "narratives/narrative_type" and .html component name needs to match (ditto for other components) -->
 
 <div class='row'>
+	<div class='col-lg-12'>
 <!-- title element for page? -->
+	</div>
 </div>
 <!-- <div class='row'>
 	<div class='col-lg-12'>
@@ -37,26 +43,26 @@
 </div> -->
 <div class='row'>
 	<div class='col-lg-12'>
-		<div class='col-md-3'>
+		<div class='col-md-4'>
 			<div class='panel'>
 				<div class='panel-heading'></div>
-<!-- 				{% with component_selection.name|add:".html" as template %}
+<!-- 				{% with component_selection_left.name|add:".html" as template %}
     				{% include template %}
 				{% endwith %} -->
 			</div>
 		</div>
-		<div class='col-md-3'>
+		<div class='col-md-4'>
 			<div class='panel'>
 				<div class='panel-heading'></div>
-<!-- 				{% with component_selection.name|add:".html" as template %}
+<!-- 				{% with component_selection_center.name|add:".html" as template %}
     				{% include template %}
 				{% endwith %} -->
 			</div>
 		</div>
-		<div class='col-md-3'>
+		<div class='col-md-4'>
 			<div class='panel'>
 				<div class='panel-heading'></div>
-<!-- 				{% with component_selection.name|add:".html" as template %}
+<!-- 				{% with component_selection_right.name|add:".html" as template %}
     				{% include template %}
 				{% endwith %} -->
 			</div>

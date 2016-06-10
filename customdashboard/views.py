@@ -1,4 +1,6 @@
 from django.views.generic.list import ListView
+from django.views.generic import TemplateView
+from django.contrib.auth.models import User
 
 from django.shortcuts import render
 from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
@@ -12,6 +14,7 @@ from django.db.models import Q
 from tola.util import getCountry
 
 from django.contrib.auth.decorators import login_required
+import uuid
 import requests
 import json
 
@@ -319,13 +322,13 @@ class InternalDashboard(ListView):
 
         return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
 
-# def AnalyticsDashboard(request,id=0):
+def AnalyticsDashboard(request,id=0):
 
-#     # get all countires
-#     countries = Country.objects.all()
-#     report = True
+    # get all countires
+    countries = Country.objects.all()
+    report = True
 
-#     return render(request, "customdashboard/themes/analytics_dashboard.html", {'countries': countries, 'report':report})
+    return render(request, "customdashboard/themes/analytics_dashboard.html", {'countries': countries, 'report':report})
 
 # def GalleryDashboard(request,id=0):
 
@@ -359,4 +362,95 @@ class InternalDashboard(ListView):
 
 #     return render(request, "customdashboard/themes/timeline_dashboard.html", {'countries': countries, 'report':report})
 
+class BarGraphView(TemplateView):
+    template_name = 'components/charts/bar_graph.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(BarGraphView, self).get_context_data(**kwargs)
+        context['bar_graph_data'] = self.bar_graph_data()
+        context['bar_graph_uuid'] = self.uuid.uuid4
+        return context
+
+    def bar_graph_data(self):
+        final_data = []
+        # do what needs to be done to data
+        return final_data
     
+# class BubbleChartView(TemplateView):
+#     template_name = 'components/charts/bubble.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super(BarGraphView, self).get_context_data(**kwargs)
+#         context['bubble_data'] = self.bubble_data()
+#         return context
+
+#     def bubble_data(self):
+#         final_data = []
+#         # do what needs to be done to data
+#         return final_data
+    
+# class DoughnutChartView(TemplateView):
+#     template_name = 'components/charts/doughnut.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super(DoughnutChartView, self).get_context_data(**kwargs)
+#         context['doughnut_chart_data'] = self.doughnut_chart_data()
+#         context['doughnut_chart_uuid'] = self.uuid.uuid4
+#         return context
+
+#     def doughnut_chart_data(self):
+#         final_data = []
+#         # do what needs to be done to data
+#         return final_data
+    
+# class LineGraphView(TemplateView):
+#     template_name = 'components/charts/line.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super(LineGraphView, self).get_context_data(**kwargs)
+#         context['line_graph_data'] = self.line_graph_data()
+#         return context
+
+#     def line_graph_data(self):
+#         final_data = []
+#         # do what needs to be done to data
+#         return final_data
+ 
+# class PieChartView(TemplateView):
+#     template_name = 'components/charts/pie.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super(PieChartView, self).get_context_data(**kwargs)
+#         context['pie_chart_data'] = self.pie_chart_data()
+#         return context
+
+#     def pie_chart_data(self):
+#         final_data = []
+#         # do what needs to be done to data
+#         return final_data
+  
+# class PolarChartView(TemplateView):
+#     template_name = 'components/charts/polar.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super(PolarChartView, self).get_context_data(**kwargs)
+#         context['polar_chart_data'] = self.polar_chart_data()
+#         return context
+
+#     def polar_chart_data(self):
+#         final_data = []
+#         # do what needs to be done to data
+#         return final_data
+    
+# class RadarChartView(TemplateView):
+#     template_name = 'components/charts/radar.html'
+
+#     def get_context_data(self, **kwargs):
+#         context = super(RadarChartView, self).get_context_data(**kwargs)
+#         context['radar_chart_data'] = self.radar_chart_data()
+#         return context
+
+#     def radar_chart_data(self):
+#         final_data = []
+#         # do what needs to be done to data
+#         return final_data
