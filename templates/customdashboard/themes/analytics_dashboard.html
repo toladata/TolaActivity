@@ -42,11 +42,16 @@ Title placeholder
 	</div>
 </div> -->
 <div class='row'>
-	<div class='col-lg-12'>
+	<!-- <div class='col-lg-12'> -->
 		<div class='col-md-4'>
 			<div class='panel'>
 				<div class='panel-heading text-center'></div>
 				Left Panel
+				{% with table_header1 as table_header %}
+					{% with table_data1 as table_data %}
+					    {% include 'customdashboard/components/charts/bar_graph.html' %}
+					{% endwith %}
+				{% endwith %}
 
 			</div>
 		</div>
@@ -54,17 +59,27 @@ Title placeholder
 			<div class='panel'>
 				<div class='panel-heading'></div>
 				Middle panel
+				{% with table_header2 as table_header %}
+					{% with table_data2 as table_data %}
+					    {% include 'customdashboard/components/charts/bar_graph.html' %}
+					{% endwith %}
+				{% endwith %}
 
 			</div>
 		</div>
 		<div class='col-md-4'>
 			<div class='panel'>
 				<div class='panel-heading'></div>
-				RIght panel
+				Right panel
+				{% with table_header3 as table_header %}
+					{% with table_data3 as table_data %}
+					    {% include 'customdashboard/components/charts/bar_graph.html' %}
+					{% endwith %}
+				{% endwith %}
 
 			</div>
 		</div>
-	</div>
+	<!-- </div> -->
 </div>
 
 {% endblock content %}

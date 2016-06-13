@@ -8,40 +8,40 @@ required:
 
 <script>
     //render bar_chart
-<!--var options = {
-        maintainAspectRatio: false,
-        responsive: true,
-        scaleOverlay : false,
-        scaleSteps : 10,
-        scaleStepWidth : 10,
-        scaleStartValue : 0,
-        scaleLineColor : "rgba(0,0,0,.25)",
-        scaleLineWidth : 1,
-        scaleShowLabels : true,
-        scaleLabel : "<%=value%>",
-        scaleFontFamily : "'Lato'",
-        scaleFontSize : 12,
-        scaleFontStyle : "800",
-        scaleFontColor : "#222",
-        scaleShowGridLines : true,
-        scaleGridLineColor : "rgba(0,0,0,.1)",
-        scaleGridLineWidth : 1,
-        bezierCurve : true,
-        pointDot : true,
-        pointDotRadius : 5,
-        pointDotStrokeWidth : 1,
-        datasetStroke : true,
-        datasetStrokeWidth : 1,
-        datasetFill : true,
-        animation : true,
-        animationSteps : 120,
-        animationEasing : "easeOutQuart",
-        onAnimationComplete : null,
-        //tooltip
-        multiTooltipTemplate: "<%= value + ' USD' %>",
-    };
+// <!--var options = {
+        // maintainAspectRatio: false,
+        // responsive: true,
+        // scaleOverlay : false,
+        // scaleSteps : 10,
+        // scaleStepWidth : 10,
+        // scaleStartValue : 0,
+        // scaleLineColor : "rgba(0,0,0,.25)",
+        // scaleLineWidth : 1,
+        // scaleShowLabels : true,
+        // scaleLabel : "<%=value%>",
+        // scaleFontFamily : "'Lato'",
+        // scaleFontSize : 12,
+        // scaleFontStyle : "800",
+        // scaleFontColor : "#222",
+        // scaleShowGridLines : true,
+        // scaleGridLineColor : "rgba(0,0,0,.1)",
+        // scaleGridLineWidth : 1,
+        // bezierCurve : true,
+        // pointDot : true,
+        // pointDotRadius : 5,
+        // pointDotStrokeWidth : 1,
+        // datasetStroke : true,
+        // datasetStrokeWidth : 1,
+        // datasetFill : true,
+        // animation : true,
+        // animationSteps : 120,
+        // animationEasing : "easeOutQuart",
+        // onAnimationComplete : null,
+        // //tooltip
+        // multiTooltipTemplate: "<%= value + ' USD' %>",
+    // };
     var data = {
-        labels: //[{% for project in getProjects %} {{ project.id }},{% endfor %}],
+        labels: [{% for project in getProjects %} {{ project.id }},{% endfor %}],
         datasets: [
             {
                 label: "Budgeted", //Where should these labels come from?
@@ -49,7 +49,7 @@ required:
                 strokeColor: "rgba(220,220,220,0.8)",
                 highlightFill: "rgba(220,220,220,0.75)",
                 highlightStroke: "rgba(220,220,220,1)",
-                data : //[{% for project in getProjects %} {{ project.actual_budget }},{% endfor %}]
+                data : [{% for project in getProjects %} {{ project.actual_budget }},{% endfor %}]
             },
             {
                 label: "Actuals", //Where should labels come from?
@@ -57,13 +57,13 @@ required:
                 strokeColor: "rgba(151,187,205,0.8)",
                 highlightFill: "rgba(151,187,205,0.75)",
                 highlightStroke: "rgba(151,187,205,1)",
-                data : //[{% for project in getProjects %} {{ project.total_cost }},{% endfor %}]
+                data : [{% for project in getProjects %} {{ project.total_cost }},{% endfor %}]
             }
         ]
     };
-    var barLegendID = 'tolaBarlegend'|add:bar_graph_uuid
-    document.getElementById(barLegendID).innerHTML = tolaBarGraph.generateLegend();-->
-    var barElementID = "tolaBarGraph"|add:bar_graph_uuid
+    // var barLegendID = 'tolaBarlegend1'//bar_graph_uuid
+    // document.getElementById(barLegendID).innerHTML = tolaBarGraph.generateLegend();
+    var barElementID = 'tolaBarGraph1'//bar_graph_uuid
     var ctx = document.getElementById(barElementID).getContext("2d");
     var tolaBarGraph = new Chart(ctx, {type: 'bar', data: data, options: options});
 

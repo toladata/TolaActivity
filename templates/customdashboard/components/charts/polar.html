@@ -6,7 +6,7 @@ required:
 * elementID for placement on dashboard
 * legendID for placement of legend for graph
 * tooltip to append to tool tip i.e. (USD, KM, LBS, etc.)
---->
+->
 
 <script>
     // polar chart for TOLA_IS
@@ -75,4 +75,7 @@ required:
     var polarChart = new Chart(ctx).PolarArea(data, options);
     document.getElementById('tola_is-legend').innerHTML = polarChart.generateLegend();
 
-</script>
+</script>-->
+{% block content %}
+    <canvas id="tolaPolarChart"></canvas>
+{% endblock %}

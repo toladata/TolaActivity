@@ -324,11 +324,39 @@ class InternalDashboard(ListView):
 
 def AnalyticsDashboard(request,id=0):
 
-    # get all countires
-    countries = Country.objects.all()
-    report = True
+    model = Program
+    program_id = id
+    
+    getCountry = Country.objects.all()
+    ## Future --  iterate through user's program id access and for each program id run getCountry.filter and add to a results set?
+    countries = getCountry.filter(id=program_id)
 
-    return render(request, "customdashboard/themes/analytics_dashboard.html", {'countries': countries, 'report':report})
+    # filter_url = "http://tables.toladata.io/api/silo/9/data/"
+
+    # headers = {'content-type': 'application/json',
+    #            'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
+
+
+    # response = requests.get(filter_url, headers=headers, verify=False)
+    # get_json = json.loads(response.content)
+    # data = get_json
+    # print (data)
+
+    getProgram = Program.objects.all().filter(id=program_id)
+
+    table_header1 = ("First Table Title")
+    table_data1 = (("Line1","Data01","Data02"),
+              ("Line2","Data03","Data03"))
+
+    table_header2 = ("First Table Title")
+    table_data2 = (("Line1","Data01","Data02"),
+              ("Line2","Data03","Data03"))
+
+    table_header3 = ("First Table Title")
+    table_data3 = (("Line1","Data01","Data02"),
+              ("Line2","Data03","Data03"))
+
+    return render(request, 'customdashboard/themes/analytics_dashboard.html', {'getProgram': getProgram, 'countries': countries})
 
 # def GalleryDashboard(request,id=0):
 

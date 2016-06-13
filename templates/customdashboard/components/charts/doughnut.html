@@ -44,3 +44,6 @@ document.getElementById('status-legend').innerHTML = statusChart.generateLegend(
 var tolaDoughnutChart = new Chart(ctx, {type:"doughnut", data: data, options: options}); 
 
 </script> -->
+{% block content %}
+    <canvas id="tolaDoughnutChart"></canvas>
+{% endblock %}
