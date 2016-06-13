@@ -4,7 +4,6 @@ $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
     if (hash) {
-    console.log(hash);
     $('.nav-tabs a[href='+hash+']').tab('show');
     }
 
@@ -264,6 +263,17 @@ $(document).ready(function() {
     $('.dropdown-menu a').on('click', function(){
         $(this).parent().parent().prev().html($(this).html() + '<span class="caret"></span>');
     })
+
+    /*
+    * Expand accordion down to location hash and then load collected data
+    */
+    if(location.hash != null && location.hash != ""){
+        $('.collapse').removeClass('in');
+        $(location.hash + '.collapse').collapse('show');
+        indicator_id = location.hash.split('-')
+        console.log(indicator_id)
+        loadIndicators(indicator_id[1])
+    }
 });
 
 /*

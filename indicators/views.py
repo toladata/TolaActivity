@@ -607,6 +607,9 @@ class CollectedDataCreate(CreateView):
             count = getTableCount(self.request.POST['tola_table'])
             form.instance.achieved = count
 
+        new = form.save()
+
+        #save disagg
         for label in getDisaggregationLabel:
             for key, value in self.request.POST.iteritems():
                 if key == label.id:
@@ -614,13 +617,12 @@ class CollectedDataCreate(CreateView):
                 else:
                     value_to_insert = None
             if value_to_insert:
-                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=getCollectedData)
+                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=new)
                 insert_disaggregationvalue.save()
 
-        form.save()
         messages.success(self.request, 'Success, Data Created!')
 
-        redirect_url = '/indicators/home/0/'
+        redirect_url = '/indicators/home/0/#hidden-' + str(self.kwargs['program'])
         return HttpResponseRedirect(redirect_url)
 
 
