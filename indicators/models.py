@@ -361,6 +361,14 @@ class CollectedData(models.Model):
         achieved=CollectedData.targeted.filter(indicator__id=self).sum('achieved')
         return achieved
 
+    @property
+    def disaggregations(self):
+        return ', '.join([y.disaggregation_label.label + ': ' + y.value for y in self.disaggregation_value.all()])
+
+    @property
+    def disaggregation_values(self):
+        return ', '.join([x.disaggregation_value for x in self.disaggregation_value.all()])
+
 
 class CollectedDataAdmin(admin.ModelAdmin):
     list_display = ('indicator','date_collected', 'create_date', 'edit_date')
