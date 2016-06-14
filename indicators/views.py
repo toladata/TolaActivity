@@ -683,8 +683,14 @@ class CollectedDataUpdate(UpdateView):
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
-            print self.request.POST['tola_table']
-            count = getTableCount(self.request.POST['tola_table'])
+            try:
+                getTable = TolaTable.objects.get(id=self.request.POST['tola_table'])
+            except DisaggregationLabel.DoesNotExist:
+                getTable = None
+            if getTable:
+                count = getTableCount(getTable.url,getTable.table_id)
+            else:
+                count = 0
             form.instance.achieved = count
 
         # save the form then update manytomany relationships
@@ -718,17 +724,17 @@ class CollectedDataDelete(DeleteView):
         return super(CollectedDataDelete, self).dispatch(request, *args, **kwargs)
 
 
-def getTableCount(table_id):
+def getTableCount(url,table_id):
     """
     Count the number of rowns in a TolaTable
     :param table_id: The TolaTable ID to update count from and return
     :return: count : count of rows from TolaTable
     """
-    service = ExternalService.objects.get(name="TolaTables")
-    filter_url = service.feed_url + "&id=" + table_id
+    filter_url = url
 
     # loop over the result table and count the number of records for actuals
-    actual_data = get_table(filter_url,count=True)
+    actual_data = get_table(filter_url)
+
     count = 0
     if actual_data:
         for item in actual_data:
@@ -790,29 +796,17 @@ def collecteddata_import(request):
     if request.method == 'POST':
         id = request.POST['service_table']
         filter_url = service.feed_url + "&id=" + id
-        token = TolaSites.objects.get(site_id=1)
-        if token.tola_tables_token:
-            headers = {'content-type': 'application/json',
-                   'Authorization': 'Token ' + token.tola_tables_token}
-        else:
-            headers = {'content-type': 'application/json'}
-            print "Token Not Found"
 
-        response = requests.get(filter_url, headers=headers, verify=False)
-        get_json = json.loads(response.content)
-        data = get_json
+        data = get_table(filter_url)
+
         # Get Data Info
         for item in data:
             name = item['name']
             url = item['data']
             remote_owner = item['owner']['username']
 
-        # loop over the result table and count the number of records for actuals
-        actual_data = get_table(item['data'])
-        count = 0
-        for item in actual_data:
-            count = count +1
-
+        #send table ID to count items in data
+        count = getTableCount(filter_url,id)
 
         # get the users country
         countries = getCountry(request.user)
