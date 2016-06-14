@@ -6,6 +6,7 @@ import chart.js
 
 <!-- load basic layout -->
 {% extends "customdashboard/themes/custom_base_layout.html" %}
+{% load staticfiles %}
 
 <!-- humanize numbers -->
 {% load humanize %}
@@ -23,12 +24,14 @@ import chart.js
 Title placeholder
 	</div>
 </div>
-<!-- <div class='row'>
+<div class='row'>
 	<div class='col-lg-12'>
-		<div class='panel'></div>
+		<div class='panel'>
+			<div class='panel-heading text-center'>I am the first row</div>	
+		</div>
 	</div>
 </div>
-<div class='row'></div>
+<!-- <div class='row'>
 	<div class='col-lg-8'>
 		<div class='panel'>
 			<div class='panel-heading'></div>
@@ -44,30 +47,36 @@ Title placeholder
 <div class='row'>
 	<!-- <div class='col-lg-12'> -->
 		<div class='col-md-4'>
-			<div class='panel'>
+			<div class='panel panel-info '>
 				<div class='panel-heading text-center'></div>
-				{{ tableHeaders.title1 }}
-				{% with tableData1 as tolaTableData %}
-				    {% include 'customdashboard/components/charts/bar_graph.html' %}
-				{% endwith %}
+					<div class="panel-body" style="min-height: 300; max-height: 300;">
+					<span class='chart-title' style="overflow-y: scroll;">{{ tableHeaders.title1 }}</span>
+					{% with tableData1 as tolaTableData %}
+					    {% include 'customdashboard/components/charts/bar_graph.html' %}
+					{% endwith %}
+					</div>
 			</div>
 		</div>
 		<div class='col-md-4'>
-			<div class='panel'>
+			<div class='panel panel-info '>
 				<div class='panel-heading'></div>
-				{{ tableHeaders.title2 }}
-				{% with tableData2 as tolaTableData %}
-				    {% include 'customdashboard/components/charts/doughnut.html' %}
-				{% endwith %}
+					<div class="panel-body" style="min-height: 300; max-height: 300;">
+					<span class='chart-title' style="overflow-y: scroll;">{{ tableHeaders.title2 }}</span>
+					{% with tableData2 as tolaTableData %}
+					    {% include 'customdashboard/components/charts/doughnut.html' %}
+					{% endwith %}
+					</div>
 			</div>
 		</div>
 		<div class='col-md-4'>
-			<div class='panel'>
+			<div class='panel panel-info '>
 				<div class='panel-heading'></div>
-				{{ tableHeaders.title3 }}
-<!-- 				{% with tableData3.data as tableData %}
-				    {% include 'customdashboard/components/charts/radar.html' %}
-				{% endwith %} -->
+					<div class="panel-body" style="min-height: 300; max-height: 300;">
+					<span class='chart-title' style="overflow-y: scroll;">{{ tableHeaders.title3 }}</span>
+					{% with tableData3.data as tableData %}
+					    <!-- {% include 'customdashboard/components/charts/radar.html' %} -->
+					{% endwith %}
+				</div>
 			</div>
 		</div>
 	<!-- </div> -->
