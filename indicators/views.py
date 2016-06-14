@@ -604,7 +604,14 @@ class CollectedDataCreate(CreateView):
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
-            count = getTableCount(self.request.POST['tola_table'])
+            try:
+                getTable = TolaTable.objects.get(id=self.request.POST['tola_table'])
+            except DisaggregationLabel.DoesNotExist:
+                getTable = None
+            if getTable:
+                count = getTableCount(getTable.url,getTable.table_id)
+            else:
+                count = 0
             form.instance.achieved = count
 
         new = form.save()
