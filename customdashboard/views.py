@@ -324,161 +324,80 @@ class InternalDashboard(ListView):
 
 def AnalyticsDashboard(request,id=0):
 
+    ## retrieve program
     model = Program
     program_id = id
-    
-    getCountry = Country.objects.all()
-    ## Future --  iterate through user's program id access and for each program id run getCountry.filter and add to a results set?
-    countries = getCountry.filter(id=program_id)
-
-    # filter_url = "http://tables.toladata.io/api/silo/9/data/"
-
-    # headers = {'content-type': 'application/json',
-    #            'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
-
-
-    # response = requests.get(filter_url, headers=headers, verify=False)
-    # get_json = json.loads(response.content)
-    # data = get_json
-    # print (data)
-
     getProgram = Program.objects.all().filter(id=program_id)
 
-    table_header1 = ("First Table Title")
-    table_data1 = (("Line1","Data01","Data02"),
-              ("Line2","Data03","Data03"))
+    ## retrieve the coutries the user has data access for
+    countries = getCountry(request.user)
 
-    table_header2 = ("First Table Title")
-    table_data2 = (("Line1","Data01","Data02"),
-              ("Line2","Data03","Data03"))
+    #retrieve projects for a program
+    getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
 
-    table_header3 = ("First Table Title")
-    table_data3 = (("Line1","Data01","Data02"),
-              ("Line2","Data03","Data03"))
+    ## retrieve data --  this is an example of a tola tables request
+    ## TODO: with forms, allow user to select the table that populates related filter_url, right?
+    ## TODO: this should allow for up to 3 data sources (one per chart)
+    filter_url = "http://tables.toladata.io/api/silo/9/data/"
+    headers = {'content-type': 'application/json',
+               'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
+    response = requests.get(filter_url, headers=headers, verify=False)
+    get_json = json.loads(response.content)
+    data = get_json
 
-    return render(request, 'customdashboard/themes/analytics_dashboard.html', {'getProgram': getProgram, 'countries': countries})
+    #Parse the JSON(s) into datasets that will feed the templates for this example 
+    ## -- parsing might not be immediately relevant for live example 
+
+    dataset1 = []
+    key1 = 'what_country_were_you_in_last'  
+    for answer in data:
+        dataset1.append(answer[key1])
+
+    dataset2 = []
+    key2 = 'tola_is_a_pashto_word_meaning_'  
+    for answer in data:
+        dataset2.append(answer[key2])
+
+    dataset3 = []
+    key3 = 'thanks_for_coming_what_made_you_join_us_today_'  
+    for answer in data:
+        dataset3.append(answer[key3])
+
+    #Programmatically defined table titles  -- 
+    ## I think these should come from a form that allows text entry of what the charts should be called
+    
+    tableHeaders = {}
+    tableHeaders['title1']= key1.title##getProgram[0]
+    tableHeaders['title2']= key2.title
+    tableHeaders['title3']= key3.title
+ 
+    #Programmatically defined data sets -- these should be (1) selected from a drop down.
+    # TODO: open question --  how do we define which values in a table's data are going to be used?  
+    # and how does that differ based on chart selection
+
+    tableData = {}
+    tableData1= dataset1
+    tableData2= dataset2
+    tableData3= dataset3
+    
+    return render(request, 'customdashboard/themes/analytics_dashboard.html', {'tableData1': tableData1,'tableData2': tableData2,'tableData3': tableData3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
 # def GalleryDashboard(request,id=0):
-
-#     # get all countires
-#     countries = Country.objects.all()
-#     report = True
+#     see Analytics Dashboard
 
 #     return render(request, "customdashboard/themes/gallery_dashboard.html", {'countries': countries, 'report':report})
 
 # def LocationDashboard(request,id=0):
-
-#     # get all countires
-#     countries = Country.objects.all()
-#     report = True
+    #see Analytics Dashboard
 
 #     return render(request, "customdashboard/themes/location_dashboard.html", {'countries': countries, 'report':report})
 
 # def NarrativeDashboard(request,id=0):
-
-#     # get all countires
-#     countries = Country.objects.all()
-#     report = True
+    #see Analytics Dashboard
 
 #     return render(request, "customdashboard/themes/narrative_dashboard.html", {'countries': countries, 'report':report})
 
 # def TimelineDashboard(request,id=0):
-
-#     # get all countires
-#     countries = Country.objects.all()
-#     report = True
+    #see Analytics Dashboard
 
 #     return render(request, "customdashboard/themes/timeline_dashboard.html", {'countries': countries, 'report':report})
-
-class BarGraphView(TemplateView):
-    template_name = 'components/charts/bar_graph.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(BarGraphView, self).get_context_data(**kwargs)
-        context['bar_graph_data'] = self.bar_graph_data()
-        context['bar_graph_uuid'] = self.uuid.uuid4
-        return context
-
-    def bar_graph_data(self):
-        final_data = []
-        # do what needs to be done to data
-        return final_data
-    
-# class BubbleChartView(TemplateView):
-#     template_name = 'components/charts/bubble.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super(BarGraphView, self).get_context_data(**kwargs)
-#         context['bubble_data'] = self.bubble_data()
-#         return context
-
-#     def bubble_data(self):
-#         final_data = []
-#         # do what needs to be done to data
-#         return final_data
-    
-# class DoughnutChartView(TemplateView):
-#     template_name = 'components/charts/doughnut.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super(DoughnutChartView, self).get_context_data(**kwargs)
-#         context['doughnut_chart_data'] = self.doughnut_chart_data()
-#         context['doughnut_chart_uuid'] = self.uuid.uuid4
-#         return context
-
-#     def doughnut_chart_data(self):
-#         final_data = []
-#         # do what needs to be done to data
-#         return final_data
-    
-# class LineGraphView(TemplateView):
-#     template_name = 'components/charts/line.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super(LineGraphView, self).get_context_data(**kwargs)
-#         context['line_graph_data'] = self.line_graph_data()
-#         return context
-
-#     def line_graph_data(self):
-#         final_data = []
-#         # do what needs to be done to data
-#         return final_data
- 
-# class PieChartView(TemplateView):
-#     template_name = 'components/charts/pie.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super(PieChartView, self).get_context_data(**kwargs)
-#         context['pie_chart_data'] = self.pie_chart_data()
-#         return context
-
-#     def pie_chart_data(self):
-#         final_data = []
-#         # do what needs to be done to data
-#         return final_data
-  
-# class PolarChartView(TemplateView):
-#     template_name = 'components/charts/polar.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super(PolarChartView, self).get_context_data(**kwargs)
-#         context['polar_chart_data'] = self.polar_chart_data()
-#         return context
-
-#     def polar_chart_data(self):
-#         final_data = []
-#         # do what needs to be done to data
-#         return final_data
-    
-# class RadarChartView(TemplateView):
-#     template_name = 'components/charts/radar.html'
-
-#     def get_context_data(self, **kwargs):
-#         context = super(RadarChartView, self).get_context_data(**kwargs)
-#         context['radar_chart_data'] = self.radar_chart_data()
-#         return context
-
-#     def radar_chart_data(self):
-#         final_data = []
-#         # do what needs to be done to data
-#         return final_data
