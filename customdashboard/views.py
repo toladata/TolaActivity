@@ -376,7 +376,7 @@ def AnalyticsDashboard(request,id=0):
     # and how does that differ based on chart selection
 
     tableData = {}
-    tableData1= dataset1
+    tableData1= [1000,2000,3000]#dataset1 -- this data is nonumerical so using a hardcoded data set as a placeholder
     tableData2= dataset2
     tableData3= dataset3
     

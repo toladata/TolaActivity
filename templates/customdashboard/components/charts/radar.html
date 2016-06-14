@@ -1,30 +1,31 @@
-<!---
+<!-- -
 RADAR template for custom charts
 required:
 * dataset[] for values
 * labels[] for labels
-* elementID HTML/CSS document id for placement on dashboard
+* elementID HTML/CSS document id for placement on dashboard -->
+{% block content %}
+    <div>I am an element: {{tableData.titles}}</div>
+    <canvas id="tolaRadarChart"></canvas>
+{% endblock %}
 
 <script>
     //render on radar_chart
     var data = {
-        labels : [{% for label in labels %} "{{ label }}", {% endfor %}],
+        labels : [1,2,3,4],
         dataset : [
             {
                 fillColor : "rgba(220,220,220,0.5)",
                 strokeColor : "#637b85",
                 pointColor : "#dbba34",
                 pointStrokeColor : "#637b85",
-                data : [{% for data in dataset %} {{ data }},{% endfor %}]
+                data : [{{tableData}}]
             }
         ]
     }
-    var ctx = document.getElementById(" {{ elementID }}").getContext("2d");
-    new Chart(ctx).Radar(survey_data);
+    var ctx = document.getElementById('tolaRadarChart').getContext("2d");
+    // new Chart(ctx).Radar(data);
 
 //new code 
-var tolaBubbleChart = new Chart(ctx, {type:"pie", data: data, options: options});  
-</script>-->
-{% block content %}
-    <canvas id="tolaRadarChart"></canvas>
-{% endblock %}
+var tolaRadarChart = new Chart(ctx, {type:"pie", data: data, options: options});  
+</script>

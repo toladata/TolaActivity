@@ -1,49 +1,56 @@
-<!---
+<!-- -
 DOUGHNUT CHART template for custom charts
 required:
 * dataset[] with label and iterable data[] for each chart item (up to 6)
   for side by side or stacked
 * elementID for placement on dashboard
 * legendID for placement of legend for graph
-* tooltip to append to tool tip i.e. (USD, KM, LBS, etc.)
+* tooltip to append to tool tip i.e. (USD, KM, LBS, etc.) -->
 
+{% block content %}
+<div>I am an element: {{ tolaTableData }}</div>
+    <canvas id="tolaDoughnutTest"></canvas>
+{% endblock %}
 
 <script>
 //render project_status in a doughnut chart
-var options = {
+var doughnutOptions = {
     // single tooltip
-    tooltipTemplate: "<%=label + ' {{ tooltip }}' %>",
+    // tooltipTemplate: "<%=label + ' {{ tooltip }}' %>",
 };
-var data = [
+
+// list_unique(set(tolaTableData))
+// for list_item in list_unique
+//     dict[list_item] = {value:[] ,color:[] ,label: {{list_item}}}
+//count the unique entries in tolaTableData -- that is the number of colors and labels
+//add a counter for the data
+//for each entry in tola Table Data, increment the unique counts by one
+
+var doughnutData = [
     {
-    value: {{ approved }},
+    value: 1000,
     color:"#637b85",
-    label: "Approved - {{ approved }}"
+    label: "Approved" 
     },
     {
-    value : {{ awaiting }},
+    value : 2000,
     color : "#2c9c69",
-    label: "Waiting - {{ awaiting }}"
+    label: "Waiting"
     },
     {
-    value : {{ rejected }},
+    value : 3000,
     color : "#dbba34",
-    label: "Rejected - {{ rejected }}"
+    label: "Rejected "
     },
     {
-    value : {{ in_progress }},
+    value : 4000,
     color : "#c62f29",
-    label: "In Progress - {{ in_progress }}"
+    label: "In Progress"
     }
 ];
-var ctx = document.getElementById("status").getContext("2d");
-
-document.getElementById('status-legend').innerHTML = statusChart.generateLegend();
+var ctx = document.getElementById("tolaDoughnutTest").getContext("2d");
 
 //new code 
-var tolaDoughnutChart = new Chart(ctx, {type:"doughnut", data: data, options: options}); 
+var tolaDoughnutChart = new Chart(ctx).Doughnut(doughtnutData, doughtnutOptions); 
 
-</script> -->
-{% block content %}
-    <canvas id="tolaDoughnutChart"></canvas>
-{% endblock %}
+</script> 

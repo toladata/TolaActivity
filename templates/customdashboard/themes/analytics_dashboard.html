@@ -46,37 +46,28 @@ Title placeholder
 		<div class='col-md-4'>
 			<div class='panel'>
 				<div class='panel-heading text-center'></div>
-				Left Panel
-				{% with table_header1 as table_header %}
-					{% with table_data1 as table_data %}
-					    {% include 'customdashboard/components/charts/bar_graph.html' %}
-					{% endwith %}
+				{{ tableHeaders.title1 }}
+				{% with tableData1 as tolaTableData %}
+				    {% include 'customdashboard/components/charts/bar_graph.html' %}
 				{% endwith %}
-
 			</div>
 		</div>
 		<div class='col-md-4'>
 			<div class='panel'>
 				<div class='panel-heading'></div>
-				Middle panel
-				{% with table_header2 as table_header %}
-					{% with table_data2 as table_data %}
-					    {% include 'customdashboard/components/charts/bar_graph.html' %}
-					{% endwith %}
+				{{ tableHeaders.title2 }}
+				{% with tableData2 as tolaTableData %}
+				    {% include 'customdashboard/components/charts/doughnut.html' %}
 				{% endwith %}
-
 			</div>
 		</div>
 		<div class='col-md-4'>
 			<div class='panel'>
 				<div class='panel-heading'></div>
-				Right panel
-				{% with table_header3 as table_header %}
-					{% with table_data3 as table_data %}
-					    {% include 'customdashboard/components/charts/bar_graph.html' %}
-					{% endwith %}
-				{% endwith %}
-
+				{{ tableHeaders.title3 }}
+<!-- 				{% with tableData3.data as tableData %}
+				    {% include 'customdashboard/components/charts/radar.html' %}
+				{% endwith %} -->
 			</div>
 		</div>
 	<!-- </div> -->
