@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!-- -
 DOUGHNUT CHART template for custom charts
 required:
@@ -8,49 +9,157 @@ required:
 * tooltip to append to tool tip i.e. (USD, KM, LBS, etc.) -->
 
 {% block content %}
-<div>I am an element: {{ tolaTableData }}</div>
-    <canvas id="tolaDoughnutTest"></canvas>
+    <div>
+        <canvas id='tolaDoughnutChart'></canvas>
+    </div>
+    <div id="tolaDoughnutLegend" class="chart-legend"></div>
 {% endblock %}
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js" type="text/javascript"></script>
 <script>
+
+var colorset = #796300 #7A3500 #9CCF10 #A70D75 #860015 #DA7512 #0B8D70 #0DAC18 #4BC4BF #082A73 #9B8000 #DA3411 #FFD200 #FFFD00 #651392 #8B5ACF #DA8F12 #7F7F7F #DA9D12 #13588D
+
 //render project_status in a doughnut chart
 var doughnutOptions = {
-    // single tooltip
-    // tooltipTemplate: "<%=label + ' {{ tooltip }}' %>",
+    percentageInnerCutout : 70,
+    tooltipTemplate: "<%= value %>%",
 };
-
-// list_unique(set(tolaTableData))
-// for list_item in list_unique
-//     dict[list_item] = {value:[] ,color:[] ,label: {{list_item}}}
-//count the unique entries in tolaTableData -- that is the number of colors and labels
-//add a counter for the data
-//for each entry in tola Table Data, increment the unique counts by one
 
 var doughnutData = [
     {
-    value: 1000,
-    color:"#637b85",
-    label: "Approved" 
-    },
-    {
-    value : 2000,
-    color : "#2c9c69",
-    label: "Waiting"
-    },
-    {
-    value : 3000,
-    color : "#dbba34",
-    label: "Rejected "
-    },
-    {
-    value : 4000,
-    color : "#c62f29",
-    label: "In Progress"
+    value: 1000//{{tolaTableData.data_set.0}},
+    color: 'rgba(158,0,96,1)',
+    label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
     }
+    // {
+    // value: 10000//{{tolaTableData.data_set.0}},
+    // color: '#c5000a',
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // }, 
+    // {
+    // value: 1000//{{tolaTableData.data_set.0}},
+    // color: '#db5e11',//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // }
+    // ,{
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.3//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.4//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.5//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.6//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.7//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.8//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.9//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.10//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.11//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // }, 
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.12//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // }
+    // ,{
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.13//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.14//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.15//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.16//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.17//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.18//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.19//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },    
+    // {
+    // value: 10//{{tolaTableData.data_set.0}},
+    // color: colorset.20//,
+    // label: "a"//"{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // }
+    //,
+    // {
+    // value: {{tolaTableData.data_set.0}},
+    // color: dynamicColors(),
+    // label: "{% autoescape off %} {{tolaTableData.labels.0}} {% endautoescape %}"
+    // },
+    // {
+    // value : {{tolaTableData.data_set.1}},
+    // color : dynamicColors(),
+    // label: "{% autoescape off %} {{tolaTableData.labels.1}} {% endautoescape %}"
+    // },
+    // {
+    // value : {{tolaTableData.data_set.2}},
+    // color : dynamicColors(),
+    // label: "{% autoescape off %} {{tolaTableData.labels.2}} {% endautoescape %}"
+    // },
+    // {
+    // value : {{tolaTableData.data_set.3}},
+    // color :dynamicColors(),
+    // label: "{% autoescape off %} {{tolaTableData.labels.3}} {% endautoescape %}"
+    // }
 ];
-var ctx = document.getElementById("tolaDoughnutTest").getContext("2d");
+// var doughtnutData = []
+// for dataset in tolaTableData:
+//     doughnutData.update({ "value": tolaTableData.data_set, "color": dynamicColors(), "label":{% autoescape off %} {{tolaTableData.labels}} {% endautoescape %}})
+// ];
 
-//new code 
-var tolaDoughnutChart = new Chart(ctx).Doughnut(doughtnutData, doughtnutOptions); 
-
+var ctx = document.getElementById('tolaDoughnutChart').getContext("2d");
+var tolaDoughnut = new Chart(ctx).Doughnut(doughnutData, doughnutOptions); 
+// document.getElementById('tolaDoughnutLegend').innerHTML = tolaDoughnut.generateLegend();
 </script> 

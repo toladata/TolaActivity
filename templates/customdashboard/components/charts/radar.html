@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <!-- -
 RADAR template for custom charts
 required:
@@ -5,27 +6,58 @@ required:
 * labels[] for labels
 * elementID HTML/CSS document id for placement on dashboard -->
 {% block content %}
-    <div>I am an element: {{tableData.titles}}</div>
-    <canvas id="tolaRadarChart"></canvas>
+    <div>
+        <canvas id="tolaRadarChart"></canvas>
+    </div>
+    <div id="tolaRadarLegend" class="chart-legend"></div>
 {% endblock %}
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js" type="text/javascript"></script>
 <script>
-    //render on radar_chart
-    var data = {
-        labels : [1,2,3,4],
-        dataset : [
-            {
-                fillColor : "rgba(220,220,220,0.5)",
-                strokeColor : "#637b85",
-                pointColor : "#dbba34",
-                pointStrokeColor : "#637b85",
-                data : [{{tableData}}]
-            }
-        ]
-    }
-    var ctx = document.getElementById('tolaRadarChart').getContext("2d");
-    // new Chart(ctx).Radar(data);
 
-//new code 
-var tolaRadarChart = new Chart(ctx, {type:"pie", data: data, options: options});  
+// Radar Chart Options
+var radarOptions = {      
+    legend: {
+        position: 'top',
+    },
+    title: {
+        display: true,
+        text: 'Chart.js Radar Chart'
+    },
+    scale: {
+      reverse: false,
+      gridLines: {
+        color: ['black', 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
+      },
+      ticks: {
+        beginAtZero: true
+      }
+    },
+    tooltipTemplate: "<%= value %>%"  
+}
+
+// Radar Data
+var radarData = {
+    labels : {% autoescape off %} {{tolaTableData.labels}} {% endautoescape %},
+    datasets : [
+        {
+            fillColor: "rgba(102,45,145,.1)",
+            strokeColor: "rgba(102,45,145,1)",
+            pointColor: "rgba(220,220,220,1)",
+            pointStrokeColor: "#fff",
+            data: [{{tolaTableData.first_data_set}}]
+        },
+        {
+            fillColor: "rgba(63,169,245,.1)",
+            strokeColor: "rgba(63,169,245,1)",
+            pointColor : "rgba(151,187,205,1)",
+            pointStrokeColor : "#fff",
+            data: [{{tolaTableData.second_data_set}}]
+        }
+    ]
+}
+
+var ctx = document.getElementById('tolaRadarChart').getContext("2d");
+var tolaRadar = new Chart(ctx).Radar(radarData, radarOptions);  
+// document.getElementById('tolaRadarLegend').innerHTML = tolaRadar.generateLegend();
 </script>

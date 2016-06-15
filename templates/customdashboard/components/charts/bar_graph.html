@@ -8,13 +8,16 @@ required:
 * tooltip to append to tool tip i.e. (USD, KM, LBS, etc.)-->
 
 {% block content %}
-<canvas id='tolaBarChart'> </canvas>
+    <div>
+        <canvas id='tolaBarChart'> </canvas>
+    </div>
+    <div id="tolaDoughnutLegend" class="chart-legend"></div>
 {% endblock %}
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js" type="text/javascript"></script>
 <script>
     //render bar_chart
-    var tolaOptions = { 
+    var barOptions = { 
             maintainAspectRatio: false, 
             responsive: true,
             scaleOverlay : false,
@@ -44,7 +47,7 @@ required:
             animationEasing : "easeOutQuart",
             onAnimationComplete : null,
             //tooltip
-            multiTooltipTemplate: "<%= value + ' USD' %>",
+            tooltipTemplate: "<%= value %>%",
             };
     var barData = {
             labels: ['1', '5', '10'],
@@ -81,7 +84,8 @@ required:
     // var bar_graph_id = 1//Math.floor(Math.random() * (1000000000 - 5 + 1)) + 5
     // var barLegendID = 'tolaBarlegend1'+ bar_graph_uuid
     // document.getElementById(barLegendID).innerHTML = tolaBarGraph.generateLegend();
-    var barElementID = 'tolaBarGraph' //+ bar_graph_id
+    // var barElementID = 'tolaBarGraph' //+ bar_graph_id
     var ctx = document.getElementById('tolaBarChart').getContext("2d");
-    var tolaBarGraph = new Chart(ctx).Bar(barData, tolaOptions);
+    var tolaBar = new Chart(ctx).Bar(barData, barOptions);
+    // document.getElementById('tolaBarLegend').innerHTML = tolaBar.generateLegend();
 </script>

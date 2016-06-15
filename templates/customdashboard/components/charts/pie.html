@@ -1,6 +1,39 @@
+{% load staticfiles %}
 <!-- 
 //new code 
 var tolaPieChart = new Chart(ctx, {type:"pie", data: data, options: options});  -->
 {% block content %}
     <canvas id="tolaPieChart"></canvas>
 {% endblock %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js" type="text/javascript"></script>
+<script>
+var pieOptions = {
+	tooltipTemplate: "<%= value %>%"
+};
+
+var pieData = [
+    {
+    value: 1000,
+    color:"#637b85",
+    label: "Approved" 
+    },
+    {
+    value : 1000,
+    color : "#2c9c69",
+    label: "Waiting"
+    },
+    {
+    value : 1000,
+    color : "#dbba34",
+    label: "Rejected "
+    },
+    {
+    value : 4000,
+    color : "#c62f29",
+    label: "In Progress"
+    }
+];
+
+var ctx = document.getElementById('tolaPieChart').getContext("2d");
+var tolaPie = new Chart(ctx).Pie(pieData, pieOptions); 
+</script> 

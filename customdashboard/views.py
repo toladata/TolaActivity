@@ -364,7 +364,8 @@ def AnalyticsDashboard(request,id=0):
         dataset3.append(answer[key3])
 
     #Programmatically defined table titles  -- 
-    ## I think these should come from a form that allows text entry of what the charts should be called
+    ## TODO: these should come from a form that allows text entry of what the charts should be called; 
+    # form should have char limits on title length
     
     tableHeaders = {}
     tableHeaders['title1']= key1.title##getProgram[0]
@@ -373,14 +374,34 @@ def AnalyticsDashboard(request,id=0):
  
     #Programmatically defined data sets -- these should be (1) selected from a drop down.
     # TODO: open question --  how do we define which values in a table's data are going to be used?  
-    # and how does that differ based on chart selection
+    # and how does that differ based on chart selection?  
+    ## bar graph needs table information to resolve to 1-2 sets of numerical values
 
     tableData = {}
     tableData1= [1000,2000,3000]#dataset1 -- this data is nonumerical so using a hardcoded data set as a placeholder
-    tableData2= dataset2
-    tableData3= dataset3
     
-    return render(request, 'customdashboard/themes/analytics_dashboard.html', {'tableData1': tableData1,'tableData2': tableData2,'tableData3': tableData3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
+    tableLabels2= ['Approved', 'Waiting', 'Rejected', 'In Progress']
+    tableDataset2= [1000,1000,2000,3000]#dataset2
+
+    tableLabels3= ['Eating','Drinking','Sleeping','Designing','Coding','Partying','Running']
+    tableDataset3_1= [1,16,7,3,14,55,40]
+    tableDataset3_2= [28,48,40,19,96,27,100]            
+
+    table2= {
+    "column_heading": tableHeaders['title2'], 
+    "labels": tableLabels2, 
+    "data_set": tableDataset2, 
+    }#dataset3
+
+    table3= {
+    "column_heading": tableHeaders['title3'], 
+    "labels": tableLabels3, 
+    "first_data_set": tableDataset3_1, 
+    "second_data_set": tableDataset3_2
+    }#dataset3
+    
+    return render(request, 'customdashboard/themes/analytics_dashboard.html', 
+        {'tableData1': tableData1,'table2': table2,'table3': table3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
 # def GalleryDashboard(request,id=0):
 #     see Analytics Dashboard

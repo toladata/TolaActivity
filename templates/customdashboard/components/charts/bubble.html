@@ -1,3 +1,9 @@
+{% load staticfiles %}
 {% block content %}
     <canvas id="tolaBubbleChart"></canvas>
 {% endblock %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js" type="text/javascript"></script>
+<script>
+var ctx = document.getElementById('tolaBubbleChart').getContext("2d");
+var tolaBubble = new Chart(ctx).Bubble(bubbleData, bubbleOptions); 
+</script> 

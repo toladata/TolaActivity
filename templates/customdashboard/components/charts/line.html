@@ -1,6 +1,12 @@
+{% load staticfiles %}
 <!-- 
 //new code 
 var tolaLineChart = new Chart(ctx, {type:"line", data: data, options: options});  -->
 {% block content %}
     <canvas id="tolaLineGraph"></canvas>
 {% endblock %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js" type="text/javascript"></script>
+<script>
+    var ctx = document.getElementById('tolaLineChart').getContext("2d");
+    var tolaLineGraph = new Chart(ctx).Line(lineData, lineOptions);
+</script>
