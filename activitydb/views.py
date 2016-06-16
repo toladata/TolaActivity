@@ -2,13 +2,13 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, \
-    Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, \
+    Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Distribution, Budget, ApprovalAuthority, Checklist, ChecklistItem, \
     Stakeholder, Contact, FormGuidance
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
-    SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, \
+    SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, QuantitativeOutputsForm, \
     ChecklistItemForm, StakeholderForm, ContactForm
 import logging
 from django.shortcuts import render
@@ -1877,6 +1877,125 @@ class BeneficiaryDelete(DeleteView):
 
     form_class = BeneficiaryForm
 
+class DistributionList(ListView):
+    """
+    Distribution 
+    """
+    model = Distribution
+    template_name = 'activitydb/distribution_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+        countries = getCountry(request.user)
+        if int(self.kwargs['pk']) == 0:
+            getDistribution = Distribution.objects.all().filter(program__country__in=countries)
+        else:
+            getDistribution = Distribution.objects.all().filter(project_agreement_id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getDistribution': getDistribution, 'project_agreement_id': project_agreement_id})
+
+
+class DistributionCreate(CreateView):
+    """
+    Distribution Form
+    """
+    model = Distribution
+
+    try:
+        guidance = FormGuidance.objects.get(form="Distribution")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(DistributionCreate, self).dispatch(request, *args, **kwargs)
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(DistributionCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get_initial(self):
+        initial = {
+            'agreement': self.kwargs['id'],
+            }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Distribution Created!')
+        latest = Distribution.objects.latest('id')
+        redirect_url = '/activitydb/Distribution_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
+
+    form_class = DistributionForm
+
+
+class DistributionUpdate(UpdateView):
+    """
+    Distribution Form
+    """
+    model = Distribution
+
+    try:
+        guidance = FormGuidance.objects.get(form="Distribution")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(DistributionUpdate, self).dispatch(request, *args, **kwargs)
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(DistributionUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Distribution Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = DistributionForm
+
+
+class DistributionDelete(DeleteView):
+    """
+    Distribution Delete
+    """
+    model = Distribution
+    success_url = '/activitydb/distribution_list/0/'
+    template_name = 'activitydb/distribution_confirm_delete.html'
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Distribution Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = DistributionForm
 
 class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
     """
