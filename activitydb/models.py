@@ -1405,7 +1405,7 @@ class Distribution(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return unicode(self.training_name)
+        return unicode(self.distribution_name)
 
 
 class DistributionAdmin(admin.ModelAdmin):
