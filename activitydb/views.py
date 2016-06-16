@@ -8,8 +8,8 @@ from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
-    SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, QuantitativeOutputsForm, \
-    ChecklistItemForm, StakeholderForm, ContactForm
+    SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
+    QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -79,6 +79,7 @@ class ProjectDash(ListView):
             getDocumentCount = 0
             getCommunityCount = 0
             getTrainingCount = 0
+            getDistributionCount = 0
             getChecklistCount = 0
         else:
             getAgreement = ProjectAgreement.objects.get(id=project_id)
@@ -89,6 +90,7 @@ class ProjectDash(ListView):
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
             getCommunityCount = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
+            getDistributionCount = Distribution.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
             getChecklistCount = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk']).count()
             getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
@@ -98,9 +100,10 @@ class ProjectDash(ListView):
         else:
             getProgram =Program.objects.get(agreement__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete,
+        return render(request, self.template_name, {'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete, 
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
-                                                    'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id, 'getChecklist': getChecklist})
+                                                    'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id, 
+                                                    'getDistribution': getDistribution,'getChecklist': getChecklist})
 
 
 class ProgramDash(ListView):
