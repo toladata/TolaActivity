@@ -194,7 +194,7 @@ class DistributionTestCase(TestCase):
         new_agreement.site.add(get_community)
         get_agreement = ProjectAgreement.objects.get(project_name="testproject")
         new_distribution = Distribution.objects.create(distribution_name="testdistribution", program=get_program,
-                                                            activity_code=get_agreement,
+                                                            initiation=get_agreement,
                                                             office_code=get_office,
                                                             distribution_indicator = "34",
                                                             distribution_implementer = "34",
