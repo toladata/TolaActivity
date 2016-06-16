@@ -107,7 +107,7 @@ def emailGroup(country,group,link,subject,message,submiter=None):
         mail_admins(subject, message, fail_silently=False)
 
 
-def get_table(url,count=None):
+def get_table(url):
     """
     Get table data from a Silo.  First get the Data url from the silo details
     then get data and return it
@@ -126,19 +126,7 @@ def get_table(url,count=None):
     response = requests.get(url,headers=headers, verify=False)
     silo = json.loads(response.content)
 
-    if count:
-        # get the url for the data return it in json format
-        if silo:
-            data_url = silo[0]['data'] + "?format=json"
-            # add token again and request silo date
-            response2 = requests.get(data_url,headers=headers, verify=False)
-            data = json.loads(response2.content)
-        else:
-            data = None
-
-        return data
-    else:
-        return json.dumps(silo)
+    return silo
 
 
 def user_to_tola(backend, user, response, *args, **kwargs):
