@@ -90,7 +90,7 @@ class ProjectDash(ListView):
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
             getCommunityCount = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
-            getDistributionCount = Distribution.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
+            getDistributionCount = Distribution.objects.all().filter(initiation_id=self.kwargs['pk']).count()
             getChecklistCount = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk']).count()
             getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
@@ -103,7 +103,7 @@ class ProjectDash(ListView):
         return render(request, self.template_name, {'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete, 
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
                                                     'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id, 
-                                                    'getDistribution': getDistribution,'getChecklist': getChecklist})
+                                                    'getChecklist': getChecklist, 'getDistributionCount': getDistributionCount})
 
 
 class ProgramDash(ListView):
