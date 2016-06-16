@@ -834,7 +834,7 @@ def collecteddata_import(request):
     return render(request, "indicators/collecteddata_import.html", {'getTables': data})
 
 
-def service_json(service):
+def service_json(request,service):
     """
     For populating service indicators in dropdown
     :param service: The remote data service

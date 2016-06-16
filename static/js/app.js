@@ -96,11 +96,13 @@ $(document).ready(function() {
      */
     $("#services").change(function() {
         var selected_service = $(this).val();
+        console.log("Service:" + selected_service);
         if (selected_service == undefined || selected_service == -1 || selected_service == '') {
             $("#serivce").html("<option>--Service--</option>");
         } else {
             var url = "/indicators/service/" + selected_service + "/service_json/";
             $.getJSON(url, function(service) {
+
                 var options = '<option value="0">--Indicator--</option>';
                 for (var i = 0; i < service.length; i++) {
                     options += '<option value="' + service[i].nid + '">' + service[i].type + ' - ' + service[i].level + ' - ' + service[i].title + '</option>';
