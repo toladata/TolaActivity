@@ -1078,7 +1078,7 @@ class DistributionForm(forms.ModelForm):
         super(DistributionForm, self).__init__(*args, **kwargs)
 
         countries = getCountry(self.request.user)
-        self.fields['project_agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
+        self.fields['activity_code'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
         self.fields['program'].queryset = Program.objects.filter(country__in=countries)
 
 
