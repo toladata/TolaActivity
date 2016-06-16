@@ -1361,7 +1361,7 @@ class FormGuidanceAdmin(admin.ModelAdmin):
 class Distribution(models.Model):
     distribution_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
-    activity_code = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
+    initiation = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     office_code = models.ForeignKey(Office, null=True, blank=True)
     distribution_indicator = models.CharField(max_length=255)
     distribution_implementer = models.CharField(max_length=255, null=True, blank=True)
@@ -1405,9 +1405,9 @@ class Distribution(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return unicode(self.training_name)
+        return unicode(self.distribution_name)
 
 
 class DistributionAdmin(admin.ModelAdmin):
-    list_display = ('distribution_name', 'program', 'project_agreement', 'create_date', 'edit_date')
+    list_display = ('distribution_name', 'program', 'initiation', 'create_date', 'edit_date')
     display = 'Program Dashboard'

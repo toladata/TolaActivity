@@ -90,7 +90,7 @@ class ProjectDash(ListView):
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
             getCommunityCount = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk']).count()
             getTrainingCount = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
-            getDistributionCount = Distribution.objects.all().filter(project_agreement_id=self.kwargs['pk']).count()
+            getDistributionCount = Distribution.objects.all().filter(initiation_id=self.kwargs['pk']).count()
             getChecklistCount = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk']).count()
             getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
@@ -103,7 +103,7 @@ class ProjectDash(ListView):
         return render(request, self.template_name, {'getProgram': getProgram, 'getAgreement': getAgreement,'getComplete': getComplete, 
                                                     'getPrograms':getPrograms, 'getDocumentCount':getDocumentCount,'getChecklistCount': getChecklistCount,
                                                     'getCommunityCount':getCommunityCount, 'getTrainingCount':getTrainingCount, 'project_id': project_id, 
-                                                    'getDistribution': getDistribution,'getChecklist': getChecklist})
+                                                    'getChecklist': getChecklist, 'getDistributionCount': getDistributionCount})
 
 
 class ProgramDash(ListView):
@@ -1889,14 +1889,14 @@ class DistributionList(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        project_agreement_id = self.kwargs['pk']
+        program_id = self.kwargs['pk']
         countries = getCountry(request.user)
         if int(self.kwargs['pk']) == 0:
             getDistribution = Distribution.objects.all().filter(program__country__in=countries)
         else:
-            getDistribution = Distribution.objects.all().filter(project_agreement_id=self.kwargs['pk'])
+            getDistribution = Distribution.objects.all().filter(program_id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getDistribution': getDistribution, 'project_agreement_id': project_agreement_id})
+        return render(request, self.template_name, {'getDistribution': getDistribution, 'program_id': program_id})
 
 
 class DistributionCreate(CreateView):
@@ -1922,7 +1922,7 @@ class DistributionCreate(CreateView):
 
     def get_initial(self):
         initial = {
-            'agreement': self.kwargs['id'],
+            'program': self.kwargs['id']
             }
 
         return initial
@@ -1937,7 +1937,7 @@ class DistributionCreate(CreateView):
         form.save()
         messages.success(self.request, 'Success, Distribution Created!')
         latest = Distribution.objects.latest('id')
-        redirect_url = '/activitydb/Distribution_update/' + str(latest.id)
+        redirect_url = '/activitydb/distribution_update/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = DistributionForm

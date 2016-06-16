@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Country, Province, Office,OfficeAdmin, Village, Program, Documentation, Template,District, Sector, \
     CustomDashboard, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
-    Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Distribution, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
+    Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Distribution, DistributionAdmin, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
     TolaSites, TolaSitesAdmin, FormGuidance, FormGuidanceAdmin
@@ -139,7 +139,7 @@ admin.site.register(Benchmarks)
 admin.site.register(Evaluate)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(TrainingAttendance)
-admin.site.register(Distribution)
+admin.site.register(Distribution, DistributionAdmin)
 admin.site.register(Beneficiary)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
