@@ -1889,14 +1889,14 @@ class DistributionList(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        project_agreement_id = self.kwargs['pk']
+        program_id = self.kwargs['pk']
         countries = getCountry(request.user)
         if int(self.kwargs['pk']) == 0:
             getDistribution = Distribution.objects.all().filter(program__country__in=countries)
         else:
-            getDistribution = Distribution.objects.all().filter(project_agreement_id=self.kwargs['pk'])
+            getDistribution = Distribution.objects.all().filter(program_id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getDistribution': getDistribution, 'project_agreement_id': project_agreement_id})
+        return render(request, self.template_name, {'getDistribution': getDistribution, 'program_id': program_id})
 
 
 class DistributionCreate(CreateView):
@@ -1922,7 +1922,7 @@ class DistributionCreate(CreateView):
 
     def get_initial(self):
         initial = {
-            'agreement': self.kwargs['id'],
+            'program': self.kwargs['id']
             }
 
         return initial
@@ -1937,7 +1937,7 @@ class DistributionCreate(CreateView):
         form.save()
         messages.success(self.request, 'Success, Distribution Created!')
         latest = Distribution.objects.latest('id')
-        redirect_url = '/activitydb/Distribution_update/' + str(latest.id)
+        redirect_url = '/activitydb/distribution_update/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = DistributionForm
