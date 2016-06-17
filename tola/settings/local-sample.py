@@ -48,7 +48,7 @@ DATABASES = {
     'default': {
         #'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tola_activity',                      # Or path to database file if using sqlite3.
+        'NAME': 'tolaactivity',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'tola',
         'PASSWORD': '',
@@ -73,10 +73,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "234234blah.apps.googleusercontent.com"
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "2345435346345fsgwegr"
 SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = "mercycorps.org"
 
-########## TOLA TABLES AUTH
-TOLA_TABLES_USER = "tolaactivity"
-TOLA_TABLES_TOKEN = "qAAdNMQy77Vwqgj4YgOu20f7"
-
 ########## CACHE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
 CACHES = {
@@ -89,8 +85,6 @@ CACHES = {
 ########## LOCAL APPS DEPENDING ON SERVER DEBUG FOR DEV BOXES, REPORT BUILDER FOR REPORT SERVER
 DEV_APPS = (
     'debug_toolbar',
-    'report_builder',
-    'djangocosign',
 )
 
 INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
