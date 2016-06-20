@@ -882,6 +882,13 @@ class ProjectAgreement(models.Model):
         self.edit_date = datetime.now()
         super(ProjectAgreement, self).save()
 
+    def get_approved(self):
+        return self.filter(approval="approved")
+
+    def get_open(self):
+        return self.filter(approval="")
+
+
     @property
     def project_name_clean(self):
         return self.project_name.encode('ascii', 'ignore')

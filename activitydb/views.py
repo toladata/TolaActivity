@@ -35,6 +35,13 @@ from mixins import AjaxableResponseMixin
 from export import ProjectAgreementResource
 from django.core.exceptions import PermissionDenied
 
+APPROVALS = (
+    ('in progress', 'in progress'),
+    ('awaiting approval', 'awaiting approval'),
+    ('approved', 'approved'),
+    ('rejected', 'rejected'),
+)
+
 
 def date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
@@ -119,9 +126,13 @@ class ProgramDash(ListView):
         if int(self.kwargs['pk']) == 0:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
         else:
-            getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
+            getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries,agreement__approval=self.kwargs['status']).order_by('name')
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms})
+        if self.kwargs['status']:
+            getDashboard.filter(agreement__approval=self.kwargs['status'])
+            print getDashboard
+
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': self.kwargs['status']})
 
 
 class ProjectAgreementList(ListView):
