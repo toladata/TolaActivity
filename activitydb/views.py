@@ -313,6 +313,9 @@ class ProjectAgreementUpdate(UpdateView):
         getProgram = Program.objects.get(agreement__id=check_agreement_status.id)
         country = getProgram.country
 
+        #convert form field unicode project name to ascii safe string for email content
+        import unicodedata
+        project_name = unicodedata.normalize('NFKD', form.instance.project_name).encode('ascii','ignore')
         #check to see if the approval status has changed
         if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
             budget = form.instance.total_estimated_budget
@@ -337,7 +340,7 @@ class ProjectAgreementUpdate(UpdateView):
             if form.instance.approval == 'approved':
                 #email the approver group so they know this was approved
                 link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
-                subject = "Project Initiation Approved: " + str(form.instance.project_name)
+                subject = "Project Initiation Approved: " + project_name
                 message = "A new initiation was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
                 getSubmiter = User.objects.get(username=self.request.user)
                 emailGroup(submiter=getSubmiter.email, country=country,group="Approver",link=link,subject=subject,message=message)
@@ -345,7 +348,7 @@ class ProjectAgreementUpdate(UpdateView):
             messages.success(self.request, 'Success, Initiation has been saved and is now Awaiting Approval (Notifications have been Sent)')
             #email the approver group so they know this was approved
             link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
-            subject = "Project Initiation Waiting for Approval: " + str(form.instance.project_name)
+            subject = "Project Initiation Waiting for Approval: " + project_name
             message = "A new initiation was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
             emailGroup(country=country,group="Approver",link=link,subject=subject,message=message)
         else:
