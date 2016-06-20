@@ -48,7 +48,7 @@ Title placeholder
 			<div class='panel-heading'></div>
 				<div class="panel-body" style="min-height: 300; max-height: 300;">
 				<span class='chart-title' style="overflow-y: scroll;">{{ table2.column_heading }}</span>
-				{% with table2 as tolaTableData %}
+				{% with table2.data_set as tolaTableData %}
 				    {% include 'customdashboard/components/charts/doughnut.html' %}
 				{% endwith %}
 				</div>
@@ -59,7 +59,7 @@ Title placeholder
 			<div class='panel-heading'></div>
 				<div class="panel-body" style="min-height: 300; max-height: 300;">
 				<span class='chart-title' style="overflow-y: scroll;">{{ table3.column_heading}}</span>
-				{% with table3 as tolaTableData %}
+				{% with tableData1 as tolaTableData %}
 				    {% include 'customdashboard/components/charts/radar.html' %}
 				{% endwith %}
 			</div>
@@ -68,3 +68,4 @@ Title placeholder
 </div>
 
 {% endblock content %}
+
