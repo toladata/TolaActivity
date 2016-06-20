@@ -974,7 +974,9 @@ class SiteProfileList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
-        activeSite = date.today() - timedelta(days=90)
+
+        #date 3 months ago, a site is considered inactive
+        inactiveSite = date.today() - timedelta(days=90)
 
         #Filter SiteProfile list and map by activity or program
         if activity_id != 0:
@@ -986,8 +988,8 @@ class SiteProfileList(ListView):
 
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
-
             getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(collecteddata__program__country__in=countries)
+
 
         if request.method == "GET" and "search" in request.GET:
             """
@@ -997,8 +999,7 @@ class SiteProfileList(ListView):
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
 
-        return render(request, self.template_name, {'activeSite':activeSite,'getSiteProfile':getSiteProfile,'getSiteProfileIndicator':getSiteProfileIndicator,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
-
+        return render(request, self.template_name, {'inactiveSite':inactiveSite,'getSiteProfile':getSiteProfile,'getSiteProfileIndicator':getSiteProfileIndicator,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 class SiteProfileReport(ListView):
     """
