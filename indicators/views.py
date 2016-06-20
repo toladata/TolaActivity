@@ -171,11 +171,6 @@ class IndicatorCreate(CreateView):
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
-    try:
-        guidance = FormGuidance.objects.get(form="Indicator")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     #pre-populate parts of the form
     def get_initial(self):
         user_profile = TolaUser.objects.get(user=self.request.user)
@@ -226,13 +221,12 @@ class IndicatorUpdate(UpdateView):
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
-    try:
-        guidance = FormGuidance.objects.get(form="Indicator")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="Indicator")
+        except FormGuidance.DoesNotExist:
+            guidance = None
         return super(IndicatorUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -549,13 +543,12 @@ class CollectedDataCreate(CreateView):
     template_name = 'indicators/collecteddata_form.html'
     form_class = CollectedDataForm
 
-    try:
-        guidance = FormGuidance.objects.get(form="CollectedData")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="CollectedData")
+        except FormGuidance.DoesNotExist:
+            guidance = None
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -640,13 +633,12 @@ class CollectedDataUpdate(UpdateView):
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
 
-    try:
-        guidance = FormGuidance.objects.get(form="CollectedData")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="CollectedData")
+        except FormGuidance.DoesNotExist:
+            guidance = None
         return super(CollectedDataUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

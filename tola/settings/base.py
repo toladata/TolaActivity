@@ -175,6 +175,7 @@ MIDDLEWARE_CLASSES = (
 )
 ########## END MIDDLEWARE CONFIGURATION
 
+
 ########## REST CONFIGURATION
 # Add Pagination to Rest Framework lists
 REST_FRAMEWORK = {
@@ -190,6 +191,7 @@ REST_FRAMEWORK = {
 }
 
 ########## END REST CONFIGURATION
+
 
 ########## URL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
@@ -231,9 +233,9 @@ THIRD_PARTY_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
+    'activitydb',
     'tola',
     'feed',
-    'activitydb',
     'indicators',
     'customdashboard',
     'tables',
@@ -371,4 +373,3 @@ CKEDITOR_CONFIGS = {
         'width': 300,
     },
 }
-

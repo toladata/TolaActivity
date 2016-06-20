@@ -128,6 +128,30 @@ class TolaUserAdmin(admin.ModelAdmin):
     search_fields = ('name','country__country','title')
 
 
+# Form Guidance
+class FormGuidance(models.Model):
+    form = models.CharField(max_length=135,null=True, blank=True)
+    guidance_link = models.URLField(max_length=200, null=True, blank=True)
+    guidance = models.TextField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('create_date',)
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(FormGuidance, self).save()
+
+    def __unicode__(self):
+        return unicode(self.form)
+
+
+class FormGuidanceAdmin(admin.ModelAdmin):
+    list_display = ( 'form', 'guidance', 'guidance_link', 'create_date',)
+    display = 'Form Guidance'
+
+
 class Sector(models.Model):
     sector = models.CharField("Sector Name", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -767,6 +791,21 @@ class StakeholderAdmin(admin.ModelAdmin):
 
 
 class ProjectAgreementManager(models.Manager):
+    def get_approved(self):
+        return self.filter(approval="approved")
+
+    def get_open(self):
+        return self.filter(approval="")
+
+    def get_inprogress(self):
+        return self.filter(approval="in progress")
+
+    def get_awaiting_approval(self):
+        return self.filter(approval="awaiting approval")
+
+    def get_rejected(self):
+        return self.filter(approval="rejected")
+
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
 
@@ -1333,31 +1372,6 @@ class FAQAdmin(admin.ModelAdmin):
     display = 'FAQ'
 
 
-# Form Guidance
-class FormGuidance(models.Model):
-    form = models.CharField(max_length=135,null=True, blank=True)
-    guidance_link = models.URLField(max_length=200, null=True, blank=True)
-    guidance = models.TextField(null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('create_date',)
-
-    def save(self):
-        if self.create_date is None:
-            self.create_date = datetime.now()
-        super(FormGuidance, self).save()
-
-    def __unicode__(self):
-        return unicode(self.form)
-
-
-class FormGuidanceAdmin(admin.ModelAdmin):
-    list_display = ( 'form', 'guidance', 'guidance_link', 'create_date',)
-    display = 'Form Guidance'
-
-
-
 class Distribution(models.Model):
     distribution_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
@@ -1369,19 +1383,19 @@ class Distribution(models.Model):
     province = models.ForeignKey(Province, null=True, blank=True)
     total_beneficiaries_received_input = models.IntegerField(null=True, blank=True)
     distribution_location = models.CharField(max_length=255, null=True, blank=True)
-    input_type_distributed = models.CharField(max_length=255, null=True, blank=True)   
-    distributor_name_and_affiliation = models.CharField(max_length=255, null=True, blank=True)   
-    distributor_contact_number = models.CharField(max_length=255, null=True, blank=True)   
+    input_type_distributed = models.CharField(max_length=255, null=True, blank=True)
+    distributor_name_and_affiliation = models.CharField(max_length=255, null=True, blank=True)
+    distributor_contact_number = models.CharField(max_length=255, null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     form_filled_by = models.CharField(max_length=255, null=True, blank=True)
-    form_filled_by_position = models.CharField(max_length=255, null=True, blank=True)   
-    form_filled_by_contact_num = models.CharField(max_length=255, null=True, blank=True)   
-    form_filled_date = models.CharField(max_length=255, null=True, blank=True)   
+    form_filled_by_position = models.CharField(max_length=255, null=True, blank=True)
+    form_filled_by_contact_num = models.CharField(max_length=255, null=True, blank=True)
+    form_filled_date = models.CharField(max_length=255, null=True, blank=True)
     form_verified_by = models.CharField(max_length=255, null=True, blank=True)
-    form_verified_by_position = models.CharField(max_length=255, null=True, blank=True)    
-    form_verified_by_contact_num = models.CharField(max_length=255, null=True, blank=True)   
-    form_verified_date = models.CharField(max_length=255, null=True, blank=True)   
+    form_verified_by_position = models.CharField(max_length=255, null=True, blank=True)
+    form_verified_by_contact_num = models.CharField(max_length=255, null=True, blank=True)
+    form_verified_date = models.CharField(max_length=255, null=True, blank=True)
     total_received_input = models.CharField(max_length=255, null=True, blank=True)
     total_male = models.IntegerField(null=True, blank=True)
     total_female = models.IntegerField(null=True, blank=True)
