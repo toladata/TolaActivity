@@ -791,6 +791,21 @@ class StakeholderAdmin(admin.ModelAdmin):
 
 
 class ProjectAgreementManager(models.Manager):
+    def get_approved(self):
+        return self.filter(approval="approved")
+
+    def get_open(self):
+        return self.filter(approval="")
+
+    def get_inprogress(self):
+        return self.filter(approval="in progress")
+
+    def get_awaiting_approval(self):
+        return self.filter(approval="awaiting approval")
+
+    def get_rejected(self):
+        return self.filter(approval="rejected")
+
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
 
@@ -905,13 +920,6 @@ class ProjectAgreement(models.Model):
 
         self.edit_date = datetime.now()
         super(ProjectAgreement, self).save()
-
-    def get_approved(self):
-        return self.filter(approval="approved")
-
-    def get_open(self):
-        return self.filter(approval="")
-
 
     @property
     def project_name_clean(self):

@@ -36,8 +36,8 @@ from export import ProjectAgreementResource
 from django.core.exceptions import PermissionDenied
 
 APPROVALS = (
-    ('in progress', 'in progress'),
-    ('awaiting approval', 'awaiting approval'),
+    ('in_progress', 'in progress'),
+    ('awaiting_approval', 'awaiting approval'),
     ('approved', 'approved'),
     ('rejected', 'rejected'),
 )
@@ -120,9 +120,11 @@ class ProgramDash(ListView):
     Dashboard links for and status for each program with number of projects
     :param request:
     :param pk: program_id
+    :param status: approval status of project
     :return:
     """
     template_name = 'activitydb/programdashboard_list.html'
+
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
@@ -131,13 +133,15 @@ class ProgramDash(ListView):
         if int(self.kwargs['pk']) == 0:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
         else:
-            getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries,agreement__approval=self.kwargs['status']).order_by('name')
+            getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
 
-        if self.kwargs['status']:
+        if self.kwargs.get('status', None):
             getDashboard.filter(agreement__approval=self.kwargs['status'])
-            print getDashboard
+            status = self.kwargs['status']
+        else:
+            status = None
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': self.kwargs['status']})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': status})
 
 
 class ProjectAgreementList(ListView):

@@ -19,7 +19,7 @@
     </div>
     <div class="btn-group" role="group">
       <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-        Status
+        Project Status
         <span class="caret"></span>
       </button>
       <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
@@ -34,12 +34,14 @@
 <br/>
 <div>
 {% if getDashboard %}
+  {% if status %}
+    <p>Filtered by: {{ status }}</p>
+  {% endif %}
     {% for program in getDashboard %}
         {% if program.agreement.all %}
             <div class='panel panel-default'>
                 <div class='panel-heading'>
                     <h4>
-
                        {{ program.name|truncatechars:80 }}
 
                        <span class="float: right">
@@ -57,24 +59,38 @@
                         <th>Approval Status</th>
                         <th>&nbsp;</th>
                     </tr>
-                    {% for item in program.agreement.all %}
-                    <tr>
-                        <td>{{ item.create_date}}</td>
-                        {% if item.approval == "approved" %}
-                            <td><a href="/activitydb/projectagreement_detail/{{ item.id }}">{{ item.project_name}}</a></td>
-                        {% else %}
-                            <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
-                        {% endif%}
-                        <td>{{ item.activity_code }}</td>
-                        <td>{{ item.office }} </td>
-                        <td>{% if item.projectcomplete %} Tracking {% if item.projectcomplete.approval  %}{{ item.projectcomplete.approval|capfirst }}{% else %}Open{% endif %}{% else %} Initiation {% if item.approval  %}{{ item.approval|capfirst }}{% else %} Open {% endif %} {% endif %}</td>
-                        <td>
-                            <a href="/activitydb/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                        <li class="list-group-item">No projects yet.</li>
-                    {% endfor %}
+                    {% if status == "in_progress" %}
+                      {% for item in program.agreement.get_inprogress %}
+                          {% include "activitydb/program_projects_table.html" %}
+                      {% empty %}
+                          <li class="list-group-item">No in progress projects.</li>
+                      {% endfor %}
+                    {% elif status == "approved" %}
+                      {% for item in program.agreement.get_approved %}
+                        {% include "activitydb/program_projects_table.html" %}
+                      {% empty %}
+                          <li class="list-group-item">No approved projects yet.</li>
+                      {% endfor %}
+                    {% elif status == "awaiting_approval" %}
+                      {% for item in program.agreement.get_awaiting_approval %}
+                        {% include "activitydb/program_projects_table.html" %}
+                      {% empty %}
+                          <li class="list-group-item">No projects awaiting approval.</li>
+                      {% endfor %}
+                    {% elif status == "rejected" %}
+                      {% for item in program.agreement.get_rejected %}
+                        {% include "activitydb/program_projects_table.html" %}
+                      {% empty %}
+                          <li class="list-group-item">No rejected projects.</li>
+                      {% endfor %}
+                    {% else %}
+                      {% for item in program.agreement.all %}
+                        {% include "activitydb/program_projects_table.html" %}
+                      {% empty %}
+                          <li class="list-group-item">No projects yet.</li>
+                      {% endfor %}
+                    {% endif %}
+
                 </table>
             </div>
         {% endif %}
