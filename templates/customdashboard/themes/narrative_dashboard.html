@@ -10,29 +10,109 @@
 {% block content %}
 
 <!-- TODO: define layout sections -->
-
-<!-- TODO: INPUT FORM FOR COMPONENT SELECTION
-		
-		NOTES: 
-		input form needs to capture chart_selection as "charts/chart_type" and .html component name needs to match
-		input form needs to capture narrative_selection as "narratives/narrative_type" and .html component name needs to match (ditto for other components) -->
-
-<!-- for each layout section in layout sections-->
-	{% with component_selection.name|add:".html" as template %}
-    	{% include template %}
-	{% endwith %}
-
-<div class='row'>
-<!-- 	<div class='col-md-4'>
-		<div class='panel panel-info '>
-			<div class='panel-heading text-center'></div>
-				<div class="panel-body" style="min-height: 300; max-height: 300;">
-				<span class='chart-title' style="overflow-y: scroll;">{{ tableHeaders.title1 }}</span>
-				{% with tableData1 as tolaTableData %}
-				    {% include 'customdashboard/components/charts/bar_graph.html' %}
-				{% endwith %}
+<div class='container-fluid' >
+	<!-- <div class='row equal' > -->
+		<div class='col-lg-9'>
+			<div class='panel panel-info' style="min-height: 200; max-height: 200;">
+					<div class="panel-body" >
+					<span class='chart-title' style="overflow-y: scroll;"> Title</span>
+					</div>
+			</div>
+			<div class='row'>
+				<div class='col-md-6 ' style='height:300'>
+					<div class='panel panel-info clear' style="float: left; min-height: 600; max-height: 600;">
+						<div class="panel-body">
+							<!-- {% with tableData1 as tolaTableData %} This should be a url request for the gallery feed-->
+							    {% include 'customdashboard/components/gallery/sidebar_gallery.html' %}
+							<!-- {% endwith %} -->
+						</div>
+					</div>
 				</div>
+				<div class='col-md-6' style='height:300'>
+					<div class='panel panel-info' style="float: left; min-height: 600; max-height: 600;">
+						<div class="panel-body" >
+							<!-- {% with tableData1 as tolaTableData %} -->
+							    {% include 'customdashboard/components/narratives/context_pane.html' %}
+							<!-- {% endwith %} -->
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class='row'>
+				<div class='col-md-12'>
+					<div class='panel panel-info '>
+						<div class='panel-heading'>PROJECT STATUS</div>
+							<div class="panel-body" style="height: 300;">
+							{% with tableData1.dataset2 as tolaTableData %}
+							    {% include 'customdashboard/components/charts/bar_graph.html' %}
+							{% endwith %}
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-	</div> -->
+		<div class='col-lg-3'>
+			<div class='panel panel-info' style="min-height: 400; max-height: 400;">
+				<div class='panel-heading text-center'> Program Objectives</div>
+					<div class="panel-body" >
+					<span class='chart-title' style="overflow-y: scroll;"></span>
+						{% with tableData1.dataset1 as tolaTableData %}
+						    {% include 'customdashboard/components/narratives/sidebar_objectives.html' %}
+						{% endwith %}
+					</div>
+			</div>
+		</div>
+		<div class='col-md-3'>
+			<div class='panel panel-info' style="min-height: 200; max-height: 200; ">
+					<!-- {% with table2.data_set as tolaTableData %} -->
+				    {% include 'customdashboard/components/narratives/sidebar_news.html' %}
+				<!-- {% endwith %} -->
+			</div>
+		</div>
+		<div class='col-md-3'>
+			<div class='panel panel-info '>
+				<div class="panel-body" style="height: 300;">
+					<span class='chart-title' style="overflow-y: scroll;">Project Location</span>
+
+					<div> THIS WILL BE A MAP? </div>
+					<!-- {% with tableData1 as tolaTableData %} -->
+					    <!-- {% include 'customdashboard/components/maps/sidebar_map.html' %} -->
+					<!-- {% endwith %} -->
+				</div>
+			</div>
+		</div>
+<!-- 	</div>
+	<div class='row equal'> -->
+<!-- 		<div class='col-md-9'>
+			<div class='panel panel-info '>
+				<div class='panel-heading'>PROJECT STATUS</div>
+					<div class="panel-body" style="height: 300;">
+					{% with tableData1.dataset2 as tolaTableData %}
+					    {% include 'customdashboard/components/charts/bar_graph.html' %}
+					{% endwith %}
+				</div>
+			</div>
+		</div> -->
+<!-- 		<div class='col-md-3'>
+			<div class='panel panel-info '>
+				<div class="panel-body" style="height: 300;">
+					<span class='chart-title' style="overflow-y: scroll;">Project Location</span>
+
+					<div> THIS WILL BE A MAP? </div>
+					<! {% with tableData1 as tolaTableData %} -->
+					    <!-- {% include 'customdashboard/components/maps/sidebar_map.html' %} -->
+					<!-- {% endwith %} -->
+<!-- 				</div>
+			</div>
+		</div> --> 
+	<!-- </div> -->
 </div>
 {% endblock content %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+<script>
+$(document).ready(function(){
+    $("newsButton").click(function(){
+        $("#newsModal").modal("toggle");
+    });
+});
+</script>

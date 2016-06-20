@@ -30,5 +30,6 @@ urlpatterns = patterns('',
 
                        #dashboard schemes
                        url(r'^(?P<id>[0-9]+)/data/public/$', 'customdashboard.views.AnalyticsDashboard', name='analytics_custom_dashboard'),
+                       url(r'^(?P<id>[0-9]+)/text/public/$', 'customdashboard.views.NarrativeDashboard', name='narrative_custom_dashboard'),
                        )
 

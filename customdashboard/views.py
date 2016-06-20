@@ -413,10 +413,39 @@ def AnalyticsDashboard(request,id=0):
 
 #     return render(request, "customdashboard/themes/location_dashboard.html", {'countries': countries, 'report':report})
 
-# def NarrativeDashboard(request,id=0):
-    #see Analytics Dashboard
+def NarrativeDashboard(request,id=0):
+    ## retrieve program
+    model = Program
+    program_id = id
+    getProgram = Program.objects.all().filter(id=program_id)
 
-#     return render(request, "customdashboard/themes/narrative_dashboard.html", {'countries': countries, 'report':report})
+    ## retrieve the coutries the user has data access for
+    countries = getCountry(request.user)
+
+    #retrieve projects for a program
+    getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
+
+    filter_url = "http://tables.toladata.io/api/silo/9/data/"
+    headers = {'content-type': 'application/json',
+               'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
+    response = requests.get(filter_url, headers=headers, verify=False)
+    get_json = json.loads(response.content)
+    data = get_json
+
+    #Parse the JSON(s) into datasets that will feed the templates for this example 
+    ## -- parsing might not be immediately relevant for live example 
+
+    tableData1 = {}
+    dataset1 = []
+    key1 = 'what_country_were_you_in_last'  
+    for answer in data:
+        dataset1.append(answer[key1])    
+    tableData1['title'] = key1.title
+    tableData1['dataset1'] = dataset1
+    tableData1['dataset2'] = [dataset1.count(dataset1[0]),dataset1.count(dataset1[1]), dataset1.count(dataset1[2])]
+
+    return render(request, 'customdashboard/themes/narrative_dashboard.html', 
+        {'tableData1': tableData1, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
 
 # def TimelineDashboard(request,id=0):
     #see Analytics Dashboard
