@@ -1,127 +1,20 @@
-<div id="map" class="sidebar-map"></div>
+<div id="map" class="sidebar-map" style='height: 250px'></div>
+<script src="{{ STATIC_URL }}js/leaflet.js"></script>
 <script>
-    // var country=[],country_lat=[],country_long=[], narrativeTitle=[], narrativeTXT=[], overlay=[];
 
-    // //read country GPS data into arrays
-    // {% for item in countries %}
-    //     country[{{forloop.counter}}] = "{{ item.country }}";
-    //     country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
-    //     country_long[{{forloop.counter}}] = "{{ item.longitude }}";
-    // {% endfor %}
-
-    //  //overlay groups
-    //  {% for group in getOverlayGroups %}
-    //     var {{ group.overlay_group }} = new L.LayerGroup();
-    //  {% endfor %}
-
-    // //define icons for overlay markers
-    // var projectIcon = L.divIcon({
-    //   className: 'map-marker',
-    //   html:'<div class="map-marker project"></div>',
-    //   iconSize: [50,50]
-    // });
-    // var indicatorIcon = L.divIcon({
-    //   className: 'marker-indicator',
-    //   html:'<div class="marker-indicator"></div>',
-    //   iconSize: [50,50]
-    // });
-    // var greenIcon = new L.Icon({
-    //     iconUrl: '{{ STATIC_URL }}js/images/marker-icon-green.png',
-    //     iconRetinaUrl: '{{ STATIC_URL }}js/images/marker-icon-2x-green.png',
-    //     iconSize:    [25, 41],
-    //     iconAnchor:  [12, 41],
-    //     popupAnchor: [1, -34],
-    //     shadowUrl: '{{ STATIC_URL }}js/images/marker-shadow.png',
-    //     shadowSize:  [41, 41]
-    // });
-    //partner markers
-    // {% for item in getSiteProfile %}
-    //     L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon})
-    //         .addTo(partners)
-    //         .bindPopup("<b>{{ item.country }}</b>
-    //                     <br/>Project Site:
-    //                     <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
-    //                     <br/>ADM1: {{ item.province }}
-    //                     <br/>ADM2: {{ item.district }}
-    //                     <br/>ADM3: {{ item.village }}
-    //                     <br/>SiteProfile{{ item.name }}
-    //                     <br/> "
-    //                    );
-    // {% endfor %}
-
-    // {% if getSiteProfileIndicator %}
-    //     //indicator markers
-    //     {% for item in getSiteProfileIndicator %}
-    //         L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon})
-    //                 .addTo(indicators)
-    //                 .bindPopup("" + "<b>{{ item.country }}</b>
-    //                             <br/>Collected Indicator Data Site:
-    //                             <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
-    //                             <br/>ADM1: {{ item.province }}
-    //                             <br/>ADM2: {{ item.district }}
-    //                             <br/>ADM3: {{ item.village }}
-    //                             <br/>SiteProfile{{ item.name }}
-    //                             <br/> "
-    //                            );
-    //     {% endfor %}
-    // {% endif %}
-
+    var mapCoordinates = [51.505, -0.09]
+    var mapScale = 13
     var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-
-    //basemaps from mapbox URL and leaflet-providers.js
-    mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-    var baseMap = L.tileLayer.provider('OpenStreetMap.Mapnik');
-
-    var baseMap = L.tileLayer.provider('OpenStreetMap.Mapnik'),
-        grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
-        opentopomap = L.tileLayer.provider('OpenTopoMap');
-
-
-    var map = L.map('map',
-               {
-                center: [country_lat[1], country_long[1]],
-                zoom: 5,
-                dragging: false,
-                touchZoom: false,
-                scrollWheelZoom: false,
-                //preselected layers
-                layers: [baseMap, projects, indicators]
-                });
-
-    var baseLayers = {"OpenStreet": baseMap,
-                      "GrayScale": grayscale,
-                      "Topography": opentopomap,
-
-                      };
-
-    // var overlays = { {% for narrative in getOverlayNarrative %}
-    //                     "{{narrative.overlay_title}}": {{narrative.overlay_group.overlay_group}},
-    //                  {% endfor %} };
-
-    // L.control.layers(baseLayers, overlays).addTo(map);
-    // var sidebar = L.control.sidebar('sidebar').addTo(map);
-
-    //AFG country boundary geoJSON
-    // var AFGLayer = L.geoJson().addTo(map);
-    // $.getJSON("{{ STATIC_URL }}publicdashboard/js/AFG.geo.json", function(json) {
-    // AFGLayer.addData(json);
-    // });
-
-    //invest_khandahar.geoJSON data (from http://earthquake.usgs.gov) - TODO - prepare INVEST-in-Khandahar geoJSON
-   // function addDataToMap(data, map){
-   //     L.geoJson(data, {
-   //          pointToLayer: function(feature, latlng) {
-   //          return L.marker(latlng, {
-   //            icon: greenIcon
-   //                  });
-   //              },
-   //          onEachFeature: function(feature, layer) {
-   //              var popupText = "Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place + "<br><a href='" + feature.properties.url + "'>More info</a>";
-   //              layer.bindPopup(popupText);
-   //          }
-   //     }).addTo(projects);
-    }
-    $.getJSON("{{ STATIC_URL }}publicdashboard/js/invest_khandahar.geojson", function(data){ addDataToMap(data, map); });
+                    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                    'Imagery &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+                    mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+    var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
+                    streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
+    var map = L.map('map', {
+                    center: mapCoordinates,
+                    zoom: mapScale,
+                    layers: [grayscale]
+                    });
+    var baseLayers = { "Grayscale": grayscale,"Streets": streets,};
+    L.control.layers(baseLayers).addTo(map);
 </script>

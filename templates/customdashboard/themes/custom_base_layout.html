@@ -10,7 +10,7 @@
         <meta name="description" content="Mercy Corps Public Dashboard">
         <meta name="author" content="Mercy Corps">
 
-        <title>{% block title %} Program Dashboard {% endblock %}</title>
+        <!-- <title>{% block title %} Program Dashboard {% endblock %}</title> -->
 
         <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png">
 
@@ -26,14 +26,14 @@
 		<!-- TODO: confirm highcharts and publicdashboards/js/plugins is loaded with static files -->
 
         <!-- - Hosted Leaflet CSS --> 
-        <!-- <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css"> -->
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
 
-        <!-- {% block extra_js_in_header %} -->
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) 
+        {% block extra_js_in_header %}
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins)  -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 
-        <!- Hosted Leaflet -->
-		<!--  <script src="{{ STATIC_URL }}js/leaflet.js"></script>
+        <!-- <!- Hosted Leaflet -->
+		 <script src="{{ STATIC_URL }}js/leaflet.js"></script>
         {% endblock %} -->
 
     </head>
