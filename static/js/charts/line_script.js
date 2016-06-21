@@ -1,4 +1,4 @@
-var lineFunction = function(data){
+var lineFunction = function(data, tolaColor){
     var ctx = document.getElementById("tolaLineChart");
     var tolaLineChart = new Chart(ctx, {
         type: 'line',
@@ -8,20 +8,20 @@ var lineFunction = function(data){
                 label: '# of Things', // user input axis label
                 data: data,
                 backgroundColor: [ 
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)', //var no_colors = tolaTableData.labels.count, shuffle palette, pop that # of colors from palette to get the array of colors
+                    '{{tolaColor.0}}',
+                    '{{tolaColor.1}}',
+                    '{{tolaColor.2}}',
+                    '{{tolaColor.3}}',
+                    '{{tolaColor.4}}',
+                    '{{tolaColor.5}}', //var no_colors = tolaTableData.labels.count, shuffle palette, pop that # of colors from palette to get the array of colors
                 ],
                 borderColor: [
-                    'rgba(255,99,132,1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',//use the same array of colors
+                    '{{tolaColor.0}}',
+                    '{{tolaColor.1}}',
+                    '{{tolaColor.2}}',
+                    '{{tolaColor.3}}',
+                    '{{tolaColor.4}}',
+                    '{{tolaColor.5}}',//use the same array of colors
                 ],
                 borderWidth: 1,
             }]
