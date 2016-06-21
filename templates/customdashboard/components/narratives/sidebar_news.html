@@ -1,17 +1,16 @@
 <div class="sidebar-pane" id="narrative-objectives">
     <h5 style='text-align: center;'>LATEST NEWS</h5>
-    <div class="panel-body"> <a href="" style='float:left; color: black;'> Article 1 </a> </div>
-    <div class="panel-body"> <a href="" style='float:left; color: black;'> Article 2 </a> </div>
-    <div class="panel-body"> <a href="" style='float:left; color: black;'> Article 3 </a> </div>
-    <div class="panel-body"> <a href="" style='float:left; color: black;'> Article 4 </a> </div>
-    <div class="panel-body"> <a href="" style='float:left; color: black;'> Article 5 </a> </div>
-	<button class='btn btn-link' type=link style='float:right;' data-toggle="modal" data-target="#myModal">More News Items</button> 
+
+    <div class="panel-body"> <a href="" style='float:left; color: black;'> {{tolaTableData.0}} This should link to article</a> </div>
+    <div class="panel-body"> <a href="" style='float:left; color: black;'> {{tolaTableData.1}} This should link to article </a> </div>
+    <div class="panel-body"> <a href="" style='float:left; color: black;'> {{tolaTableData.2}} This should link to article</a> </div>
+    <div class="panel-body"> <a href="" style='float:left; color: black;'> {{tolaTableData.3}} This should link to article</a> </div>
+    <div class="panel-body"> <a href="" style='float:left; color: black;'> {{tolaTableData.4}} This should link to article</a> </div>
+	<div><button class='btn btn-link' type=link style='float:right;' data-toggle="modal" data-target="#newsModal">More News Items</button> </div>
 </div>
 
-<!-- <div class="panel-body">  -->
-
-        <!-- Modal -->
-<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Modal -->
+<div id="newsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
 
     <!-- Modal content-->
@@ -20,12 +19,16 @@
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <h4 class="modal-title">LATEST NEWS</h4>
       </div>
-      <div class="modal-body" style='overflow-x: scroll;'>
-              <!--populates news items from the feed within a certain date range?  -->
-              text just to show modal is working
+      <div class="modal-body" style='overflow-x: scroll; word-wrap: break-word; '>
+              <!--populates news items of some type-->
+
+	      {% for data in tolaTableData %}
+			<p>  {{ data.title }} </p><br>
+	      {% endfor %}
+              
       </div>
       <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close News</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

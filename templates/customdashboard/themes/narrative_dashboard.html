@@ -11,79 +11,167 @@
 {% block content %}
 
 <!-- TODO: define layout sections -->
-<div class='container-fluid' >
-	<div class='col-lg-9'>
-		<div class='panel panel-info' style="min-height: 200; max-height: 200;">
-			<div class="panel-body" >
-				<span class='chart-title' style="overflow-y: scroll;"> Title</span>
-			</div>
-		</div>
-		<div class='row'>
-			<div class='col-md-6 ' style='height:300'>
-				<div class='panel panel-info clear' style="float: left; min-height: 600; max-height: 600;">
-					<div class="panel-body">
-						<!-- {% with tableData1 as tolaTableData %} This should be a url request for the gallery feed-->
-						    {% include 'customdashboard/components/gallery/sidebar_gallery.html' %}
-						<!-- {% endwith %} -->
+<div class="tab-content">
+	  <div id="home" class="tab-pane fade in active">
+		<div class='container-fluid' >
+			<div class='col-lg-9'>
+				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
+					<div class="panel-body" style='text-align: center'>
+						<h3>PROGRAM OR PROJECT TITLE SHOULD GO HERE </h3>
+						<h5> Subtitle if it sounds good </h5>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-md-6 ' style='height:300'>
+						<div class='panel panel-info clear' style="float: left; min-height: 600; max-height: 600;">
+							<div class="panel-body">
+								<!-- {% with tableData1 as tolaTableData %} This should be a url request for the gallery feed-->
+								    {% include 'customdashboard/components/gallery/sidebar_gallery.html' %}
+								<!-- {% endwith %} -->
+							</div>
+						</div>
+					</div>
+					<div class='col-md-6' style='height:300'>
+						<div class='panel panel-info' style="float: left; min-height: 600; max-height: 600;">
+							<div class="panel-body" >
+								<!-- {% with tableData1 as tolaTableData %} -->
+								    {% include 'customdashboard/components/narratives/context_pane.html' %}
+								<!-- {% endwith %} -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-md-12'>
+						<div class='panel panel-info '>
+							<div class='panel-heading'>PROJECT STATUS</div>
+								<div class="panel-body" style="height: 300;">
+								{% with tableData2.dataset as tolaTableData %}
+								    {% include 'customdashboard/components/charts/bar_graph.html' %}
+								{% endwith %}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class='col-md-6' style='height:300'>
-				<div class='panel panel-info' style="float: left; min-height: 600; max-height: 600;">
-					<div class="panel-body" >
-						<!-- {% with tableData1 as tolaTableData %} -->
-						    {% include 'customdashboard/components/narratives/context_pane.html' %}
-						<!-- {% endwith %} -->
+			<div class='col-lg-3'>
+				<div class='col-lg-12'>
+					<div class='panel panel-info' style="min-height: 400; max-height: 400;">
+						<div class="panel-body" >
+						  <ul class="nav nav-pills">
+						    <li class="active"><a data-toggle="pill" href="#home" style='text-align: center'>PROGRAM HOME</a></li>
+						    <li><a data-toggle="pill" href="#menu1">Program Objective 1</a></li>
+						    <li><a data-toggle="pill" href="#menu2">Program Objective 2</a></li>
+						    <li><a data-toggle="pill" href="#menu3">Program Objective 3</a></li>
+						  </ul>
+						</div>
 					</div>
 				</div>
-			</div>
-		</div>
-		<div class='row'>
-			<div class='col-md-12'>
-				<div class='panel panel-info '>
-					<div class='panel-heading'>PROJECT STATUS</div>
-						<div class="panel-body" style="height: 300;">
-						{% with tableData1.dataset2 as tolaTableData %}
-						    {% include 'customdashboard/components/charts/bar_graph.html' %}
-						{% endwith %}
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class='col-lg-3'>
-		<div class='col-lg-12'>
-			<div class='panel panel-info' style="min-height: 400; max-height: 400;">
-				<div class='panel-heading text-center'> Program Objectives</div>
-					<div class="panel-body" >
-					<span class='chart-title' style="overflow-y: scroll;"></span>
+				<div class='col-md-12'>
+					<div class='panel panel-info' style="min-height: 200; max-height: 200; ">
 						{% with tableData1.dataset1 as tolaTableData %}
-						    {% include 'customdashboard/components/narratives/sidebar_objectives.html' %}
+							{% include 'customdashboard/components/narratives/sidebar_news.html' %}
 						{% endwith %}
+		            </div>
+				</div>
+				<div class='col-md-12'>
+					<div class='panel panel-info '>
+						<div class="panel-body">
+							<span class='chart-title' style="overflow-y: scroll;">Project Location</span>
+							<!-- {% with tableData1 as tolaTableData %} -->
+							    {% include 'customdashboard/components/maps/sidebar_map.html' %}
+							<!-- {% endwith %} -->
+						</div>
 					</div>
-			</div>
-		</div>
-		<div class='col-md-12'>
-			<div class='panel panel-info' style="min-height: 200; max-height: 200; ">
-				<!-- {% with table2.data_set as tolaTableData %} -->
-				{% include 'customdashboard/components/narratives/sidebar_news.html' %}
-            </div>
-				<!-- {% endwith %} -->
-		</div>
-		<div class='col-md-12'>
-			<div class='panel panel-info '>
-				<div class="panel-body">
-					<span class='chart-title' style="overflow-y: scroll;">Project Location</span>
-					<div> THIS WILL BE A MAP? </div>
-					<!-- {% with tableData1 as tolaTableData %} -->
-					    {% include 'customdashboard/components/maps/sidebar_map.html' %}
-					<!-- {% endwith %} -->
 				</div>
 			</div>
 		</div>
 	</div>
+
+	  <div id="menu1" class="tab-pane fade">
+		<div class='container-fluid' >
+			<div class='col-lg-9'>
+				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
+					<div class="panel-body" >
+						<span class='chart-title' style="overflow-y: scroll;">Program Objective 1</span>
+						<p> Text about objective 1</p>
+					</div>
+				</div>
+			</div>
+			<div class='col-lg-3'>
+				<div class='col-lg-12'>
+					<div class='panel panel-info' style="min-height: 400; max-height: 400;">
+						<div class="panel-body" >
+						  <ul class="nav nav-pills">
+						    <li><a data-toggle="pill" href="#home" style='text-align: center;'>PROGRAM HOME</a></li>
+						    <li class="active"><a data-toggle="pill" href="#menu1">Program Objective 1</a></li>
+						    <li><a data-toggle="pill" href="#menu2">Program Objective 2</a></li>
+						    <li ><a data-toggle="pill" href="#menu3">Program Objective 3</a></li>
+						  </ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	  </div>
+	  <div id="menu2" class="tab-pane fade">
+		<div class='container-fluid' >
+			<div class='col-lg-9'>
+				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
+					<div class="panel-body" >
+						<span class='chart-title' style="overflow-y: scroll;">Program Objective 2</span>
+						<p> Text about objective 2</p>
+					</div>
+				</div>
+			</div>
+			<div class='col-lg-3'>
+				<div class='col-lg-12'>
+					<div class='panel panel-info' style="min-height: 400; max-height: 400;">
+						<div class="panel-body" >
+						  <ul class="nav nav-pills">
+						    <li><a data-toggle="pill" href="#home" style='text-align: center'>PROGRAM HOME</a></li>
+						    <li><a data-toggle="pill" href="#menu1">Program Objective 1</a></li>
+						    <li class="active"><a data-toggle="pill" href="#menu2">Program Objective 2</a></li>
+						    <li><a data-toggle="pill" href="#menu3">Program Objective 3</a></li>
+						  </ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	  </div>
+	  <div id="menu3" class="tab-pane fade">
+		<div class='container-fluid' >
+			<div class='col-lg-9'>
+				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
+					<div class="panel-body" >
+						<span class='chart-title' style="overflow-y: scroll;">Program Objective 3</span>
+						<p> Text about objective 3</p>
+					</div>
+				</div>
+			</div>
+			<div class='col-lg-3'>
+				<div class='col-lg-12'>
+					<div class='panel panel-info' style="min-height: 400; max-height: 400;">
+						<div class="panel-body" >
+						  <ul class="nav nav-pills">
+						    <li><a data-toggle="pill" href="#home" style='text-align: center'>PROGRAM HOME</a></li>
+						    <li><a data-toggle="pill" href="#menu1">Program Objective 1</a></li>
+						    <li><a data-toggle="pill" href="#menu2">Program Objective 2</a></li>
+						    <li class="active"><a data-toggle="pill" href="#menu3">Program Objective 3</a></li>
+						  </ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	  </div>
 </div>
 {% endblock content %}
+
+
+
+
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></scri
