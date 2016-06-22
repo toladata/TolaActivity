@@ -596,13 +596,6 @@ class CollectedDataCreate(CreateView):
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
 
         # update the count with the value of Table unique count
-<<<<<<< HEAD
-        getTableCount = TolaTable.objects.all().filter(id=self.request.POST['tola_table'])
-
-        if form.instance.update_count_tola_table:
-            form.instance.achieved = getTableCount[0].unique_count
-
-=======
         if form.instance.update_count_tola_table and form.instance.tola_table:
             try:
                 getTable = TolaTable.objects.get(id=self.request.POST['tola_table'])
@@ -617,7 +610,6 @@ class CollectedDataCreate(CreateView):
         new = form.save()
 
         #save disagg
->>>>>>> master
         for label in getDisaggregationLabel:
             for key, value in self.request.POST.iteritems():
                 if key == label.id:
@@ -641,8 +633,6 @@ class CollectedDataUpdate(UpdateView):
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
 
-<<<<<<< HEAD
-=======
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -651,7 +641,6 @@ class CollectedDataUpdate(UpdateView):
             guidance = None
         return super(CollectedDataUpdate, self).dispatch(request, *args, **kwargs)
 
->>>>>>> master
     def get_context_data(self, **kwargs):
         context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
         #get the indicator_id for the collected data
@@ -689,18 +678,7 @@ class CollectedDataUpdate(UpdateView):
 
         getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
-<<<<<<< HEAD
-        # update the count with the value of Table unique count
-        getTableCount = TolaTable.objects.all().filter(id=self.request.POST['tola_table'])
 
-        print form["achieved"].value
-
-        if form.instance.update_count_tola_table:
-            form.instance.achieved = getTableCount[0].unique_count
-            form["achieved"].value = getTableCount[0].unique_count
-
-        print form["achieved"].value
-=======
         getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
 
         # update the count with the value of Table unique count
@@ -715,7 +693,6 @@ class CollectedDataUpdate(UpdateView):
                 count = 0
             form.instance.achieved = count
 
->>>>>>> master
         # save the form then update manytomany relationships
         form.save()
 
@@ -771,14 +748,10 @@ def getTableCount(url,table_id):
 
 def merge_two_dicts(x, y):
     """
-<<<<<<< HEAD
-    Given two dicts, merge them into a new dict as a shallow copy.
-=======
     Given two dictionary Items, merge them into a new dict as a shallow copy.
     :param x: Dict 1
     :param y: Dict 2
     :return: Merge of the 2 Dicts
->>>>>>> master
     """
     z = x.copy()
     z.update(y)
@@ -788,11 +761,8 @@ def merge_two_dicts(x, y):
 def collecteddata_import(request):
     """
     Import collected data from Tola Tables
-<<<<<<< HEAD
-=======
     :param request:
     :return:
->>>>>>> master
     """
     owner = request.user
     service = ExternalService.objects.get(name="TolaTables")
@@ -827,31 +797,16 @@ def collecteddata_import(request):
         id = request.POST['service_table']
         filter_url = service.feed_url + "&id=" + id
 
-<<<<<<< HEAD
-        response = requests.get(filter_url, headers=headers, verify=False)
-        get_json = json.loads(response.content)
-        data = get_json
-=======
         data = get_table(filter_url)
 
->>>>>>> master
         # Get Data Info
         for item in data:
             name = item['name']
             url = item['data']
             remote_owner = item['owner']['username']
 
-<<<<<<< HEAD
-        # loop over the result table and count the number of records for actuals
-        actual_data = get_table(item['data'])
-        count = 0
-        for item in actual_data:
-            count = count +1
-
-=======
         #send table ID to count items in data
         count = getTableCount(filter_url,id)
->>>>>>> master
 
         # get the users country
         countries = getCountry(request.user)
