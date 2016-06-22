@@ -7,6 +7,9 @@ from .models import Program, Country, Province, AdminLevelThree, District, Proje
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
+
+import pytz
+
 from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
     QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
@@ -42,7 +45,8 @@ APPROVALS = (
     ('rejected', 'rejected'),
 )
 
-from datetime import date, timedelta
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 def date_handler(obj):
@@ -1009,8 +1013,8 @@ class SiteProfileList(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
-        #date 3 months ago, a site is considered inactive
-        inactiveSite = date.today() - timedelta(days=90)
+        #this date, 3 months ago, a site is considered inactive
+        inactiveSite = pytz.UTC.localize(datetime.now()) - relativedelta(months=3)
 
         #Filter SiteProfile list and map by activity or program
         if activity_id != 0:
@@ -1022,8 +1026,7 @@ class SiteProfileList(ListView):
 
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
-            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(collecteddata__program__country__in=countries)
-
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province','collecteddata_set').filter(collecteddata__program__country__in=countries)
 
         if request.method == "GET" and "search" in request.GET:
             """
