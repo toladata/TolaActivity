@@ -285,12 +285,11 @@ class ProjectAgreementUpdate(UpdateView):
         check_form_type = ProjectAgreement.objects.get(id=self.kwargs['pk'])
 
         if check_form_type.detailed == True:
-            form = ProjectAgreementForm()
+            form = ProjectAgreementForm
         else:
-            form = ProjectAgreementSimpleForm()
+            form = ProjectAgreementSimpleForm
 
-        form.request = self.request
-        return form
+        return form(**self.get_form_kwargs())
 
 
     def get_context_data(self, **kwargs):
