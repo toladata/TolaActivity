@@ -1,7 +1,6 @@
-var radarFunction = function(data, color_count, color_palette){
+var radarFunction = function(data, tolaRadarColors){
     var ctx = document.getElementById("tolaRadarChart");
 
-    var tolaRadarColors = tolafiedColor(color_palette,color_count);
     var tolaRadarChart = new Chart(ctx, {
         type: 'radar',
         data: {

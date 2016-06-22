@@ -7,7 +7,12 @@
 {% endblock %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/require.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/charts/tolaColor.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/charts/doughnut_script.js"></script>
-<script>$(document).ready(require(['../../../../static/js/charts/tolaColor.js']), doughnutFunction({{tolaTableData}},({{tolaTableData}}.length),'bright'))</script>
+<script>
+doughnutFunction( 
+	//pass in the table data and labels data
+	{{tolaTableData}},
+	//slice off the right number of doughnutColors to use in the chart
+	{% autoescape off %} {{colorPalettes.light}}.slice(0,{{tolaTableData}}.size) {% endautoescape %}
+)
+</script>

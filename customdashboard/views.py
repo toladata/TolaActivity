@@ -388,7 +388,7 @@ def AnalyticsDashboard(request,id=0):
     tableDataset3_2= [28,48,40,19,96,27,100]            
 
     table2= {
-    "column_heading": tableHeaders['title2'], 
+    "column_heading": "title for placeholder", 
     "labels": tableLabels2, 
     "data_set": tableDataset2, 
     }#dataset3
@@ -399,19 +399,14 @@ def AnalyticsDashboard(request,id=0):
     "first_data_set": tableDataset3_1, 
     "second_data_set": tableDataset3_2
     }#dataset3
+
+    colorPalettes = {
+    'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
+    'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
+    };
     
     return render(request, 'customdashboard/themes/analytics_dashboard.html', 
-        {'tableData1': tableData1,'table2': table2,'table3': table3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
-
-# def GalleryDashboard(request,id=0):
-#     see Analytics Dashboard
-
-#     return render(request, "customdashboard/themes/gallery_dashboard.html", {'countries': countries, 'report':report})
-
-# def LocationDashboard(request,id=0):
-    #see Analytics Dashboard
-
-#     return render(request, "customdashboard/themes/location_dashboard.html", {'countries': countries, 'report':report})
+        {'colorPalettes': colorPalettes, 'tableData1': tableData1,'table2': table2,'table3': table3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
 def NarrativeDashboard(request,id=0):
     ## retrieve program
@@ -444,10 +439,18 @@ def NarrativeDashboard(request,id=0):
     tableData1['dataset1'] = dataset1
     tableData1['dataset2'] = [dataset1.count(dataset1[0]),dataset1.count(dataset1[1]), dataset1.count(dataset1[2])]
 
+    # Borrowed data for bar graph
+    tableData2 = {}
+    tableData2['approved'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='approved')
+    tableData2['rejected'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='rejected')
+    tableData2['in_progress'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='in progress')
+    tableData2['awaiting_approval'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='awaiting approval')
+    tableData2['dataset'] = [len(tableData2['approved']),len(tableData2['rejected']),len(tableData2['in_progress']),len(tableData2['awaiting_approval'])]
+
+    colorPalettes = {
+    'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
+    'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
+    };
+
     return render(request, 'customdashboard/themes/narrative_dashboard.html', 
-        {'tableData1': tableData1, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
-
-# def TimelineDashboard(request,id=0):
-    #see Analytics Dashboard
-
-#     return render(request, "customdashboard/themes/timeline_dashboard.html", {'countries': countries, 'report':report})
+        {'tableData1': tableData1,'tableData2': tableData2, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 

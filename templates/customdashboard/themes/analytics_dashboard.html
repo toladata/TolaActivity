@@ -37,7 +37,7 @@ Title placeholder
 			<div class='panel-heading text-center'></div>
 				<div class="panel-body" style="min-height: 300; max-height: 300;">
 				<span class='chart-title' style="overflow-y: scroll;">{{ tableHeaders.title1 }}</span>
-				{% with tableData1 as tolaTableData %}
+				{% with table2 as tolaTableData %}
 				    {% include 'customdashboard/components/charts/bar_graph.html' %}
 				{% endwith %}
 				</div>

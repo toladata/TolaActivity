@@ -10,5 +10,11 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/require.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/charts/tolaColor.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/charts/radar_script.js"></script>
-<script>$(document).ready(
-require(['../../../../static/js/charts/tolaColor.js']), radarFunction({{tolaTableData}},({{tolaTableData}}.length),'light'))</script>
+<script>
+radarFunction(	
+	//pass in the table data and labels data
+	{{tolaTableData}},
+	//slice off the right number of doughnutColors to use in the chart
+	{% autoescape off %} {{colorPalettes.light}}.slice(0,{{tolaTableData}}.size) {% endautoescape %})
+
+</script>

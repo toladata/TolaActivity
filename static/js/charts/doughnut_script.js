@@ -1,6 +1,5 @@
-var doughnutFunction = function(data, color_count, color_palette){
+var doughnutFunction = function(data, tolaDoughnutColors){
     var ctx = document.getElementById("tolaDoughnutChart");
-    var tolaDoughnutColors = tolafiedColor(color_palette,color_count); // this should be revised to be something
     var tolaDoughnutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
