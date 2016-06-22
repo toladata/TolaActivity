@@ -109,14 +109,10 @@ def emailGroup(country,group,link,subject,message,submiter=None):
 
 def get_table(url):
     """
-<<<<<<< HEAD
-    import data from Tola Tables
-=======
     Get table data from a Silo.  First get the Data url from the silo details
     then get data and return it
     :param url: URL to silo meta detail info
     :return: json dump of table data
->>>>>>> master
     """
     token = TolaSites.objects.get(site_id=1)
     if token.tola_tables_token:
@@ -126,20 +122,12 @@ def get_table(url):
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
-<<<<<<< HEAD
     response = requests.get(url,headers=headers, verify=False)
     user_json = json.loads(response.content)
 
     data = user_json
 
     return data
-=======
-    # add token to requests and return silo details
-    response = requests.get(url,headers=headers, verify=False)
-    silo = json.loads(response.content)
-
-    return silo
->>>>>>> master
 
 
 def user_to_tola(backend, user, response, *args, **kwargs):
