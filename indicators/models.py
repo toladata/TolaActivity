@@ -331,7 +331,11 @@ class CollectedData(models.Model):
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data")
     tola_table = models.ForeignKey(TolaTable, blank=True, null=True)
+<<<<<<< HEAD
+    update_count_tola_table = models.BooleanField("Would you like to update the achieved total with the row count from TolaTables?",default=False)
+=======
     update_count_tola_table = models.BooleanField("Would you like to update the achieved total with the count from TolaTables?",default=False)
+>>>>>>> master
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     site = models.ManyToManyField(SiteProfile, blank=True)

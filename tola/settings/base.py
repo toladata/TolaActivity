@@ -314,6 +314,27 @@ path.append(PROJECT_PATH)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'error.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
+"""
+LOGSTASH LOGGING DISABLED FOR NOW
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
             'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
@@ -326,7 +347,7 @@ LOGGING = {
 
     'handlers': {
       'logstash': {
-          'level': 'DEBUG',
+          'level': 'ERROR',
           'class': 'logstash.LogstashHandler',
           'host': '82.196.12.89',
           'port': 5959, # Default value: 5959
@@ -345,7 +366,7 @@ LOGGING = {
     },
 
 }
-
+"""
 
 ########## END LOGGING CONFIGURATION
 
