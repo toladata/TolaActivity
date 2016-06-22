@@ -266,12 +266,7 @@ class ProjectAgreementUpdate(UpdateView):
     :param id: project_agreement_id
     """
     model = ProjectAgreement
-
-    check_form_type = ProjectAgreement.objects.get(id=pk)
-    if check_form_type.detailed == True:
-        form_class = ProjectAgreementForm
-    else:
-        form_class = ProjectAgreementSimpleForm
+    form_class = ProjectAgreementSimpleForm
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -280,14 +275,19 @@ class ProjectAgreementUpdate(UpdateView):
         except FormGuidance.DoesNotExist:
             guidance = None
 
+        return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class):
         check_form_type = ProjectAgreement.objects.get(id=self.kwargs['pk'])
 
         if check_form_type.detailed == True:
-            form_class = ProjectAgreementForm
+            form = ProjectAgreementSimpleForm
         else:
-            form_class = ProjectAgreementSimpleForm
+            form = ProjectAgreementForm
 
-        return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
+        form.request = self.request
+        return form
+
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)

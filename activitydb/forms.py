@@ -157,7 +157,7 @@ class ProjectAgreementForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
-        self.request = kwargs.pop('request')
+        #self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -471,7 +471,6 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
-        self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -596,11 +595,10 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
                     ),
                 ),
 
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            ),
-
+                FormActions(
+                    Submit('submit', 'Save', css_class='btn-default'),
+                    Reset('reset', 'Reset', css_class='btn-warning')
+                ),
 
             HTML("""<br/>"""),
 
@@ -641,7 +639,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
             ),
 
         )
-        super(ProjectAgreementForm, self).__init__(*args, **kwargs)
+        super(ProjectAgreementSimpleForm, self).__init__(*args, **kwargs)
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
