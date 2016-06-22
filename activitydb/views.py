@@ -7,7 +7,10 @@ from .models import Program, Country, Province, AdminLevelThree, District, Proje
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
-from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
+
+import pytz
+
+from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
     QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 import logging
@@ -42,7 +45,8 @@ APPROVALS = (
     ('rejected', 'rejected'),
 )
 
-from datetime import date, timedelta
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 def date_handler(obj):
@@ -187,6 +191,8 @@ class ProjectAgreementCreate(CreateView):
     Project Agreement Form
     :param request:
     :param id:
+    This is only used in case of an error incomplete form submission from the simple form
+    in the project dashboard
     """
 
     model = ProjectAgreement
@@ -264,6 +270,7 @@ class ProjectAgreementUpdate(UpdateView):
     :param id: project_agreement_id
     """
     model = ProjectAgreement
+    form_class = ProjectAgreementSimpleForm
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -271,7 +278,20 @@ class ProjectAgreementUpdate(UpdateView):
             guidance = FormGuidance.objects.get(form="Agreement")
         except FormGuidance.DoesNotExist:
             guidance = None
+
         return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class):
+        check_form_type = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+
+        if check_form_type.detailed == True:
+            form = ProjectAgreementSimpleForm
+        else:
+            form = ProjectAgreementForm
+
+        form.request = self.request
+        return form
+
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)
@@ -993,8 +1013,8 @@ class SiteProfileList(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
-        #date 3 months ago, a site is considered inactive
-        inactiveSite = date.today() - timedelta(days=90)
+        #this date, 3 months ago, a site is considered inactive
+        inactiveSite = pytz.UTC.localize(datetime.now()) - relativedelta(months=3)
 
         #Filter SiteProfile list and map by activity or program
         if activity_id != 0:
@@ -1006,8 +1026,7 @@ class SiteProfileList(ListView):
 
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
-            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(collecteddata__program__country__in=countries)
-
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province','collecteddata_set').filter(collecteddata__program__country__in=countries)
 
         if request.method == "GET" and "search" in request.GET:
             """
