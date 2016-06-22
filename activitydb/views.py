@@ -289,8 +289,7 @@ class ProjectAgreementUpdate(UpdateView):
         else:
             form = ProjectAgreementSimpleForm
 
-        form.request = self.request
-        return form
+        return form(**self.get_form_kwargs())
 
 
     def get_context_data(self, **kwargs):
