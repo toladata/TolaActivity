@@ -18,7 +18,7 @@
         <form role="form" class="form-inline" action="/activitydb/projectagreement_add/" method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="program">Select list:</label>
+                <label for="program">Program:</label>
                 <select class="form-control" id="program" name="program" required="">
                     {% for item in getPrograms %}
                         <option value="{{ item.id }} ">{{ item.name|truncatechars:50 }}</option>
@@ -30,7 +30,15 @@
                 <label for="project_name">Project Name:</label>
                 <input type="text" name="project_name" required="" id="id_project_name" class="textinput textInput form-control" maxlength="255">
             </div>
-          <button type="submit" class="btn btn-default">Submit</button>
+            <div class="form-group">
+                <label for="detailed">Detailed Form?:</label>
+                <input type="checkbox" name="detailed" required="" id="id_detailed"> Yes
+            </div>
+            <br/>
+            <br/>
+            <div class="form-group">
+              <button type="submit" class="btn btn-default">Submit</button>
+            </div>
         </form>
     </div>
 

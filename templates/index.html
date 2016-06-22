@@ -296,7 +296,9 @@ $(function () {
                                 {%endfor%}
                             </ul>
                         </div>
-                        <a href="/activitydb/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a Project</a>
+                        {% if report_server == False%}
+                          <a href="/activitydb/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a Project</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -352,7 +354,7 @@ $(function () {
                     </table>
                 </div>
             </div>
-            {% endif %}   
+            {% endif %}
             <div class="panel panel-info">
                 <div class="panel-heading">
                     Strategic Objectives

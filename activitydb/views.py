@@ -7,8 +7,10 @@ from .models import Program, Country, Province, AdminLevelThree, District, Proje
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
+
 import pytz
-from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
+
+from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
     QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 import logging
@@ -189,6 +191,8 @@ class ProjectAgreementCreate(CreateView):
     Project Agreement Form
     :param request:
     :param id:
+    This is only used in case of an error incomplete form submission from the simple form
+    in the project dashboard
     """
 
     model = ProjectAgreement
@@ -267,12 +271,26 @@ class ProjectAgreementUpdate(UpdateView):
     """
     model = ProjectAgreement
 
+    check_form_type = ProjectAgreement.objects.get(id=pk)
+    if check_form_type.detailed == True:
+        form_class = ProjectAgreementForm
+    else:
+        form_class = ProjectAgreementSimpleForm
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             guidance = FormGuidance.objects.get(form="Agreement")
         except FormGuidance.DoesNotExist:
             guidance = None
+
+        check_form_type = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+
+        if check_form_type.detailed == True:
+            form_class = ProjectAgreementForm
+        else:
+            form_class = ProjectAgreementSimpleForm
+
         return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
