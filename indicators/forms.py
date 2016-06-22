@@ -152,8 +152,6 @@ class CollectedDataForm(forms.ModelForm):
 
             ),
 
-
-
                 Div(
                         "",
                         HTML("""<br/>

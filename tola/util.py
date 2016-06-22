@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
 
 
-#CREATE NEW DATA DICTIONARY OBJECT 
+#CREATE NEW DATA DICTIONARY OBJECT
 def siloToDict(silo):
     parsed_data = {}
     key_value = 1
@@ -109,7 +109,14 @@ def emailGroup(country,group,link,subject,message,submiter=None):
 
 def get_table(url):
     """
+<<<<<<< HEAD
     import data from Tola Tables
+=======
+    Get table data from a Silo.  First get the Data url from the silo details
+    then get data and return it
+    :param url: URL to silo meta detail info
+    :return: json dump of table data
+>>>>>>> master
     """
     token = TolaSites.objects.get(site_id=1)
     if token.tola_tables_token:
@@ -119,18 +126,26 @@ def get_table(url):
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
+<<<<<<< HEAD
     response = requests.get(url,headers=headers, verify=False)
     user_json = json.loads(response.content)
 
     data = user_json
 
     return data
+=======
+    # add token to requests and return silo details
+    response = requests.get(url,headers=headers, verify=False)
+    silo = json.loads(response.content)
+
+    return silo
+>>>>>>> master
 
 
 def user_to_tola(backend, user, response, *args, **kwargs):
 
     # Add a google auth user to the tola profile
-    default_country = Country.objects.get(id=1)
+    default_country = Country.objects.first()
     userprofile, created = TolaUser.objects.get_or_create(
         user = user)
 

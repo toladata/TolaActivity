@@ -1,20 +1,8 @@
-from django.contrib import messages
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import logout
-from django.http import HttpResponseRedirect
-from django.views.generic.list import ListView
 from django.views.generic import TemplateView, View
-from django.shortcuts import render
-from django.contrib import auth
 from activitydb.models import ProjectAgreement, ProjectComplete, Program
-from .models import Report
 from indicators.models import CollectedData, Indicator
 from .forms import FilterForm
-from util import getCountry
-from datetime import datetime
-from django.shortcuts import get_object_or_404
-from django.db.models import Sum, Count
+
 from django.db.models import Q
 from activitydb.mixins import AjaxableResponseMixin
 from django.http import HttpResponse, JsonResponse
@@ -22,9 +10,6 @@ from django.http import HttpResponse, JsonResponse
 import json
 import simplejson
 
-from tola.util import getCountry
-
-from django.contrib.auth.decorators import login_required
 from activitydb.export import ProjectAgreementResource
 from activitydb.export import ProgramResource
 from indicators.export import CollectedDataResource

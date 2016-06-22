@@ -34,15 +34,14 @@ class TolaSites(models.Model):
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
     updated = models.DateTimeField(auto_now=False, blank=True, null=True)
 
+    class Meta:
+        verbose_name_plural = "Tola Sites"
+
     def __unicode__(self):
         return self.name
 
-    @property
-    def countries_list(self):
-        return ', '.join([x.code for x in self.countries.all()])
-
     def save(self, *args, **kwargs):
-        ''' On save, update timestamps as appropriate'''
+        ''' On save, update timestamps as appropriate '''
         if kwargs.pop('new_entry', True):
             self.created = datetime.now()
         else:
@@ -127,6 +126,30 @@ class TolaUserAdmin(admin.ModelAdmin):
     display = 'Tola User'
     list_filter = ('country',)
     search_fields = ('name','country__country','title')
+
+
+# Form Guidance
+class FormGuidance(models.Model):
+    form = models.CharField(max_length=135,null=True, blank=True)
+    guidance_link = models.URLField(max_length=200, null=True, blank=True)
+    guidance = models.TextField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('create_date',)
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = datetime.now()
+        super(FormGuidance, self).save()
+
+    def __unicode__(self):
+        return unicode(self.form)
+
+
+class FormGuidanceAdmin(admin.ModelAdmin):
+    list_display = ( 'form', 'guidance', 'guidance_link', 'create_date',)
+    display = 'Form Guidance'
 
 
 class Sector(models.Model):
@@ -243,7 +266,7 @@ class FundCodeAdmin(admin.ModelAdmin):
 
 
 class Program(models.Model):
-    gaitid = models.CharField("GAITID", max_length=255, blank=True, unique=True)
+    gaitid = models.CharField("ID", max_length=255, blank=True, unique=True)
     name = models.CharField("Program Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
@@ -288,7 +311,7 @@ class ApprovalAuthority(models.Model):
 
     class Meta:
         ordering = ('approval_user',)
-        verbose_name_plural = "Approval Authority"
+        verbose_name_plural = "Tola Approval Authority"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -310,6 +333,8 @@ class Province(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = "Admin Level 1"
+        verbose_name_plural = "Admin Level 1"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -325,19 +350,21 @@ class Province(models.Model):
 
 class ProvinceAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'create_date')
-    search_fields = ('name','country')
+    search_fields = ('name','country__country')
     list_filter = ('create_date','country')
     display = 'Admin Level 1'
 
 
 class District(models.Model):
     name = models.CharField("Admin Level 2", max_length=255, blank=True)
-    province = models.ForeignKey(Province)
+    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
+        verbose_name = "Admin Level 2"
+        verbose_name_plural = "Admin Level 2"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -360,12 +387,14 @@ class DistrictAdmin(admin.ModelAdmin):
 
 class AdminLevelThree(models.Model):
     name = models.CharField("Admin Level 3", max_length=255, blank=True)
-    district = models.ForeignKey(District)
+    district = models.ForeignKey(District,verbose_name="Admin Level 2")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
+        verbose_name = "Admin Level 3"
+        verbose_name_plural = "Admin Level 3"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -389,7 +418,7 @@ class AdminLevelThreeAdmin(admin.ModelAdmin):
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
     code = models.CharField("Office Code", max_length=255, blank=True)
-    province = models.ForeignKey(Province)
+    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -411,7 +440,7 @@ class Office(models.Model):
 
 class OfficeAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
-    search_fields = ('name','province')
+    search_fields = ('name','province__name','code')
     list_filter = ('create_date','province__country__country')
     display = 'Office'
 
@@ -419,12 +448,14 @@ class OfficeAdmin(admin.ModelAdmin):
 class Village(models.Model):
     name = models.CharField("Admin Level 4", max_length=255, blank=True)
     district = models.ForeignKey(District,null=True,blank=True)
-    admin_3 = models.ForeignKey(AdminLevelThree,null=True,blank=True)
+    admin_3 = models.ForeignKey(AdminLevelThree,verbose_name="Admin Level 3",null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
+        verbose_name = "Admin Level 4"
+        verbose_name_plural = "Admin Level 4"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -576,7 +607,7 @@ class SiteProfile(models.Model):
         return new_name
 
 
-class CommunityAdmin(admin.ModelAdmin):
+class SiteProfileAdmin(admin.ModelAdmin):
     list_display = ('name', 'code','office', 'country', 'district', 'province', 'village', 'cluster', 'longitude', 'latitude', 'create_date', 'edit_date')
     list_filter = ('country__country')
     search_fields = ('code','office__code','country__country')
@@ -760,6 +791,21 @@ class StakeholderAdmin(admin.ModelAdmin):
 
 
 class ProjectAgreementManager(models.Manager):
+    def get_approved(self):
+        return self.filter(approval="approved")
+
+    def get_open(self):
+        return self.filter(approval="")
+
+    def get_inprogress(self):
+        return self.filter(approval="in progress")
+
+    def get_awaiting_approval(self):
+        return self.filter(approval="awaiting approval")
+
+    def get_rejected(self):
+        return self.filter(approval="rejected")
+
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
 
@@ -767,6 +813,7 @@ class ProjectAgreementManager(models.Manager):
 # Project Agreements, admin is handled in the admin.py
 class ProjectAgreement(models.Model):
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    detailed = models.BooleanField(default=False,verbose_name="Detailed form view")
     program = models.ForeignKey(Program, verbose_name="Program", related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
@@ -852,9 +899,10 @@ class ProjectAgreement(models.Model):
     objects = ProjectAgreementManager()
 
     class Meta:
-        ordering = ('create_date',)
+        ordering = ('project_name',)
+        verbose_name_plural = "Project Initiation"
         permissions = (
-            ("can_approve", "Can approve agreement"),
+            ("can_approve", "Can approve initiation"),
         )
 
     # on save add create date or update edit date
@@ -902,18 +950,18 @@ class ProjectAgreement(models.Model):
 
 class ProjectComplete(models.Model):
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
-    project_agreement = models.OneToOneField(ProjectAgreement)
-    activity_code = models.CharField("Activity Code", max_length=255, blank=True, null=True)
+    project_agreement = models.OneToOneField(ProjectAgreement, verbose_name="Project Initiation")
+    activity_code = models.CharField("Project Code", max_length=255, blank=True, null=True)
     project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
     project_type = models.ForeignKey(ProjectType, max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
     dashboard_name = models.ForeignKey(CustomDashboard, blank=True, null=True)
-    expected_start_date = models.DateTimeField(help_text="Imported Project Agreement", blank=True, null=True)
-    expected_end_date = models.DateTimeField(help_text="Imported Project Agreement", blank=True, null=True)
-    expected_duration = models.CharField("Expected Duration", max_length=255, help_text="Imported from Project Agreement", blank=True, null=True)
-    actual_start_date = models.DateTimeField(help_text="Imported from Project Agreement", blank=True, null=True)
+    expected_start_date = models.DateTimeField(help_text="Imported from Project Initiation", blank=True, null=True)
+    expected_end_date = models.DateTimeField(help_text="Imported Project Initiation", blank=True, null=True)
+    expected_duration = models.CharField("Expected Duration", max_length=255, help_text="Imported from Project Initiation", blank=True, null=True)
+    actual_start_date = models.DateTimeField(help_text="Imported from Project Initiation", blank=True, null=True)
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=None)
@@ -959,8 +1007,8 @@ class ProjectComplete(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        ordering = ('create_date',)
-        verbose_name_plural = "Project Completions"
+        ordering = ('project_name',)
+        verbose_name_plural = "Project Tracking"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1036,7 +1084,7 @@ class Benchmarks(models.Model):
     budget = models.IntegerField("Estimated Budget", blank=True, null=True)
     cost = models.IntegerField("Actual Cost", blank=True, null=True)
     description = models.CharField("Description", max_length=255, blank=True)
-    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True)
+    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True, verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete,blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1066,7 +1114,7 @@ class Monitor(models.Model):
     responsible_person = models.CharField("Person Responsible", max_length=25, blank=True, null=True)
     frequency = models.CharField("Frequency", max_length=25, blank=True, null=True)
     type = models.TextField("Type", null=True, blank=True)
-    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True)
+    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True, verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete,blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1096,7 +1144,7 @@ class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True)
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
     proposed_value = models.IntegerField(default=0, blank=True, null=True)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True)
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, on_delete=models.SET_NULL)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1120,45 +1168,10 @@ class BudgetAdmin(admin.ModelAdmin):
     display = 'Budget'
 
 
-class MergeMap(models.Model):
-    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=False)
-    project_completion = models.ForeignKey(ProjectComplete, null=True, blank=False)
-    from_column = models.CharField(max_length=255, blank=True)
-    to_column = models.CharField(max_length=255, blank=True)
-
-
-class MergeMapAdmin(admin.ModelAdmin):
-    list_display = ('project_agreement', 'project_completion', 'from_column', 'to_column')
-    display = 'project_agreement'
-
-# Default dashboard when no custom dashboard is specified on a program
-class ProgramDashboard(models.Model):
-    program = models.ForeignKey(Program, null=True, blank=True)
-    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    project_completion = models.ForeignKey(ProjectComplete, null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('program',)
-
-    # on save add create date or update edit date
-    def save(self):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ProgramDashboard, self).save()
-
-
-class ProgramDashboardAdmin(admin.ModelAdmin):
-    list_display = ('program', 'create_date', 'edit_date')
-    display = 'Program Dashboard'
-
-
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
-    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
+    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
     total_participants = models.IntegerField(null=True, blank=True)
@@ -1233,60 +1246,9 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
 
 
-class FormLibrary(models.Model):
-    name = models.CharField("Form Name", max_length=255, null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name','create_date')
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(FormLibrary, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return unicode(self.name)
-
-
-class FormLibraryAdmin(admin.ModelAdmin):
-    list_display = ('name','create_date')
-
-
-class FormEnabled(models.Model):
-    form = models.ForeignKey(FormLibrary)
-    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
-    country = models.ForeignKey(Country,null=True,blank=True)
-    enabled = models.BooleanField(default=False)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('country','agreement')
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(FormEnabled, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return unicode(self.form)
-
-
-class FormEnabledAdmin(admin.ModelAdmin):
-    list_display = ('form','agreement','country')
-
-
 class Checklist(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True,default="Checklist")
-    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
+    agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     country = models.ForeignKey(Country,null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1347,7 +1309,7 @@ class DocumentationApp(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('create_date',)
+        ordering = ('name',)
 
     def save(self):
         if self.create_date is None:
@@ -1411,3 +1373,56 @@ class FAQAdmin(admin.ModelAdmin):
     display = 'FAQ'
 
 
+class Distribution(models.Model):
+    distribution_name = models.CharField(max_length=255)
+    program = models.ForeignKey(Program, null=True, blank=True)
+    initiation = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
+    office_code = models.ForeignKey(Office, null=True, blank=True)
+    distribution_indicator = models.CharField(max_length=255)
+    distribution_implementer = models.CharField(max_length=255, null=True, blank=True)
+    reporting_period = models.CharField(max_length=255, null=True, blank=True)
+    province = models.ForeignKey(Province, null=True, blank=True)
+    total_beneficiaries_received_input = models.IntegerField(null=True, blank=True)
+    distribution_location = models.CharField(max_length=255, null=True, blank=True)
+    input_type_distributed = models.CharField(max_length=255, null=True, blank=True)
+    distributor_name_and_affiliation = models.CharField(max_length=255, null=True, blank=True)
+    distributor_contact_number = models.CharField(max_length=255, null=True, blank=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+    form_filled_by = models.CharField(max_length=255, null=True, blank=True)
+    form_filled_by_position = models.CharField(max_length=255, null=True, blank=True)
+    form_filled_by_contact_num = models.CharField(max_length=255, null=True, blank=True)
+    form_filled_date = models.CharField(max_length=255, null=True, blank=True)
+    form_verified_by = models.CharField(max_length=255, null=True, blank=True)
+    form_verified_by_position = models.CharField(max_length=255, null=True, blank=True)
+    form_verified_by_contact_num = models.CharField(max_length=255, null=True, blank=True)
+    form_verified_date = models.CharField(max_length=255, null=True, blank=True)
+    total_received_input = models.CharField(max_length=255, null=True, blank=True)
+    total_male = models.IntegerField(null=True, blank=True)
+    total_female = models.IntegerField(null=True, blank=True)
+    total_age_0_14_male = models.IntegerField(null=True, blank=True)
+    total_age_0_14_female = models.IntegerField(null=True, blank=True)
+    total_age_15_24_male = models.IntegerField(null=True, blank=True)
+    total_age_15_24_female = models.IntegerField(null=True, blank=True)
+    total_age_25_59_male = models.IntegerField(null=True, blank=True)
+    total_age_25_59_female = models.IntegerField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('distribution_name',)
+
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Distribution, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.distribution_name)
+
+
+class DistributionAdmin(admin.ModelAdmin):
+    list_display = ('distribution_name', 'program', 'initiation', 'create_date', 'edit_date')
+    display = 'Program Dashboard'

@@ -1,7 +1,5 @@
-from django.shortcuts import render
 from .forms import FeedbackForm, RegistrationForm, NewUserRegistrationForm,NewTolaUserRegistrationForm
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -11,6 +9,7 @@ from .tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
 from tola.util import getCountry
+from django.contrib.auth.models import Group
 
 from django.contrib.auth.decorators import login_required
 
@@ -139,7 +138,9 @@ def index(request, selected_countries=None, id=0, sector=0):
                                           'complete_open_count':complete_open_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,\
                                           'complete_wait_count':complete_wait_count,\
-                                          'programs':getPrograms,'getSiteProfile':getSiteProfile,'countries': user_countries,'selected_countries':selected_countries,'getFilteredName':getFilteredName,'getSectors':getSectors,\
+                                          'programs':getPrograms,'getSiteProfile':getSiteProfile,\
+                                          'countries': user_countries,'selected_countries':selected_countries,\
+                                          'getFilteredName':getFilteredName,'getSectors':getSectors,\
                                           'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums,\
                                           'count_evidence':count_evidence,
                                           'getObjectives':getObjectives,

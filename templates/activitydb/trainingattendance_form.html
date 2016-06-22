@@ -15,13 +15,14 @@
 {% block page_title %}Training Attendance Form{% endblock %}
 
 {% block content %}
+    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
-        {% for field in form %}
-            {% for error in field.errors %}
-                    <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
+            {% for field in form %}
+                {% for error in field.errors %}
+                        <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
         </div>
         {% for error in form.non_field_errors %}
             <div class="alert alert-error">

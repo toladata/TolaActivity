@@ -8,7 +8,7 @@
         <meta name="description" content="Mercy Corps Public Dashboard">
         <meta name="author" content="Mercy Corps">
 
-        <title>{% block title %} Public Dashboard {% endblock %}</title>
+        <title>{% block title %} INVEST-in-Kandahar Dashboard {% endblock %}</title>
 
         <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png">
 
@@ -16,23 +16,17 @@
         <link href="{{ STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 
         <!-- JQuery UI CSS -->
-        <link href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.10.4.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ STATIC_URL }}css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 
         <!-- Custom Footer CSS -->
         <link href="{{ STATIC_URL }}css/app.css" rel="stylesheet" type="text/css">
-
-        <!--- Django Tables2 css -->
-        <link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
 
         <!--- Hosted Leaflet CSS --->
         <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
 
         {% block extra_js_in_header %}
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.11.1.min.js"></script>
-
-        <!-- App specific Javascript -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/app.js"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 
         <!-- Hosted Leaflet -->
         <script src="{{ STATIC_URL }}js/leaflet.js"></script>
@@ -47,13 +41,25 @@
             <div class="navbar-collapse collapse" role="navigation">
                 <ul class="nav navbar-nav">
                     <li class="{{ home_tab }}"><a href="{% url 'index' %}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Gallery<b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">INVEST-in-Kandahar<b class="caret"></b></a>
                         <ul class="dropdown-menu">
 
-                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> List</a></li>
-                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> Albums</a></li>
+                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> About Us</a></li>
+                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> Target Demographic</a></li>
+                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> Area of Focus - VTCs</a></li>
+                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> Business Partnerships</a></li>
+                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> M&E Practices</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resources<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> Photo Gallery</a></li>
+                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> Success Stories</a></li>
+                            <li><a href=""><span class="glyphicon glyphicon-th-list"></span> Surveys</a></li>
                         </ul>
                     </li>
 
@@ -86,25 +92,25 @@
                     <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
                 </div>
                 <div class="col-md-4 text-right">
-                    <a href="/customdashboard/public/{% if getProgram %}{{ getProgram.id }}{% else %}0{% endif %}/{{ getProgram.id }}/gallery/0/" class="text-muted">Gallery</a> | <a href="" class="text-muted">Surveys</a> | <a href="" class="text-muted">Success Stories</a>
+                    <a href="" class="text-muted">Custom Dashboard for INVEST-in-Kandahar</a>
                 </div>
             </div>
         </div><!-- .footer collapse -->
 
-        <!-- jQuery UI (necessary for datepicker as well as dataTables library -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.10.4.min.js"></script>
 
         <!-- data tables jquery javascript library -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
 
         <!-- Bootstrap compiled javascript plugins -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-
-        <!-- Typekit (Fonts) -->
-        <script src="https://use.typekit.net/lmu1xjz.js"></script>
-        <script>try{Typekit.load({ async: true });}catch(e){}</script>
+        {% if offline_mode %}
+            <!--- offline mode so don't try andload the external fonts --->
+        {% else %}
+            <!-- Typekit (Fonts) -->
+            <script src="https://use.typekit.net/shi4wqr.js"></script>
+            <script>try{Typekit.load({ async: true });}catch(e){}</script>
+        {% endif %}
 
         {% block extra_js_in_body %}{% endblock %}
     </body>
 </html>
-

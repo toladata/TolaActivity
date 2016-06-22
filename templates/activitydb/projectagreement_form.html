@@ -5,7 +5,7 @@
   {% if pk %}
     <li><a href="/activitydb/dashboard/project/{{ pk }}/">Project Dashboard</a></li>
   {% endif %}
-  <li class="active">Project Agreement Form</li>
+  <li class="active">Project Initiation Form</li>
 </ol>
 {% endblock %}
 
@@ -24,9 +24,9 @@
 
 {% endblock %}
 
-{% block page_title %}Project Agreement Form{% endblock %}
+{% block page_title %}Project Initiation Form{% endblock %}
 {% block content %}
-    <span style="float: right;"><a onclick="newPopup('https://drive.google.com/open?id=111BzD3uHlJpaj4MSk7l8XApvrpu69QgimWPnfXbBUT4','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
+    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}

@@ -21,9 +21,6 @@ build
 # Logs:
 *.log
 
-#virtualenv
-frds-venv/
-
 #allvritualenv
 venv/
 
@@ -40,3 +37,4 @@ client_secrets.json
 error.log
 *.secret
 *.secret.yml
+assets/

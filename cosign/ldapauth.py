@@ -1,8 +1,7 @@
-from django.db import connection
-from django.contrib.auth.models import User,Permission
+from django.contrib.auth.models import User,Group
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
-import sys, traceback, datetime, ldap, re, logging
+import datetime, ldap, re, logging
 from activitydb.models import Country, TolaUser
 
 from django.utils.timezone import utc
@@ -103,7 +102,7 @@ class RemoteUserBackend(object):
 
     """
     --------------------------------------------------------------------------------
-    When a use logs in to the api, this method checks if s/he has an account in ldap
+    When a user logs in to the api, this method checks if s/he has an account in ldap
     It creates an account in the auth_user table of the django if an account exist in
     ldap but not in the django app; otherwise, it updates it
     --------------------------------------------------------------------------------
@@ -132,6 +131,9 @@ class RemoteUserBackend(object):
 
         # finally update the password to match the one in ldap
         user.password = make_password(password)
+        if created:
+            # add user to ViewOnly group by default
+            user.groups.add(Group.objects.get(name='ViewOnly'))
         user.save()
         logger.info("Saved user: %s %s" % (user.first_name, user.last_name))
         return user

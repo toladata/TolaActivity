@@ -66,7 +66,7 @@ class StrategicObjective(models.Model):
 
 class StrategicObjectiveAdmin(admin.ModelAdmin):
     list_display = ('country','name')
-    search_fields = ('country','name')
+    search_fields = ('country__country','name')
     list_filter = ('country__country',)
     display = 'Strategic Objectives'
 
@@ -323,7 +323,7 @@ class CollectedData(models.Model):
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
     program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
     date_collected = models.DateTimeField(null=True, blank=True)
@@ -331,7 +331,11 @@ class CollectedData(models.Model):
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data")
     tola_table = models.ForeignKey(TolaTable, blank=True, null=True)
+<<<<<<< HEAD
     update_count_tola_table = models.BooleanField("Would you like to update the achieved total with the row count from TolaTables?",default=False)
+=======
+    update_count_tola_table = models.BooleanField("Would you like to update the achieved total with the count from TolaTables?",default=False)
+>>>>>>> master
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
@@ -360,6 +364,10 @@ class CollectedData(models.Model):
     def achieved_sum(self):
         achieved=CollectedData.targeted.filter(indicator__id=self).sum('achieved')
         return achieved
+
+    @property
+    def disaggregations(self):
+        return ', '.join([y.disaggregation_label.label + ': ' + y.value for y in self.disaggregation_value.all()])
 
 
 class CollectedDataAdmin(admin.ModelAdmin):
