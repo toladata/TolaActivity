@@ -36,9 +36,9 @@ DATABASES = app_settings['DATABASES']
 
 # DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = True
+DEBUG = app_settings['DEBUG']
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = app_settings['TEMPLATE_DEBUG']
 
 # EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
@@ -74,10 +74,6 @@ LDAP_ADMIN_GROUP = app_settings['LDAP_ADMIN_GROUP']
 AUTHENTICATION_BACKENDS = app_settings['AUTHENTICATION_BACKENDS']
 
 # If report server then limit navigation and allow access to public dashboards
-REPORT_SERVER = False
-<<<<<<< HEAD
-OFFLINE_MODE = False
-=======
-OFFLINE_MODE = False 
->>>>>>> e9b05e73a723500acf31904d9e05013332eba797
-NON_LDAP = True
+REPORT_SERVER = app_settings['REPORT_SERVER']
+OFFLINE_MODE = app_settings['OFFLINE_MODE']
+NON_LDAP = app_settings['NON_LDAP']
