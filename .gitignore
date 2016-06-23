@@ -24,7 +24,7 @@ build
 #allvritualenv
 venv/
 
-#conf
+conf
 conf/awstats.conf
 
 #Misc.
