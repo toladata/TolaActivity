@@ -1050,11 +1050,6 @@ class SiteProfileForm(forms.ModelForm):
                              'info_source'
                     ),
                 ),
-                Tab('Approvals',
-                    Fieldset('',
-                        'approval','approved_by','filled_by',
-                    ),
-                ),
 
             ),
             FormActions(
