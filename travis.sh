@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 echo about to Push
 
 git push origin docker
