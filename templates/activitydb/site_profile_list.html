@@ -75,7 +75,6 @@
         <th>Province</th>
         <th>District</th>
         <th>Status</th>
-        <th>Approval</th>
         <th>&nbsp;</th>
     </tr>
     {% for item in getSiteProfile %}
@@ -88,7 +87,6 @@
         <td>{{ item.province }}</td>
         <td>{{ item.district }}</td>
         <td>{% for a in items.collecteddata_set.all %}{% if inactiveSite > a.date_collected %}<span class="badge">Inactive</span>{% else %}&nbsp<span class="badge">Active</span>{% endif %}{% endfor %}&nbsp{% if item.name != items.name %}<span class="badge">No Data</span>{% endif %}</td>
-        <td>{{ item.approval }}</td>
         <td>
             <a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
     </tr>
