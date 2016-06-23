@@ -678,6 +678,7 @@ class CollectedDataUpdate(UpdateView):
 
         getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
+
         getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
 
         # update the count with the value of Table unique count

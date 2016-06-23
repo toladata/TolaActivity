@@ -74,6 +74,7 @@
         <th>Profile Type</th>
         <th>Province</th>
         <th>District</th>
+        <th>Status</th>
         <th>Approval</th>
         <th>&nbsp;</th>
     </tr>
@@ -82,10 +83,11 @@
             {% for items in getSiteProfileIndicator %}
     <tr>
         <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date }} </a></td>
-        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name }}</a><br/>{% for a in items.collecteddata_set.all %}{% if inactiveSite > a.date_collected %}<span class="badge">Inactive</span>{% else %}&nbsp<span class="badge">Active</span>{% endif %}{% endfor %}&nbsp{% if item.name != items.name %}<span class="badge">No Data</span>{% endif %}</td>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name }}</a></td>
         <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
         <td>{{ item.province }}</td>
         <td>{{ item.district }}</td>
+        <td>{% for a in items.collecteddata_set.all %}{% if inactiveSite > a.date_collected %}<span class="badge">Inactive</span>{% else %}&nbsp<span class="badge">Active</span>{% endif %}{% endfor %}&nbsp{% if item.name != items.name %}<span class="badge">No Data</span>{% endif %}</td>
         <td>{{ item.approval }}</td>
         <td>
             <a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
