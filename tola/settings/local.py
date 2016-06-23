@@ -75,5 +75,9 @@ AUTHENTICATION_BACKENDS = app_settings['AUTHENTICATION_BACKENDS']
 
 # If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = False
+<<<<<<< HEAD
 OFFLINE_MODE = False
+=======
+OFFLINE_MODE = False 
+>>>>>>> e9b05e73a723500acf31904d9e05013332eba797
 NON_LDAP = True
