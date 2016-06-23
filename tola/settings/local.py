@@ -67,5 +67,5 @@ INSTALLED_APPS = INSTALLED_APPS + tuple(DEV_APPS)
 
 # If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = False
-OFFLINE_MODE = True
+OFFLINE_MODE = False 
 NON_LDAP = True

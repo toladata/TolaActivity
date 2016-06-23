@@ -310,7 +310,7 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 import os
 PROJECT_PATH = dirname(dirname(dirname(abspath(__file__))))
 path.append(PROJECT_PATH)
-
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -329,7 +329,7 @@ LOGGING = {
         },
     },
 }
-
+"""
 """
 LOGSTASH LOGGING DISABLED FOR NOW
 LOGGING = {
