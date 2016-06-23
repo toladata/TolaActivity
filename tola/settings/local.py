@@ -65,7 +65,15 @@ DEV_APPS = app_settings['DEV_APPS']
 
 INSTALLED_APPS = INSTALLED_APPS + tuple(DEV_APPS)
 
+LDAP_LOGIN = app_settings['LDAP_LOGIN']
+LDAP_SERVER = app_settings['LDAP_SERVER']
+LDAP_PASSWORD = app_settings['LDAP_PASSWORD']
+LDAP_USER_GROUP = app_settings['LDAP_USER_GROUP']
+LDAP_ADMIN_GROUP = app_settings['LDAP_ADMIN_GROUP']
+
+AUTHENTICATION_BACKENDS = app_settings['AUTHENTICATION_BACKENDS']
+
 # If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = False
-OFFLINE_MODE = True
+OFFLINE_MODE = False
 NON_LDAP = True
