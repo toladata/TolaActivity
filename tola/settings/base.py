@@ -282,68 +282,28 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
-#LOGGING = {
-#    'version': 1,
-#    'disable_existing_loggers': False,
-#    'filters': {
-#        'require_debug_false': {
-#            '()': 'django.utils.log.RequireDebugFalse'
-#        }
-#    },
-#    'handlers': {
-#        'mail_admins': {
-#            'level': 'ERROR',
-#            'filters': ['require_debug_false'],
-#            'class': 'django.utils.log.AdminEmailHandler'
-#        }
-#    },
-#    'loggers': {
-#        'django.request': {
-#            'handlers': ['mail_admins'],
-#            'level': 'ERROR',
-#            'propagate': True,
-#        },
-#    }
-#}
-
-
-import os
-PROJECT_PATH = dirname(dirname(dirname(abspath(__file__))))
-path.append(PROJECT_PATH)
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt': "%Y-%d-%b %H:%M:%S"
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
     },
-
     'handlers': {
-      'logstash': {
-          'level': 'DEBUG',
-          'class': 'logstash.LogstashHandler',
-          'host': '82.196.12.89',
-          'port': 5959, # Default value: 5959
-          'version': 1, # Version of logstash event schema. Default value: 0 (for backward compatibility of the library)
-          'message_type': 'logstash',  # 'type' field in logstash message. Default value: 'logstash'.
-          'fqdn': False, # Fully qualified domain name. Default value: false.
-          'tags': ['tag1', 'tag2'], # list of tags. Default: None.
-      },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
     },
     'loggers': {
-      'django.request': {
-          'handlers': ['logstash'],
-          'level': 'DEBUG',
-          'propagate': True,
-      },
-    },
-
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
 }
 
 

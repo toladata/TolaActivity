@@ -7,7 +7,10 @@ from .models import Program, Country, Province, AdminLevelThree, District, Proje
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
-from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
+
+import pytz
+
+from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
     QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 import logging
@@ -36,13 +39,14 @@ from export import ProjectAgreementResource
 from django.core.exceptions import PermissionDenied
 
 APPROVALS = (
-    ('in progress', 'in progress'),
-    ('awaiting approval', 'awaiting approval'),
+    ('in_progress', 'in progress'),
+    ('awaiting_approval', 'awaiting approval'),
     ('approved', 'approved'),
     ('rejected', 'rejected'),
 )
 
-from datetime import date, timedelta
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 def date_handler(obj):
@@ -103,7 +107,6 @@ class ProjectDash(ListView):
             getChecklistCount = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk']).count()
             getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
 
-
         if int(self.kwargs['pk']) == 0:
             getProgram =Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         else:
@@ -120,6 +123,7 @@ class ProgramDash(ListView):
     Dashboard links for and status for each program with number of projects
     :param request:
     :param pk: program_id
+    :param status: approval status of project
     :return:
     """
     template_name = 'activitydb/programdashboard_list.html'
@@ -133,7 +137,7 @@ class ProgramDash(ListView):
         if int(self.kwargs['pk']) == 0:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
         else:
-            getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries,agreement__approval=self.kwargs['status']).order_by('name')
+            getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
 
         if self.kwargs['status']:
             status = self.kwargs['status']
@@ -187,6 +191,8 @@ class ProjectAgreementCreate(CreateView):
     Project Agreement Form
     :param request:
     :param id:
+    This is only used in case of an error incomplete form submission from the simple form
+    in the project dashboard
     """
 
     model = ProjectAgreement
@@ -264,6 +270,7 @@ class ProjectAgreementUpdate(UpdateView):
     :param id: project_agreement_id
     """
     model = ProjectAgreement
+    form_class = ProjectAgreementSimpleForm
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -271,7 +278,19 @@ class ProjectAgreementUpdate(UpdateView):
             guidance = FormGuidance.objects.get(form="Agreement")
         except FormGuidance.DoesNotExist:
             guidance = None
+
         return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class):
+        check_form_type = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+
+        if check_form_type.detailed == True:
+            form = ProjectAgreementForm
+        else:
+            form = ProjectAgreementSimpleForm
+
+        return form(**self.get_form_kwargs())
+
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)
@@ -993,8 +1012,8 @@ class SiteProfileList(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
-        #date 3 months ago, a site is considered inactive
-        inactiveSite = date.today() - timedelta(days=90)
+        #this date, 3 months ago, a site is considered inactive
+        inactiveSite = pytz.UTC.localize(datetime.now()) - relativedelta(months=3)
 
         #Filter SiteProfile list and map by activity or program
         if activity_id != 0:
@@ -1006,8 +1025,7 @@ class SiteProfileList(ListView):
 
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
-            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(collecteddata__program__country__in=countries)
-
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province','collecteddata_set').filter(collecteddata__program__country__in=countries)
 
         if request.method == "GET" and "search" in request.GET:
             """
