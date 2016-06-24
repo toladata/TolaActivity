@@ -16,7 +16,7 @@ Ensure that the configuration files (`.secret`, `.secret.yml`) are in the `confi
 ## Using docker
 Run the following commands from the root of this repository:
   - `docker-compose up -d mysqldb`
-  - `docker-compose up nginx`
+  - `docker-compose up`
 Wait about a minute.
 
 ## USING virtualenv
