@@ -124,7 +124,9 @@ class ProgramDash(ListView):
     """
     template_name = 'activitydb/programdashboard_list.html'
 
+
     def get(self, request, *args, **kwargs):
+
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
@@ -134,10 +136,12 @@ class ProgramDash(ListView):
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries,agreement__approval=self.kwargs['status']).order_by('name')
 
         if self.kwargs['status']:
+            status = self.kwargs['status']
             getDashboard.filter(agreement__approval=self.kwargs['status'])
-            print getDashboard
+        else:
+            status = None
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': self.kwargs['status']})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': status})
 
 
 class ProjectAgreementList(ListView):
