@@ -3,7 +3,7 @@
 #### This script checks the build status. If it has passed then it runs Docker in the activity server. If it has failed, then it exists ####
 
 echo about to Push
-git push origin docker
+git push origin master
 echo Pushed
 sleep 75
 
