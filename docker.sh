@@ -3,7 +3,7 @@
 ### It dockerizes automatically ###
 cd /home/TolaActivity
 git stash
-git pull origin docker
+git pull origin master
 
 docker-compose up
 
