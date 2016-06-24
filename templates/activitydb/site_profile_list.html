@@ -81,7 +81,7 @@
         {% if getSiteProfileIndicator %}
             {% for items in getSiteProfileIndicator %}
     <tr>
-        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date }} </a></td>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date|date:"d-m-Y" }} </a></td>
         <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name }}</a></td>
         <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
         <td>{{ item.province }}</td>
