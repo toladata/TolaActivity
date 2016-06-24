@@ -139,9 +139,12 @@ class ProgramDash(ListView):
         else:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
 
-        if self.kwargs['status']:
+        if self.kwargs.get('status', None):
             status = self.kwargs['status']
-            getDashboard.filter(agreement__approval=self.kwargs['status'])
+            if status == "in progress":
+                getDashboard.filter(Q(agreement__approval=self.kwargs['status']) | Q(agreement__approval=None))
+            else:
+                getDashboard.filter(agreement__approval=self.kwargs['status'])
         else:
             status = None
 
