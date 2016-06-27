@@ -21,7 +21,6 @@ Once all your changes have been commited to the repo, and before pushing them, r
 Run the following commands from the root of this repository:
   - `docker-compose up -d mysqldb`
   - `docker-compose up`
-Wait about a minute.
 
 ## USING virtualenv
 (Install virtualenv)
