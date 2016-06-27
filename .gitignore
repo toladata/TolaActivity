@@ -1,7 +1,6 @@
 *.log
 *.pot
 *.pyc
-#local.py
 # Python bytecode:
 *.py[co]
 

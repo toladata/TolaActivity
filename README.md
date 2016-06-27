@@ -13,10 +13,14 @@ files.
 ## Configuration
 Ensure that the configuration files (`.secret`, `.secret.yml`) are in the `config` folder.
 
-## Using docker
-Run the following commands from the root of this repository:
+## How to run
+Once all your changes have been commited to the repo, and before pushing them, run: 
+`. travis.sh`
+
+## Using docker manually
+In case you want to run docker manually, inside de instance, run the following commands from the root of this repository:
   - `docker-compose up -d mysqldb`
-  - `docker-compose up nginx`
+  - `docker-compose up`
 Wait about a minute.
 
 ## USING virtualenv
