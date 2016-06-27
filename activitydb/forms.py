@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser
+from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser, CustomDashboard, DashboardTheme, DashboardComponent, ComponentDataSource
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -1164,3 +1164,100 @@ class ProjectCompleteTable(forms.ModelForm):
     class Meta:
         model = ProjectComplete
         fields = '__all__'
+
+class CustomDashboardCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = CustomDashboard
+        exclude = ['create_date', 'edit_date']
+
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+
+        super(CustomDashboardCreateForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(CustomDashboardCreateForm, self).save(*args, **kwargs)
+        return obj
+
+class DashboardComponentCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = DashboardComponent
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+
+        super(DashboardComponentCreateForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(DashboardComponentCreateForm, self).save(*args, **kwargs)
+        return obj
+
+class ComponentDataSourceCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = ComponentDataSource
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+
+        super(ComponentDataSourceCreateForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(ComponentDataSourceCreateForm, self).save(*args, **kwargs)
+        return obj
+
+class DashboardThemeCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = DashboardTheme
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+
+        super(DashboardThemeCreateForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(DashboardThemeCreateForm, self).save(*args, **kwargs)
+        return obj
