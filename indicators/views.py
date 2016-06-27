@@ -886,7 +886,6 @@ class IndicatorExport(View):
             del kwargs['program']
 
         queryset = Indicator.objects.filter(**kwargs)
-        print kwargs
         indicator = IndicatorResource().export(queryset)
         response = HttpResponse(indicator.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator.csv'
@@ -903,8 +902,6 @@ class IndicatorDataExport(View):
             del kwargs['indicator']
         if int(kwargs['program']) == 0:
             del kwargs['program']
-
-        print kwargs
 
         queryset = CollectedData.objects.filter(**kwargs)
         dataset = CollectedDataResource().export(queryset)

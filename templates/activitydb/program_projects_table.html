@@ -1,8 +1,16 @@
 <tr>
     <td>{{ item.create_date|date:"d-m-Y" }}</td>
     <td> {{ item.project_name }} <br/>
-        <a class="btn btn-xs btn-default">{% if item.approval == "approved" %}<span class="glyphicon glyphicon-lock"></span>{% endif%} Initiation Form</a>
-        <a href="/activitydb/projectagreement_update/{{ item.id }}" class="btn btn-xs btn-default">Tracking Form</a>
+        {% if item.approval == "approved" %}
+          <a class="btn btn-xs btn-default"><span class="glyphicon glyphicon-lock"></span>Initiation Form</a>
+        {% else %}
+          <a class="btn btn-xs btn-default" href="/activitydb/projectagreement_update/{{ item.id }}">Initiation Form</a>
+        {% endif%}
+        {% if item.projectcomplete %}
+          <a class="btn btn-xs btn-default" href="/activitydb/projectcomplete_update/{{ item.projectcomplete.id }}">Tracking Form</a>
+        {% else %}
+          <a class="btn btn-xs btn-default"><span class="glyphicon glyphicon-lock"></span>Tracking Form</a>
+        {% endif%}
         <a href="/activitydb/projectagreement_detail/{{ item.id }}" class="btn btn-xs btn-default">Print View</a>
     </td>
     <td>{{ item.activity_code }}</td>
