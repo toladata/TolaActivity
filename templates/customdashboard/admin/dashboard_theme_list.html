@@ -4,15 +4,37 @@
 <!-- humanize numbers -->
 {% load humanize %}
 
-<!-- layout-specific content modules-->
-{% block content %}
-<!-- TODO: INPUT FORM FOR COMPONENT SELECTION
-		
-		NOTES: 
-		input form needs to capture chart_selection as "charts/chart_type" and .html component name needs to match
-		input form needs to capture narrative_selection as "narratives/narrative_type" and .html component name needs to match (ditto for other components) -->
+{% block page_title %}Dashboard Themes{% endblock %}
 
-<div>Just proving that I exist for now -- I will list dashboard themes
-</div>
+{% block content %}
+<!-- <div>
+<a href="/activitydb/custom_dashboard_add/0/" class="btn btn-large btn-success">Create Custom Dashboard Theme</a> &nbsp;
+<hr/>
+<br/>
+</div> -->
+<h3>Dashboard Themes</h3>
+
+<!-- Table -->
+<table class="table">
+    <tr>
+        <th>Date Created</th>
+        <th>Theme Name</th>
+        <th>Theme Type</th>
+        <th>Example Dashboard</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+    </tr>
+    {% for item in getDashboards %}
+    <tr>
+       <td> Date </td>       
+       <td> I am a Dashboard Name</td>
+       <td> I am a Dashboard Type</td>
+        <td> <a href="/activitydb/custom_dashboard_delete/{{ item.id }}" class="btn btn-xs btn-danger">Example Dashboard</a></td>
+    </tr>
+    {% empty %}
+        <li class="list-group-item">No Dashboard Themes Available Yet.</li>
+    {% endfor %}
+</table>
 
 {% endblock content %}

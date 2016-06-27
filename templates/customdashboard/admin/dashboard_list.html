@@ -5,13 +5,41 @@
 {% load humanize %}
 
 <!-- layout-specific content modules-->
-{% block content %}
-<!-- TODO: INPUT FORM FOR COMPONENT SELECTION
-		
-		NOTES: 
-		input form needs to capture chart_selection as "charts/chart_type" and .html component name needs to match
-		input form needs to capture narrative_selection as "narratives/narrative_type" and .html component name needs to match (ditto for other components) -->
 
-<div>Just proving that I exist for now</div>
+
+
+{% block page_title %}Dashboard List{% endblock %}
+
+{% block content %}
+<div>
+<a href="/activitydb/custom_dashboard_add/0/" class="btn btn-large btn-success">New Custom Dashboard</a> &nbsp;
+<hr/>
+<br/>
+</div>
+<h3>Dashboards</h3>
+
+<!-- Table -->
+<table class="table">
+    <tr>
+        <th>Date Created</th>
+        <th>Dashboard Name</th>
+        <th>Dashboard Type</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+    </tr>
+    {% for item in getDashboards %}
+    <tr>
+       <td> Date </td>       
+       <td> I am a Dashboard Name</td>
+       <td> I am a Dashboard Type</td>
+        <td> <a href="/activitydb/custom_dashboard_delete/{{ item.id }}" class="btn btn-xs btn-danger">View Dashboard</a></td>
+        <td> <a href="/activitydb/custom_dashboard_update/{{ item.id }}" class="btn btn-xs btn-danger">Edit Dashboard</a></td>
+        <td> <a href="/activitydb/custom_dashboard_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Dashboard</a></td>
+    </tr>
+    {% empty %}
+        <li class="list-group-item">No Custom Dashboards.</li>
+    {% endfor %}
+</table>
 
 {% endblock content %}
