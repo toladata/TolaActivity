@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, \
-    ChecklistItemForm, StakeholderForm, ContactForm, CustomDashboardCreateForm
+    ChecklistItemForm, StakeholderForm, ContactForm, CustomDashboardCreateForm, DashboardThemeCreateForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -2440,8 +2440,11 @@ class CustomDashboardList(ListView):
 #             template.update = 'customdashboard/themes/custom_base_layout'
 
 class CustomDashboardCreate(CreateView):
+    #   :param request:
+    #   :param id:
+    #   """
     model = CustomDashboard
-    template_name = 'activitydb/customdashboard_form.html'
+    template_name = 'customdashboard/admin/customdashboard_form.html'
 
     try:
         guidance = FormGuidance.objects.get(form="CustomDashboard")
@@ -2466,6 +2469,19 @@ class CustomDashboardCreate(CreateView):
 
         return initial
 
+  #   #Example -- get shared data from project agreement and pre-populate form with it
+  #   def get_initial(self):
+
+  #       initial = {
+  #           'approved_by': self.request.user,
+  #           'estimated_by': self.request.user,
+  #           'checked_by': self.request.user,
+  #           'reviewed_by': self.request.user,
+  #           'approval_submitted_by': self.request.user,
+  #           }
+
+  #       return initial
+
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardCreate, self).get_context_data(**kwargs)
         return context
@@ -2483,30 +2499,16 @@ class CustomDashboardCreate(CreateView):
         #save formset from context
         context = self.get_context_data()
 
-        # latest = ProjectAgreement.objects.latest('id')
-        # getAgreement = ProjectAgreement.objects.get(id=latest.id)
-
-        # #create a new dashbaord entry for the project
-        # getProgram = Program.objects.get(id=latest.program_id)
-
-        # create_checklist = Checklist(agreement=getAgreement)
-        # create_checklist.save()
-        # form selection for each 
-        # component_sequence = {}
-        # for component in new_component_list:
-        #     #     DashboardComponent.objects.create()
-        #     # get new component id
-        #       component_sequence[new_component_list.index(component)] = new component's id
-
-
         messages.success(self.request, 'Success, Dashboard Created!')
 
-        # redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
+        latest = CustomDashboard.objects.latest('id')
+        getCustomDashboard = CustomDashboard.objects.get(id=latest.id)
+
+        # redirect_url = '/activitydb/dashboard/project/' + str(latest.id) //redirect to list view or detail view?
 
         return HttpResponseRedirect(redirect_url)
 
     form_class = CustomDashboardCreateForm
-
 
 class DashboardThemeList(ListView):
 
@@ -2534,6 +2536,68 @@ class DashboardThemeList(ListView):
         getDashboardThemes = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
             
         return render(request, self.template_name, {'getDashboardThemes': getDashboardThemes, 'getProgram': getProgram, 'getProjects': getProjects})
+
+class DashboardThemeCreate(CreateView):
+    model = DashboardTheme
+    template_name = 'customdashboard/admin/dashboard_theme_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="DashboardTheme")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(DashboardThemeCreate, self).dispatch(request, *args, **kwargs)
+
+
+    def get_initial(self):
+        initial = {}
+
+        return initial
+
+  #   #Example -- get shared data from project agreement and pre-populate form with it
+  #   def get_initial(self):
+
+  #       initial = {
+  #           'approved_by': self.request.user,
+  #           'estimated_by': self.request.user,
+  #           'checked_by': self.request.user,
+  #           'reviewed_by': self.request.user,
+  #           'approval_submitted_by': self.request.user,
+  #           }
+
+  #       return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardThemeCreate, self).get_context_data(**kwargs)
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        #save formset from context
+        context = self.get_context_data()
+
+        messages.success(self.request, 'Success, Dashboard Created!')
+
+        latest = DashboardTheme.objects.latest('id')
+        getDashboardTheme = DashboardTheme.objects.get(id=latest.id)
+
+        # redirect_url = '/activitydb/dashboard/project/' + str(latest.id) //redirect to list view or detail view?
+
+        return HttpResponseRedirect(redirect_url)
+
+    form_class = DashboardThemeCreateForm
 
 class DashboardComponentList(ListView):
 

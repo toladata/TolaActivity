@@ -103,7 +103,7 @@ urlpatterns = [
                        # url(r'^custom_dashboard_delete(?P<pk>[0-9]+)/$',  CustomDashboardDelete.as_view(), name='custom_dashboard_delete'),
 
                        url(r'^custom_dashboard/theme/(?P<id>[0-9]+)/$', DashboardThemeList.as_view(), name='dashboard_theme_list'),
-                       # url(r'^custom_dashboard/theme_add/(?P<pk>[0-9]+)/$',  CustomDashboardCreate.as_view(), name='custom_dashboard/theme_add'),
+                       url(r'^custom_dashboard/theme_add/(?P<pk>[0-9]+)/$',  DashboardThemeCreate.as_view(), name='dashboard_theme_add'),
                        # url(r'^custom_dashboard/theme_update/(?P<id>[0-9]+)/$',  CustomDashboardUpdate.as_view(), name='custom_dashboard/theme_update'),
                        # url(r'^custom_dashboard/theme_delete(?P<id>[0-9]+)/$',  CustomDashboardDelete.as_view(), name='custom_dashboard/theme_delete'),
                       

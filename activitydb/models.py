@@ -190,9 +190,10 @@ class ContactAdmin(admin.ModelAdmin):
 class DashboardTheme(models.Model):
     theme_name = models.CharField("Dashboard Theme Name", max_length=255, blank=True)
     theme_description = models.TextField("Brief Description", null=True, blank=True, help_text="What is the focus of this theme?")
-    theme_template = models.CharField("Dashboard Theme Name", max_length=255, blank=True)
+    theme_template = models.CharField("Template", max_length=255, blank=True)
     is_public = models.BooleanField(default=False)
-    number_of_components = models.IntegerField(blank=False)
+    number_of_components = models.IntegerField(blank=False, null=False, default=1)
+    layout_dictionary = models.TextField("Dashboard Layout Dictionary", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -211,7 +212,7 @@ class DashboardTheme(models.Model):
         return self.theme_name
 
 class DashboardThemeAdmin(admin.ModelAdmin):
-    list_display = ('theme_name', 'theme_description', 'is_public', 'number_of_components','create_date', 'edit_date')
+    list_display = ('theme_name', 'theme_description', 'is_public', 'number_of_components', 'layout_dictionary','create_date', 'edit_date')
     display = 'Dashboard Theme'
 
 class ComponentDataSource(models.Model):
@@ -274,10 +275,9 @@ class CustomDashboard(models.Model):
     dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
     dashboard_description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard display to the user?")
     is_public = models.BooleanField("External Public Dashboard", default=False)
-    dashboard_theme = models.ForeignKey(DashboardTheme, blank=False, null=False)
-    dashboard_color_palette = models.CharField("Color Scheme", max_length=255, blank=False)
-    layout_dictionary = models.TextField("...", null=True, blank=True)
-    dashboard_components = models.ManyToManyField(DashboardComponent, blank=False)
+    dashboard_theme = models.ForeignKey(DashboardTheme, blank=True, null=True)
+    dashboard_color_palette = models.CharField("Color Scheme", max_length=255, blank=False, default="bright")
+    dashboard_components = models.ManyToManyField(DashboardComponent, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
