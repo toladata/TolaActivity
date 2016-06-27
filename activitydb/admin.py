@@ -1,10 +1,11 @@
 from django.contrib import admin
 from .models import Country, Province, Office,OfficeAdmin, Village, Program, Documentation, Template,District, Sector, \
-    CustomDashboard, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
+    CustomDashboard, CustomDashboardAdmin, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
-    TolaSites, TolaSitesAdmin, FormGuidance, FormGuidanceAdmin
+    TolaSites, TolaSitesAdmin, FormGuidance, FormGuidanceAdmin, DashboardTheme, DashboardComponent, \
+    ComponentDataSource, DashboardThemeAdmin, DashboardComponentAdmin, ComponentDataSourceAdmin 
 
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
@@ -126,7 +127,10 @@ admin.site.register(District, DistrictAdmin)
 admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
 admin.site.register(Village)
 admin.site.register(Program, ProgramAdmin)
-admin.site.register(CustomDashboard)
+admin.site.register(CustomDashboard, CustomDashboardAdmin)
+admin.site.register(DashboardTheme, DashboardThemeAdmin)
+admin.site.register(DashboardComponent, DashboardComponentAdmin)
+admin.site.register(ComponentDataSource, ComponentDataSourceAdmin)
 admin.site.register(Sector)
 admin.site.register(ProjectAgreement, ProjectAgreementAdmin)
 admin.site.register(ProjectComplete, ProjectCompleteAdmin)
