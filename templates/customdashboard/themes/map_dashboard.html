@@ -1,0 +1,66 @@
+<!-- import chart.js -->
+
+<!-- load basic layout -->
+{% extends "customdashboard/themes/custom_base_layout.html" %}
+{% load staticfiles %}
+
+<!-- humanize numbers -->
+{% load humanize %}
+
+<!-- layout-specific content modules-->
+{% block content %}
+
+<!-- TODO: define layout sections -->
+<div class="tab-content">
+	<div class='container-fluid'>
+		<div class='row'>
+			<div class='col-lg-1'>
+				<div id="home" class="tab-pane fade in active">
+						<ul class="nav nav-pills">
+						    <li class="active"><a href="#home" style='text-align: center'>Home</a></li>
+						    <li><a href="#menu1">#1</a></li>
+						    <li><a href="#menu2">#2</a></li>
+						    <li><a href="#menu3">#3</a></li>
+						 </ul>
+				</div>
+			</div>
+			<div class='col-lg-11' style='padding:0; margin:0;'>
+				<div class='panel panel-info' style="min-height: 400pt; max-height: 400pt;">
+					<!-- <div class="panel-body" style='text-align: center'> -->
+						{% include 'customdashboard/components/maps/content_map.html' %}
+					<!-- </div> -->
+				</div>
+			</div>
+		</div>
+		<div class='row' style='padding:0; margin:0;'>
+			<div class='col-md-9'>
+				<div class='panel panel-info '>
+					<div class='panel-heading'>PROJECT STATUS?</div>
+					<div class="panel-body" style="height: 300;">
+						<!-- {% with table2 as tolaTableData %} -->
+						    {% include 'customdashboard/components/charts/bar_graph.html' %}
+						<!-- {% endwith %} -->
+					</div>
+				</div>
+			</div>
+			<div class='col-lg-3'>
+
+				<div class='panel panel-info '>
+					<div class="panel-body">
+						<span class='chart-title' style="overflow-y: scroll;">???</span>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}
+
+
+
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+ <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
