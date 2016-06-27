@@ -1,9 +1,9 @@
 var doughnutFunction = function(data, tolaDoughnutColors){
-    var ctx = document.getElementById("tolaDoughnutChart");
+    var ctx = document.getElementById(data.component_id);
     var tolaDoughnutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['1', '5', '10'], //{{tolaTableData.labels}}
+            labels: ['1', '5', '10'], //data.labels
             datasets: [{
                 label: '# of Things', // user input axis label
                 data: data,
@@ -19,7 +19,9 @@ var doughnutFunction = function(data, tolaDoughnutColors){
                         beginAtZero:true,
                     }
                 }]
-            }
+            },
+            responsive: true,
+            maintainAspectRatio: true
             //add options relating to legend generation
         }
     });

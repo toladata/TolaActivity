@@ -1,5 +1,5 @@
 var barFunction = function(data, tolaBarColors){
-    var ctx = document.getElementById("tolaBarChart");
+    var ctx = document.getElementById(data.component_id);
     var tolaBarChart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -19,7 +19,9 @@ var barFunction = function(data, tolaBarColors){
                         beginAtZero:true,
                     }
                 }]
-            }
+            },
+            responsive: true,
+            maintainAspectRatio: true
             //add options relating to legend generation
         }
     });

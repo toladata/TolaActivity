@@ -1,17 +1,11 @@
-var polarFunction = function(data){
+var polarFunction = function(data, tolaPolarColors){
     var ctx = document.getElementById("tolaPolarChart");
     var tolaPolarChart = new Chart(ctx, {
         type: 'polar',
         data: {
             datasets: [{
 	        data: data,
-	        backgroundColor: [
-	            "#FF6384",
-	            "#4BC0C0",
-	            "#FFCE56",
-	            "#E7E9ED",
-	            "#36A2EB"
-	        ],
+	        backgroundColor: tolaPolarColors,
 	        label: 'My dataset' // for legend
 		    }],
 		    labels: [
