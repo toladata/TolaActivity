@@ -21,13 +21,26 @@ import chart.js
 
 <div class='row'>
 	<div class='col-lg-12'>
-Title placeholder
+		<h3> Page title placeholder text</h3>
 	</div>
 </div>
 <div class='row'>
-	<div class='col-lg-12'>
+	<div class='col-lg-9'>
 		<div class='panel'>
-			<div class='panel-heading text-center'>I am the first row</div>	
+			<div class='panel-heading text-center'>
+				{% with table4 as tolaTableData %}
+				    {% include 'customdashboard/components/charts/bar_graph.html' %}
+				{% endwith %}
+			</div>	
+		</div>
+	</div>
+	<div class='col-lg-3'>
+		<div class='panel'>
+			<div class='panel-heading text-center'>
+				{% with table2 as tolaTableData %}
+				    {% include 'customdashboard/components/charts/pie.html' %}
+				{% endwith %}
+			</div>	
 		</div>
 	</div>
 </div>
