@@ -3,13 +3,13 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, \
     Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Budget, ApprovalAuthority, Checklist, ChecklistItem, \
-    Stakeholder, Contact, FormGuidance
+    Stakeholder, Contact, FormGuidance, CustomDashboard, DashboardComponent, ComponentDataSource, DashboardTheme
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, \
-    ChecklistItemForm, StakeholderForm, ContactForm
+    ChecklistItemForm, StakeholderForm, ContactForm, CustomDashboardCreateForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -2352,3 +2352,239 @@ def service_json(request, service):
     """
     service_indicators = import_service(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
+
+# This lists available custom dashboards to view
+class CustomDashboardList(ListView):
+
+    """
+    CustomDashboard
+    :param request:
+    :param pk: program_id
+    """
+    model = CustomDashboard
+    template_name = 'customdashboard/admin/dashboard_list.html'
+
+    def get(self, request, *args, **kwargs):
+    ## retrieve program
+        model = Program
+        program_id = int(self.kwargs['pk'])
+        getProgram = Program.objects.all().filter(id=program_id)
+
+        ## retrieve the coutries the user has data access for
+        countries = getCountry(request.user)
+
+        #retrieve projects for a program
+        getProjects = []#ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
+
+        #retrieve projects for a program
+        getCustomDashboards = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
+            
+        return render(request, self.template_name, {'getCustomDashboards': getCustomDashboards, 'getProgram': getProgram, 'getProjects': getProjects})
+
+# class CustomDashboardDetail(DetailView):
+#     model = CustomDashboard
+#     context_object_name = 'dashboard_context'
+#     template = 'customdashboard/themes/custom_base_layout'
+#     queryset = CustomDashboard.objects.all()
+
+#     colorPalettes = {
+#     'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
+#     'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
+#     };
+
+#     def get_context_data(self, **kwargs):
+#         context = super(CustomDashboardDetail, self).get_context_data(**kwargs)
+#         context['now'] = timezone.now()
+#         context.update({'id': self.kwargs['id']})
+
+#         try:
+#             getProgram = Program.objects.all().filter(dashboard__id=self.kwargs['pk'])
+#         except Program.DoesNotExist:
+#             getProgram = None
+#         context.update({'getProgram': getProgram})
+
+#         try:
+#             getCountry = Countrys.objects.all().filter(dashboard__id=self.kwargs['pk'])
+#         except Countrys.DoesNotExist:
+#             getCountry = None
+#         context.update({'getCountry': getCountry})
+
+#         try:
+#             getProjects = Projects.objects.all().filter(dashboard__id=self.kwargs['pk'])
+#         except Projects.DoesNotExist:
+#             getProjects = None
+#         context.update({'getProjects': getProjects})
+
+#     #get Dashboard theme
+#         try:
+#             getTheme = Theme.objects.all().filter(dashboard__id=self.kwargs['pk'])
+#         except Theme.DoesNotExist:
+#             getTheme = None
+#         context.update({'getTheme': getTheme})
+
+#     # get Dashboard Components -- these will already have all their intelligence
+#         try:
+#             getDashboardComponents = DashboardComponents.objects.all().filter(dashboard__id=self.kwargs['pk'])
+#         except DashboardComponents.DoesNotExist:
+#             getDashboardComponents = None
+#         context.update({'getDashboardComponents': getDashboardComponents})
+
+#         return context
+
+#      def get_template_name:
+#         try:
+#             getTheme = Theme.objects.all().filter(dashboard__id=self.kwargs['pk'])
+#             template.update = 'customdashboard/themes/'.concat('self.theme_template')
+#         except Theme.DoesNotExist:
+#             getTheme = None
+#             template.update = 'customdashboard/themes/custom_base_layout'
+
+class CustomDashboardCreate(CreateView):
+    model = CustomDashboard
+    template_name = 'activitydb/customdashboard_form.html'
+
+    try:
+        guidance = FormGuidance.objects.get(form="CustomDashboard")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CustomDashboardCreate, self).dispatch(request, *args, **kwargs)
+
+     # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(CustomDashboardCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get_initial(self):
+
+        initial = {
+
+            }
+
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(CustomDashboardCreate, self).get_context_data(**kwargs)
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        #save formset from context
+        context = self.get_context_data()
+
+        # latest = ProjectAgreement.objects.latest('id')
+        # getAgreement = ProjectAgreement.objects.get(id=latest.id)
+
+        # #create a new dashbaord entry for the project
+        # getProgram = Program.objects.get(id=latest.program_id)
+
+        # create_checklist = Checklist(agreement=getAgreement)
+        # create_checklist.save()
+        # form selection for each 
+        # component_sequence = {}
+        # for component in new_component_list:
+        #     #     DashboardComponent.objects.create()
+        #     # get new component id
+        #       component_sequence[new_component_list.index(component)] = new component's id
+
+
+        messages.success(self.request, 'Success, Dashboard Created!')
+
+        # redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
+
+        return HttpResponseRedirect(redirect_url)
+
+    form_class = CustomDashboardCreateForm
+
+
+class DashboardThemeList(ListView):
+
+    """
+    CustomDashboard
+    :param request:
+    :param pk: program_id
+    """
+    model = CustomDashboard
+    template_name = 'customdashboard/admin/dashboard_theme_list.html'
+
+    def get(self, request, *args, **kwargs):
+    ## retrieve program
+        model = Program
+        program_id = int(self.kwargs['id'])
+        getProgram = Program.objects.all().filter(id=program_id)
+
+        ## retrieve the coutries the user has data access for
+        countries = getCountry(request.user)
+
+        #retrieve projects for a program
+        getProjects = []#ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
+
+        #retrieve projects for a program
+        getDashboardThemes = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
+            
+        return render(request, self.template_name, {'getDashboardThemes': getDashboardThemes, 'getProgram': getProgram, 'getProjects': getProjects})
+
+class DashboardComponentList(ListView):
+
+    """
+    CustomDashboard
+    :param request:
+    :param pk: program_id
+    """
+    model = CustomDashboard
+    template_name = 'customdashboard/admin/dashboard_component_list.html'
+
+    def get(self, request, *args, **kwargs):
+    ## retrieve program
+        model = Program
+        program_id = int(self.kwargs['id'])
+        getProgram = Program.objects.all().filter(id=program_id)
+
+        ## retrieve the coutries the user has data access for
+        countries = getCountry(request.user)
+
+        #retrieve projects for a program
+        getProjects = []#ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
+
+        #retrieve projects for a program
+        getDashboardComponents = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
+            
+        return render(request, self.template_name, {'getDashboardComponents': getDashboardComponents, 'getProgram': getProgram, 'getProjects': getProjects})
+
+class ComponentDataSourceList(ListView):
+
+    """
+    CustomDashboard
+    :param request:
+    :param pk: program_id
+    """
+    model = CustomDashboard
+    template_name = 'customdashboard/admin/component_datasource_list.html'
+
+    def get(self, request, *args, **kwargs):
+    ## retrieve program
+        model = Program
+        program_id = int(self.kwargs['id'])
+        getProgram = Program.objects.all().filter(id=program_id)
+
+        ## retrieve the coutries the user has data access for
+        countries = getCountry(request.user)
+
+        #retrieve projects for a program
+        getProjects = []#ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
+
+        #retrieve projects for a program
+        getComponentDataSources = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
+            
+        return render(request, self.template_name, {'getComponentDataSources': getComponentDataSources, 'getProgram': getProgram, 'getProjects': getProjects})
