@@ -2,7 +2,7 @@ mysqldb:
   image: mysql:5.7
   env_file: ./config/mysql.env.secret
 nginx:
-   image: nginx:stable-alpine
+   image: nginx
    restart: always
    volumes:
       - .:/home/TolaActivity
