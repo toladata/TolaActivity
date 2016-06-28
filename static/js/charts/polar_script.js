@@ -1,5 +1,5 @@
 var polarFunction = function(data, tolaPolarColors){
-    var ctx = document.getElementById("tolaPolarChart");
+    var ctx = document.getElementById(data.component_id);
     var tolaPolarChart = new Chart(ctx, {
         type: 'polar',
         data: {

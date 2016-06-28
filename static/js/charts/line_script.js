@@ -1,5 +1,5 @@
 var lineFunction = function(data, tolaLineColors){
-    var ctx = document.getElementById("tolaLineChart");
+    var ctx = document.getElementById(data.component_id);
 
     var tolaLineChart = new Chart(ctx, {
         type: 'line',

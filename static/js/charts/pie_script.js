@@ -1,5 +1,5 @@
 var pieFunction = function(data, tolaPieColors){
-    var ctx = document.getElementById("tolaPieChart");
+    var ctx = document.getElementById(data.component_id);
     var tolaPieChart = new Chart(ctx, {
         type: 'pie',
         data: {
