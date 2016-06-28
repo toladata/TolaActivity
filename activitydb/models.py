@@ -272,17 +272,17 @@ class DashboardComponentAdmin(admin.ModelAdmin):
 
 
 class CustomDashboard(models.Model):
-    dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
-    dashboard_description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard display to the user?")
+    name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
+    description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard display to the user?")
     is_public = models.BooleanField("External Public Dashboard", default=False)
-    dashboard_theme = models.ForeignKey(DashboardTheme, blank=True, null=True)
-    dashboard_color_palette = models.CharField("Color Scheme", max_length=255, blank=False, default="bright")
-    dashboard_components = models.ManyToManyField(DashboardComponent, blank=True, null=True)
+    theme = models.ForeignKey(DashboardTheme, blank=True, null=True, related_name='theme')
+    color_palette = models.CharField("Color Scheme", max_length=255, blank=False, default="bright")
+    components = models.ManyToManyField(DashboardComponent, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('dashboard_name',)
+        ordering = ('name',)
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -293,11 +293,11 @@ class CustomDashboard(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.dashboard_name
+        return self.name
 
 
 class CustomDashboardAdmin(admin.ModelAdmin):
-    list_display = ('dashboard_name', 'dashboard_description', 'is_public', 'dashboard_theme', 'dashboard_color_palette','create_date', 'edit_date')
+    list_display = ('name', 'description', 'is_public', 'theme', 'color_palette','create_date', 'edit_date')
     display = 'Custom Dashboard'
 
 # For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'

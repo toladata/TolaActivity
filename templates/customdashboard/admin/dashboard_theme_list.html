@@ -12,29 +12,39 @@
 <hr/>
 <br/>
 </div> -->
-<h3>Dashboard Themes</h3>
+<!-- <h3>Dashboard Themes</h3> -->
 
 <!-- Table -->
 <table class="table">
     <tr>
         <th>Date Created</th>
         <th>Theme Name</th>
-        <th>Theme Type</th>
+        <th>Theme Description</th>
+        <th># of Components</th>
+        <th>Distribution</th>
         <th>Example Dashboard</th>
         <th>&nbsp;</th>
         <th>&nbsp;</th>
         <th>&nbsp;</th>
     </tr>
-    {% for item in getDashboards %}
+    {% for item in getDashboardThemes %}
     <tr>
-       <td> Date </td>       
-       <td> I am a Dashboard Name</td>
-       <td> I am a Dashboard Type</td>
-        <td> <a href="/activitydb/custom_dashboard_delete/{{ item.id }}" class="btn btn-xs btn-danger">Example Dashboard</a></td>
+       <td> item.create_date </td>       
+       <td> item.theme_name </td>
+       <td> item.theme_description </td>
+       <td> item.number_of_components </td>
+       <td> item.is_public </td>        
+       <td> <a href="" >Example </a></td> <!-- This is a sample image of the layout -->
+       <td> <a href="/activitydb/custom_dashboard/theme_update/{{ item.id }}" class="btn btn-xs btn-danger">Edit Theme </a></td>
+       <td> <a href="/activitydb/custom_dashboard/theme_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Theme </a></td>
     </tr>
     {% empty %}
         <li class="list-group-item">No Dashboard Themes Available Yet.</li>
     {% endfor %}
 </table>
+
+<div class="panel-footer">
+    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/theme_add/{{ item.id }}">Add New Theme</a>
+</div>
 
 {% endblock content %}

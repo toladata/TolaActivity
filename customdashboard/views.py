@@ -60,7 +60,6 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     getCustomDashboard = CustomDashboard.objects.all()
 
 
-
     return render(request, "customdashboard/visual_dashboard.html", {'getSiteProfile':getSiteProfile, 'getBudgetEstimated': getBudgetEstimated, 'getQuantitativeDataSums': getQuantitativeDataSums,
                                                                      'country': countries, 'getProjectStatus': getProjectStatus, 'getAwaitingApprovalCount':getAwaitingApprovalCount,
                                                                      'getFilteredName': getFilteredName,'getProjects': getProjects, 'getApprovedCount': getApprovedCount,
@@ -391,6 +390,8 @@ def AnalyticsDashboard(request,id=0):
     "column_heading": "title for placeholder", 
     "labels": tableLabels2, 
     "data_set": tableDataset2, 
+    "component_id" : "testBarId",
+    "component_id_2" : "testBarId2"
     }#dataset3
 
     table3= {
@@ -400,13 +401,20 @@ def AnalyticsDashboard(request,id=0):
     "second_data_set": tableDataset3_2
     }#dataset3
 
+    table4= {
+    "column_heading": "title for placeholder", 
+    "labels": tableLabels2, 
+    "data_set": tableDataset2, 
+    "component_id" : "testBarId2",
+    }#dataset3
+
     colorPalettes = {
     'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
     'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
     };
     
     return render(request, 'customdashboard/themes/analytics_dashboard.html', 
-        {'colorPalettes': colorPalettes, 'tableData1': tableData1,'table2': table2,'table3': table3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
+        {'colorPalettes': colorPalettes, 'tableData1': tableData1,'table4': table4,'table2': table2,'table3': table3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
 def NarrativeDashboard(request,id=0):
     ## retrieve program
@@ -454,3 +462,52 @@ def NarrativeDashboard(request,id=0):
 
     return render(request, 'customdashboard/themes/narrative_dashboard.html', 
         {'tableData1': tableData1,'tableData2': tableData2, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
+
+
+def MapDashboard(request,id=0):
+    ## retrieve program
+    model = Program
+    program_id = id
+    getProgram = Program.objects.all().filter(id=program_id)
+
+    ## retrieve the coutries the user has data access for
+    countries = getCountry(request.user)
+
+    #retrieve projects for a program
+    getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
+
+    filter_url = "http://tables.toladata.io/api/silo/9/data/"
+    headers = {'content-type': 'application/json',
+               'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
+    response = requests.get(filter_url, headers=headers, verify=False)
+    get_json = json.loads(response.content)
+    data = get_json
+
+    #Parse the JSON(s) into datasets that will feed the templates for this example 
+    ## -- parsing might not be immediately relevant for live example 
+
+    tableData1 = {}
+    dataset1 = []
+    key1 = 'what_country_were_you_in_last'  
+    for answer in data:
+        dataset1.append(answer[key1])    
+    tableData1['title'] = key1.title
+    tableData1['dataset1'] = dataset1
+    tableData1['dataset2'] = [dataset1.count(dataset1[0]),dataset1.count(dataset1[1]), dataset1.count(dataset1[2])]
+
+    # Borrowed data for bar graph
+    tableData2 = {}
+    tableData2['approved'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='approved')
+    tableData2['rejected'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='rejected')
+    tableData2['in_progress'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='in progress')
+    tableData2['awaiting_approval'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='awaiting approval')
+    tableData2['dataset'] = [len(tableData2['approved']),len(tableData2['rejected']),len(tableData2['in_progress']),len(tableData2['awaiting_approval'])]
+
+    colorPalettes = {
+    'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
+    'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
+    };
+
+    return render(request, 'customdashboard/themes/map_dashboard.html', 
+        {'tableData1': tableData1,'tableData2': tableData2, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
+

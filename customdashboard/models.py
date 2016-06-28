@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
+
 from activitydb.models import Program
 
 
@@ -96,7 +97,3 @@ class GalleryAdmin(admin.ModelAdmin):
 class ProgramLinksAdmin(admin.ModelAdmin):
     list_display = ('program','create_date','edit_date')
     display = 'Program Links'
-
-
-
-

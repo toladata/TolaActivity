@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from .forms import ProjectAgreementForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, BudgetForm, FilterForm, QuantitativeOutputsForm, \
-    ChecklistItemForm, StakeholderForm, ContactForm, CustomDashboardCreateForm, DashboardThemeCreateForm
+    ChecklistItemForm, StakeholderForm, ContactForm, CustomDashboardCreateForm, CustomDashboardForm, DashboardThemeCreateForm
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -2355,7 +2355,6 @@ def service_json(request, service):
 
 # This lists available custom dashboards to view
 class CustomDashboardList(ListView):
-
     """
     CustomDashboard
     :param request:
@@ -2462,25 +2461,8 @@ class CustomDashboardCreate(CreateView):
         return kwargs
 
     def get_initial(self):
-
-        initial = {
-
-            }
-
+        initial = {}
         return initial
-
-  #   #Example -- get shared data from project agreement and pre-populate form with it
-  #   def get_initial(self):
-
-  #       initial = {
-  #           'approved_by': self.request.user,
-  #           'estimated_by': self.request.user,
-  #           'checked_by': self.request.user,
-  #           'reviewed_by': self.request.user,
-  #           'approval_submitted_by': self.request.user,
-  #           }
-
-  #       return initial
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardCreate, self).get_context_data(**kwargs)
@@ -2504,11 +2486,98 @@ class CustomDashboardCreate(CreateView):
         latest = CustomDashboard.objects.latest('id')
         getCustomDashboard = CustomDashboard.objects.get(id=latest.id)
 
-        # redirect_url = '/activitydb/dashboard/project/' + str(latest.id) //redirect to list view or detail view?
-
+        messages.success(self.request, 'Success, Dashboard Created!')
+        redirect_url = '/activitydb/custom_dashboard_update/' + str(latest.id) 
         return HttpResponseRedirect(redirect_url)
 
-    form_class = CustomDashboardCreateForm
+    form_class = CustomDashboardCreateForm 
+
+class CustomDashboardUpdate(UpdateView):
+    """
+    Project Initiation Form
+    :param request:
+    :param id: dashboard_id
+    """
+    model = CustomDashboard
+
+    try:
+        guidance = FormGuidance.objects.get(form="CustomDashboard")
+    except FormGuidance.DoesNotExist:
+        guidance = None
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CustomDashboardUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
+
+        # requests follow this pattern
+        try:
+            getDashboardTheme = DashboardTheme.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except DashboardTheme.DoesNotExist:
+            getDashboardTheme = None
+        context.update({'getDashboardTheme': getDashboardTheme})
+        
+        try:
+            getDashboardComponents = DashboardComponents.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except DashboardComponents.DoesNotExist:
+            getDashboardComponents = None
+        context.update({'getDashboardComponents': getDashboardComponents})
+
+        return context
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(CustomDashboardUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        #do some stuff first
+        messages.success(self.request, 'Success, form updated!')
+        form.save()
+        #save formset from context
+        context = self.get_context_data()
+        self.object = form.save()
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = CustomDashboardForm
+
+class CustomDashboardDelete(DeleteView):
+    """
+    CustomDashboard Delete
+    """
+    model = CustomDashboard
+    success_url = 'activitydb/dashboard/0/'
+
+    @method_decorator(group_required('Country',url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(CustomDashboardDelete, self).dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        return HttpResponseRedirect('/activitydb/success')
+
+    form_class = CustomDashboardForm     
 
 class DashboardThemeList(ListView):
 

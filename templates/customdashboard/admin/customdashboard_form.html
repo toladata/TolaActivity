@@ -4,14 +4,12 @@
 <!-- humanize numbers -->
 {% load humanize %}
 
-<!-- {% block bread_crumb %} Insert breadcrumbs here {% endblock %} -->
 {% block extra_js_in_body %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
-    <!--  <script type="text/javascript"> //Insert script(s) here  </script> -->
 {% endblock %}
 
-{% block page_title %} New Custom Dashboard Form {% endblock %}
+{% block page_title %} New Custom Dashboard {% endblock %}
 
 {% block content %}
     {% include "form_guidance.html" %}

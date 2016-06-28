@@ -38,4 +38,8 @@
         <li class="list-group-item">No Dashboard Components Created Yet.</li>
     {% endfor %}
 </table>
+
+<div class="panel-footer">
+  <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ item.id }}">Add Component</a>
+</div>
 {% endblock content %}
