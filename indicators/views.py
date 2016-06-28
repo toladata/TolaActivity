@@ -171,11 +171,6 @@ class IndicatorCreate(CreateView):
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
-    try:
-        guidance = FormGuidance.objects.get(form="Indicator")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     #pre-populate parts of the form
     def get_initial(self):
         user_profile = TolaUser.objects.get(user=self.request.user)
@@ -226,13 +221,12 @@ class IndicatorUpdate(UpdateView):
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
-    try:
-        guidance = FormGuidance.objects.get(form="Indicator")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="Indicator")
+        except FormGuidance.DoesNotExist:
+            guidance = None
         return super(IndicatorUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -549,13 +543,12 @@ class CollectedDataCreate(CreateView):
     template_name = 'indicators/collecteddata_form.html'
     form_class = CollectedDataForm
 
-    try:
-        guidance = FormGuidance.objects.get(form="CollectedData")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="CollectedData")
+        except FormGuidance.DoesNotExist:
+            guidance = None
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -604,9 +597,19 @@ class CollectedDataCreate(CreateView):
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
-            count = getTableCount(self.request.POST['tola_table'])
+            try:
+                getTable = TolaTable.objects.get(id=self.request.POST['tola_table'])
+            except DisaggregationLabel.DoesNotExist:
+                getTable = None
+            if getTable:
+                count = getTableCount(getTable.url,getTable.table_id)
+            else:
+                count = 0
             form.instance.achieved = count
 
+        new = form.save()
+
+        #save disagg
         for label in getDisaggregationLabel:
             for key, value in self.request.POST.iteritems():
                 if key == label.id:
@@ -614,13 +617,12 @@ class CollectedDataCreate(CreateView):
                 else:
                     value_to_insert = None
             if value_to_insert:
-                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=getCollectedData)
+                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=new)
                 insert_disaggregationvalue.save()
 
-        form.save()
         messages.success(self.request, 'Success, Data Created!')
 
-        redirect_url = '/indicators/home/0/'
+        redirect_url = '/indicators/home/0/#hidden-' + str(self.kwargs['program'])
         return HttpResponseRedirect(redirect_url)
 
 
@@ -631,13 +633,12 @@ class CollectedDataUpdate(UpdateView):
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
 
-    try:
-        guidance = FormGuidance.objects.get(form="CollectedData")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="CollectedData")
+        except FormGuidance.DoesNotExist:
+            guidance = None
         return super(CollectedDataUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -677,12 +678,19 @@ class CollectedDataUpdate(UpdateView):
 
         getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
         getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
+
         getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
-            print self.request.POST['tola_table']
-            count = getTableCount(self.request.POST['tola_table'])
+            try:
+                getTable = TolaTable.objects.get(id=self.request.POST['tola_table'])
+            except DisaggregationLabel.DoesNotExist:
+                getTable = None
+            if getTable:
+                count = getTableCount(getTable.url,getTable.table_id)
+            else:
+                count = 0
             form.instance.achieved = count
 
         # save the form then update manytomany relationships
@@ -716,17 +724,17 @@ class CollectedDataDelete(DeleteView):
         return super(CollectedDataDelete, self).dispatch(request, *args, **kwargs)
 
 
-def getTableCount(table_id):
+def getTableCount(url,table_id):
     """
     Count the number of rowns in a TolaTable
     :param table_id: The TolaTable ID to update count from and return
     :return: count : count of rows from TolaTable
     """
-    service = ExternalService.objects.get(name="TolaTables")
-    filter_url = service.feed_url + "&id=" + table_id
+    filter_url = url
 
     # loop over the result table and count the number of records for actuals
-    actual_data = get_table(filter_url,count=True)
+    actual_data = get_table(filter_url)
+
     count = 0
     if actual_data:
         for item in actual_data:
@@ -782,35 +790,23 @@ def collecteddata_import(request):
         data = user_json
 
     # debug the json data string uncomment dump and print
-    # data2 = json.dumps(data) # json formatted string
-    # print data2
+
+    data2 = json.dumps(user_json) # json formatted string
 
     if request.method == 'POST':
         id = request.POST['service_table']
         filter_url = service.feed_url + "&id=" + id
-        token = TolaSites.objects.get(site_id=1)
-        if token.tola_tables_token:
-            headers = {'content-type': 'application/json',
-                   'Authorization': 'Token ' + token.tola_tables_token}
-        else:
-            headers = {'content-type': 'application/json'}
-            print "Token Not Found"
 
-        response = requests.get(filter_url, headers=headers, verify=False)
-        get_json = json.loads(response.content)
-        data = get_json
+        data = get_table(filter_url)
+
         # Get Data Info
         for item in data:
             name = item['name']
             url = item['data']
             remote_owner = item['owner']['username']
 
-        # loop over the result table and count the number of records for actuals
-        actual_data = get_table(item['data'])
-        count = 0
-        for item in actual_data:
-            count = count +1
-
+        #send table ID to count items in data
+        count = getTableCount(filter_url,id)
 
         # get the users country
         countries = getCountry(request.user)
@@ -831,7 +827,7 @@ def collecteddata_import(request):
     return render(request, "indicators/collecteddata_import.html", {'getTables': data})
 
 
-def service_json(service):
+def service_json(request,service):
     """
     For populating service indicators in dropdown
     :param service: The remote data service
@@ -890,7 +886,6 @@ class IndicatorExport(View):
             del kwargs['program']
 
         queryset = Indicator.objects.filter(**kwargs)
-        print kwargs
         indicator = IndicatorResource().export(queryset)
         response = HttpResponse(indicator.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator.csv'
@@ -907,8 +902,6 @@ class IndicatorDataExport(View):
             del kwargs['indicator']
         if int(kwargs['program']) == 0:
             del kwargs['program']
-
-        print kwargs
 
         queryset = CollectedData.objects.filter(**kwargs)
         dataset = CollectedDataResource().export(queryset)

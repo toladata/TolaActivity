@@ -1,7 +1,7 @@
 from import_export import resources
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export import fields
-from .models import TrainingAttendance, Beneficiary, ProjectAgreement, Program, SiteProfile, Capacity, Evaluate, \
+from .models import TrainingAttendance, Distribution, Beneficiary, ProjectAgreement, Program, SiteProfile, Capacity, Evaluate, \
     Stakeholder, Sector, ProjectType, Office, TolaUser
 
 
@@ -9,6 +9,12 @@ class TrainingAttendanceResource(resources.ModelResource):
 
     class Meta:
         model = TrainingAttendance
+
+
+class DistributionResource(resources.ModelResource):
+
+    class Meta:
+        model = Distribution
 
 
 class BeneficiaryResource(resources.ModelResource):

@@ -51,6 +51,7 @@
                         <th>Evidence</th>
                         <th>Target</th>
                         <th>Actual</th>
+                        <th>Disaggregations</th>
                     </tr>
                     {% for item in getCollectedData %}
                     <tr>
@@ -58,11 +59,12 @@
                         <td>{{ item.indicator.strategic_objectives_list }}</td>
                         <td>{{ item.program }}</td>
                         <td>{{ item.indicator.objectives_list }}</td>
-                        <td>{{ item.indicator.number }} - {{ item.indicator.name }} {% if item.indicator.key_performance_indicator %} <span class="badge">KPI</span>{% endif %}</td>
+                        <td>{{ item.indicator.number }} - <a href="/indicators/indicator_update/{{item.indicator.id}}">{{ item.indicator.name }}</a> {% if item.indicator.key_performance_indicator %} <span class="badge">KPI</span>{% endif %}</td>
                         <td>{{ item.date_collected|date:"d-m-Y" }}</td>
                         <td>{{ item.evidence }} {{ item.tola_table}}</td>
                         <td>{{ item.targeted }}</td>
                         <td>{{ item.achieved }}</td>
+                        <td>{{ item.disaggregations }}</td>
 
                     </tr>
                     {% endfor %}

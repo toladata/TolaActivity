@@ -4,7 +4,6 @@ $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
     if (hash) {
-    console.log(hash);
     $('.nav-tabs a[href='+hash+']').tab('show');
     }
 
@@ -97,11 +96,13 @@ $(document).ready(function() {
      */
     $("#services").change(function() {
         var selected_service = $(this).val();
+        console.log("Service:" + selected_service);
         if (selected_service == undefined || selected_service == -1 || selected_service == '') {
             $("#serivce").html("<option>--Service--</option>");
         } else {
             var url = "/indicators/service/" + selected_service + "/service_json/";
             $.getJSON(url, function(service) {
+
                 var options = '<option value="0">--Indicator--</option>';
                 for (var i = 0; i < service.length; i++) {
                     options += '<option value="' + service[i].nid + '">' + service[i].type + ' - ' + service[i].level + ' - ' + service[i].title + '</option>';
@@ -264,6 +265,17 @@ $(document).ready(function() {
     $('.dropdown-menu a').on('click', function(){
         $(this).parent().parent().prev().html($(this).html() + '<span class="caret"></span>');
     })
+
+    /*
+    * Expand accordion down to location hash and then load collected data
+    */
+    if(location.hash != null && location.hash != ""){
+        $('.collapse').removeClass('in');
+        $(location.hash + '.collapse').collapse('show');
+        indicator_id = location.hash.split('-')
+        console.log(indicator_id)
+        loadIndicators(indicator_id[1])
+    }
 });
 
 /*

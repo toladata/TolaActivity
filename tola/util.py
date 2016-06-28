@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
 
 
-#CREATE NEW DATA DICTIONARY OBJECT 
+#CREATE NEW DATA DICTIONARY OBJECT
 def siloToDict(silo):
     parsed_data = {}
     key_value = 1
@@ -107,7 +107,7 @@ def emailGroup(country,group,link,subject,message,submiter=None):
         mail_admins(subject, message, fail_silently=False)
 
 
-def get_table(url,count=None):
+def get_table(url):
     """
     Get table data from a Silo.  First get the Data url from the silo details
     then get data and return it
@@ -122,29 +122,18 @@ def get_table(url,count=None):
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
-    # add token to requests and return silo details
     response = requests.get(url,headers=headers, verify=False)
-    silo = json.loads(response.content)
+    user_json = json.loads(response.content)
 
-    if count:
-        # get the url for the data return it in json format
-        if silo:
-            data_url = silo[0]['data'] + "?format=json"
-            # add token again and request silo date
-            response2 = requests.get(data_url,headers=headers, verify=False)
-            data = json.loads(response2.content)
-        else:
-            data = None
+    data = user_json
 
-        return data
-    else:
-        return json.dumps(silo)
+    return data
 
 
 def user_to_tola(backend, user, response, *args, **kwargs):
 
     # Add a google auth user to the tola profile
-    default_country = Country.objects.get(id=1)
+    default_country = Country.objects.first()
     userprofile, created = TolaUser.objects.get_or_create(
         user = user)
 

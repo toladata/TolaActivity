@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Country, Province, Office,OfficeAdmin, Village, Program, Documentation, Template,District, Sector, \
     CustomDashboard, CustomDashboardAdmin, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
-    Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
+    Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Distribution, DistributionAdmin, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
     TolaSites, TolaSitesAdmin, FormGuidance, FormGuidanceAdmin, DashboardTheme, DashboardComponent, \
@@ -17,7 +17,7 @@ from tola.util import getCountry
 class DocumentationResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
-    project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(ProjectAgreement, 'name'))
+    project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(ProjectAgreement, 'project_name'))
 
     class Meta:
         model = Documentation
@@ -143,6 +143,7 @@ admin.site.register(Benchmarks)
 admin.site.register(Evaluate)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(TrainingAttendance)
+admin.site.register(Distribution, DistributionAdmin)
 admin.site.register(Beneficiary)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
@@ -158,10 +159,3 @@ admin.site.register(Feedback,FeedbackAdmin)
 admin.site.register(TolaUser,TolaUserAdmin)
 admin.site.register(TolaSites,TolaSitesAdmin)
 admin.site.register(FormGuidance,FormGuidanceAdmin)
-
-
-
-
-
-
-
