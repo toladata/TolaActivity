@@ -1,10 +1,10 @@
-{% extends "customdashboard/themes/custom_base_layout.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
 
 <!-- humanize numbers -->
 {% load humanize %}
 
-{% block page_title %} New Custom Dashboard Theme {% endblock %}
+{% block page_title %} New Dashboard Theme {% endblock %}
 
 {% block content %}
 
@@ -23,8 +23,7 @@
             </div>
         {% endfor %}
     {% endif %}
-    {% load crispy_forms_tags %}
-    <form class="form-horizontal" method="post" enctype="multipart/form-data" name="most" id="dashboard_theme">
+    {% csrf_token %}
+    {% load crispy_forms_tags %} 
     {% crispy form %}
-    </form>
 {% endblock content %}

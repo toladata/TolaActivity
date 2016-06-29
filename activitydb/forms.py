@@ -1440,7 +1440,7 @@ class CustomDashboardCreateForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = False
-
+        self.helper.add_input(Submit('submit', 'Save'))
         super(CustomDashboardCreateForm, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
@@ -1569,6 +1569,7 @@ class DashboardThemeCreateForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = False
+        self.helper.add_input(Submit('submit', 'Save'))
         super(DashboardThemeCreateForm, self).__init__(*args, **kwargs)
 
 #     def save(self, *args, **kwargs):
@@ -1597,6 +1598,7 @@ class DashboardThemeForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.form_tag = True
         self.helper.form_id = "dashboard_theme"
+        self.helper.add_input(Submit('submit', 'Save'))
 
         super(DashboardThemeForm, self).__init__(*args, **kwargs)
 
@@ -1621,6 +1623,7 @@ class DashboardComponentForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.form_tag = True
         self.helper.form_id = "dashboard_component"
+        self.helper.add_input(Submit('submit', 'Save'))
 
         super(DashboardComponentForm, self).__init__(*args, **kwargs)
 
@@ -1645,5 +1648,6 @@ class ComponentDataSourceForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.form_tag = True
         self.helper.form_id = "component_data_source"
+        self.helper.add_input(Submit('submit', 'Save'))
 
         super(ComponentDataSourceForm, self).__init__(*args, **kwargs)
