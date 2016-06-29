@@ -1026,7 +1026,7 @@ class SiteProfileList(ListView):
 
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
-            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province','collecteddata_set').filter(collecteddata__program__country__in=countries)
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province','collecteddata_set').filter(collecteddata__program__country__in=countries).distinct()
 
         if request.method == "GET" and "search" in request.GET:
             """
