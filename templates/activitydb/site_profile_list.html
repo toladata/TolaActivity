@@ -69,7 +69,6 @@
  <!-- Table -->
 <table class="table">
     <tr>
-        <th>ID</th>
         <th>Date Created</th>
         <th>Profile Name</th>
         <th>Profile Type</th>
@@ -80,7 +79,6 @@
     {% if getSiteProfile %}
       {% for item in getSiteProfile %}
           <tr>
-              <td>{{ item.id }}</td>
               <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date|date:"d-m-Y" }} </a></td>
               <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name }}</a></td>
               <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
