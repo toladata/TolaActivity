@@ -296,8 +296,8 @@ class DashboardComponentAdmin(admin.ModelAdmin):
 
 
 class CustomDashboard(models.Model):
-    name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
-    description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard display to the user?")
+    dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
+    dashboard_description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard display to the user?")
     is_public = models.BooleanField("External Public Dashboard", default=False)
     theme = models.ForeignKey(DashboardTheme, blank=True, null=True, related_name='theme')
     color_palette = models.CharField("Color Scheme", max_length=255, blank=False, default="bright")
@@ -306,7 +306,7 @@ class CustomDashboard(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('dashboard_name',)
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -317,11 +317,11 @@ class CustomDashboard(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name
+        return self.dashboard_name
 
 
 class CustomDashboardAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'is_public', 'theme', 'color_palette','create_date', 'edit_date')
+    list_display = ('dashboard_name', 'dashboard_description', 'is_public', 'theme', 'color_palette','create_date', 'edit_date')
     display = 'Custom Dashboard'
 
 # For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'

@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
-    QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm, CustomDashboardCreateForm, CustomDashboardForm, DashboardThemeCreateForm
+    QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm, CustomDashboardCreateForm, CustomDashboardForm, DashboardThemeCreateForm, DashboardThemeForm, DashboardComponentForm, ComponentDataSourceForm
 import pytz
 import logging
 from django.shortcuts import render
@@ -2658,53 +2658,6 @@ class CustomDashboardUpdate(UpdateView):
     except FormGuidance.DoesNotExist:
         guidance = None
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        return super(CustomDashboardUpdate, self).dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
-        pk = self.kwargs['pk']
-        context.update({'pk': pk})
-
-        # requests follow this pattern
-        try:
-            getDashboardTheme = DashboardTheme.objects.all().filter(agreement__id=self.kwargs['pk'])
-        except DashboardTheme.DoesNotExist:
-            getDashboardTheme = None
-        context.update({'getDashboardTheme': getDashboardTheme})
-        
-        try:
-            getDashboardComponents = DashboardComponents.objects.all().filter(agreement__id=self.kwargs['pk'])
-        except DashboardComponents.DoesNotExist:
-            getDashboardComponents = None
-        context.update({'getDashboardComponents': getDashboardComponents})
-
-        return context
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(CustomDashboardUpdate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        #do some stuff first
-        messages.success(self.request, 'Success, form updated!')
-        form.save()
-        #save formset from context
-        context = self.get_context_data()
-        self.object = form.save()
-
-        return self.render_to_response(self.get_context_data(form=form))
-
     form_class = CustomDashboardForm
 
 class CustomDashboardDelete(DeleteView):
@@ -2712,7 +2665,7 @@ class CustomDashboardDelete(DeleteView):
     CustomDashboard Delete
     """
     model = CustomDashboard
-    success_url = 'activitydb/dashboard/0/'
+    success_url = 'activitydb/custom_dashboard/'
 
     @method_decorator(group_required('Country',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -2821,6 +2774,34 @@ class DashboardThemeCreate(CreateView):
 
     form_class = DashboardThemeCreateForm
 
+# class DashboardThemeCreate(CreateView):
+# class DashboardThemeUpdate(UpdateView):
+class DashboardThemeDelete(DeleteView):
+    """
+    DashboardTheme Delete
+    """
+    model = DashboardTheme
+    template_name = 'activitydb/customdashboard_theme_confirm_delete.html'
+    success_url = 'activitydb/custom_dashboard/'
+
+    @method_decorator(group_required('Country',url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(DashboardThemeDelete, self).dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        return HttpResponseRedirect('/activitydb/success')
+
+    form_class = DashboardThemeForm  
+
 class DashboardComponentList(ListView):
 
     """
@@ -2848,6 +2829,33 @@ class DashboardComponentList(ListView):
             
         return render(request, self.template_name, {'getDashboardComponents': getDashboardComponents, 'getProgram': getProgram, 'getProjects': getProjects})
 
+# class DashbaordComponentCreate(CreateView):
+# class DashbaordComponentUpdate(UpdateView):
+class DashbaordComponentDelete(DeleteView):
+    """
+    DashboardComponent Delete
+    """
+    model = DashboardComponent
+    success_url = 'activitydb/custom_dashboard/'
+
+    @method_decorator(group_required('Country',url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(DashboardComponentDelete, self).dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        return HttpResponseRedirect('/activitydb/success')
+
+    form_class = DashboardComponentForm  
+
 class ComponentDataSourceList(ListView):
 
     """
@@ -2874,3 +2882,32 @@ class ComponentDataSourceList(ListView):
         getComponentDataSources = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
             
         return render(request, self.template_name, {'getComponentDataSources': getComponentDataSources, 'getProgram': getProgram, 'getProjects': getProjects})
+
+# class ComponentDataSourceCreate(CreateView):
+# class ComponentDataSourceUpdate(UpdateView):
+class ComponentDataSourceDelete(DeleteView):    
+    """
+    ComponentDataSource Delete
+    """
+    model = ComponentDataSource
+    success_url = 'activitydb/custom_dashboard/'
+
+    @method_decorator(group_required('Country',url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ComponentDataSourceDelete, self).dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        return HttpResponseRedirect('/activitydb/success')
+
+    form_class = ComponentDataSourceForm  
+
+
