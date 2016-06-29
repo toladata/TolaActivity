@@ -174,7 +174,7 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details', 'detailed','activity_code','account_code','lin_code','office', 'sector','program', 'project_name', 'project_activity',
+                    Fieldset('Project Details','activity_code','account_code','lin_code','office', 'sector','program', 'project_name', 'project_activity',
                              'project_type', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date',
                         ),
 
@@ -488,7 +488,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details','detailed', 'activity_code','office', 'sector','program', 'project_name',
+                    Fieldset('Project Details', 'activity_code','office', 'sector','program', 'project_name',
                              'site','stakeholder','expected_start_date','expected_end_date',
                         ),
 
