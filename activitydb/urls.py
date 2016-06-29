@@ -113,12 +113,12 @@ urlpatterns = [
                        url(r'^custom_dashboard/theme_delete(?P<id>[0-9]+)/$', DashboardThemeDelete.as_view(), name='custom_dashboard/theme_delete'),
                       
                        url(r'^custom_dashboard/component/(?P<id>[0-9]+)/$', DashboardComponentList.as_view(), name='dashboard_component_list'),                       
-                       # url(r'^custom_dashboard/component_add/(?P<pk>[0-9]+)/$',  DashboardComponentCreate.as_view(), name='custom_dashboard/component_add'),
+                       url(r'^custom_dashboard/component_add/(?P<pk>[0-9]+)/$',  DashboardComponentCreate.as_view(), name='custom_dashboard/component_add'),
                        # url(r'^custom_dashboard/component_update/(?P<id>[0-9]+)/$',  DashboardComponentUpdate.as_view(), name='custom_dashboard/component_update'),
                        # url(r'^custom_dashboard/component_delete(?P<id>[0-9]+)/$', DashboardComponentDelete.as_view(), name='custom_dashboard/component_delete'),
                       
                        url(r'^custom_dashboard/data/(?P<id>[0-9]+)/$', ComponentDataSourceList.as_view(), name='component_data_source_list'),
-                       # url(r'^custom_dashboard/data_add/(?P<pk>[0-9]+)/$',  ComponentDataSourceCreate.as_view(), name='custom_dashboard/data_add'),
+                       url(r'^custom_dashboard/data_add/(?P<pk>[0-9]+)/$',  ComponentDataSourceCreate.as_view(), name='custom_dashboard/data_add'),
                        # url(r'^custom_dashboard/data_update/(?P<id>[0-9]+)/$',  ComponentDataSourceUpdate.as_view(), name='custom_dashboard/data_update'),
                        # url(r'^custom_dashboard/data_delete(?P<id>[0-9]+)/$',  ComponentDataSourceDelete.as_view(), name='custom_dashboard/data_delete'),
                        

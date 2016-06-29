@@ -1439,7 +1439,7 @@ class CustomDashboardCreateForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.form_tag = False
+        self.helper.form_tag = True
         self.helper.add_input(Submit('submit', 'Save'))
         super(CustomDashboardCreateForm, self).__init__(*args, **kwargs)
 
@@ -1457,7 +1457,8 @@ class CustomDashboardForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
-        self.request = kwargs.pop('request')
+        print kwargs.pop('request')
+        # self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -1470,89 +1471,40 @@ class CustomDashboardForm(forms.ModelForm):
         self.helper.form_tag = True
         self.helper.form_id = "dashboard"
         self.helper.layout = Layout(
-
-            HTML("""<br/>"""),
+            # HTML("""<br/>"""),
             TabHolder(
-                Tab('Custom Dashboards',
-                    Fieldset(),
-                    ),
-                Tab('Dashboard Components',
-                    Fieldset(),
-                    ),
-                Tab('Dashboard Data Source',
-                    Fieldset(),
-                    ),
+                # Tab('Custom Dashboards',
+                #     Fieldset(),
+                #     ),
+                # Tab('Dashboard Components',
+                #     Fieldset(),
+                #     ),
+                # Tab('Dashboard Data Source',
+                #     Fieldset(),
+                #     ),
+                # Tab('Dashboard Preview',
+                #     Fieldset(),
+                #     ),
+                # Tab('Dashboard Creation',
+                #     Fieldset(),
+                # ),
 
-                Tab('Dashboard Preview',
-                    Fieldset(),
-                    ),
-                Tab('Dashboard Creation',
-                    Fieldset(),
-                ),
+                # FormActions(
+                #     Submit('submit', 'Save', css_class='btn-default'),
+                #     Reset('reset', 'Reset', css_class='btn-warning')
+                # ),
 
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            ),
+                # HTML("""<br/>"""),
 
-            HTML("""<br/>"""),
-
-            Fieldset(
-            ),
+                # Fieldset(
+                # ),
             )
         )
         super(CustomDashboardForm, self).__init__(*args, **kwargs)
 
         #here go the filters and overrides
 
-# class DashboardComponentCreateForm(forms.ModelForm):
-
-#     class Meta:
-#         model = DashboardComponent
-#         exclude = ['create_date', 'edit_date']
-
-#     def __init__(self, *args, **kwargs):
-#         self.helper = FormHelper()
-#         self.helper.form_class = 'form-horizontal'
-#         self.helper.label_class = 'col-sm-2'
-#         self.helper.field_class = 'col-sm-6'
-#         self.helper.form_error_title = 'Form Errors'
-#         self.helper.error_text_inline = True
-#         self.helper.help_text_inline = True
-#         self.helper.html5_required = True
-#         self.helper.form_tag = False
-
-#         super(DashboardComponentCreateForm, self).__init__(*args, **kwargs)
-
-#     def save(self, *args, **kwargs):
-#         # Commit is already set to false
-#         obj = super(DashboardComponentCreateForm, self).save(*args, **kwargs)
-#         return obj
-
-# class ComponentDataSourceCreateForm(forms.ModelForm):
-
-#     class Meta:
-#         model = ComponentDataSource
-#         exclude = ['create_date', 'edit_date']
-
-#     def __init__(self, *args, **kwargs):
-#         self.helper = FormHelper()
-#         self.helper.form_class = 'form-horizontal'
-#         self.helper.label_class = 'col-sm-2'
-#         self.helper.field_class = 'col-sm-6'
-#         self.helper.form_error_title = 'Form Errors'
-#         self.helper.error_text_inline = True
-#         self.helper.help_text_inline = True
-#         self.helper.html5_required = True
-#         self.helper.form_tag = False
-
-#         super(ComponentDataSourceCreateForm, self).__init__(*args, **kwargs)
-
-#     def save(self, *args, **kwargs):
-#         # Commit is already set to false
-#         obj = super(ComponentDataSourceCreateForm, self).save(*args, **kwargs)
-#         return obj
-
+## Dashboard Theme Form Classes
 class DashboardThemeCreateForm(forms.ModelForm):
 
     class Meta:
@@ -1568,14 +1520,14 @@ class DashboardThemeCreateForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.form_tag = False
+        self.helper.form_tag = True
         self.helper.add_input(Submit('submit', 'Save'))
         super(DashboardThemeCreateForm, self).__init__(*args, **kwargs)
 
-#     def save(self, *args, **kwargs):
-#         # Commit is already set to false
-#         obj = super(DashboardThemeCreateForm, self).save(*args, **kwargs)
-#         return obj
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(DashboardThemeCreateForm, self).save(*args, **kwargs)
+        return obj
 
 class DashboardThemeForm(forms.ModelForm):
 
@@ -1602,6 +1554,32 @@ class DashboardThemeForm(forms.ModelForm):
 
         super(DashboardThemeForm, self).__init__(*args, **kwargs)
 
+## Dashboard Component Form Classes
+
+class DashboardComponentCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = DashboardComponent
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = True
+
+        super(DashboardComponentCreateForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(DashboardComponentCreateForm, self).save(*args, **kwargs)
+        return obj
+
 class DashboardComponentForm(forms.ModelForm):
 
     class Meta:
@@ -1626,6 +1604,31 @@ class DashboardComponentForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(DashboardComponentForm, self).__init__(*args, **kwargs)
+
+## Data Source Form Classes
+class ComponentDataSourceCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = ComponentDataSource
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = True
+
+        super(ComponentDataSourceCreateForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(ComponentDataSourceCreateForm, self).save(*args, **kwargs)
+        return obj
 
 class ComponentDataSourceForm(forms.ModelForm):
 
