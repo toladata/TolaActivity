@@ -765,37 +765,24 @@ def collecteddata_import(request):
     :return:
     """
     owner = request.user
-    service = ExternalService.objects.get(name="TolaTables")
+    #get the TolaTables URL and token from the sites object
+    service = TolaSites.objects.get(site_id=1)
 
     # add filter to get just the users tables only
-    user_filter_url = service.feed_url + "&owner__username=" + str(owner)
-    shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
-    token = TolaSites.objects.get(site_id=1)
-    if token.tola_tables_token:
-        headers = {'content-type': 'application/json',
-               'Authorization': 'Token ' + token.tola_tables_token}
-    else:
-        headers = {'content-type': 'application/json'}
-        print "Token Not Found"
+    user_filter_url = service.tola_tables_url + "&owner__username=" + str(owner)
+    shared_filter_url = service.tola_tables_url + "&shared__username=" + str(owner)
 
-    response = requests.get(user_filter_url, headers=headers, verify=False)
-    response2 = requests.get(shared_filter_url, headers=headers, verify=False)
-
-    user_json = json.loads(response.content)
-    shared_json = json.loads(response2.content)
+    user_json = get_table(user_filter_url)
+    shared_json = get_table(shared_filter_url)
 
     if type(shared_json) is not dict:
         data = user_json + shared_json
     else:
         data = user_json
 
-    # debug the json data string uncomment dump and print
-
-    data2 = json.dumps(user_json) # json formatted string
-
     if request.method == 'POST':
         id = request.POST['service_table']
-        filter_url = service.feed_url + "&id=" + id
+        filter_url = service.tola_tables_url + "&id=" + id
 
         data = get_table(filter_url)
 
