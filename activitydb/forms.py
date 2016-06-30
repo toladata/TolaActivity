@@ -1472,20 +1472,66 @@ class CustomDashboardForm(forms.ModelForm):
         self.helper.layout = Layout(
             HTML("""<br/>"""),
             TabHolder(
-                Tab('Custom Dashboards',
-                    # Fieldset(),
+                Tab('Current Dashboard',
+                    Fieldset("Step 1: Your Dashboard",
+                        HTML("""
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Current Dashboard</div>
+                                    This will show current dashboard contents and give edit and delete options
+                            </div>
+                            """),
+                        ),
                     ),
                 Tab('Dashboard Components',
-                    # Fieldset(),
+                    Fieldset("Step 2: Dashboard Components",
+                        HTML("""
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Components</div>
+                                    This will list components
+                              <div class="panel-footer">
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ id }}/">Add Component</a>
+                              </div>
+                            </div>
+                            """),
+                        ),
                     ),
                 Tab('Dashboard Data Source',
-                    # Fieldset(),
+                    Fieldset("Step 3: Component Data Sources",
+                        HTML("""
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Data</div>
+                                    This will list component data sources
+                              <div class="panel-footer">
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ id }}/">Add Data Source</a>
+                              </div>
+                            </div>
+                            """),
+                        ),
                     ),
                 Tab('Dashboard Preview',
-                    # Fieldset(),
+                    Fieldset("Step 4: Preview Dashboard",
+                        HTML("""
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Current Dashboard</div>
+                                    This will let you preview your dashboard
+                            </div>
+                            """),
+                        ),
                     ),
-                Tab('Dashboard Creation',
-                    # Fieldset(),
+                Tab('Finalize Dashboard',
+                    Fieldset("Step 5: Finalize Dashboard",
+                        HTML("""
+                            <div class='panel panel-default'>
+                              <!-- Default panel contents -->
+                              <div class='panel-heading'>Finalize Dashboard</div>
+                                    This is where you finalize your dashboard
+                            </div>
+                            """),
+                        ),
                 ),
                 # FormActions(
                 #     Submit('submit', 'Save', css_class='btn-default'),
