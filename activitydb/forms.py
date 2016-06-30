@@ -1477,8 +1477,31 @@ class CustomDashboardForm(forms.ModelForm):
                         HTML("""
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
-                              <div class='panel-heading'>Current Dashboard</div>
-                                    This will show current dashboard contents and give edit and delete options
+                              {% if getCustomDashboard %}
+                                  <!-- Table -->
+                                  <table class="table">
+                                    <tr >
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Public?</th>
+                                    <th>Theme</th>
+                                    <th>Program</th>
+                                    <th>Color Scheme</th>
+                                    <th>Components</th>
+                                    <th></th>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ item.dashboard_name}}</td>
+                                        <td>{{ item.dashboard_description }}</td>
+                                        <td> {% if item.is_public == 1 %} Yes {% else %} No {% endif %}</td>
+                                        <td>{{ item.theme}}</td>
+                                        <td>{{ item.program }}</td>
+                                        <td>{{ item.color_palette }}</td>
+                                        <td>{{ item.components }}</td>
+                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}/'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                    </tr>
+                                  </table>
+                              {% endif %}
                             </div>
                             """),
                         ),
@@ -1487,9 +1510,32 @@ class CustomDashboardForm(forms.ModelForm):
                     Fieldset("Step 2: Dashboard Components",
                         HTML("""
                             <div class='panel panel-default'>
-                              <!-- Default panel contents -->
-                              <div class='panel-heading'>Components</div>
-                                    This will list components
+                                  <!-- Table -->
+                                  <table class="table">
+                                    <tr >
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Public?</th>
+                                    <th>Component Type</th>
+                                    <th>Data Required</th>
+                                    <th>Data Sources</th>
+                                    <th></th>
+                                    </tr>
+                                    {% if getDashboardComponents %}
+                                        {% for item in getDashboardComponents %}
+                                            <tr>
+                                                <td>{{ item.component_name}}</td>
+                                                <td>{{ item.component_description }}</td>
+                                                <td> {% if item.is_public == 1 %} Yes {% else %} No {% endif %}</td>
+                                                <td>{{ item.component_type}}</td>
+                                                <td>{{ item.data_required }}</td>
+                                                <td>{{ item.data_sources }}</td>
+                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}/'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <tr><td></td></tr>
+                                  </table>
                               <div class="panel-footer">
                                 <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ id }}/">Add Component</a>
                               </div>
@@ -1501,12 +1547,64 @@ class CustomDashboardForm(forms.ModelForm):
                     Fieldset("Step 3: Component Data Sources",
                         HTML("""
                             <div class='panel panel-default'>
-                              <!-- Default panel contents -->
-                              <div class='panel-heading'>Data</div>
-                                    This will list component data sources
+                                  <!-- Table -->
+                                  <table class="table">
+                                    <tr >
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Source</th>
+                                    <th>Column or Key Name</th>
+                                    <th></th>
+                                    <th></th>
+                                    </tr>
+                                    {% if getComponentDataSources %}
+                                        {% for item in getComponentDataSources %}
+                                            <tr>
+                                                <td>{{ item.data_name}}</td>
+                                                <td>{{ item.data_type }}</td>
+                                                <td>{{ item.data_source }}</td>
+                                                <td>{{ item.data_filter_key }}</td>
+                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}/'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <tr><td></td></tr>
+                                  </table>
                               <div class="panel-footer">
                                 <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ id }}/">Add Data Source</a>
                               </div>
+                            </div>
+                            """),
+                        ),
+                    Fieldset("Step 4: Assign Data to Components",
+                        HTML("""
+                            <div class='panel panel-default'>
+                                  <!-- Table -->
+                                  <table class="table">
+                                    <tr >
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Public?</th>
+                                    <th>Component Type</th>
+                                    <th>Data Required</th>
+                                    <th>Data Sources</th>
+                                    <th></th>
+                                    </tr>
+                                    {% if getDashboardComponents %}
+                                        {% for item in getDashboardComponents %}
+                                            <tr>
+                                                <td>{{ item.component_name}}</td>
+                                                <td>{{ item.component_description }}</td>
+                                                <td> {% if item.is_public == 1 %} Yes {% else %} No {% endif %}</td>
+                                                <td>{{ item.component_type}}</td>
+                                                <td>{{ item.data_required }}</td>
+                                                <td>{{ item.data_sources }}</td>
+                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}/'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <tr><td></td></tr>
+                                  </table>
                             </div>
                             """),
                         ),
@@ -1517,7 +1615,7 @@ class CustomDashboardForm(forms.ModelForm):
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
                               <div class='panel-heading'>Current Dashboard</div>
-                                    This will let you preview your dashboard
+                                This needs to be a modal: <a target="_new" href='/activitydb/custom_dashboard_detail/{{ item.id }}/'>Preview Dashboard</a>
                             </div>
                             """),
                         ),
@@ -1528,7 +1626,14 @@ class CustomDashboardForm(forms.ModelForm):
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
                               <div class='panel-heading'>Finalize Dashboard</div>
-                                    This is where you finalize your dashboard
+                              <div>This is where you finalize your dashboard
+
+                              </div>
+                              <div class="panel-footer">
+                                    This will be a submit button
+                                    This will be a clear (return to step 1)
+                                    This will be a cancel (exit dashboard creation) button
+                              </div>
                             </div>
                             """),
                         ),

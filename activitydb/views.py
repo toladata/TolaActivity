@@ -2598,35 +2598,45 @@ class CustomDashboardUpdate(UpdateView):
             guidance = FormGuidance.objects.get(form="CustomDashboard")
         except FormGuidance.DoesNotExist:
             guidance = None
+        
         return super(CustomDashboardUpdate, self).dispatch(request, *args, **kwargs)
 
     #get form method, if needed
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
-        getCustomDashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
-        id = getCustomDashboard.id
-        program_id = getCustomDashboard.program.id
-        dashboard_theme_id = getCustomDashboard.theme.id
-        context.update({'id': id})
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
+        # program_id = getCustomDashboard.program
+        # dashboard_theme_id = getCustomDashboard.theme.id
+        # context.update({'getCustomDashboard': getCustomDashboard})
+        # context.update({'id': id})
+
+        try:
+            getCustomDashboard =context['customdashboard']
+        except CustomDashboard.DoesNotExist:
+            getCustomDashboard = None
+        context.update({'getCustomDashboard': getCustomDashboard})
 
         # try:
-        #     getProgram = Program.objects.all().filter(program__id=self.kwargs[program_id])
-        # except Program.DoesNotExist:
-        #     getProgram = None
-        # context.update({'getProgram': getProgram})
-
-        # try:
-        #     getDashboardTheme = DashboardTheme.objects.all().filter(dashboard__id=self.kwargs[dashboard_theme_id])
+        #     getDashboardTheme = DashboardTheme.objects.all().filter(dashboardtheme__id=getCustomDashboard['theme'])
         # except DashboardTheme.DoesNotExist:
         #     getDashboardTheme = None
         # context.update({'getDashboardTheme': getDashboardTheme})
 
         try:
-            getComponents = DashboardComponent.objects.all()#.filter(dashboard_id=self.kwargs[id])
-        except Components.DoesNotExist:
-            getComponents = None
-        context.update({'getComponents': getComponents})
+            getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk'])
+        except DashboardComponent.DoesNotExist:
+            getDashboardComponents = None
+        context.update({'getDashboardComponents': getDashboardComponents})
+
+        getComponentDataSources = []
+        for component in getDashboardComponents:
+            try:
+                getComponentDataSources.append(ComponentDataSources.objects.all().filter(component__id=self.kwargs['pk']))
+            except ComponentDataSources.DoesNotExist:
+                getComponentDataSources = None
+        context.update({'getComponentDataSources': getComponentDataSources})
 
         return context
         
