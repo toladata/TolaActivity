@@ -1457,8 +1457,7 @@ class CustomDashboardForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
-        print kwargs.pop('request')
-        # self.request = kwargs.pop('request')
+        self.request = kwargs.pop("request")
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -1471,34 +1470,33 @@ class CustomDashboardForm(forms.ModelForm):
         self.helper.form_tag = True
         self.helper.form_id = "dashboard"
         self.helper.layout = Layout(
-            # HTML("""<br/>"""),
+            HTML("""<br/>"""),
             TabHolder(
-                # Tab('Custom Dashboards',
-                #     Fieldset(),
-                #     ),
-                # Tab('Dashboard Components',
-                #     Fieldset(),
-                #     ),
-                # Tab('Dashboard Data Source',
-                #     Fieldset(),
-                #     ),
-                # Tab('Dashboard Preview',
-                #     Fieldset(),
-                #     ),
-                # Tab('Dashboard Creation',
-                #     Fieldset(),
-                # ),
-
+                Tab('Custom Dashboards',
+                    # Fieldset(),
+                    ),
+                Tab('Dashboard Components',
+                    # Fieldset(),
+                    ),
+                Tab('Dashboard Data Source',
+                    # Fieldset(),
+                    ),
+                Tab('Dashboard Preview',
+                    # Fieldset(),
+                    ),
+                Tab('Dashboard Creation',
+                    # Fieldset(),
+                ),
                 # FormActions(
                 #     Submit('submit', 'Save', css_class='btn-default'),
                 #     Reset('reset', 'Reset', css_class='btn-warning')
-                # ),
+                ),
 
-                # HTML("""<br/>"""),
+                HTML("""<br/>"""),
 
                 # Fieldset(
                 # ),
-            )
+            # )
         )
         super(CustomDashboardForm, self).__init__(*args, **kwargs)
 

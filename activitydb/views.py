@@ -2587,12 +2587,10 @@ class CustomDashboardCreate(CreateView):
     form_class = CustomDashboardCreateForm 
 
 class CustomDashboardUpdate(UpdateView):
-    """
-    Project Initiation Form
-    :param request:
-    :param id: dashboard_id
-    """
+
     model = CustomDashboard
+    template_name = 'customdashboard/admin/customdashboard_form.html'
+    form_class = CustomDashboardForm
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -2600,38 +2598,43 @@ class CustomDashboardUpdate(UpdateView):
             guidance = FormGuidance.objects.get(form="CustomDashboard")
         except FormGuidance.DoesNotExist:
             guidance = None
-
         return super(CustomDashboardUpdate, self).dispatch(request, *args, **kwargs)
 
     #get form method, if needed
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
-        pk = self.kwargs['pk']
-        context.update({'pk': pk})
+        getCustomDashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
+        id = getCustomDashboard.id
+        program_id = getCustomDashboard.program.id
+        dashboard_theme_id = getCustomDashboard.theme.id
+        context.update({'id': id})
+
+        # try:
+        #     getProgram = Program.objects.all().filter(program__id=self.kwargs[program_id])
+        # except Program.DoesNotExist:
+        #     getProgram = None
+        # context.update({'getProgram': getProgram})
+
+        # try:
+        #     getDashboardTheme = DashboardTheme.objects.all().filter(dashboard__id=self.kwargs[dashboard_theme_id])
+        # except DashboardTheme.DoesNotExist:
+        #     getDashboardTheme = None
+        # context.update({'getDashboardTheme': getDashboardTheme})
 
         try:
-            getProgram = Program.objects.all().filter(program__id=self.kwargs['program'])
-        except Program.DoesNotExist:
-            getProgram = None
-        context.update({'getProgram': getProgram})
-
-        try:
-            getDashboardTheme = DashboardTheme.objects.all().filter(dashboard__id=self.kwargs['dashboard_theme'])
-        except DashboardTheme.DoesNotExist:
-            getDashboardTheme = None
-        context.update({'getDashboardTheme': getDashboardTheme})
-
-        try:
-            getComponents = Componentss.objects.all().filter(components__id=self.kwargs['component'])
-        except Componentss.DoesNotExist:
+            getComponents = DashboardComponent.objects.all()#.filter(dashboard_id=self.kwargs[id])
+        except Components.DoesNotExist:
             getComponents = None
         context.update({'getComponents': getComponents})
-        # for components, get data sources?  Or will components come with their data?
 
-        context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
         return context
+        
+        # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(CustomDashboardUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
@@ -2642,7 +2645,6 @@ class CustomDashboardUpdate(UpdateView):
         messages.success(self.request, 'Success, CustomDashboard Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
-    form_class = CustomDashboardForm
 
 class CustomDashboardDelete(DeleteView):
     """
