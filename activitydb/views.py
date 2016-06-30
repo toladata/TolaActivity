@@ -204,9 +204,9 @@ class ProjectAgreementCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Agreement")
+            self.guidance = FormGuidance.objects.get(form="Agreement")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(ProjectAgreementCreate, self).dispatch(request, *args, **kwargs)
 
      # add the request to the kwargs
@@ -278,10 +278,9 @@ class ProjectAgreementUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Agreement")
+            self.guidance = FormGuidance.objects.get(form="Agreement")
         except FormGuidance.DoesNotExist:
-            guidance = None
-
+            self.guidance = None
         return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_form(self, form_class):
@@ -498,7 +497,7 @@ class ProjectCompleteCreate(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Complete")
+            self.guidance = FormGuidance.objects.get(form="Complete")
         except FormGuidance.DoesNotExist:
             guidance = None
         return super(ProjectCompleteCreate, self).dispatch(request, *args, **kwargs)
@@ -588,9 +587,9 @@ class ProjectCompleteUpdate(UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Complete")
+            self.guidance = FormGuidance.objects.get(form="Complete")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(ProjectCompleteUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -777,9 +776,9 @@ class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Documentation")
+            self.guidance = FormGuidance.objects.get(form="Documentation")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(DocumentationAgreementCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -831,9 +830,9 @@ class DocumentationAgreementUpdate(AjaxableResponseMixin, UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Documentation")
+            self.guidance = FormGuidance.objects.get(form="Documentation")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(DocumentationAgreementUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -904,9 +903,9 @@ class DocumentationCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Documentation")
+            self.guidance = FormGuidance.objects.get(form="Documentation")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(DocumentationCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -943,9 +942,9 @@ class DocumentationUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Documentation")
+            self.guidance = FormGuidance.objects.get(form="Documentation")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(DocumentationUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1065,9 +1064,9 @@ class SiteProfileCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="SiteProfile")
+            self.guidance = FormGuidance.objects.get(form="SiteProfile")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(SiteProfileCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1114,9 +1113,9 @@ class SiteProfileUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="SiteProfile")
+            self.guidance = FormGuidance.objects.get(form="SiteProfile")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(SiteProfileUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1432,9 +1431,9 @@ class ContactCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Contact")
+            self.guidance = FormGuidance.objects.get(form="Contact")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(ContactCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -1476,9 +1475,9 @@ class ContactUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Contact")
+            self.guidance = FormGuidance.objects.get(form="Contact")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(ContactUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -1559,9 +1558,9 @@ class StakeholderCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Stakeholder")
+            self.guidance = FormGuidance.objects.get(form="Stakeholder")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(StakeholderCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1611,9 +1610,9 @@ class StakeholderUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Stakeholder")
+            self.guidance = FormGuidance.objects.get(form="Stakeholder")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(StakeholderUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1696,9 +1695,9 @@ class TrainingCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Training")
+            self.guidance = FormGuidance.objects.get(form="Training")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(TrainingCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1739,9 +1738,9 @@ class TrainingUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Training")
+            self.guidance = FormGuidance.objects.get(form="Training")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(TrainingUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1815,9 +1814,9 @@ class BeneficiaryCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Beneficiary")
+            self.guidance = FormGuidance.objects.get(form="Beneficiary")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(BeneficiaryCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
@@ -1858,9 +1857,9 @@ class BeneficiaryUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Beneficiary")
+            self.guidance = FormGuidance.objects.get(form="Beneficiary")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(BeneficiaryUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1936,9 +1935,9 @@ class DistributionCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Distribution")
+            self.guidance = FormGuidance.objects.get(form="Distribution")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(DistributionCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -1979,9 +1978,9 @@ class DistributionUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Distribution")
+            self.guidance = FormGuidance.objects.get(form="Distribution")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(DistributionUpdate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -2283,9 +2282,9 @@ class ChecklistItemCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="ChecklistItem")
+            self.guidance = FormGuidance.objects.get(form="ChecklistItem")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(ChecklistItemCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -2337,9 +2336,9 @@ class ChecklistItemUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="ChecklistItem")
+            self.guidance = FormGuidance.objects.get(form="ChecklistItem")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(ChecklistItemUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
