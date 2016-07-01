@@ -224,9 +224,9 @@ class IndicatorUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Indicator")
+            self.guidance = FormGuidance.objects.get(form="Indicator")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(IndicatorUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -546,16 +546,18 @@ class CollectedDataCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="CollectedData")
+            self.guidance = FormGuidance.objects.get(form="CollectedData")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
         try:
-            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
+            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__standard=True).filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
+            getDisaggregationLabelStandard = DisaggregationLabel.objects.all().filter(disaggregation_type__standard=True)
         except DisaggregationLabel.DoesNotExist:
+            getDisaggregationLabelStandard = None
             getDisaggregationLabel = None
 
         #set values to None so the form doesn't display empty fields for previous entries
@@ -563,6 +565,7 @@ class CollectedDataCreate(CreateView):
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
+        context.update({'getDisaggregationLabelStandard': getDisaggregationLabelStandard})
         context.update({'indicator_id': self.kwargs['indicator']})
         context.update({'program_id': self.kwargs['program']})
 
@@ -593,7 +596,7 @@ class CollectedDataCreate(CreateView):
 
     def form_valid(self, form):
 
-        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
+        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(Q(disaggregation_type__indicator__id=self.request.POST['indicator']) | Q(disaggregation_type__standard=True))
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
@@ -636,25 +639,32 @@ class CollectedDataUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="CollectedData")
+            self.guidance = FormGuidance.objects.get(form="CollectedData")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(CollectedDataUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
         #get the indicator_id for the collected data
         getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
+
         try:
             getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=getIndicator.indicator_id)
+            getDisaggregationLabelStandard = DisaggregationLabel.objects.all().filter(disaggregation_type__standard=True)
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationLabel = None
+            getDisaggregationLabelStandard = None
 
         try:
-            getDisaggregationValue = DisaggregationValue.objects.all().filter(collecteddata=self.kwargs['pk'])
+            getDisaggregationValue = DisaggregationValue.objects.all().filter(collecteddata=self.kwargs['pk']).exclude(disaggregation_label__disaggregation_type__standard=True)
+            getDisaggregationValueStandard = DisaggregationValue.objects.all().filter(collecteddata=self.kwargs['pk']).filter(disaggregation_label__disaggregation_type__standard=True)
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationValue = None
+            getDisaggregationValueStandard = None
 
+        context.update({'getDisaggregationLabelStandard': getDisaggregationLabelStandard})
+        context.update({'getDisaggregationValueStandard': getDisaggregationValueStandard})
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
@@ -677,7 +687,7 @@ class CollectedDataUpdate(UpdateView):
     def form_valid(self, form):
 
         getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
-        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
+        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(Q(disaggregation_type__indicator__id=self.request.POST['indicator']) | Q(disaggregation_type__standard=True)).distinct()
 
         getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
 
@@ -685,7 +695,7 @@ class CollectedDataUpdate(UpdateView):
         if form.instance.update_count_tola_table and form.instance.tola_table:
             try:
                 getTable = TolaTable.objects.get(id=self.request.POST['tola_table'])
-            except DisaggregationLabel.DoesNotExist:
+            except TolaTable.DoesNotExist:
                 getTable = None
             if getTable:
                 count = getTableCount(getTable.url,getTable.table_id)
