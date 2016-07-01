@@ -155,7 +155,32 @@ class CollectedDataForm(forms.ModelForm):
                 Div(
                         "",
                         HTML("""<br/>
-                                {% if getDisaggregationLabel and not getDisaggregationValue%}
+                                {% if getDisaggregationLabelStandard and not getDisaggregationValueStandard %}
+                                    <div class='panel panel-default'>
+                                        <!-- Default panel contents -->
+                                        <div class='panel-heading'>Standard Disaggregations</div>
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Disaggregation Level</th>
+                                            <th>Actuals</th>
+                                            </tr>
+                                            {% for item in getDisaggregationLabelStandard %}
+                                            <tr>
+                                                <td>{{ item.label }}</td>
+                                                <td><input type="text" name="{{ item.id }}" value=""></td>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+                                    </div>
+                                {% else %}
+                                    {% if not getDisaggregationValueStandard %}
+                                        <h4>Standard Disaggregation Levels Not Entered</h4>
+                                        <p>Standard disaggregations are entered in the administrator for the entire organizations.  If you are not seeing
+                                        any here, please contact your system administrator.</p>
+                                    {% endif %}
+                                {% endif %}
+                                {% if getDisaggregationLabel and not getDisaggregationValue %}
                                     <div class='panel panel-default'>
                                         <!-- Default panel contents -->
                                         <div class='panel-heading'>New Disaggregations</div>
@@ -174,8 +199,10 @@ class CollectedDataForm(forms.ModelForm):
                                           </table>
                                     </div>
                                 {% else %}
-                                    <h4>Disaggregation Levels Not Entered For This Indicator</h4>
-                                    <a href="/indicators/indicator_update/{{ indicator_id }}">Add a Disaggregation</a>
+                                    {% if not getDisaggregationValue %}
+                                        <h4>Disaggregation Levels Not Entered For This Indicator</h4>
+                                        <a href="/indicators/indicator_update/{{ indicator_id }}">Add a Disaggregation</a>
+                                    {% endif %}
                                 {% endif %}
 
                                 {% if getDisaggregationValue %}
@@ -190,6 +217,28 @@ class CollectedDataForm(forms.ModelForm):
                                             <th>Actuals</th>
                                             </tr>
                                             {% for item in getDisaggregationValue %}
+                                            <tr>
+                                                <td>{{ item.disaggregation_label.label }}</td>
+                                                <td><input type="text" name="{{ item.disaggregation_label.id }}" value="{{ item.value }}"></td>
+                                            </tr>
+                                            {% endfor %}
+                                          </table>
+
+                                    </div>
+                                {% endif %}
+
+                                {% if getDisaggregationValueStandard %}
+                                    <div class='panel panel-default'>
+                                        <!-- Default panel contents -->
+                                        <div class='panel-heading'>Existing Standard Disaggregations</div>
+
+                                          <!-- Table -->
+                                          <table class="table">
+                                            <tr>
+                                            <th>Disaggregation Level</th>
+                                            <th>Actuals</th>
+                                            </tr>
+                                            {% for item in getDisaggregationValueStandard %}
                                             <tr>
                                                 <td>{{ item.disaggregation_label.label }}</td>
                                                 <td><input type="text" name="{{ item.disaggregation_label.id }}" value="{{ item.value }}"></td>
@@ -224,6 +273,6 @@ class CollectedDataForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
-        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, country__in=countries)
+        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
 
         self.fields['tola_table'].queryset = TolaTable.objects.filter(owner=self.request.user)
