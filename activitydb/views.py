@@ -2601,7 +2601,13 @@ class CustomDashboardUpdate(UpdateView):
         
         return super(CustomDashboardUpdate, self).dispatch(request, *args, **kwargs)
 
-    #get form method, if needed
+    def get_initial(self):
+        dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
+        initial = {
+            'dashboard': dashboard,
+            }
+
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
@@ -2613,16 +2619,17 @@ class CustomDashboardUpdate(UpdateView):
         # context.update({'id': id})
 
         try:
-            getCustomDashboard =context['customdashboard']
+            getCustomDashboard =CustomDashboard.objects.get(id=self.kwargs['pk'])
         except CustomDashboard.DoesNotExist:
             getCustomDashboard = None
         context.update({'getCustomDashboard': getCustomDashboard})
 
-        # try:
-        #     getDashboardTheme = DashboardTheme.objects.all().filter(dashboardtheme__id=getCustomDashboard['theme'])
-        # except DashboardTheme.DoesNotExist:
-        #     getDashboardTheme = None
-        # context.update({'getDashboardTheme': getDashboardTheme})
+        try:
+            selected_theme = getCustomDashboard.theme.id
+            getDashboardTheme = DashboardTheme.objects.all().filter(id=selected_theme)
+        except DashboardTheme.DoesNotExist:
+            getDashboardTheme = None
+        context.update({'getDashboardTheme': getDashboardTheme})
 
         try:
             getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk'])
@@ -2712,48 +2719,59 @@ class DashboardThemeCreate(CreateView):
     model = DashboardTheme
     template_name = 'customdashboard/admin/dashboard_theme_form.html'
 
-#     program_id = int(self.kwargs['pk'])
 
-#     try:
-#         guidance = FormGuidance.objects.get(form="DashboardTheme")
-#     except FormGuidance.DoesNotExist:
-#         guidance = None
+class DashboardThemeUpdate(UpdateView):
 
-#     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-#     def dispatch(self, request, *args, **kwargs):
-#         return super(DashboardThemeCreate, self).dispatch(request, *args, **kwargs)
+    model = DashboardTheme
+    template_name = 'activitydb/custom_dashboard/admin/dashboard_theme_form.html'
 
-#     def get_context_data(self, **kwargs):
-#         context = super(DashboardThemeCreate, self).get_context_data(**kwargs)
-#         pk = self.kwargs['pk']
-#         context.update({'pk': pk})
-#         return context
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="DashboardTheme")
+        except FormGuidance.DoesNotExist:
+            guidance = None
+        return super(DashboardTheme, self).dispatch(request, *args, **kwargs)
 
-#     def form_invalid(self, form):
+    def get_context_data(self, **kwargs):
+        context = super(DashboardThemeUpdate, self).get_context_data(**kwargs)
+        getComplete = DashboardTheme.objects.get(id=self.kwargs['pk'])
+        id = getDashboardTheme.id
+        context.update({'id': id})
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
 
-#         messages.error(self.request, 'Invalid Form', fail_silently=False)
+        # get stuff
 
-#         return self.render_to_response(self.get_context_data(form=form))
+        return context
 
-#     def form_valid(self, form):
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(DashboardThemeUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
-#         form.save()
+    #get shared data from project agreement and pre-populate form with it
+    def get_initial(self):
+        initial = {}
+        return initial
 
-#         #save formset from context
-#         context = self.get_context_data()
+    def form_invalid(self, form):
 
-#         messages.success(self.request, 'Success, Dashboard Created!')
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
 
-#         latest = DashboardTheme.objects.latest('id')
-#         getDashboardTheme = DashboardTheme.objects.get(id=latest.id)
+        return self.render_to_response(self.get_context_data(form=form))
 
-#         redirect_url = '/activitydb/custom_dashboard/theme/' + str(program_id) 
+    def form_valid(self, form):
 
-#         return HttpResponseRedirect(redirect_url)
+        form.save()
+        self.object = form.save()
 
-#     form_class = DashboardThemeCreateForm
+        messages.success(self.request, 'Success, form updated!')
 
-# class DashboardThemeUpdate(UpdateView):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = DashboardThemeForm
+
 class DashboardThemeDelete(DeleteView):
     """
     DashboardTheme Delete
@@ -2809,16 +2827,15 @@ class DashboardComponentCreate(CreateView):
     #   :param id:
     #   """
     model = DashboardComponent
-    template_name = 'customdashboard/admin/dashboardcomponent_form.html'
+    # template_name = 'customdashboard/admin/dashboardcomponent_form.html'
     # program_id = int(self.kwargs['pk'])
-
-    try:
-        guidance = FormGuidance.objects.get(form="DashboardComponent")
-    except FormGuidance.DoesNotExist:
-        guidance = None
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="DashboardComponent")
+        except FormGuidance.DoesNotExist:
+            guidance = None
         return super(DashboardComponentCreate, self).dispatch(request, *args, **kwargs)
 
      # add the request to the kwargs
@@ -2840,7 +2857,6 @@ class DashboardComponentCreate(CreateView):
     def form_valid(self, form):
 
         form.save()
-
         #save formset from context
         context = self.get_context_data()
 
@@ -2848,24 +2864,64 @@ class DashboardComponentCreate(CreateView):
 
         latest = DashboardComponent.objects.latest('id')
         getDashboardComponent = DashboardComponent.objects.get(id=latest.id)
-        # redirect_url = '/activitydb/custom_dashboard/dashboard_component_update/' + str(program_id) 
+        redirect_url = '/activitydb/custom_dashboard/dashboard_component_update/' + str(latest.id) 
         return HttpResponseRedirect(redirect_url)
 
     form_class = DashboardComponentCreateForm 
 
-# class DashbaordComponentUpdate(UpdateView):
+class DashboardComponentUpdate(UpdateView):
+    model = DashboardComponent
+    # template_name = 'activitydb/custom_dashboard/admin/dashboard_component_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="DashboardComponent")
+        except FormGuidance.DoesNotExist:
+            guidance = None
+        return super(DashboardComponent, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardComponentUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(DashboardComponentUpdate, self).get_form_kwargs()
+        getDashboardComponents = DashboardComponent.objects.all().get(id=self.kwargs['pk'])
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+        self.object = form.save()
+
+        messages.success(self.request, 'Success, form updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = DashboardComponentForm
+
 
 class DashboardComponentDelete(DeleteView):
     """
     DashboardComponent Delete
     """
     model = DashboardComponent
-    template_name = 'activitydb/dashboard_component_confirm_delete.html'
-    success_url = 'activitydb/custom_dashboard/'
+    # template_name = 'activitydb/dashboard_component_confirm_delete.html'
+    success_url = 'activitydb/custom_dashboard_update/'
 
-    @method_decorator(group_required('Country',url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
-        return super(DashboardComponentDelete, self).dispatch(request, *args, **kwargs)
+        context = super(DashboardComponentDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
 
     def form_invalid(self, form):
 
@@ -2880,6 +2936,10 @@ class DashboardComponentDelete(DeleteView):
         return HttpResponseRedirect('/activitydb/success')
 
     form_class = DashboardComponentForm  
+
+
+
+
 
 class ComponentDataSourceList(ListView):
 
@@ -2961,7 +3021,57 @@ class ComponentDataSourceCreate(CreateView):
 
     form_class = ComponentDataSourceCreateForm 
 
-# class ComponentDataSourceUpdate(UpdateView):
+class ComponentDataSourceUpdate(UpdateView):
+
+    model = ComponentDataSource
+    template_name = 'activitydb/custom_dashboard/admin/component_datasource_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            guidance = FormGuidance.objects.get(form="ComponentDataSource")
+        except FormGuidance.DoesNotExist:
+            guidance = None
+        return super(ComponentDataSource, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ComponentDataSourceUpdate, self).get_context_data(**kwargs)
+        getComplete = ComponentDataSource.objects.get(id=self.kwargs['pk'])
+        id = getComponentDataSource.id
+        context.update({'id': id})
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
+
+        # get stuff
+
+        return context
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(ComponentDataSourceUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    #get shared data from project agreement and pre-populate form with it
+    def get_initial(self):
+        initial = {}
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+        self.object = form.save()
+
+        messages.success(self.request, 'Success, form updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = ComponentDataSourceForm
 
 class ComponentDataSourceDelete(DeleteView):    
     """
