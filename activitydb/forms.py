@@ -1497,11 +1497,14 @@ class CustomDashboardForm(forms.ModelForm):
                                         <td>{{ item.theme}}</td>
                                         <td>{{ item.program }}</td>
                                         <td>{{ item.color_palette }}</td>
-                                        <td>{{ item.components }}</td>
-                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}/'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                        <td> {% if not item.components %} None {% endif %}
+                                        </td>
+                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" onclick="document.getElementById('id').submit()" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Edit</a> | <a class="dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                     </tr>
                                   </table>
                               {% endif %}
+                            <div class="panel-footer">
+                            </div>
                             </div>
                             """),
                         ),
@@ -1530,14 +1533,14 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <td>{{ item.component_type}}</td>
                                                 <td>{{ item.data_required }}</td>
                                                 <td>{{ item.data_sources }}</td>
-                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}/'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                                <td><a class="dashboard_components" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Edit</a> | <a class="dashboard_components" href='/activitydb/custom_dashboard_delete/{{ item.id }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
                                     <tr><td></td></tr>
                                   </table>
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ id }}/">Add Component</a>
+                                <a class="dashboard_components" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ id }}">Add Component</a>
                               </div>
                             </div>
                             """),
@@ -1564,14 +1567,14 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <td>{{ item.data_type }}</td>
                                                 <td>{{ item.data_source }}</td>
                                                 <td>{{ item.data_filter_key }}</td>
-                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}/'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
                                     <tr><td></td></tr>
                                   </table>
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ id }}/">Add Data Source</a>
+                                <a class="data_sources" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_data_add/{{ id }}">Add Data Source</a>
                               </div>
                             </div>
                             """),
@@ -1587,7 +1590,7 @@ class CustomDashboardForm(forms.ModelForm):
                                     <th>Public?</th>
                                     <th>Component Type</th>
                                     <th>Data Required</th>
-                                    <th>Data Sources</th>
+                                    <th>Data Source(s)</th>
                                     <th></th>
                                     </tr>
                                     {% if getDashboardComponents %}
@@ -1598,8 +1601,13 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <td> {% if item.is_public == 1 %} Yes {% else %} No {% endif %}</td>
                                                 <td>{{ item.component_type}}</td>
                                                 <td>{{ item.data_required }}</td>
-                                                <td>{{ item.data_sources }}</td>
-                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}/'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                                <td><select multiple>
+                                                    {% for option in getComponentDataSources %}
+                                                        <option value="{{option}}">{{option.title}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                </td>
+                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Update Component</a></td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
@@ -1609,38 +1617,25 @@ class CustomDashboardForm(forms.ModelForm):
                             """),
                         ),
                     ),
-                Tab('Dashboard Preview',
-                    Fieldset("Step 4: Preview Dashboard",
+                Tab('Preview & Submit',
+                    Fieldset("Step 5: Preview & Finalize Dashboard",
                         HTML("""
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
-                              <div class='panel-heading'>Current Dashboard</div>
-                                This needs to be a modal: <a target="_new" href='/activitydb/custom_dashboard_detail/{{ item.id }}/'>Preview Dashboard</a>
+                                View this in the window: <a target="_new" href='/activitydb/custom_dashboard_detail/{{ item.id }}'>Preview Dashboard</a>
+                            </div>
+                            <div>
+                                <p> To keep this dashboard, select "Save" below.  </p>
                             </div>
                             """),
                         ),
-                    ),
-                Tab('Finalize Dashboard',
-                    Fieldset("Step 5: Finalize Dashboard",
-                        HTML("""
-                            <div class='panel panel-default'>
-                              <!-- Default panel contents -->
-                              <div class='panel-heading'>Finalize Dashboard</div>
-                              <div>This is where you finalize your dashboard
-
-                              </div>
-                              <div class="panel-footer">
-                                    This will be a submit button
-                                    This will be a clear (return to step 1)
-                                    This will be a cancel (exit dashboard creation) button
-                              </div>
-                            </div>
-                            """),
+                        FormActions(
+                            Submit('submit', 'Save', css_class='btn-default'),
+                            Reset('reset', 'Reset', css_class='btn-warning'),
+                            # cancel('cancel', 'Reset', css_class='btn-warning'),
                         ),
                 ),
-                # FormActions(
-                #     Submit('submit', 'Save', css_class='btn-default'),
-                #     Reset('reset', 'Reset', css_class='btn-warning')
+
                 ),
 
                 HTML("""<br/>"""),
@@ -1703,8 +1698,7 @@ class DashboardThemeForm(forms.ModelForm):
 
         super(DashboardThemeForm, self).__init__(*args, **kwargs)
 
-## Dashboard Component Form Classes
-
+## --------Dashboard Component Form Classes-------------
 class DashboardComponentCreateForm(forms.ModelForm):
 
     class Meta:
@@ -1754,7 +1748,7 @@ class DashboardComponentForm(forms.ModelForm):
 
         super(DashboardComponentForm, self).__init__(*args, **kwargs)
 
-## Data Source Form Classes
+## --------Data Source Form Classes-------------
 class ComponentDataSourceCreateForm(forms.ModelForm):
 
     class Meta:
@@ -1775,7 +1769,6 @@ class ComponentDataSourceCreateForm(forms.ModelForm):
         super(ComponentDataSourceCreateForm, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        # Commit is already set to false
         obj = super(ComponentDataSourceCreateForm, self).save(*args, **kwargs)
         return obj
 
