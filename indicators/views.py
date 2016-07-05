@@ -510,7 +510,7 @@ class CollectedDataList(ListView):
             #redress indicator query based on submitted program
             getIndicators = Indicator.objects.select_related().filter(program=self.kwargs['program']).exclude(collecteddata__isnull=True)
         elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
-            getCollectedData = CollectedData.objects.all().prefetch_related('evidence','indicator','program','indicator__objectives','indicator__strategic_objectives').filter(indicator__country__in=countries).order_by('program','indicator__number')
+            getCollectedData = CollectedData.objects.all().prefetch_related('evidence','indicator','program','indicator__objectives','indicator__strategic_objectives').filter(indicator__program__country__in=countries).order_by('program','indicator__number')
             collected_sum = CollectedData.objects.filter(indicator__program__country__in=countries).aggregate(Sum('targeted'),Sum('achieved'))
 
 
