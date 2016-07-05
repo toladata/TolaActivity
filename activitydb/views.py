@@ -2590,7 +2590,12 @@ class CustomDashboardDetail(DetailView):
 
     model = CustomDashboard
     context_object_name = 'customdashboard'
-    queryset = CustomDashboard.objects.all()
+
+    def get_object(self, queryset=CustomDashboard.objects.all()):
+        try:
+            return queryset.get(project_agreement__id=self.kwargs['pk'])
+        except CustomDashboard.DoesNotExist:
+            return None
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardDetail, self).get_context_data(**kwargs)
