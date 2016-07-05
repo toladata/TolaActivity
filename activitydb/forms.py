@@ -1497,14 +1497,33 @@ class CustomDashboardForm(forms.ModelForm):
                                         <td>{{ item.theme}}</td>
                                         <td>{{ item.program }}</td>
                                         <td>{{ item.color_palette }}</td>
-                                        <td> {% if not item.components %} None {% endif %}
+                                        <td>{% if not item.components %}
+                                                 None  
+                                            {% else %}
+                                                {% for component in item.components %} {{component.component_name}}
+                                                {% endfor %}
+                                            {% endif %}
                                         </td>
-                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" onclick="document.getElementById('id').submit()" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Edit</a> | <a class="dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                        <td> <a class="dashboards" data-toggle="modal" data-target="#myUpdateModal" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Edit</a> | <a class="dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}' data-toggle="modal" data-target="#myDeleteModal">Delete</a></td>
                                     </tr>
                                   </table>
+
+                                  <a class="dashboard_components" style="text-align: left;" href="/activitydb/custom_dashboard/component_add/{{ id }}">Next Step: Add Component</a>      
                               {% endif %}
-                            <div class="panel-footer">
                             </div>
+                            <div id="myUpdateModal" class="modal fade" role="dialog">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                    {% include 'customdashboard/components/admin/customdashboard_detail.html' %}
+                                </div>
+                              </div>
+                            </div>
+                            <div id="myDeleteModal" class="modal fade" role="dialog">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                    {% include 'customdashboard/components/admin/customdashboard_confirm_delete.html' %}
+                                </div>
+                              </div>
                             </div>
                             """),
                         ),
@@ -1533,15 +1552,36 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <td>{{ item.component_type}}</td>
                                                 <td>{{ item.data_required }}</td>
                                                 <td>{{ item.data_sources }}</td>
-                                                <td><a class="dashboard_components" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Edit</a> | <a class="dashboard_components" href='/activitydb/custom_dashboard_delete/{{ item.id }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                                <td><a class="dashboard_components" data-toggle="modal" data-target="#myUpdateComponentModal" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Edit</a> | <a class="dashboard_components" href='/activitydb/custom_dashboard_delete/{{ item.id }}' data-toggle="modal" data-target="#myDeleteComponentModal">Delete</a></td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
                                     <tr><td></td></tr>
                                   </table>
                               <div class="panel-footer">
-                                <a class="dashboard_components" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ id }}">Add Component</a>
+                                <a class="dashboard_components" data-toggle="modal" data-target="#myAddComponentModal" href="/activitydb/custom_dashboard/component_add/{{ id }}">Add Component</a>    
                               </div>
+                              <div id="myAddComponentModal" class="modal fade" role="dialog">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        Add component
+                                    </div>
+                                  </div>
+                                </div>
+                                <div id="myUpdateComponentModal" class="modal fade" role="dialog">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        Edit component
+                                    </div>
+                                  </div>
+                                </div>
+                                <div id="myDeleteComponentModal" class="modal fade" role="dialog">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        Delete component
+                                    </div>
+                                  </div>
+                                </div>
                             </div>
                             """),
                         ),
@@ -1550,31 +1590,52 @@ class CustomDashboardForm(forms.ModelForm):
                     Fieldset("Step 3: Component Data Sources",
                         HTML("""
                             <div class='panel panel-default'>
-                                  <!-- Table -->
-                                  <table class="table">
-                                    <tr >
-                                    <th>Name</th>
-                                    <th>Type</th>
-                                    <th>Source</th>
-                                    <th>Column or Key Name</th>
-                                    <th></th>
-                                    <th></th>
-                                    </tr>
-                                    {% if getComponentDataSources %}
-                                        {% for item in getComponentDataSources %}
-                                            <tr>
-                                                <td>{{ item.data_name}}</td>
-                                                <td>{{ item.data_type }}</td>
-                                                <td>{{ item.data_source }}</td>
-                                                <td>{{ item.data_filter_key }}</td>
-                                                <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{ item.id }}'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard_delete/{{ item.id }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                    <tr><td></td></tr>
-                                  </table>
+                              <!-- Table -->
+                              <table class="table">
+                                <tr >
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Source</th>
+                                <th>Column or Key Name</th>
+                                <th></th>
+                                <th></th>
+                                </tr>
+                                {% if getComponentDataSources %}
+                                    {% for item in getComponentDataSources %}
+                                        <tr>
+                                            <td>{{ item.data_name}}</td>
+                                            <td>{{ item.data_type }}</td>
+                                            <td>{{ item.data_source }}</td>
+                                            <td>{{ item.data_filter_key }}</td>
+                                            <td><a class="data_sources" data-toggle="modal" data-target="#myEditDataModal" href='/activitydb/custom_dashboard/data_update{{ item.id }}'>Edit</a> | <a class="custom_dashboards" href='/activitydb/custom_dashboard/data_delete/{{ item.id }}' data-toggle="modal" data-target="#myDeleteDataModal">Delete</a></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                                <tr><td></td></tr>
+                              </table>
                               <div class="panel-footer">
-                                <a class="data_sources" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_data_add/{{ id }}">Add Data Source</a>
+                                <a class="data_sources" data-toggle="modal" data-target="#myAddDataModal" href="/activitydb/custom_dashboard/data_add/{{ id }}">Add Data Source</a>
+                              </div>
+                              <div id="myAddDataModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        Add data source
+                                    </div>
+                                </div>
+                              </div>
+                              <div id="myUpdateDataModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        Edit Data
+                                    </div>
+                                  </div>
+                              </div>
+                              <div id="myDeleteDataModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        Delete Data
+                                    </div>
+                                </div>
                               </div>
                             </div>
                             """),
@@ -1621,11 +1682,17 @@ class CustomDashboardForm(forms.ModelForm):
                     Fieldset("Step 5: Preview & Finalize Dashboard",
                         HTML("""
                             <div class='panel panel-default'>
-                              <!-- Default panel contents -->
-                                View this in the window: <a target="_new" href='/activitydb/custom_dashboard_detail/{{ item.id }}'>Preview Dashboard</a>
-                            </div>
+                              <a class="dashboards" data-toggle="modal" data-target="#myPreviewModal" href='/activitydb/custom_dashboard_detail/{{ item.id }}'>Preview Dashboard</a>
+                             </div>
                             <div>
                                 <p> To keep this dashboard, select "Save" below.  </p>
+                            </div>
+                            <div id="myPreviewModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        Dashboard render
+                                    </div>
+                                </div>
                             </div>
                             """),
                         ),

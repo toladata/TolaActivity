@@ -2586,6 +2586,47 @@ class CustomDashboardCreate(CreateView):
 
     form_class = CustomDashboardCreateForm 
 
+class CustomDashboardDetail(DetailView):
+
+    model = CustomDashboard
+    context_object_name = 'customdashboard'
+    queryset = CustomDashboard.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(CustomDashboardDetail, self).get_context_data(**kwargs)
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
+
+        try:
+            getCustomDashboard =CustomDashboard.objects.get(id=self.kwargs['pk'])
+        except CustomDashboard.DoesNotExist:
+            getCustomDashboard = None
+        context.update({'getCustomDashboard': getCustomDashboard})
+
+        try:
+            selected_theme = getCustomDashboard.theme.id
+            getDashboardTheme = DashboardTheme.objects.all().filter(id=selected_theme)
+        except DashboardTheme.DoesNotExist:
+            getDashboardTheme = None
+        context.update({'getDashboardTheme': getDashboardTheme})
+
+        try:
+            getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk'])
+        except DashboardComponent.DoesNotExist:
+            getDashboardComponents = None
+        context.update({'getDashboardComponents': getDashboardComponents})
+
+        getComponentDataSources = []
+        for component in getDashboardComponents:
+            try:
+                getComponentDataSources.append(ComponentDataSources.objects.all().filter(component__id=self.kwargs['pk']))
+            except ComponentDataSources.DoesNotExist:
+                getComponentDataSources = None
+        context.update({'getComponentDataSources': getComponentDataSources})
+
+        return context
+
+
 class CustomDashboardUpdate(UpdateView):
 
     model = CustomDashboard
@@ -2613,10 +2654,6 @@ class CustomDashboardUpdate(UpdateView):
         context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
         pk = self.kwargs['pk']
         context.update({'pk': pk})
-        # program_id = getCustomDashboard.program
-        # dashboard_theme_id = getCustomDashboard.theme.id
-        # context.update({'getCustomDashboard': getCustomDashboard})
-        # context.update({'id': id})
 
         try:
             getCustomDashboard =CustomDashboard.objects.get(id=self.kwargs['pk'])
@@ -2689,12 +2726,6 @@ class CustomDashboardDelete(DeleteView):
     form_class = CustomDashboardForm     
 
 class DashboardThemeList(ListView):
-
-    """
-    CustomDashboard
-    :param request:
-    :param pk: program_id
-    """
     model = CustomDashboard
     template_name = 'customdashboard/admin/dashboard_theme_list.html'
 
@@ -2721,7 +2752,6 @@ class DashboardThemeCreate(CreateView):
 
 
 class DashboardThemeUpdate(UpdateView):
-
     model = DashboardTheme
     template_name = 'activitydb/custom_dashboard/admin/dashboard_theme_form.html'
 
@@ -2797,12 +2827,8 @@ class DashboardThemeDelete(DeleteView):
     form_class = DashboardThemeForm  
 
 class DashboardComponentList(ListView):
-    """
-    CustomDashboard
-    :param request:
-    :param pk: program_id
-    """
-    model = CustomDashboard
+
+    model = DashboardComponent
     template_name = 'customdashboard/admin/dashboard_component_list.html'
 
     def get(self, request, *args, **kwargs):
@@ -2823,12 +2849,7 @@ class DashboardComponentList(ListView):
         return render(request, self.template_name, {'getDashboardComponents': getDashboardComponents, 'getProgram': getProgram, 'getProjects': getProjects})
 
 class DashboardComponentCreate(CreateView):
-    #   :param request:
-    #   :param id:
-    #   """
     model = DashboardComponent
-    # template_name = 'customdashboard/admin/dashboardcomponent_form.html'
-    # program_id = int(self.kwargs['pk'])
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -2871,7 +2892,6 @@ class DashboardComponentCreate(CreateView):
 
 class DashboardComponentUpdate(UpdateView):
     model = DashboardComponent
-    # template_name = 'activitydb/custom_dashboard/admin/dashboard_component_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -2911,9 +2931,6 @@ class DashboardComponentUpdate(UpdateView):
 
 
 class DashboardComponentDelete(DeleteView):
-    """
-    DashboardComponent Delete
-    """
     model = DashboardComponent
     # template_name = 'activitydb/dashboard_component_confirm_delete.html'
     success_url = 'activitydb/custom_dashboard_update/'
@@ -2937,18 +2954,8 @@ class DashboardComponentDelete(DeleteView):
 
     form_class = DashboardComponentForm  
 
-
-
-
-
 class ComponentDataSourceList(ListView):
-
-    """
-    CustomDashboard
-    :param request:
-    :param pk: program_id
-    """
-    model = CustomDashboard
+    model = ComponentDataSource
     template_name = 'customdashboard/admin/component_datasource_list.html'
 
     def get(self, request, *args, **kwargs):
@@ -2969,9 +2976,6 @@ class ComponentDataSourceList(ListView):
         return render(request, self.template_name, {'getComponentDataSources': getComponentDataSources, 'getProgram': getProgram, 'getProjects': getProjects})
 
 class ComponentDataSourceCreate(CreateView):
-            #   :param request:
-    #   :param id:
-    #   """
     model = ComponentDataSource
     template_name = 'customdashboard/admin/componentdatasource_form.html'
     # program_id = int(self.kwargs['pk'])
@@ -3022,7 +3026,6 @@ class ComponentDataSourceCreate(CreateView):
     form_class = ComponentDataSourceCreateForm 
 
 class ComponentDataSourceUpdate(UpdateView):
-
     model = ComponentDataSource
     template_name = 'activitydb/custom_dashboard/admin/component_datasource_form.html'
 
@@ -3074,9 +3077,6 @@ class ComponentDataSourceUpdate(UpdateView):
     form_class = ComponentDataSourceForm
 
 class ComponentDataSourceDelete(DeleteView):    
-    """
-    ComponentDataSource Delete
-    """
     model = ComponentDataSource
     template_name = 'activitydb/component_data_source_confirm_delete.html'
     success_url = 'activitydb/custom_dashboard/'
