@@ -1,4 +1,4 @@
-from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable
+from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
 from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreement, TolaUser
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
@@ -108,6 +108,7 @@ class IndicatorForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['disaggregation'].queryset = DisaggregationType.objects.filter(country__in=countries).filter(standard=False)
         self.fields['objectives'].queryset = Objective.objects.all().filter(program__id=self.program)
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
