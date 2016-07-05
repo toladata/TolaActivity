@@ -175,7 +175,6 @@ class IndicatorCreate(CreateView):
     def get_initial(self):
         user_profile = TolaUser.objects.get(user=self.request.user)
         initial = {
-            'country': user_profile.country,
             'program': self.kwargs['id'],
             }
 
@@ -309,7 +308,7 @@ def indicator_report(request, program=0):
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
     if int(program) == 0:
-        getIndicators = Indicator.objects.all().select_related().filter(country__in=countries)
+        getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries)
     else:
         getIndicators = Indicator.objects.all().filter(program__id=program).select_related()
 
@@ -385,7 +384,7 @@ def indicator_data_report(request, id=0, program=0):
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-    getIndicators = Indicator.objects.select_related().filter(country__in=countries)
+    getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
     indicator_name = None
     program_name = None
     q = {'indicator__id__isnull': False}
@@ -401,7 +400,7 @@ def indicator_data_report(request, id=0, program=0):
     else:
         getSiteProfile = SiteProfile.objects.all().select_related()
         z = {
-            'indicator__country__in': countries,
+            'indicator__program__country__in': countries,
         }
 
     if int(program) != 0:
@@ -459,9 +458,9 @@ class IndicatorReportData(View, AjaxableResponseMixin):
                 }
             q.update(r)
         countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','baseline','collecteddata','key_performance_indicator')
-        indicator_count = Indicator.objects.all().filter(country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
-        indicator_data_count = Indicator.objects.all().filter(country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
+        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','baseline','collecteddata','key_performance_indicator')
+        indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
+        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
 
         indicator_serialized = json.dumps(list(indicator))
 
@@ -492,7 +491,7 @@ class CollectedDataList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(country__in=countries).exclude(collecteddata__isnull=True)
+        getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         getCollectedData = None
         collected_sum = None
 
@@ -512,7 +511,7 @@ class CollectedDataList(ListView):
             getIndicators = Indicator.objects.select_related().filter(program=self.kwargs['program']).exclude(collecteddata__isnull=True)
         elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
             getCollectedData = CollectedData.objects.all().prefetch_related('evidence','indicator','program','indicator__objectives','indicator__strategic_objectives').filter(indicator__country__in=countries).order_by('program','indicator__number')
-            collected_sum = CollectedData.objects.filter(indicator__country__in=countries).aggregate(Sum('targeted'),Sum('achieved'))
+            collected_sum = CollectedData.objects.filter(indicator__program__country__in=countries).aggregate(Sum('targeted'),Sum('achieved'))
 
 
         #get details about the filtered indicator or program
