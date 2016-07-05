@@ -146,7 +146,7 @@ def indicator_create(request, id=0):
                     type=getType
 
         #save form
-        new_indicator = Indicator(country=country,sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
+        new_indicator = Indicator(sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
         new_indicator.save()
         new_indicator.program.add(program)
         new_indicator.indicator_type.add(type)
