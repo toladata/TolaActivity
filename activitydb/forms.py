@@ -1508,7 +1508,7 @@ class CustomDashboardForm(forms.ModelForm):
                                     </tr>
                                   </table>
 
-                                  <a class="dashboard_components btn btn-default" data-target="#step1" data-toggle="tab">Next Step: Add Components</a>      
+                                  <a class="dashboard_components btn btn-primary" data-target="#dashboard-components" data-toggle="tab">Next Step: Add Components</a>      
                               {% endif %}
                             </div>
                             <div id="myUpdateModal" class="modal fade" role="dialog">
@@ -1539,7 +1539,7 @@ class CustomDashboardForm(forms.ModelForm):
                 Tab('Dashboard Components',
                     Fieldset("Step 2: Dashboard Components",
                         HTML("""
-                            <div class='panel panel-default tab-pane' id="step1">
+                            <div class='panel panel-default'>
                                   <!-- Table -->
                                   <table class="table">
                                     <tr >
@@ -1570,7 +1570,7 @@ class CustomDashboardForm(forms.ModelForm):
                                 <a class="dashboard_components" data-toggle="modal" data-target="#myAddComponentModal" href="/activitydb/custom_dashboard/component_add/{{ id }}">Add Component</a>    
                               </div>
                               <div>
-                                  <a class="btn btn-default" data-target="#step2" data-toggle="tab">Next Step: Add Data Sources</a></div>
+                                  <a class="btn btn-primary" data-target="#dashboard-data-source" data-toggle="tab">Next Step: Add Data Sources</a></div>
                               <div id="myAddComponentModal" class="modal fade" role="dialog">
                                   <div class="modal-dialog">
                                         <div class="modal-content">
@@ -1611,7 +1611,7 @@ class CustomDashboardForm(forms.ModelForm):
                 Tab('Dashboard Data Source',
                     Fieldset("Step 3: Component Data Sources",
                         HTML("""
-                            <div class='panel panel-default tab-pane' id="step2'>
+                            <div class='panel panel-default'>
                               <!-- Table -->
                               <table class="table">
                                 <tr >
@@ -1710,7 +1710,7 @@ class CustomDashboardForm(forms.ModelForm):
                                     {% endif %}
                                     <tr><td></td></tr>
                                   </table>
-                                  <a class="dashboard_components btn btn-default" data-target="#step3" data-toggle="tab">Next Step: Preview & Finalize</a>      
+                                  <a class="dashboard_components btn btn-primary" data-target="#preview-submit" data-toggle="tab">Next Step: Preview & Finalize</a>      
                               
                               <div id="myAssignDataModal" class="modal fade" role="dialog">
                                 <div class="modal-dialog">
@@ -1730,7 +1730,7 @@ class CustomDashboardForm(forms.ModelForm):
                 Tab('Preview & Submit',
                     Fieldset("Step 5: Preview & Finalize Dashboard",
                         HTML("""
-                            <div class='panel panel-body tab-pane' id="step3">
+                            <div class='panel panel-body'>
                                 {% if getCustomDashboard %}
                                     <a class="btn btn-info" data-toggle="modal" data-target="#myPreviewModal" aria-hidden="true" href="/activitydb/custom_dashboard_detail/{{ getCustomDashboard.id }}">Preview Dashboard</a>
                                 {% else %}
