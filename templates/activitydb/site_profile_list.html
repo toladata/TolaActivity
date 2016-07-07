@@ -66,8 +66,8 @@
     </script>
 {% endif %}
 
- <!-- Table -->
-<table class="table">
+ <!-- Display site profiles & projects -->
+<table class="table table-striped">
     <tr>
         <th>Date Created</th>
         <th>Profile Name</th>
@@ -78,22 +78,54 @@
     </tr>
     {% if getSiteProfile %}
       {% for item in getSiteProfile %}
-          <tr>
-              <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date|date:"d-m-Y" }} </a></td>
-              <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name }}</a></td>
-              <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
-              <td>{{ item.province }}</td>
-              <td>{{ item.district }}</td>
-              <td>
-                  <a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a>
-              </td>
-          </tr>
+    <tr>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date|date:"d-m-Y" }} </a></td>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name }}</a></td>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
+        <td>{{ item.province }}</td>
+        <td>{{ item.district }}</td>
+        <td><a onclick="loadCollected({{ item.id }}, {{ program_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ item.id }}">Projects {{ item.data_count }} </a><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
+    </tr>
+    <tr>
+        <td colspan="6" class="hiddenRow">
+            <div id="hidden-{{ item.id }}" class="accordian-body collapse">
+                <table class="table table-bordered">
+                    <tr>
+
+                        <th>Program</th>
+                        <th>Project Name</th>
+                        <th>Project Activity</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                    </tr>
+                        {% if collecteddata %}
+                            {% for item in collecteddata %}
+                    <tr>
+                        <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.date_collected|date:"m-d-Y" }}</a></td>
+                        <td>{% if item.evidence %} {{ item.evidence }} {%endif%} {% if item.tola_table %} <a href="{{ item.tola_table.url }}">{{ item.tola_table }}</a> {% endif %}</td>
+                        <td>{{ item.targeted }}</td>
+
+                        <td>{{ item.achieved }}</td>
+                        <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+                    </tr>
+                            {% endfor %}
+                        {% else %}
+                    <tr>
+                        <td colspan="6">No Projects on this Site</td>
+
+                    </tr>
+                        {% endif %}
+                </table>
+            </div>
+        </td>
+    </tr>
       {% endfor %}
     {% else %}
-      <tr>
-        <td colspan="7">No Site Profiles yet.</td>
-      </tr>
+    <tr>
+        <td colspan="6">No Site Profiles yet.</td>
+    </tr>
     {% endif %}
+
 </table>
 
 <!-- Modal -->
