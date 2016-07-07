@@ -84,7 +84,8 @@
         <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
         <td>{{ item.province }}</td>
         <td>{{ item.district }}</td>
-        <td><a onclick="loadCollected({{ item.id }}, {{ program_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ item.id }}">Projects {{ item.data_count }} </a><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
+                    {% if getProjects %}
+        <td><a class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ item.id }}">Projects <span class="badge">{{ getProjects|length }}</span></a><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
     </tr>
     <tr>
         <td colspan="6" class="hiddenRow">
@@ -92,26 +93,25 @@
                 <table class="table table-bordered">
                     <tr>
 
-                        <th>Program</th>
                         <th>Project Name</th>
-                        <th>Project Activity</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                    </tr>
-                        {% if collecteddata %}
-                            {% for item in collecteddata %}
-                    <tr>
-                        <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.date_collected|date:"m-d-Y" }}</a></td>
-                        <td>{% if item.evidence %} {{ item.evidence }} {%endif%} {% if item.tola_table %} <a href="{{ item.tola_table.url }}">{{ item.tola_table }}</a> {% endif %}</td>
-                        <td>{{ item.targeted }}</td>
+                        <th>Program</th>
+                        <th>Activity Code</th>
+                        <th>Expected Start Date</th>
+                        <th>&nbsp;</th>
 
-                        <td>{{ item.achieved }}</td>
-                        <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+                    </tr>
+                            {% for items in getProjects %}
+                    <tr>
+                        <td>{{ items.project_name }}</a></td>
+                        <td>{{ items.program.name }}</td>
+                        <td>{{ items.activity_code }}</td>
+                        <td>{{ items.expected_start_date|date:"m-d-Y" }}</td>
+                        <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>View</a></td>
                     </tr>
                             {% endfor %}
                         {% else %}
                     <tr>
-                        <td colspan="6">No Projects on this Site</td>
+                        <td colspan="5">No Projects on this Site</td>
 
                     </tr>
                         {% endif %}

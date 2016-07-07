@@ -1013,6 +1013,8 @@ class SiteProfileList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+        #getProjects = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries)
+        getProjects = ProjectAgreement.objects.all().filter(site__id='1')
 
         #this date, 3 months ago, a site is considered inactive
         inactiveSite = pytz.UTC.localize(datetime.now()) - relativedelta(months=3)
@@ -1032,7 +1034,7 @@ class SiteProfileList(ListView):
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
 
-        return render(request, self.template_name, {'inactiveSite':inactiveSite,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+        return render(request, self.template_name, {'inactiveSite':inactiveSite,'getProjects':getProjects,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 class SiteProfileReport(ListView):
     """
