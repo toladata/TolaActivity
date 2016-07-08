@@ -273,7 +273,7 @@ class ProjectAgreementUpdate(UpdateView):
     :param id: project_agreement_id
     """
     model = ProjectAgreement
-    form_class = ProjectAgreementSimpleForm
+    form_class = ProjectAgreementForm
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -398,7 +398,6 @@ class ProjectAgreementUpdate(UpdateView):
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = ProjectAgreementForm
 
 
 class ProjectAgreementDetail(DetailView):
