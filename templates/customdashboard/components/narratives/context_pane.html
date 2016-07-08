@@ -1,6 +1,6 @@
 <div class="sidebar-pane" id="narrative-context">
-	<h4 style='text-align: center;'> Project Description</h4>
-    <div> Placeholder text - populate this with text input from a form or feed.  According to news, there are around 113 refugees from Syria, Iraq, Afghanistan, Iran, Pakistan, and Bangladesh (including families and children) who wanted to go to Italy from Turkey but have been caught in a Greece Island (Crete) from last several days. The migrants said they had set off from Antalya on Turkey's southwestern coast, some 260 nautical miles away, police and coastguard officials said. </div>
+	<h4 style='text-align: center;'> {{tolaTextData.title}}</h4>
+    <div> {{tolaTextData.excerpt}} </div>
 	<button class='btn btn-link' type=link style='float:right;' data-toggle="modal" data-target="#newsModal">Read More</button>
 </div>
 
@@ -12,12 +12,10 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">ARTICLE TITLE</h4>
+        <h4 class="modal-title">{{tolaTextData.title}}</h4>
       </div>
       <div class="modal-body" style='overflow-x: scroll; word-wrap: break-word; '>
-              <!--populates news items of some type-->
-              full context
-              
+         {{tolaTextData.full}}
       </div>
       <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

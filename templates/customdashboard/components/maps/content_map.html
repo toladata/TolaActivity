@@ -1,20 +1,35 @@
 <div id="map" class="content-map" style='height: 375pt'></div>
-<script src="{{ STATIC_URL }}js/leaflet.js"></script>
-<script>
+<script type="text/javascript">
 
-    var mapCoordinates = [51.505, -0.09]
-    var mapScale = 13
+    var layeredCountries = new L.LayerGroup();
+    // Define an icon called cssIcon
+    var countryIcon = L.divIcon({
+      // Set class name for CSS and marker width/height
+      html:'<div class="map-marker"></div>',
+      iconSize: [0,0]
+    });
+    {% for mappedSite in tolaMapData %}
+        L.marker([{{ mappedSite.latitude }}, {{ mappedSite.longitude }}], {icon: countryIcon}).addTo(layeredCountries).bindPopup("" + "<b>{{ mappedSite.location_name }}</b><br>{{ mappedSite.site_description }}<br/> <br>Region: {{mappedSite.region_link}}<br/>");
+    {%   endfor %}
+
+    var mapCoordinates = [38.4237, 27.1428]
+    var mapScale = 5
     var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
                     '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
                     'Imagery &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
                     mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+
+
     var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
                     streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr});
     var map = L.map('map', {
                     center: mapCoordinates,
                     zoom: mapScale,
-                    layers: [grayscale]
+                    layers: [grayscale, layeredCountries]
                     });
+
     var baseLayers = { "Grayscale": grayscale,"Streets": streets,};
-    L.control.layers(baseLayers).addTo(map);
+    var overlays = {"RRIMA Location": layeredCountries, };
+    L.control.layers(baseLayers, overlays).addTo(map);
+
 </script>

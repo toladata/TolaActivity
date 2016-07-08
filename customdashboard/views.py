@@ -428,40 +428,66 @@ def NarrativeDashboard(request,id=0):
     #retrieve projects for a program
     getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
 
-    filter_url = "http://tables.toladata.io/api/silo/9/data/"
-    headers = {'content-type': 'application/json',
-               'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
-    response = requests.get(filter_url, headers=headers, verify=False)
-    get_json = json.loads(response.content)
-    data = get_json
+    # filter_url = "http://tables.toladata.io/api/silo/9/data/"
+    # headers = {'content-type': 'application/json',
+    #            'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
+    # response = requests.get(filter_url, headers=headers, verify=False)
+    # get_json = json.loads(response.content)
+    # data = get_json
 
     #Parse the JSON(s) into datasets that will feed the templates for this example 
     ## -- parsing might not be immediately relevant for live example 
+    pageText = {}
+    pageText['pageTitle'] = "Refugee Response Information Management & Analysis (RRIMA)"
+    pageText['objectives'] = ["Rapid Use Interface", "Data Analysis"]
+    pageText['objectives_subtitles'] = ["Rapid Implementation; Nimble and Accessible User Interface","Data Analysis and Dissemination"]
+    pageText['objectives_content'] = ["RRIMA will be a user-friendly dashboarding/data visualization tool that is quick to implement and requires little technical knowledge to use. ", "RRIMA will promote increased transparency and communications across teams, partners and external audiences.\n\nRRIMA will support teams' ability to articulate impact and trends across the whole Aegean Response."]
+    pageText['projectSummary'] = {
+        'title':"Project Description (Summary)", 
+        'excerpt': "The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.",
+        'full':"In recent years, we have seen a phenomena of migration taking place originating from geographic areas spanning across North and East Africa, the Middle East and Central Asia flowing into and towards Europe.\n\n More than a million migrants and refugees crossed into Europe in 2015 - the vast majority of which traveled along the Aegean route from countries such as Syria, Afghanistan and Iraq through Turkey, Greece and the Balkans into Europe, seeking asylum. Approximately 74% of those are from the top 10 refugee-producing countries (including Syria, Afghanistan, and Iraq among others) and are likely meet the criteria for protected status under the 1951 Refugee Convention. The remaining 26% are migrants who are seeking safety, resources and/or a better life in Europe. \n\n Mercy Corps is poised with field teams in active areas along the migration route, including the Turkey, Greece, Serbia and the Former Republic of Macedonia (FYROM). However, despite the fact that teams are gathering similar information and running parallel programming, communication and information flow is limited due to a lack of a unifying framework for analysis.\n\n With ECHO funding, we have the opportunity to change that. \n\n The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.\n\n Working side by side with the Tola team and utilizing TolaData as the primary platform for data and information merging and management, the RRIMA and Tola partnership aims to:\n\n Centralize existing data sources.\n Identify trends within a given context.\n Analyze real-time data sets.\n Inform adaptive program delivery.\n Promote data sharing and learning."
+    }
+    pageText['timelineLinks'] = [{"date": "July 13","event": "RRIMA Webinar","link": ""},{"date": "August 4-5","event": "Kick-Off Meeting (Izmir)","link": ""},{"date": "Aug 28 - Sept 9","event": "RRIMA Team in Izmir","link": ""},{"date": "September 9","event": "Prototype Presentation to ECHO","link": ""},{"date": "December","event": "Project Conclusion","link": ""}]
 
-    tableData1 = {}
-    dataset1 = []
-    key1 = 'what_country_were_you_in_last'  
-    for answer in data:
-        dataset1.append(answer[key1])    
-    tableData1['title'] = key1.title
-    tableData1['dataset1'] = dataset1
-    tableData1['dataset2'] = [dataset1.count(dataset1[0]),dataset1.count(dataset1[1]), dataset1.count(dataset1[2])]
+    pageImages = {}
+    pageImages['leadimage_sourcelink'] = 'drive.google.com/a/mercycorps.org/file/d/0B8g-VJ-NXXHiMng0OVVla3FEMlE/view?usp=sharing'
+    pageImages['title'] = 'Aegean Response Photos'
+    pageImages['imageset'] = ["img/demo_images/image1.jpg","img/demo_images/image2.jpg","img/demo_images/image3.jpg","img/demo_images/image4.jpg","img/demo_images/image5.jpg","img/demo_images/image6.jpg","img/demo_images/image7.jpg","img/demo_images/image8.jpg"]
 
+    pageNews = [{"link":"https://newsthatmoves.org/en/ashrafs-story-part-i-fleeing-political-persecution/", "title": "Ashraf's Story Part I: Fleeing Political Persecution"},
+        {"link":"https://newsthatmoves.org/en/greece-overhauls-appeals-to-speed-up-returns-to-turkey", "title": "Greece Overhauls Appeals To Speed Up Returns To Turkey"},
+        {"link":"https://newsthatmoves.org/en/asylum-seekers-make-legal-challenge-to-eu-turkey-deal/", "title": "Asylum Seekers Make Legal Challenge To EU-Turkey Deal"},
+        {"link":"https://newsthatmoves.org/en/legal-information-for-refugees-in-turkey-via-sms/", "title": "Legal Information For Refugees In Turkey Via SMS"},
+        {"link":"https://newsthatmoves.org/en/increase-in-irregular-migration-into-bulgaria/", "title": "Increase In Irregular Migration Into Bulgaria"},
+        {"link":"https://newsthatmoves.org/en/amnesty-international-stop-returns-to-turkey/", "title": "Amnesty International: Halt Returns To Turkey"},
+        {"link":"https://newsthatmoves.org/en/fundamental-rights-at-risk-in-the-european-union/", "title": "Fundamental Rights At Risk In The European Union"},
+        {"link":"https://newsthatmoves.org/en/rumours-family-reunification-camps-transportation/", "title": "RUMOURS: Family Reunification, Camps & Transportation"},
+        {"link":"https://newsthatmoves.org/en/iom-sea-route-death-toll-dropping/", "title": "IOM: Sea Route Death Toll Dropping"},
+        {"link":"https://newsthatmoves.org/en/number-of-arrivals-in-greece-dropped-90-percent/", "title": "Number of Arrivals in Greece Dropped 90 percent"}]
+
+    pageMap = []
+    pageMap = [
+        {"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir", "site_description":"Information we want to display", "region_link":"Turkey"},
+        {"latitude":37.0660, "longitude":37.3781, "location_name":"Gaziantep", "site_description":"Information we want to display","region_link":"Turkey"},
+        {"latitude":39.2645, "longitude":26.2777, "location_name":"Lesvos", "site_description":"Information we want to display","region_link":"Greece"},
+        {"latitude":37.1409, "longitude":26.8488, "location_name":"Leros", "site_description":"Information we want to display","region_link":"Greece"},
+        {"latitude":36.8915, "longitude":27.2877, "location_name":"Kos", "site_description":"Information we want to display","region_link":"Greece"},
+        {"latitude":37.9838, "longitude":23.7275, "location_name":"Athens", "site_description":"Information we want to display","region_link":"Greece"},
+        {"latitude":41.1452, "longitude":22.4997, "location_name":"Gevgelija", "site_description":"Information we want to display","region_link":"Balkans"},
+        {"latitude":42.2130, "longitude":21.7108, "location_name":"Tabanovce", "site_description":"Information we want to display","region_link":"Balkans"},
+        {"latitude":42.3092, "longitude": 21.6499, "location_name":"Presevo", "site_description":"Information we want to display","region_link":"Balkans"},
+        {"latitude":44.8416, "longitude":20.4958, "location_name":"Krnjaca", "site_description":"Information we want to display","region_link":"Balkans"},
+        {"latitude":45.1258, "longitude":19.2283, "location_name":"Sid", "site_description":"Information we want to display","region_link":"Balkans"},
+        {"latitude":46.1005, "longitude":19.6651, "location_name":"Subotica", "site_description":"Information we want to display","region_link":"Balkans"}]
     # Borrowed data for bar graph
-    tableData2 = {}
-    tableData2['approved'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='approved')
-    tableData2['rejected'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='rejected')
-    tableData2['in_progress'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='in progress')
-    tableData2['awaiting_approval'] = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries,approval='awaiting approval')
-    tableData2['dataset'] = [len(tableData2['approved']),len(tableData2['rejected']),len(tableData2['in_progress']),len(tableData2['awaiting_approval'])]
-
     colorPalettes = {
     'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
     'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
     };
 
+
     return render(request, 'customdashboard/themes/narrative_dashboard.html', 
-        {'tableData1': tableData1,'tableData2': tableData2, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
+        {'pageText': pageText, 'pageNews': pageNews, 'pageImages': pageImages, 'pageMap': pageMap,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
 
 
 def MapDashboard(request,id=0):

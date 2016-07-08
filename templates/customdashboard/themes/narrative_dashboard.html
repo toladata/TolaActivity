@@ -13,30 +13,31 @@
 <!-- TODO: define layout sections -->
 <div class="tab-content">
 	  <div id="home" class="tab-pane fade in active">
-		<div class='container-fluid' >
+		<div class='container-fluid'>
 			<div class='col-lg-9'>
 				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
 					<div class="panel-body" style='text-align: center'>
-						<h3>PROGRAM OR PROJECT TITLE SHOULD GO HERE </h3>
-						<h5> Subtitle if it sounds good </h5>
+						<div class='col-lg-12'><h3>{{ pageText.pageTitle }}</h3>
+						<button class='btn btn-warn' style='border-radius: 5px; float: right; padding-right: 2em;'> Dynamic View </button></div>
 					</div>
 				</div>
 				<div class='row'>
 					<div class='col-md-6 ' style='height:300'>
 						<div class='panel panel-info clear' style="float: left; min-height: 600; max-height: 600;">
 							<div class="panel-body">
-								<!-- {% with tableData1 as tolaTableData %} This should be a url request for the gallery feed-->
+								
+								{% with pageImages.imageset as tolaImageData %}
 								    {% include 'customdashboard/components/gallery/sidebar_gallery.html' %}
-								<!-- {% endwith %} -->
+								{% endwith %}
 							</div>
 						</div>
 					</div>
 					<div class='col-md-6' style='height:300'>
 						<div class='panel panel-info' style="float: left; min-height: 600; max-height: 600;">
 							<div class="panel-body" >
-								<!-- {% with tableData1 as tolaTableData %} -->
+								{% with pageText.projectSummary as tolaTextData %}
 								    {% include 'customdashboard/components/narratives/context_pane.html' %}
-								<!-- {% endwith %} -->
+								{% endwith %}
 							</div>
 						</div>
 					</div>
@@ -44,10 +45,10 @@
 				<div class='row'>
 					<div class='col-md-12'>
 						<div class='panel panel-info '>
-							<div class='panel-heading'>PROJECT STATUS</div>
+							<div class='panel-heading'>PROGRAM MAP</div>
 								<div class="panel-body" style="height: 300;">
-								{% with table2 as tolaTableData %}
-								    {% include 'customdashboard/components/charts/bar_graph.html' %}
+								{% with pageMap as tolaMapData %}
+								    {% include 'customdashboard/components/maps/content_map.html' %}
 								{% endwith %}
 							</div>
 						</div>
@@ -60,27 +61,26 @@
 						<div class="panel-body" >
 						  <ul class="nav nav-pills">
 						    <li class="active"><a data-toggle="pill" href="#home" style='text-align: center'>PROGRAM HOME</a></li>
-						    <li><a data-toggle="pill" href="#menu1">Program Objective 1</a></li>
-						    <li><a data-toggle="pill" href="#menu2">Program Objective 2</a></li>
-						    <li><a data-toggle="pill" href="#menu3">Program Objective 3</a></li>
+						    <li><a data-toggle="pill" href="#menu1">{{pageText.objectives.0}}</a></li>
+						    <li><a data-toggle="pill" href="#menu2">{{pageText.objectives.1}}</a></li>
 						  </ul>
 						</div>
 					</div>
 				</div>
 				<div class='col-md-12'>
 					<div class='panel panel-info' style="min-height: 200; max-height: 200; ">
-						{% with tableData1.dataset1 as tolaTableData %}
+						{% with pageText.timelineLinks as tolaTextData %}
 							{% include 'customdashboard/components/narratives/sidebar_news.html' %}
 						{% endwith %}
 		            </div>
 				</div>
 				<div class='col-md-12'>
 					<div class='panel panel-info '>
-						<div class="panel-body">
-							<span class='chart-title' style="overflow-y: scroll;">Project Location</span>
-							<!-- {% with tableData1 as tolaTableData %} -->
-							    {% include 'customdashboard/components/maps/sidebar_map.html' %}
-							<!-- {% endwith %} -->
+						<div class="panel-body" style="height:200; overflow-y: scroll;">
+							<span class='chart-title' style="overflow-y: scroll; ">NEWSFEED</span>
+							{% with pageNews as tolaTextData %}
+							    {% include 'customdashboard/components/narratives/sidebar_news2.html' %}
+							{% endwith %}
 						</div>
 					</div>
 				</div>
@@ -93,8 +93,8 @@
 			<div class='col-lg-9'>
 				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
 					<div class="panel-body" >
-						<span class='chart-title' style="overflow-y: scroll;">Program Objective 1</span>
-						<p> objective details</p>
+						<span class='chart-title' style="overflow-y: scroll;"><h3>{{pageText.objectives_subtitles.0}}</h3></span>
+						<p>{{pageText.objectives_content.0}}</p> 
 					</div>
 				</div>
 			</div>
@@ -104,9 +104,8 @@
 						<div class="panel-body" >
 						  <ul class="nav nav-pills">
 						    <li><a data-toggle="pill" href="#home" style='text-align: center;'>PROGRAM HOME</a></li>
-						    <li class="active"><a data-toggle="pill" href="#menu1">Program Objective 1</a></li>
-						    <li><a data-toggle="pill" href="#menu2">Program Objective 2</a></li>
-						    <li ><a data-toggle="pill" href="#menu3">Program Objective 3</a></li>
+						    <li><a data-toggle="pill" href="#menu1">{{pageText.objectives.0}}</a></li>
+						    <li><a data-toggle="pill" href="#menu2">{{pageText.objectives.1}}</a></li>
 						  </ul>
 						</div>
 					</div>
@@ -119,8 +118,8 @@
 			<div class='col-lg-9'>
 				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
 					<div class="panel-body" >
-						<span class='chart-title' style="overflow-y: scroll;">Program Objective 2</span>
-						<p> Text about objective 2</p>
+						<span class='chart-title' style="overflow-y: scroll;"><h3>{{pageText.objectives_subtitles.1}}</h3></span>
+						<p>{{pageText.objectives_content.1}}</p> 
 					</div>
 				</div>
 			</div>
@@ -130,9 +129,8 @@
 						<div class="panel-body" >
 						  <ul class="nav nav-pills">
 						    <li><a data-toggle="pill" href="#home" style='text-align: center'>PROGRAM HOME</a></li>
-						    <li><a data-toggle="pill" href="#menu1">Program Objective 1</a></li>
-						    <li class="active"><a data-toggle="pill" href="#menu2">Program Objective 2</a></li>
-						    <li><a data-toggle="pill" href="#menu3">Program Objective 3</a></li>
+						    <li><a data-toggle="pill" href="#menu1">{{pageText.objectives.0}}</a></li>
+						    <li class="active"><a data-toggle="pill" href="#menu2">{{pageText.objectives.1}}</a></li>
 						  </ul>
 						</div>
 					</div>
@@ -140,7 +138,7 @@
 			</div>
 		</div>
 	  </div>
-	  <div id="menu3" class="tab-pane fade">
+<!-- 	  <div id="menu3" class="tab-pane fade">
 		<div class='container-fluid' >
 			<div class='col-lg-9'>
 				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
@@ -156,16 +154,17 @@
 						<div class="panel-body" >
 						  <ul class="nav nav-pills">
 						    <li><a data-toggle="pill" href="#home" style='text-align: center'>PROGRAM HOME</a></li>
-						    <li><a data-toggle="pill" href="#menu1">Program Objective 1</a></li>
-						    <li><a data-toggle="pill" href="#menu2">Program Objective 2</a></li>
-						    <li class="active"><a data-toggle="pill" href="#menu3">Program Objective 3</a></li>
+
+						    <li><a data-toggle="pill" href="#menu1">{{pageText.objectives.0}}</a></li>
+						    <li><a data-toggle="pill" href="#menu2">{{pageText.objectives.1}}</a></li>
+						    <li>
 						  </ul>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	  </div>
+	  </div> -->
 </div>
 {% endblock content %}
 
