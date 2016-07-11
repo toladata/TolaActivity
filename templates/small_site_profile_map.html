@@ -57,7 +57,6 @@
             scrollWheelZoom: false,
         }).setView([country_lat[1],country_long[1]], country_zoom[1]);
 
-    L.control.layers(baseLayers).addTo(map);
 
     // Load map with geojson file that contains borders
     $.getJSON($('link[rel="borders"]').attr("href"), function(data) {
@@ -186,17 +185,27 @@
       className: 'map-marker indicator',
       iconSize: [20,20],
     });
-
-
+    var project_sites = [
     {% for item in getSiteProfile %}
-        L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Project Site<br><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>ADM1: {{ item.province }} <br/>ADM2: {{ item.district }} <br/> ADM3: {{ item.admin_level_three }} <br/> Name: {{ item.name }} <br/> ");
+        L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Project Site<br><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>ADM1: {{ item.province }} <br/>ADM2: {{ item.district }} <br/> ADM3: {{ item.admin_level_three }} <br/> Name: {{ item.name }} <br/> "),
     {%   endfor %}
+    ];
+    var projects = L.layerGroup(project_sites).addTo(map);
 
+    var indicator_sites = [
     {% if getSiteProfileIndicator %}
         {% for item in getSiteProfileIndicator %}
-            L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Collected Indicator Data Site<br> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>ADM1: {{ item.province }} <br/>ADM2: {{ item.district }} <br/> ADM3: {{ item.admin_level_three }} <br/> Name: {{ item.name }} <br/> ");
+            L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Collected Indicator Data Site<br> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>ADM1: {{ item.province }} <br/>ADM2: {{ item.district }} <br/> ADM3: {{ item.admin_level_three }} <br/> Name: {{ item.name }} <br/> "),
         {%   endfor %}
     {% endif %}
+    ];
+    var indicators = L.layerGroup(indicator_sites).addTo(map);
 
+    var overlayMaps = {
+        "Indicator Data Sites": indicators,
+        "Project Sites": projects,
+    };
+
+    L.control.layers(baseLayers,overlayMaps).addTo(map);
 
 </script>

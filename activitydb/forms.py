@@ -1021,7 +1021,7 @@ class SiteProfileForm(forms.ModelForm):
             TabHolder(
                 Tab('Profile',
                     Fieldset('Description',
-                        'code', 'name', 'type', 'office',
+                        'name', 'type', 'office',
                     ),
                     Fieldset('Contact Info',
                         'contact_leader', 'date_of_firstcontact', 'contact_number', 'num_members',

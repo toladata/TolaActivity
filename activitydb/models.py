@@ -597,14 +597,11 @@ class SiteProfile(models.Model):
             self.create_date = datetime.now()
             self.edit_date = datetime.now()
 
-        # Generate a site profile code by combining the country code, office code and the name of the site
-            self.code = str(self.country.code) + "-" + str(self.office.code) + "-" + str(self.name)
-
         super(SiteProfile, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
-        new_name = str(self.province) + " - " + str(self.name)
+        new_name = self.name
         return new_name
 
 
