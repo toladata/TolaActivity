@@ -8,17 +8,20 @@
     var country=[];
     var country_lat=[];
     var country_long=[];
+    var country_zoom=[];
     {% if selected_countries_list %}
         {% for item in selected_countries_list %}
             country[{{forloop.counter}}] = "{{ item.country }}";
             country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
             country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+            country_zoom[{{forloop.counter}}] = "{{ item.zoom }}";
         {% endfor %}
     {%else%}
         {% for item in countries %}
             country[{{forloop.counter}}] = "{{ item.country }}";
             country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
             country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+            country_zoom[{{forloop.counter}}] = "{{ item.zoom }}";
         {% endfor %}
     {% endif %}
 
@@ -52,7 +55,7 @@
             layers: [positron], // only add one!
             touchZoom: false,
             scrollWheelZoom: false,
-        }).setView([country_lat[1],country_long[1]], 5);
+        }).setView([country_lat[1],country_long[1]], country_zoom[1]);
 
     L.control.layers(baseLayers).addTo(map);
 
