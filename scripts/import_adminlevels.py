@@ -113,22 +113,22 @@ def getAllData(getCountry,file_name):
 
 # UNCOMMENT AND UPDATE TO IMPORT
 print "IMPORTING China !!!!!!"
-getCountry = Country.objects.get(country="China")
+getCountry, created = Country.objects.get_or_create(country="China")
 file_name = "fixtures/Admin-China.csv"
 getAllData(getCountry, file_name)
 print "IMPORTING India !!!!!!"
-getCountry = Country.objects.get(country="India")
+getCountry, created = Country.objects.get_or_create(country="India")
 file_name = "fixtures/Admin-India.csv"
 getAllData(getCountry, file_name)
 print "IMPORTING Indonesia !!!!!!"
-getCountry = Country.objects.get(country="Indonesia")
+getCountry, created = Country.objects.get_or_create(country="Indonesia")
 file_name = "fixtures/Admin-Indonesia.csv"
 getAllData(getCountry, file_name)
 print "IMPORTING Mongolia !!!!!!"
-getCountry = Country.objects.get(country="Mongolia")
+getCountry, created = Country.objects.get_or_create(country="Mongolia")
 file_name = "fixtures/Admin-Mongolia.csv"
 getAllData(getCountry, file_name)
 print "IMPORTING Myanmar !!!!!!"
-getCountry = Country.objects.get(country="Myanmar")
+getCountry, created = Country.objects.get_or_create(country="Myanmar")
 file_name = "fixtures/Admin-Myanmar.csv"
 getAllData(getCountry, file_name)
