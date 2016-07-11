@@ -112,8 +112,23 @@ def getAllData(getCountry,file_name):
 
 
 # UNCOMMENT AND UPDATE TO IMPORT
-# Kenya
-print "IMPORTING Kenya !!!!!!"
-getCountry = Country.objects.get(country="Kenya")
-file_name = "fixtures/kenya-admin.csv"
+print "IMPORTING China !!!!!!"
+getCountry = Country.objects.get(country="China")
+file_name = "fixtures/Admin-China.csv"
+getAllData(getCountry, file_name)
+print "IMPORTING India !!!!!!"
+getCountry = Country.objects.get(country="India")
+file_name = "fixtures/Admin-India.csv"
+getAllData(getCountry, file_name)
+print "IMPORTING Indonesia !!!!!!"
+getCountry = Country.objects.get(country="Indonesia")
+file_name = "fixtures/Admin-Indonesia.csv"
+getAllData(getCountry, file_name)
+print "IMPORTING Mongolia !!!!!!"
+getCountry = Country.objects.get(country="Mongolia")
+file_name = "fixtures/Admin-Mongolia.csv"
+getAllData(getCountry, file_name)
+print "IMPORTING Myanmar !!!!!!"
+getCountry = Country.objects.get(country="Myanmar")
+file_name = "fixtures/Admin-Myanmar.csv"
 getAllData(getCountry, file_name)

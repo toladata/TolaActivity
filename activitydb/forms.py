@@ -700,7 +700,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','project_activity','site'
+                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','project_activity','site','stakeholder',
                     ),
                     Fieldset(
                         'Dates',
@@ -768,7 +768,7 @@ class ProjectCompleteForm(forms.ModelForm):
             TabHolder(
                 Tab('Executive Summary',
                     Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code','account_code','lin_code',\
-                             'office', 'sector','project_name', 'project_activity','site',
+                             'office', 'sector','project_name', 'project_activity','site','stakeholder',
                         ),
                     Fieldset(
                         'Dates',
