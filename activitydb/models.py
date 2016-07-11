@@ -62,6 +62,7 @@ class Country(models.Model):
     description = models.TextField("Description/Notes", max_length=765,blank=True)
     latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
     longitude = models.CharField("Longitude", max_length=255, null=True, blank=True)
+    zoom = models.IntegerField("Zoom", default=5)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -596,14 +597,11 @@ class SiteProfile(models.Model):
             self.create_date = datetime.now()
             self.edit_date = datetime.now()
 
-        # Generate a site profile code by combining the country code, office code and the name of the site
-            self.code = str(self.country.code) + "-" + str(self.office.code) + "-" + str(self.name)
-
         super(SiteProfile, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
-        new_name = str(self.province) + " - " + str(self.name)
+        new_name = self.name
         return new_name
 
 
