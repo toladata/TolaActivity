@@ -1,4 +1,4 @@
-{% extends "customdashboard/themes/custom_base_layout.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
 
 <!-- humanize numbers -->
@@ -44,7 +44,7 @@
 </table>
 
 <div class="panel-footer">
-    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/theme_add/0/">Add New Theme</a>
+    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/theme_add/">Add New Theme</a>
 </div>
 
 {% endblock content %}
