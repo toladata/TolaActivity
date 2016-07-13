@@ -20,17 +20,20 @@
         <th>Date Created</th>
         <th>Component Name</th>
         <th>Component Type</th>
-        <th>Example Component</th>
+        <th>Component Description</th>   
+        <th>Public?</th>
         <th>Data Source</th>
         <th>&nbsp;</th>
         <th>&nbsp;</th>
     </tr>
     {% for item in getDashboardComponents %}
     <tr>
-       <td> Date </td>       
-       <td> I am a Dashboard Component</td>
-       <td> I am a Component Type</td>
-       <td> I am the Data</td>       
+       <td> item.create_date</td>       
+       <td> item.component_name</td>
+       <td> item.component_type </td>
+       <td> item.component_description </td>
+       <td> item.is_public </td>
+       <td> item.data_source</td>       
        <td> <a href="/activitydb/custom_dashboard/component_update/{{ item.id }}" class="btn btn-xs btn-danger">Update Component</a></td>
        <td> <a href="/activitydb/custom_dashboard/component_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Component</a></td>
     </tr>
