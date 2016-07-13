@@ -1,5 +1,3 @@
-<!-- import chart.js -->
-
 <!-- load basic layout -->
 {% extends "customdashboard/themes/custom_base_layout.html" %}
 {% load staticfiles %}
@@ -11,45 +9,54 @@
 {% block content %}
 
 <!-- TODO: define layout sections -->
-<div class="tab-content">
-	<div class='container-fluid'>
-		<div class='row'>
-			<div class='col-lg-1'>
-				<div id="home" class="tab-pane fade in active">
-						<ul class="nav nav-pills">
-						    <li class="active"><a href="#home" style='text-align: center'>Home</a></li>
-						    <li><a href="#menu1">#1</a></li>
-						    <li><a href="#menu2">#2</a></li>
-						    <li><a href="#menu3">#3</a></li>
-						 </ul>
-				</div>
-			</div>
-			<div class='col-lg-11' style='padding:0; margin:0;'>
-				<div class='panel panel-info' style="min-height: 400pt; max-height: 400pt;">
-					<!-- <div class="panel-body" style='text-align: center'> -->
-						{% include 'customdashboard/components/maps/content_map.html' %}
-					<!-- </div> -->
-				</div>
+<div class="tab-content"'>
+	<div class='container-fluid'>		
+
+		<div class='row' '>
+			<div class='col-lg-12 borderless soft-border-top padding-no-bottom' style='background-color:#DB5E12; height: 75px;' >
+				<h2 class='title-white'>Greece</h2>
 			</div>
 		</div>
-		<div class='row' style='padding:0; margin:0;'>
-			<div class='col-md-9'>
-				<div class='panel panel-info '>
-					<div class='panel-heading'>PROJECT STATUS?</div>
-					<div class="panel-body" style="height: 300;">
-						<!-- {% with table2 as tolaTableData %} -->
+		<div class='row'>
+			<div class='col-lg-12'>
+				<div class='panel panel-info' style="height: 300pt; border-color: #00afaa;"">
+					{% with pageMap as tolaMapData %}
+						{% include 'customdashboard/components/maps/region_map.html' %}
+					{% endwith %}
+				</div>
+		</div>
+		<div class='row'>
+			<div class='col-md-4' style="height: 500;">
+				<div class='panel panel-info soft-border-full' style='border-color: #00afaa; '>
+					<div class='panel-heading text-center soft-border-top' style='background-color: #7B5213;'></div>
+						<div class="panel-body" style="min-height: 500; max-height: 500;">
+						<span class='chart-title' style="overflow-y: scroll;">{{ table1.column_heading }}</span>
+						{% with table1 as tolaTableData %}
 						    {% include 'customdashboard/components/charts/bar_graph.html' %}
-						<!-- {% endwith %} -->
-					</div>
+						{% endwith %}
+						</div>
 				</div>
 			</div>
-			<div class='col-lg-3'>
-
-				<div class='panel panel-info '>
-					<div class="panel-body">
-						<span class='chart-title' style="overflow-y: scroll;">???</span>
-
-					</div>
+			<div class='col-md-4' style="height: 500;">
+				<div class='panel panel-info soft-border-full' style='border-color: #00afaa;'>
+					<div class='panel-heading soft-border-top' style='background-color: #7B5213;'></div>
+						<div class="panel-body" style="min-height: 500; max-height: 500;">
+						<span class='chart-title' style="overflow-y: scroll;">{{ table2.column_heading }}</span>
+						{% with table2 as tolaTableData %}
+						    {% include 'customdashboard/components/charts/doughnut.html' %}
+						{% endwith %}
+						</div>
+				</div>
+			</div>
+			<div class='col-md-4' style="height: 500;">
+				<div class='panel panel-info soft-border-full' style='border-color: #00afaa;'>
+					<div class='panel-heading soft-border-top' style='background-color: #7B5213;'></div>
+						<div class="panel-body" style="min-height: 500; max-height: 500;">
+						<span class='chart-title' style="overflow-y: scroll;">{{ table3.column_heading }}</span>
+						{% with table3 as tolaTableData %}
+						    {% include 'customdashboard/components/charts/doughnut2.html' %}
+						{% endwith %}
+						</div>
 				</div>
 			</div>
 		</div>
@@ -58,9 +65,7 @@
 
 {% endblock content %}
 
-
-
-
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
- <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<div id="map" class="content-map" style='height: 375pt'></div>

@@ -15,26 +15,26 @@
 	  <div id="home" class="tab-pane fade in active">
 		<div class='container-fluid'>
 			<div class='col-lg-9'>
-				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
+				<div class='panel panel-info borderless soft-border-full' style="min-height: 200; max-height: 200; background-color:#DB5E11;">
 					<div class="panel-body" style='text-align: center'>
-						<div class='col-lg-12'><h3>{{ pageText.pageTitle }}</h3>
-						<button class='btn btn-warn' style='border-radius: 5px; float: right; padding-right: 2em;'> Dynamic View </button></div>
+						<div class='col-lg-12 title-white'>
+						<span style='font-size: 2.2em;'>{{ pageText.pageTitle }}</span>
+						<button class='btn btn-warn title-white' style='background-color: #e89424;border-radius: 2px; float: right; margin: .5em;'> Dynamic View </button></div>
 					</div>
 				</div>
-				<div class='row'>
-					<div class='col-md-6 ' style='height:300'>
-						<div class='panel panel-info clear' style="float: left; min-height: 600; max-height: 600;">
+				<div class='row row-eq-height' >
+					<div class='col-md-6 row-eq-height bounded-column'>
+						<div class='panel panel-info borderless soft-border-full' style="float: left; height: 245pt;">
 							<div class="panel-body">
-								
 								{% with pageImages.imageset as tolaImageData %}
 								    {% include 'customdashboard/components/gallery/sidebar_gallery.html' %}
 								{% endwith %}
 							</div>
 						</div>
 					</div>
-					<div class='col-md-6' style='height:300'>
-						<div class='panel panel-info' style="float: left; min-height: 600; max-height: 600;">
-							<div class="panel-body" >
+					<div class='col-md-6 row-eq-height bounded-column'>
+						<div class='panel panel-info borderless soft-border-full' style="float: left; height: 245pt; ">
+							<div class="panel-body" style='overflow-y: scroll; ' >
 								{% with pageText.projectSummary as tolaTextData %}
 								    {% include 'customdashboard/components/narratives/context_pane.html' %}
 								{% endwith %}
@@ -44,8 +44,8 @@
 				</div>
 				<div class='row'>
 					<div class='col-md-12'>
-						<div class='panel panel-info '>
-							<div class='panel-heading'>PROGRAM MAP</div>
+						<div class='panel panel-info borderless soft-border-full'>
+							<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213;'><span class='title-white'> PROGRAM MAP </span></div>
 								<div class="panel-body" style="height: 300;">
 								{% with pageMap as tolaMapData %}
 								    {% include 'customdashboard/components/maps/content_map.html' %}
@@ -57,10 +57,10 @@
 			</div>
 			<div class='col-lg-3'>
 				<div class='col-lg-12'>
-					<div class='panel panel-info' style="min-height: 400; max-height: 400;">
+					<div class='panel panel-info borderless soft-border-full' style="min-height: 400; max-height: 400;">
 						<div class="panel-body" >
 						  <ul class="nav nav-pills">
-						    <li class="active"><a data-toggle="pill" href="#home" style='text-align: center'>PROGRAM HOME</a></li>
+						    <li class="active"><a data-toggle="pill" href="#home" style='text-align: center'>OBJECTIVES</a></li>
 						    <li><a data-toggle="pill" href="#menu1">{{pageText.objectives.0}}</a></li>
 						    <li><a data-toggle="pill" href="#menu2">{{pageText.objectives.1}}</a></li>
 						  </ul>
@@ -68,30 +68,32 @@
 					</div>
 				</div>
 				<div class='col-md-12'>
-					<div class='panel panel-info' style="min-height: 200; max-height: 200; ">
+					<div class='panel panel-info borderless soft-border-full' style="min-height: 200; max-height: 200; ">
+					<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213;'><span class='title-white'> LATEST EVENTS</span></div>
 						{% with pageText.timelineLinks as tolaTextData %}
-							{% include 'customdashboard/components/narratives/sidebar_news.html' %}
+							{% include 'customdashboard/components/narratives/sidebar_events.html' %}
 						{% endwith %}
 		            </div>
 				</div>
 				<div class='col-md-12'>
-					<div class='panel panel-info '>
-						<div class="panel-body" style="height:200; overflow-y: scroll;">
-							<span class='chart-title' style="overflow-y: scroll; ">NEWSFEED</span>
+					<div class='panel panel-info borderless soft-border-full'>							
+					<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213;'><span class='title-white'> NEWSFEED</span></div>
+						<div class="panel-body">
+							<!-- <span class='chart-title' style="overflow-y: scroll; ">NEWSFEED</span> -->
 							{% with pageNews as tolaTextData %}
-							    {% include 'customdashboard/components/narratives/sidebar_news2.html' %}
+							    {% include 'customdashboard/components/narratives/sidebar_news.html' %}
 							{% endwith %}
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		<!-- </div> -->
 	</div>
 
 	  <div id="menu1" class="tab-pane fade">
 		<div class='container-fluid' >
 			<div class='col-lg-9'>
-				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
+				<div class='panel panel-info borderless' style="min-height: 200; max-height: 200;">
 					<div class="panel-body" >
 						<span class='chart-title' style="overflow-y: scroll;"><h3>{{pageText.objectives_subtitles.0}}</h3></span>
 						<p>{{pageText.objectives_content.0}}</p> 
@@ -100,10 +102,10 @@
 			</div>
 			<div class='col-lg-3'>
 				<div class='col-lg-12'>
-					<div class='panel panel-info' style="min-height: 400; max-height: 400;">
+					<div class='panel panel-info borderless' style="min-height: 400; max-height: 400;">
 						<div class="panel-body" >
 						  <ul class="nav nav-pills">
-						    <li><a data-toggle="pill" href="#home" style='text-align: center;'>PROGRAM HOME</a></li>
+						    <li><a data-toggle="pill" href="#home" style='text-align: center;'>HOME</a></li>
 						    <li><a data-toggle="pill" href="#menu1">{{pageText.objectives.0}}</a></li>
 						    <li><a data-toggle="pill" href="#menu2">{{pageText.objectives.1}}</a></li>
 						  </ul>
@@ -116,7 +118,7 @@
 	  <div id="menu2" class="tab-pane fade">
 		<div class='container-fluid' >
 			<div class='col-lg-9'>
-				<div class='panel panel-info' style="min-height: 200; max-height: 200;">
+				<div class='panel panel-info borderless' style="min-height: 200; max-height: 200;">
 					<div class="panel-body" >
 						<span class='chart-title' style="overflow-y: scroll;"><h3>{{pageText.objectives_subtitles.1}}</h3></span>
 						<p>{{pageText.objectives_content.1}}</p> 
@@ -125,10 +127,10 @@
 			</div>
 			<div class='col-lg-3'>
 				<div class='col-lg-12'>
-					<div class='panel panel-info' style="min-height: 400; max-height: 400;">
+					<div class='panel panel-info borderless' style="min-height: 400; max-height: 400;">
 						<div class="panel-body" >
 						  <ul class="nav nav-pills">
-						    <li><a data-toggle="pill" href="#home" style='text-align: center'>PROGRAM HOME</a></li>
+						    <li><a data-toggle="pill" href="#home" style='text-align: center'>HOME</a></li>
 						    <li><a data-toggle="pill" href="#menu1">{{pageText.objectives.0}}</a></li>
 						    <li class="active"><a data-toggle="pill" href="#menu2">{{pageText.objectives.1}}</a></li>
 						  </ul>
@@ -165,12 +167,10 @@
 			</div>
 		</div>
 	  </div> -->
+	</div>
 </div>
 {% endblock content %}
 
-
-
-
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
- <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></scri
+<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
