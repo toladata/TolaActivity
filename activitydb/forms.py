@@ -1583,7 +1583,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <td>{{ component.component_type}}</td>
                                                 <td>{{ component.data_required }}</td>
                                                 <td>{{ component.data_sources }}</td>
-                                                <td><a class="dashboard_components" data-toggle="modal" data-target="#myUpdateComponentModal" href='/activitydb/custom_dashboard_update/{{ pk }}'>Edit</a> | <a class="dashboard_components" href='/activitydb/custom_dashboard_delete/{{ pk }}' data-toggle="modal" data-target="#myDeleteComponentModal">Delete</a></td>
+                                                <td><a class="dashboard_components" data-toggle="modal" data-target="#myUpdateComponentModal" href='/activitydb/custom_dashboard/component_update/{{component.id}}>Edit</a> | <a class="dashboard_components" href='/activitydb/custom_dashboard/component_delete/{{component.id}}' data-toggle="modal" data-target="#myDeleteComponentModal">Delete</a></td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
@@ -1905,6 +1905,7 @@ class ComponentDataSourceCreateForm(forms.ModelForm):
         exclude = ['create_date', 'edit_date']
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -1913,7 +1914,8 @@ class ComponentDataSourceCreateForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.form_tag = True
+        self.helper.form_tag = True   
+        self.helper.form_id = "component_data_source"    
 
         super(ComponentDataSourceCreateForm, self).__init__(*args, **kwargs)
 
