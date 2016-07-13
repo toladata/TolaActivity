@@ -146,7 +146,7 @@ def indicator_create(request, id=0):
                     type=getType
 
         #save form
-        new_indicator = Indicator(country=country,sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
+        new_indicator = Indicator(sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
         new_indicator.save()
         new_indicator.program.add(program)
         new_indicator.indicator_type.add(type)
@@ -175,7 +175,6 @@ class IndicatorCreate(CreateView):
     def get_initial(self):
         user_profile = TolaUser.objects.get(user=self.request.user)
         initial = {
-            'country': user_profile.country,
             'program': self.kwargs['id'],
             }
 
@@ -224,9 +223,9 @@ class IndicatorUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="Indicator")
+            self.guidance = FormGuidance.objects.get(form="Indicator")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(IndicatorUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -309,7 +308,7 @@ def indicator_report(request, program=0):
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
     if int(program) == 0:
-        getIndicators = Indicator.objects.all().select_related().filter(country__in=countries)
+        getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries)
     else:
         getIndicators = Indicator.objects.all().filter(program__id=program).select_related()
 
@@ -385,7 +384,7 @@ def indicator_data_report(request, id=0, program=0):
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-    getIndicators = Indicator.objects.select_related().filter(country__in=countries)
+    getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
     indicator_name = None
     program_name = None
     q = {'indicator__id__isnull': False}
@@ -401,7 +400,7 @@ def indicator_data_report(request, id=0, program=0):
     else:
         getSiteProfile = SiteProfile.objects.all().select_related()
         z = {
-            'indicator__country__in': countries,
+            'indicator__program__country__in': countries,
         }
 
     if int(program) != 0:
@@ -459,9 +458,9 @@ class IndicatorReportData(View, AjaxableResponseMixin):
                 }
             q.update(r)
         countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','baseline','collecteddata','key_performance_indicator')
-        indicator_count = Indicator.objects.all().filter(country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
-        indicator_data_count = Indicator.objects.all().filter(country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
+        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','baseline','collecteddata','key_performance_indicator')
+        indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
+        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
 
         indicator_serialized = json.dumps(list(indicator))
 
@@ -492,7 +491,7 @@ class CollectedDataList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(country__in=countries).exclude(collecteddata__isnull=True)
+        getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         getCollectedData = None
         collected_sum = None
 
@@ -511,8 +510,8 @@ class CollectedDataList(ListView):
             #redress indicator query based on submitted program
             getIndicators = Indicator.objects.select_related().filter(program=self.kwargs['program']).exclude(collecteddata__isnull=True)
         elif int(self.kwargs['indicator']) == 0 and int(self.kwargs['program']) == 0:
-            getCollectedData = CollectedData.objects.all().prefetch_related('evidence','indicator','program','indicator__objectives','indicator__strategic_objectives').filter(indicator__country__in=countries).order_by('program','indicator__number')
-            collected_sum = CollectedData.objects.filter(indicator__country__in=countries).aggregate(Sum('targeted'),Sum('achieved'))
+            getCollectedData = CollectedData.objects.all().prefetch_related('evidence','indicator','program','indicator__objectives','indicator__strategic_objectives').filter(indicator__program__country__in=countries).order_by('program','indicator__number')
+            collected_sum = CollectedData.objects.filter(indicator__program__country__in=countries).aggregate(Sum('targeted'),Sum('achieved'))
 
 
         #get details about the filtered indicator or program
@@ -546,16 +545,18 @@ class CollectedDataCreate(CreateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="CollectedData")
+            self.guidance = FormGuidance.objects.get(form="CollectedData")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataCreate, self).get_context_data(**kwargs)
         try:
-            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
+            getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__standard=True).filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
+            getDisaggregationLabelStandard = DisaggregationLabel.objects.all().filter(disaggregation_type__standard=True)
         except DisaggregationLabel.DoesNotExist:
+            getDisaggregationLabelStandard = None
             getDisaggregationLabel = None
 
         #set values to None so the form doesn't display empty fields for previous entries
@@ -563,6 +564,7 @@ class CollectedDataCreate(CreateView):
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
+        context.update({'getDisaggregationLabelStandard': getDisaggregationLabelStandard})
         context.update({'indicator_id': self.kwargs['indicator']})
         context.update({'program_id': self.kwargs['program']})
 
@@ -593,7 +595,7 @@ class CollectedDataCreate(CreateView):
 
     def form_valid(self, form):
 
-        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.kwargs['indicator'])
+        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(Q(disaggregation_type__indicator__id=self.request.POST['indicator']) | Q(disaggregation_type__standard=True))
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
@@ -636,25 +638,32 @@ class CollectedDataUpdate(UpdateView):
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="CollectedData")
+            self.guidance = FormGuidance.objects.get(form="CollectedData")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(CollectedDataUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CollectedDataUpdate, self).get_context_data(**kwargs)
         #get the indicator_id for the collected data
         getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
+
         try:
             getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=getIndicator.indicator_id)
+            getDisaggregationLabelStandard = DisaggregationLabel.objects.all().filter(disaggregation_type__standard=True)
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationLabel = None
+            getDisaggregationLabelStandard = None
 
         try:
-            getDisaggregationValue = DisaggregationValue.objects.all().filter(collecteddata=self.kwargs['pk'])
+            getDisaggregationValue = DisaggregationValue.objects.all().filter(collecteddata=self.kwargs['pk']).exclude(disaggregation_label__disaggregation_type__standard=True)
+            getDisaggregationValueStandard = DisaggregationValue.objects.all().filter(collecteddata=self.kwargs['pk']).filter(disaggregation_label__disaggregation_type__standard=True)
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationValue = None
+            getDisaggregationValueStandard = None
 
+        context.update({'getDisaggregationLabelStandard': getDisaggregationLabelStandard})
+        context.update({'getDisaggregationValueStandard': getDisaggregationValueStandard})
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
@@ -677,7 +686,7 @@ class CollectedDataUpdate(UpdateView):
     def form_valid(self, form):
 
         getCollectedData = CollectedData.objects.get(id=self.kwargs['pk'])
-        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(disaggregation_type__indicator__id=self.request.POST['indicator'])
+        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(Q(disaggregation_type__indicator__id=self.request.POST['indicator']) | Q(disaggregation_type__standard=True)).distinct()
 
         getIndicator = CollectedData.objects.get(id=self.kwargs['pk'])
 
@@ -685,7 +694,7 @@ class CollectedDataUpdate(UpdateView):
         if form.instance.update_count_tola_table and form.instance.tola_table:
             try:
                 getTable = TolaTable.objects.get(id=self.request.POST['tola_table'])
-            except DisaggregationLabel.DoesNotExist:
+            except TolaTable.DoesNotExist:
                 getTable = None
             if getTable:
                 count = getTableCount(getTable.url,getTable.table_id)
@@ -765,37 +774,24 @@ def collecteddata_import(request):
     :return:
     """
     owner = request.user
-    service = ExternalService.objects.get(name="TolaTables")
+    #get the TolaTables URL and token from the sites object
+    service = TolaSites.objects.get(site_id=1)
 
     # add filter to get just the users tables only
-    user_filter_url = service.feed_url + "&owner__username=" + str(owner)
-    shared_filter_url = service.feed_url + "&shared__username=" + str(owner)
-    token = TolaSites.objects.get(site_id=1)
-    if token.tola_tables_token:
-        headers = {'content-type': 'application/json',
-               'Authorization': 'Token ' + token.tola_tables_token}
-    else:
-        headers = {'content-type': 'application/json'}
-        print "Token Not Found"
+    user_filter_url = service.tola_tables_url + "&owner__username=" + str(owner)
+    shared_filter_url = service.tola_tables_url + "&shared__username=" + str(owner)
 
-    response = requests.get(user_filter_url, headers=headers, verify=False)
-    response2 = requests.get(shared_filter_url, headers=headers, verify=False)
-
-    user_json = json.loads(response.content)
-    shared_json = json.loads(response2.content)
+    user_json = get_table(user_filter_url)
+    shared_json = get_table(shared_filter_url)
 
     if type(shared_json) is not dict:
         data = user_json + shared_json
     else:
         data = user_json
 
-    # debug the json data string uncomment dump and print
-
-    data2 = json.dumps(user_json) # json formatted string
-
     if request.method == 'POST':
         id = request.POST['service_table']
-        filter_url = service.feed_url + "&id=" + id
+        filter_url = service.tola_tables_url + "&id=" + id
 
         data = get_table(filter_url)
 

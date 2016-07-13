@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/indicators/home/0/">Indicators</a></li>
-  <li class="active">Data</li>
+  <li><a href="/indicators/home/{{ program.id }}/">Indicators</a></li>
 </ol>
 {% endblock %}
 {% block page_title %}Collected Indicator Data{% endblock %}

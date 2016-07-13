@@ -62,6 +62,7 @@ class Country(models.Model):
     description = models.TextField("Description/Notes", max_length=765,blank=True)
     latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
     longitude = models.CharField("Longitude", max_length=255, null=True, blank=True)
+    zoom = models.IntegerField("Zoom", default=5)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -650,14 +651,11 @@ class SiteProfile(models.Model):
             self.create_date = datetime.now()
             self.edit_date = datetime.now()
 
-        # Generate a site profile code by combining the country code, office code and the name of the site
-            self.code = str(self.country.code) + "-" + str(self.office.code) + "-" + str(self.name)
-
         super(SiteProfile, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
-        new_name = str(self.province) + " - " + str(self.name)
+        new_name = self.name
         return new_name
 
 
@@ -926,7 +924,7 @@ class ProjectAgreement(models.Model):
     estimated_by_date = models.DateTimeField("Date Originated", null=True, blank=True)
     checked_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="checking")
     checked_by_date = models.DateTimeField("Date Checked", null=True, blank=True)
-    reviewed_by = models.ForeignKey(TolaUser, verbose_name="Field Verification By", blank=True, null=True, related_name="reviewing")
+    reviewed_by = models.ForeignKey(TolaUser, verbose_name="Request review", blank=True, null=True, related_name="reviewing" )
     reviewed_by_date = models.DateTimeField("Date Verified", null=True, blank=True)
     finance_reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="finance_reviewing")
     finance_reviewed_by_date = models.DateTimeField("Date Reviewed by Finance", null=True, blank=True)
@@ -935,7 +933,7 @@ class ProjectAgreement(models.Model):
     capacity = models.ManyToManyField(Capacity,verbose_name="Sustainability Plan", blank=True)
     evaluate = models.ManyToManyField(Evaluate, blank=True)
     approval = models.CharField("Approval Status", default="in progress", max_length=255, blank=True, null=True)
-    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_agreement")
+    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_agreement", verbose_name="Request approval")
     approved_by_date = models.DateTimeField("Date Approved", null=True, blank=True)
     approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="submitted_by_agreement")
     approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
