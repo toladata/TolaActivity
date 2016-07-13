@@ -4,8 +4,8 @@
 </div>
 
 <!-- Modal -->
-<div id="photoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="photoModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document" >
+<div id="photoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="photoModalLabel" aria-hidden="true" >
+  <div class="modal-dialog" role="document" style='width:75%'>
 
     <!-- Modal content-->
     <div class="modal-content" >
@@ -13,11 +13,11 @@
         <button type="button" class="close" data-dismiss="modal">&times;</button>
         <h4 class="modal-title">{{tolaImageData.title}}</h4>
       </div>
-      <div class="modal-body" style='overflow-x: scroll; word-wrap: break-word; '>
+      <div class="modal-body" style='overflow-y: scroll; '>
          {% for photo in tolaImageData%}
-           <div class='col-lg-3' style='margin: .5em;'>
+           <div class='col-lg-3' >
            	 <!-- <a href="#">{{photo.name}}</a> -->
-             <img src="{{STATIC_URL}}/{% autoescape off %}{{ photo }} {% endautoescape %}" / class='gallery_thumbnail' style='width: 50pt;'>
+             <img src="{{STATIC_URL}}/{% autoescape off %}{{ photo }} {% endautoescape %}" / class='gallery_thumbnail' style='width: 200pt; padding: 1em;'>
        		</div>   
     	{% endfor %}
               
