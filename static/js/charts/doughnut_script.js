@@ -3,16 +3,22 @@ var doughnutFunction = function(data, tolaDoughnutColors){
     var tolaDoughnutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['1', '5', '10'], //data.labels
+            labels: data.labels,
             datasets: [{
-                label: '# of Things', // user input axis label
-                data: data,
+                label: "placeholder", // user input axis label
+                data: data.data_set,
                 backgroundColor: tolaDoughnutColors,
                 borderColor: tolaDoughnutColors,
                 borderWidth: 1,
             }]
         },
         options: {
+            legend: {
+                display: true,
+                labels: {
+                    boxWidth: 10,
+                }
+            },
             scales: {
                 yAxes: [{
                     ticks: {

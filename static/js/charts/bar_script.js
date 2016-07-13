@@ -5,7 +5,7 @@ var barFunction = function(data, tolaBarColors){
         data: {
             labels: data.labels,
             datasets: [{
-                label: '# of Things', // user input axis label
+                label: "# of people", // user input axis label
                 data: data.data_set,
                 backgroundColor: tolaBarColors,
                 borderColor: tolaBarColors,
@@ -13,6 +13,9 @@ var barFunction = function(data, tolaBarColors){
             }]
         },
         options: {
+            legend: {
+                display: false,
+            },
             scales: {
                 yAxes: [{
                     ticks: {
@@ -22,7 +25,6 @@ var barFunction = function(data, tolaBarColors){
             },
             responsive: true,
             maintainAspectRatio: true
-            //add options relating to legend generation
         }
     });
 };
