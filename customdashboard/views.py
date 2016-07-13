@@ -516,6 +516,13 @@ def MapDashboard(request,id=0):
     #Programmatically defined table titles  -- 
     ## TODO: these should come from a form that allows text entry of what the charts should be called; 
     # form should have char limits on title length
+    colorPalettes = {
+    'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
+    'bright1':['#82BC00','#C8C500','#1349BB','#10A400','#CF102E','#FF7100','#A40D7A','#00AFA8'],
+    'bright2':['#82BC00','#C8C500 ','#10A400','#CF102E','#FF7100','#A40D7A','#00AFA8'],
+    'bright3':['#82BC00','#C18A34','#CF102E','#A40D7A','#00AFA8'],
+    'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
+    };
 
     tableData = {}
  
@@ -533,6 +540,7 @@ def MapDashboard(request,id=0):
     "labels": tableLabels1, 
     "data_set": tableDataset1, 
     "component_id" : "testBarId",
+    "colors": colorPalettes['bright1'],
     }
 
     table2= {
@@ -540,6 +548,7 @@ def MapDashboard(request,id=0):
     "labels": tableLabels2, 
     "data_set": tableDataset2, 
     "component_id" : "testBarId2",
+    "colors": colorPalettes['bright2'],
     }
 
     table3= {
@@ -547,6 +556,7 @@ def MapDashboard(request,id=0):
     "labels": tableLabels3, 
     "data_set": tableDataset3, 
     "component_id" : "testBarId3",
+    "colors": colorPalettes['bright3'],
     }
 
     pageMap = []
@@ -554,13 +564,7 @@ def MapDashboard(request,id=0):
         {"latitude":37.1409, "longitude":26.8488, "location_name":"Leros", "site_contact":"Hicham Awad","site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece","region_link":"Greece"},
         {"latitude":36.8915, "longitude":27.2877, "location_name":"Kos", "site_contact":"Josh Kreger","site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece","region_link":"Greece"},
         {"latitude":37.9838, "longitude":23.7275, "location_name":"Athens", "site_contact":"Kaja Wislinska","site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece","region_link":"Greece"}]
-    colorPalettes = {
-    'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
-    'bright1':['#82BC00','#C8C500','#1349BB','#10A400','#CF102E','#FF7100','#A40D7A','#00AFA8'],
-    'bright2':['#82BC00','#C8C500 ','#10A400','#CF102E','#FF7100','#A40D7A','#00AFA8'],
-    'bright3':['#82BC00','#C18A34','#CF102E','#A40D7A','#00AFA8'],
-    'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
-    };
+
 
     return render(request, 'customdashboard/themes/map_dashboard.html', 
         {'pageMap':pageMap,'colorPalettes':colorPalettes,'table1': table1,'table2': table2,'table3': table3,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) 

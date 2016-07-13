@@ -2,7 +2,7 @@
 
 {% block content %}
     <div>
-        <canvas id='{{tolaTableData.component_id}}'></canvas>
+        <canvas id='{{tolaTableData.component_id}}' style='height: 300px;''></canvas>
     </div>
 {% endblock %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js" type="text/javascript"></script>
@@ -11,8 +11,8 @@
 <script>
 doughnutFunction( 
 	//pass in the table data and labels data
-	{{tolaTableData}},
+	{% autoescape off %} {{tolaTableData}} {% endautoescape %},
 	//slice off the right number of doughnutColors to use in the chart
-	{% autoescape off %} {{colorPalettes.light}}.slice(0,{{tolaTableData}}.size) {% endautoescape %}
+	{% autoescape off %} {{tolaTableData.colors}} {% endautoescape %}
 )
 </script>
