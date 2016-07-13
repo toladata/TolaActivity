@@ -1,8 +1,7 @@
-<div class="sidebar-pane" id="narrative-news">
-    <h5 style='text-align: center;'>LATEST EVENTS</h5>
+<div class="sidebar-pane" id="narrative-pane" style="height: 390px; overflow-y: scroll;">
     {% for textRecord in tolaTextData %}
-      <div class="panel-body"> <a href="" style='float:left; color: black;'><strong>{{textRecord.date }}:</strong><br> {{textRecord.event}} </a> </div>
-<!-- 	<div><button class='btn btn-link' type=link style='float:right;' data-toggle="modal" data-target="#newsModal">More News Items</button> </div> -->
+      <div class="panel-body"> <a href="{{textRecord.link}}" style='float:left; color: black; '>{{textRecord.title}} </a> </div>
+<!--    <div><button class='btn btn-link' type=link style='float:right;' data-toggle="modal" data-target="#newsModal">More News Items</button> </div> -->
     {% endfor %}
 </div>
 
@@ -19,9 +18,9 @@
       <div class="modal-body" style='overflow-x: scroll; word-wrap: break-word; '>
               <!--populates news items of some type-->
 
-	      {% for data in tolaTableData %}
-			<p>  {{ data.title }} </p><br>
-	      {% endfor %}
+          {% for data in tolaTableData %}
+            <p>  {{ data.title }} </p><br>
+          {% endfor %}
               
       </div>
       <div class="modal-footer">
