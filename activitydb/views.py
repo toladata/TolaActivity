@@ -2730,15 +2730,15 @@ class CustomDashboardUpdate(UpdateView):
 
         return initial
         
-    def get_form(self, form_class):
-        url = request.META['HTTP_REFERER']
-        stringifiedUrl = urllib.unquote(url).decode('utf8')
-        if stringifiedUrl.endswith('#current-dashboard'):
-            form = CustomDashboardModalForm
-        else:
-            form = CustomDashboardForm
+    # def get_form(self, form_class):
+    #     url = request.META['HTTP_REFERER']
+    #     stringifiedUrl = urllib.unquote(url).decode('utf8')
+    #     if stringifiedUrl.endswith('#current-dashboard'):
+    #         form = CustomDashboardModalForm
+    #     else:
+    #         form = CustomDashboardForm
 
-        return form(**self.get_form_kwargs())
+    #     return form(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
@@ -2923,7 +2923,6 @@ class DashboardThemeDelete(DeleteView):
 
     form_class = DashboardThemeForm  
 
-
 class DashboardComponentList(ListView):
     model = DashboardComponent
     template_name = 'customdashboard/admin/dashboard_component_list.html'
@@ -2981,9 +2980,9 @@ class DashboardComponentCreate(CreateView):
         messages.success(self.request, 'Success, Dashboard Created!')
 
         currentDashboard = CustomDashboard.objects.all().filter(customdashboard__id=self.kwargs['pk'])
-        latestComponent = DashboardComponent.objects.latest('id')
-        getDashboardComponent = DashboardComponent.objects.get(id=latestComponent.id)
-        updateCurrentDashboard = currentDashboard.components.add(getDashboardComponent)
+        ## need to figure out what needs are for adding new component
+        ## on selecting add, maybe separate form:
+        ## creates a blank component, associates it with the dashboard, refreshes the page
         # redirect_url = '/activitydb/custom_dashboard/dashboard_component_update/' + str(latest.id) 
         return HttpResponseRedirect(redirect_url)
 
@@ -3024,6 +3023,11 @@ class DashboardComponentUpdate(UpdateView):
 
         messages.success(self.request, 'Success, form updated!')
 
+        getComponentDataSources = ComponentDataSource.objects.all()
+        currentComponent = CustomDashboard.objects.all().filter(customdashboard__id=self.kwargs['pk'])
+        latestComponent = DashboardComponent.objects.latest('id')
+        getDashboardComponent = DashboardComponent.objects.get(id=latestComponent.id)
+        updateCurrentDashboard = currentDashboard.components.add(getDashboardComponent)
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentForm
@@ -3056,7 +3060,7 @@ class DashboardComponentDelete(DeleteView):
 
 class ComponentDataSourceList(ListView):
     model = ComponentDataSource
-    template_name = 'customdashboard/admin/component_datasource_list.html'
+    template_name = 'customdashboard/admin/component_data_source_list.html'
 
     def get(self, request, *args, **kwargs):
     ## retrieve program
@@ -3071,14 +3075,13 @@ class ComponentDataSourceList(ListView):
         getProjects = []#ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
 
         #retrieve projects for a program
-        getComponentDataSources = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
+        getComponentDataSources = ComponentDataSource.objects.all()
             
         return render(request, self.template_name, {'getComponentDataSources': getComponentDataSources, 'getProgram': getProgram, 'getProjects': getProjects})
 
 class ComponentDataSourceCreate(CreateView):
     model = ComponentDataSource
     template_name = 'customdashboard/admin/component_data_source_form.html'
-    # program_id = int(self.kwargs['pk'])
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -3096,7 +3099,9 @@ class ComponentDataSourceCreate(CreateView):
         return kwargs
 
     def get_initial(self):
-        initial = {        }# add data types here to pre-populate
+        initial = {   
+
+             }# add data types here to pre-populate
         return initial
 
     def get_context_data(self, **kwargs):
@@ -3124,33 +3129,6 @@ class ComponentDataSourceCreate(CreateView):
         return HttpResponseRedirect(redirect_url)
 
     form_class = ComponentDataSourceCreateForm 
-
-
-
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        #save formset from context
-        context = self.get_context_data()
-
-        messages.success(self.request, 'Success, Dashboard Created!')
-
-        currentDashboard = CustomDashboard.objects.all().filter(customdashboard__id=self.kwargs['pk'])
-        latestComponent = DashboardComponent.objects.latest('id')
-        getDashboardComponent = DashboardComponent.objects.get(id=latestComponent.id)
-        updateCurrentDashboard = currentDashboard.components.add(getDashboardComponent)
-        # redirect_url = '/activitydb/custom_dashboard/dashboard_component_update/' + str(latest.id) 
-        return HttpResponseRedirect(redirect_url)
-
-    form_class = DashboardComponentCreateForm 
 
 class ComponentDataSourceUpdate(UpdateView):
     model = ComponentDataSource
