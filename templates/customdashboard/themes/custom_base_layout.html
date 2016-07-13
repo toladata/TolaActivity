@@ -16,14 +16,13 @@
 
         <!-- Bootstrap -->
         <link href="{{ STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ STATIC_URL}}css/tola-dashboard.css" rel="stylesheet" type="text/css" />
 
         <!-- JQuery UI CSS -->
         <link href="{{ STATIC_URL }}css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 
         <!-- Custom Footer CSS -->
         <link href="{{ STATIC_URL }}css/app.css" rel="stylesheet" type="text/css">
-
-		<!-- TODO: confirm highcharts and publicdashboards/js/plugins is loaded with static files -->
 
         <!-- - Hosted Leaflet CSS --> 
         <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
@@ -34,12 +33,12 @@
 
         <!-- <!- Hosted Leaflet -->
 		 <script src="{{ STATIC_URL }}js/leaflet.js"></script>
-        {% endblock %} -->
+        {% endblock %} 
 
     </head>
 
 <!-- nav bar -->  
-    <body>
+    <body  style='background-color:#00afaa;'>
         <!--http://getbootstrap.com/examples/sticky-footer-navbar/-->
         <div class="navbar navbar-default navbar-tola navbar-fixed-top" role="navigation">
             <div class="container">
@@ -70,23 +69,12 @@
 		            <a href="" class="text-muted">GNU GENERAL PUBLIC LICENSE Version 2</a>
 		        </div>
 		        <div class="col-md-4 text-right">
-		            <a href="http://www.toladata.com" class="text-muted">Inspired in Kabul. Built in Portland.</a>
 		        </div>
 		    </div>
-		</div><!-- .footer collapse
-
-        <!- data tables jquery javascript library -->
-        <!-- <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script> -->
-
-<!--         {% if offline_mode %}
-            <!- offline mode so don't try andload the external fonts -->
-<!--         {% else %}
-            <!- Typekit (Fonts) -->
-<!--             <script src="https://use.typekit.net/shi4wqr.js"></script>
-            <script>try{Typekit.load({ async: true });}catch(e){}</script>
-        {% endif %}   -->
-
-        <!-- {% block extra_js_in_body %} -->
-        {% endblock %}
+		</div>
+   <!-- .footer collapse
+      
+        <!- {% block extra_js_in_body %} -->
+        <!-- {% endblock %} -->
     </body>
 </html>
