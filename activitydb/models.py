@@ -243,7 +243,7 @@ class ComponentDataSource(models.Model):
     data_name = models.CharField("Name of Source Data", max_length=255, blank=True)
     data_type = models.CharField("Data Type", max_length=200, null=True, blank=True, help_text="Is this data photos? Text? Numerical data?")
     data_source = models.URLField(max_length=200, null=True, blank=True)
-    data_filter_key = models.CharField("Color Scheme", max_length=255, blank=False)
+    data_filter_key = models.CharField("Key Term", max_length=255, blank=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
