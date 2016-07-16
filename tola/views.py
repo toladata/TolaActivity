@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites, LoggedUser
 from indicators.models import CollectedData
 from .tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
@@ -211,7 +211,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
-from tola.serializer import ProjectAgreementSerializer
+from tola.serializer import ProjectAgreementSerializer, LoggedUserSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -229,10 +229,36 @@ class JSONResponse(HttpResponse):
 
 def activity_api_data(request):
     """
-   Get TolaActivity Users,
+   Get TolaActivity Projects,
     """
+    activity_data = {}
     if request.method == 'GET':
+
+        country = request.GET.get('country')
+
+        activity_logged_users = logged_in_users(country)
         projects = ProjectAgreement.objects.prefetch_related('program').order_by('-create_date')[:6]
-        serializer = ProjectAgreementSerializer(projects, many=True)
-        return JSONResponse(serializer.data)
+
+        project_serializer = ProjectAgreementSerializer(projects, many=True)
+        user_serializer = LoggedUserSerializer(activity_logged_users, many=True)
+
+        projects = project_serializer.data
+        users = user_serializer.data
+
+        activity_data = {'projects':projects, 'activity_logged_users': users}
+
+        return JSONResponse(activity_data)
+
+#get logged users and send to Tola Work through the API
+        return {}
+#return users logged into TolaWork 
+def logged_in_users(country):
+
+    logged_users = {}
+
+    logged_users = LoggedUser.objects.filter(country=country).order_by('username')
+    for logged_user in logged_users:
+        logged_user.queue = 'TolaActivity'
+
+    return logged_users
 

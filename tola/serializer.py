@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from activitydb.models import ProjectComplete, ProjectAgreement, Program
+from activitydb.models import ProjectComplete, ProjectAgreement, Program, LoggedUser
 
 class ProgramSerializer(serializers.ModelSerializer):
 	
@@ -13,3 +13,9 @@ class ProjectAgreementSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ProjectComplete 
 		fields = ('project_name','program','approval','create_date')
+
+class LoggedUserSerializer(serializers.ModelSerializer):
+	
+	class Meta:
+		model = LoggedUser
+		fields = ('username', 'country')
