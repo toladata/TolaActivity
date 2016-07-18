@@ -40,8 +40,7 @@ def emailGroup(country,group,link,subject,message,submiter=None):
         #email incident to admins in each country assoicated with the projects program
         for single_country in country.all():
             country = Country.objects.all().filter(country=single_country)
-            getGroupEmails = User.objects.all().filter(groups__name=group,tola_user__country=country).values_list('email', flat=True)
-            print getGroupEmails
+            getGroupEmails = User.objects.all().filter(tola_user=group,tola_user__country=country).values_list('email', flat=True)
             email_link = link
             formatted_email = email_link
             subject = str(subject)

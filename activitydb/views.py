@@ -28,6 +28,8 @@ import requests
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect
 
+from django.contrib.sites.shortcuts import get_current_site
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
@@ -273,7 +275,7 @@ class ProjectAgreementUpdate(UpdateView):
     :param id: project_agreement_id
     """
     model = ProjectAgreement
-    form_class = ProjectAgreementSimpleForm
+    form_class = ProjectAgreementForm
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -377,18 +379,18 @@ class ProjectAgreementUpdate(UpdateView):
 
             if form.instance.approval == 'approved':
                 #email the approver group so they know this was approved
-                link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+                link = "Link: " + "https://" + get_current_site(self.request).name + "/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
                 subject = "Project Initiation Approved: " + project_name
                 message = "A new initiation was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
                 getSubmiter = User.objects.get(username=self.request.user)
-                emailGroup(submiter=getSubmiter.email, country=country,group="Approver",link=link,subject=subject,message=message)
+                emailGroup(submiter=getSubmiter.email, country=country,group=form.instance.approved_by,link=link,subject=subject,message=message)
         elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
             messages.success(self.request, 'Success, Initiation has been saved and is now Awaiting Approval (Notifications have been Sent)')
             #email the approver group so they know this was approved
-            link = "Link: " + "https://tola-activity.mercycorps.org/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+            link = "Link: " + "https://" + get_current_site(self.request).name + "/activitydb/projectagreement_update/" + str(self.kwargs['pk']) + "/"
             subject = "Project Initiation Waiting for Approval: " + project_name
             message = "A new initiation was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
-            emailGroup(country=country,group="Approver",link=link,subject=subject,message=message)
+            emailGroup(country=country,group=form.instance.approved_by,link=link,subject=subject,message=message)
         else:
             messages.success(self.request, 'Success, form updated!')
         form.save()
@@ -398,7 +400,6 @@ class ProjectAgreementUpdate(UpdateView):
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = ProjectAgreementForm
 
 
 class ProjectAgreementDetail(DetailView):
@@ -1798,9 +1799,10 @@ class BeneficiaryList(ListView):
     def get(self, request, *args, **kwargs):
 
         project_agreement_id = self.kwargs['pk']
+        countries = getCountry(request.user)
 
         if int(self.kwargs['pk']) == 0:
-            getBeneficiaries = Beneficiary.objects.all()
+            getBeneficiaries = Beneficiary.objects.all().filter(Q(training__program__country__in=countries) | Q(distribution__program__country__in=countries) )
         else:
             getBeneficiaries = Beneficiary.objects.all().filter(training_id=self.kwargs['pk'])
 
