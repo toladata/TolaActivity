@@ -1,32 +1,56 @@
+<script type="text/javascript">
+    var frm = $('#dataAddForm');
+    frm.submit(function () {
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                $("#alert-error").html("Success! ");
+            },
+            error: function(data) {
+                $("#alert-error").html("Something went wrong!");
+            }
+        });
+        return false;
+    });
+
+</script>
 
 {% block extra_js_in_body %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
 {% endblock %}
 
-{% block page_title %}New Data Source Form{% endblock %}
-{% block content %}
-    {% include "form_guidance.html" %}
-    {% if form.errors %}
-        <div class="help-block">
-        {% for field in form %}
-            {% for error in field.errors %}
-                    <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
-            {% endfor %}
-        {% endfor %}
+    <div class="modal-header">
+
+        <div class="alert alert-error" id="alert-error">
+            <strong>{{ error|escape }}</strong>
         </div>
-        {% for error in form.non_field_errors %}
-            <div class="alert alert-error">
-                <strong>{{ error|escape }}</strong>
-            </div>
-        {% endfor %}
-    {% endif %}
-    {% load crispy_forms_tags %} 
-    <form class="form-horizontal" method="post" enctype="multipart/form-data" name="most" id="data-source">
-    {% crispy form %}
-    <input type="submit" name="submit" value="save" class="btn btn-success">
-    </form>
-    <!-- Modal -->
+
+        <h4 class="modal-title">{% block page_title %}New Data Source Form {% endblock %}</h4>
+
+    </div>
+    {% include "form_guidance.html" %}
+    <div class="modal-body">
+        {% load crispy_forms_tags %}
+        {% if "/activitydb/custom_dashboard/data_add" in request.get_full_path  %}
+            <form class="form-horizontal" method="post" id="dataAddForm" action="../../custom_dashboard/data_add/">
+        {% endif %}
+
+        {% csrf_token %}
+        {% crispy form %}
+
+        <input type="submit" class="btn btn-primary" name="Save changes" value="Save changes"/>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/activitydb/custom_dashboard_update/{{ id }}/#dashboard-data-source';parent.location.reload();">Close</button>
+    </div> 
 
 
-{% endblock content %}
+
+
+
+
