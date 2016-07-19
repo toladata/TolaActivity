@@ -1,42 +1,22 @@
-{% extends "customdashboard/themes/custom_base_layout.html" %}
-{% load staticfiles %}
+<h4>Component DataSources</h4>
 
-<!-- humanize numbers -->
-{% load humanize %}
-
-{% block page_title %}Component DataSources{% endblock %}
-
-{% block content %}
-
-<h3>Component DataSources</h3>
-
-<!-- Table -->
 <table class="table">
-    <tr>
-        <th>Date Created</th>
-        <th>Data Source Name</th>
-        <th>Data Type</th>
-        <th>URL</th>
-        <th>&nbsp;</th>
-        <th>&nbsp;</th>
-        <th>&nbsp;</th>
-    </tr>
-    {% for item in getComponentDataSources %}
-    <tr>
-       <td> Date </td>       
-       <td> I am a Data Source</td>
-       <td> I am this type</td>
-       <td> I am this location</td>       
-       <td> <a href="/activitydb/custom_dashboard/component_update/{{ item.id }}" class="btn btn-xs btn-danger">Update Component</a></td>
-       <td> <a href="/activitydb/custom_dashboard/component_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Component</a></td>
-    </tr>
-    {% empty %}
-        <li class="list-group-item">No Data Sources Identified Yet.</li>
-    {% endfor %}
+  <tr>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Source</th>
+    <th>Column or Key Name</th>
+    <th></th>
+    <th></th>
+  </tr>
+  {% for data in getComponentDataSources %}
+  <tr>
+    <th>{{ data.data_name }}</th>
+    <th>{{ data.data_type }}</th>
+    <th>{{ data.data_source }}</th>
+    <th>{{ data.data_filter_key }}</th>
+    <th><a href="/activitydb/custom_dashboard/data_update/{{ item.id }}" class="btn btn-xs btn-danger">Update Data Source</a></th>
+    <th><a href="/activitydb/custom_dashboard/data_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Data Source</a></th> 
+  </tr>
+  {% endfor %}
 </table>
-
-<div class="panel-footer">
-	<a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_data_source_add/{{ item.id }}">Add Data Source</a>
-</div>
-
-{% endblock content %}
