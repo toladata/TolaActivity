@@ -62,6 +62,7 @@ class Country(models.Model):
     description = models.TextField("Description/Notes", max_length=765,blank=True)
     latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
     longitude = models.CharField("Longitude", max_length=255, null=True, blank=True)
+    zoom = models.IntegerField("Zoom", default=5)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -574,6 +575,7 @@ class SiteProfile(models.Model):
     village = models.CharField("Administrative Level 4", help_text="", max_length=255, null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
+    status = models.BooleanField("Site Active", default=True)
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
     filled_by = models.ForeignKey(TolaUser, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
@@ -596,14 +598,11 @@ class SiteProfile(models.Model):
             self.create_date = datetime.now()
             self.edit_date = datetime.now()
 
-        # Generate a site profile code by combining the country code, office code and the name of the site
-            self.code = str(self.country.code) + "-" + str(self.office.code) + "-" + str(self.name)
-
         super(SiteProfile, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
-        new_name = str(self.province) + " - " + str(self.name)
+        new_name = self.name
         return new_name
 
 
@@ -1217,7 +1216,8 @@ class TrainingAttendanceAdmin(admin.ModelAdmin):
 
 class Beneficiary(models.Model):
     beneficiary_name = models.CharField(max_length=255, null=True, blank=True)
-    training = models.ForeignKey(TrainingAttendance, null=True, blank=True)
+    training = models.ManyToManyField(TrainingAttendance, blank=True)
+    distribution = models.ManyToManyField('Distribution', blank=True)
     father_name = models.CharField(max_length=255, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=255, null=True, blank=True)
