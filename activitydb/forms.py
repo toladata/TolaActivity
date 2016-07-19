@@ -1021,7 +1021,7 @@ class SiteProfileForm(forms.ModelForm):
             TabHolder(
                 Tab('Profile',
                     Fieldset('Description',
-                        'name', 'type', 'office',
+                        'name', 'type', 'office','status',
                     ),
                     Fieldset('Contact Info',
                         'contact_leader', 'date_of_firstcontact', 'contact_number', 'num_members',
@@ -1289,6 +1289,9 @@ class TrainingAttendanceForm(forms.ModelForm):
 
 class DistributionForm(forms.ModelForm):
 
+    start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+
     class Meta:
         model = Distribution
         exclude = ['create_date', 'edit_date']
@@ -1311,6 +1314,8 @@ class DistributionForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['initiation'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
         self.fields['program'].queryset = Program.objects.filter(country__in=countries)
+        self.fields['office_code'].queryset = Office.objects.filter(province__country__in=countries)
+        self.fields['province'].queryset = Province.objects.filter(country__in=countries)
 
 
 class ContactForm(forms.ModelForm):
@@ -1405,6 +1410,7 @@ class BeneficiaryForm(forms.ModelForm):
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
         countries = getCountry(self.request.user)
         self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
+        self.fields['distribution'].queryset = Distribution.objects.filter(program__country__in=countries)
 
 
 class FilterForm(forms.Form):

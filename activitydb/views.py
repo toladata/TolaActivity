@@ -1797,9 +1797,10 @@ class BeneficiaryList(ListView):
     def get(self, request, *args, **kwargs):
 
         project_agreement_id = self.kwargs['pk']
+        countries = getCountry(request.user)
 
         if int(self.kwargs['pk']) == 0:
-            getBeneficiaries = Beneficiary.objects.all()
+            getBeneficiaries = Beneficiary.objects.all().filter(Q(training__program__country__in=countries) | Q(distribution__program__country__in=countries) )
         else:
             getBeneficiaries = Beneficiary.objects.all().filter(training_id=self.kwargs['pk'])
 
