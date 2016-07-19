@@ -10,7 +10,6 @@
 {% endblock %}
 
 {% block page_title %} New Custom Dashboard {% endblock %}
-
 {% block content %}
     {% include "form_guidance.html" %}
     {% if form.errors %}
@@ -28,5 +27,14 @@
         {% endfor %}
     {% endif %}
     {% load crispy_forms_tags %}
-    {% crispy form %}
+
+   {% crispy form %}
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div> <!-- /.modal-content -->
+        </div> <!-- /.modal-dialog -->
+    </div> <!-- /.modal -->
+
 {% endblock content %}

@@ -2621,8 +2621,8 @@ class CustomDashboardDetail(DetailView):
         getComponentDataSources = []
         for component in getDashboardComponents:
             try:
-                getComponentDataSources.append(ComponentDataSources.objects.all().filter(component__id=self.kwargs['pk']))
-            except ComponentDataSources.DoesNotExist:
+                getComponentDataSources.append(ComponentDataSource.objects.all().filter(component__id=self.kwargs['pk']))
+            except ComponentDataSource.DoesNotExist:
                 getComponentDataSources = None
         context.update({'getComponentDataSources': getComponentDataSources})
 
@@ -2644,9 +2644,13 @@ class CustomDashboardUpdate(UpdateView):
         return super(CustomDashboardUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
+        getCustomDashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
+        getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk'])
+        getComponentDataSources = ComponentDataSource.objects.all()
         initial = {
-            'dashboard': dashboard,
+            'getCustomDashboard': getCustomDashboard,
+            'getDashboardComponents': getDashboardComponents,
+            'getComponentDataSources': getComponentDataSources,
             }
 
         return initial
@@ -2675,12 +2679,10 @@ class CustomDashboardUpdate(UpdateView):
             getDashboardComponents = None
         context.update({'getDashboardComponents': getDashboardComponents})
 
-        getComponentDataSources = []
-        for component in getDashboardComponents:
-            try:
-                getComponentDataSources.append(ComponentDataSources.objects.all().filter(component__id=self.kwargs['pk']))
-            except ComponentDataSources.DoesNotExist:
-                getComponentDataSources = None
+        try:
+            getComponentDataSources = ComponentDataSource.objects.all()
+        except ComponentDataSource.DoesNotExist:
+            getComponentDataSources = None
         context.update({'getComponentDataSources': getComponentDataSources})
 
         return context
@@ -2718,9 +2720,10 @@ class CustomDashboardUpdate(UpdateView):
         return super(CustomDashboardUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
         initial = {
-            'dashboard': dashboard,
+            'getCustomDashboard': CustomDashboard.objects.get(id=self.kwargs['pk']),
+            'getDashboardComponents': DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk']),
+            'getComponentDataSources': ComponentDataSource.objects.all(),
             }
 
         return initial
@@ -2759,12 +2762,10 @@ class CustomDashboardUpdate(UpdateView):
             getDashboardComponents = None
         context.update({'getDashboardComponents': getDashboardComponents})
 
-        getComponentDataSources = []
-        for component in getDashboardComponents:
-            try:
-                getComponentDataSources.append(ComponentDataSources.objects.all().filter(component__id=self.kwargs['pk']))
-            except ComponentDataSources.DoesNotExist:
-                getComponentDataSources = None
+        try:
+            getComponentDataSources = ComponentDataSource.objects.all()
+        except ComponentDataSource.DoesNotExist:
+            getComponentDataSources = None
         context.update({'getComponentDataSources': getComponentDataSources})
 
         return context
@@ -2955,31 +2956,23 @@ class DashboardComponentCreate(CreateView):
         kwargs['request'] = self.request
         return kwargs
 
+    def dispatch(self, request, *args, **kwargs):
+        return super(DashboardComponentCreate, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentCreate, self).get_context_data(**kwargs)
         return context 
 
     def form_invalid(self, form):
-
         messages.error(self.request, 'Invalid Form', fail_silently=False)
-
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
         form.save()
-
         #save formset from context
         context = self.get_context_data()
-
-        messages.success(self.request, 'Success, Dashboard Created!')
-
-        currentDashboard = CustomDashboard.objects.all().filter(customdashboard__id=self.kwargs['pk'])
-        ## need to figure out what needs are for adding new component
-        ## on selecting add, maybe separate form:
-        ## creates a blank component, associates it with the dashboard, refreshes the page
-        # redirect_url = '/activitydb/custom_dashboard/dashboard_component_update/' + str(latest.id) 
-        return HttpResponseRedirect(redirect_url)
+        messages.success(self.request, 'Success, Component Created!')
+        return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentCreateForm 
 
@@ -3058,46 +3051,22 @@ class ComponentDataSourceList(ListView):
     template_name = 'customdashboard/admin/component_data_source_list.html'
 
     def get(self, request, *args, **kwargs):
-    ## retrieve program
-        model = Program
-        program_id = int(self.kwargs['id'])
-        getProgram = Program.objects.all().filter(id=program_id)
-
-        ## retrieve the coutries the user has data access for
-        countries = getCountry(request.user)
-
-        #retrieve projects for a program
-        getProjects = []#ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
-
-        #retrieve projects for a program
         getComponentDataSources = ComponentDataSource.objects.all()
             
-        return render(request, self.template_name, {'getComponentDataSources': getComponentDataSources, 'getProgram': getProgram, 'getProjects': getProjects})
+        return render(request, self.template_name, {'getComponentDataSources': getComponentDataSources})
 
 class ComponentDataSourceCreate(CreateView):
     model = ComponentDataSource
     template_name = 'customdashboard/admin/component_data_source_form.html'
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            guidance = FormGuidance.objects.get(form="ComponentDataSource")
-        except FormGuidance.DoesNotExist:
-            guidance = None
-
-        return super(ComponentDataSourceCreate, self).dispatch(request, *args, **kwargs)
-   
      # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(ComponentDataSourceCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
 
-    def get_initial(self):
-        initial = {   
-
-             }# add data types here to pre-populate
-        return initial
+    def dispatch(self, request, *args, **kwargs):
+        return super(ComponentDataSourceCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ComponentDataSourceCreate, self).get_context_data(**kwargs)
@@ -3110,20 +3079,13 @@ class ComponentDataSourceCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
         form.save()
-
-        #save formset from context
         context = self.get_context_data()
-
-        messages.success(self.request, 'Success, Dashboard Created!')
-
-        latest = ComponentDataSource.objects.latest('id')
-        getComponentDataSource = ComponentDataSource.objects.get(id=latest.id)
-        # redirect_url = '/activitydb/custom_dashboard/component_data_update/' + str(program_id) 
-        return HttpResponseRedirect(redirect_url)
+        messages.success(self.request, 'Success, Data Source Created!')
+        return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ComponentDataSourceCreateForm 
+
 
 class ComponentDataSourceUpdate(UpdateView):
     model = ComponentDataSource

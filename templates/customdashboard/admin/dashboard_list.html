@@ -19,6 +19,7 @@
 <h3>Current Dashboards</h3>
 
 <table class="table">
+    {% if getDashboards %}
     <tr>
         <th>Date Created</th>
         <th>Dashboard Name</th>
@@ -29,6 +30,7 @@
         <th>&nbsp;</th>
         <th>&nbsp;</th>
     </tr>
+    {% endif %}
     {% for item in getDashboards %}
     <tr>
        <td>{{ item.create_date }}</td>       
