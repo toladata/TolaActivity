@@ -84,37 +84,38 @@
         <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
         <td>{{ item.province }}</td>
         <td>{{ item.district }}</td>
-                    {% if getProjects %}
-        <td><a class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ item.id }}">Projects <span class="badge">{{ getProjects|length }}</span></a><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
+                    {% if getSites %}
+            <td><a class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ item.id }}">View Projects </a><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
     </tr>
     <tr>
         <td colspan="6" class="hiddenRow">
             <div id="hidden-{{ item.id }}" class="accordian-body collapse">
                 <table class="table table-bordered">
                     <tr>
-
                         <th>Project Name</th>
                         <th>Program</th>
                         <th>Activity Code</th>
                         <th>Expected Start Date</th>
                         <th>&nbsp;</th>
-
                     </tr>
-                            {% for items in getProjects %}
+                        {% for site in getSites %}
+                            {% for items in site.projectagreement_set.all %}
+                                {% if item.id == site.id %}
                     <tr>
-                        <td>{{ items.project_name }}</a></td>
+                        <td>{{ items.project_name }}</td>
                         <td>{{ items.program.name }}</td>
                         <td>{{ items.activity_code }}</td>
                         <td>{{ items.expected_start_date|date:"m-d-Y" }}</td>
-                        <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>View</a></td>
+                        <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>Project Report</a></td>
                     </tr>
+                                {% endif %}
                             {% endfor %}
-                        {% else %}
+                        {% endfor %}
+                    {% else %}
                     <tr>
                         <td colspan="5">No Projects on this Site</td>
-
                     </tr>
-                        {% endif %}
+                    {% endif %}
                 </table>
             </div>
         </td>
@@ -125,9 +126,7 @@
         <td colspan="6">No Site Profiles yet.</td>
     </tr>
     {% endif %}
-
 </table>
-
 <!-- Modal -->
 <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
