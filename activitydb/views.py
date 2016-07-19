@@ -1015,6 +1015,9 @@ class SiteProfileList(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
 
+        #getProjects = ProjectAgreement.objects.prefetch_related('site')
+        getSites = SiteProfile.objects.all()
+
         #this date, 3 months ago, a site is considered inactive
         inactiveSite = pytz.UTC.localize(datetime.now()) - relativedelta(months=3)
 
@@ -1033,7 +1036,7 @@ class SiteProfileList(ListView):
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
 
-        return render(request, self.template_name, {'inactiveSite':inactiveSite,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+        return render(request, self.template_name, {'inactiveSite':inactiveSite,'getSites':getSites,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 class SiteProfileReport(ListView):
     """
@@ -1797,9 +1800,10 @@ class BeneficiaryList(ListView):
     def get(self, request, *args, **kwargs):
 
         project_agreement_id = self.kwargs['pk']
+        countries = getCountry(request.user)
 
         if int(self.kwargs['pk']) == 0:
-            getBeneficiaries = Beneficiary.objects.all()
+            getBeneficiaries = Beneficiary.objects.all().filter(Q(training__program__country__in=countries) | Q(distribution__program__country__in=countries) )
         else:
             getBeneficiaries = Beneficiary.objects.all().filter(training_id=self.kwargs['pk'])
 
