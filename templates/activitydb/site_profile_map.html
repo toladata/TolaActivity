@@ -187,7 +187,9 @@
 
     {% if getSiteProfileIndicator %}
         {% for item in getSiteProfileIndicator %}
+            {% if item.status == 1 %}
             L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Collected Indicator Data Site<br> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/> SiteProfile{{ item.name }} <br/> ");
+            {% endif %}
         {%   endfor %}
     {% endif %}
 
