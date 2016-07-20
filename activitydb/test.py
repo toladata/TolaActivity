@@ -243,7 +243,7 @@ class BeneficiaryTestCase(TestCase):
         new_training.save()
         get_training = TrainingAttendance.objects.get(training_name="testtraining")
         new_benny = Beneficiary.objects.create(beneficiary_name="Joe Test", father_name="Mr Test", age="42", gender="male", signature=False,remarks="life")
-        new_benny.training = new_training
+        new_benny.training.add(new_training)
         new_benny.save()
 
     def test_beneficiary_exists(self):

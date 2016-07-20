@@ -372,7 +372,7 @@ def programIndicatorReport(request, program=0):
     return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms, 'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 
-def indicator_data_report(request, id=0, program=0):
+def indicator_data_report(request, id=0, program=0, type=0):
     """
     This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
     and sums it at the bottom.  Lives in the "Reports" navigation.
@@ -385,6 +385,7 @@ def indicator_data_report(request, id=0, program=0):
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
+    getTypes = IndicatorType.objects.all()
     indicator_name = None
     program_name = None
     q = {'indicator__id__isnull': False}
@@ -432,7 +433,7 @@ def indicator_data_report(request, id=0, program=0):
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'getQuantitativeData':queryset,'countries':countries, 'getSiteProfile':getSiteProfile, 'table': table,'getPrograms':getPrograms, 'getIndicators': getIndicators, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'indicator_name':indicator_name, 'program_name': program_name})
+    return render(request, "indicators/data_report.html", {'getQuantitativeData':queryset,'countries':countries, 'getSiteProfile':getSiteProfile, 'table': table,'getPrograms':getPrograms, 'getIndicators': getIndicators,'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper, 'id': id,'program':program,'indicator_name':indicator_name, 'program_name': program_name})
 
 
 class IndicatorReportData(View, AjaxableResponseMixin):
@@ -458,7 +459,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
                 }
             q.update(r)
         countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','baseline','collecteddata','key_performance_indicator')
+        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','external_service_record__external_service__name','lop_target','baseline','collecteddata','key_performance_indicator')
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
 

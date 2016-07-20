@@ -6,13 +6,13 @@
 </ol>
 <div class="btn-group" role="group">
   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
-    Programs
+    Program
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-      <li role="presentation"><a role="menuitem" tabindex="2" href="/indicators/data/0/0/">--All--</a></li>
+      <li role="presentation"><a role="menuitem" tabindex="2" href="/indicators/data/0/0/0/">--All--</a></li>
     {% for item in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="2" href="/indicators/data/0/{{ item.id }}">{{ item.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="2" href="/indicators/data/0/{{ item.id }}/{{ type }}/">{{ item.name }}</a></li>
     {% endfor %}
   </ul>
 </div>
@@ -23,9 +23,22 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/0/{{ program }}/">--All--</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/0/{{ program }}/{{ type }}/">--All--</a></li>
     {% for item in getIndicators %}
-        <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/{{ item.id }}/{{ program }}/">{{ item.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/{{ item.id }}/{{ program }}/{{ type }}/">{{ item.name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="btn-group" role="group">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    Type
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+            <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/{{ id }}/{{ program }}/{{ type }}/">--All--</a></li>
+    {% for item in getTypes %}
+        <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/{{ id }}/{{ program }}/{{ item.id }}/">{{ item.indicator_type }}</a></li>
     {% endfor %}
   </ul>
 </div>
@@ -82,17 +95,18 @@
                 retrieve: true,
                 data: indicator_records,
                 columns: [
-                    { title: "Program", data: "program__name",
-                                "mRender": function (data, type, row) {
-                                    return '<a id="program_report" name=' + row.program__id + '>' + data + '</a>';
-                                }
-                    },
-                    { title: "Indicator", data: "name"},
+                    { title: "Program", data: "program__name"},
+                    { title: "Indicator", data: "name",
+                            "mRender": function (data, type, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
+                            }
+                        },
                     { title: "Level", data: "level__name"},
                     { title: "Type", data: "indicator_type__indicator_type"},
                     { title: "Sector", data: "sector__sector"},
                     { title: "Baseline", data: "baseline"},
                     { title: "LOP Target", data: "lop_target"},
+                    { title: "External", data: "external_service_record__external_service__name"},
                     { title: "Supporting Data", data: "collecteddata",
                               "mRender": function (data, type, row) {
                                 return '<a class="collecteddata" name=' + row.id + '>Collected Data</a>';
