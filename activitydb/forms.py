@@ -1535,78 +1535,51 @@ class CustomDashboardForm(forms.ModelForm):
                                     </tr>
                                   </table>
 
-                                  <a class="dashboard_components btn btn-primary" data-target="#dashboard-components" data-toggle="tab">Next Step: Add Components</a>      
+                                  <a class="dashboard_components btn btn-primary" data-target="#add-dashboard-components" data-toggle="tab">Next Step: Add Components</a>      
                               {% endif %}
                             </div>
                             """),
                         ),
                     ),
-                Tab('Dashboard Components',
+                Tab('Add Dashboard Components',
                     Fieldset("Step 2: Dashboard Components",
                         HTML("""
                             <div class='panel panel-default'>
-                                {% if getCustomDashboard %}
-                                  <!-- Table -->
-                                  <table class="table">
-                                    <tr >
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Public?</th>
-                                    <th>Component Type</th>
-                                    <th>Data Required</th>
-                                    <th>Data Sources</th>
-                                    <th></th>
-                                    </tr>
-                                    {% if getDashboardComponents %}
-                                        {% for component in getDashboardComponents %}
-                                            <tr>
-                                                <td>{{ component.component_name}}</td>
-                                                <td>{{ component.component_description }}</td>
-                                                <td> {% if component.is_public == 1 %} Yes {% else %} No {% endif %}</td>
-                                                <td>{{ component.component_type}}</td>
-                                                <td>{{ component.data_required }}</td>
-                                                <td>{{ component.data_sources }}</td>
-                                                <td><a class="dashboard_components" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_update/{{component.id}}>Edit</a> | <a class="dashboard_components" href='/activitydb/custom_dashboard/component_delete/{{component.id}}' data-toggle="modal" data-target="#myModal">Delete</a></td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                    <tr><td></td></tr>
-                                  </table>   
-                              <div class="panel-footer">
-                                <a class="dashboard_components" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ pk }}">Add Component</a>    
-                              </div>
-                              <div>
-                                  <a class="btn btn-primary" data-target="#dashboard-data-source" data-toggle="tab">Next Step: Add Data Sources</a></div>
-                                {% endif %}
+                                {% include 'customdashboard/admin/dashboard_component_list.html' %}
+                                <div class="panel-footer">
+                                    <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}">Add Component</a>
+                                </div>
+                                <a class="btn btn-primary" data-target="#add-dashboard-data-sources" data-toggle="tab">Next Step: Add Data Sources</a>
                             </div>
                             """),
                         ),
                     ),
-                Tab('Dashboard Data Source',
+                Tab('Add Dashboard Data Sources',
                     Fieldset("Step 3: Component Data Sources",
                         HTML("""
                             <div class='panel panel-default'>
-
                                 {% include 'customdashboard/admin/component_data_source_list.html' %}
                                 <div class="panel-footer">
                                     <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/data_add/">Add Data Source</a>
                                 </div>
+                                <a class="btn btn-primary" data-target="#assign-data" data-toggle="tab">Next Step: Add Data Sources</a>
                             </div>
                             """),
                         ),
+                    ),
+                Tab('Assign Data',
                     Fieldset("Step 4: Assign Data to Components",
                         HTML("""
                             <div class='panel panel-default'>
-                                  <!-- Table -->
                                   <table class="table">
-                                    <tr >
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Public?</th>
-                                    <th>Component Type</th>
-                                    <th>Data Required</th>
-                                    <th>Data Source(s)</th>
-                                    <th></th>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Public?</th>
+                                        <th>Component Type</th>
+                                        <th>Data Required</th>
+                                        <th class='col-sm-2'>Data Source(s)</th>
+                                        <th></th>
                                     </tr>
                                     {% if getDashboardComponents %}
                                         {% for component in getDashboardComponents %}
@@ -1616,20 +1589,18 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <td> {% if component.is_public == 1 %} Yes {% else %} No {% endif %}</td>
                                                 <td>{{ component.component_type}}</td>
                                                 <td>{{ component.data_required }}</td>
-                                                <td><select multiple>
-                                                    {% for data in getComponentDataSources %}
-                                                        <option value="{{data}}">{{data.title}}</option>
-                                                    {% endfor %}
-                                                </select>
+                                                <td class='col-sm-2'>
+                                                    <select multiple>
+                                                        {% for data in getComponentDataSources %}
+                                                            <option class='col-sm-2' value="{{data}}">{{data.title}}</option>
+                                                        {% endfor %}
+                                                    </select>
                                                 </td>
                                                 <td>
-                                                {% for component in getDashboardComponents %}
-                                                    <a class="dashboards btn" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_update/{{ component.id }}'>Assign</a></td>
-                                                {% endfor %}
+                                                    <a class="dashboards btn" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_update/{{ component.id }}'>Assign</a>
+                                                </td>
                                             </tr>
                                         {% endfor %}                                        
-                                        {% else %}
-                                            <p> There are no components yet for this dashboard. </p>
                                     {% endif %}
                                     <tr><td></td></tr>
                                   </table>
@@ -1666,12 +1637,9 @@ class CustomDashboardForm(forms.ModelForm):
                         FormActions(
                             Submit('submit', 'Save', css_class='btn-default'),
                             Reset('reset', 'Reset', css_class='btn-warning'),
-                            # cancel('cancel', 'Reset', css_class='btn-warning'),
                         ),
+                    ),
                 ),
-
-                ),
-
                 HTML("""<br/>"""),
 
         )
