@@ -2726,21 +2726,11 @@ class CustomDashboardUpdate(UpdateView):
     def get_initial(self):
         initial = {
             'getCustomDashboard': CustomDashboard.objects.get(id=self.kwargs['pk']),
-            'getDashboardComponents': DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk']),
+            'getDashboardComponents': DashboardComponent.objects.all(),
             'getComponentDataSources': ComponentDataSource.objects.all(),
             }
 
         return initial
-        
-    # def get_form(self, form_class):
-    #     url = request.META['HTTP_REFERER']
-    #     stringifiedUrl = urllib.unquote(url).decode('utf8')
-    #     if stringifiedUrl.endswith('#current-dashboard'):
-    #         form = CustomDashboardModalForm
-    #     else:
-    #         form = CustomDashboardForm
-
-    #     return form(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
@@ -2761,7 +2751,7 @@ class CustomDashboardUpdate(UpdateView):
         context.update({'getDashboardTheme': getDashboardTheme})
 
         try:
-            getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk'])
+            getDashboardComponents = DashboardComponent.objects.all()
         except DashboardComponent.DoesNotExist:
             getDashboardComponents = None
         context.update({'getDashboardComponents': getDashboardComponents})
@@ -2945,7 +2935,14 @@ class DashboardComponentList(ListView):
 class DashboardComponentCreate(CreateView):
     model = DashboardComponent
     template_name = 'customdashboard/admin/dashboard_component_form.html'
-    
+
+     # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(DashboardComponentCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        pk = self.kwargs['pk']
+        return kwargs
+
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -2954,14 +2951,11 @@ class DashboardComponentCreate(CreateView):
             guidance = None
         return super(DashboardComponentCreate, self).dispatch(request, *args, **kwargs)
 
-     # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(DashboardComponentCreate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(DashboardComponentCreate, self).dispatch(request, *args, **kwargs)
+    def get_initial(self):
+        initial = {
+            'getCustomDashboard': CustomDashboard.objects.get(id=self.kwargs['pk']),
+            'getComponentDataSources': ComponentDataSource.objects.all(),
+            }
 
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentCreate, self).get_context_data(**kwargs)
