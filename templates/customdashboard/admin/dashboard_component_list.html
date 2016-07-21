@@ -1,48 +1,26 @@
+<h4>Dashboard Components</h4>
 
-{% load staticfiles %}
-
-<!-- humanize numbers -->
-{% load humanize %}
-
-{% block page_title %}Dashboard Components{% endblock %}
-
-{% block content %}
-<!-- <div>
-<a href="/activitydb/custom_dashboard_add/0/" class="btn btn-large btn-success">Create Custom Dashboard Theme</a> &nbsp;
-<hr/>
-<br/>
-</div> -->
-<h3>Dashboard Components</h3>
-
-<!-- Table -->
 <table class="table">
-    <tr>
-        <th>Date Created</th>
-        <th>Component Name</th>
-        <th>Component Type</th>
-        <th>Component Description</th>   
-        <th>Public?</th>
-        <th>Data Source</th>
-        <th>&nbsp;</th>
-        <th>&nbsp;</th>
-    </tr>
-    {% for item in getDashboardComponents %}
-    <tr>
-       <td> item.create_date</td>       
-       <td> item.component_name</td>
-       <td> item.component_type </td>
-       <td> item.component_description </td>
-       <td> item.is_public </td>
-       <td> item.data_source</td>       
-       <td> <a href="/activitydb/custom_dashboard/component_update/{{ item.id }}" class="btn btn-xs btn-danger">Update Component</a></td>
-       <td> <a href="/activitydb/custom_dashboard/component_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Component</a></td>
-    </tr>
-    {% empty %}
-        <li class="list-group-item">No Dashboard Components Created Yet.</li>
-    {% endfor %}
+  <tr>
+    <th>Date Created</th>
+    <th>Component Name</th>
+    <th>Component Type</th>
+    <th>Component Description</th>   
+    <th>Public?</th>
+    <th>Data Source</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </tr>
+  {% for component in getDashboardComponents %}
+  <tr>
+    <td> {{ component.create_date }}</td>       
+    <td> {{ component.component_name }}</td>
+    <td> {{ component.component_type }}</td>
+    <td> {{ component.component_description }}</td>
+    <td> {{ component.is_public }}</td>
+    <td> {{ component.data_source }}</td>       
+    <td> <a href="/activitydb/custom_dashboard/component_update/{{ component.id }}" class="btn btn-xs btn-danger">Update Component</a></td>
+    <td> <a href="/activitydb/custom_dashboard/component_delete/{{ component.id }}" class="btn btn-xs btn-danger">Delete Component</a></td>
+  </tr>
+  {% endfor %}
 </table>
-
-<div class="panel-footer">
-  <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_add/{{ item.id }}">Add Component</a>
-</div>
-{% endblock content %}
