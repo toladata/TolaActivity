@@ -2708,11 +2708,9 @@ class CustomDashboardUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class CustomDashboardUpdate(UpdateView):
-
+class CustomDashboardPreview(UpdateView):
     model = CustomDashboard
-    template_name = 'customdashboard/admin/customdashboard_form.html'
-    form_class = CustomDashboardForm
+    template_name = 'customdashboard/admin/customdashboard_preview.html'
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -2779,6 +2777,8 @@ class CustomDashboardUpdate(UpdateView):
         messages.success(self.request, 'Success, CustomDashboard Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
+
+
 
 class CustomDashboardDelete(DeleteView):
     """
@@ -3136,10 +3136,11 @@ class ComponentDataSourceUpdate(UpdateView):
 
     form_class = ComponentDataSourceForm
 
+
 class ComponentDataSourceDelete(DeleteView):    
     model = ComponentDataSource
     template_name = 'customdashboard/admin/component_data_source_confirm_delete.html'
-    success_url = 'activitydb/custom_dashboard/'
+    success_url = 'activitydb/custom_dashboard_update/'
 
     def get_context_data(self, **kwargs):
         context = super(ComponentDataSourceDelete, self).get_context_data(**kwargs)
