@@ -1571,41 +1571,9 @@ class CustomDashboardForm(forms.ModelForm):
                     Fieldset("Step 4: Assign Data to Components",
                         HTML("""
                             <div class='panel panel-default'>
-                                  <table class="table">
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Public?</th>
-                                        <th>Component Type</th>
-                                        <th>Data Required</th>
-                                        <th class='col-sm-2'>Data Source(s)</th>
-                                        <th></th>
-                                    </tr>
-                                    {% if getDashboardComponents %}
-                                        {% for component in getDashboardComponents %}
-                                            <tr>
-                                                <td>{{ component.component_name}}</td>
-                                                <td>{{ component.component_description }}</td>
-                                                <td> {% if component.is_public == 1 %} Yes {% else %} No {% endif %}</td>
-                                                <td>{{ component.component_type}}</td>
-                                                <td>{{ component.data_required }}</td>
-                                                <td class='col-sm-2'>
-                                                    <select multiple>
-                                                        {% for data in getComponentDataSources %}
-                                                            <option class='col-sm-2' value="{{data}}">{{data.title}}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <a class="dashboards btn" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_update/{{ component.id }}'>Assign</a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}                                        
-                                    {% endif %}
-                                    <tr><td></td></tr>
-                                  </table>
-                                  <a class="dashboard_components btn btn-primary" data-target="#preview-submit" data-toggle="tab">Next Step: Preview & Finalize</a>      
-                              
+                                {% include 'customdashboard/admin/component_data_source_assign.html' %}
+                                <div class="panel-footer">
+                                <a class="btn btn-primary" data-target="#preview-submit" data-toggle="tab">Next Step: Preview & Submit</a>
                             </div>
                             """),
                         ),
@@ -1615,7 +1583,7 @@ class CustomDashboardForm(forms.ModelForm):
                         HTML("""
                             <div class='panel panel-body'>
                                 {% if getCustomDashboard %}
-                                    <a class="btn btn-info" data-toggle="modal" data-target="#myPreviewModal" aria-hidden="true" href="/activitydb/custom_dashboard_detail/{{ pk }}">Preview Dashboard</a>
+                                    <a class="btn btn-info" data-toggle="modal" data-target="#myPreviewModal" aria-hidden="true" href="/activitydb/custom_dashboard_preview/{{ pk }}">Preview Dashboard</a>
                                 {% else %}
                                     No dashboard to display.
                                 {% endif %}
