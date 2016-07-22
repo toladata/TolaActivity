@@ -102,7 +102,8 @@ urlpatterns = [
                        url(r'^district/(?P<district>[-\w]+)/district_json/', 'activitydb.views.district_json', name='district_json'),
 
                        url(r'^custom_dashboard/(?P<pk>[0-9]+)/$', CustomDashboardList.as_view(), name='custom_dashboard_list'),
-                       url(r'^custom_dashboard_detail/(?P<id>[0-9]+)/$', CustomDashboardDetail.as_view(), name='custom_dashboard_detail'),
+                       url(r'^custom_dashboard_detail/(?P<pk>[0-9]+)/$', CustomDashboardDetail.as_view(), name='custom_dashboard_detail'),
+                       # url(r'^custom_dashboard_preview/(?P<pk>[0-9]+)/$', 'activitydb.views.dashboard_preview_link', name='custom_dashboard_detail'),
                        url(r'^custom_dashboard_add/(?P<id>[0-9]+)/$', CustomDashboardCreate.as_view(), name='custom_dashboard_add'),
                        url(r'^custom_dashboard_update/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(), name='custom_dashboard_update'),
                        url(r'^custom_dashboard_delete/(?P<pk>[0-9]+)/$', CustomDashboardDelete.as_view(), name='custom_dashboard_delete'),
@@ -120,10 +121,9 @@ urlpatterns = [
                        url(r'^custom_dashboard/data/(?P<id>[0-9]+)/$', ComponentDataSourceList.as_view(), name='component_data_source_list'),
                        url(r'^custom_dashboard/data_add/$',  ComponentDataSourceCreate.as_view(), name='custom_dashboard/data_add'),
                        url(r'^custom_dashboard/data_update/(?P<id>[0-9]+)/$',  ComponentDataSourceUpdate.as_view(), name='custom_dashboard/data_update'),
-                       url(r'^custom_dashboard/data_delete(?P<id>[0-9]+)/$',  ComponentDataSourceDelete.as_view(), name='custom_dashboard/data_delete'),
+                       url(r'^custom_dashboard/data_delete/(?P<id>[0-9]+)/$',  ComponentDataSourceDelete.as_view(), name='custom_dashboard/data_delete'),
                        
                        #ajax calls
                        url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
-
 
                        ]
