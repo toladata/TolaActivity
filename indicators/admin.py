@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import IndicatorType, Indicator, ReportingFrequency, DisaggregationType, DisaggregationLabel,\
-    CollectedData, Objective, Level, IndicatorAdmin, ObjectiveAdmin, StrategicObjective, StrategicObjectiveAdmin, ExternalService, \
-    ExternalServiceAdmin, ExternalServiceRecord, ExternalServiceRecordAdmin, CollectedDataAdmin, TolaTable, DisaggregationLabelAdmin
+from .models import *
 from activitydb.models import Sector, Country, Program
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
@@ -11,7 +9,6 @@ from simple_history.admin import SimpleHistoryAdmin
 
 class IndicatorResource(resources.ModelResource):
 
-    country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     indicator_type = ManyToManyWidget(IndicatorType, separator=" | ", field="indicator_type")
     objective = ManyToManyWidget(Objective, separator=" | ", field="objective"),
     strategic_objective = ManyToManyWidget(StrategicObjective, separator=" | ", field="strategic_objective")
@@ -23,7 +20,7 @@ class IndicatorResource(resources.ModelResource):
 
     class Meta:
         model = Indicator
-        fields = ('id','country','indicator_type','level','objective','strategic_objective','name','number',\
+        fields = ('id','indicator_type','level','objective','strategic_objective','name','number',\
                   'source','definition','baseline','lop_target','means_of_verification','data_collection_method','responsible_person',\
                   'method_of_analysis','information_use','reporting_frequency','comments','disaggregation','sector',\
                   'program','key_performance_indicator')
@@ -34,9 +31,9 @@ class IndicatorAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
     resource_class = IndicatorResource
     list_display = ('indicator_types','name','sector','key_performance_indicator')
     search_fields = ('name','number','program__name')
-    list_filter = ('country','key_performance_indicator','sector')
+    list_filter = ('program','key_performance_indicator','sector')
     display = 'Indicators'
-    filter_horizontal = ('objectives','strategic_objectives','disaggregation','program')
+    filter_horizontal = ('program','objectives','strategic_objectives','disaggregation','program')
     pass
 
 
@@ -66,7 +63,7 @@ class CollectedDataAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
     resource_class = CollectedDataResource
     list_display = ('indicator','program','agreement')
     search_fields = ('indicator','agreement','program','owner__username')
-    list_filter = ('indicator__country__country','program','approved_by')
+    list_filter = ('indicator__program__country__country','program','approved_by')
     display = 'Collected Data on Indicators'
     pass
 
@@ -74,7 +71,7 @@ class CollectedDataAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
 admin.site.register(IndicatorType)
 admin.site.register(Indicator,IndicatorAdmin)
 admin.site.register(ReportingFrequency)
-admin.site.register(DisaggregationType)
+admin.site.register(DisaggregationType, DisaggregationTypeAdmin)
 admin.site.register(DisaggregationLabel, DisaggregationLabelAdmin)
 admin.site.register(CollectedData, CollectedDataAdmin)
 admin.site.register(Objective,ObjectiveAdmin)

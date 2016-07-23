@@ -208,17 +208,16 @@ body > .container {
   text-align: center;
 }
 
-=======
 /* Login buttons for Social */
 .social-buttons{
-    margin:12px 0
+    margin:12px;
 }
 .btn-go{
     color: #fff;
     background-color:#55acee;
+    margin:12px 0px 12px 0px;
 }
 .btn-go:hover{
     color: #fff;
     background-color:#59b5fa;
 }
-\

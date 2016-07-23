@@ -35,7 +35,7 @@ class CollectedDataResource(resources.ModelResource):
     agreement = fields.Field(column_name='agreement', attribute='agreement',  widget=ForeignKeyWidget(ProjectAgreement, 'project_name_clean'))
     complete = fields.Field(column_name='complete', attribute='complete',  widget=ForeignKeyWidget(ProjectComplete, 'project_name_clean'))
     program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
-    disaggregation_value = fields.Field(column_name='disaggregation_value', attribute='disaggregation_value', widget=ManyToManyWidget(DisaggregationValue, 'value'))
+    disaggregations = fields.Field(column_name='dissaggregations', attribute='disaggregations')
 
     class Meta:
         model = CollectedData

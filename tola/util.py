@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
 
 
-#CREATE NEW DATA DICTIONARY OBJECT 
+#CREATE NEW DATA DICTIONARY OBJECT
 def siloToDict(silo):
     parsed_data = {}
     key_value = 1
@@ -36,59 +36,11 @@ def getCountry(user):
         return get_countries
 
 
-def getTolaDataSilos(user):
-        """
-        Returns a list of silos from TolaData that the logged in user has access to
-        """
-        token = TolaSites.objects.get(site_id=1).value("tola_tables_token")
-        url="https://tola-data.mercycorps.org/api/silo/?format=json"
-        headers = {'content-type': 'application/json',
-               'Authorization': 'Token ' + token}
-
-        response = requests.get(url,headers=headers, verify=False)
-        # set url for json feed here
-        json_file = response
-
-        print "JSON FILE:"
-        print json_file.read()
-
-        #load data
-        data = json.load(json_file)
-        json_file.close()
-
-        for row in data:
-            print row
-            vars_to_sql = []
-            keys_to_sql = []
-            for new_key, new_value in row.iteritems():
-                try:
-                    new_key = new_key.encode('ascii','ignore')
-                    new_value = new_value.encode('ascii','ignore')
-                except Exception, err:
-                    sys.stderr.write('ERROR: %s\n' % str(err))
-                print new_key
-                print new_value
-
-                if new_value:
-                    #country or region related columns only
-                    if new_key in ('country','region','iso_code'):
-                        #change iso_code to code for DB table
-                        if new_key == 'iso_code':
-                            new_key = 'code'
-                        keys_to_sql.append(new_key)
-                        vars_to_sql.append(new_value)
-            silos = keys_to_sql + vars_to_sql
-
-
-        return silos
-
-
 def emailGroup(country,group,link,subject,message,submiter=None):
         #email incident to admins in each country assoicated with the projects program
         for single_country in country.all():
             country = Country.objects.all().filter(country=single_country)
-            getGroupEmails = User.objects.all().filter(groups__name=group,tola_user__country=country).values_list('email', flat=True)
-            print getGroupEmails
+            getGroupEmails = User.objects.all().filter(tola_user=group,tola_user__country=country).values_list('email', flat=True)
             email_link = link
             formatted_email = email_link
             subject = str(subject)
@@ -107,7 +59,7 @@ def emailGroup(country,group,link,subject,message,submiter=None):
         mail_admins(subject, message, fail_silently=False)
 
 
-def get_table(url,count=None):
+def get_table(url):
     """
     Get table data from a Silo.  First get the Data url from the silo details
     then get data and return it
@@ -117,34 +69,21 @@ def get_table(url,count=None):
     token = TolaSites.objects.get(site_id=1)
     if token.tola_tables_token:
         headers = {'content-type': 'application/json',
-               'Authorization': 'Token ' + token.tola_tables_token}
+               'Authorization': 'Token ' + token.tola_tables_token }
     else:
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
-    # add token to requests and return silo details
     response = requests.get(url,headers=headers, verify=False)
-    silo = json.loads(response.content)
+    data = json.loads(response.content)
 
-    if count:
-        # get the url for the data return it in json format
-        if silo:
-            data_url = silo[0]['data'] + "?format=json"
-            # add token again and request silo date
-            response2 = requests.get(data_url,headers=headers, verify=False)
-            data = json.loads(response2.content)
-        else:
-            data = None
-
-        return data
-    else:
-        return json.dumps(silo)
+    return data
 
 
 def user_to_tola(backend, user, response, *args, **kwargs):
 
     # Add a google auth user to the tola profile
-    default_country = Country.objects.get(id=1)
+    default_country = Country.objects.first()
     userprofile, created = TolaUser.objects.get_or_create(
         user = user)
 

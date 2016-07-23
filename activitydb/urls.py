@@ -5,12 +5,12 @@ from django.conf.urls import *
 # place app url patterns here
 
 urlpatterns = [
-                       url(r'^report_builder/', include('report_builder.urls')),
                        ###activitydb
-                       url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)/$', ProjectDash.as_view(), name='project_dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)$', ProjectDash.as_view(), name='project_dashboard'),
                        url(r'^dashboard/project', ProjectDash.as_view(), name='project_dashboard'),
+                       url(r'^dashboard/(?P<pk>\w+)/(?P<status>\w+)/$', ProgramDash.as_view(), name='dashboard'),
+                       url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
 
                        url(r'^projectagreement_list/(?P<pk>\w+)/$', ProjectAgreementList.as_view(), name='projectagreement_list'),
                        url(r'^projectagreement_add/$', ProjectAgreementCreate.as_view(), name='projectagreement_add'),
@@ -83,6 +83,11 @@ urlpatterns = [
                        url(r'^beneficiary_add/(?P<id>\w+)/$', BeneficiaryCreate.as_view(), name='beneficiary_add'),
                        url(r'^beneficiary_update/(?P<pk>\w+)/$', BeneficiaryUpdate.as_view(), name='beneficiary_update'),
                        url(r'^beneficiary_delete/(?P<pk>\w+)/$', BeneficiaryDelete.as_view(), name='beneficiary_delete'),
+
+                       url(r'^distribution_list/(?P<pk>\w+)/$', DistributionList.as_view(), name='distribution_list'),
+                       url(r'^distribution_add/(?P<id>\w+)/$', DistributionCreate.as_view(), name='distribution_add'),
+                       url(r'^distribution_update/(?P<pk>\w+)/$', DistributionUpdate.as_view(), name='distribution_update'),
+                       url(r'^distribution_delete/(?P<pk>\w+)/$', DistributionDelete.as_view(), name='distribution_delete'),
 
                        url(r'^budget_list/(?P<pk>\w+)/$', BudgetList.as_view(), name='budget_list'),
                        url(r'^budget_add/(?P<id>\w+)/$', BudgetCreate.as_view(), name='budget_add'),

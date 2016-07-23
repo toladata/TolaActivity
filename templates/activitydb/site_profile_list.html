@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/activitydb/dashboard/0/">Program Index</a></li>
   {%  if project_agreement_id != 0 %}
     <li><a href="/activitydb/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
   {% endif %}
@@ -66,33 +66,75 @@
     </script>
 {% endif %}
 
- <!-- Table -->
-<table class="table">
+ <!-- Display site profiles & projects -->
+<table class="table table-striped">
     <tr>
         <th>Date Created</th>
         <th>Profile Name</th>
+        <th>Status</th>
         <th>Profile Type</th>
         <th>Province</th>
         <th>District</th>
-        <th>Approval</th>
         <th>&nbsp;</th>
     </tr>
-    {% for item in getSiteProfile %}
-    <tr>
-        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date}}</a></td>
-        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name}}</a></td>
-        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type}}</a></td>
-        <td>{{ item.province}}</td>
-        <td>{{ item.district}}</td>
-        <td>{{ item.approval}}</td>
-        <td>
-            <a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
-    </tr>
-    {% empty %}
-        <li class="list-group-item">No Site Profiles yet.</li>
-    {% endfor %}
-</table>
+    {% if getSiteProfile %}
+      {% for item in getSiteProfile %}
 
+    <tr>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.create_date|date:"d-m-Y" }} </a></td>
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.name }}</a></td>
+        {% if item.status == 1 %}
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}"><span class="badge">Active</span></a></td>
+        {%else%}
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}"><span class="badge">Inactive</span></a></td>
+        {%endif%}
+        <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
+        <td>{{ item.province }}</td>
+        <td>{{ item.district }}</td>
+        <td><a class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ item.id }}">View Projects </a><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
+    </tr>
+
+    <tr>
+        <td colspan="7" class="hiddenRow">
+            <div id="hidden-{{ item.id }}" class="accordian-body collapse">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Program</th>
+                        <th>Activity Code</th>
+                        <th>Expected Start Date</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    {% if getSites %}
+                    {% for site in getSites %}
+                            {% for items in site.projectagreement_set.all %}
+                                {% if item.id == site.id %}
+                    <tr>
+                        <td>{{ items.project_name }}</td>
+                        <td>{{ items.program.name }}</td>
+                        <td>{{ items.activity_code }}</td>
+                        <td>{{ items.expected_start_date|date:"m-d-Y" }}</td>
+                        <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>Project Report</a></td>
+                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="5">No Projects on this Site</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </td>
+    </tr>
+      {% endfor %}
+    {% else %}
+    <tr>
+        <td colspan="7">No Site Profiles yet.</td>
+    </tr>
+    {% endif %}
+</table>
 <!-- Modal -->
 <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">

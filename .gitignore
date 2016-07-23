@@ -1,7 +1,6 @@
 *.log
 *.pot
 *.pyc
-#local.py
 # Python bytecode:
 *.py[co]
 
@@ -24,17 +23,17 @@ build
 #allvritualenv
 venv/
 
-#conf
+conf
 conf/awstats.conf
 
 #Misc.
 .idea/
 .DS_Store
 media/
-local.py
-htdocs/tola/settings/local.py
 client_secrets.json
 *.crt
 *.key
 error.log
+*.secret
+*.secret.yml
 assets/
