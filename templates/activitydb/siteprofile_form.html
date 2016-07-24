@@ -2,7 +2,7 @@
 {% block bread_crumb %}
 <div>
 <ol class="breadcrumb">
-  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/activitydb/dashboard/0/">Program Index</a></li>
   {%  if getProgram.id %}
     <li><a href="/activitydb/siteprofile_list/{{ getProgram.id }}/">Site Profiles</a></li>
   {% else %}
@@ -15,7 +15,7 @@
 {% block page_title %}Site Profile Form{% endblock %}
 
 {% block content %}
-    <span style="float: right;"><a onclick="newPopup('https://drive.google.com/open?id=18nGr_uk1VSzitwjkstxvjGWxtINzlITUgBGFP_s-b9o','Form Help/Guidance'); return false;" href="#" class="btn btn-sm btn-info">Form Help/Guidance</a></span>
+    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}

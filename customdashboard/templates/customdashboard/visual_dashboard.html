@@ -18,7 +18,7 @@ $(function () {
                 type: 'pie'
             },
             title: {
-                text: 'Project Agreements by Status'
+                text: 'Project Initiations by Status'
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -34,7 +34,7 @@ $(function () {
                 }
             },
             series: [{
-                name: 'Project Agreements',
+                name: 'Project Initiations',
                 colorByPoint: true,
                 data: [{
                     name: 'Approved',
@@ -175,15 +175,15 @@ $(function () {
                 <div style="float:left;">
 
                     <h4>Project Status {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}{% endif %} </a></h4>
-                    Number of Agreements : <b>{{ getProjectsCount }}</b><br>
+                    Number of Initiations : <b>{{ getProjectsCount }}</b><br>
                     <!-- approved count-->
-                   <h4> <span class="label label-success">Approved &nbsp;<span class="badge">{{ getApprovedCount }}</span></span>
+                   <h4> <a href="/activitydb/dashboard/{{ getFilteredName.id }}/approved/"><span class="label label-success">Approved &nbsp;<span class="badge">{{ getApprovedCount }}</span></span></a>
                        <!-- awaiting approval count-->
-                    <span class="label label-success">Awaiting Approval &nbsp;<span class="badge">{{ getAwaitingApprovalCount }}</span></span>
+                    <a href="/activitydb/dashboard/{{ getFilteredName.id }}/awaiting_approval/"><span class="label label-success">Awaiting Approval &nbsp;<span class="badge">{{ getAwaitingApprovalCount }}</span></span></a>
                     <!-- in progress count-->
-                    <span class="label label-success">In Progress &nbsp;<span class="badge">{{ getInProgressCount }}</span></span>
+                    <a href="/activitydb/dashboard/{{ getFilteredName.id }}/in_progress/"><span class="label label-success">In Progress &nbsp;<span class="badge">{{ getInProgressCount }}</span></span></a>
                     <!-- rejected count-->
-                    <span class="label label-success">Rejected &nbsp;<span class="badge">{{ getRejectedCount }}</span></span></h4>
+                    <a href="/activitydb/dashboard/{{ getFilteredName.id }}/rejected/"><span class="label label-success">Rejected &nbsp;<span class="badge">{{ getRejectedCount }}</span></span></a></h4>
 
                 </div>
                     <!-- Display custom dashboards -->

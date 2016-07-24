@@ -4,7 +4,6 @@ $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
     if (hash) {
-    console.log(hash);
     $('.nav-tabs a[href='+hash+']').tab('show');
     }
 
@@ -50,39 +49,6 @@ function tasklistChange(pk,type,value){
 }
 
 
-
-/*
-*  Load the collected data for an indicator on the results page
-*/
-function loadCollected(indicator,program){
-    var indicator;
-    $('.ajaxLoader').show();
-    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
-        $('#hidden-' + indicator).html(data);
-    });
-    $('.ajaxLoader').hide();
-};
-
-/*
-*  Load the collected data for an indicator on the results page
-*/
-function loadIndicators(program){
-    var program;
-    $('.ajaxLoader').show();
-    $.get('/indicators/program_indicators/' + program + '/', function(data){
-        $('#hidden-' + program).html(data);
-      });
-    $('.ajaxLoader').hide();
-    $('#hidden-' + program).on('shown', function () {
-       $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
-    });
-
-    $('#hidden-' + program).on('hidden', function () {
-       $(".icon-chevron-up").removeClass("icon-chevron-up").addClass("icon-chevron-down");
-    });
-};
-
-
 $(document).ready(function() {
 
     /*
@@ -97,11 +63,13 @@ $(document).ready(function() {
      */
     $("#services").change(function() {
         var selected_service = $(this).val();
+        console.log("Service:" + selected_service);
         if (selected_service == undefined || selected_service == -1 || selected_service == '') {
             $("#serivce").html("<option>--Service--</option>");
         } else {
             var url = "/indicators/service/" + selected_service + "/service_json/";
             $.getJSON(url, function(service) {
+
                 var options = '<option value="0">--Indicator--</option>';
                 for (var i = 0; i < service.length; i++) {
                     options += '<option value="' + service[i].nid + '">' + service[i].type + ' - ' + service[i].level + ' - ' + service[i].title + '</option>';
@@ -127,7 +95,7 @@ $(document).ready(function() {
         } else {
             var url = "/activitydb/country/" + selected_country + "/country_json/";
             $.getJSON(url, function(province) {
-                var options = '<option value="0">--Level 1--</option>';
+                var options = '<option value="">--Level 1--</option>';
                 for (var i = 0; i < province.length; i++) {
                     options += '<option value="' + province[i].pk + '">' + province[i].fields['name'] + '</option>';
                 }
@@ -152,7 +120,7 @@ $(document).ready(function() {
         } else {
             var url = "/activitydb/province/" + selected_province + "/province_json/";
             $.getJSON(url, function(district) {
-                var options = '<option value="0">--Level 2--</option>';
+                var options = '<option value="">--Level 2--</option>';
                 for (var i = 0; i < district.length; i++) {
                     options += '<option value="' + district[i].pk + '">' + district[i].fields['name'] + '</option>';
                 }
@@ -167,7 +135,7 @@ $(document).ready(function() {
     });
 
 
-        /*
+    /*
      * Handle change in the province drop-down; updates the district drop-down accordingly.
      */
     $("select#id_district").change(function() {
@@ -177,7 +145,7 @@ $(document).ready(function() {
         } else {
             var url = "/activitydb/district/" + selected_district + "/district_json/";
             $.getJSON(url, function(adminthree) {
-                var options = '<option value="0">--Level 3--</option>';
+                var options = '<option value="">--Level 3--</option>';
                 for (var i = 0; i < adminthree.length; i++) {
                     options += '<option value="' + adminthree[i].pk + '">' + adminthree[i].fields['name'] + '</option>';
                 }
@@ -264,6 +232,17 @@ $(document).ready(function() {
     $('.dropdown-menu a').on('click', function(){
         $(this).parent().parent().prev().html($(this).html() + '<span class="caret"></span>');
     })
+
+    /*
+    * Expand accordion down to location hash and then load collected data
+    */
+    if(location.hash != null && location.hash != ""){
+        $('.collapse').removeClass('in');
+        $(location.hash + '.collapse').collapse('show');
+        indicator_id = location.hash.split('-')
+        console.log(indicator_id)
+        loadIndicators(indicator_id[1])
+    }
 });
 
 /*

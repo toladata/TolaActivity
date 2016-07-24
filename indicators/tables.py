@@ -16,9 +16,9 @@ class IndicatorTable(tables.Table):
     class Meta:
         model = Indicator
         attrs = {"class": "paleblue"}
-        fields = ('programs', 'sector','indicator_type', 'name', 'number', 'source', 'definition', 'disaggregation', 'baseline', 'lop_target', 'means_of_verification', 'data_collection_method', 'responsible_person',
+        fields = ('programs', 'sector','indicator_type', 'name', 'number','key_performance_indicator', 'source', 'definition', 'disaggregation', 'baseline', 'lop_target', 'means_of_verification', 'data_collection_method', 'responsible_person',
                     'method_of_analysis', 'information_use', 'reporting_frequency','create_date', 'edit_date')
-        sequence = ('programs', 'sector','indicator_type', 'name', 'number', 'source', 'definition', 'disaggregation', 'baseline', 'lop_target', 'means_of_verification', 'data_collection_method', 'responsible_person',
+        sequence = ('programs', 'sector','indicator_type', 'name', 'number', 'key_performance_indicator', 'source', 'definition', 'disaggregation', 'baseline', 'lop_target', 'means_of_verification', 'data_collection_method', 'responsible_person',
                     'method_of_analysis', 'information_use', 'reporting_frequency', 'create_date', 'edit_date')
 
 

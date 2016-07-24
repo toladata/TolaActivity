@@ -63,7 +63,7 @@
     <div class='jumbotron'>
 
         <h4>Import a data table from <a href="http://tola-tables.mercycorps.org" target="_new">Tola Tables</a>.</h4>
-        <p>Import one of your Tola Tables or a Table shared with you as a Project Agreement, Indicator, Site Profile or Indicator Evidence.</p>
+        <p>Import one of your Tola Tables or a Table shared with you as a Project Initiation, Indicator, Site Profile or Indicator Evidence.</p>
         <div class="panel-body">
             <form class="form-horizontal" method="post" enctype="multipart/form-data" id="importForm" name="most" action="/tables/import/" role="form">
               {% csrf_token %}
@@ -80,7 +80,7 @@
 
                   <label for="service_table">Import to: </label>
                   <select name="import_object" id="import_object" class="form-control">
-                      <option value="agreement">Project Agreement</option>
+                      <option value="agreement">Project Initiation</option>
                       <option value="site">Site Profile</option>
                       <option value="indicator">Indicator</option>
                       <option value="evidence">Indicator Evidence</option>

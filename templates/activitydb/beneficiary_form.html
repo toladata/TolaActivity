@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/activitydb/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/activitydb/dashboard/0/">Program Index</a></li>
   {%  if project_proposal_id %}
     <li><a href="/activitydb/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
     <li><a href="/activitydb/beneficiary_list/{{ project_proposal_id }}/">Beneficiaries</a></li>
@@ -15,6 +15,7 @@
 {% block page_title %}Beneficiary Form{% endblock %}
 
 {% block content %}
+    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}

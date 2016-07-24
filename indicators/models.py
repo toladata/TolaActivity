@@ -15,6 +15,7 @@ class TolaTable(models.Model):
     remote_owner = models.CharField(max_length=255, blank=True)
     country = models.ManyToManyField(Country, blank=True)
     url = models.CharField(max_length=255, blank=True)
+    unique_count = models.IntegerField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -65,7 +66,7 @@ class StrategicObjective(models.Model):
 
 class StrategicObjectiveAdmin(admin.ModelAdmin):
     list_display = ('country','name')
-    search_fields = ('country','name')
+    search_fields = ('country__country','name')
     list_filter = ('country__country',)
     display = 'Strategic Objectives'
 
@@ -119,6 +120,8 @@ class LevelAdmin(admin.ModelAdmin):
 class DisaggregationType(models.Model):
     disaggregation_type = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True)
+    standard = models.BooleanField(default=False, verbose_name="Standard (TolaData Admins Only)")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -127,7 +130,8 @@ class DisaggregationType(models.Model):
 
 
 class DisaggregationTypeAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type','description','create_date','edit_date')
+    list_display = ('disaggregation_type','country','standard','description')
+    list_filter = ('country','standard','disaggregation_type')
     display = 'Disaggregation Type'
 
 
@@ -142,7 +146,7 @@ class DisaggregationLabel(models.Model):
 
 
 class DisaggregationLabelAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type','label','create_date','edit_date')
+    list_display = ('disaggregation_type','label',)
     display = 'Disaggregation Label'
     list_filter = ('disaggregation_type__disaggregation_type',)
 
@@ -159,6 +163,7 @@ class DisaggregationValue(models.Model):
 
 class DisaggregationValueAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_label','value','create_date','edit_date')
+    list_filter = ('disaggregation_label__disaggregation_type__disaggregation_type','disaggregation_label')
     display = 'Disaggregation Value'
 
 
@@ -225,12 +230,11 @@ class ExternalServiceRecordAdmin(admin.ModelAdmin):
 
 class IndicatorManager(models.Manager):
     def get_queryset(self):
-        return super(IndicatorManager, self).get_queryset().prefetch_related('program','country').select_related('sector')
+        return super(IndicatorManager, self).get_queryset().prefetch_related('program').select_related('sector')
 
 
 class Indicator(models.Model):
     indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
-    country = models.ForeignKey(Country, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
     objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Program Objective", related_name="obj_indicator")
@@ -303,13 +307,6 @@ class Indicator(models.Model):
         return self.name
 
 
-class IndicatorAdmin(admin.ModelAdmin):
-    list_display = ('indicator_types','name','sector','key_performance_indicator')
-    search_fields = ('name','number','program__name')
-    list_filter = ('sector','country','key_performance_indicator')
-    display = 'Indicators'
-
-
 class CollectedDataManager(models.Manager):
     def get_queryset(self):
         return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('program','indicator','agreement','complete','evidence','tola_table')
@@ -322,7 +319,7 @@ class CollectedData(models.Model):
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2")
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
     program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
     date_collected = models.DateTimeField(null=True, blank=True)
@@ -330,6 +327,7 @@ class CollectedData(models.Model):
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data")
     tola_table = models.ForeignKey(TolaTable, blank=True, null=True)
+    update_count_tola_table = models.BooleanField("Would you like to update the achieved total with the row count from TolaTables?",default=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
@@ -359,8 +357,12 @@ class CollectedData(models.Model):
         achieved=CollectedData.targeted.filter(indicator__id=self).sum('achieved')
         return achieved
 
+    @property
+    def disaggregations(self):
+        return ', '.join([y.disaggregation_label.label + ': ' + y.value for y in self.disaggregation_value.all()])
+
 
 class CollectedDataAdmin(admin.ModelAdmin):
     list_display = ('indicator','date_collected', 'create_date', 'edit_date')
-    list_filter = ['program__country__country']
+    list_filter = ['indicator__program__country__country']
     display = 'Indicator Output/Outcome Collected Data'

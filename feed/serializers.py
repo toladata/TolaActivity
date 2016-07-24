@@ -1,10 +1,9 @@
-from django.forms import widgets
 from rest_framework import serializers
 from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
-    ProjectAgreement, ProjectTypeOther, Stakeholder, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
+    ProjectAgreement, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective
+    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
 from django.contrib.auth.models import User
 
 
@@ -63,12 +62,6 @@ class CountrySerializer(serializers.HyperlinkedModelSerializer):
         model = Country
 
 
-class ProjectTypeOtherSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = ProjectTypeOther
-
-
 class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -85,7 +78,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TolaUser
-
+        fields = ('url', 'name','country', 'countries')
 
 class IndicatorTypeSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -139,12 +132,6 @@ class StrategicObjectiveSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = StrategicObjective
-
-
-class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Stakeholder
 
 
 class StakeholderTypeSerializer(serializers.HyperlinkedModelSerializer):
@@ -205,3 +192,21 @@ class DocumentationSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Documentation
+
+
+class CollectedDataSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = CollectedData
+
+
+class TolaTableSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = TolaTable
+
+
+class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = DisaggregationValue

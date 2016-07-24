@@ -13,6 +13,7 @@ urlpatterns = patterns('',
                        url(r'^internal_dashboard/(?P<pk>\w+)/$', InternalDashboard.as_view(), name='internal_dashboard'),
                        url(r'^survey_public/report$', 'customdashboard.views.ReportPublicDashboard', name='report_public_dashboard'),
                        url(r'^survey_public/$', 'customdashboard.views.SurveyPublicDashboard', name='survey_public_dashboard'),
+                       url(r'^survey_talk_public/$', 'customdashboard.views.SurveyTalkPublicDashboard', name='survey_talk_public_dashboard'),
                        url(r'^public/(?P<id>\w+)/$', 'customdashboard.views.PublicDashboard', name='public_dashboard'),
                        url(r'^public/(?P<id>\w+)/([0-9]+)/$', 'customdashboard.views.PublicDashboard', name='public_dashboard'),
 

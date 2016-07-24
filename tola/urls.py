@@ -26,9 +26,8 @@ router.register(r'projecttype', ProjectTypeViewSet)
 router.register(r'office', OfficeViewSet)
 router.register(r'siteprofile', SiteProfileViewSet)
 router.register(r'country', CountryViewSet)
-router.register(r'agreements', AgreementViewSet)
-router.register(r'completes', CompleteViewSet)
-router.register(r'projecttypeother', ProjectTypeOtherViewSet)
+router.register(r'initiations', AgreementViewSet)
+router.register(r'tracking', CompleteViewSet)
 router.register(r'indicator', IndicatorViewSet)
 router.register(r'reportingfrequency', ReportingFrequencyViewSet)
 router.register(r'tolauser', TolaUserViewSet)
@@ -51,6 +50,12 @@ router.register(r'adminlevelthree', AdminLevelThreeViewSet)
 router.register(r'village', VillageViewSet)
 router.register(r'contact', ContactViewSet)
 router.register(r'documentation', DocumentationViewSet)
+router.register(r'collecteddata', CollectedDataViewSet)
+router.register(r'tolatable', TolaTableViewSet)
+router.register(r'disaggregationvalue', DisaggregationValueViewSet)
+
+
+
 
 urlpatterns = [ # rest framework
                 url(r'^api/', include(router.urls)),

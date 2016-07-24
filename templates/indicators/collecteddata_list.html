@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/indicators/home/0/">Indicators</a></li>
-  <li class="active">Data</li>
+  <li><a href="/indicators/home/{{ program.id }}/">Indicators</a></li>
 </ol>
 {% endblock %}
 {% block page_title %}Collected Indicator Data{% endblock %}
 
 {% block content %}
+
+
 <div class="dropdown">
     <div class="btn-group" role="group">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
@@ -16,7 +17,7 @@
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
         {% for program in getPrograms %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/0/{{ program.id }}/">{{ program.gaitid}} - {{ program.name }}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/0/{{ program.id }}/{{ type }}/">{{ program.gaitid}} - {{ program.name }}</a></li>
         {% endfor %}
         </ul>
     </div>
@@ -27,7 +28,19 @@
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
         {% for item in getIndicators %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ item.id }}/0/">{{ item.number}} - {{ item.name }}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ item.id }}/{{ program }}/{{ type }}/">{{ item.number}} - {{ item.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+        <div class="btn-group" role="group">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+            Indicator Type
+        <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+            <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/collecteddata/{{ indicator }}/{{ program }}/0/">--All--</a></li>
+        {% for item in getIndicatorTypes %}
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ indicator}}/{{ program }}/{{ item.id }}/">{{ item.indicator_type}}</a></li>
         {% endfor %}
         </ul>
     </div>
@@ -35,51 +48,113 @@
     <br/>
 </div>
 
+<br/>
+{% if indicator_name %}
+    <h4>Filtered by Indicator: {{ indicator_name }}</h4>
+{% elif program_name %}
+    <h4>Filtered by Program : {{ program_name }}</h4>
+{% endif %}
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
+    <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+    <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            function show_indicator_table(indicator_data) {
+
+                indicator_records = JSON.parse(indicator_data);
+                //First destroy any old version of the table to refresh anew
+                if ( $.fn.dataTable.isDataTable( '#data_table' ) ) {
+                    table.destroy();
+                    $('#data_table').empty();
+                };
+
+                table = $('#data_table').DataTable( {
+                    retrieve: true,
+                    data: indicator_records,
+                    columns: [
+                        { title: "Program", data: "indicator__program__name"},
+                        { title: "Indicator", data: "name",
+                                "mRender": function (data, type, row) {
+                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/' + row.indicator__id + '/{{ program }}/0/">' + row.indicator__name + '</a>';
+                                }
+                            },
+                        { title: "Level", data: "indicator__level__name"},
+                        { title: "Type", data: "indicator__indicator_type__indicator_type"},
+                        { title: "Sector", data: "indicator__sector__sector"},
+                        { title: "Baseline", data: "indicator__baseline"},
+                        { title: "LOP Target", data: "indicator__lop_target"},
+                        { title: "External", data: "indicator__external_service_record__external_service__name"},
+                        { title: "KPI",data: "indicator__key_performance_indicator"},
+                        { title: "Date Collected", data: "date_collected"},
+                        { title: "Targeted", data: "targeted"},
+                        { title: "Achieved", data: "achieved"},
+                        ]
+                } );
+
+                // provide export button url for indicator
+                $('#export').click(function(){ do_export("indicator"); });
+                $('.collecteddata').click(function(){ data_report(this.name); });
+                $('#program_report').click(function(){ program_report(this.name); });
+
+            }
+
+            // INDICATOR REPORT
+            function indicator_report() {
+                // get the program and indicator id from the url
+                indicator_id = document.URL.split('/')[5];
+                console.log(indicator_id);
+                program_id = document.URL.split('/')[6];
+                console.log(program_id);
+                type_id = document.URL.split('/')[7];
+                console.log(type_id);
+
+                $.getJSON("/indicators/collecteddata_report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/", function(data) {
+                    show_indicator_table(data['collected']);
+                    document.getElementById("targeted").innerHTML=data['collected_sum']['targeted__sum'];
+                    document.getElementById("achieved").innerHTML=data['collected_sum']['achieved__sum'];
+                });
+            }
+
+            // EXPORT DATA
+            function do_export(type) {
+                // get the program and  indicator id from the url
+                indicator_id = document.URL.split('/')[5];
+                console.log(indicator_id);
+                program_id = document.URL.split('/')[6];
+                type_id = document.URL.split('/')[7];
+                console.log(type_id);
+                new_location="/indicators/collecteddata_report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/" + "export";
+                window.location.assign(new_location);
+
+            }
+
+            indicator_report();
+
+        });
+    </script>
 
 
-    {% if getCollectedData %}
-        <div class='panel panel-default'>
-            <div class='panel-heading'><h4>{% if filter_program %} Program: {{ filter_program }} {% elif filter_indicator %} Indicator: {{ filter_indicator }} {% endif %}</h4></div>
-                <!-- Table -->
-                <table class="table table-striped">
-                    <tr>
-                        <th>Strat. Objective</th>
-                        <th>Program</th>
-                        <th>Objective</th>
-                        <th>Indicator</th>
-                        <th>Date Collected</th>
-                        <th>Evidence</th>
-                        <th>Target</th>
-                        <th>Actual</th>
-                    </tr>
-                    {% for item in getCollectedData %}
-                    <tr>
 
-                        <td>{{ item.indicator.strategic_objectives_list }}</td>
-                        <td>{{ item.program }}</td>
-                        <td>{{ item.indicator.objectives_list }}</td>
-                        <td>{{ item.indicator.number }} - {{ item.indicator.name }}</td>
-                        <td>{{ item.date_collected|date:"d-m-Y" }}</td>
-                        <td>{{ item.evidence }} {{ item.tola_table}}</td>
-                        <td>{{ item.targeted }}</td>
-                        <td>{{ item.achieved }}</td>
-
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <td colspan="6"><span style="float: right;">Sum:</span></td>
-                        <td>{{ collected_sum.targeted__sum }}</td>
-                        <td>{{ collected_sum.achieved__sum }}</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                </table>
-            </div>
-            <br/>
-            <button type="submit" class="btn btn-success" onClick="location.href='/indicators/collecteddata/{% if filter_indicator %}{{ filter_indicator.id }}{%else%}0{%endif%}/{% if filter_program %}{{ filter_program.id }}{%else%}0{%endif%}/?export=True'">Export All</button>
+    <div id="program_table_div">
+        <table class="table table-bordered" id="data_table">
+        </table>
+        <div style="float: right;">
+            <p>
+                <b>Targeted Total:</b> <span class="badge" id="targeted"></span>&nbsp;
+                <b>Achieved Total:</b> <span class="badge" id="achieved"></span>
+            </p>
         </div>
+    </div>
+    <br/>
+    <button type="button" class="btn btn-success" id="export">Export All</button>
+    <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
 
-    {% else %}
-        <h4>No Data Found for <em>"{% if filter_program %}Program: {{ filter_program }}{% elif filter_indicator %} Indicator: {{ filter_indicator }}{% endif %}"</em> </h4>
-        <p>Select a Program or Indicator from the filters above.</p>
-    {% endif %}
+
+
+
+
+
 {% endblock content %}

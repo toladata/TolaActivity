@@ -8,7 +8,20 @@ and completing projects as well as sharing the output data.
 
 Tola Data fucntionality http:www.github.com/mercycorps/tola is intended to allow importing
 and exporting of project specific data from 3rd party data sources or excel
-files.  
+files.
+
+## Configuration
+Ensure that the configuration files (`.secret`, `.secret.yml`) are in the `config` folder.
+
+## To deploy changes in activity servers
+Once all your changes have been commited to the repo, and before pushing them, run: 
+`. travis.sh`
+
+## To deploy locally
+Run the following commands from the root of this repository:
+  - `docker-compose build`
+  - `docker-compose up -d mysqldb`
+  - `docker-compose up`
 
 ## USING virtualenv
 (Install virtualenv)

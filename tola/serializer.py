@@ -18,4 +18,4 @@ class LoggedUserSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = LoggedUser
-		fields = ('username', 'country')
+		fields = ('username', 'country', 'email')
