@@ -234,9 +234,7 @@ def activity_api_data(request):
     activity_data = {}
     if request.method == 'GET':
 
-        country = request.GET.get('country')
-
-        activity_logged_users = logged_in_users(country)
+        activity_logged_users = logged_in_users()
         projects = ProjectAgreement.objects.prefetch_related('program').order_by('-create_date')[:6]
 
         project_serializer = ProjectAgreementSerializer(projects, many=True)
@@ -251,12 +249,13 @@ def activity_api_data(request):
 
 #get logged users and send to Tola Work through the API
         return {}
-#return users logged into TolaWork 
-def logged_in_users(country):
+
+#return users logged into TolaActivity
+def logged_in_users():
 
     logged_users = {}
 
-    logged_users = LoggedUser.objects.filter(country=country).order_by('username')
+    logged_users = LoggedUser.objects.all().order_by('username')
     for logged_user in logged_users:
         logged_user.queue = 'TolaActivity'
 

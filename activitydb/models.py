@@ -1427,6 +1427,7 @@ class LoggedUser(models.Model):
 
     username = models.CharField(max_length=30, primary_key=True)
     country = models.CharField(max_length=100, blank=False)
+    email = models.CharField(max_length=100, blank=False, default='user@mercycorps.com')
     
     def __unicode__(self):
         return self.username
@@ -1434,7 +1435,7 @@ class LoggedUser(models.Model):
     def login_user(sender, request, user, **kwargs):
         country = get_user_country(request)
 
-        LoggedUser(username=user.username, country=country ).save()
+        LoggedUser(username=user.username, country=country, email=user.email).save()
 
     def logout_user(sender, request, user, **kwargs):
 
