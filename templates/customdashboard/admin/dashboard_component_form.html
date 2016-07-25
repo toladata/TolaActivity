@@ -33,7 +33,6 @@
     {% load crispy_forms_tags %}
     {% if "/component_add" in request.get_full_path  %}
         <form class="form-horizontal" method="post" id="dashboardComponentForm" action='{{ request.get_full_path }}'>
-        <input type='hidden' value={{ request.get_full_path|slice:":-1,:-2" }}>
     {% endif %}
 
     {% csrf_token %}
