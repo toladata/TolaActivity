@@ -1,4 +1,4 @@
-<h4>Dashboard Components</h4>
+<h4>Dashboard Components: </h4>
 
 <table class="table">
   <tr>
@@ -19,8 +19,8 @@
     <td> {{ component.component_description }}</td>
     <td> {{ component.is_public }}</td>
     <td> {{ component.data_source }}</td>       
-    <td> <a href="/activitydb/custom_dashboard/component_update/{{ component.id }}" class="btn btn-xs btn-danger">Update Component</a></td>
-    <td> <a href="/activitydb/custom_dashboard/component_delete/{{ component.id }}" class="btn btn-xs btn-danger">Delete Component</a></td>
+    <td> <a href="/activitydb/custom_dashboard/component_update/{{ component.id }}" class="btn btn-xs btn-danger">Update</a></td>
+    <td> <a href="/activitydb/custom_dashboard/component_delete/{{ component.id }}" class="btn btn-xs btn-danger">Delete</a></td>                                   
   </tr>
   {% endfor %}
 </table>
