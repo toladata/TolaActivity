@@ -2590,7 +2590,6 @@ class CustomDashboardCreate(CreateView):
 class CustomDashboardDetail(DetailView):
 
     model = CustomDashboard
-    context_object_name = 'customdashboard'
 
     def get_object(self, queryset=CustomDashboard.objects.all()):
         try:
@@ -2649,7 +2648,7 @@ class CustomDashboardUpdate(UpdateView):
 
     def get_initial(self):
         getCustomDashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
-        getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk'])
+        getDashboardComponents = DashboardComponent.objects.all().filter(componentset=getCustomDashboard)
         getComponentDataSources = ComponentDataSource.objects.all()
         initial = {
             'getCustomDashboard': getCustomDashboard,
@@ -2658,6 +2657,16 @@ class CustomDashboardUpdate(UpdateView):
             }
 
         return initial
+
+    def get_form(self, form_class):
+        check_form_type = self.request.get_full_path()
+        print check_form_type
+        if check_form_type.startswith('/activitydb/custom_dashboard_edit'):
+            form = CustomDashboardModalForm
+        else:
+            form = CustomDashboardForm
+
+        return form(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardUpdate, self).get_context_data(**kwargs)
@@ -2678,7 +2687,7 @@ class CustomDashboardUpdate(UpdateView):
         context.update({'getDashboardTheme': getDashboardTheme})
 
         try:
-            getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=self.kwargs['pk'])
+            getDashboardComponents = DashboardComponent.objects.all().filter(componentset=getCustomDashboard)
         except DashboardComponent.DoesNotExist:
             getDashboardComponents = None
         context.update({'getDashboardComponents': getDashboardComponents})
@@ -2777,7 +2786,6 @@ class CustomDashboardPreview(UpdateView):
         messages.success(self.request, 'Success, CustomDashboard Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
-
 
 
 class CustomDashboardDelete(DeleteView):
@@ -2959,6 +2967,12 @@ class DashboardComponentCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentCreate, self).get_context_data(**kwargs)
+        try:
+            getCustomDashboard =CustomDashboard.objects.get(id=self.kwargs['pk'])
+        except CustomDashboard.DoesNotExist:
+            getCustomDashboard = None
+        context.update({'getCustomDashboard': getCustomDashboard})
+
         return context 
 
     def form_invalid(self, form):
@@ -2967,7 +2981,6 @@ class DashboardComponentCreate(CreateView):
 
     def form_valid(self, form):
         form.save()
-        #save formset from context
         context = self.get_context_data()
         messages.success(self.request, 'Success, Component Created!')
         return self.render_to_response(self.get_context_data(form=form))
@@ -2982,7 +2995,7 @@ class DashboardComponentUpdate(UpdateView):
             guidance = FormGuidance.objects.get(form="DashboardComponent")
         except FormGuidance.DoesNotExist:
             guidance = None
-        return super(DashboardComponent, self).dispatch(request, *args, **kwargs)
+        return super(DashboardComponentUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentUpdate, self).get_context_data(**kwargs)
@@ -3003,17 +3016,16 @@ class DashboardComponentUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
+        print form
         form.save()
         self.object = form.save()
 
         messages.success(self.request, 'Success, form updated!')
 
-        getComponentDataSources = ComponentDataSource.objects.all()
-        currentComponent = CustomDashboard.objects.all().filter(customdashboard__id=self.kwargs['pk'])
-        latestComponent = DashboardComponent.objects.latest('id')
-        getDashboardComponent = DashboardComponent.objects.get(id=latestComponent.id)
-        updateCurrentDashboard = currentDashboard.components.add(getDashboardComponent)
+        # getComponentDataSources = ComponentDataSource.objects.all()
+        # currentComponent = CustomDashboard.objects.all().filter(customdashboard__id=self.kwargs['pk'])
+        # getDashboardComponent = DashboardComponent.objects.get(id=latestComponent.id)
+        # updateCurrentDashboard = currentDashboard.components.add(getDashboardComponent)
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentForm
@@ -3079,6 +3091,8 @@ class ComponentDataSourceCreate(CreateView):
     def form_valid(self, form):
         form.save()
         context = self.get_context_data()
+        dashboard = getCustomDashboard #returns current dashboard
+        dashboard.components.add(getCustomDashboard)
         messages.success(self.request, 'Success, Data Source Created!')
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -3094,18 +3108,15 @@ class ComponentDataSourceUpdate(UpdateView):
             guidance = FormGuidance.objects.get(form="ComponentDataSource")
         except FormGuidance.DoesNotExist:
             guidance = None
-        return super(ComponentDataSource, self).dispatch(request, *args, **kwargs)
+        return super(ComponentDataSourceUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ComponentDataSourceUpdate, self).get_context_data(**kwargs)
-        getComplete = ComponentDataSource.objects.get(id=self.kwargs['pk'])
-        id = getComponentDataSource.id
-        context.update({'id': id})
+        getComponentDataSource = ComponentDataSource.objects.get(id=self.kwargs['pk'])
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
         # get stuff
-
         return context
 
     # add the request to the kwargs
