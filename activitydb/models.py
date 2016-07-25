@@ -250,7 +250,7 @@ class ComponentDataSource(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('data_name',)
+        ordering = ('id',)
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -273,7 +273,7 @@ class DashboardComponent(models.Model):
     is_public = models.BooleanField("External Public Dashboard", default=False)
     component_type = models.CharField("Component Type", max_length=255, blank=True)
     data_required = models.CharField("Required Data Type", max_length=255, blank=False)
-    data_sources = models.ManyToManyField(ComponentDataSource, blank=False)
+    data_sources = models.ManyToManyField(ComponentDataSource, blank=False, related_name="datasourceset")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1488,7 +1488,7 @@ class CustomDashboard(models.Model):
     theme = models.ForeignKey(DashboardTheme, blank=True, null=True, related_name='theme')
     program = models.ForeignKey(Program, verbose_name="Program", related_name="dashboard_program", null=True, blank=True)
     color_palette = models.CharField("Color Scheme", max_length=255, blank=False, default="bright")
-    components = models.ManyToManyField(DashboardComponent, blank=True, null=True)
+    components = models.ManyToManyField(DashboardComponent, blank=True, null=True, related_name="componentset")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
