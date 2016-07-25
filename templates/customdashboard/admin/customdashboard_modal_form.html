@@ -17,7 +17,7 @@
         <div class="help-block">
         {% for field in form %}
             {% for error in field.errors %}
-                    <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
+                <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
             {% endfor %}
         {% endfor %}
         </div>
