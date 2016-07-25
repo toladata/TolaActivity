@@ -49,39 +49,6 @@ function tasklistChange(pk,type,value){
 }
 
 
-
-/*
-*  Load the collected data for an indicator on the results page
-*/
-function loadCollected(indicator,program){
-    var indicator;
-    $('.ajaxLoader').show();
-    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
-        $('#hidden-' + indicator).html(data);
-    });
-    $('.ajaxLoader').hide();
-};
-
-/*
-*  Load the collected data for an indicator on the results page
-*/
-function loadIndicators(program){
-    var program;
-    $('.ajaxLoader').show();
-    $.get('/indicators/program_indicators/' + program + '/', function(data){
-        $('#hidden-' + program).html(data);
-      });
-    $('.ajaxLoader').hide();
-    $('#hidden-' + program).on('shown', function () {
-       $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
-    });
-
-    $('#hidden-' + program).on('hidden', function () {
-       $(".icon-chevron-up").removeClass("icon-chevron-up").addClass("icon-chevron-down");
-    });
-};
-
-
 $(document).ready(function() {
 
     /*
