@@ -1,0 +1,51 @@
+<script type="text/javascript">
+    var frm = $('#dataAddForm');
+    frm.submit(function () {
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                $("#alert-error").html("Success! ");
+            },
+            error: function(data) {
+                $("#alert-error").html("Something went wrong!");
+            }
+        });
+        return false;
+    });
+
+</script>
+<div class="modal-body">
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Public?</th>
+            <th>Component Type</th>
+            <th>Data Required</th>
+            <th class='col-sm-2'>Data Source(s)</th>
+            <th></th>
+        </tr>
+        {% for component in getDashboardComponents %}
+        <form class="form-horizontal form-group" method="post" id="dataAddForm" action="../../custom_dashboard/component_update/{{component.id}}">
+        <tr>
+            <td><input id="id_component_name" maxlength="255" readonly="readonly" name="component_name" value="{{ component.component_name}}"/></td>
+            <td><input id="id_component_description" maxlength="255" readonly="readonly" name="component_description" value="{{ component.component_description}}"/></td>
+            <td><input id="id_is_public" maxlength="255" readonly="readonly" name="is_public" value="{% if component.is_public == 1 %} Yes {% else %} No {% endif %}"/></td>
+            <td><input id="id_component_type" maxlength="255" readonly="readonly" name="component_type" value="{{ component.component_type}}"/></td>
+            <td><input id="id_component_data_required" maxlength="255" readonly="readonly" name="component_data_required" value="{{ component.data_required}}"/></td>
+            <td ><select multiple="multiple" id="id_data_sources" name="data_sources" class="form-control" >
+                    {% for data in getComponentDataSources %}
+                        <option value="{{data.id}}">{{data.data_name}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td><input class="btn btn-default" type="submit" value="Assign"> </td>
+        </tr>
+        </form>
+
+        {% endfor %}
+        {% csrf_token %}
+    </table>
+</div>
