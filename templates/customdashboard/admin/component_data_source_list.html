@@ -15,8 +15,8 @@
     <th>{{ data.data_type }}</th>
     <th>{{ data.data_source }}</th>
     <th>{{ data.data_filter_key }}</th>
-    <th><a href="/activitydb/custom_dashboard/data_update/{{ item.id }}" class="btn btn-xs btn-danger">Update Data Source</a></th>
-    <th><a href="/activitydb/custom_dashboard/data_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Data Source</a></th> 
+    <th><a href='/activitydb/custom_dashboard/data_update/{{ data.id }}' class="btn btn-xs btn-danger">Update</a></th>
+    <th><a href='/activitydb/custom_dashboard/data_delete/{{ data.id }}' class="btn btn-xs btn-danger">Delete</a></th> 
   </tr>
   {% endfor %}
 </table>
