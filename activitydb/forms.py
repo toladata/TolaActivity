@@ -1453,6 +1453,7 @@ class CustomDashboardCreateForm(forms.ModelForm):
         # Commit is already set to false
         obj = super(CustomDashboardCreateForm, self).save(*args, **kwargs)
         return obj
+        
 class CustomDashboardModalForm(forms.ModelForm):
     
     class Meta:
@@ -1473,8 +1474,10 @@ class CustomDashboardModalForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = True
+        self.helper.add_input(Submit('submit', 'Save'))
         
         super(CustomDashboardModalForm, self).__init__(*args, **kwargs)
+   
 
 class CustomDashboardForm(forms.ModelForm):
 
@@ -1531,7 +1534,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                 None
                                             {% endif %}
                                         </td>
-                                        <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_update/{{pk}}'>Edit</a> | <a class="dashboards" href='/activitydb/custom_dashboard_delete/{{ pk }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                        <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_edit/{{pk}}'>Edit</a> | <a class="dashboards" href='/activitydb/custom_dashboard_delete/{{ pk }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                     </tr>
                                   </table>
 
@@ -1684,7 +1687,14 @@ class DashboardComponentCreateForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = False
-        self.helper.form_id = "new-component" 
+        self.helper.form_id = "new-component"         
+        self.helper.layout = Layout(
+
+            HTML("""<br/>"""),
+
+                'component_name' ,'component_description','is_public','component_type','data_required','data_sources',
+
+        )
 
         super(DashboardComponentCreateForm, self).__init__(*args, **kwargs)
 
@@ -1714,7 +1724,7 @@ class DashboardComponentForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.form_tag = True
         self.helper.form_id = "dashboard-component"
-        self.helper.add_input(Submit('submit', 'Save'))
+        # self.helper.add_input(Submit('submit', 'Assign'))
 
         super(DashboardComponentForm, self).__init__(*args, **kwargs)
 
