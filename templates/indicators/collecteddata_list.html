@@ -58,33 +58,36 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-
+            // Build a filter for start and end date from Column 8 or date collected
             $.fn.dataTableExt.afnFiltering.push(
                 function( oSettings, aData, iDataIndex ) {
-                    var iFini = document.getElementById('dt1').value;
-                    var iFfin = document.getElementById('dt2').value;
-                    var iStartDateCol = 9;
-                    var iEndDateCol = 9;
 
-                    iFini=iFini.substring(6,10) + iFini.substring(3,5)+ iFini.substring(0,2);
-                    iFfin=iFfin.substring(6,10) + iFfin.substring(3,5)+ iFfin.substring(0,2);
+                    var start = document.getElementById('dt1').value;
+                    var end = document.getElementById('dt2').value;
+                    var dateCol = aData[8];
 
-                    var datofini=aData[iStartDateCol].substring(6,10) + aData[iStartDateCol].substring(3,5)+ aData[iStartDateCol].substring(0,2);
-                    var datoffin=aData[iEndDateCol].substring(6,10) + aData[iEndDateCol].substring(3,5)+ aData[iEndDateCol].substring(0,2);
+                    //replace the - in all striangs
+                    var find = '-';
+                    var re = new RegExp(find, 'g');
 
-                    if ( iFini === "" && iFfin === "" )
+                    start = start.replace(re,'');
+                    end = end.replace(re,'');
+                    dateCol = dateCol.replace(re,'');
+
+
+                    if ( start === "" && end === "" )
                     {
                         return true;
                     }
-                    else if ( iFini <= datofini && iFfin === "")
+                    else if ( start <= dateCol && end === "")
                     {
                         return true;
                     }
-                    else if ( iFfin >= datoffin && iFini === "")
+                    else if ( end >= dateCol && start === "")
                     {
                         return true;
                     }
-                    else if (iFini <= datofini && iFfin >= datoffin)
+                    else if (start <= dateCol && end >= dateCol)
                     {
                         return true;
                     }
@@ -94,19 +97,7 @@
 
             // Set data picker values and formats
             $("#dt1").datepicker({
-                dateFormat: "yy-m-dd",
-                minDate: 0,
-                onSelect: function (date) {
-                    var dt2 = $('#dt2');
-                    var startDate = $(this).datepicker('getDate');
-                    var minDate = $(this).datepicker('getDate');
-                    dt2.datepicker('setDate', minDate);
-                    startDate.setDate(startDate.getDate() + 30);
-                    //sets dt2 maxDate to the last day of 30 days window
-                    dt2.datepicker('option', 'maxDate', startDate);
-                    dt2.datepicker('option', 'minDate', minDate);
-                    $(this).datepicker('option', 'minDate', minDate);
-                }
+                dateFormat: "yy-m-dd"
             });
             $('#dt2').datepicker({
                 dateFormat: "yy-m-dd"
@@ -136,9 +127,12 @@
                         { title: "Sector", data: "indicator__sector__sector"},
                         { title: "Baseline", data: "indicator__baseline"},
                         { title: "LOP Target", data: "indicator__lop_target"},
-                        { title: "External", data: "indicator__external_service_record__external_service__name"},
                         { title: "KPI",data: "indicator__key_performance_indicator"},
-                        { title: "Date Collected", data: "date_collected"},
+                        { title: "Date Collected", data: "date_collected",
+                                "mRender": function ( data, type, row ) {
+                                var javascriptDate = new Date(row.date_collected);
+                                javascriptDate = javascriptDate.getFullYear() + "-" + (javascriptDate.getMonth()+1) + "-" + javascriptDate.getDate();
+                                return "<div class='date'>"+javascriptDate+"<div>";}},
                         { title: "Targeted", data: "targeted"},
                         { title: "Achieved", data: "achieved"},
                         ]
@@ -151,7 +145,10 @@
 
                 // Listen for filter and redraw
                 $('#dt2').change( function() {
-                    console.log("draw")
+                    table.draw();
+                });
+
+                $('#dt2').change( function() {
                     table.draw();
                 });
 
