@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
-    IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData
+    IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData, IndicatorDataExport
 
 
 urlpatterns = [
@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^report_data/(?P<id>\w+)/(?P<program>\w+)/(?P<type>\w+)/$', IndicatorReportData.as_view(),name='indicator_report_data'),
     url(r'^report_data/(?P<id>\w+)/(?P<program>\w+)/(?P<indicator_type>\w+)/export/$', IndicatorExport.as_view(),name='indicator_export'),
     url(r'^collecteddata_report_data/(?P<indicator>\w+)/(?P<program>\w+)/(?P<type>\w+)/$', CollectedDataReportData.as_view(), name='collecteddata_report_data'),
+    url(r'^collecteddata_report_data/(?P<indicator>\w+)/(?P<program>\w+)/(?P<type>\w+)/export/$', IndicatorDataExport.as_view(), name='collecteddata_report_data'),
 
 
 ]
