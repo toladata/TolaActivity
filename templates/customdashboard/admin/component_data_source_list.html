@@ -11,12 +11,12 @@
   </tr>
   {% for data in getComponentDataSources %}
   <tr>
-    <th>{{ data.data_name }}</th>
-    <th>{{ data.data_type }}</th>
-    <th>{{ data.data_source }}</th>
-    <th>{{ data.data_filter_key }}</th>
-    <th><a href='/activitydb/custom_dashboard/data_update/{{ data.id }}' class="btn btn-xs btn-danger">Update</a></th>
-    <th><a href='/activitydb/custom_dashboard/data_delete/{{ data.id }}' class="btn btn-xs btn-danger">Delete</a></th> 
+    <td>{{ data.data_name }}</td>
+    <td>{{ data.data_type }}</td>
+    <td>{{ data.data_source }}</td>
+    <td>{{ data.data_filter_key }}</td>
+    <td><a data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/data_update/{{ data.id }}/' class="components btn btn-xs btn-danger">Update</a></td>
+    <td><a data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/data_delete/{{ data.id }}/' class="components btn btn-xs btn-danger">Delete</a></td> 
   </tr>
   {% endfor %}
 </table>

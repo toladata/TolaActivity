@@ -2631,7 +2631,6 @@ class CustomDashboardDetail(DetailView):
 class CustomDashboardUpdate(UpdateView):
 
     model = CustomDashboard
-    template_name = 'customdashboard/admin/customdashboard_form.html'
     form_class = CustomDashboardForm
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
@@ -2657,7 +2656,6 @@ class CustomDashboardUpdate(UpdateView):
 
     def get_form(self, form_class):
         check_form_type = self.request.get_full_path()
-        print check_form_type
         if check_form_type.startswith('/activitydb/custom_dashboard_edit'):
             form = CustomDashboardModalForm
         else:
@@ -2928,7 +2926,7 @@ class DashboardComponentList(ListView):
         ## retrieve the countries the user has data access for
         countries = getCountry(request.user)
         
-        dashboard_id = int(self.kwargs['id'])
+        dashboard_id = int(self.kwargs['pk'])
         
         if dashboard_id == 0:
             getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=dashboard_id)
@@ -2945,7 +2943,7 @@ class DashboardComponentCreate(CreateView):
     def get_form_kwargs(self):
         kwargs = super(DashboardComponentCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        pk = self.kwargs['pk']
+        id = self.kwargs['id']
         return kwargs
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
@@ -2958,14 +2956,14 @@ class DashboardComponentCreate(CreateView):
 
     def get_initial(self):
         initial = {
-            'getCustomDashboard': CustomDashboard.objects.get(id=self.kwargs['pk']),
+            'getCustomDashboard': CustomDashboard.objects.get(id=self.kwargs['id']),
             'getComponentDataSources': ComponentDataSource.objects.all(),
             }
 
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentCreate, self).get_context_data(**kwargs)
         try:
-            getCustomDashboard =CustomDashboard.objects.get(id=self.kwargs['pk'])
+            getCustomDashboard =CustomDashboard.objects.get(id=self.kwargs['id'])
         except CustomDashboard.DoesNotExist:
             getCustomDashboard = None
         context.update({'getCustomDashboard': getCustomDashboard})
@@ -2986,19 +2984,20 @@ class DashboardComponentCreate(CreateView):
 
 class DashboardComponentUpdate(UpdateView):
     model = DashboardComponent
+    template_name = 'customdashboard/admin/dashboard_component_update_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         try:
-            guidance = FormGuidance.objects.get(form="DashboardComponent")
+            guidance = FormGuidance.objects.get(form="DashboardComponentUpdate")
         except FormGuidance.DoesNotExist:
             guidance = None
         return super(DashboardComponentUpdate, self).dispatch(request, *args, **kwargs)
-
+    
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentUpdate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
+        context.update({'pk': self.kwargs['pk']})
         return context
-
+    
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(DashboardComponentUpdate, self).get_form_kwargs()
@@ -3007,13 +3006,11 @@ class DashboardComponentUpdate(UpdateView):
         return kwargs
 
     def form_invalid(self, form):
-
         messages.error(self.request, 'Invalid Form', fail_silently=False)
 
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        print form
         form.save()
         self.object = form.save()
 
@@ -3031,11 +3028,10 @@ class DashboardComponentUpdate(UpdateView):
 class DashboardComponentDelete(DeleteView):
     model = DashboardComponent
     template_name = 'customdashboard/admin/dashboard_component_confirm_delete.html'
-    success_url = 'activitydb/custom_dashboard_update/'
 
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentDelete, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
+        context.update({'pk': self.kwargs['pk']})
         return context
 
     def form_invalid(self, form):
@@ -3098,7 +3094,7 @@ class ComponentDataSourceCreate(CreateView):
 
 class ComponentDataSourceUpdate(UpdateView):
     model = ComponentDataSource
-    template_name = 'activitydb/custom_dashboard/admin/component_datasource_form.html'
+    template_name = 'customdashboard/admin/component_data_source_update_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -3109,7 +3105,7 @@ class ComponentDataSourceUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ComponentDataSourceUpdate, self).get_context_data(**kwargs)
-        getComponentDataSource = ComponentDataSource.objects.get(id=self.kwargs['pk'])
+        getComponentDataSource = ComponentDataSource.objects.all().get(id=self.kwargs['pk'])
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
@@ -3148,11 +3144,12 @@ class ComponentDataSourceUpdate(UpdateView):
 class ComponentDataSourceDelete(DeleteView):    
     model = ComponentDataSource
     template_name = 'customdashboard/admin/component_data_source_confirm_delete.html'
-    success_url = 'activitydb/custom_dashboard_update/'
+    success_url = 'activitydb/custom_dashboard_update/{{ id }}'
 
     def get_context_data(self, **kwargs):
         context = super(ComponentDataSourceDelete, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
+        getDataSource = ComponentDataSource.objects.all.filter(id=self.kwargs['pk'])
+        context.update({'pk': self.kwargs['pk']})
         return context
 
     def form_invalid(self, form):

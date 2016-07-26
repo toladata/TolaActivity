@@ -105,8 +105,8 @@ urlpatterns = [
                        url(r'^custom_dashboard_detail/(?P<pk>[0-9]+)/$', CustomDashboardDetail.as_view(), name='custom_dashboard_detail'),
                        # url(r'^custom_dashboard_preview/(?P<pk>[0-9]+)/$', 'activitydb.views.dashboard_preview_link', name='custom_dashboard_detail'),
                        url(r'^custom_dashboard_add/(?P<id>[0-9]+)/$', CustomDashboardCreate.as_view(), name='custom_dashboard_add'),
-                       url(r'^custom_dashboard_update/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(), name='custom_dashboard_update'),
-                       url(r'^custom_dashboard_edit/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(), name='custom_dashboard_edit'),
+                       url(r'^custom_dashboard_update/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/customdashboard_form.html"), name='custom_dashboard_update'),
+                       url(r'^custom_dashboard_edit/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/customdashboard_modal_form.html"), name='custom_dashboard_edit'),
                        url(r'^custom_dashboard_delete/(?P<pk>[0-9]+)/$', CustomDashboardDelete.as_view(), name='custom_dashboard_delete'),
 
                        url(r'^custom_dashboard/theme/(?P<id>[0-9]+)/$', DashboardThemeList.as_view(), name='dashboard_theme_list'),
@@ -114,15 +114,15 @@ urlpatterns = [
                        url(r'^custom_dashboard/theme_update/(?P<id>[0-9]+)/$',  DashboardThemeUpdate.as_view(), name='custom_dashboard/theme_update'),
                        url(r'^custom_dashboard/theme_delete(?P<id>[0-9]+)/$', DashboardThemeDelete.as_view(), name='custom_dashboard/theme_delete'),
                       
-                       url(r'^custom_dashboard/component/(?P<id>[0-9]+)/$', DashboardComponentList.as_view(), name='dashboard_component_list'),                       
-                       url(r'^custom_dashboard/component_add/(?P<pk>[0-9]+)/$', DashboardComponentCreate.as_view(), name='custom_dashboard/component_add'),
-                       url(r'^custom_dashboard/component_update/(?P<id>[0-9]+)/$',  DashboardComponentUpdate.as_view(), name='custom_dashboard/component_update'),
-                       url(r'^custom_dashboard/component_delete(?P<id>[0-9]+)/$', DashboardComponentDelete.as_view(), name='custom_dashboard/component_delete'),
+                       url(r'^custom_dashboard/component/(?P<pk>[0-9]+)/$', DashboardComponentList.as_view(), name='dashboard_component_list'),                       
+                       url(r'^custom_dashboard/component_add/(?P<id>[0-9]+)/$', DashboardComponentCreate.as_view(), name='custom_dashboard/component_add'),
+                       url(r'^custom_dashboard/component_update/(?P<pk>[0-9]+)/$', DashboardComponentUpdate.as_view(), name='custom_dashboard/component_update'),
+                       url(r'^custom_dashboard/component_delete/(?P<pk>[0-9]+)/$', DashboardComponentDelete.as_view(), name='custom_dashboard/component_delete'),
 
-                       url(r'^custom_dashboard/data/(?P<id>[0-9]+)/$', ComponentDataSourceList.as_view(), name='component_data_source_list'),
-                       url(r'^custom_dashboard/data_add/$',  ComponentDataSourceCreate.as_view(), name='custom_dashboard/data_add'),
-                       url(r'^custom_dashboard/data_update/(?P<id>[0-9]+)/$',  ComponentDataSourceUpdate.as_view(), name='custom_dashboard/data_update'),
-                       url(r'^custom_dashboard/data_delete/(?P<id>[0-9]+)/$',  ComponentDataSourceDelete.as_view(), name='custom_dashboard/data_delete'),
+                       url(r'^custom_dashboard/data/(?P<pk>[0-9]+)/$', ComponentDataSourceList.as_view(), name='component_data_source_list'),
+                       url(r'^custom_dashboard/data_add/$', ComponentDataSourceCreate.as_view(), name='custom_dashboard/data_add'),
+                       url(r'^custom_dashboard/data_update/(?P<pk>[0-9]+)/$', ComponentDataSourceUpdate.as_view(), name='custom_dashboard/data_update'),
+                       url(r'^custom_dashboard/data_delete/(?P<pk>[0-9]+)/$', ComponentDataSourceDelete.as_view(), name='custom_dashboard/data_delete'),
                        
                        #ajax calls
                        url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
