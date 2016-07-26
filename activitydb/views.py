@@ -401,7 +401,6 @@ class ProjectAgreementUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-
 class ProjectAgreementDetail(DetailView):
 
     model = ProjectAgreement
@@ -500,7 +499,7 @@ class ProjectCompleteCreate(CreateView):
         try:
             self.guidance = FormGuidance.objects.get(form="Complete")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(ProjectCompleteCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
