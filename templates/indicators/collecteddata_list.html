@@ -8,7 +8,6 @@
 
 {% block content %}
 
-
 <div class="dropdown">
     <div class="btn-group" role="group">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
@@ -32,7 +31,7 @@
         {% endfor %}
         </ul>
     </div>
-        <div class="btn-group" role="group">
+    <div class="btn-group" role="group">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
             Indicator Type
         <span class="caret"></span>
@@ -48,19 +47,70 @@
     <br/>
 </div>
 
-<br/>
 {% if indicator_name %}
     <h4>Filtered by Indicator: {{ indicator_name }}</h4>
 {% elif program_name %}
     <h4>Filtered by Program : {{ program_name }}</h4>
 {% endif %}
-
     <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
     <script type="text/javascript">
-
         $(document).ready(function() {
+
+
+            $.fn.dataTableExt.afnFiltering.push(
+                function( oSettings, aData, iDataIndex ) {
+                    var iFini = document.getElementById('dt1').value;
+                    var iFfin = document.getElementById('dt2').value;
+                    var iStartDateCol = 9;
+                    var iEndDateCol = 9;
+
+                    iFini=iFini.substring(6,10) + iFini.substring(3,5)+ iFini.substring(0,2);
+                    iFfin=iFfin.substring(6,10) + iFfin.substring(3,5)+ iFfin.substring(0,2);
+
+                    var datofini=aData[iStartDateCol].substring(6,10) + aData[iStartDateCol].substring(3,5)+ aData[iStartDateCol].substring(0,2);
+                    var datoffin=aData[iEndDateCol].substring(6,10) + aData[iEndDateCol].substring(3,5)+ aData[iEndDateCol].substring(0,2);
+
+                    if ( iFini === "" && iFfin === "" )
+                    {
+                        return true;
+                    }
+                    else if ( iFini <= datofini && iFfin === "")
+                    {
+                        return true;
+                    }
+                    else if ( iFfin >= datoffin && iFini === "")
+                    {
+                        return true;
+                    }
+                    else if (iFini <= datofini && iFfin >= datoffin)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
+            // Set data picker values and formats
+            $("#dt1").datepicker({
+                dateFormat: "yy-m-dd",
+                minDate: 0,
+                onSelect: function (date) {
+                    var dt2 = $('#dt2');
+                    var startDate = $(this).datepicker('getDate');
+                    var minDate = $(this).datepicker('getDate');
+                    dt2.datepicker('setDate', minDate);
+                    startDate.setDate(startDate.getDate() + 30);
+                    //sets dt2 maxDate to the last day of 30 days window
+                    dt2.datepicker('option', 'maxDate', startDate);
+                    dt2.datepicker('option', 'minDate', minDate);
+                    $(this).datepicker('option', 'minDate', minDate);
+                }
+            });
+            $('#dt2').datepicker({
+                dateFormat: "yy-m-dd"
+            });
 
             function show_indicator_table(indicator_data) {
 
@@ -99,22 +149,37 @@
                 $('.collecteddata').click(function(){ data_report(this.name); });
                 $('#program_report').click(function(){ program_report(this.name); });
 
+                // Listen for filter and redraw
+                $('#dt2').change( function() {
+                    console.log("draw")
+                    table.draw();
+                });
+
             }
+
+
 
             // INDICATOR REPORT
             function indicator_report() {
                 // get the program and indicator id from the url
                 indicator_id = document.URL.split('/')[5];
-                console.log(indicator_id);
+                //console.log(indicator_id);
                 program_id = document.URL.split('/')[6];
-                console.log(program_id);
+                //console.log(program_id);
                 type_id = document.URL.split('/')[7];
-                console.log(type_id);
+                //console.log(type_id);
 
                 $.getJSON("/indicators/collecteddata_report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/", function(data) {
                     show_indicator_table(data['collected']);
-                    document.getElementById("targeted").innerHTML=data['collected_sum']['targeted__sum'];
-                    document.getElementById("achieved").innerHTML=data['collected_sum']['achieved__sum'];
+                    // If the indicator id is passed then sum up for the indicator
+                    if (indicator_id > 0){
+                        document.getElementById("sum1").style.display = 'block';
+                        document.getElementById("sum2").style.display = 'block';
+                        document.getElementById("targeted1").innerHTML=data['collected_sum']['targeted__sum'];
+                        document.getElementById("achieved1").innerHTML=data['collected_sum']['achieved__sum'];
+                        document.getElementById("targeted2").innerHTML=data['collected_sum']['targeted__sum'];
+                        document.getElementById("achieved2").innerHTML=data['collected_sum']['achieved__sum'];
+                        }
                 });
             }
 
@@ -135,18 +200,34 @@
 
         });
     </script>
-
-
-
+    <div id="sum1" style="display: none; float: right;">
+        <p>
+            <b>Targeted Total:</b> <span class="badge" id="targeted1"></span>&nbsp;
+            <b>Achieved Total:</b> <span class="badge" id="achieved1"></span>
+        </p>
+    </div>
+    <div>&nbsp;</div>
     <div id="program_table_div">
+        <table border="2" cellspacing="5" cellpadding="5">
+            <tbody><tr>
+                <td>Start Date: </td>
+                <td><input type="text" id="dt1"></td>
+            </tr>
+            <tr>
+                <td>End Date: </td>
+                <td><input type="text" id="dt2"></td>
+            </tr>
+        </tbody>
+        </table>
+        <br/>
         <table class="table table-bordered" id="data_table">
         </table>
-        <div style="float: right;">
-            <p>
-                <b>Targeted Total:</b> <span class="badge" id="targeted"></span>&nbsp;
-                <b>Achieved Total:</b> <span class="badge" id="achieved"></span>
-            </p>
-        </div>
+    </div>
+    <div id="sum2" style="display: none; float: right;">
+        <p>
+            <b>Targeted Total:</b> <span class="badge" id="targeted2"></span>&nbsp;
+            <b>Achieved Total:</b> <span class="badge" id="achieved2"></span>
+        </p>
     </div>
     <br/>
     <button type="button" class="btn btn-success" id="export">Export All</button>
