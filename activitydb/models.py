@@ -1377,6 +1377,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from urllib2 import urlopen
 import json
 
+
 class LoggedUser(models.Model):
 
     username = models.CharField(max_length=30, primary_key=True)
@@ -1416,6 +1417,7 @@ def get_user_country(request):
     except Exception, e:
         response = "undefined"
         return response
+
 
 class Distribution(models.Model):
     distribution_name = models.CharField(max_length=255)

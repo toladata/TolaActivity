@@ -7,7 +7,7 @@ from activitydb.models import ProjectAgreement, ProjectComplete, Program, SitePr
 from indicators.models import CollectedData
 from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites
 from indicators.models import CollectedData, Indicator
->>>>>>> c661a87c58688a9d9dad90df01f9d0cd38a6d02a
+
 from .tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
@@ -255,7 +255,6 @@ def logout_view(request):
     # Redirect to a success page.
     return HttpResponseRedirect("/")
 
-    
 
 ######-------API Views to Feed Data to Tolawork API requests-----####
 '''
