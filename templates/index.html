@@ -342,9 +342,9 @@ $(function () {
                         </tr>
                     {%for value in count_evidence  %}
                         {%for item in countries  %}
-                            {% if item.country == value.indicator__country__country %}
+                            {% if item.country == value.indicator__program__country__country %}
                             <tr>
-                               <td>{{value.indicator__country__country}}</td>
+                               <td>{{value.indicator__program__country__country}}</td>
                                <td>{{value.indicator_count}}</td>
                                <td>{{value.evidence_count}}</td>
                             </tr>
