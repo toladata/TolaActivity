@@ -300,6 +300,7 @@ class ProjectAgreementUpdate(UpdateView):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)
         pk = self.kwargs['pk']
         context.update({'pk': pk})
+        context.update({'program': pk})
 
         try:
             getQuantitative = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
@@ -764,6 +765,24 @@ class DocumentationList(ListView):
             getDocumentation = Documentation.objects.all().prefetch_related('program','project','project__office').filter(program__country__in=countries)
 
         return render(request, self.template_name, {'getPrograms': getPrograms, 'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
+
+
+class DocumentationAgreementList(AjaxableResponseMixin, CreateView):
+    """
+       Documentation Modal List
+    """
+    model = Documentation
+    template_name = 'activitydb/documentation_popup_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+
+        getDocumentation = Documentation.objects.all().prefetch_related('program', 'project')
+
+
+        return render(request, self.template_name, {'getPrograms': getPrograms, 'getDocumentation': getDocumentation})
 
 
 class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):

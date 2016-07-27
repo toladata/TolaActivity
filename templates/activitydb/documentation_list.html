@@ -40,7 +40,6 @@
     <tr>
         <td><a href="/activitydb/documentation_update/{{ item.id }}">{{ item.create_date}}</a></td>
         <td><a href="/activitydb/documentation_update/{{ item.id }}">{{ item.name|truncatechars:90 }}</a></td>
-        <td><a href="/activitydb/documentation_update/{{ item.id }}">{{ item.project}}</a></td>
         <td>{{ item.program|truncatechars:90 }}</td>
         <td><a href="/activitydb/documentation_update/{{ item.id }}" class="btn btn-xs btn-info">Update</a>
             <a href="/activitydb/documentation_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Document</a>

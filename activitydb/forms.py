@@ -395,7 +395,8 @@ class ProjectAgreementForm(forms.ModelForm):
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="documents" data-toggle="modal" data-target="#myModal" onclick="document.getElementById('agreement').submit()" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
+                                <a class="documents" data-toggle="modal" data-target="#myModal" onclick="document.getElementById('agreement').submit()" href="/activitydb/documentation_agreement_add/{{ pk }}">Add New Documentation</a>
+                                <a class="documents" data-toggle="modal" data-target="#myModal" onclick="document.getElementById('agreement').submit()" href="/activitydb/documentation_agreement_list/{{ pk }}">Add Existing Documentation</a>
                               </div>
                             </div>
                              """),
@@ -634,7 +635,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="documents" data-toggle="modal" data-target="#myModal" onclick="document.getElementById('agreement').submit()" href="/activitydb/documentation_agreement_add/{{ pk }}">Add Documentation</a>
+                                <a onclick="newPopup('/activitydb/documentation_list/0/{{ pk }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
                               </div>
                             </div>
                              """),
