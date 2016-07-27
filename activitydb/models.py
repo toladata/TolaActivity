@@ -1053,7 +1053,7 @@ class Documentation(models.Model):
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     project = models.ForeignKey(ProjectAgreement, blank=True, null=True)
-    program = models.ForeignKey(Program, blank=True, null=True)
+    program = models.ForeignKey(Program)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
