@@ -1120,7 +1120,7 @@ class DocumentationForm(forms.ModelForm):
 
             HTML("""<br/>"""),
 
-                'name', 'url', Field('description', rows="3", css_class='input-xlarge'),
+                'name',FieldWithButtons('url', StrictButton("gdrive", onclick="onApiLoad();")), Field('description', rows="3", css_class='input-xlarge'),
                 'project','program',
 
             FormActions(
