@@ -536,7 +536,7 @@ class SiteProfile(models.Model):
     profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
     name = models.CharField("Site Name", max_length=255, blank=False)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
-    office = models.ForeignKey(Office, default="1")
+    office = models.ForeignKey(Office, blank=True, null=True)
     contact_leader = models.CharField("Contact Name", max_length=255, blank=True, null=True)
     date_of_firstcontact = models.DateTimeField("Date of First Contact", null=True, blank=True)
     contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
