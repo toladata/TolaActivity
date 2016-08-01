@@ -1654,6 +1654,7 @@ class DashboardThemeCreateForm(forms.ModelForm):
         exclude = ['create_date', 'edit_date']
 
     def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -1662,8 +1663,7 @@ class DashboardThemeCreateForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.form_tag = True
-        self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.form_tag = False
         super(DashboardThemeCreateForm, self).__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs):

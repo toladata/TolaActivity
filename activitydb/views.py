@@ -2818,26 +2818,44 @@ class DashboardThemeList(ListView):
     template_name = 'customdashboard/admin/dashboard_theme_list.html'
 
     def get(self, request, *args, **kwargs):
-    ## retrieve program
-        model = Program
-        program_id = int(self.kwargs['id'])
-        getProgram = Program.objects.all().filter(id=program_id)
-
-        ## retrieve the coutries the user has data access for
-        countries = getCountry(request.user)
-
-        #retrieve projects for a program
-        getProjects = []#ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
-
-        #retrieve projects for a program
-        getDashboardThemes = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
+        getDashboardThemes = DashboardTheme.objects.all()
             
-        return render(request, self.template_name, {'getDashboardThemes': getDashboardThemes, 'getProgram': getProgram, 'getProjects': getProjects})
+        return render(request, self.template_name, {'getDashboardThemes': getDashboardThemes})
 
 class DashboardThemeCreate(CreateView):
     model = DashboardTheme
     template_name = 'customdashboard/admin/dashboard_theme_form.html'
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(DashboardThemeCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+
+    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.guidance = FormGuidance.objects.get(form="DashboardTheme")
+        except FormGuidance.DoesNotExist:
+            self.guidance = None
+        return super(DashboardThemeCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(DashboardThemeCreate, self).get_context_data(**kwargs)
+
+        return context 
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Theme Created!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = DashboardThemeCreateForm 
 
 class DashboardThemeUpdate(UpdateView):
     model = DashboardTheme
