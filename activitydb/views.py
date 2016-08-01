@@ -2783,13 +2783,13 @@ class CustomDashboardPreview(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class CustomDashboardDelete(DeleteView):
+class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
     """
     CustomDashboard Delete
     """
     model = CustomDashboard
     template_name = 'customdashboard/admin/customdashboard_confirm_delete.html'
-    success_url = 'activitydb/custom_dashboard/'
+    success_url = '/'
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardDelete, self).get_context_data(**kwargs)
@@ -2807,7 +2807,9 @@ class CustomDashboardDelete(DeleteView):
         form.save()
 
         messages.success(self.request, 'Success, Dashboard Deleted!')
-        return HttpResponseRedirect('/activitydb/success')
+
+        return self.render_to_response(self.get_context_data(form=form))
+        # return HttpResponseRedirect('/activitydb/success')
 
     form_class = CustomDashboardForm     
 
@@ -2925,15 +2927,11 @@ class DashboardComponentList(ListView):
         model = Program
         ## retrieve the countries the user has data access for
         countries = getCountry(request.user)
+        dashboard_id = int(self.kwargs['customDashboardId'])
         
-        dashboard_id = int(self.kwargs['pk'])
-        
-        if dashboard_id == 0:
-            getDashboardComponents = DashboardComponent.objects.all().filter(customdashboard__id=dashboard_id)
-        else:
-            getAllComponents = DashboardComponent.objects.all()
+        getDashboardListComponents = DashboardComponent.objects.all()
             
-        return render(request, self.template_name, {'getDashboardComponents': getDashboardComponents, 'component_id': self.kwargs['pk']})
+        return render(request, self.template_name, {'getDashboardListComponents': getDashboardListComponents})
 
 class DashboardComponentCreate(CreateView):
     model = DashboardComponent
@@ -2978,30 +2976,41 @@ class DashboardComponentCreate(CreateView):
         form.save()
         context = self.get_context_data()
         messages.success(self.request, 'Success, Component Created!')
+        latestComponent = DashboardComponent.objects.latest('id')
+        getCustomDashboard.componentset.add(latestComponent)
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentCreateForm 
 
 class DashboardComponentUpdate(UpdateView):
     model = DashboardComponent
-    template_name = 'customdashboard/admin/dashboard_component_update_form.html'
+    success_url = '/'
 
     def dispatch(self, request, *args, **kwargs):
-        try:
-            guidance = FormGuidance.objects.get(form="DashboardComponentUpdate")
-        except FormGuidance.DoesNotExist:
-            guidance = None
+        # try:
+        #     guidance = FormGuidance.objects.get(form="DashboardComponentUpdate")
+        # except FormGuidance.DoesNotExist:
+        #     guidance = None
         return super(DashboardComponentUpdate, self).dispatch(request, *args, **kwargs)
     
+
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentUpdate, self).get_context_data(**kwargs)
-        context.update({'pk': self.kwargs['pk']})
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
+
+        getComponentDataSources = []
+        getComponentDataSources = ComponentDataSource.objects.all()
+        context.update({'getComponentDataSources': getComponentDataSources})
+
+        getDashboardComponent = DashboardComponent.objects.all().get(id=self.kwargs['pk'])
+        context.update({'getDashboardComponent': getDashboardComponent})
+
         return context
-    
+
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(DashboardComponentUpdate, self).get_form_kwargs()
-        getDashboardComponents = DashboardComponent.objects.all().get(id=self.kwargs['pk'])
         kwargs['request'] = self.request
         return kwargs
 
@@ -3016,18 +3025,15 @@ class DashboardComponentUpdate(UpdateView):
 
         messages.success(self.request, 'Success, form updated!')
 
-        # getComponentDataSources = ComponentDataSource.objects.all()
-        # currentComponent = CustomDashboard.objects.all().filter(customdashboard__id=self.kwargs['pk'])
-        # getDashboardComponent = DashboardComponent.objects.get(id=latestComponent.id)
-        # updateCurrentDashboard = currentDashboard.components.add(getDashboardComponent)
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentForm
 
 
-class DashboardComponentDelete(DeleteView):
+class DashboardComponentDelete(AjaxableResponseMixin, DeleteView):
     model = DashboardComponent
     template_name = 'customdashboard/admin/dashboard_component_confirm_delete.html'
+    success_url = '/'
 
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentDelete, self).get_context_data(**kwargs)
@@ -3045,7 +3051,8 @@ class DashboardComponentDelete(DeleteView):
         form.save()
 
         messages.success(self.request, 'Success, Component Deleted!')
-        return HttpResponseRedirect('/activitydb/success')
+
+        return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentForm  
 
@@ -3076,7 +3083,6 @@ class ComponentDataSourceCreate(CreateView):
         return context
 
     def form_invalid(self, form):
-
         messages.error(self.request, 'Invalid Form', fail_silently=False)
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -3084,8 +3090,6 @@ class ComponentDataSourceCreate(CreateView):
     def form_valid(self, form):
         form.save()
         context = self.get_context_data()
-        dashboard = getCustomDashboard #returns current dashboard
-        dashboard.components.add(getCustomDashboard)
         messages.success(self.request, 'Success, Data Source Created!')
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -3141,14 +3145,15 @@ class ComponentDataSourceUpdate(UpdateView):
     form_class = ComponentDataSourceForm
 
 
-class ComponentDataSourceDelete(DeleteView):    
+class ComponentDataSourceDelete(AjaxableResponseMixin, DeleteView):    
     model = ComponentDataSource
     template_name = 'customdashboard/admin/component_data_source_confirm_delete.html'
-    success_url = 'activitydb/custom_dashboard_update/{{ id }}'
+    success_url = '/'
 
     def get_context_data(self, **kwargs):
         context = super(ComponentDataSourceDelete, self).get_context_data(**kwargs)
-        getDataSource = ComponentDataSource.objects.all.filter(id=self.kwargs['pk'])
+        getDataSource = ComponentDataSource.objects.all().get(id=self.kwargs['pk'])
+        pk=self.kwargs['pk']
         context.update({'pk': self.kwargs['pk']})
         return context
 
@@ -3163,6 +3168,7 @@ class ComponentDataSourceDelete(DeleteView):
         form.save()
 
         messages.success(self.request, 'Success, Component Deleted!')
-        return HttpResponseRedirect('/activitydb/success')
+
+        return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ComponentDataSourceForm  

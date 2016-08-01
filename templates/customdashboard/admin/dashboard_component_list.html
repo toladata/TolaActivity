@@ -18,9 +18,14 @@
     <td> {{ component.component_type }}</td>
     <td> {{ component.component_description }}</td>
     <td> {{ component.is_public }}</td>
-    <td> {{ component.data_source }}</td>       
-    <td> <a href="/activitydb/custom_dashboard/component_update/{{ component.id }}" class="btn btn-xs btn-danger">Update</a></td>
-    <td> <a href="/activitydb/custom_dashboard/component_delete/{{ component.id }}" class="btn btn-xs btn-danger">Delete</a></td>                                   
+    <td> {% for data in component.data_sources.all %}
+            {{ data.data_name }} 
+          {% empty %}
+            NOT ASSIGNED
+          {% endfor %}
+    </td>    
+    <td><a data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_update/{{ component.id }}/" class="dashboards btn btn-xs btn-danger">Update</a></td>
+    <td> <a data-toggle="modal" data-target="#myModal" href="/activitydb/custom_dashboard/component_delete/{{ component.id }}/" class="dashboards btn btn-xs btn-danger">Delete</a></td>                                   
   </tr>
   {% endfor %}
 </table>

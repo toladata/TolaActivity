@@ -1522,17 +1522,17 @@ class CustomDashboardForm(forms.ModelForm):
                                     <th></th>
                                     </tr>
                                     <tr>
-                                        <td>{{ getCustomDashboard.dashboard_name}}</td>
+                                        <td>{{ getCustomDashboard.dashboard_name }}</td>
                                         <td>{{ getCustomDashboard.dashboard_description }}</td>
                                         <td> {% if getCustomDashboard.is_public == 1 %} Yes {% else %} No {% endif %}</td>
-                                        <td>{{ getCustomDashboard.theme}}</td>
+                                        <td>{{ getCustomDashboard.theme }}</td>
                                         <td>{{ getCustomDashboard.program }}</td>
                                         <td>{{ getCustomDashboard.color_palette }}</td>
-                                        <td>{% if getCustomDashboard.components %}
-                                                {{ getCustomDashboard.components }}
-                                            {% else %}
+                                        <td>{% for component in getDashboardComponents %}
+                                                {{ component.component_name }} <br>
+                                            {% empty %}
                                                 None
-                                            {% endif %}
+                                            {% endfor %}
                                         </td>
                                         <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_edit/{{pk}}'>Edit</a> | <a class="dashboards" href='/activitydb/custom_dashboard_delete/{{ pk }}' data-toggle="modal" data-target="#myModal">Delete</a></td>
                                     </tr>
@@ -1574,9 +1574,37 @@ class CustomDashboardForm(forms.ModelForm):
                     Fieldset("Step 4: Assign Data to Components",
                         HTML("""
                             <div class='panel panel-default'>
-                                {% include 'customdashboard/admin/component_data_source_assign.html' %}
+                                <table class="table">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Public?</th>
+                                        <th>Component Type</th>
+                                        <th>Data Required</th>
+                                        <th>Assigned Data</th>
+                                        <th class='col-sm-2'>Data Source(s)</th>
+                                    </tr>
+                                    {% for component in getDashboardComponents %}
+                                        <tr>
+                                            <td>{{ component.component_name}}</td>
+                                            <td>{{ component.component_description}}</td>
+                                            <td>{% if component.is_public == 1 %} Yes {% else %} No {% endif %}</td>
+                                            <td>{{ component.component_type}}</td>
+                                            <td>{{ component.data_required}}</td>
+                                            <td> {% for data in component.data_sources.all %}
+                                                    {{ data.data_name }} 
+                                                {% empty %}
+                                                    NOT ASSIGNED
+                                                {% endfor %}
+                                            </td>   
+                                            <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/data_assign/{{component.id}}'>Assign</a>
+                                            </td> 
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
                                 <div class="panel-footer">
                                 <a class="btn btn-primary" data-target="#preview-submit" data-toggle="tab">Next Step: Preview & Submit</a>
+                                </div>
                             </div>
                             """),
                         ),
@@ -1712,31 +1740,6 @@ class DashboardComponentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         #get the user object from request to check permissions
-        self.request = kwargs.pop('request')
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-6'
-        self.helper.form_error_title = 'Form Errors'
-        self.helper.error_text_inline = True
-        self.helper.help_text_inline = True
-        self.helper.html5_required = True
-        self.helper.form_tag = True
-        self.helper.form_id = "dashboard-component"
-        # self.helper.add_input(Submit('submit', 'Assign'))
-
-        super(DashboardComponentForm, self).__init__(*args, **kwargs)
-
-class DashboardComponentUpdateForm(forms.ModelForm):
-    
-    class Meta:
-        model = DashboardComponent
-        exclude = ['create_date', 'edit_date']
-
-    def __init__(self, *args, **kwargs):
-
-        #get the user object from request to check permissions
         self.request = kwargs.pop("request")
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -1749,9 +1752,31 @@ class DashboardComponentUpdateForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.form_tag = True
         self.helper.add_input(Submit('submit', 'Save'))
+
+        super(DashboardComponentForm, self).__init__(*args, **kwargs)
+
+class DashboardComponentUpdateForm(forms.ModelForm):
+    
+    class Meta:
+        model = DashboardComponent
+        exclude = ['create_date', 'edit_date']
+
+    def __init__(self, *args, **kwargs):
+
+        # get the user object from request to check permissions
+        self.request = kwargs.pop("request")
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
         
-        super(CustomDashboardModalForm, self).__init__(*args, **kwargs)
-   
+        super(DashboardComponentUpdateForm, self).__init__(*args, **kwargs)
 
 ## --------Data Source Form Classes-------------
 class ComponentDataSourceCreateForm(forms.ModelForm):
