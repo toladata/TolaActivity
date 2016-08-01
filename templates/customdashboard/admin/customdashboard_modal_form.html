@@ -1,14 +1,3 @@
-{% extends "base.html" %}
-{% load staticfiles %}
-
-<!-- humanize numbers -->
-{% load humanize %}
-
-{% block extra_js_in_body %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
-    <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
-{% endblock %}
-
 {% block page_title %} Edit Dashboard Properties {% endblock %}
 
 {% block content %}
