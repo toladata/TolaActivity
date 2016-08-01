@@ -329,7 +329,7 @@ class Program(models.Model):
     fund_code = models.ManyToManyField(FundCode, blank=True)
     description = models.TextField("Program Description", max_length=765, null=True, blank=True)
     sector = models.ManyToManyField(Sector, blank=True)
-    dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)
+    dashboard_name = models.ForeignKey("CustomDashboard", null=True, blank=True, related_name="custom_dashboard")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     budget_check = models.BooleanField("Enable Approval Authority Matrix", default=False)
@@ -585,7 +585,6 @@ class LandTypeAdmin(admin.ModelAdmin):
 class SiteProfileManager(models.Manager):
     def get_queryset(self):
         return super(SiteProfileManager, self).get_queryset().prefetch_related().select_related('country','province','district','admin_level_three','type')
-
 
 class SiteProfile(models.Model):
     profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
@@ -862,7 +861,6 @@ class ProjectAgreementManager(models.Manager):
 
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
-
 
 # Project Agreements, admin is handled in the admin.py
 class ProjectAgreement(models.Model):
