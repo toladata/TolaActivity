@@ -210,7 +210,6 @@ class IndicatorCreate(CreateView):
         form = ""
         return self.render_to_response(self.get_context_data(form=form))
 
-
     form_class = IndicatorForm
 
 
@@ -995,6 +994,11 @@ class IndicatorDataExport(View):
             del kwargs['indicator']
         if int(kwargs['program']) == 0:
             del kwargs['program']
+        if int(kwargs['type']) == 0:
+            del kwargs['type']
+        else:
+           kwargs['indicator__indicator_type__id'] = kwargs['type']
+           del kwargs['type']
 
         queryset = CollectedData.objects.filter(**kwargs)
         dataset = CollectedDataResource().export(queryset)

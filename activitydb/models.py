@@ -590,7 +590,7 @@ class SiteProfile(models.Model):
     profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
     name = models.CharField("Site Name", max_length=255, blank=False)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
-    office = models.ForeignKey(Office, default="1")
+    office = models.ForeignKey(Office, blank=True, null=True)
     contact_leader = models.CharField("Contact Name", max_length=255, blank=True, null=True)
     date_of_firstcontact = models.DateTimeField("Date of First Contact", null=True, blank=True)
     contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
@@ -1104,7 +1104,7 @@ class Documentation(models.Model):
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     project = models.ForeignKey(ProjectAgreement, blank=True, null=True)
-    program = models.ForeignKey(Program, blank=True, null=True)
+    program = models.ForeignKey(Program)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

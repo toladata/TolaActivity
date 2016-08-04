@@ -300,6 +300,7 @@ class ProjectAgreementUpdate(UpdateView):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)
         pk = self.kwargs['pk']
         context.update({'pk': pk})
+        context.update({'program': pk})
 
         try:
             getQuantitative = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
@@ -401,7 +402,6 @@ class ProjectAgreementUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-
 class ProjectAgreementDetail(DetailView):
 
     model = ProjectAgreement
@@ -500,7 +500,7 @@ class ProjectCompleteCreate(CreateView):
         try:
             self.guidance = FormGuidance.objects.get(form="Complete")
         except FormGuidance.DoesNotExist:
-            guidance = None
+            self.guidance = None
         return super(ProjectCompleteCreate, self).dispatch(request, *args, **kwargs)
 
     # add the request to the kwargs
@@ -767,6 +767,24 @@ class DocumentationList(ListView):
         return render(request, self.template_name, {'getPrograms': getPrograms, 'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
 
 
+class DocumentationAgreementList(AjaxableResponseMixin, CreateView):
+    """
+       Documentation Modal List
+    """
+    model = Documentation
+    template_name = 'activitydb/documentation_popup_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+
+        getDocumentation = Documentation.objects.all().prefetch_related('program', 'project')
+
+
+        return render(request, self.template_name, {'getPrograms': getPrograms, 'getDocumentation': getDocumentation})
+
+
 class DocumentationAgreementCreate(AjaxableResponseMixin, CreateView):
     """
     Documentation Form
@@ -1020,9 +1038,9 @@ class SiteProfileList(ListView):
 
         #Filter SiteProfile list and map by activity or program
         if activity_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=activity_id).distinct('id')
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=activity_id).distinct()
         elif program_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id)).distinct('id')
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id)).distinct()
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
         if request.method == "GET" and "search" in request.GET:

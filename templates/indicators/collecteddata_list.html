@@ -8,7 +8,6 @@
 
 {% block content %}
 
-
 <div class="dropdown">
     <div class="btn-group" role="group">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
@@ -32,7 +31,7 @@
         {% endfor %}
         </ul>
     </div>
-        <div class="btn-group" role="group">
+    <div class="btn-group" role="group">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
             Indicator Type
         <span class="caret"></span>
@@ -48,19 +47,61 @@
     <br/>
 </div>
 
-<br/>
 {% if indicator_name %}
     <h4>Filtered by Indicator: {{ indicator_name }}</h4>
 {% elif program_name %}
     <h4>Filtered by Program : {{ program_name }}</h4>
 {% endif %}
-
     <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
     <script type="text/javascript">
-
         $(document).ready(function() {
+
+            // Build a filter for start and end date from Column 8 or date collected
+            $.fn.dataTableExt.afnFiltering.push(
+                function( oSettings, aData, iDataIndex ) {
+
+                    var start = document.getElementById('dt1').value;
+                    var end = document.getElementById('dt2').value;
+                    var dateCol = aData[8];
+
+                    //replace the - in all striangs
+                    var find = '-';
+                    var re = new RegExp(find, 'g');
+
+                    start = start.replace(re,'');
+                    end = end.replace(re,'');
+                    dateCol = dateCol.replace(re,'');
+
+
+                    if ( start === "" && end === "" )
+                    {
+                        return true;
+                    }
+                    else if ( start <= dateCol && end === "")
+                    {
+                        return true;
+                    }
+                    else if ( end >= dateCol && start === "")
+                    {
+                        return true;
+                    }
+                    else if (start <= dateCol && end >= dateCol)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
+            // Set data picker values and formats
+            $("#dt1").datepicker({
+                dateFormat: "yy-m-dd"
+            });
+            $('#dt2').datepicker({
+                dateFormat: "yy-m-dd"
+            });
 
             function show_indicator_table(indicator_data) {
 
@@ -86,9 +127,12 @@
                         { title: "Sector", data: "indicator__sector__sector"},
                         { title: "Baseline", data: "indicator__baseline"},
                         { title: "LOP Target", data: "indicator__lop_target"},
-                        { title: "External", data: "indicator__external_service_record__external_service__name"},
                         { title: "KPI",data: "indicator__key_performance_indicator"},
-                        { title: "Date Collected", data: "date_collected"},
+                        { title: "Date Collected", data: "date_collected",
+                                "mRender": function ( data, type, row ) {
+                                var javascriptDate = new Date(row.date_collected);
+                                javascriptDate = javascriptDate.getFullYear() + "-" + (javascriptDate.getMonth()+1) + "-" + javascriptDate.getDate();
+                                return "<div class='date'>"+javascriptDate+"<div>";}},
                         { title: "Targeted", data: "targeted"},
                         { title: "Achieved", data: "achieved"},
                         ]
@@ -99,22 +143,40 @@
                 $('.collecteddata').click(function(){ data_report(this.name); });
                 $('#program_report').click(function(){ program_report(this.name); });
 
+                // Listen for filter and redraw
+                $('#dt2').change( function() {
+                    table.draw();
+                });
+
+                $('#dt2').change( function() {
+                    table.draw();
+                });
+
             }
+
+
 
             // INDICATOR REPORT
             function indicator_report() {
                 // get the program and indicator id from the url
                 indicator_id = document.URL.split('/')[5];
-                console.log(indicator_id);
+                //console.log(indicator_id);
                 program_id = document.URL.split('/')[6];
-                console.log(program_id);
+                //console.log(program_id);
                 type_id = document.URL.split('/')[7];
-                console.log(type_id);
+                //console.log(type_id);
 
                 $.getJSON("/indicators/collecteddata_report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/", function(data) {
                     show_indicator_table(data['collected']);
-                    document.getElementById("targeted").innerHTML=data['collected_sum']['targeted__sum'];
-                    document.getElementById("achieved").innerHTML=data['collected_sum']['achieved__sum'];
+                    // If the indicator id is passed then sum up for the indicator
+                    if (indicator_id > 0){
+                        document.getElementById("sum1").style.display = 'block';
+                        document.getElementById("sum2").style.display = 'block';
+                        document.getElementById("targeted1").innerHTML=data['collected_sum']['targeted__sum'];
+                        document.getElementById("achieved1").innerHTML=data['collected_sum']['achieved__sum'];
+                        document.getElementById("targeted2").innerHTML=data['collected_sum']['targeted__sum'];
+                        document.getElementById("achieved2").innerHTML=data['collected_sum']['achieved__sum'];
+                        }
                 });
             }
 
@@ -135,18 +197,34 @@
 
         });
     </script>
-
-
-
+    <div id="sum1" style="display: none; float: right;">
+        <p>
+            <b>Targeted Total:</b> <span class="badge" id="targeted1"></span>&nbsp;
+            <b>Achieved Total:</b> <span class="badge" id="achieved1"></span>
+        </p>
+    </div>
+    <div>&nbsp;</div>
     <div id="program_table_div">
+        <table border="2" cellspacing="5" cellpadding="5">
+            <tbody><tr>
+                <td>Start Date: </td>
+                <td><input type="text" id="dt1"></td>
+            </tr>
+            <tr>
+                <td>End Date: </td>
+                <td><input type="text" id="dt2"></td>
+            </tr>
+        </tbody>
+        </table>
+        <br/>
         <table class="table table-bordered" id="data_table">
         </table>
-        <div style="float: right;">
-            <p>
-                <b>Targeted Total:</b> <span class="badge" id="targeted"></span>&nbsp;
-                <b>Achieved Total:</b> <span class="badge" id="achieved"></span>
-            </p>
-        </div>
+    </div>
+    <div id="sum2" style="display: none; float: right;">
+        <p>
+            <b>Targeted Total:</b> <span class="badge" id="targeted2"></span>&nbsp;
+            <b>Achieved Total:</b> <span class="badge" id="achieved2"></span>
+        </p>
     </div>
     <br/>
     <button type="button" class="btn btn-success" id="export">Export All</button>
