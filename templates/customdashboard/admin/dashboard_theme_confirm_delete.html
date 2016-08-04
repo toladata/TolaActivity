@@ -17,7 +17,7 @@
 	</div>
 
     <div class="modal-body">
-        <form action="/activitydb/custom_dashboard/theme_delete/{{ id }}/" id="dashboardThemeDeleteForm" method="post">{% csrf_token %}
+        <form action="/activitydb/custom_dashboard/theme_delete/{{ pk }}/" id="dashboardThemeDeleteForm" method="post">{% csrf_token %}
             <p>Are you sure you want to delete "{{ object }}"?</p>
             <input type="submit" value="Confirm" />
         </form>
