@@ -2588,9 +2588,17 @@ class CustomDashboardDetail(DetailView):
 
     model = CustomDashboard
 
+    def dispatch(self, request, *args, **kwargs):        
+        return super(CustomDashboardDetail, self).dispatch(request, *args, **kwargs)
+
+    def get_template_names(self):
+        dashboard = CustomDashboard.objects.all().filter(id = self.kwarg['pk'])
+        getDashboardTheme = DashboardTheme.objects.all().filter(dashboardtheme_id = dashboard.theme)
+        template_name = getDashboardTheme.template
+
     def get_object(self, queryset=CustomDashboard.objects.all()):
         try:
-            return queryset.get(project_agreement__id=self.kwargs['pk'])
+            return queryset.get(customdashboard__id=self.kwargs['pk'])
         except CustomDashboard.DoesNotExist:
             return None
 
@@ -2625,7 +2633,6 @@ class CustomDashboardDetail(DetailView):
             except ComponentDataSource.DoesNotExist:
                 getComponentDataSources = None
         context.update({'getComponentDataSources': getComponentDataSources})
-
         return context
 
 class CustomDashboardUpdate(UpdateView):
@@ -2793,7 +2800,7 @@ class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardDelete, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
+        context.update({'id': self.kwargs['id']})
         return context
 
     def form_invalid(self, form):
@@ -2859,25 +2866,17 @@ class DashboardThemeCreate(CreateView):
 
 class DashboardThemeUpdate(UpdateView):
     model = DashboardTheme
-    template_name = 'activitydb/custom_dashboard/admin/dashboard_theme_form.html'
+    template_name = 'customdashboard/admin/dashboard_theme_update_form.html'
 
     def dispatch(self, request, *args, **kwargs):
-        try:
-            guidance = FormGuidance.objects.get(form="DashboardTheme")
-        except FormGuidance.DoesNotExist:
-            guidance = None
-        return super(DashboardTheme, self).dispatch(request, *args, **kwargs)
-
+        return super(DashboardThemeUpdate, self).dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super(DashboardThemeUpdate, self).get_context_data(**kwargs)
-        getComplete = DashboardTheme.objects.get(id=self.kwargs['pk'])
-        id = getDashboardTheme.id
-        context.update({'id': id})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
-
-        # get stuff
-
+        getComplete = DashboardTheme.objects.get(id=self.kwargs['pk'])
+        context.update({'getComplete': getComplete})
         return context
 
     # add the request to the kwargs
@@ -2885,11 +2884,6 @@ class DashboardThemeUpdate(UpdateView):
         kwargs = super(DashboardThemeUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
-
-    #get shared data from project agreement and pre-populate form with it
-    def get_initial(self):
-        initial = {}
-        return initial
 
     def form_invalid(self, form):
 
@@ -2913,12 +2907,12 @@ class DashboardThemeDelete(DeleteView):
     DashboardTheme Delete
     """
     model = DashboardTheme
-    template_name = 'activitydb/customdashboard_theme_confirm_delete.html'
-    success_url = 'activitydb/custom_dashboard/'
+    template_name = 'customdashboard/admin/dashboard_theme_confirm_delete.html'
+    success_url = '/'
 
     def get_context_data(self, **kwargs):
         context = super(DashboardThemeDelete, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
+        context.update({'pk': self.kwargs['pk']})
         return context
 
     def form_invalid(self, form):
@@ -2932,9 +2926,9 @@ class DashboardThemeDelete(DeleteView):
         form.save()
 
         messages.success(self.request, 'Success, Dashboard Theme Deleted!')
-        return HttpResponseRedirect('/activitydb/success')
+        return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = DashboardThemeForm  
+    form_class = DashboardThemeForm 
 
 class DashboardComponentList(ListView):
     model = DashboardComponent

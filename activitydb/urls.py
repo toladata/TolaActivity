@@ -111,8 +111,8 @@ urlpatterns = [
 
                        url(r'^custom_dashboard/theme/$', DashboardThemeList.as_view(), name='dashboard_theme_list'),
                        url(r'^custom_dashboard/theme_add/$',  DashboardThemeCreate.as_view(), name='dashboard_theme_add'),
-                       url(r'^custom_dashboard/theme_update/(?P<id>[0-9]+)/$',  DashboardThemeUpdate.as_view(), name='custom_dashboard/theme_update'),
-                       url(r'^custom_dashboard/theme_delete(?P<id>[0-9]+)/$', DashboardThemeDelete.as_view(), name='custom_dashboard/theme_delete'),
+                       url(r'^custom_dashboard/theme_update/(?P<pk>[0-9]+)/$',  DashboardThemeUpdate.as_view(), name='custom_dashboard/theme_update'),
+                       url(r'^custom_dashboard/theme_delete/(?P<pk>[0-9]+)/$', DashboardThemeDelete.as_view(), name='custom_dashboard/theme_delete'),
                       
                        url(r'^custom_dashboard/component/(?P<pk>[0-9]+)/$', DashboardComponentList.as_view(), name='dashboard_component_list'),                       
                        url(r'^custom_dashboard/component_add/(?P<id>[0-9]+)/$', DashboardComponentCreate.as_view(), name='custom_dashboard/component_add'),

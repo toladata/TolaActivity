@@ -1485,6 +1485,7 @@ class CustomDashboard(models.Model):
     program = models.ForeignKey(Program, verbose_name="Program", related_name="dashboard_program", null=True, blank=True)
     color_palette = models.CharField("Color Scheme", max_length=255, blank=False, default="bright")
     components = models.ManyToManyField(DashboardComponent, blank=True, null=True, related_name="componentset")
+    component_map = models.TextField("Dashboard Layout Dictionary", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

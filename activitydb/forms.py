@@ -1603,6 +1603,40 @@ class CustomDashboardForm(forms.ModelForm):
                                     {% endfor %}
                                     </table>
                                 <div class="panel-footer">
+                                <a class="btn btn-primary" data-target="#map-dashboard" data-toggle="tab">Next Step: Preview & Submit</a>
+                                </div>
+                            </div>
+                            """),
+                        ),
+                    ),
+                Tab('Map Dashboard',
+                    Fieldset("Step 5: Map Components to Dashboard Template",
+                        HTML("""
+                            <div class='panel panel-default'>
+                                <table class="table">
+                                    <tr>
+                                        <th>Dashboard Location</th>
+                                        <th>Component Type</th>
+                                        <th>Component Assigned?</th>
+                                        <th>Components Available</th>
+                                        <th></th>
+                                    </tr>
+                                    {% for key, value in getDashboardTheme.layout_dictionary.iteritems %}
+                                        <tr>
+                                            <td>{{ key }}</td>
+                                            <td>{{ value }}</td>
+                                            <td>{% for dash_key, dash_value in getCustomDashboard.component_map %}
+                                                    {% if dash_value %} Yes {% else %} No {% endif %} 
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td> Update
+                                            </td>   
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+                                <div class="panel-footer">
                                 <a class="btn btn-primary" data-target="#preview-submit" data-toggle="tab">Next Step: Preview & Submit</a>
                                 </div>
                             </div>
@@ -1610,7 +1644,7 @@ class CustomDashboardForm(forms.ModelForm):
                         ),
                     ),
                 Tab('Preview & Submit',
-                    Fieldset("Step 5: Preview & Finalize Dashboard",
+                    Fieldset("Step 6: Preview & Finalize Dashboard",
                         HTML("""
                             <div class='panel panel-body'>
                                 {% if getCustomDashboard %}
@@ -1690,9 +1724,9 @@ class DashboardThemeForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.form_tag = True
+        self.helper.form_tag = False
         self.helper.form_id = "dashboard_theme"
-        self.helper.add_input(Submit('submit', 'Save'))
+        # self.helper.add_input(Submit('submit', 'Save'))
 
         super(DashboardThemeForm, self).__init__(*args, **kwargs)
 
