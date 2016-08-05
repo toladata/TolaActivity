@@ -9,6 +9,7 @@ from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Doc
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
+import ast
 
 
 #Global for approvals
@@ -1621,21 +1622,17 @@ class CustomDashboardForm(forms.ModelForm):
                                         <th>Components Available</th>
                                         <th></th>
                                     </tr>
-                                    {% for key, value in getDashboardTheme.layout_dictionary.iteritems %}
+                                    {% for item in getDashboardLayoutList %}
                                         <tr>
-                                            <td>{{ key }}</td>
-                                            <td>{{ value }}</td>
-                                            <td>{% for dash_key, dash_value in getCustomDashboard.component_map %}
-                                                    {% if dash_value %} Yes {% else %} No {% endif %} 
-                                                {% endfor %}
-                                            </td>
-                                            <td>
-                                            </td>
-                                            <td> Update
-                                            </td>   
+                                            <td> {{item.0}}</td>
+                                            <td> {{item.1}}</td>
+                                            <td> {% if getCustomDashboard.component_map %} Yes
+                                                {% else %} No 
+                                                {% endif %} </td>  
+                                            <td>{% include 'customdashboard/admin/dashboard_component_map.html' %} </td>
                                         </tr>
                                     {% endfor %}
-                                    </table>
+                                </table>
                                 <div class="panel-footer">
                                 <a class="btn btn-primary" data-target="#preview-submit" data-toggle="tab">Next Step: Preview & Submit</a>
                                 </div>

@@ -22,6 +22,7 @@ from tables import ProjectAgreementTable
 from django_tables2 import RequestConfig
 from filters import ProjectAgreementFilter
 import json
+import ast
 import requests
 import urllib
 
@@ -2644,13 +2645,6 @@ class CustomDashboardDetail(DetailView):
             getDashboardComponents = None
         context.update({'getDashboardComponents': getDashboardComponents})
 
-        getComponentDataSources = []
-        for component in getDashboardComponents:
-            try:
-                getComponentDataSources.append(ComponentDataSource.objects.all().filter(component__id=self.kwargs['pk']))
-            except ComponentDataSource.DoesNotExist:
-                getComponentDataSources = None
-        context.update({'getComponentDataSources': getComponentDataSources})
         return context
 
 class CustomDashboardUpdate(UpdateView):
@@ -2705,6 +2699,12 @@ class CustomDashboardUpdate(UpdateView):
         except DashboardTheme.DoesNotExist:
             getDashboardTheme = None
         context.update({'getDashboardTheme': getDashboardTheme})
+
+        # This theme layout helps to map the components to their position on the page
+        layout = getDashboardTheme[0].layout_dictionary
+        layoutList = ast.literal_eval(layout)
+        getDashboardLayoutList = list(layoutList.items())
+        context.update({'getDashboardLayoutList': getDashboardLayoutList})
 
         try:
             getDashboardComponents = DashboardComponent.objects.all().filter(componentset=getCustomDashboard)

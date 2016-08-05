@@ -1,0 +1,36 @@
+
+
+    <td>
+    	<form class="form-horizontal" method="post" id="componentMapForm" action="{{request.get_full_path}}">
+            <select multiple="multiple" id="id_component_map" name="component_map" class="form-control" >{% for data in getComponents.component_map.value %}
+                    <option value="{{data.id}}">{{data.data_name}}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-default" type="submit" value="Update"> Update </button>   
+	        {% endfor %}
+
+	    {% csrf_token %}
+
+		</form></td>
+
+
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+<script type="text/javascript">
+    var frm = $('#componentMapForm');
+    frm.submit(function () {
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                $("#alert-error").html("Success! ");
+            },
+            error: function(data) {
+                $("#alert-error").html("Something went wrong!");
+            }
+        });
+        return false;
+    });
+</script>
