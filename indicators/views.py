@@ -432,7 +432,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'countries':countries,'getSiteProfile': getSiteProfile,
+    return render(request, "indicators/data_report.html", {'getQuantitativeData': queryset, 'countries':countries,'getSiteProfile': getSiteProfile,
                                                            'getPrograms':getPrograms, 'getIndicators': getIndicators,
                                                            'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
                                                            'id': id,'program': program,'type': type,'indicator_name':indicator_name,
