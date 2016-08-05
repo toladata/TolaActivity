@@ -1,18 +1,15 @@
-
-
-    <td>
-    	<form class="form-horizontal" method="post" id="componentMapForm" action="{{request.get_full_path}}">
-            <select multiple="multiple" id="id_component_map" name="component_map" class="form-control" >{% for data in getComponents.component_map.value %}
-                    <option value="{{data.id}}">{{data.data_name}}</option>
+<td> <form class="form-horizontal" method="post" id="componentMapForm" action="">
+            <select multiple="multiple" id="id_component_map" name="component_map" class="form-control" >
+                {% for component in getDashboardComponents %}
+                    {% if component.component_type == item.1 %}
+                        <option value="{{component.id}}">{{component.component_name}}</option>
+                    {% endif %}
                 {% endfor %}
             </select>
-            <button class="btn btn-default" type="submit" value="Update"> Update </button>   
-	        {% endfor %}
-
-	    {% csrf_token %}
-
-		</form></td>
-
+        <button class="btn btn-default" type="submit" value="Map"> Map </button>   
+        {% csrf_token %}
+    </form> 
+</td>
 
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>

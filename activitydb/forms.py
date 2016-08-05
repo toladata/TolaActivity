@@ -1629,7 +1629,7 @@ class CustomDashboardForm(forms.ModelForm):
                                             <td> {% if getCustomDashboard.component_map %} Yes
                                                 {% else %} No 
                                                 {% endif %} </td>  
-                                            <td>{% include 'customdashboard/admin/dashboard_component_map.html' %} </td>
+                                            {% include 'customdashboard/admin/dashboard_component_map.html' %}
                                         </tr>
                                     {% endfor %}
                                 </table>
