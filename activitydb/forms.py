@@ -174,7 +174,7 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details', 'detailed', 'activity_code','account_code','lin_code','office', 'sector','program', 'project_name', 'project_activity',
+                    Fieldset('Project Details', 'activity_code','account_code','lin_code','office', 'sector','program', 'project_name', 'project_activity',
                              'project_type', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date',
                         ),
 
@@ -436,7 +436,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
     class Meta:
         model = ProjectAgreement
         fields = '__all__'
-        exclude = ['create_date', 'edit_date','activity_code','account_code','lin_code','mc_estimated_budget','mc_estimated_budget','local_total_estimated_budget','local_estimated_budget'
+        exclude = ['create_date', 'edit_date','activity_code','account_code','lin_code','mc_estimated_budget','local_total_estimated_budget','local_estimated_budget'
                    ,'approval_submitted_by','finance_reviewed_by','me_reviewed_by','exchange_rate','exchange_rate_date','estimation_date','other_budget']
 
     map = forms.CharField(widget=GoogleMapsWidget(
@@ -490,7 +490,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details','detailed', 'activity_code','office', 'sector','program', 'project_name',
+                    Fieldset('Project Details', 'activity_code','office', 'sector','program', 'project_name',
                              'site','stakeholder','expected_start_date','expected_end_date',
                         ),
 

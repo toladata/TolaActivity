@@ -812,7 +812,7 @@ class ProjectAgreementManager(models.Manager):
 # Project Agreements, admin is handled in the admin.py
 class ProjectAgreement(models.Model):
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
-    detailed = models.BooleanField(default=False,verbose_name="Detailed form view")
+    short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
     program = models.ForeignKey(Program, verbose_name="Program", related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
