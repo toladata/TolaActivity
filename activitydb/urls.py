@@ -109,7 +109,7 @@ urlpatterns = [
                        url(r'^custom_dashboard_update/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/customdashboard_form.html"), name='custom_dashboard_update'),
                        url(r'^custom_dashboard_edit/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/customdashboard_modal_form.html"), name='custom_dashboard_edit'),
                        url(r'^custom_dashboard_map/(?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/dashboard_component_map.html"), name='custom_dashboard_map'),
-                       url(r'^custom_dashboard_remap/(?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/dashboard_component_unmap.html"), name='custom_dashboard_unmap'),
+                       url(r'^custom_dashboard_remap/(?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/dashboard_component_remap.html"), name='custom_dashboard_unmap'),
                        url(r'^custom_dashboard_delete/(?P<pk>[0-9]+)/$', CustomDashboardDelete.as_view(), name='custom_dashboard_delete'),
 
                        url(r'^custom_dashboard/theme/$', DashboardThemeList.as_view(), name='dashboard_theme_list'),

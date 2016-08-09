@@ -21,10 +21,8 @@
                     {% endif %}
                 {% endfor %}
             </select>
-        <!-- somehow the selected component needs to be pushed with the mapped location to the dictionary-->
         <button class="btn btn-default" type="submit" value="Map"> Map </button>   
         {% csrf_token %}
-        {% crispy form %}
 
         </form>
     </div>

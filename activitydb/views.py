@@ -2761,6 +2761,9 @@ class CustomDashboardUpdate(UpdateView):
     def form_valid(self, form):
         check_form_type = self.request.get_full_path()
         if check_form_type.startswith('/activitydb/custom_dashboard_map'):
+            if request.method == 'POST':
+                mapped_location = form.data[mapped_location]
+                component_map[mapped_location] = form.data['component_map']
             form.update()
         else:
             form.save()

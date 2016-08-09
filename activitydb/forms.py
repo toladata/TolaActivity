@@ -1659,9 +1659,10 @@ class CustomDashboardForm(forms.ModelForm):
                                                     {% endif %}
                                                  {% empty %} <li "list-style: none;"> None </li>
                                                  {% endfor %}
-                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_map/{{pk}}/{{item.0}}/{{item.1}}'> Map </a>  </td>
-                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_remap/{{pk}}/{{item.0}}/{{item.1}}'> Update </a>  </td>
-                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}'> New </a> </td>
+                                            </td>
+                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_map/{{pk}}/{{item.0}}/{{item.1}}'> Map </a> </td>
+                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_remap/{{pk}}/{{item.0}}/{{item.1}}'> Update </a></td>
+                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}'> New </a></td>
                                         </tr>
                                     {% endfor %}
                                 </table>
