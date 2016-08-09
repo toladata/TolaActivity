@@ -1,17 +1,37 @@
-<td> <form class="form-horizontal" method="post" id="componentMapForm" action="">
-            <select multiple="multiple" id="id_component_map" name="component_map" class="form-control" >
+{% block extra_js_in_body %}
+    <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+    <div class="modal-header">
+
+        <div class="alert alert-error" id="alert-error">
+            <strong>{{ error|escape }}</strong>
+        </div>
+
+        <h4 class="modal-title">{% block page_title %}Map Component to Template Position {% endblock %}</h4>
+
+    </div>
+    <div class="modal-body">
+        {% load crispy_forms_tags %}
+        <form class="form-horizontal" method="post" id="componentMapForm" action="custom_dashboard_map/{{ getCustomDashboard.id }}/{{mapped_location}}/{{component_type}}/">
+            <select id="id_component_map" name="component_map" class="form-control" >
                 {% for component in getDashboardComponents %}
-                    {% if component.component_type == item.1 %}
+                    {% if component.component_type == component_type %}
                         <option value="{{component.id}}">{{component.component_name}}</option>
                     {% endif %}
                 {% endfor %}
             </select>
+        <!-- somehow the selected component needs to be pushed with the mapped location to the dictionary-->
         <button class="btn btn-default" type="submit" value="Map"> Map </button>   
         {% csrf_token %}
-    </form> 
-</td>
+        {% crispy form %}
 
+        </form>
+    </div>
 
+    <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/activitydb/custom_dashboard_update/{{ id }}/#add-dashboard-components';parent.location.reload();">Close</button>
+    </div> 
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
 <script type="text/javascript">
@@ -22,7 +42,7 @@
             url: frm.attr('action'),
             data: frm.serialize(),
             success: function (data) {
-                $("#alert-error").html("Success! ");
+                $("#alert-error").html("Success!");
             },
             error: function(data) {
                 $("#alert-error").html("Something went wrong!");
@@ -30,4 +50,5 @@
         });
         return false;
     });
+
 </script>

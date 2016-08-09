@@ -1479,7 +1479,29 @@ class CustomDashboardModalForm(forms.ModelForm):
         
         super(CustomDashboardModalForm, self).__init__(*args, **kwargs)
    
+class CustomDashboardMapForm(forms.ModelForm):
+    
+    class Meta:
+        model = CustomDashboard
+        exclude = ['create_date', 'edit_date']
 
+    def __init__(self, *args, **kwargs):
+
+        #get the user object from request to check permissions
+        self.request = kwargs.pop("request")
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+        
+        super(CustomDashboardMapForm, self).__init__(*args, **kwargs)
+   
 class CustomDashboardForm(forms.ModelForm):
 
     class Meta:
@@ -1620,7 +1642,9 @@ class CustomDashboardForm(forms.ModelForm):
                                         <th>Component Type</th>
                                         <th>Component Assigned?</th>
                                         <th>Components Available</th>
-                                        <th></th>
+                                        <th>Map Component</th>
+                                        <th>Update Mapping</th>
+                                        <th>Create New Component</th>
                                     </tr>
                                     {% for item in getDashboardLayoutList %}
                                         <tr>
@@ -1629,7 +1653,15 @@ class CustomDashboardForm(forms.ModelForm):
                                             <td> {% if getCustomDashboard.component_map %} Yes
                                                 {% else %} No 
                                                 {% endif %} </td>  
-                                            {% include 'customdashboard/admin/dashboard_component_map.html' %}
+                                            <td> {% for component in getDashboardComponents %}
+                                                    {%if component.component_type == item.1 %}
+                                                      <li style="list-style: none;">{{component.component_name}}</li>
+                                                    {% endif %}
+                                                 {% empty %} <li "list-style: none;"> None </li>
+                                                 {% endfor %}
+                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_map/{{pk}}/{{item.0}}/{{item.1}}'> Map </a>  </td>
+                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_remap/{{pk}}/{{item.0}}/{{item.1}}'> Update </a>  </td>
+                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}'> New </a> </td>
                                         </tr>
                                     {% endfor %}
                                 </table>
