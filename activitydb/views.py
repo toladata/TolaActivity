@@ -10,7 +10,7 @@ from django.utils import timezone
 
 import pytz
 
-from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteCreateForm, DocumentationForm, \
+from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteSimpleForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
     QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 import logging
@@ -288,10 +288,10 @@ class ProjectAgreementUpdate(UpdateView):
     def get_form(self, form_class):
         check_form_type = ProjectAgreement.objects.get(id=self.kwargs['pk'])
 
-        if check_form_type.detailed == True:
-            form = ProjectAgreementForm
-        else:
+        if check_form_type.short == True:
             form = ProjectAgreementSimpleForm
+        else:
+            form = ProjectAgreementForm
 
         return form(**self.get_form_kwargs())
 
@@ -535,6 +535,14 @@ class ProjectCompleteCreate(CreateView):
         except SiteProfile.DoesNotExist:
             getSites = None
 
+        try:
+            getStakeholder = Stakeholder.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
+            stakeholder = {'stakeholder': [o for o in getStakeholder], }
+            initial = pre_initial.copy()
+            initial.update(stakeholder)
+        except Stakeholder.DoesNotExist:
+            getStakeholder = None
+
         return initial
 
     def get_context_data(self, **kwargs):
@@ -592,6 +600,16 @@ class ProjectCompleteUpdate(UpdateView):
         except FormGuidance.DoesNotExist:
             self.guidance = None
         return super(ProjectCompleteUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class):
+        check_form_type = ProjectComplete.objects.get(id=self.kwargs['pk'])
+
+        if check_form_type.project_agreement.short == True:
+            form = ProjectCompleteSimpleForm
+        else:
+            form = ProjectCompleteForm
+
+        return form(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)

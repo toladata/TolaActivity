@@ -812,7 +812,7 @@ class ProjectAgreementManager(models.Manager):
 # Project Agreements, admin is handled in the admin.py
 class ProjectAgreement(models.Model):
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
-    detailed = models.BooleanField(default=False,verbose_name="Detailed form view")
+    short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
     program = models.ForeignKey(Program, verbose_name="Program", related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
@@ -964,6 +964,7 @@ class ProjectComplete(models.Model):
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=None)
+    stakeholder = models.ManyToManyField(Stakeholder, blank=True)
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
     account_code = models.CharField("Fund Code", help_text='', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Code", help_text='', max_length=255, blank=True, null=True)
