@@ -964,6 +964,7 @@ class ProjectComplete(models.Model):
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=None)
+    stakeholder = models.ManyToManyField(Stakeholder, blank=True)
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
     account_code = models.CharField("Fund Code", help_text='', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Code", help_text='', max_length=255, blank=True, null=True)
