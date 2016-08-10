@@ -1710,6 +1710,24 @@ class CustomDashboardForm(forms.ModelForm):
 
         #here go the filters and overrides
 
+class CustomDashboardDetailForm(forms.ModelForm):
+    class Meta:
+        model = CustomDashboard
+        exclude = ['create_date', 'edit_date','global_item']
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        # self.helper = FormHelper()
+        # self.helper.form_class = 'form-horizontal'
+        # self.helper.label_class = 'col-sm-2'
+        # self.helper.field_class = 'col-sm-6'
+        # self.helper.form_error_title = 'Form Errors'
+        # self.helper.error_text_inline = True
+        # self.helper.help_text_inline = True
+        # self.helper.html5_required = True
+
+        super(CustomDashbaordDetailForm, self).__init__(*args, **kwargs)
+
 ## Dashboard Theme Form Classes
 class DashboardThemeCreateForm(forms.ModelForm):
 
