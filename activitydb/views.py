@@ -2616,9 +2616,9 @@ class CustomDashboardDetail(DetailView):
     #         return None
 
     def get_template_names(self):
-        dashboard = hash(CustomDashboard.objects.get(id = self.kwargs['pk']))
-        getDashboardTheme = DashboardTheme.objects.get(id = dashboard)
-        template_name = getDashboardTheme.theme_template
+        dashboard = CustomDashboard.objects.get(id = self.kwargs['pk'])
+        getDashboardTheme = DashboardTheme.objects.all().filter(id = dashboard.theme.id)
+        template_name = getDashboardTheme[0].theme_template
         return template_name
 
     def get_context_data(self, **kwargs):
