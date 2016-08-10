@@ -26,6 +26,7 @@ import json
 import ast
 import requests
 import urllib
+import logging
 
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect
@@ -2755,14 +2756,15 @@ class CustomDashboardUpdate(UpdateView):
         return kwargs
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        messages.error(self.request, 'I dont like this!', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
         check_form_type = self.request.get_full_path()
         if check_form_type.startswith('/activitydb/custom_dashboard_map'):
             if request.method == 'POST':
-                mapped_location = form.data[mapped_location]
+                mapped_url = re.search('(activitydb/custom_dashboard_map\/[0-9]+\/)([0-9]+)(\/[\w]+)', check_form_type)
+                mapped_location = mapped_url[1]
                 component_map[mapped_location] = form.data['component_map']
             form.update()
         else:

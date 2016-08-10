@@ -8,21 +8,21 @@
             <strong>{{ error|escape }}</strong>
         </div>
 
-        <h4 class="modal-title">{% block page_title %}Map Component to Template Position {% endblock %}</h4>
+        <h4 class="modal-title">{% block page_title %}Update Template Mapping {% endblock %}</h4>
 
     </div>
     <div class="modal-body">
         {% load crispy_forms_tags %}
-        
+        <div>Currently mapped component: {{getCustomDashboard.component_map}}</div>
         <form class="form-horizontal" method="post" id="componentMapForm" action="{{ request.get_full_path }}"">
             <select id="id_component_map" name="component_map" class="form-control" >
                 {% for component in getDashboardComponents %}
                     {% if component.component_type in request.get_full_path %}
-                        <option value="{{component}}">{{component.component_name}}</option>
+                        <option value="{{component.id}}">{{component.component_name}}</option>
                     {% endif %}
                 {% endfor %}
             </select>
-        <button class="btn btn-default" type="submit" value="Map"> Map </button>   
+        <button class="btn btn-default" type="submit" value="Map"> Update </button>   
         {% csrf_token %}
 
         </form>
@@ -34,7 +34,7 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
 <script type="text/javascript">
-    var frm = $('#componentMapForm');
+    var frm = $('#componentRemapForm');
     frm.submit(function () {
         $.ajax({
             type: frm.attr('method'),
