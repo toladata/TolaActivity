@@ -2710,6 +2710,19 @@ class CustomDashboardUpdate(UpdateView):
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
+        check_path = self.request.get_full_path()
+        if check_path.startswith('/activitydb/custom_dashboard_map'):
+            location = self.kwargs['location']
+            component_type = self.kwargs['type']
+        # else if check_form_type.startswith('/activitydb/custom_dashboard_remap'):
+        #     location = self.kwargs['location']
+        #     component_type = self.kwargs['type']
+        else:
+            location = None
+            component_type = None
+        context.update({'location': location})
+        context.update({'component_type': component_type})
+
         try:
             getCustomDashboard =CustomDashboard.objects.get(id=self.kwargs['pk'])
         except CustomDashboard.DoesNotExist:
