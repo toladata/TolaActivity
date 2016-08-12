@@ -83,6 +83,7 @@ class ProjectDash(ListView):
     template_name = 'activitydb/projectdashboard_list.html'
 
     def get(self, request, *args, **kwargs):
+
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
         project_id = int(self.kwargs['pk'])
@@ -129,7 +130,6 @@ class ProgramDash(ListView):
     :return:
     """
     template_name = 'activitydb/programdashboard_list.html'
-
 
     def get(self, request, *args, **kwargs):
 
