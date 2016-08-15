@@ -1651,8 +1651,8 @@ class CustomDashboardForm(forms.ModelForm):
                                             <td> {{item.0}}</td>
                                             <td> {{item.1}}</td>
                                             <td> {% if getCustomDashboard.component_map %} 
-                                                    Yes
-                                                {% else %} No
+                                                    Yes: {{getCustomDashboard.component_map}}
+                                                {% else %} No: {{getCustomDashboard.component_map}}
                                                 {% endif %} </td>  
                                             <td> {% for component in getDashboardComponents %}
                                                     {%if component.component_type == item.1 %}

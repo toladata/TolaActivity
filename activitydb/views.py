@@ -2644,7 +2644,23 @@ class CustomDashboardDetail(DetailView):
         except DashboardComponent.DoesNotExist:
             getDashboardComponents = None
         context.update({'getDashboardComponents': getDashboardComponents})
+        
+        try:
+            color_selection = getCustomDashboard.color_palette
+            if color_selection == 'bright':
+                getColorPalette = ['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
+            else:
+                getColorPalette = ['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
+        except getCustomDashboard.DoesNotExist:
+                getColorPalette = None
+        context.update({'getColorPalette': getColorPalette})
 
+
+    # Process for Matching Data and Subcomponent Template
+    # Step 1: Retrieve JSON data for components
+    # Step 2: ?? #import colorDictionary if one is needed? (should this be Step 2?)
+    # Step 3: Pass that component data to the template -- associate component # in getAllComponentData to template
+    # Step 4: Include correct component template  "include component.component_template" for that component
         try:
             getAllComponentData = {}
             for component in getDashboardComponents:
@@ -2658,15 +2674,15 @@ class CustomDashboardDetail(DetailView):
                 response = requests.get(filter_url, headers=headers, verify=False)
                 get_json = json.loads(response.content)
                 getSingleComponentData["{{data.data_name}}"] = get_json
+                # should this be getSingleComponentData[data.data_name.data] = get_json
+                # and then taking that set of values and looking at the data dictionary for color matches
+                # how do we handle labels vs. values -- if data.data_name.data.labels, then run lookUp process
+                # if no label values are in lookUp dictionary, map all
+                # if label queue is less than notmal queue, map remaining from color palette surplus
               getAllComponentData["{{component.component_name}}"] = getSingleComponentData
         except DashboardComponent.DoesNotExist:
             getAllComponentData = None
         context.update({'getAllComponentData': getAllComponentData})
-
-    # Step 2: Pass that component data to the template -- this means the template should read getAllComponentData 
-    
-    # Step 3: component template should be read into the theme template using an "include component.component_template" for that component
-    #       -- to do this, should getDashboardComponents be sortable by component.id? how does that work
 
         return context
 
