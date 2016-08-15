@@ -1,7 +1,6 @@
 """Common settings and globals."""
 
 from os.path import abspath, basename, dirname, join, normpath
-#import os
 from sys import path
 
 ########## PATH CONFIGURATION
@@ -282,30 +281,55 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+
+import os
+PROJECT_PATH = dirname(dirname(dirname(abspath(__file__))))
+path.append(PROJECT_PATH)
+
+
+#LOGGING = {
+#    'version': 1,
+#    'disable_existing_loggers': False,
+#    'filters': {
+#        'require_debug_false': {
+#            '()': 'django.utils.log.RequireDebugFalse'
+#        }
+#    },
+#    'handlers': {
+#        'mail_admins': {
+#            'level': 'ERROR',
+#            'filters': ['require_debug_false'],
+#            'class': 'django.utils.log.AdminEmailHandler'
+#        }
+#   },
+#    'loggers': {
+#        'django.request': {
+#            'handlers': ['mail_admins'],
+#            'level': 'ERROR',
+#            'propagate': True,
+#        },
+#    }
+#}
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
     'handlers': {
-        'mail_admins': {
+        'file': {
             'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
+            'class': 'logging.FileHandler',
+            'filename': 'error.log',
+        },
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
+        'django': {
+            'handlers': ['file'],
             'level': 'ERROR',
             'propagate': True,
         },
-    }
+    },
 }
-
 
 ########## END LOGGING CONFIGURATION
 

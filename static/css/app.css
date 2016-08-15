@@ -62,6 +62,10 @@ button:focus,
   background-color: rgba(0, 0, 0, .15);
 }
 
+.navbar-tola .navbar-nav .navbar-collapse {
+    clear: both;
+    float: none;
+}
 /* - End Bootstrap Overrides */
 
 /* Custom page CSS
