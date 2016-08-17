@@ -277,7 +277,7 @@ class Program(models.Model):
     dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    budget_check = models.BooleanField("Enable Approval Authority Matrix", default=False)
+    budget_check = models.BooleanField("Enable Approval Authority", default=False)
     country = models.ManyToManyField(Country)
     user_access = models.ManyToManyField(TolaUser, blank=True)
 

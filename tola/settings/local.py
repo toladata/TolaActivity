@@ -42,6 +42,13 @@ TEMPLATE_DEBUG = app_settings['TEMPLATE_DEBUG']
 
 # EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
+EMAIL_USE_TLS = app_settings['EMAIL_USE_TLS']
+EMAIL_HOST = app_settings['EMAIL_HOST']
+EMAIL_PORT = app_settings['EMAIL_PORT']
+EMAIL_HOST_USER = app_settings['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = app_settings['EMAIL_HOST_PASSWORD']
+DEFAULT_FROM_EMAIL = app_settings['DEFAULT_FROM_EMAIL']
+SERVER_EMAIL = app_settings['SERVER_EMAIL']
 EMAIL_BACKEND = app_settings['EMAIL_BACKEND']
 EMAIL_FILE_PATH = app_settings['EMAIL_FILE_PATH']
 
