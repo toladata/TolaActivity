@@ -2679,11 +2679,12 @@ class CustomDashboardDetail(DetailView):
 
     # Process for Matching Data and Subcomponent Template
     # Step 1: Retrieve JSON data for components
-    # Step 2: ?? #import colorDictionary if one is needed? (should this be Step 2?)
+    # Step 2: colorize data with colorDictionary 
     # Step 3: Pass that component data to the template -- associate component # in getAllComponentData to template
     # Step 4: Include correct component template  "include component.component_template" for that component
         try:
             getAllComponentData = {}
+            projectDictionary = {} 
             for component in getDashboardComponents:
               getSingleComponentData = {}
               for data in component.data_sources.all():
@@ -2697,9 +2698,18 @@ class CustomDashboardDetail(DetailView):
                 getSingleComponentData["{{data.data_name}}"] = get_json
                 # should this be getSingleComponentData[data.data_name.data] = get_json
                 # and then taking that set of values and looking at the data dictionary for color matches
-                # how do we handle labels vs. values -- if data.data_name.data.labels, then run lookUp process
-                # if no label values are in lookUp dictionary, map all
-                # if label queue is less than notmal queue, map remaining from color palette surplus
+                # if data.data_name.data.labels:
+                #     colorsQueue = getColorPalette
+                #     colors = []
+                #     for label in data.data_name.data.labels:
+                #         if label in projectDictionary:
+                #             colors.append(projectDictionary['{{label}}'])
+                #             #remove projectDictionary['{{label}}'] from colorsQueue
+                #         else:
+                #             poppedColor = colorsQueue.pop()
+                #             projectDictionary['{{label}}'] = poppedColor
+                #             colors.append(productDictionary('{{label}}'))
+                getSingleComponentData["{{data.data_name}}"] = {'data': get_json} #when ready, add colors: color_selection
               getAllComponentData["{{component.component_name}}"] = getSingleComponentData
         except DashboardComponent.DoesNotExist:
             getAllComponentData = None
@@ -2812,10 +2822,6 @@ class CustomDashboardUpdate(UpdateView):
     def form_valid(self, form):
         check_form_type = self.request.get_full_path()
         if check_form_type.startswith('/activitydb/custom_dashboard_map'):
-            if request.method == 'POST':
-                mapped_url = re.search('(activitydb/custom_dashboard_map\/[0-9]+\/)([0-9]+)(\/[\w]+)', check_form_type)
-                mapped_location = mapped_url[1]
-                component_map[mapped_location] = form.data['component_map']
             form.update()
         else:
             form.save()
