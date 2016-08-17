@@ -425,8 +425,13 @@ class ProjectAgreementForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
-            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
+            APPROVALS = (
+                ('in progress', 'in progress'),
+                ('awaiting approval', 'awaiting approval'),
+                ('rejected', 'rejected'),
+            )
+            self.fields['approval'].choices = APPROVALS
+            #self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
 
@@ -660,8 +665,13 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
-            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
+            APPROVALS = (
+                ('in progress', 'in progress'),
+                ('awaiting approval', 'awaiting approval'),
+                ('rejected', 'rejected'),
+            )
+            self.fields['approval'].choices = APPROVALS
+            #self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
 
@@ -977,7 +987,12 @@ class ProjectCompleteForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
+            APPROVALS = (
+                ('in progress', 'in progress'),
+                ('awaiting approval', 'awaiting approval'),
+                ('rejected', 'rejected'),
+            )
+            self.fields['approval'].choices = APPROVALS
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_submitted_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
@@ -1240,7 +1255,12 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
+            APPROVALS = (
+                ('in progress', 'in progress'),
+                ('awaiting approval', 'awaiting approval'),
+                ('rejected', 'rejected'),
+            )
+            self.fields['approval'].choices = APPROVALS
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
