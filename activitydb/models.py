@@ -1040,12 +1040,6 @@ class ProjectComplete(models.Model):
         return self.project_name.encode('ascii', 'ignore')
 
 
-class ProjectCompleteAdmin(admin.ModelAdmin):
-    list_display = ('program', 'project_name', 'activity_code')
-    list_filter = ('program__country','office')
-    display = 'project_name'
-
-
 # Project Documents, admin is handled in the admin.py
 class Documentation(models.Model):
     name = models.CharField("Name of Document", max_length=135, blank=True, null=True)

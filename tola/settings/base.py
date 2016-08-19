@@ -319,7 +319,7 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/tola/error.log',
+            'filename': 'error.log',
         },
     },
     'loggers': {

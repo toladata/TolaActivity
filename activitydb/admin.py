@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Country, Province, Office,OfficeAdmin, Village, Program, Documentation, Template,District, Sector, \
-    CustomDashboard, ProjectAgreement, ProjectComplete, ProjectCompleteAdmin, SiteProfile, Capacity, Monitor, \
+    CustomDashboard, ProjectAgreement, ProjectComplete, SiteProfile, Capacity, Monitor, \
     Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Distribution, DistributionAdmin, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
     ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
     Contact, StakeholderAdmin, ContactAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
@@ -43,6 +43,7 @@ class ProjectAgreementResource(resources.ModelResource):
                 'create_date': {'format': '%d/%m/%Y'},
                 'edit_date': {'format': '%d/%m/%Y'},
                 'expected_start_date': {'format': '%d/%m/%Y'},
+                'expected_end_date': {'format': '%d/%m/%Y'},
                 }
 
 
@@ -51,6 +52,41 @@ class ProjectAgreementAdmin(ImportExportModelAdmin):
     list_display = ('program','project_name')
     list_filter = ('program__country',)
     filter_horizontal = ('capacity','evaluate','site','stakeholder')
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        # Filter by logged in users allowable countries
+        user_countries = getCountry(request.user)
+        #if not request.user.user.is_superuser:
+        return queryset.filter(country__in=user_countries)
+
+    pass
+
+
+# Resource for CSV export
+class ProjectCompleteResource(resources.ModelResource):
+
+    class Meta:
+        model = ProjectComplete
+        widgets = {
+                'create_date': {'format': '%d/%m/%Y'},
+                'edit_date': {'format': '%d/%m/%Y'},
+                'expected_start_date': {'format': '%d/%m/%Y'},
+                'expected_end_date': {'format': '%d/%m/%Y'},
+                'actual_start_date': {'format': '%d/%m/%Y'},
+                'actual_end_date': {'format': '%d/%m/%Y'},
+                }
+
+
+class ProjectCompleteAdmin(ImportExportModelAdmin):
+    resource_class = ProjectCompleteResource
+    list_display = ('program', 'project_name', 'activity_code')
+    list_filter = ('program__country','office')
+    display = 'project_name'
 
     def queryset(self, request, queryset):
         """

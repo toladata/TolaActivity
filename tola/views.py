@@ -200,7 +200,7 @@ def register(request):
     """
     Register a new User profile using built in Django Users Model
     """
-    privacy = TolaSites.objects.all().filter(id=1)
+    privacy = TolaSites.objects.get(id=1)
     if request.method == 'POST':
         uf = NewUserRegistrationForm(request.POST)
         tf = NewTolaUserRegistrationForm(request.POST)
