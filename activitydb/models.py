@@ -1137,7 +1137,7 @@ class MonitorAdmin(admin.ModelAdmin):
 class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True)
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
-    proposed_value = models.IntegerField(default=0, blank=True, null=True)
+    proposed_value = models.IntegerField("Actual Value",default=0, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, on_delete=models.SET_NULL)
     create_date = models.DateTimeField(null=True, blank=True)

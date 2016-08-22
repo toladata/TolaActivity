@@ -139,6 +139,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = ProjectAgreement.objects.all()
     serializer_class = AgreementSerializer
+    pagination_class = SmallResultsSetPagination
 
 
 class CompleteViewSet(viewsets.ModelViewSet):
@@ -158,6 +159,7 @@ class CompleteViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = ProjectComplete.objects.all()
     serializer_class = CompleteSerializer
+    pagination_class = SmallResultsSetPagination
 
 
 class IndicatorViewSet(viewsets.ModelViewSet):
@@ -169,11 +171,11 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = Indicator.objects.all().filter(country__in=user_countries)
+        queryset = Indicator.objects.all().filter(program__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country','program__name')
+    filter_fields = ('program__country__country','program__name')
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
