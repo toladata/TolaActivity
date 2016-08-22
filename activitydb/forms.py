@@ -441,7 +441,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
     class Meta:
         model = ProjectAgreement
         fields = '__all__'
-        exclude = ['create_date', 'edit_date','activity_code','account_code','lin_code','mc_estimated_budget','local_total_estimated_budget','local_estimated_budget'
+        exclude = ['create_date', 'edit_date','account_code','lin_code','mc_estimated_budget','local_total_estimated_budget','local_estimated_budget'
                    ,'approval_submitted_by','finance_reviewed_by','me_reviewed_by','exchange_rate','exchange_rate_date','estimation_date','other_budget']
 
     map = forms.CharField(widget=GoogleMapsWidget(
@@ -1005,7 +1005,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
         model = ProjectComplete
         fields = '__all__'
 
-        exclude = ['create_date', 'edit_date','project_activity', 'activity_code', 'account_code', 'lin_code', 'mc_estimated_budget',
+        exclude = ['create_date', 'edit_date','project_activity', 'account_code', 'lin_code', 'mc_estimated_budget',
                'local_total_estimated_budget', 'local_estimated_budget', 'approval_submitted_by', 'finance_reviewed_by',
                'me_reviewed_by', 'exchange_rate', 'exchange_rate_date',
                'estimation_date', 'other_budget']
