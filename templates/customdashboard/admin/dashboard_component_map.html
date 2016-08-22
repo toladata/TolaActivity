@@ -15,6 +15,13 @@
         {% load crispy_forms_tags %}
         
         <form class="form-horizontal" method="post" id="componentMapForm" action="{{ request.get_full_path }}">
+            <input type='hidden'>
+            <input type='hidden'>
+            <input type='hidden'>
+            <input type='hidden'>
+            <input type='hidden'>
+            <input type='hidden'>
+            <input type='hidden'>
             <select id="id_component_map" name="component_map" class="form-control" >
                 {% for component in getDashboardComponents %}
                     {% if component.component_type in request.get_full_path %}

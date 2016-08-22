@@ -2566,12 +2566,12 @@ class CustomDashboardList(ListView):
         countries = getCountry(request.user)
 
         #retrieve projects for a program
-        getProjects = []#ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
+        # getProjects = ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
 
         #retrieve projects for a program
-        getCustomDashboards = []#CustomDashboard.objects.all().filter(program__id=program__id, program__country__in=countries)
+        getCustomDashboards = CustomDashboard.objects.all().filter(program__id=program_id)
             
-        return render(request, self.template_name, {'getCustomDashboards': getCustomDashboards, 'getProgram': getProgram, 'getProjects': getProjects})
+        return render(request, self.template_name, {'getCustomDashboards': getCustomDashboards, 'getProgram': getProgram})
 
 class CustomDashboardCreate(CreateView):
     #   :param request:
@@ -2717,6 +2717,22 @@ class CustomDashboardDetail(DetailView):
 
         return context
 
+def custom_dashboard_update_components(AjaxableResponseMixin,pk,component_map):
+
+    form_mapping = component_map
+    mapped = false
+    current_dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
+    # current_mapping = current_dashboard.component_map.split()
+    # for mapping in current_mapping
+    #     if mapping.0 == form_mapping.0
+    #         update = current_dashboard.update(component_map=form_mapping)
+    #         mapped = true
+    # if mapped == false
+    #     update = current_dashboard.component_map.append(form_mapping)
+    #     current_dashboard.save()
+    # return HttpResponse(form_mapping)
+
+
 class CustomDashboardUpdate(UpdateView):
 
     model = CustomDashboard
@@ -2816,15 +2832,23 @@ class CustomDashboardUpdate(UpdateView):
         return kwargs
 
     def form_invalid(self, form):
-        messages.error(self.request, 'I dont like this!', fail_silently=False)
+        messages.error(self.request, self, fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
         check_form_type = self.request.get_full_path()
-        if check_form_type.startswith('/activitydb/custom_dashboard_map'):
-            form.update()
-        else:
-            form.save()
+        # if check_form_type.startswith('/activitydb/custom_dashboard_map'):
+        #     getCustomDashboard.component_map = form.cleaned_data['component_map']
+        #     getCustomDashboard.save()
+            # for position in getCustomDashboard.component_map:
+            #     mapped_position = form.component_map.0
+            #     if position.0 == mapped_position:
+            #         position.1 == form.component_map.1
+            #         mapped = true
+            # if mapped != true:
+            #     getCustomDashboard.component_map.append(form.component_map)
+        # else:
+        form.save()
         messages.success(self.request, 'Success, CustomDashboard Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -2839,7 +2863,9 @@ class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardDelete, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['id']})
+        getCustomDashboard = CustomDashboard.objects.all().get(id=self.kwargs['pk'])
+        pk=self.kwargs['pk']
+        context.update({'pk': self.kwargs['pk']})
         return context
 
     def form_invalid(self, form):
@@ -2852,6 +2878,7 @@ class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = CustomDashboardForm     
+
 
 class DashboardThemeList(ListView):
     model = CustomDashboard
