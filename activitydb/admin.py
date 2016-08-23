@@ -1,11 +1,5 @@
 from django.contrib import admin
-from .models import Country, Province, Office,OfficeAdmin, Village, Program, Documentation, Template,District, Sector, \
-    CustomDashboard, ProjectAgreement, ProjectComplete, SiteProfile, Capacity, Monitor, \
-    Benchmarks, Evaluate, ProjectType,ProjectTypeAdmin, TrainingAttendance, Distribution, DistributionAdmin, Beneficiary, Budget, ProfileType, FAQ, ApprovalAuthority, \
-    ChecklistItem, ChecklistItemAdmin,Checklist, ChecklistAdmin, DocumentationApp, ProvinceAdmin, DistrictAdmin, AdminLevelThree, AdminLevelThreeAdmin, StakeholderType, Stakeholder, \
-    Contact, StakeholderAdmin, ContactAdmin, Feedback, FeedbackAdmin, TolaUser, TolaUserAdmin, \
-    TolaSites, TolaSitesAdmin, FormGuidance, FormGuidanceAdmin
-
+from .models import *
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportModelAdmin
@@ -176,7 +170,7 @@ admin.site.register(Evaluate)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(TrainingAttendance)
 admin.site.register(Distribution, DistributionAdmin)
-admin.site.register(Beneficiary)
+admin.site.register(Beneficiary, BeneficiaryAdmin)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
 admin.site.register(FAQ)

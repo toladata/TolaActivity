@@ -868,7 +868,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ id }}">Add Budget Contribution</a>
                                       </div>
                                     </div>
                                 """),
@@ -907,7 +907,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ id }}">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                              """),
@@ -962,7 +962,7 @@ class ProjectCompleteForm(forms.ModelForm):
                               </table>
                           {% endif %}
                           <div class="panel-footer">
-                            <a onclick="newPopup('/activitydb/documentation_list/0/{{ pk }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
+                            <a onclick="newPopup('/activitydb/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
                           </div>
                         </div>
                          """),
@@ -1136,7 +1136,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ id }}">Add Budget Contribution</a>
                                       </div>
                                     </div>
                             """),
@@ -1175,7 +1175,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Indicators</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ id }}">Add Indicators</a>
                                       </div>
                                     </div>
                              """),
@@ -1230,7 +1230,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                               </table>
                           {% endif %}
                           <div class="panel-footer">
-                            <a onclick="newPopup('/activitydb/documentation_list/0/{{ pk }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
+                            <a onclick="newPopup('/activitydb/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
                           </div>
                         </div>
                          """),
