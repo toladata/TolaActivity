@@ -2717,20 +2717,20 @@ class CustomDashboardDetail(DetailView):
 
         return context
 
-def custom_dashboard_update_components(AjaxableResponseMixin,pk,component_map):
-
-    form_mapping = component_map
+def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): #component_map):
+# (?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$
+    # form_mapping = component_map
     mapped = false
     current_dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
-    # current_mapping = current_dashboard.component_map.split()
-    # for mapping in current_mapping
+    current_map = current_dashboard.component_map#.split("]","],")
+    # for mapped_object in current_map:
     #     if mapping.0 == form_mapping.0
     #         update = current_dashboard.update(component_map=form_mapping)
     #         mapped = true
-    # if mapped == false
+    # if mapped == false:
     #     update = current_dashboard.component_map.append(form_mapping)
     #     current_dashboard.save()
-    # return HttpResponse(form_mapping)
+    return HttpResponse(component_map)
 
 
 class CustomDashboardUpdate(UpdateView):
@@ -2994,9 +2994,9 @@ class DashboardComponentList(ListView):
         model = Program
         ## retrieve the countries the user has data access for
         countries = getCountry(request.user)
-        dashboard_id = int(self.kwargs['customDashboardId'])
+        dashboard_id = int(self.kwargs['pk'])
         
-        getDashboardListComponents = DashboardComponent.objects.all()
+        getDashboardListComponents = DashboardComponent.objects.all().filter(componentset=dashboard_id)
             
         return render(request, self.template_name, {'getDashboardListComponents': getDashboardListComponents})
 
