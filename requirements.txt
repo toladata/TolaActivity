@@ -21,7 +21,7 @@ google-api-python-client==1.2
 httplib2==0.9
 jdcal==1.2
 macholib==1.5.1
-oauth2client==1.2
+oauth2client==1.5.1
 openpyxl==2.1.5
 Pillow==2.5.1
 python-dateutil==1.5

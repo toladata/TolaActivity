@@ -39,7 +39,7 @@ urlpatterns = [
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<type>\w+)/table/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
     url(r'^data/(?P<id>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
-    url(r'^export/(?P<id>\w+)/(?P<program>\w+)/$', IndicatorExport.as_view(), name='indicator_export'),
+    url(r'^export/(?P<id>\w+)/(?P<program>\w+)/(?P<indicator_type>\w+)/$', IndicatorExport.as_view(), name='indicator_export'),
 
     #ajax calls
     url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
