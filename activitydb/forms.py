@@ -1842,14 +1842,22 @@ class CustomDashboardForm(forms.ModelForm):
                                                             Yes: {{getCustomDashboard.component_map}}
                                                         {% else %} No: {{getCustomDashboard.component_map}}
                                                         {% endif %} </td>  
-                                                    <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_map/{{pk}}/{{item.0}}/{{item.1}}'> Select</a> </td> 
-                                                    <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}'> New</a></td>
+                                                    <td> <div class="form-group"> 
+                                                            <select class="form-control" id="sel1">
+                                                            <option value=0> None </option>
+                                                            for component in getDashboardComponents:
+                                                                if component.component_type == item.1:
+                                                                    <option value=component.id> {{component.component_name}} </option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}'>New</a></td>
                                                 </tr>
                                             {% endfor %}
                                         </table>
                                     <div>
                                     <div class="panel panel-footer">Don't see a component or need to edit an existing component?<br>
-                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='customdashboard/admin/dashboard_component_list.html'> View Component Inventory </a></td>
+                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/component/{{pk}}/'> View Component Inventory </a></td>
                                     </div>
                                 </div>
                             </div>
@@ -1876,17 +1884,33 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <th>Select Existing Data Source</th>
                                                 <th>Create New Data Source</th>
                                             </tr>
-                                            <tr>
-                                                <td> </td>
-                                                <td> </td>
-                                                <td> </td>  
-                                                <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href=''> Select</a> </td> 
-                                                <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href=''> New </a></td>
-                                            </tr>
+                                            {% for component in getDashboardComponents %}
+                                                <tr>
+                                                    <td>{{component.component_name}}</td>
+                                                    <td>{{component.data_required}} </td>
+                                                    <td>{% if component.data_sources %} Yes 
+                                                        {% else %} 
+                                                        No
+                                                        {% endif %}
+                                                    </td>  
+                                                    <td> <div class="form-group"> 
+                                                            <select class="form-control" id="sel2">
+                                                                <option value=0> None </option>
+                                                                {% for data in getDataSources %}
+                                                                    {% if data.data_type == component.data_required %}
+                                                                        <option value=data.id> {{data.data_name}} </option>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/data_add/'> New </a></td>
+                                                </tr>
+                                            {% endfor %}
                                         </table>
                                     <div>
                                     <div class="panel panel-footer">Don't see your data source or need to edit an existing data source?<br>
-                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href=''> View All Data Sources</a></td>
+                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/data/{{pk}}/'> View All Data Sources</a></td>
                                     </div>
                                 </div>
                             </div>
