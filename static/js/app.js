@@ -259,3 +259,19 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
   e.target // activated tab
   e.relatedTarget // previous tab
 })
+
+/*
+* Confirm Change of Short form to Long
+*/
+function confirmshort() {
+      if (document.getElementById('id_short').checked == true) {
+        return false;
+      } else {
+       var box= confirm("Warning: The short form is recommended for all cases except COMPLEX programs.  Are you sure you want to do this?");
+        if (box==true)
+            return true;
+        else
+           document.getElementById('id_short').checked = true;
+
+      }
+    }

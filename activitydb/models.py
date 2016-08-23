@@ -786,7 +786,7 @@ class Stakeholder(models.Model):
 class StakeholderAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'country', 'create_date')
     display = 'Stakeholders'
-    list_filter = ('create_date','country','type','sector')
+    list_filter = ('country','type','sector')
 
 
 class ProjectAgreementManager(models.Manager):
@@ -1206,7 +1206,8 @@ class TrainingAttendance(models.Model):
 
 class TrainingAttendanceAdmin(admin.ModelAdmin):
     list_display = ('training_name', 'program', 'project_agreement', 'create_date', 'edit_date')
-    display = 'Program Dashboard'
+    display = 'Training Attendance'
+    list_filter = ('program__country','program')
 
 
 class Beneficiary(models.Model):
@@ -1219,6 +1220,7 @@ class Beneficiary(models.Model):
     site = models.ForeignKey(SiteProfile, null=True, blank=True)
     signature = models.BooleanField(default=True)
     remarks = models.CharField(max_length=255, null=True, blank=True)
+    program = models.ManyToManyField('Program', blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1238,7 +1240,9 @@ class Beneficiary(models.Model):
 
 
 class BeneficiaryAdmin(admin.ModelAdmin):
-    list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
+    list_display = ('beneficiary_name',)
+    display = 'Beneficiary'
+    list_filter = ('program__country','program__name')
 
 
 class Checklist(models.Model):
