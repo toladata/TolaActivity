@@ -261,7 +261,9 @@ class ProjectAgreementCreate(CreateView):
         for item in get_globals:
             ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
 
+
         messages.success(self.request, 'Success, Initiation Created!')
+
         redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 

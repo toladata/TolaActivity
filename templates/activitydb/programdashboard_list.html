@@ -60,6 +60,7 @@
                         <th>Approval Status</th>
                         <th>&nbsp;</th>
                     </tr>
+
                     {% if status == "in_progress" %}
                       {% for item in program.agreement.get_inprogress %}
                           {% include "activitydb/program_projects_table.html" %}
@@ -91,6 +92,7 @@
                           <li class="list-group-item">No projects yet.</li>
                       {% endfor %}
                     {% endif %}
+
 
                 </table>
             </div>

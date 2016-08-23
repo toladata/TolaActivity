@@ -40,8 +40,8 @@
     </tr>
     {% for item in getDashboard %}
     <tr>
-        <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.create_date}}</a></td>
-        <td><a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a></td>
+        <td>{% if item.approval %}{{ item.create_date}}{% else %}<a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.create_date}}</a>{% endif %}</td>
+        <td>{% if item.approval %} {{ item.project_name}}{% else %}<a href="/activitydb/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a>{% endif %}</td>
         <td>{{ item.activity_code}}</td>
         <td>{% if item.approval %} {{ item.approval}} {% else %} Open {% endif %}</td>
         <td>{{ item.dashboard_name }}</td>

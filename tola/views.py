@@ -3,8 +3,11 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites, LoggedUser
+from indicators.models import CollectedData
 from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites
 from indicators.models import CollectedData, Indicator
+
 from .tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
@@ -251,3 +254,62 @@ def logout_view(request):
     logout(request)
     # Redirect to a success page.
     return HttpResponseRedirect("/")
+
+
+######-------API Views to Feed Data to Tolawork API requests-----####
+'''
+    This view responds to the 'GET' request from TolaWork
+'''
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.response import Response
+from django.http import HttpResponse
+from rest_framework.renderers import JSONRenderer
+from tola.serializer import ProjectAgreementSerializer, LoggedUserSerializer
+
+
+class JSONResponse(HttpResponse):
+    """
+    An HttpResponse that renders its content into JSON.
+    """
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
+
+@api_view(['GET'])
+@authentication_classes(())
+@permission_classes(())
+
+def activity_api_data(request):
+    """
+   Get TolaActivity Projects,
+    """
+    activity_data = {}
+    if request.method == 'GET':
+
+        activity_logged_users = logged_in_users()
+        projects = ProjectAgreement.objects.prefetch_related('program').order_by('-create_date')[:6]
+
+        project_serializer = ProjectAgreementSerializer(projects, many=True)
+        user_serializer = LoggedUserSerializer(activity_logged_users, many=True)
+
+        projects = project_serializer.data
+        users = user_serializer.data
+
+        activity_data = {'projects':projects, 'activity_logged_users': users}
+
+        return JSONResponse(activity_data)
+
+#get logged users and send to Tola Work through the API
+        return {}
+
+#return users logged into TolaActivity
+def logged_in_users():
+
+    logged_users = {}
+
+    logged_users = LoggedUser.objects.all().order_by('username')
+    for logged_user in logged_users:
+        logged_user.queue = 'TolaActivity'
+
+    return logged_users

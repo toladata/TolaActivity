@@ -12,12 +12,12 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/MarkerCluster.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/leaflet-sidebar.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}js/highcharts/api/css/font-awesome.css">
-<link rel="borders" type="application/json" href="{{ STATIC_URL }}publicdashboard/js/AFG.geojson">
 
 <script src="{{ STATIC_URL }}publicdashboard/js/vendor/modernizr-2.8.3.min.js"></script>
 <script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/vendor/leaflet.js"></script>
 <script src="{{ STATIC_URL }}js/leaflet-sidebar.js"></script>
+<script src="{{ STATIC_URL }}publicdashboard/js/vendor/AFG.geo.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/leaflet-google.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/leaflet.markercluster.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/Leaflet.Photo.js"></script>
@@ -186,7 +186,7 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
             {% for item in getSiteProfile %}
                 L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon})
                     .addTo(partners)
-                    .bindPopup("<b>{{ item.country }}</b>
+                    .bindPopup("" + "<b>{{ item.country }}</b>
                                 <br/>Project Site:
                                 <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
                                 <br/>ADM1: {{ item.province }}
@@ -314,7 +314,7 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
 
             var photoLayer = L.photo.cluster().on('click', function (evt) {
 		        var photo = evt.layer.photo,
-			        template = '<a><img src="{url}"/></a><p>{caption}</p>';
+			        template = '<a><img height="300" src="{url}"/></a><p>{caption}</p>';
 
 		        if (photo.video && (!!document.createElement('video').canPlayType('video/mp4; codecs=avc1.42E01E,mp4a.40.2'))) {
 			        template = '<video autoplay controls poster="{url}"><source src="{video}" type="video/mp4"/></video>';
@@ -322,7 +322,8 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
 
 		    evt.layer.bindPopup(L.Util.template(template, photo), {
 			    className: 'leaflet-popup-photo',
-			    minWidth: 400
+			    minWidth: 300
+
 		        }).openPopup();
 	        });
 

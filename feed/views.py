@@ -8,6 +8,7 @@ from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser
 
 from django.contrib.auth.models import User
 from tola.util import getCountry
+from django.shortcuts import get_object_or_404
 
 from rest_framework import renderers, viewsets, filters
 from rest_framework.response import Response
@@ -18,7 +19,6 @@ class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
     page_size_query_param = 'page_size'
     max_page_size = 10000
-
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 100
@@ -34,9 +34,11 @@ class SmallResultsSetPagination(PageNumberPagination):
 
 # API Classes
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    A ViewSet for listing or retrieving users.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
 
 class ProgramViewSet(viewsets.ModelViewSet):
     """
@@ -192,9 +194,20 @@ class ReportingFrequencyViewSet(viewsets.ModelViewSet):
 
 class TolaUserViewSet(viewsets.ModelViewSet):
     """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
+    A ViewSet for listing or retrieving TolaUsers.
+
     """
+    def list(self, request):
+        queryset = TolaUser.objects.all()
+        serializer = TolaUserSerializer(instance=queryset,context={'request': request},many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = TolaUser.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = TolaUserSerializer(instance=user, context={'request': request})
+        return Response(serializer.data)
+
     queryset = TolaUser.objects.all()
     serializer_class = TolaUserSerializer
 
