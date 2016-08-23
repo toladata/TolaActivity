@@ -173,6 +173,14 @@ $(document).ready(function() {
         if(typeof district_dropdown_has_changed != 'undefined') distirct_dropdown_has_changed(district_office);
     });
 
+/*
+* CUSTOM DASHBOARD
+*/
+
+    // on change to Step 2, selector, save change to db
+    // on change to Step 3, selector, save change to db
+
+
     /*
      * UPDATE BUDGET TOTAL
     */
