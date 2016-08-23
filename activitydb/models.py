@@ -26,6 +26,7 @@ class TolaSites(models.Model):
     name = models.CharField(blank=True, null=True, max_length=255)
     agency_name = models.CharField(blank=True, null=True, max_length=255)
     agency_url = models.CharField(blank=True, null=True, max_length=255)
+    tola_report_url = models.CharField(blank=True, null=True, max_length=255)
     tola_tables_url = models.CharField(blank=True, null=True, max_length=255)
     tola_tables_user = models.CharField(blank=True, null=True, max_length=255)
     tola_tables_token = models.CharField(blank=True, null=True, max_length=255)
