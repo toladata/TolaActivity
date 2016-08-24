@@ -706,7 +706,6 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.layout = Layout(
-
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
@@ -720,7 +719,9 @@ class ProjectCompleteCreateForm(forms.ModelForm):
                     ),
                 ),
             ),
-
+            FormActions(
+                Submit('submit', 'Save', css_class='btn-default')
+            ),
         )
         super(ProjectCompleteCreateForm, self).__init__(*args, **kwargs)
 
