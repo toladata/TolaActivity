@@ -238,7 +238,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                         <tr>
                                         <th>Contributor</th>
                                         <th>Description</th>
-                                        <th>Proposed Value</th>
+                                        <th>Value</th>
                                         <th>View</th>
                                         </tr>
                                         {% for item in getBudget %}
@@ -558,7 +558,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
                                         <tr>
                                         <th>Contributor</th>
                                         <th>Description</th>
-                                        <th>Proposed Value</th>
+                                        <th>Value</th>
                                         <th>View</th>
                                         </tr>
                                         {% for item in getBudget %}
@@ -854,7 +854,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                             <tr>
                                             <th>Contributor</th>
                                             <th>Description</th>
-                                            <th>Proposed Value</th>
+                                            <th>Value</th>
                                             <th>View</th>
                                             </tr>
                                             {% for item in getBudget %}
@@ -1122,7 +1122,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                             <tr>
                                             <th>Contributor</th>
                                             <th>Description</th>
-                                            <th>Proposed Value</th>
+                                            <th>Value</th>
                                             <th>View</th>
                                             </tr>
                                             {% for item in getBudget %}
@@ -1273,7 +1273,7 @@ class SiteProfileForm(forms.ModelForm):
         exclude = ['create_date', 'edit_date']
 
     map = forms.CharField(widget=GoogleMapsWidget(
-        attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
+        attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude','country':'Find a city or village'}), required=False)
 
     date_of_firstcontact = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
