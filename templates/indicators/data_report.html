@@ -62,6 +62,8 @@
     <h4>Filtered by Indicator: {{ indicator_name }}</h4>
 {% elif program_name %}
     <h4>Filtered by Program : {{ program_name }}</h4>
+{% elif type_name %}
+    <h4>Filtered by Indicator Type : {{ type_name }}</h4>
 {% endif %}
 
 {% if "map" in request.get_full_path %}
