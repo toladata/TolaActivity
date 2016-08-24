@@ -122,6 +122,7 @@ class ProjectAgreementForm(forms.ModelForm):
     class Meta:
         model = ProjectAgreement
         fields = '__all__'
+        exclude = ['create_date', 'edit_date', 'short']
 
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
@@ -442,7 +443,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
         model = ProjectAgreement
         fields = '__all__'
         exclude = ['create_date', 'edit_date','account_code','lin_code','mc_estimated_budget','local_total_estimated_budget','local_estimated_budget'
-                   ,'approval_submitted_by','finance_reviewed_by','me_reviewed_by','exchange_rate','exchange_rate_date','estimation_date','other_budget']
+                   ,'approval_submitted_by','finance_reviewed_by','me_reviewed_by','exchange_rate','exchange_rate_date','estimation_date','other_budget','short']
 
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
