@@ -7,6 +7,7 @@ from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from django import forms
 from tola.util import getCountry
+from django.db.models import Q
 
 
 class DatePicker(forms.DateInput):
@@ -127,6 +128,7 @@ class CollectedDataForm(forms.ModelForm):
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
         self.program = kwargs.pop('program')
+        self.tola_table = kwargs.pop('tola_table')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -275,5 +277,4 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
-
-        self.fields['tola_table'].queryset = TolaTable.objects.filter(owner=self.request.user)
+        self.fields['tola_table'].queryset = TolaTable.objects.filter(Q(owner=self.request.user) | Q(id=self.tola_table))
