@@ -1279,7 +1279,7 @@ class ChecklistItem(models.Model):
     in_file = models.BooleanField(default=False)
     not_applicable = models.BooleanField(default=False)
     global_item = models.BooleanField(default=False)
-    owner = models.ForeignKey(TolaUser, blank=True)
+    owner = models.ForeignKey(TolaUser, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
