@@ -676,6 +676,7 @@ class CollectedDataCreate(CreateView):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['program'] = self.kwargs['program']
+        kwargs['tola_table'] = None
 
         return kwargs
 
@@ -774,7 +775,10 @@ class CollectedDataUpdate(UpdateView):
         kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['program'] = get_data.program
-        kwargs['tola_table'] = get_data.tola_table.id
+        if get_data.tola_table:
+            kwargs['tola_table'] = get_data.tola_table.id
+        else:
+            kwargs['tola_table'] = None
         return kwargs
 
     def form_valid(self, form):
