@@ -282,20 +282,18 @@ class ProjectAgreementForm(forms.ModelForm):
                              HTML("""
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      <div class='panel-heading'>Indicator</div>
                                       {% if getQuantitative %}
                                           <!-- Table -->
                                           <table class="table">
                                             <tr>
                                             <th>Targeted</th>
-                                            <th>Description</th>
                                             <th>Indicator</th>
                                             <th>View</th>
                                             </tr>
                                             {% for item in getQuantitative %}
                                             <tr>
                                                 <td>{{ item.targeted}}</td>
-                                                <td>{{ item.description}}</td>
                                                 <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
                                             </tr>
@@ -886,14 +884,13 @@ class ProjectCompleteForm(forms.ModelForm):
                              HTML("""
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      <div class='panel-heading'>Indicator</div>
                                       {% if getQuantitative %}
                                           <!-- Table -->
                                           <table class="table">
                                             <tr>
                                             <th>Targeted</th>
                                             <th>Achieved</th>
-                                            <th>Description</th>
                                             <th>Indicator</th>
                                             <th>View</th>
                                             </tr>
@@ -901,7 +898,6 @@ class ProjectCompleteForm(forms.ModelForm):
                                             <tr>
                                                 <td>{{ item.targeted}}</td>
                                                 <td>{{ item.achieved}}</td>
-                                                <td>{{ item.description}}</td>
                                                 <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
                                             </tr>
@@ -1154,14 +1150,13 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                              HTML("""
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      <div class='panel-heading'>Indicator</div>
                                       {% if getQuantitative %}
                                           <!-- Table -->
                                           <table class="table">
                                             <tr>
                                             <th>Targeted</th>
                                             <th>Achieved</th>
-                                            <th>Description</th>
                                             <th>Indicator</th>
                                             <th>View</th>
                                             </tr>
