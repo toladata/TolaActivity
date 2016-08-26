@@ -64,7 +64,7 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Analysis and Reporting',
                     Fieldset('Analysis and Reporting',
-                        'method_of_analysis','information_use', 'reporting_frequency','comments'
+                        'method_of_analysis','information_use', 'reporting_frequency','comments','notes'
                     ),
                 ),
                 Tab('Approval',

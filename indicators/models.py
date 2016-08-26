@@ -262,6 +262,7 @@ class Indicator(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     history = HistoricalRecords()
+    notes = models.TextField(max_length=500, null=True, blank=True)
     #optimize query for class based views etc.
     objects = IndicatorManager()
 
