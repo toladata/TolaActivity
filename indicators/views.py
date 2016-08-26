@@ -435,7 +435,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     return render(request, "indicators/data_report.html", {'getQuantitativeData': queryset, 'countries':countries,'getSiteProfile': getSiteProfile,
                                                            'getPrograms':getPrograms, 'getIndicators': getIndicators,
                                                            'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
-                                                           'id': id,'program': program,'type': type,'indicator_name':indicator_name,
+                                                           'id': id,'program': program,'type': type,'indicator': id,'indicator_name':indicator_name,
                                                            'type_name': type_name, 'program_name': program_name})
 
 

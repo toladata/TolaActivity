@@ -8,12 +8,14 @@ class GoogleMapsWidget(forms.HiddenInput):
     inline in a form
     """
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value,country=None, attrs=None, choices=()):
+
         self.attrs['base_latitude'] = self.attrs.get('base_latitude', u'34.5333')
         self.attrs['base_longitude'] = self.attrs.get('base_longitude', u'69.1667')
         self.attrs['width'] = self.attrs.get('width', 700)
         self.attrs['height'] = self.attrs.get('height', 400)
-        self.attrs['country_city'] = self.attrs.get('country_city', u'Kabul, Afghanistan')
+        self.attrs['country'] = self.attrs.get('country', country)
+
 
         maps_html = u"""
             <script type="text/javascript" src="https://maps.google.com/maps/api/js?v=3&key=AIzaSyAc76ZfKuHCvwXAEAiR2vINQPgNRenCf_8&sensor=false"></script>
@@ -112,7 +114,7 @@ class GoogleMapsWidget(forms.HiddenInput):
             <div style="width: 400px; margin-bottom: 25px; margin-left: 100px">
                 <div id="search">
                 <label for="city_county">City, Country:</label>
-                <input id="city_country" type="text" value="%(country_city)s" class="input-medium search-query"/>
+                <input id="city_country" type="text" value="%(country)s" class="input-medium search-query"/>
                 <input class="btn" type="button" value="Find" onclick="codeAddress()" />
                 </div>
                 <div id="search_results"><br/>
@@ -125,7 +127,7 @@ class GoogleMapsWidget(forms.HiddenInput):
 
 
             """ % {'latitude': self.attrs['latitude'], 'longitude': self.attrs['longitude'], 'base_longitude': self.attrs['base_longitude'],
-                   'base_latitude': self.attrs['base_latitude'], 'width': self.attrs['width'], 'height': self.attrs['height'], 'country_city': self.attrs['country_city']}
+                   'base_latitude': self.attrs['base_latitude'], 'width': self.attrs['width'], 'height': self.attrs['height'], 'country': self.attrs['country']}
 
         rendered = super(GoogleMapsWidget, self).render(name, value, attrs)
         return rendered + mark_safe(maps_html)
