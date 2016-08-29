@@ -2569,7 +2569,7 @@ class CustomDashboardList(ListView):
         # getProjects = ProjectAgreement.objects.all().filter(program__id=program__id, program__country__in=countries)
 
         #retrieve projects for a program
-        getCustomDashboards = CustomDashboard.objects.all().filter(program__id=program_id)
+        getCustomDashboards = CustomDashboard.objects.all().filter(program=program_id)
             
         return render(request, self.template_name, {'getCustomDashboards': getCustomDashboards, 'getProgram': getProgram})
 
@@ -2804,6 +2804,13 @@ class CustomDashboardUpdate(UpdateView):
         layoutList = ast.literal_eval(layout)
         getDashboardLayoutList = list(layoutList.items())
         context.update({'getDashboardLayoutList': getDashboardLayoutList})
+        # getLayoutDictionary = "{"template_position": {"component_type":"bar_chart","component_assigned": "component_id"}}"
+        # for item in getDashboardLayoutList:
+        #     if !getDashboardLayoutList[item.0]:
+        #         getLayoutDictionary[item.0]={"component_type":item.1, "component_assigned":""}
+        #     else if getLayoutDictionary[item.0].component_type != item.1
+        #         getLayoutDictionary[item.0]={"component_type":item.1, "component_assigned":""}
+        # context.update({'getLayoutDictionary': getLayoutDictionary})
 
         try:
             getDashboardComponents = DashboardComponent.objects.all().filter(componentset=getCustomDashboard)
@@ -3073,6 +3080,25 @@ class DashboardComponentUpdate(UpdateView):
         getDashboardComponent = DashboardComponent.objects.all().get(id=self.kwargs['pk'])
         context.update({'getDashboardComponent': getDashboardComponent})
 
+        #for each component define the properties the component needs to have data mapped for by type
+        #ideally this dictionary would be saved externally as a constant
+        getComponentProperties = {
+            'bar_graph':{'labels':'', 'data': '', 'colors':''}, 
+            'doughnut': {'labels':'', 'data': '', 'colors':''}, 
+            'line':{'labels':'', 'data': '', 'colors':''}, 
+            'pie':{'labels':'', 'data': '', 'colors':''}, 
+            'polar':{'labels':'', 'data': '', 'colors':''}, 
+            'radar':{'labels':'', 'data': '', 'colors':''}, 
+            'sidebar_gallery':{'photo_url':'', 'photo_titles':'', 'photo_captions':'', 'photo_dates':''}, 
+            'content_map':{'latitude':'', 'longitude':'', 'location_name':'', 'description': '', 'region_link': '','region_name':''}, 
+            'region_map':{'latitude':'', 'longitude':'', 'site_contact':'', 'location_name':'','description': ''}, 
+            'sidebar_map':{'latitude':'', 'longitude':'', 'site_contact':'', 'location_name':'','description': ''}, 
+            'context_pane':{}, 
+            'sidebar_events':{}, 
+            'sidebar_news':{},
+            'sidebar_objectives':{}
+        }
+        context.update({'getComponentProperties': getComponentProperties})
         return context
 
     # add the request to the kwargs
