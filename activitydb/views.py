@@ -25,7 +25,8 @@ from filters import ProjectAgreementFilter
 import json
 import requests
 
-from django.core import serializers
+from django.core import serializers, paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -1070,8 +1071,26 @@ class SiteProfileList(ListView):
             getSiteProfile = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
+        #paginate site profile list
 
-        return render(request, self.template_name, {'inactiveSite':inactiveSite,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+        default_list = 10 # default number of site profiles per page
+        user_list = request.GET.get('user_list') # user defined number of site profiles per page, 10, 20, 30
+
+        if user_list:
+            default_list = int(user_list)
+
+        paginator = Paginator(getSiteProfile, default_list)
+
+        page = request.GET.get('page')
+
+        try:
+            getSiteProfile = paginator.page(page)
+        except PageNotAnInteger:
+            getSiteProfile = paginator.page(1)
+        except EmptyPage:
+            getSiteProfile = paginator.page(paginator.num_pages)
+
+        return render(request, self.template_name, {'inactiveSite':inactiveSite,'default_list':default_list,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
 class SiteProfileReport(ListView):
     """
