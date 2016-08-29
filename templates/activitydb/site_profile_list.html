@@ -91,43 +91,10 @@
         <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
         <td>{{ item.province }}</td>
         <td>{{ item.district }}</td>
-        <td><a class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ item.id }}">View Projects </a><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
+        <td><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
     </tr>
 
-    <tr>
-        <td colspan="7" class="hiddenRow">
-            <div id="hidden-{{ item.id }}" class="accordian-body collapse">
-                <table class="table table-bordered">
-                    <tr>
-                        <th>Project Name</th>
-                        <th>Program</th>
-                        <th>Activity Code</th>
-                        <th>Expected Start Date</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                    {% if getSites %}
-                    {% for site in getSites %}
-                            {% for items in site.projectagreement_set.all %}
-                                {% if item.id == site.id %}
-                    <tr>
-                        <td>{{ items.project_name }}</td>
-                        <td>{{ items.program.name }}</td>
-                        <td>{{ items.activity_code }}</td>
-                        <td>{{ items.expected_start_date|date:"m-d-Y" }}</td>
-                        <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>Project Report</a></td>
-                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="5">No Projects on this Site</td>
-                    </tr>
-                    {% endif %}
-                </table>
-            </div>
-        </td>
-    </tr>
+
       {% endfor %}
     {% else %}
     <tr>
