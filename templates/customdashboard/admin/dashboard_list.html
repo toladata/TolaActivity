@@ -31,16 +31,16 @@
         <th>&nbsp;</th>
     </tr>
     {% endif %}
-    {% for item in getDashboards %}
+    {% for dashboard in getCustomDashboards %}
     <tr>
-       <td>{{ item.create_date }}</td>       
-       <td>{{ item.dashboard_name }}</td>
-       <td>{{ item.dashboard_theme }}</td>
-       <td>{{ item.dashboard_description }}</td>
-       <td>{{ item.is_public }}</td>
-        <td> <a href="/activitydb/custom_dashboard_delete/{{ item.id }}" class="btn btn-xs btn-danger">View Dashboard</a></td>
-        <td> <a href="/activitydb/custom_dashboard_update/{{ item.id }}" class="btn btn-xs btn-danger">Edit Dashboard</a></td>
-        <td> <a href="/activitydb/custom_dashboard_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Dashboard</a></td>
+       <td>{{ dashboard.create_date }}</td>       
+       <td>{{ dashboard.dashboard_name }}</td>
+       <td>{{ dashboard.dashboard_theme }}</td>
+       <td>{{ dashboard.dashboard_description }}</td>
+       <td>{{ dashboard.is_public }}</td>
+        <td> <a href="/activitydb/custom_dashboard_delete/{{ dashboard.id }}" class="btn btn-xs btn-danger">View</a></td>
+        <td> <a href="/activitydb/custom_dashboard_update/{{ dashboard.id }}" class="btn btn-xs btn-danger">Edit</a></td>
+        <td> <a href="/activitydb/custom_dashboard_delete/{{ dashboard.id }}" class="btn btn-xs btn-danger">Delete</a></td>
     </tr>
     {% empty %}
         <li class="list-group-item">No Custom Dashboards.</li>
