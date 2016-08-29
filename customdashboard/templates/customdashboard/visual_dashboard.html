@@ -100,7 +100,7 @@ $(function () {
         },  {
             name: 'Actual',
             data: [
-            {% for project in getProjects %}{{ project.total_estimated_budget }},{%endfor%}]
+            {% for project in getProjects %}{{ project.projectcomplete.actual_budget }},{%endfor%}]
 
         }]
     });
@@ -186,21 +186,6 @@ $(function () {
                     <a href="/activitydb/dashboard/{{ getFilteredName.id }}/rejected/"><span class="label label-success">Rejected &nbsp;<span class="badge">{{ getRejectedCount }}</span></span></a></h4>
 
                 </div>
-                    <!-- Display custom dashboards -->
-                   <div class="btn-group" style="float:right; display: inline-block; vertical-align: middle;">
-                      <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                        Program Custom Dashboard <span class="caret"></span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                          <li role="presentation">
-                              <a role="menuitem" tabindex="-1" href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- 0 - Project Status --</a></li>
-                         {%for customdashboard in getCustomDashboard%}
-                          <li class="list-group-item ">
-                                <a href="/customdashboard/public/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ customdashboard.id }}/">{{customdashboard.id}} - {{ customdashboard.dashboard_name }}</a>
-                            </li>
-                        {%endfor%}
-                      </ul>
-                   </div>
 
             </div>
         </div>
@@ -214,31 +199,17 @@ $(function () {
 
                     <div class="btn-group">
                       <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                        Filter Project by Status <span class="caret"></span>
+                        Project Dashboard <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu" role="menu">
                           <li role="presentation">
-                              <a role="menuitem" tabindex="-1" href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All Projects --</a></li>
-                         {% for projectstatus in getProjectStatus %}
+                         {% for project in getProjects %}
                             <li class="list-group-item">
-                                <a href="/customdashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/{{ projectstatus.project_status }}/">{{ projectstatus.project_status }} Projects</a>
+                                <a href="/activitydb/dashboard/project/{{ project.id }}/">{{ project.project_name }}</a>
                             </li>
-                        {%endfor%}
+                         {%endfor%}
                       </ul>
                     </div>
-                </div>
-                <div class="panel-body">
-                    <ul class="list-group">
-
-                        <!-- show projects -->
-                    {% for project in getProjects %}
-                        <li class="list-group-item">
-
-                            <a href="/activitydb/dashboard/project/{{ project.id }}/">{{ project.project_name }}</a>&nbsp;
-                            <button type="button" class="btn btn-xs btn-success" style="float:right;" onclick="location.href='/activitydb/dashboard/project/{{ project.id }}'"><span class="glyphicon glyphicon-arrow-right"></span></button>
-                        </li>
-                    {% endfor %}
-                    </ul>
                 </div>
                 <div class="panel-body">
                     <div id="indicator" style=" width: 100%; height: 460px; margin: 0 auto; float:right"></div>

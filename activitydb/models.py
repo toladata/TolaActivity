@@ -26,6 +26,7 @@ class TolaSites(models.Model):
     name = models.CharField(blank=True, null=True, max_length=255)
     agency_name = models.CharField(blank=True, null=True, max_length=255)
     agency_url = models.CharField(blank=True, null=True, max_length=255)
+    tola_report_url = models.CharField(blank=True, null=True, max_length=255)
     tola_tables_url = models.CharField(blank=True, null=True, max_length=255)
     tola_tables_user = models.CharField(blank=True, null=True, max_length=255)
     tola_tables_token = models.CharField(blank=True, null=True, max_length=255)
@@ -277,7 +278,7 @@ class Program(models.Model):
     dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    budget_check = models.BooleanField("Enable Approval Authority Matrix", default=False)
+    budget_check = models.BooleanField("Enable Approval Authority", default=False)
     country = models.ManyToManyField(Country)
     user_access = models.ManyToManyField(TolaUser, blank=True)
 
@@ -536,7 +537,7 @@ class SiteProfile(models.Model):
     profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
     name = models.CharField("Site Name", max_length=255, blank=False)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
-    office = models.ForeignKey(Office, default="1")
+    office = models.ForeignKey(Office, blank=True, null=True)
     contact_leader = models.CharField("Contact Name", max_length=255, blank=True, null=True)
     date_of_firstcontact = models.DateTimeField("Date of First Contact", null=True, blank=True)
     contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
@@ -786,7 +787,7 @@ class Stakeholder(models.Model):
 class StakeholderAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'country', 'create_date')
     display = 'Stakeholders'
-    list_filter = ('create_date','country','type','sector')
+    list_filter = ('country','type','sector')
 
 
 class ProjectAgreementManager(models.Manager):
@@ -812,7 +813,7 @@ class ProjectAgreementManager(models.Manager):
 # Project Agreements, admin is handled in the admin.py
 class ProjectAgreement(models.Model):
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
-    detailed = models.BooleanField(default=False,verbose_name="Detailed form view")
+    short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
     program = models.ForeignKey(Program, verbose_name="Program", related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
@@ -964,6 +965,7 @@ class ProjectComplete(models.Model):
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=None)
+    stakeholder = models.ManyToManyField(Stakeholder, blank=True)
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
     account_code = models.CharField("Fund Code", help_text='', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Code", help_text='', max_length=255, blank=True, null=True)
@@ -1039,12 +1041,6 @@ class ProjectComplete(models.Model):
         return self.project_name.encode('ascii', 'ignore')
 
 
-class ProjectCompleteAdmin(admin.ModelAdmin):
-    list_display = ('program', 'project_name', 'activity_code')
-    list_filter = ('program__country','office')
-    display = 'project_name'
-
-
 # Project Documents, admin is handled in the admin.py
 class Documentation(models.Model):
     name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
@@ -1053,7 +1049,7 @@ class Documentation(models.Model):
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     project = models.ForeignKey(ProjectAgreement, blank=True, null=True)
-    program = models.ForeignKey(Program, blank=True, null=True)
+    program = models.ForeignKey(Program)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1142,7 +1138,7 @@ class MonitorAdmin(admin.ModelAdmin):
 class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True)
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
-    proposed_value = models.IntegerField(default=0, blank=True, null=True)
+    proposed_value = models.IntegerField("Value",default=0, blank=True, null=True)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, on_delete=models.SET_NULL)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -1211,7 +1207,8 @@ class TrainingAttendance(models.Model):
 
 class TrainingAttendanceAdmin(admin.ModelAdmin):
     list_display = ('training_name', 'program', 'project_agreement', 'create_date', 'edit_date')
-    display = 'Program Dashboard'
+    display = 'Training Attendance'
+    list_filter = ('program__country','program')
 
 
 class Beneficiary(models.Model):
@@ -1224,6 +1221,7 @@ class Beneficiary(models.Model):
     site = models.ForeignKey(SiteProfile, null=True, blank=True)
     signature = models.BooleanField(default=True)
     remarks = models.CharField(max_length=255, null=True, blank=True)
+    program = models.ManyToManyField('Program', blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1243,7 +1241,9 @@ class Beneficiary(models.Model):
 
 
 class BeneficiaryAdmin(admin.ModelAdmin):
-    list_display = ('beneficiary_name', 'father_name', 'age', 'gender', 'community', 'signature', 'remarks', 'initials')
+    list_display = ('beneficiary_name',)
+    display = 'Beneficiary'
+    list_filter = ('program__country','program__name')
 
 
 class Checklist(models.Model):
@@ -1279,6 +1279,7 @@ class ChecklistItem(models.Model):
     in_file = models.BooleanField(default=False)
     not_applicable = models.BooleanField(default=False)
     global_item = models.BooleanField(default=False)
+    owner = models.ForeignKey(TolaUser, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1371,6 +1372,52 @@ class FAQ(models.Model):
 class FAQAdmin(admin.ModelAdmin):
     list_display = ( 'question', 'answer', 'create_date',)
     display = 'FAQ'
+
+#Logged users
+from django.contrib.auth.signals import user_logged_in, user_logged_out 
+from urllib2 import urlopen
+import json
+
+
+class LoggedUser(models.Model):
+
+    username = models.CharField(max_length=30, primary_key=True)
+    country = models.CharField(max_length=100, blank=False)
+    email = models.CharField(max_length=100, blank=False, default='user@mercycorps.com')
+    
+    def __unicode__(self):
+        return self.username
+
+    def login_user(sender, request, user, **kwargs):
+        country = get_user_country(request)
+
+        LoggedUser(username=user.username, country=country, email=user.email).save()
+
+    def logout_user(sender, request, user, **kwargs):
+
+        try:
+            user = LoggedUser.objects.get(pk=user.username)
+            user.delete()
+
+        except LoggedUser.DoesNotExist:
+            pass
+        
+    user_logged_in.connect(login_user)
+    user_logged_out.connect(logout_user)
+
+
+def get_user_country(request):
+
+    # Automatically geolocate the connecting IP
+    ip = request.META.get('REMOTE_ADDR')
+    try:
+        response = urlopen('http://ipinfo.io/'+ip+'/json').read()
+        response = json.loads(response)
+        return response['country'].lower()
+
+    except Exception, e:
+        response = "undefined"
+        return response
 
 
 class Distribution(models.Model):

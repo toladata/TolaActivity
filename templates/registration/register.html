@@ -26,15 +26,17 @@
       {% load crispy_forms_tags %}
       {{ userform|crispy }}
       {{ tolaform|crispy }}
+      <div id="iframe">
       <h6>Notice/Disclaimer:</h6>
-      {{ privacy }} {{ privacy.name }}
-      {{ privacy.privacy_disclaimer }}
-      <iframe hidden="hidden" width="400" height="200" scrolling="True">
-          <p>
-      {{ privacy.privacy_disclaimer }}
-          </p>
-      </iframe>
 
+          <p>
+            {{ privacy.privacy_disclaimer }}
+          </p>
+
+      </div>
+        <br/>
+      <div>
       <input type="submit" value="Create the account">
+      </div>
   </form>
 {% endblock %}
