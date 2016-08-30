@@ -1104,13 +1104,15 @@ class SiteProfileReport(ListView):
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getCommunity = SiteProfile.objects.all()
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province')
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province')
         else:
-            getCommunity = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk'])
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=self.kwargs['pk']).filter(status=1)
+            getSiteProfileIndicator = None
 
         id=self.kwargs['pk']
 
-        return render(request, self.template_name, {'getCommunity':getCommunity,'project_agreement_id': project_agreement_id,'id':id,'country': countries})
+        return render(request, self.template_name, {'getSiteProfile':getSiteProfile, 'getSiteProfileIndicator':getSiteProfileIndicator,'project_agreement_id': project_agreement_id,'id':id,'country': countries})
 
 
 class SiteProfileCreate(CreateView):
