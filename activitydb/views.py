@@ -1092,6 +1092,7 @@ class SiteProfileList(ListView):
 
         return render(request, self.template_name, {'inactiveSite':inactiveSite,'default_list':default_list,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
 
+
 class SiteProfileReport(ListView):
     """
     SiteProfile Report filtered by project
@@ -1104,8 +1105,8 @@ class SiteProfileReport(ListView):
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries)
-            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__program__country__in=countries))
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).filter(status=1)
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__program__country__in=countries)).filter(status=1)
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=self.kwargs['pk']).filter(status=1)
             getSiteProfileIndicator = None
