@@ -1104,8 +1104,8 @@ class SiteProfileReport(ListView):
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province')
-            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province')
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries)
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__program__country__in=countries))
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=self.kwargs['pk']).filter(status=1)
             getSiteProfileIndicator = None
