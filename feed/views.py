@@ -14,6 +14,7 @@ from rest_framework import renderers, viewsets, filters
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
+from activitydb.mixins import APIDefaultsMixin
 
 class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
@@ -449,3 +450,16 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
     serializer_class = DisaggregationValueSerializer
     pagination_class = StandardResultsSetPagination
 
+#Returns a list of all project agreement and feed to TolaWork
+class ProjectAgreementViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for getting ProjectAgreement."""
+
+    queryset = ProjectAgreement.objects.order_by('create_date')
+    serializer_class = AgreementSerializer
+
+
+class LoggedUserSerializerViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+    """API endpoint for getting Logged Users."""
+
+    queryset = LoggedUser.objects.all()
+    serializer_class = LoggedUserSerializer
