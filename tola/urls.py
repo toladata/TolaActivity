@@ -1,5 +1,6 @@
 from feed import views
 from tola import views
+from tola import api
 from feed.views import *
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
@@ -53,8 +54,8 @@ router.register(r'documentation', DocumentationViewSet)
 router.register(r'collecteddata', CollectedDataViewSet)
 router.register(r'tolatable', TolaTableViewSet)
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
-
-
+router.register(r'projectagreements', ProjectAgreementViewSet)
+router.register(r'loggedusers', LoggedUserSerializerViewSet)
 
 
 urlpatterns = [ # rest framework
