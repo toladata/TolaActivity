@@ -255,23 +255,3 @@ def logout_view(request):
     # Redirect to a success page.
     return HttpResponseRedirect("/")
 
-
-######-------API Views to Feed Data to Tolawork API requests-----####
-'''
-    This view responds to the 'GET' request from TolaWork
-'''
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.response import Response
-from django.http import HttpResponse
-from rest_framework.renderers import JSONRenderer
-from tola.serializer import ProjectAgreementSerializer, LoggedUserSerializer
-
-
-class JSONResponse(HttpResponse):
-    """
-    An HttpResponse that renders its content into JSON.
-    """
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)

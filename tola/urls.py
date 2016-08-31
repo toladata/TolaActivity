@@ -1,6 +1,5 @@
 from feed import views
 from tola import views
-from tola import api
 from feed.views import *
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
@@ -83,7 +82,6 @@ urlpatterns = [ # rest framework
                 url(r'^contact', views.contact, name='contact'),
                 url(r'^faq', views.faq, name='faq'),
                 url(r'^documentation', views.documentation, name='documentation'),
-                url(r'^tolaactivitydata', views.activity_api_data, name='tolaactivitydata'),
 
                 # app include of activitydb urls
                 url(r'^activitydb/', include('activitydb.urls')),
