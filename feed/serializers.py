@@ -54,6 +54,56 @@ class AgreementSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = ProjectAgreement
+        fields=(
+                'program',
+                'date_of_request',
+                'project_name',
+                'project_type',
+                'project_activity',
+                'project_description',
+                'site',
+                'activity_code',
+                'office',
+                'sector',
+                'project_design',
+                'account_code',
+                'lin_code',
+                'stakeholder',
+                'effect_or_impact',
+                'expected_start_date',
+                'expected_end_date',
+                'expected_duration',
+                'total_estimated_budget',
+                'mc_estimated_budget',
+                'local_total_estimated_budget',
+                'local_mc_estimated_budget',
+                'exchange_rate',
+                'exchange_rate_date',
+                'estimation_date',
+                'estimated_by',
+                'estimated_by_date',
+                'checked_by',
+                'checked_by_date',
+                'reviewed_by',
+                'reviewed_by_date',
+                'finance_reviewed_by',
+                'finance_reviewed_by_date',
+                'me_reviewed_by',
+                'me_reviewed_by_date',
+                'capacity',
+                'evaluate',
+                'approval',
+                'approved_by',
+                'approved_by_date',
+                'approval_submitted_by',
+                'approval_remarks',
+                'justification_background',
+                'risks_assumptions',
+                'justification_description_community_selection',
+                'description_of_project_activities',
+                'description_of_government_involvement',
+                'description_of_community_involvement',
+                'community_project_description')
 
 
 class CountrySerializer(serializers.HyperlinkedModelSerializer):
@@ -78,7 +128,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TolaUser
-
+        fields = ('url', 'name','country', 'countries')
 
 class IndicatorTypeSerializer(serializers.HyperlinkedModelSerializer):
 

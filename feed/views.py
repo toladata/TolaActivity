@@ -8,6 +8,7 @@ from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser
 
 from django.contrib.auth.models import User
 from tola.util import getCountry
+from django.shortcuts import get_object_or_404
 
 from rest_framework import renderers, viewsets, filters
 from rest_framework.response import Response
@@ -18,7 +19,6 @@ class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
     page_size_query_param = 'page_size'
     max_page_size = 10000
-
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 100
@@ -34,9 +34,11 @@ class SmallResultsSetPagination(PageNumberPagination):
 
 # API Classes
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    A ViewSet for listing or retrieving users.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
 
 class ProgramViewSet(viewsets.ModelViewSet):
     """
@@ -139,6 +141,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = ProjectAgreement.objects.all()
     serializer_class = AgreementSerializer
+    pagination_class = SmallResultsSetPagination
 
 
 class CompleteViewSet(viewsets.ModelViewSet):
@@ -158,6 +161,7 @@ class CompleteViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = ProjectComplete.objects.all()
     serializer_class = CompleteSerializer
+    pagination_class = SmallResultsSetPagination
 
 
 class IndicatorViewSet(viewsets.ModelViewSet):
@@ -169,11 +173,11 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = Indicator.objects.all().filter(country__in=user_countries)
+        queryset = Indicator.objects.all().filter(program__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country','program__name')
+    filter_fields = ('program__country__country','program__name')
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
@@ -190,9 +194,20 @@ class ReportingFrequencyViewSet(viewsets.ModelViewSet):
 
 class TolaUserViewSet(viewsets.ModelViewSet):
     """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
+    A ViewSet for listing or retrieving TolaUsers.
+
     """
+    def list(self, request):
+        queryset = TolaUser.objects.all()
+        serializer = TolaUserSerializer(instance=queryset,context={'request': request},many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = TolaUser.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = TolaUserSerializer(instance=user, context={'request': request})
+        return Response(serializer.data)
+
     queryset = TolaUser.objects.all()
     serializer_class = TolaUserSerializer
 

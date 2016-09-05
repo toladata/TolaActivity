@@ -122,6 +122,7 @@ class ProjectAgreementForm(forms.ModelForm):
     class Meta:
         model = ProjectAgreement
         fields = '__all__'
+        exclude = ['create_date', 'edit_date', 'short']
 
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
@@ -236,7 +237,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                         <tr>
                                         <th>Contributor</th>
                                         <th>Description</th>
-                                        <th>Proposed Value</th>
+                                        <th>Value</th>
                                         <th>View</th>
                                         </tr>
                                         {% for item in getBudget %}
@@ -277,20 +278,18 @@ class ProjectAgreementForm(forms.ModelForm):
                              HTML("""
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      <div class='panel-heading'>Indicator</div>
                                       {% if getQuantitative %}
                                           <!-- Table -->
                                           <table class="table">
                                             <tr>
                                             <th>Targeted</th>
-                                            <th>Description</th>
                                             <th>Indicator</th>
                                             <th>View</th>
                                             </tr>
                                             {% for item in getQuantitative %}
                                             <tr>
                                                 <td>{{ item.targeted}}</td>
-                                                <td>{{ item.description}}</td>
                                                 <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
                                             </tr>
@@ -421,8 +420,13 @@ class ProjectAgreementForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
-            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
+            APPROVALS = (
+                ('in progress', 'in progress'),
+                ('awaiting approval', 'awaiting approval'),
+                ('rejected', 'rejected'),
+            )
+            self.fields['approval'].choices = APPROVALS
+            #self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
 
@@ -432,8 +436,8 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
     class Meta:
         model = ProjectAgreement
         fields = '__all__'
-        exclude = ['create_date', 'edit_date','activity_code','account_code','lin_code','mc_estimated_budget','local_total_estimated_budget','local_estimated_budget'
-                   ,'approval_submitted_by','finance_reviewed_by','me_reviewed_by','exchange_rate','exchange_rate_date','estimation_date','other_budget']
+        exclude = ['create_date', 'edit_date','account_code','lin_code','mc_estimated_budget','local_total_estimated_budget','local_estimated_budget'
+                   ,'approval_submitted_by','finance_reviewed_by','me_reviewed_by','exchange_rate','exchange_rate_date','estimation_date','other_budget','short']
 
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
@@ -549,7 +553,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
                                         <tr>
                                         <th>Contributor</th>
                                         <th>Description</th>
-                                        <th>Proposed Value</th>
+                                        <th>Value</th>
                                         <th>View</th>
                                         </tr>
                                         {% for item in getBudget %}
@@ -656,8 +660,13 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
-            self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
+            APPROVALS = (
+                ('in progress', 'in progress'),
+                ('awaiting approval', 'awaiting approval'),
+                ('rejected', 'rejected'),
+            )
+            self.fields['approval'].choices = APPROVALS
+            #self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
 
@@ -691,7 +700,6 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.layout = Layout(
-
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
@@ -705,7 +713,9 @@ class ProjectCompleteCreateForm(forms.ModelForm):
                     ),
                 ),
             ),
-
+            FormActions(
+                Submit('submit', 'Save', css_class='btn-default')
+            ),
         )
         super(ProjectCompleteCreateForm, self).__init__(*args, **kwargs)
 
@@ -840,7 +850,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                             <tr>
                                             <th>Contributor</th>
                                             <th>Description</th>
-                                            <th>Proposed Value</th>
+                                            <th>Value</th>
                                             <th>View</th>
                                             </tr>
                                             {% for item in getBudget %}
@@ -854,7 +864,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ id }}">Add Budget Contribution</a>
                                       </div>
                                     </div>
                                 """),
@@ -870,14 +880,13 @@ class ProjectCompleteForm(forms.ModelForm):
                              HTML("""
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      <div class='panel-heading'>Indicator</div>
                                       {% if getQuantitative %}
                                           <!-- Table -->
                                           <table class="table">
                                             <tr>
                                             <th>Targeted</th>
                                             <th>Achieved</th>
-                                            <th>Description</th>
                                             <th>Indicator</th>
                                             <th>View</th>
                                             </tr>
@@ -885,7 +894,6 @@ class ProjectCompleteForm(forms.ModelForm):
                                             <tr>
                                                 <td>{{ item.targeted}}</td>
                                                 <td>{{ item.achieved}}</td>
-                                                <td>{{ item.description}}</td>
                                                 <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/activitydb/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/activitydb/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
                                             </tr>
@@ -893,7 +901,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ id }}">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                              """),
@@ -948,7 +956,7 @@ class ProjectCompleteForm(forms.ModelForm):
                               </table>
                           {% endif %}
                           <div class="panel-footer">
-                            <a onclick="newPopup('/activitydb/documentation_list/0/{{ pk }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
+                            <a onclick="newPopup('/activitydb/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
                           </div>
                         </div>
                          """),
@@ -973,7 +981,12 @@ class ProjectCompleteForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
+            APPROVALS = (
+                ('in progress', 'in progress'),
+                ('awaiting approval', 'awaiting approval'),
+                ('rejected', 'rejected'),
+            )
+            self.fields['approval'].choices = APPROVALS
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_submitted_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
@@ -986,7 +999,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
         model = ProjectComplete
         fields = '__all__'
 
-        exclude = ['create_date', 'edit_date','project_activity', 'activity_code', 'account_code', 'lin_code', 'mc_estimated_budget',
+        exclude = ['create_date', 'edit_date','project_activity', 'account_code', 'lin_code', 'mc_estimated_budget',
                'local_total_estimated_budget', 'local_estimated_budget', 'approval_submitted_by', 'finance_reviewed_by',
                'me_reviewed_by', 'exchange_rate', 'exchange_rate_date',
                'estimation_date', 'other_budget']
@@ -1103,7 +1116,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                             <tr>
                                             <th>Contributor</th>
                                             <th>Description</th>
-                                            <th>Proposed Value</th>
+                                            <th>Value</th>
                                             <th>View</th>
                                             </tr>
                                             {% for item in getBudget %}
@@ -1117,7 +1130,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ pk }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/budget_add/{{ id }}">Add Budget Contribution</a>
                                       </div>
                                     </div>
                             """),
@@ -1133,14 +1146,13 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                              HTML("""
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator Evidence</div>
+                                      <div class='panel-heading'>Indicator</div>
                                       {% if getQuantitative %}
                                           <!-- Table -->
                                           <table class="table">
                                             <tr>
                                             <th>Targeted</th>
                                             <th>Achieved</th>
-                                            <th>Description</th>
                                             <th>Indicator</th>
                                             <th>View</th>
                                             </tr>
@@ -1156,7 +1168,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ pk }}">Add Indicators</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/activitydb/quantitative_add/{{ id }}">Add Indicators</a>
                                       </div>
                                     </div>
                              """),
@@ -1211,7 +1223,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                               </table>
                           {% endif %}
                           <div class="panel-footer">
-                            <a onclick="newPopup('/activitydb/documentation_list/0/{{ pk }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
+                            <a onclick="newPopup('/activitydb/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
                           </div>
                         </div>
                          """),
@@ -1236,7 +1248,12 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
 
         if not 'Approver' in self.request.user.groups.values_list('name', flat=True):
-            self.fields['approval'].widget.attrs['disabled'] = "disabled"
+            APPROVALS = (
+                ('in progress', 'in progress'),
+                ('awaiting approval', 'awaiting approval'),
+                ('rejected', 'rejected'),
+            )
+            self.fields['approval'].choices = APPROVALS
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
@@ -1249,7 +1266,7 @@ class SiteProfileForm(forms.ModelForm):
         exclude = ['create_date', 'edit_date']
 
     map = forms.CharField(widget=GoogleMapsWidget(
-        attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
+        attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude','country':'Find a city or village'}), required=False)
 
     date_of_firstcontact = forms.DateField(widget=DatePicker.DateInput(), required=False)
 

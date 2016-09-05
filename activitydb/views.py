@@ -267,7 +267,9 @@ class ProjectAgreementCreate(CreateView):
         for item in get_globals:
             ChecklistItem.objects.create(checklist=get_checklist,item=item.item)
 
+
         messages.success(self.request, 'Success, Initiation Created!')
+
         redirect_url = '/activitydb/dashboard/project/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
@@ -627,21 +629,21 @@ class ProjectCompleteUpdate(UpdateView):
 
         # get budget data
         try:
-            getBudget = Budget.objects.all().filter(complete__id=self.kwargs['pk'])
+            getBudget = Budget.objects.all().filter(agreement__id=getComplete.project_agreement_id)
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
 
         # get Quantitative data
         try:
-            getQuantitative = CollectedData.objects.all().filter(complete__id=self.kwargs['pk']).order_by('indicator')
+            getQuantitative = CollectedData.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('indicator')
         except CollectedData.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
 
         # get benchmark or project components
         try:
-            getBenchmark = Benchmarks.objects.all().filter(complete__id=self.kwargs['pk']).order_by('description')
+            getBenchmark = Benchmarks.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('description')
         except Benchmarks.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
@@ -1371,7 +1373,7 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Benchmark Created!')
+        messages.success(self.request, 'Success, Component Created!')
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = BenchmarkForm
@@ -1408,7 +1410,7 @@ class BenchmarkUpdate(AjaxableResponseMixin, UpdateView):
 
     def form_valid(self, form):
         form.save()
-        messages.success(self.request, 'Success, Benchmark Updated!')
+        messages.success(self.request, 'Success, Component Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -1437,7 +1439,7 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
 
         form.save()
 
-        messages.success(self.request, 'Success, Benchmark Deleted!')
+        messages.success(self.request, 'Success, Component Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = BenchmarkForm
@@ -2068,6 +2070,7 @@ class DistributionDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DistributionForm
+
 
 class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
     """

@@ -435,7 +435,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     return render(request, "indicators/data_report.html", {'getQuantitativeData': queryset, 'countries':countries,'getSiteProfile': getSiteProfile,
                                                            'getPrograms':getPrograms, 'getIndicators': getIndicators,
                                                            'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
-                                                           'id': id,'program': program,'type': type,'indicator_name':indicator_name,
+                                                           'id': id,'program': program,'type': type,'indicator': id,'indicator_name':indicator_name,
                                                            'type_name': type_name, 'program_name': program_name})
 
 
@@ -676,6 +676,7 @@ class CollectedDataCreate(CreateView):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['program'] = self.kwargs['program']
+        kwargs['tola_table'] = None
 
         return kwargs
 
@@ -770,10 +771,14 @@ class CollectedDataUpdate(UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        program = CollectedData.objects.get(id=self.kwargs['pk']).program
+        get_data = CollectedData.objects.get(id=self.kwargs['pk'])
         kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        kwargs['program'] = program
+        kwargs['program'] = get_data.program
+        if get_data.tola_table:
+            kwargs['tola_table'] = get_data.tola_table.id
+        else:
+            kwargs['tola_table'] = None
         return kwargs
 
     def form_valid(self, form):
