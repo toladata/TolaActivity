@@ -53,8 +53,8 @@ router.register(r'documentation', DocumentationViewSet)
 router.register(r'collecteddata', CollectedDataViewSet)
 router.register(r'tolatable', TolaTableViewSet)
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
-
-
+router.register(r'projectagreements', ProjectAgreementViewSet)
+router.register(r'loggedusers', LoggedUserSerializerViewSet)
 
 
 urlpatterns = [ # rest framework
@@ -82,7 +82,6 @@ urlpatterns = [ # rest framework
                 url(r'^contact', views.contact, name='contact'),
                 url(r'^faq', views.faq, name='faq'),
                 url(r'^documentation', views.documentation, name='documentation'),
-                url(r'^tolaactivitydata', views.activity_api_data, name='tolaactivitydata'),
 
                 # app include of activitydb urls
                 url(r'^activitydb/', include('activitydb.urls')),

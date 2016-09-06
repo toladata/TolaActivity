@@ -25,7 +25,8 @@ from filters import ProjectAgreementFilter
 import json
 import requests
 
-from django.core import serializers
+from django.core import serializers, paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -1070,8 +1071,27 @@ class SiteProfileList(ListView):
             getSiteProfile = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
                                                              Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
+        #paginate site profile list
 
-        return render(request, self.template_name, {'inactiveSite':inactiveSite,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+        default_list = 10 # default number of site profiles per page
+        user_list = request.GET.get('user_list') # user defined number of site profiles per page, 10, 20, 30
+
+        if user_list:
+            default_list = int(user_list)
+
+        paginator = Paginator(getSiteProfile, default_list)
+
+        page = request.GET.get('page')
+
+        try:
+            getSiteProfile = paginator.page(page)
+        except PageNotAnInteger:
+            getSiteProfile = paginator.page(1)
+        except EmptyPage:
+            getSiteProfile = paginator.page(paginator.num_pages)
+
+        return render(request, self.template_name, {'inactiveSite':inactiveSite,'default_list':default_list,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getPrograms':getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper})
+
 
 class SiteProfileReport(ListView):
     """
@@ -1085,13 +1105,15 @@ class SiteProfileReport(ListView):
         project_agreement_id = self.kwargs['pk']
 
         if int(self.kwargs['pk']) == 0:
-            getCommunity = SiteProfile.objects.all()
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).filter(status=1)
+            getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__program__country__in=countries)).filter(status=1)
         else:
-            getCommunity = SiteProfile.objects.all().filter(projectagreement__id=self.kwargs['pk'])
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=self.kwargs['pk']).filter(status=1)
+            getSiteProfileIndicator = None
 
         id=self.kwargs['pk']
 
-        return render(request, self.template_name, {'getCommunity':getCommunity,'project_agreement_id': project_agreement_id,'id':id,'country': countries})
+        return render(request, self.template_name, {'getSiteProfile':getSiteProfile, 'getSiteProfileIndicator':getSiteProfileIndicator,'project_agreement_id': project_agreement_id,'id':id,'country': countries})
 
 
 class SiteProfileCreate(CreateView):

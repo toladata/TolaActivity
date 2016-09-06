@@ -4,7 +4,6 @@
 
 <!--- Hosted Leaflet CSS --->
 <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
-<link rel="borders" type="application/json" href="js/world_borders.geojson">
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/main.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/Leaflet.Photo.css">
@@ -17,7 +16,6 @@
 <script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/vendor/leaflet.js"></script>
 <script src="{{ STATIC_URL }}js/leaflet-sidebar.js"></script>
-<script src="{{ STATIC_URL }}publicdashboard/js/vendor/AFG.geo.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/leaflet-google.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/leaflet.markercluster.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/Leaflet.Photo.js"></script>
@@ -25,6 +23,8 @@
 <script src="{{ STATIC_URL }}publicdashboard/js/leaflet-providers.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/jquery-1.11.3.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
+
+<link rel="borders" type="application/json" href="{{ STATIC_URL }}js/world_borders.geojson">
 
 <div class="wrapper">
 
@@ -148,209 +148,202 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
         </div>
         <div id="map" class="sidebar-map"></div>
         <script>
-            var country=[],country_lat=[],country_long=[], narrativeTitle=[], narrativeTXT=[], overlay=[];
+            var country=[],country_lat=[],country_long=[],country_zoom=[], narrativeTitle=[], narrativeTXT=[], overlay=[];
 
-            //read country GPS data into arrays
             {% for item in countries %}
                 country[{{forloop.counter}}] = "{{ item.country }}";
                 country_lat[{{forloop.counter}}] = "{{ item.latitude }}";
                 country_long[{{forloop.counter}}] = "{{ item.longitude }}";
+                country_zoom[{{forloop.counter}}] = "{{ item.zoom }}";
             {% endfor %}
 
-             //overlay groups
-             {% for group in getOverlayGroups %}
-                var {{ group.overlay_group }} = new L.LayerGroup();
-             {% endfor %}
+            var osmLink = '<a href="https://openstreetmap.org">OpenStreetMap</a>',
+                thunLink = '<a href="https://thunderforest.com/">Thunderforest</a>';
 
-            //define icons for overlay markers
-            var projectIcon = L.divIcon({
-              className: 'map-marker',
-              html:'<div class="map-marker project"></div>',
-              iconSize: [50,50]
-            });
-            var indicatorIcon = L.divIcon({
-              className: 'marker-indicator',
-              html:'<div class="marker-indicator"></div>',
-              iconSize: [50,50]
-            });
-            var greenIcon = new L.Icon({
-                iconUrl: '{{ STATIC_URL }}js/images/marker-icon-green.png',
-                iconRetinaUrl: '{{ STATIC_URL }}js/images/marker-icon-2x-green.png',
-                iconSize:    [25, 41],
-                iconAnchor:  [12, 41],
-                popupAnchor: [1, -34],
-                shadowUrl: '{{ STATIC_URL }}js/images/marker-shadow.png',
-                shadowSize:  [41, 41]
-            });
-            //partner markers
-            {% for item in getSiteProfile %}
-                L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon})
-                    .addTo(partners)
-                    .bindPopup("" + "<b>{{ item.country }}</b>
-                                <br/>Project Site:
-                                <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
-                                <br/>ADM1: {{ item.province }}
-                                <br/>ADM2: {{ item.district }}
-                                <br/>ADM3: {{ item.village }}
-                                <br/>SiteProfile{{ item.name }}
-                                <br/> "
-                               );
-            {% endfor %}
+            var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                osmAttrib = '&copy; ' + osmLink + ' Contributors',
+                osmHumURL = "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+                osmHumAttrib = "© OpenStreetMap Contributors. Tiles courtesy of Humanitarian OpenStreetMap Team",
+                landUrl = 'http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png',
+                thunAttrib = '&copy; '+osmLink+' Contributors & '+thunLink;
+            var osmMap = L.tileLayer(osmUrl, {attribution: osmAttrib}),
+                landMap = L.tileLayer(landUrl, {attribution: thunAttrib}),
+                osmHumMap = L.tileLayer(osmHumURL, {attribution: osmHumAttrib});
 
-            {% if getSiteProfileIndicator %}
-                //indicator markers
-                {% for item in getSiteProfileIndicator %}
-                    L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon})
-                            .addTo(indicators)
-                            .bindPopup("" + "<b>{{ item.country }}</b>
-                                        <br/>Collected Indicator Data Site:
-                                        <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
-                                        <br/>ADM1: {{ item.province }}
-                                        <br/>ADM2: {{ item.district }}
-                                        <br/>ADM3: {{ item.village }}
-                                        <br/>SiteProfile{{ item.name }}
-                                        <br/> "
-                                       );
-                {% endfor %}
-            {% endif %}
+            var googleLayer = new L.Google('ROADMAP');
 
-            var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                        'Imagery &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',{attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'});
 
-            //basemaps from mapbox URL and leaflet-providers.js
-            mbUrl = 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
-            var baseMap = L.tileLayer.provider('OpenStreetMap.Mapnik');
+            var baseLayers = {
+                    "OSM Mapnik": osmMap,
+                    "OSM Humanitarian": osmHumMap,
+                    "Landscape": landMap,
+                    "CartoDB Positron": positron,
+                    "Google Roads": googleLayer
+                };
 
-            var baseMap = L.tileLayer.provider('OpenStreetMap.Mapnik'),
-                grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
-                opentopomap = L.tileLayer.provider('OpenTopoMap');
+            //Init map with default zoom and coordinates of logged in users country
+            var map = L.map('map', {
+                    layers: [positron], // only add one!
+                    touchZoom: false,
+                    scrollWheelZoom: false,
+                }).setView([country_lat[1],country_long[1]], country_zoom[1]);
 
 
-            var map = L.map('map',
-                       {
-                        center: [country_lat[1], country_long[1]],
-                        zoom: 5,
-                        dragging: false,
-                        touchZoom: false,
-                        scrollWheelZoom: false,
-                        //preselected layers
-                        layers: [baseMap, projects, indicators]
+            // Load map with geojson file that contains borders
+            $.getJSON($('link[rel="borders"]').attr("href"), function(data) {
+
+                /**
+                 * Set the style for each feature(country) to be light grey by default
+                 * @param feature (from getJson file)
+                */
+                function style(feature) {
+                    return {
+                    fillColor: "#E3E3E3",
+                    weight: 1,
+                    opacity: 0.4,
+                    color: 'white',
+                    fillOpacity: 0.3
+                    };
+                }
+
+                var geojson = L.geoJson(data, {
+                onEachFeature: onEachFeature,
+                style : style
+                }).addTo(map);
+
+                /**
+                 * Loops over each feature and creates call back function for events
+                 * Also highlights the default country based on user login
+                 * @param feature (from getJson file)
+                 * @param layer (from geoJson file)
+                */
+                function onEachFeature(feature, layer){
+                     if ($.inArray(feature.properties.NAME, country) > -1) {
+                        highlightDefault(feature, layer);
+                     }
+
+                    layer.on({
+                    click : onCountryClick,
+                    mouseover : onCountryHighLight,
+                    mouseout : onCountryMouseOut,
+                    });
+                }
+
+                /**
+                * Callback for mouse out of the country border. Will take care of the ui aspects, and will call
+                * other callbacks after done.  If it's the default highlighted country leave it alone.
+                * @param e the event
+                */
+                function onCountryMouseOut(e){
+                    if ($.inArray(e.target.feature.properties.NAME, country) == -1) {
+                        geojson.resetStyle(e.target);
+                    }
+                    // $("#countryHighlighted").text("No selection");
+
+                    var countryName = e.target.feature.properties.NAME;
+                    var countryCode = e.target.feature.properties.iso_a2;
+                    //callback when mouse exits a country polygon goes here, for additional actions
+                }
+
+                /**
+                * Callback for when a country is clicked.  Pop-up the country name
+                * @param e
+                */
+                function onCountryClick(e){
+                //callback for clicking inside a polygon
+                    geojson.bindPopup(e.target.feature.properties.NAME);
+                }
+
+                /**
+                * Callback for when a country is highlighted. Will take care of the ui aspects, and it will call
+                * other callbacks after done. If it's the default highlighted country leave it alone.
+                * @param e
+                */
+                function onCountryHighLight(e){
+
+                    if ($.inArray(e.target.feature.properties.NAME, country) == -1) {
+                        var layer = e.target;
+
+                        layer.setStyle({
+                            weight: 2,
+                            color: '#666',
+                            dashArray: '',
+                            fillOpacity: 0.7
                         });
 
-            var baseLayers = {"OpenStreet": baseMap,
-                              "GrayScale": grayscale,
-                              "Topography": opentopomap,
+                        if (!L.Browser.ie && !L.Browser.opera) {
+                            layer.bringToFront();
+                        }
 
-                              };
-
-            var overlays = { {% for narrative in getOverlayNarrative %}
-                                "{{narrative.overlay_title}}": {{narrative.overlay_group.overlay_group}},
-                             {% endfor %} };
-
-            L.control.layers(baseLayers, overlays).addTo(map);
-            var sidebar = L.control.sidebar('sidebar').addTo(map);
-
-            //AFG country boundary geoJSON
-            var AFGLayer = L.geoJson().addTo(map);
-            $.getJSON("{{ STATIC_URL }}publicdashboard/js/AFG.geo.json", function(json) {
-            AFGLayer.addData(json);
-            });
-
-            //invest_khandahar.geoJSON data (from http://earthquake.usgs.gov) - TODO - prepare INVEST-in-Khandahar geoJSON
-           function addDataToMap(data, map){
-               L.geoJson(data, {
-                    pointToLayer: function(feature, latlng) {
-                    return L.marker(latlng, {
-                      icon: greenIcon
-                            });
-                        },
-                    onEachFeature: function(feature, layer) {
-                        var popupText = "Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place + "<br><a href='" + feature.properties.url + "'>More info</a>";
-                        layer.bindPopup(popupText);
+                        var countryName = e.target.feature.properties.name;
+                        var countryCode = e.target.feature.properties.ISO2;
                     }
-               }).addTo(projects);
-            }
-            $.getJSON("{{ STATIC_URL }}publicdashboard/js/invest_khandahar.geojson", function(data){ addDataToMap(data, map); });
+                    //callback when mouse enters a country polygon goes here, for additional actions
+                 }
 
-            //narrative placeholders
-            {% for text in getOverlayNarrative %}
-                narrativeTitle[{{forloop.counter}}] = "{{text.narrative_title}}";
-                narrativeTXT[{{forloop.counter}}] = "{{text.narrative}}";
-                overlay[{{forloop.counter}}] = "{{text.overlay_title}}";
-            {% endfor %}
 
-            var testNarrative = L.control({position: 'bottomleft'}),
-                dashNarrative = L.control({position: 'bottomleft'});
+                /**
+                * Callback for hilighting the logged in users selected country
+                * @param feature
+                * @param layer
+                */
+                function highlightDefault(feature,layer){
+                        layer.setStyle({
+                        weight: 2,
+                        color: 'blue',
+                        fillColor: 'blue',
+                        dashArray: '',
+                        fillOpacity: 0.1,
+                        borderColor: 'blue'
+                        });
+                    var countryName = feature.properties.NAME;
+                    var countryCode = feature.properties.ISO2;
 
-            dashNarrative.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'info narrative');
-                div.innerHTML +=
-                "<strong>"+narrativeTitle[1]+":</strong><br/>" + narrativeTXT[1];
-                return div;
-                };
+                    //callback when mouse enters a country polygon goes here, for additional actions
+                 }
 
-            testNarrative.onAdd = function (map) {
-            var div = L.DomUtil.create('div', 'info narrative');
-                div.innerHTML +=
-                "<strong>"+narrativeTitle[2]+":</strong><br/>" + narrativeTXT[2];
-                return div;
-                };
 
-            dashNarrative.addTo(map);
+             });
 
-            map.on('overlayadd', function (eventLayer) {
-                if (eventLayer.name === overlay[2]) {
-                    this.removeControl(dashNarrative);
-                    testNarrative.addTo(this);
-                }
-            });
-            map.on('overlayremove', function (eventLayer) {
-                if (eventLayer.name === overlay[2]) {
-                    this.removeControl(testNarrative);
-                    dashNarrative.addTo(this);
-                }
+
+            // Define an icon called cssIcon
+            var projectIcon = L.divIcon({
+             className: "map-marker",
+             iconSize: [20,20],
             });
 
-            var photoLayer = L.photo.cluster().on('click', function (evt) {
-		        var photo = evt.layer.photo,
-			        template = '<a><img height="300" src="{url}"/></a><p>{caption}</p>';
+            var indicatorIcon = L.divIcon({
+              className: 'map-marker indicator',
+              iconSize: [20,20],
+            });
+            var project_sites = [
+            {% for item in getSiteProfile %}
+                {%if item.status == 1 %}
+                L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Project Site<br><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>ADM1: {{ item.province }} <br/>ADM2: {{ item.district }} <br/> ADM3: {{ item.admin_level_three }} <br/> Name: {{ item.name }} <br/> "),
+                {%endif%}
+            {%   endfor %}
+            ];
+            var projects = L.layerGroup(project_sites).addTo(map);
 
-		        if (photo.video && (!!document.createElement('video').canPlayType('video/mp4; codecs=avc1.42E01E,mp4a.40.2'))) {
-			        template = '<video autoplay controls poster="{url}"><source src="{video}" type="video/mp4"/></video>';
-		            };
+            var indicator_sites = [
+            {% if getSiteProfileIndicator %}
+                {% for item in getSiteProfileIndicator %}
+                    {%if item.status == 1 %}
+                    L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Collected Indicator Data Site<br> <a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>ADM1: {{ item.province }} <br/>ADM2: {{ item.district }} <br/> ADM3: {{ item.admin_level_three }} <br/> Name: {{ item.name }} <br/> "),
+                    {%endif%}
+                {%   endfor %}
+            {% endif %}
+            ];
+            var indicators = L.layerGroup(indicator_sites).addTo(map);
 
-		    evt.layer.bindPopup(L.Util.template(template, photo), {
-			    className: 'leaflet-popup-photo',
-			    minWidth: 300
+            var overlayMaps = {
+                "Indicator Data Sites": indicators,
+                "Project Sites": projects,
+            };
 
-		        }).openPopup();
-	        });
+            L.control.layers(baseLayers,overlayMaps).addTo(map);
 
-	        reqwest({
-		        url: 'https://picasaweb.google.com/data/feed/api/user/114670224825998987940/albumid/6277837931786391457?alt=json-in-script',
-		        type: 'jsonp',
-		        success: function (data) {
-			        var photos = [];
-			        data = data.feed.entry;
-			            for (var i = 0; i < data.length; i++) {
-				            var photo = data[i];
-				            if (photo['georss$where']) {
-					            var pos = photo['georss$where']['gml$Point']['gml$pos']['$t'].split(' ');
-					            photos.push({
-						                lat: pos[0],
-						                lng: pos[1],
-						                url: photo['media$group']['media$content'][0].url,
-						                caption: photo['media$group']['media$description']['$t'],
-						                thumbnail: photo['media$group']['media$thumbnail'][0].url,
-						                video: (photo['media$group']['media$content'][1] ? photo['media$group']['media$content'][1].url : null)
-					                    });
-				            };
-			}
-			photoLayer.add(photos).addTo(VTC);
-			map.fitBounds(photoLayer.getBounds());
-		}
-	});
         </script>
     </div>
 

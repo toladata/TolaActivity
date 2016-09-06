@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load i18n %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
   <li><a href="/activitydb/dashboard/0/">Program Index</a></li>
@@ -91,43 +91,10 @@
         <td><a href="/activitydb/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
         <td>{{ item.province }}</td>
         <td>{{ item.district }}</td>
-        <td><a class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ item.id }}">View Projects </a><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
+        <td><a href="/activitydb/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
     </tr>
 
-    <tr>
-        <td colspan="7" class="hiddenRow">
-            <div id="hidden-{{ item.id }}" class="accordian-body collapse">
-                <table class="table table-bordered">
-                    <tr>
-                        <th>Project Name</th>
-                        <th>Program</th>
-                        <th>Activity Code</th>
-                        <th>Expected Start Date</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                    {% if getSites %}
-                    {% for site in getSites %}
-                            {% for items in site.projectagreement_set.all %}
-                                {% if item.id == site.id %}
-                    <tr>
-                        <td>{{ items.project_name }}</td>
-                        <td>{{ items.program.name }}</td>
-                        <td>{{ items.activity_code }}</td>
-                        <td>{{ items.expected_start_date|date:"m-d-Y" }}</td>
-                        <td><a target="_new" href='/activitydb/projectagreement_detail/{{ item.id }}/'>Project Report</a></td>
-                    </tr>
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="5">No Projects on this Site</td>
-                    </tr>
-                    {% endif %}
-                </table>
-            </div>
-        </td>
-    </tr>
+
       {% endfor %}
     {% else %}
     <tr>
@@ -135,6 +102,55 @@
     </tr>
     {% endif %}
 </table>
+
+<!-- paginate site profile listing -->
+ <div class="row">
+    <div class="col-md-8">
+        <ul class="paginate">
+            {% if getSiteProfile.has_previous %}
+                <li><a href="?page={{ getSiteProfile.previous_page_number }}"> {% trans "Previous" %} </a></li>
+                <li><a href="?page={{ getSiteProfile.previous_page_number }}"> {{getSiteProfile.previous_page_number}} </a></li>
+            {% endif %}
+
+            {% blocktrans with getSiteProfile.number as site_num and getSiteProfile.paginator.num_pages as num_pages %}
+                <li><a class="active" href=""> {{ site_num }}</a></li>
+            {% endblocktrans %}
+
+            {% if getSiteProfile.has_next %}
+                <li><a href="?page={{ getSiteProfile.next_page_number }}"> {{ getSiteProfile.next_page_number }}</a></li>
+
+                {% ifnotequal getSiteProfile.next_page_number getSiteProfile.paginator.num_pages %}
+                    {% with getSiteProfile.paginator.num_pages as num_pages %}
+                        <li><a href="">...</a></li>
+                        <li><a href="?page={{ num_pages }}"> {{ num_pages }}  </a></li>
+                    {% endwith %}
+                {% endifnotequal %}
+
+                <li><a href="?page={{ getSiteProfile.next_page_number }}">{% trans "Next" %}</a></li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="per_page">
+        <ul class="paginate">
+            <li>
+                <a class = "{% if default_list == 5 %}active{% endif %}" href="?user_list=10">5</a>
+            </li>
+            <li>
+                <a class = "{% if default_list == 10 %}active{% endif %}" href="?user_list=10">10</a>
+            </li>
+            <li>
+                <a class = "{% if default_list == 20 %}active{% endif %}" href="?user_list=20">20 </a>
+            </li>
+            <li>
+                <a class = "{% if default_list == 30 %}active{% endif %}" href="?user_list=30" >30</a>
+            </li>
+            <li><a href="#">per page</a></li>
+        </ul>
+    </div>
+</div>
+
+
+
 <!-- Modal -->
 <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">

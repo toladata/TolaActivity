@@ -744,6 +744,8 @@ class ProjectCompleteForm(forms.ModelForm):
     expected_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    actual_cost_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
     program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
 
