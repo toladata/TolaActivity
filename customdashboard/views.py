@@ -309,7 +309,7 @@ def RRIMAPublicDashboard(request,id=0):
     pageImages = {}
     pageImages['leadimage_sourcelink'] = 'drive.google.com/a/mercycorps.org/file/d/0B8g-VJ-NXXHiMng0OVVla3FEMlE/view?usp=sharing'
     pageImages['title'] = 'Aegean Response Photos'
-    pageImages['imageset'] = ["img/demo_images/image1.jpg","img/demo_images/image2.jpg","img/demo_images/image3.jpg","img/demo_images/image4.jpg","img/demo_images/image5.jpg","img/demo_images/image6.jpg","img/demo_images/image7.jpg","img/demo_images/image8.jpg"]
+    pageImages['imageset'] = ["img/rrima_images/image1.jpg","img/rrima_images/image2.jpg","img/rrima_images/image3.jpg","img/rrima_images/image4.jpg","img/rrima_images/image5.jpg","img/rrima_images/image6.jpg","img/rrima_images/image7.jpg","img/rrima_images/image8.jpg"]
 
     pageNews = [{"link":"(?P<id>[0-9]+)/jupyter/1/", "title": "RRIMA Report, Vol. 1"},
         {"link":"(?P<id>[0-9]+)/jupyter/2/", "title": "RRIMA Report, Vol. 2"},
