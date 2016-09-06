@@ -1,6 +1,7 @@
 from django.views.generic.list import ListView
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 
 from django.shortcuts import render
 from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
@@ -335,39 +336,43 @@ def AnalyticsDashboard(request,id=0):
     ## retrieve data --  this is an example of a tola tables request
     ## TODO: with forms, allow user to select the table that populates related filter_url, right?
     ## TODO: this should allow for up to 3 data sources (one per chart)
-    filter_url = "http://tables.toladata.io/api/silo/9/data/"
-    headers = {'content-type': 'application/json',
-               'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
-    response = requests.get(filter_url, headers=headers, verify=False)
-    get_json = json.loads(response.content)
-    data = get_json
+
+    #detailed assessment: https://tola-tables.mercycorps.org/api/silo/1225/data/
+
+
+    # filter_url = "http://tables.toladata.io/api/silo/9/data/"
+    # headers = {'content-type': 'application/json',
+    #            'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
+    # response = requests.get(filter_url, headers=headers, verify=False)
+    # get_json = json.loads(response.content)
+    # data = get_json
 
     #Parse the JSON(s) into datasets that will feed the templates for this example 
     ## -- parsing might not be immediately relevant for live example 
 
-    dataset1 = []
-    key1 = 'what_country_were_you_in_last'  
-    for answer in data:
-        dataset1.append(answer[key1])
+    # dataset1 = []
+    # key1 = 'what_country_were_you_in_last'  
+    # for answer in data:
+    #     dataset1.append(answer[key1])
 
-    dataset2 = []
-    key2 = 'tola_is_a_pashto_word_meaning_'  
-    for answer in data:
-        dataset2.append(answer[key2])
+    # dataset2 = []
+    # key2 = 'tola_is_a_pashto_word_meaning_'  
+    # for answer in data:
+    #     dataset2.append(answer[key2])
 
-    dataset3 = []
-    key3 = 'thanks_for_coming_what_made_you_join_us_today_'  
-    for answer in data:
-        dataset3.append(answer[key3])
+    # dataset3 = []
+    # key3 = 'thanks_for_coming_what_made_you_join_us_today_'  
+    # for answer in data:
+    #     dataset3.append(answer[key3])
 
-    #Programmatically defined table titles  -- 
-    ## TODO: these should come from a form that allows text entry of what the charts should be called; 
+    # Programmatically defined table titles  -- 
+    # TODO: these should come from a form that allows text entry of what the charts should be called; 
     # form should have char limits on title length
     
     tableHeaders = {}
-    tableHeaders['title1']= key1.title##getProgram[0]
-    tableHeaders['title2']= key2.title
-    tableHeaders['title3']= key3.title
+    tableHeaders['title1']= "Title 1"##key1.title##getProgram[0]
+    tableHeaders['title2']= "Title 2"##key2.title
+    tableHeaders['title3']= "Title 3"##key3.title
  
     #Programmatically defined data sets -- these should be (1) selected from a drop down.
     # TODO: open question --  how do we define which values in a table's data are going to be used?  
@@ -444,46 +449,39 @@ def NarrativeDashboard(request,id=0):
             "Working side by side with the Tola team and utilizing TolaData as the primary platform for data and information merging and management, the RRIMA and Tola partnership aims to:"], 
             'highlightList':["Centralize existing data sources.", "Identify trends within a given context.", "Analyze real-time data sets.", "Inform adaptive program delivery.", "Promote data sharing and learning."]   
     }
-    pageText['timelineLinks'] = [{"date": "July 13","event": "RRIMA Webinar","link": ""},{"date": "August 4-5","event": "Kick-Off Meeting (Izmir)","link": ""},{"date": "Aug 28 - Sept 9","event": "RRIMA Team in Izmir","link": ""},{"date": "September 9","event": "Prototype Presentation to ECHO","link": ""},{"date": "December","event": "Project Conclusion","link": ""}]
+    pageText['timelineLinks'] = [{"date": "August 4-5","event": "Kick-Off Meeting (Izmir)","link": ""},{"date": "Aug 28 - Sept 9","event": "RRIMA Team in Izmir","link": ""},{"date": "October","event": "Prototype Presentation to ECHO","link": ""},{"date": "October - December","event": "Project Conclusion","link": ""}, {"date": "December","event": "Project Conclusion","link": ""}]
 
     pageImages = {}
     pageImages['leadimage_sourcelink'] = 'drive.google.com/a/mercycorps.org/file/d/0B8g-VJ-NXXHiMng0OVVla3FEMlE/view?usp=sharing'
     pageImages['title'] = 'Aegean Response Photos'
     pageImages['imageset'] = ["img/demo_images/image1.jpg","img/demo_images/image2.jpg","img/demo_images/image3.jpg","img/demo_images/image4.jpg","img/demo_images/image5.jpg","img/demo_images/image6.jpg","img/demo_images/image7.jpg","img/demo_images/image8.jpg"]
 
-    pageNews = [{"link":"https://newsthatmoves.org/en/ashrafs-story-part-i-fleeing-political-persecution/", "title": "Ashraf's Story Part I: Fleeing Political Persecution"},
-        {"link":"https://newsthatmoves.org/en/greece-overhauls-appeals-to-speed-up-returns-to-turkey", "title": "Greece Overhauls Appeals To Speed Up Returns To Turkey"},
-        {"link":"https://newsthatmoves.org/en/asylum-seekers-make-legal-challenge-to-eu-turkey-deal/", "title": "Asylum Seekers Make Legal Challenge To EU-Turkey Deal"},
-        {"link":"https://newsthatmoves.org/en/legal-information-for-refugees-in-turkey-via-sms/", "title": "Legal Information For Refugees In Turkey Via SMS"},
-        {"link":"https://newsthatmoves.org/en/increase-in-irregular-migration-into-bulgaria/", "title": "Increase In Irregular Migration Into Bulgaria"},
-        {"link":"https://newsthatmoves.org/en/amnesty-international-stop-returns-to-turkey/", "title": "Amnesty International: Halt Returns To Turkey"},
-        {"link":"https://newsthatmoves.org/en/fundamental-rights-at-risk-in-the-european-union/", "title": "Fundamental Rights At Risk In The European Union"},
-        {"link":"https://newsthatmoves.org/en/rumours-family-reunification-camps-transportation/", "title": "RUMOURS: Family Reunification, Camps & Transportation"},
-        {"link":"https://newsthatmoves.org/en/iom-sea-route-death-toll-dropping/", "title": "IOM: Sea Route Death Toll Dropping"},
-        {"link":"https://newsthatmoves.org/en/number-of-arrivals-in-greece-dropped-90-percent/", "title": "Number of Arrivals in Greece Dropped 90 percent"}]
+    pageNews = [{"link":"(?P<id>[0-9]+)/jupyter/1/", "title": "RRIMA Report, Vol. 1"},
+        {"link":"(?P<id>[0-9]+)/jupyter/2/", "title": "RRIMA Report, Vol. 2"},
+        {"link":"(?P<id>[0-9]+)/jupyter/3/", "title": "RRIMA Report, Vol. 3"},
+        {"link":"(?P<id>[0-9]+)/jupyter/4/", "title": "RRIMA Report, Vol. 4"},
+        {"link":"(?P<id>[0-9]+)/jupyter/5/", "title": "RRIMA Report, Vol. 5"},
+        {"link":"(?P<id>[0-9]+)/jupyter/6/", "title": "RRIMA Report, Vol. 6"}]
 
-    pageMap = []
-    pageMap = [{"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir", "site_description":"Information we want to display", "region_link":"Turkey"},
-        {"latitude":37.0660, "longitude":37.3781, "location_name":"Gaziantep", "site_description":"Information we want to display","region_link":"Turkey"},
-        {"latitude":39.2645, "longitude":26.2777, "location_name":"Lesvos", "site_description":"Information we want to display","region_link":"/customdashboard/1/map/public/","region_name":"Greece"},
-        {"latitude":37.1409, "longitude":26.8488, "location_name":"Leros", "site_description":"Information we want to display","region_link":"/customdashboard/1/map/public/","region_name":"Greece"},
-        {"latitude":36.8915, "longitude":27.2877, "location_name":"Kos", "site_description":"Information we want to display","region_link":"/customdashboard/1/map/public/","region_name":"Greece"},
-        {"latitude":37.9838, "longitude":23.7275, "location_name":"Athens", "site_description":"Information we want to display","region_link":"/customdashboard/1/map/public/","region_name":"Greece"},
-        {"latitude":41.1452, "longitude":22.4997, "location_name":"Gevgelija", "site_description":"Information we want to display","region_link":"Balkans"},
-        {"latitude":42.2130, "longitude":21.7108, "location_name":"Tabanovce", "site_description":"Information we want to display","region_link":"Balkans"},
-        {"latitude":42.3092, "longitude": 21.6499, "location_name":"Presevo", "site_description":"Information we want to display","region_link":"Balkans"},
-        {"latitude":44.8416, "longitude":20.4958, "location_name":"Krnjaca", "site_description":"Information we want to display","region_link":"Balkans"},
-        {"latitude":45.1258, "longitude":19.2283, "location_name":"Sid", "site_description":"Information we want to display","region_link":"Balkans"},
-        {"latitude":46.1005, "longitude":19.6651, "location_name":"Subotica", "site_description":"Information we want to display","region_link":"Balkans"}]
-    # Borrowed data for bar graph
+    pageMap = [{"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir","site_contact":"", "site_description":"Information we want to display", "region_name":"Turkey"},
+        {"latitude":37.0660, "longitude":37.3781, "location_name":"Gaziantep","site_contact":"", "site_description":"Information we want to display","region_name":"Turkey"},
+        {"latitude":39.2645, "longitude":26.2777, "location_name":"Lesvos", "site_contact":"Josh Kreger", "site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece"},
+        {"latitude":37.1409, "longitude":26.8488, "location_name":"Leros", "site_contact":"Hicham Awad","site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece","region_link":"Greece"},
+        {"latitude":36.8915, "longitude":27.2877, "location_name":"Kos", "site_contact":"Josh Kreger","site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece","region_link":"Greece"},
+        {"latitude":37.9838, "longitude":23.7275, "location_name":"Athens", "site_contact":"Kaja Wislinska","site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece","region_link":"Greece"},
+        {"latitude":41.1452, "longitude":22.4997, "location_name":"Gevgelija", "site_contact":"test","site_description":"Information we want to display","region_name":"Balkans"},
+        {"latitude":42.2130, "longitude":21.7108, "location_name":"Tabanovce","site_contact":"test","site_description":"Information we want to display","region_name":"Balkans"},
+        {"latitude":42.3092, "longitude": 21.6499, "location_name":"Presevo","site_contact":"test","site_description":"Information we want to display","region_name":"Balkans"},
+        {"latitude":44.8416, "longitude":20.4958, "location_name":"Krnjaca","site_contact":"test","site_description":"Information we want to display","region_name":"Balkans"},
+        {"latitude":45.1258, "longitude":19.2283, "location_name":"Sid","site_contact":"test","site_description":"Information we want to display","region_name":"Balkans"},
+        {"latitude":46.1005, "longitude":19.6651, "location_name":"Subotica","site_contact":"test","site_description":"Information we want to display","region_name":"Balkans"}]
+   # Borrowed data for bar graph
     colorPalettes = {
     'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
     'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
     };
 
-
-
-    return render(request, 'customdashboard/themes/narrative_dashboard.html', 
+    return render(request, 'customdashboard/themes/rrima_narrative_dashboard.html', 
         {'pageText': pageText, 'pageNews': pageNews, 'pageImages': pageImages, 'pageMap': pageMap,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
 
 
@@ -567,3 +565,13 @@ def MapDashboard(request,id=0):
     return render(request, 'customdashboard/themes/map_dashboard.html', 
         {'pageMap':pageMap,'colorPalettes':colorPalettes,'table1': table1,'table2': table2,'table3': table3,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) 
 
+def RRIMAJupyterView1(request,id=0): 
+    model = Program
+    program_id = 1#id ##USE TURKEY PROGRAM ID HERE
+    # getProgram = Program.objects.all().filter(id=program_id)
+
+    ## retrieve the coutries the user has data access for
+    countries = getCountry(request.user)
+    with open('static/rrima.html') as myfile: data = "\n".join(line for line in myfile) 
+    
+    return HttpResponse(data)
