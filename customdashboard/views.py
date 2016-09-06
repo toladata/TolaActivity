@@ -2,7 +2,7 @@ from django.views.generic.list import ListView
 
 from django.shortcuts import render
 from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
-from customdashboard.models import OverlayGroups, OverlayNarratives
+from customdashboard.models import OverlayGroups, OverlayNarratives, JupyterNotebooks
 from .models import ProjectStatus, Gallery
 from indicators.models import CollectedData
 
@@ -273,12 +273,73 @@ def ReportPublicDashboard(request,id=0):
 
     return render(request, "publicdashboard/survey_public_dashboard.html", {'countries': countries, 'report':report})
 
+def RRIMAPublicDashboard(request,id=0):
+
+    ## retrieve program
+    model = Program
+    program_id = id
+    getProgram = Program.objects.all().filter(id=program_id)
+
+    ## retrieve the coutries the user has data access for
+    countries = getCountry(request.user)
+
+    #retrieve projects for a program
+    getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
+
+
+    pageText = {}
+    pageText['pageTitle'] = "Refugee Response Information Management & Analysis (RRIMA)"
+    pageText['objectives'] = ["Rapid Use Interface", "Data Analysis"]
+    pageText['objectives_subtitles'] = ["Rapid Implementation; Nimble and Accessible User Interface","Data Analysis and Dissemination"]
+    pageText['objectives_content'] = ["RRIMA will be a user-friendly dashboarding/data visualization tool that is quick to implement and requires little technical knowledge to use. ", "RRIMA will promote increased transparency and communications across teams, partners and external audiences.\n\nRRIMA will support teams' ability to articulate impact and trends across the whole Aegean Response."]
+    pageText['projectSummary'] = {
+        'title':"Project Description", 
+        'excerpt': "The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.",
+        'full':[
+            "In recent years, we have seen a phenomena of migration taking place originating from geographic areas spanning across North and East Africa, the Middle East and Central Asia flowing into and towards Europe.",
+            "More than a million migrants and refugees crossed into Europe in 2015 - the vast majority of which traveled along the Aegean route from countries such as Syria, Afghanistan and Iraq through Turkey, Greece and the Balkans into Europe, seeking asylum. Approximately 74 percent of those are from the top 10 refugee-producing countries (including Syria, Afghanistan, and Iraq among others) and are likely meet the criteria for protected status under the 1951 Refugee Convention. The remaining 26 percent are migrants who are seeking safety, resources and/or a better life in Europe.", 
+            "Mercy Corps is poised with field teams in active areas along the migration route, including the Turkey, Greece, Serbia and the Former Republic of Macedonia (FYROM). However, despite the fact that teams are gathering similar information and running parallel programming, communication and information flow is limited due to a lack of a unifying framework for analysis.", 
+            "With ECHO funding, we have the opportunity to change that. ", 
+            "The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.", 
+            "Working side by side with the Tola team and utilizing TolaData as the primary platform for data and information merging and management, the RRIMA and Tola partnership aims to:"], 
+            'highlightList':["Centralize existing data sources.", "Identify trends within a given context.", "Analyze real-time data sets.", "Inform adaptive program delivery.", "Promote data sharing and learning."]   
+    }
+    pageText['timelineLinks'] = [{"date": "August 4-5","event": "Kick-Off Meeting (Izmir)","link": ""},{"date": "Aug 28 - Sept 9","event": "RRIMA Team in Izmir","link": ""},{"date": "October","event": "Prototype Presentation to ECHO","link": ""},{"date": "October - December","event": "Project Conclusion","link": ""}, {"date": "December","event": "Project Conclusion","link": ""}]
+
+    pageImages = {}
+    pageImages['leadimage_sourcelink'] = 'drive.google.com/a/mercycorps.org/file/d/0B8g-VJ-NXXHiMng0OVVla3FEMlE/view?usp=sharing'
+    pageImages['title'] = 'Aegean Response Photos'
+    pageImages['imageset'] = ["img/rrima_images/image1.jpg","img/rrima_images/image2.jpg","img/rrima_images/image3.jpg","img/rrima_images/image4.jpg","img/rrima_images/image5.jpg","img/rrima_images/image6.jpg","img/rrima_images/image7.jpg","img/rrima_images/image8.jpg"]
+
+    pageNews = JupyterNotebooks.objects.all().filter(very_custom_dashboard="RRIMA")
+
+    pageMap = [{"latitude":39.9334, "longitude":32.8597, "location_name":"Ankara","site_contact":"Sonal Shinde, Migration Response Director", "site_description":"Information we want to display","region_name":"Turkey"},
+        {"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir","site_contact":"Tracy Lucas, Emergency Program Manager, ECHO Aegean Response", "site_description":"Information we want to display", "region_name":"Turkey"},
+        {"latitude":37.0660, "longitude":37.3781, "location_name":"Gaziantep","site_contact":"Jihane Nami, Director of Programs Turkey", "site_description":"Information we want to display","region_name":"Turkey"},
+        {"latitude":39.2645, "longitude":26.2777, "location_name":"Lesvos", "site_contact":"Chiara Bogoni, Island Emergency Program Manager", "site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece"},
+        {"latitude":37.9838, "longitude":23.7275, "location_name":"Athens", "site_contact":"Josh Kreger, Team Leader - Greece and Kaja Wislinska, Team Leader - Athens and Mainland","site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece","region_link":"Greece"},
+        {"latitude":44.7866, "longitude":20.4489, "location_name":"Belgrade","site_contact":"Radovan Jovanovic, Team Leader - Balkans","site_description":"Information we want to display","region_name":"Balkans"}]
+   # Borrowed data for bar graph
+    colorPalettes = {
+    'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
+    'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
+    };
+
+    return render(request, 'customdashboard/rrima_dashboard.html', 
+        {'pageText': pageText, 'pageNews': pageNews, 'pageImages': pageImages, 'pageMap': pageMap,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
+
+
 
 def Gallery(request,id=0):
     program_id = id
     getProgram = Program.objects.all().filter(id=program_id)
     getGallery = Gallery.objects.all().filter(program_name__id=program_id)
     return render(request, "gallery/gallery.html", {'getGallery':getGallery, 'getProgram':getProgram})
+
+
+def Notebook(request,id=0):
+    getNotebook = JupyterNotebooks.objects.get(id=id)
+    return render(request, "customdashboard/notebook.html", {'getNotebook':getNotebook})
 
 
 class ProgramList(ListView):
