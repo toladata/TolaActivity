@@ -15,6 +15,7 @@ urlpatterns = patterns('',
                        url(r'^survey_public/$', 'customdashboard.views.SurveyPublicDashboard', name='survey_public_dashboard'),
                        url(r'^survey_talk_public/$', 'customdashboard.views.SurveyTalkPublicDashboard', name='survey_talk_public_dashboard'),
                        url(r'^public/(?P<id>\w+)/$', 'customdashboard.views.PublicDashboard', name='public_dashboard'),
+                       url(r'^public/(?P<id>\w+)/rrima$', 'customdashboard.views.RRIMAPublicDashboard', name='rrima_public_dashboard'),
                        url(r'^public/(?P<id>\w+)/([0-9]+)/$', 'customdashboard.views.PublicDashboard', name='public_dashboard'),
 
                        #display default custom dashboard
