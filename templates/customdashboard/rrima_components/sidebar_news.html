@@ -1,6 +1,6 @@
 <div class="sidebar-pane" id="narrative-pane" style="height: 300px; overflow-y: scroll;">
     {% for textRecord in tolaTextData %}
-      <div class="panel-body"> <a href="{{textRecord.link}}" style='float:left; color: black; '>{{textRecord.title}} </a> </div>
+      <div class="panel-body"> <a href="/customdashboard/notebook/{{textRecord.id}}" style='float:left; color: black; '>{{textRecord.name}} </a> </div>
     {% endfor %}
 </div>
 
@@ -28,7 +28,3 @@
     </div>
   </div>
 </div>
-
-
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>

@@ -2,7 +2,7 @@ from django.views.generic.list import ListView
 
 from django.shortcuts import render
 from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
-from customdashboard.models import OverlayGroups, OverlayNarratives
+from customdashboard.models import OverlayGroups, OverlayNarratives, JupyterNotebooks
 from .models import ProjectStatus, Gallery
 from indicators.models import CollectedData
 
@@ -311,12 +311,7 @@ def RRIMAPublicDashboard(request,id=0):
     pageImages['title'] = 'Aegean Response Photos'
     pageImages['imageset'] = ["img/rrima_images/image1.jpg","img/rrima_images/image2.jpg","img/rrima_images/image3.jpg","img/rrima_images/image4.jpg","img/rrima_images/image5.jpg","img/rrima_images/image6.jpg","img/rrima_images/image7.jpg","img/rrima_images/image8.jpg"]
 
-    pageNews = [{"link":"(?P<id>[0-9]+)/jupyter/1/", "title": "RRIMA Report, Vol. 1"},
-        {"link":"(?P<id>[0-9]+)/jupyter/2/", "title": "RRIMA Report, Vol. 2"},
-        {"link":"(?P<id>[0-9]+)/jupyter/3/", "title": "RRIMA Report, Vol. 3"},
-        {"link":"(?P<id>[0-9]+)/jupyter/4/", "title": "RRIMA Report, Vol. 4"},
-        {"link":"(?P<id>[0-9]+)/jupyter/5/", "title": "RRIMA Report, Vol. 5"},
-        {"link":"(?P<id>[0-9]+)/jupyter/6/", "title": "RRIMA Report, Vol. 6"}]
+    pageNews = JupyterNotebooks.objects.all().filter(very_custom_dashboard="RRIMA")
 
     pageMap = [{"latitude":39.9334, "longitude":32.8597, "location_name":"Ankara","site_contact":"Sonal Shinde, Migration Response Director", "site_description":"Information we want to display","region_name":"Turkey"},
         {"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir","site_contact":"Tracy Lucas, Emergency Program Manager, ECHO Aegean Response", "site_description":"Information we want to display", "region_name":"Turkey"},
@@ -340,6 +335,11 @@ def Gallery(request,id=0):
     getProgram = Program.objects.all().filter(id=program_id)
     getGallery = Gallery.objects.all().filter(program_name__id=program_id)
     return render(request, "gallery/gallery.html", {'getGallery':getGallery, 'getProgram':getProgram})
+
+
+def Notebook(request,id=0):
+    getNotebook = JupyterNotebooks.objects.get(id=id)
+    return render(request, "customdashboard/notebook.html", {'getNotebook':getNotebook})
 
 
 class ProgramList(ListView):
