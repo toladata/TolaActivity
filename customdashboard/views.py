@@ -304,7 +304,7 @@ def RRIMAPublicDashboard(request,id=0):
             "Working side by side with the Tola team and utilizing TolaData as the primary platform for data and information merging and management, the RRIMA and Tola partnership aims to:"], 
             'highlightList':["Centralize existing data sources.", "Identify trends within a given context.", "Analyze real-time data sets.", "Inform adaptive program delivery.", "Promote data sharing and learning."]   
     }
-    pageText['timelineLinks'] = [{"date": "August 4-5","event": "Kick-Off Meeting (Izmir)","link": ""},{"date": "Aug 28 - Sept 9","event": "RRIMA Team in Izmir","link": ""},{"date": "October","event": "Prototype Presentation to ECHO","link": ""},{"date": "October - December","event": "Project Conclusion","link": ""}, {"date": "December","event": "Project Conclusion","link": ""}]
+    pageText['timelineLinks'] = [{"date": "August 4-5","event": "Kick-Off Meeting (Izmir)","link": ""},{"date": "Aug 28 - Sept 9","event": "RRIMA Team in Izmir","link": ""},{"date": "October","event": "Prototype Presentation to ECHO","link": ""},{"date": "October - December","event": "RRIMA Reports Released; Testing of Data Visualization Prototype","link": ""}, {"date": "December","event": "Project Conclusion","link": ""}]
 
     pageImages = {}
     pageImages['leadimage_sourcelink'] = 'drive.google.com/a/mercycorps.org/file/d/0B8g-VJ-NXXHiMng0OVVla3FEMlE/view?usp=sharing'
