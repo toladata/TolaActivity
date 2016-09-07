@@ -28,7 +28,7 @@
 {% include "activitydb/site_profile_map.html" %}
 
 <ul class="list-group">
-{% for item in getCommunity %}
+{% for item in getSiteProfile %}
     <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.name }}</b>
     <div class="btn-group align-right" role="group" aria-label="...">
         <a href="/activitydb/siteprofile_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Sites</a>

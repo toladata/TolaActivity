@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
-    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
+    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
 from django.contrib.auth.models import User
@@ -260,3 +260,8 @@ class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = DisaggregationValue
+
+class LoggedUserSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = LoggedUser
+		fields = ('username', 'country', 'email')
