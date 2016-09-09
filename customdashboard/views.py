@@ -317,12 +317,12 @@ def RRIMAPublicDashboard(request,id=0):
 
     pageNews = JupyterNotebooks.objects.all().filter(very_custom_dashboard="RRIMA")
 
-    pageMap = [{"latitude":39.9334, "longitude":32.8597, "location_name":"Ankara","site_contact":"Sonal Shinde, Migration Response Director", "site_description":"Information we want to display","region_name":"Turkey"},
-        {"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir","site_contact":"Tracy Lucas, Emergency Program Manager, ECHO Aegean Response", "site_description":"Information we want to display", "region_name":"Turkey"},
-        {"latitude":37.0660, "longitude":37.3781, "location_name":"Gaziantep","site_contact":"Jihane Nami, Director of Programs Turkey", "site_description":"Information we want to display","region_name":"Turkey"},
-        {"latitude":39.2645, "longitude":26.2777, "location_name":"Lesvos", "site_contact":"Chiara Bogoni, Island Emergency Program Manager", "site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece"},
-        {"latitude":37.9838, "longitude":23.7275, "location_name":"Athens", "site_contact":"Josh Kreger, Team Leader - Greece and Kaja Wislinska, Team Leader - Athens and Mainland","site_description":"Cash, NFIs, Information Dissemination, Wifi Hotspots, SIM Distribution, Shelter, Advocacy","region_link":"Greece","region_link":"Greece"},
-        {"latitude":44.7866, "longitude":20.4489, "location_name":"Belgrade","site_contact":"Radovan Jovanovic, Team Leader - Balkans","site_description":"Information we want to display","region_name":"Balkans"}]
+    pageMap = [{"latitude":39.9334, "longitude":32.8597, "location_name":"Ankara","site_contact":"Sonal Shinde, Migration Response Director", "site_description":"Migration Response Coordination","region_name":"Turkey"},
+        {"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir","site_contact":"Tracy Lucas, Emergency Program Manager, ECHO Aegean Response", "site_description":"Cash, Information Dissemination, Youth, Protection", "region_name":"Turkey"},
+        {"latitude":37.0660, "longitude":37.3781, "location_name":"Gaziantep","site_contact":"Jihane Nami, Director of Programs Turkey", "site_description":"Cash, NFI, Shelter, Protection, Information Dissemination","region_name":"Turkey"},
+        {"latitude":39.2645, "longitude":26.2777, "location_name":"Lesvos", "site_contact":"Chiara Bogoni, Island Emergency Program Manager", "site_description":"Cash, Youth Programs, Food","region_link":"Greece"},
+        {"latitude":37.9838, "longitude":23.7275, "location_name":"Athens", "site_contact":"Josh Kreger, Team Leader - Greece and Kaja Wislinska, Team Leader - Athens and Mainland","site_description":"Cash, Youth Psychosocial Support, Legal Support","region_link":"Greece","region_link":"Greece"},
+        {"latitude":44.7866, "longitude":20.4489, "location_name":"Belgrade","site_contact":"Radovan Jovanovic, Team Leader - Balkans","site_description":"SIM Card Distribution, Information Dissemination","region_name":"Balkans"}]
    # Borrowed data for bar graph
     colorPalettes = {
     'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
