@@ -38,7 +38,7 @@ scp TolaActivity/tarestore.sql TASERVERNAME:/home/TolaActivity/tarestore.sql
 
 docker-compose build
 
-### MySQL container ####
+### MySQL container & restore database ####
 docker-compose up -d mysqldb
 sleep 5
 docker cp tarestore.sql tolaactivity_mysqldb_1:/home
