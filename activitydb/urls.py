@@ -105,7 +105,6 @@ urlpatterns = [
 
                        url(r'^custom_dashboard/(?P<pk>[0-9]+)/$', CustomDashboardList.as_view(), name='custom_dashboard_list'),
                        url(r'^custom_dashboard_detail/(?P<pk>[0-9]+)/$', CustomDashboardDetail.as_view(), name='custom_dashboard_detail'),
-                       # url(r'^custom_dashboard_preview/(?P<pk>[0-9]+)/$', 'activitydb.views.dashboard_preview_link', name='custom_dashboard_detail'),
                        url(r'^custom_dashboard_add/(?P<id>[0-9]+)/$', CustomDashboardCreate.as_view(), name='custom_dashboard_add'),
                        url(r'^custom_dashboard_update/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/customdashboard_form.html"), name='custom_dashboard_update'),
                        url(r'^custom_dashboard_edit/(?P<pk>[0-9]+)/$', CustomDashboardUpdate.as_view(template_name="customdashboard/admin/customdashboard_modal_form.html"), name='custom_dashboard_edit'),
