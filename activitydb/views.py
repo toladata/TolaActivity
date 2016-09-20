@@ -2720,7 +2720,8 @@ class CustomDashboardDetail(DetailView):
                          'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
                 response = requests.get(filter_url, headers=headers, verify=False)
                 get_json = json.loads(response.content)
-                getSingleComponentData["{{data.data_name}}"] = get_json
+                data = get_json[{{data.data_filter_key}}]
+                
                 # should this be getSingleComponentData[data.data_name.data] = get_json
                 # and then taking that set of values and looking at the data dictionary for color matches
                 # if data.data_name.data.labels:
@@ -2734,12 +2735,16 @@ class CustomDashboardDetail(DetailView):
                 #             poppedColor = colorsQueue.pop()
                 #             projectDictionary['{{label}}'] = poppedColor
                 #             colors.append(productDictionary('{{label}}'))
-                getSingleComponentData["{{data.data_name}}"] = {'data': get_json} #when ready, add colors: color_selection
-              getAllComponentData["{{component.component_name}}"] = getSingleComponentData
+
+                getSingleComponentData["{{data.data_name}}"] = {'data': data} #when ready, add colors: color_selection
+              getAllComponentData["{{component.component_name}}"] = getSingleComponentData #phase 2 should let this be multiple data sources
         except DashboardComponent.DoesNotExist:
             getAllComponentData = None
-        context.update({'getAllComponentData': getAllComponentData})
+        context.update('getAllComponentData': getAllComponentData)
 
+        getLayoutComponents = json.dumps(getDashboardTheme.layout_dictionary, sort_keys=True)
+        context.update('getLayoutComponents': getLayoutComponents)
+        
         return context
 
 def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): #component_map):
