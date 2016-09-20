@@ -20,7 +20,7 @@ chmod +x /usr/local/bin/docker-compose
 #git clone https://github.com/letsencrypt/letsencrypt 
 #cd letsencrypt
 #service nginx stop
-#docker stop tolaactivity_nginx_1/tolatables_nginx_1
+#docker stop tolaactivity_nginx_1
 #./letsencrypt-auto certonly --standalone --agree-tos --redirect --duplicate --text --email EMAIL -d DOMAINNAME
 
 ######### ELK #########
