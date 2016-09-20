@@ -35,7 +35,7 @@ urlpatterns = patterns('',
 
                        #dashboard schemes
                        url(r'^(?P<id>[0-9]+)/data/public/$', 'customdashboard.views.AnalyticsDashboard', name='analytics_custom_dashboard'),
+                       url(r'^(?P<id>[0-9]+)/news/public/$', 'customdashboard.views.NewsDashboard', name='news_custom_dashboard'),
                        url(r'^(?P<id>[0-9]+)/text/public/$', 'customdashboard.views.NarrativeDashboard', name='text_custom_dashboard'),
-                       url(r'^(?P<id>[0-9]+)/map/public/$', 'customdashboard.views.MapDashboard', name='map_custom_dashboard'),
-                       # url(r'^jupyter/1/$', 'customdashboard.views.RRIMAJupyterView1', name='jupyter_dashboard'),                          
+                       url(r'^(?P<id>[0-9]+)/map/public/$', 'customdashboard.views.MapDashboard', name='map_custom_dashboard'),                       
 )

@@ -480,6 +480,87 @@ def AnalyticsDashboard(request,id=0):
     return render(request, 'customdashboard/themes/analytics_dashboard.html', 
         {'colorPalettes': colorPalettes, 'tableData1': tableData1,'table4': table4,'table2': table2,'table3': table3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
+def NewsDashboard(request,id=0):
+
+    ## retrieve program
+    model = Program
+    program_id = id
+    getProgram = Program.objects.all().filter(id=program_id)
+
+    ## retrieve the coutries the user has data access for
+    countries = getCountry(request.user)
+
+    #retrieve projects for a program
+    getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
+
+    ## retrieve data --  this is an example of a tola tables request
+    ## TODO: with forms, allow user to select the table that populates related filter_url, right?
+    ## TODO: this should allow for up to 3 data sources (one per chart)
+
+    #detailed assessment: https://tola-tables.mercycorps.org/api/silo/1225/data/
+
+
+    # filter_url = "http://tables.toladata.io/api/silo/9/data/"
+    # headers = {'content-type': 'application/json',
+    #            'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
+    # response = requests.get(filter_url, headers=headers, verify=False)
+    # get_json = json.loads(response.content)
+    # data = get_json
+
+    #Parse the JSON(s) into datasets that will feed the templates for this example 
+    ## -- parsing might not be immediately relevant for live example 
+
+    # dataset1 = []
+    # key1 = 'what_country_were_you_in_last'  
+    # for answer in data:
+    #     dataset1.append(answer[key1])
+
+    # dataset2 = []
+    # key2 = 'tola_is_a_pashto_word_meaning_'  
+    # for answer in data:
+    #     dataset2.append(answer[key2])
+
+    # dataset3 = []
+    # key3 = 'thanks_for_coming_what_made_you_join_us_today_'  
+    # for answer in data:
+    #     dataset3.append(answer[key3])
+
+    # Programmatically defined table titles  -- 
+    # TODO: these should come from a form that allows text entry of what the charts should be called; 
+    # form should have char limits on title length
+    
+ 
+ 
+    #Programmatically defined data sets -- these should be (1) selected from a drop down.
+    # TODO: open question --  how do we define which values in a table's data are going to be used?  
+    # and how does that differ based on chart selection?  
+    ## bar graph needs table information to resolve to 1-2 sets of numerical values
+
+      
+    pageNewsFeedOne = [
+    {"date":"", "short_description":"text","link":"", "location": "[EU,Greece,US,etc.]"},
+    {"date":"", "short_description":"text","link":"", "location": "[EU,Greece,US,etc.]"}
+    ]
+
+    pageText = {}
+    pageText['pageTitle'] = "Refugee Response and Migration News"
+    pageText['objectives'] = ["General", "Push/Pull", "Youth","Education", "Legal", "Health"]
+    pageText['objectives_subtitles'] = ["General", "Push/Pull", "Youth","Education", "Legal", "Health"]
+    pageText['projectSummary'] = {
+        'title':"Project Description", 
+        'excerpt': "The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.",
+        'full':["Formatted text"]
+    }
+
+    colorPalettes = {
+    'bright':['#82BC00','#C8C500','#10A400','#CF102E','#DB5E11','#A40D7A','#00AFA8','#1349BB','#FFD200 ','#FF7100','#FFFD00','#ABABAB','#7F7F7F','#7B5213','#C18A34'],
+    'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
+    };
+    
+    return render(request, 'customdashboard/themes/news_dashboard.html', 
+        {'colorPalettes': colorPalettes, 'pageNewsFeedOne': pageNewsFeedOne, 'pageText': pageText, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
+
+
 def NarrativeDashboard(request,id=0):
     ## retrieve program
     model = Program
