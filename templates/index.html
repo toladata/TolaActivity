@@ -260,6 +260,11 @@ $(function () {
 });
 
 </script>
+    <div class="alert alert-success fade in">
+            <a class="close" data-dismiss="alert" href="#">&times;</a>
+            <p><b>Welcome {{request.user | upper}}, you have {{user_pending_approvals}} Project Initiations to Approve!! </b></p>
+    </div>
+        <br>
 
     <div class="panel panel-default">
         <div class="panel-heading">

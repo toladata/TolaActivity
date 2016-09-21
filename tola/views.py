@@ -95,6 +95,10 @@ def index(request, selected_countries=None, id=0, sector=0):
     table.paginate(page=request.GET.get('page', 1), per_page=20)
 
     count_program = Program.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
+
+    approved_by = TolaUser.objects.get(user_id=request.user)
+    user_pending_approvals = ProjectAgreement.objects.all().filter(approved_by=approved_by).exclude(approval='approved').count()
+
     count_program_agreement = ProjectAgreement.objects.all().filter(program__country__in=selected_countries,program__funding_status='Funded').values('program').distinct().count()
     count_indicator = Indicator.objects.all().filter(program__country__in=selected_countries,program__funding_status='Funded').values('program').distinct().count()
     count_evidence_adoption = CollectedData.objects.all().filter(indicator__isnull=False,indicator__program__country__in=selected_countries).values("indicator__program__country__country").annotate(evidence_count=Count('evidence', distinct=True) + Count('tola_table', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
@@ -159,6 +163,7 @@ def index(request, selected_countries=None, id=0, sector=0):
                                           'count_evidence_adoption':total_evidence_adoption_count,
                                           'count_indicator_data':total_indicator_data_count,
                                           'selected_countries_label_list':selected_countries_label_list,
+                                          'user_pending_approvals':user_pending_approvals,
                                           })
 
 
