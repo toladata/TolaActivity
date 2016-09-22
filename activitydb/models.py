@@ -14,6 +14,12 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from simple_history.models import HistoricalRecords
+from django.contrib.sessions.models import Session
+try:
+    from django.utils import timezone
+except ImportError:
+    from datetime import datetime as timezone
+
 
 # New user created generate a token
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -1393,8 +1399,27 @@ class LoggedUser(models.Model):
 
     def login_user(sender, request, user, **kwargs):
         country = get_user_country(request)
+        active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
+        print active_sessions
+        user_id_list = []
+        logged_user_id = request.user.id
 
-        LoggedUser(username=user.username, country=country, email=user.email).save()
+        try:
+            for session in active_sessions:
+                data = session.get_decoded()
+                print data
+                user_id_list.append(data.get('_auth_user_id', None))
+
+                if logged_user_id in user_id_list:
+                    LoggedUser(username=user.username, country=country, email=user.email).save()
+
+                if data.get('google-oauth2_state'):
+                    LoggedUser(username=user.username, country=country, email=user.email).save()
+
+        except Exception, e:
+            pass
+                
+    
 
     def logout_user(sender, request, user, **kwargs):
 
