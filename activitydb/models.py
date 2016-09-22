@@ -1400,14 +1400,14 @@ class LoggedUser(models.Model):
     def login_user(sender, request, user, **kwargs):
         country = get_user_country(request)
         active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-        print active_sessions
+        
         user_id_list = []
         logged_user_id = request.user.id
 
         try:
             for session in active_sessions:
                 data = session.get_decoded()
-                print data
+
                 user_id_list.append(data.get('_auth_user_id', None))
 
                 if logged_user_id in user_id_list:
