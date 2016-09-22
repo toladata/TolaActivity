@@ -98,6 +98,7 @@ urlpatterns = [
 
                        url(r'^report/export/$', 'activitydb.views.report', name='report'),
                        url(r'^report/', 'activitydb.views.report', name='report'),
+                       url(r'^export_stakeholders_list/', 'activitydb.views.export_stakeholders_list', name='export_stakeholders_list'),
 
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),
                        url(r'^country/(?P<country>[-\w]+)/country_json/', 'activitydb.views.country_json', name='country_json'),

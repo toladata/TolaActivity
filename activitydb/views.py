@@ -38,7 +38,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from tola.util import getCountry, emailGroup
 from mixins import AjaxableResponseMixin
-from export import ProjectAgreementResource
+from export import ProjectAgreementResource, StakeholderResource
 from django.core.exceptions import PermissionDenied
 
 APPROVALS = (
@@ -2514,6 +2514,7 @@ def report(request):
         response['Content-Disposition'] = 'attachment; filename=activity_report.csv'
         return response
 
+
     # send the keys and vars
     return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
 
@@ -2574,3 +2575,12 @@ def service_json(request, service):
     """
     service_indicators = import_service(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
+
+def export_stakeholders_list(request):
+
+    getStakeholders = Stakeholder.objects.all()
+    dataset = StakeholderResource().export(getStakeholders)
+    response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=activity_report.csv'
+
+    return response
