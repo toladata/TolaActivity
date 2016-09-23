@@ -2677,6 +2677,10 @@ class CustomDashboardDetail(DetailView):
         except CustomDashboard.DoesNotExist:
             getCustomDashboard = None
         context.update({'getCustomDashboard': getCustomDashboard})
+        #this will also return the component map
+        #destring the component map
+        #for each position in the template, render the component by grabbing the component (by ID) and associating its template and data
+        #render the component by getting the data for that component
 
         try:
             selected_theme = getCustomDashboard.theme.id
@@ -2701,51 +2705,41 @@ class CustomDashboardDetail(DetailView):
                 getColorPalette = None
         context.update({'getColorPalette': getColorPalette})
 
-
-    # Process for Matching Data and Subcomponent Template
-    # Step 1: Retrieve JSON data for components
-    # Step 2: colorize data with colorDictionary 
-    # Step 3: Pass that component data to the template -- associate component # in getAllComponentData to template
-    # Step 4: Include correct component template  "include component.component_template" for that component
         try:
-            getAllComponentData = {}
-            projectDictionary = {} 
-            for component in getDashboardComponents:
-              getSingleComponentData = {}
-              for data in component.data_sources.all():
-                filter_url = 'http://tables.toladata.io/api/silo/9/data/'
-                #data.data_source + data.data_filter_key
-                headers = {
-                         'content-type': 'application/json',
-                         'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
-                response = requests.get(filter_url, headers=headers, verify=False)
-                get_json = json.loads(response.content)
-                data = get_json[{{data.data_filter_key}}]
-                
-                # should this be getSingleComponentData[data.data_name.data] = get_json
-                # and then taking that set of values and looking at the data dictionary for color matches
-                # if data.data_name.data.labels:
-                #     colorsQueue = getColorPalette
-                #     colors = []
-                #     for label in data.data_name.data.labels:
-                #         if label in projectDictionary:
-                #             colors.append(projectDictionary['{{label}}'])
-                #             #remove projectDictionary['{{label}}'] from colorsQueue
-                #         else:
-                #             poppedColor = colorsQueue.pop()
-                #             projectDictionary['{{label}}'] = poppedColor
-                #             colors.append(productDictionary('{{label}}'))
+            #TODO: replace mockLayoutJSON with getCustomDashboard.component_map
+            mockLayoutJSON = '{"1":"123ComponentID", "2":"456ComponentID", "3":"789ComponentID"}'
+            layoutJSON = mockLayoutJSON
+            
+            getComponentOrder = json.loads(layoutJSON)
+        except not getCustomDashboard.component_map:
+            getComponentOrder = None
+        context.update({'getComponentOrder': getComponentOrder})
 
-                getSingleComponentData["{{data.data_name}}"] = {'data': data} #when ready, add colors: color_selection
-              getAllComponentData["{{component.component_name}}"] = getSingleComponentData #phase 2 should let this be multiple data sources
-        except DashboardComponent.DoesNotExist:
-            getAllComponentData = None
-        context.update('getAllComponentData': getAllComponentData)
-
-        getLayoutComponents = json.dumps(getDashboardTheme.layout_dictionary, sort_keys=True)
-        context.update('getLayoutComponents': getLayoutComponents)
+        # try:
+        #     getAllComponentData = {}
+        #     if getDashboardTheme.number_of_components:
+        #         number_of_components = (getDashboardTheme.number_of_components) + 1
+        #     else: 
+        #         number_of_components = 4
+        #     for i in range(1, number_of_components):
+        #         componentID = getComponentOrder[i]
+        #         getAllComponentData[getDashboardComponents.componentID] = {}
+        #         # for data in getDashboardComponents.componentID.data_sources:
+        #             #data = retrieve data
+        #             #getAllComponentData[getDashboardComponents.componentID][data.data_name] = data
+        #     # getAllComponentData
+        # except not getDashboardComponents:
+        #     getAllComponentData = None
+        # context.update({'getAllComponentData': getAllComponentData})
         
         return context
+
+def import_data_filters(request, service):
+    """
+    For populating data filters in dropdown
+    """
+    data_filters = import_filter(service,deserialize=False)
+    return HttpResponse(data_filters, content_type="application/json")
 
 def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): #component_map):
 # (?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$
@@ -3212,6 +3206,15 @@ class ComponentDataSourceCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ComponentDataSourceCreateForm 
+
+class ComponentDataSourceDetail(DetailView):
+    model = ComponentDataSource
+    template_name = 'customdashboard/admin/component_data_source_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        getComponentDataSources = ComponentDataSource.objects.all()
+            
+        return render(request, self.template_name, {'getComponentDataSources': getComponentDataSources})
 
 
 class ComponentDataSourceUpdate(UpdateView):
