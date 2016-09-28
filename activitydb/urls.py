@@ -124,6 +124,7 @@ urlpatterns = [
 
                        url(r'^custom_dashboard/data/(?P<pk>[0-9]+)/$', ComponentDataSourceList.as_view(), name='component_data_source_list'),
                        url(r'^custom_dashboard/data_add/$', ComponentDataSourceCreate.as_view(), name='custom_dashboard/data_add'),
+                       url(r'^custom_dashboard/data_detail/(?P<pk>[0-9]+)/$', ComponentDataSourceDetail.as_view(), name='custom_data_source_detail'),
                        url(r'^custom_dashboard/data_assign/(?P<pk>[0-9]+)/$', DashboardComponentUpdate.as_view(template_name="customdashboard/admin/component_data_source_assign.html"), name='custom_dashboard/data_assign'),
                        url(r'^custom_dashboard/data_update/(?P<pk>[0-9]+)/$', ComponentDataSourceUpdate.as_view(), name='custom_dashboard/data_update'),
                        url(r'^custom_dashboard/data_delete/(?P<pk>[0-9]+)/$', ComponentDataSourceDelete.as_view(), name='custom_dashboard/data_delete'),
