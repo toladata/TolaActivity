@@ -278,6 +278,7 @@ class DashboardComponent(models.Model):
     component_type = models.CharField("Component Type", max_length=255, blank=True)
     data_required = models.CharField("Required Data Type", max_length=255, blank=False)
     data_sources = models.ManyToManyField(ComponentDataSource, blank=False, related_name="datasourceset")
+    data_map = models.TextField("Data Mapping Dictionary", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
