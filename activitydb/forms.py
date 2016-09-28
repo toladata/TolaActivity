@@ -1957,14 +1957,18 @@ class CustomDashboardForm(forms.ModelForm):
                                     <tr>
                                         <th>Component</th>
                                         <th>Component Type</th>
-                                        <th>Assign Data Values</th>
+                                        <th>Data Source</th>
+                                        <th></th>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td></td>
-                                        {% for value in getComponentProperties %}
-                                            <td>data goes here</td>
-                                        {% endfor %}
+                                        <td>
+                                            {% for value in getComponentProperties %}
+                                                <td>data goes here</td>
+                                            {% endfor %}
+                                        </td>
+                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/data_detail/{{{data.id}}/'>Select Data Values</a></td>                    
                                     </tr>
                                 </table>
                                 <div class="panel-footer">
