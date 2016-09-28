@@ -2599,6 +2599,7 @@ class CustomDashboardList(ListView):
             
         return render(request, self.template_name, {'getCustomDashboards': getCustomDashboards, 'getProgram': getProgram})
 
+
 class CustomDashboardCreate(CreateView):
     #   :param request:
     #   :param id:
@@ -2651,6 +2652,7 @@ class CustomDashboardCreate(CreateView):
         return HttpResponseRedirect(redirect_url)
 
     form_class = CustomDashboardCreateForm 
+
 
 class CustomDashboardDetail(DetailView):
 
@@ -2744,13 +2746,16 @@ class CustomDashboardDetail(DetailView):
         
         return context
 
-def import_data_filters(request, service):
-    """
-    For populating data filters in dropdown
-    """
-    data_filters = import_filter(service,deserialize=False)
-    return HttpResponse(data_filters, content_type="application/json")
+#TODO: build out code to import data filters for modal to select filters on wizard
+# def import_data_filters(request, service):
+#     """
+#     For populating data filters in dropdown
+#     """
+#     data_filters = import_filter(service,deserialize=False)
+#     return HttpResponse(data_filters, content_type="application/json")
 
+
+#TODO: build out function for component mapping for dashboard wizard
 def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): #component_map):
 # (?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$
     # form_mapping = component_map
@@ -2811,6 +2816,7 @@ class CustomDashboardUpdate(UpdateView):
         if check_path.startswith('/activitydb/custom_dashboard_map'):
             location = self.kwargs['location']
             component_type = self.kwargs['type']
+        # TODO: If applicable, work through flow for remapping
         # else if check_form_type.startswith('/activitydb/custom_dashboard_remap'):
         #     location = self.kwargs['location']
         #     component_type = self.kwargs['type']
@@ -2838,13 +2844,6 @@ class CustomDashboardUpdate(UpdateView):
         layoutList = ast.literal_eval(layout)
         getDashboardLayoutList = list(layoutList.items())
         context.update({'getDashboardLayoutList': getDashboardLayoutList})
-        # getLayoutDictionary = "{"template_position": {"component_type":"bar_chart","component_assigned": "component_id"}}"
-        # for item in getDashboardLayoutList:
-        #     if !getDashboardLayoutList[item.0]:
-        #         getLayoutDictionary[item.0]={"component_type":item.1, "component_assigned":""}
-        #     else if getLayoutDictionary[item.0].component_type != item.1
-        #         getLayoutDictionary[item.0]={"component_type":item.1, "component_assigned":""}
-        # context.update({'getLayoutDictionary': getLayoutDictionary})
 
         try:
             getDashboardComponents = DashboardComponent.objects.all().filter(componentset=getCustomDashboard)
@@ -2865,8 +2864,8 @@ class CustomDashboardUpdate(UpdateView):
             context.update({'component_type': component_type})
 
         return context
-        
-        # add the request to the kwargs
+
+    # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(CustomDashboardUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
@@ -2878,6 +2877,7 @@ class CustomDashboardUpdate(UpdateView):
 
     def form_valid(self, form):
         check_form_type = self.request.get_full_path()
+        #TODO: Once refactoring is done, revisit whether checking form type still needed
         # if check_form_type.startswith('/activitydb/custom_dashboard_map'):
         #     getCustomDashboard.component_map = form.cleaned_data['component_map']
         #     getCustomDashboard.save()
@@ -2893,6 +2893,7 @@ class CustomDashboardUpdate(UpdateView):
         messages.success(self.request, 'Success, CustomDashboard Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
+
 
 class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
     """
@@ -2929,6 +2930,7 @@ class DashboardThemeList(ListView):
         getDashboardThemes = DashboardTheme.objects.all() 
         return render(request, self.template_name, {'getDashboardThemes': getDashboardThemes})
 
+
 class DashboardThemeCreate(CreateView):
     model = DashboardTheme
     template_name = 'customdashboard/admin/dashboard_theme_form.html'
@@ -2962,6 +2964,7 @@ class DashboardThemeCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardThemeCreateForm 
+
 
 class DashboardThemeUpdate(UpdateView):
     model = DashboardTheme
@@ -2998,6 +3001,7 @@ class DashboardThemeUpdate(UpdateView):
 
     form_class = DashboardThemeForm
 
+
 class DashboardThemeDelete(DeleteView):
     """
     DashboardTheme Delete
@@ -3026,6 +3030,7 @@ class DashboardThemeDelete(DeleteView):
 
     form_class = DashboardThemeForm 
 
+
 class DashboardComponentList(ListView):
     model = DashboardComponent
     template_name = 'customdashboard/admin/dashboard_component_list.html'
@@ -3040,6 +3045,7 @@ class DashboardComponentList(ListView):
         getDashboardListComponents = DashboardComponent.objects.all().filter(componentset=dashboard_id)
             
         return render(request, self.template_name, {'getDashboardListComponents': getDashboardListComponents})
+
 
 class DashboardComponentCreate(CreateView):
     model = DashboardComponent
@@ -3089,6 +3095,7 @@ class DashboardComponentCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentCreateForm 
+
 
 class DashboardComponentUpdate(UpdateView):
     model = DashboardComponent
@@ -3178,6 +3185,7 @@ class DashboardComponentDelete(AjaxableResponseMixin, DeleteView):
 
     form_class = DashboardComponentForm  
 
+
 class ComponentDataSourceList(ListView):
     model = ComponentDataSource
     template_name = 'customdashboard/admin/component_data_source_list.html'
@@ -3186,6 +3194,7 @@ class ComponentDataSourceList(ListView):
         getComponentDataSources = ComponentDataSource.objects.all()
             
         return render(request, self.template_name, {'getComponentDataSources': getComponentDataSources})
+
 
 class ComponentDataSourceCreate(CreateView):
     model = ComponentDataSource
@@ -3216,6 +3225,7 @@ class ComponentDataSourceCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = ComponentDataSourceCreateForm 
+
 
 class ComponentDataSourceDetail(DetailView):
     model = ComponentDataSource
