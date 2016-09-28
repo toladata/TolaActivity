@@ -26,6 +26,7 @@ from tables import ProjectAgreementTable
 from django_tables2 import RequestConfig
 from filters import ProjectAgreementFilter
 import json
+import simplejson
 import ast
 import requests
 import urllib
@@ -2705,32 +2706,41 @@ class CustomDashboardDetail(DetailView):
                 getColorPalette = None
         context.update({'getColorPalette': getColorPalette})
 
-        try:
-            #TODO: replace mockLayoutJSON with getCustomDashboard.component_map
-            mockLayoutJSON = '{"1":"123ComponentID", "2":"456ComponentID", "3":"789ComponentID"}'
-            layoutJSON = mockLayoutJSON
-            
-            getComponentOrder = json.loads(layoutJSON)
+        # retrieve the layout order of the components on the dashboard    
+        try: 
+            getComponentOrder = json.dumps(getCustomDashboard.component_map, sort_keys=True)
         except not getCustomDashboard.component_map:
             getComponentOrder = None
         context.update({'getComponentOrder': getComponentOrder})
 
-        # try:
-        #     getAllComponentData = {}
-        #     if getDashboardTheme.number_of_components:
-        #         number_of_components = (getDashboardTheme.number_of_components) + 1
-        #     else: 
-        #         number_of_components = 4
-        #     for i in range(1, number_of_components):
-        #         componentID = getComponentOrder[i]
-        #         getAllComponentData[getDashboardComponents.componentID] = {}
-        #         # for data in getDashboardComponents.componentID.data_sources:
-        #             #data = retrieve data
-        #             #getAllComponentData[getDashboardComponents.componentID][data.data_name] = data
-        #     # getAllComponentData
-        # except not getDashboardComponents:
-        #     getAllComponentData = None
-        # context.update({'getAllComponentData': getAllComponentData})
+        # retrieve the data source mapping of data 
+        try:
+            getComponentDataMaps = {}
+            for position, component_id in getComponentOrder.iteritems():
+                #add an attribute to the getComponentDataMaps dictionary for all data from this component
+                selected_component = DashboardComponent.objects.get(component_id)
+                getComponentDataMaps[position]['data_sources'] = selected_component.data_sources
+                getComponentDataMaps[position]['data_map'] = json.dumps(selected_component.data_map, sort_keys-True)
+        except not getComponentOrder:
+            getComponentDataMaps = None
+        context.update({'getComponentDataMaps': getComponentDataMaps})
+
+        #retrieve data for each componennt in data map
+        try:
+            #iterate through the component maps for each position on the page
+            for position in getComponentDataMaps:
+                #iterate through the data sources mapped for each components and retrieve data
+                for mapped_item, data_source in getComponentDataMaps[position]['data_map']:
+                    # get that DataSource by id
+                    data_source = ComponentDataSource.objects.get(data_source)
+                    #retrieve data 
+                    dataset = data_source.data_source  # do JSON request here
+                    # filter data by the key to just use subset needed
+                    filtered_data = dataset[data_source.filter_key]
+                    getAllComponentData[position]['data_sources']['data_source.name'] = filtered_data
+        except not getDashboardComponents:
+            getAllComponentData = None
+        context.update({'getAllComponentData': getAllComponentData})
         
         return context
 
