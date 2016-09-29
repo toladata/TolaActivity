@@ -54,7 +54,7 @@ router.register(r'collecteddata', CollectedDataViewSet)
 router.register(r'tolatable', TolaTableViewSet)
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
 router.register(r'projectagreements', ProjectAgreementViewSet)
-router.register(r'loggedusers', LoggedUserSerializerViewSet)
+router.register(r'loggedusers', LoggedUserViewSet)
 
 
 urlpatterns = [ # rest framework

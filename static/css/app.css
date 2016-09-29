@@ -264,3 +264,7 @@ ul.paginate li a:hover:not(.active) {background-color: #ddd;}
     float: right;
     margin-right: 15px;
 }
+.float-right
+{
+  float: right;
+}

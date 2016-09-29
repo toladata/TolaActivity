@@ -357,3 +357,5 @@ CKEDITOR_CONFIGS = {
         'width': 300,
     },
 }
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

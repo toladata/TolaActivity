@@ -8,12 +8,27 @@
 {% block page_title %}Stakeholder List{% endblock %}
 
 {% block content %}
-<div>
+<div class="dropdown">
+<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    Programs
+    <span class="caret"></span>
+  </button>
+<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/stakeholder_list/0/0">-- All --</a></li>
+    {% for program in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/stakeholder_list/{{ program.id }}/0/">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% endfor %}
+  </ul>
 <a href="/activitydb/stakeholder_add/0/" class="btn btn-large btn-success">New Stakeholder</a> &nbsp;
+</div>
 <hr/>
 <br/>
-</div>
-<h3>Stakeholder</h3>
+
+    
+    <h3>Stakeholder</h3>
+    
+<a href="/activitydb/export_stakeholders_list/" class="btn btn-sm btn-primary float-right"><span class="glyphicon glyphicon-export"></span> Export to Excel</a>&nbsp;
+<br><br>
 
 <!-- Table -->
 <table class="table">

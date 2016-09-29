@@ -38,7 +38,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from tola.util import getCountry, emailGroup
 from mixins import AjaxableResponseMixin
-from export import ProjectAgreementResource
+from export import ProjectAgreementResource, StakeholderResource
 from django.core.exceptions import PermissionDenied
 
 APPROVALS = (
@@ -1601,13 +1601,23 @@ class StakeholderList(ListView):
     def get(self, request, *args, **kwargs):
 
         project_agreement_id = self.kwargs['pk']
-        countries = getCountry(request.user)
-        if int(self.kwargs['pk']) == 0:
-            getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
-        else:
-            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk'])
+        program_id = int(self.kwargs['program_id'])
 
-        return render(request, self.template_name, {'getStakeholders': getStakeholders, 'project_agreement_id': project_agreement_id})
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+
+        countries = getCountry(request.user)
+
+        if program_id != 0:
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct()
+
+        elif int(self.kwargs['pk']) != 0:
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct()
+
+        else:
+            getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
+
+        return render(request, self.template_name, {'getStakeholders': getStakeholders, 'project_agreement_id': project_agreement_id, 'getPrograms': getPrograms})
 
 
 class StakeholderCreate(CreateView):
@@ -2504,6 +2514,7 @@ def report(request):
         response['Content-Disposition'] = 'attachment; filename=activity_report.csv'
         return response
 
+
     # send the keys and vars
     return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
 
@@ -2550,7 +2561,7 @@ def import_service(service_id=1, deserialize=True):
     if deserialize == True:
         data = json.load(get_json) # deserialises it
     else:
-        #send json data back not deserialized data
+    #send json data back not deserialized data
         data = get_json
     #debug the json data string uncomment dump and print
     data2 = json.dumps(data) # json formatted string
@@ -2564,3 +2575,12 @@ def service_json(request, service):
     """
     service_indicators = import_service(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
+
+def export_stakeholders_list(request):
+
+    getStakeholders = Stakeholder.objects.all()
+    dataset = StakeholderResource().export(getStakeholders)
+    response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=activity_report.csv'
+
+    return response

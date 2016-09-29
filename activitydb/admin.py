@@ -148,6 +148,8 @@ class ApprovalAuthorityAdmin(admin.ModelAdmin):
     search_fields = ('approval_user__user__first_name', 'approval_user__user__last_name', 'country__country')
     list_filter = ('create_date','country')
 
+class StakeholderAdmin(ImportExportModelAdmin):
+    pass
 
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Province, ProvinceAdmin)
