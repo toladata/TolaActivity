@@ -1853,10 +1853,10 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <th></th>
                                                 <th>Add New Component</th>
                                             </tr>
-                                            {% for item in getDashboardLayoutList %}
+                                            {% for item, value in getDashboardLayoutList %}
                                                 <tr>
-                                                    <td> {{item.0}}</td>
-                                                    <td> {{item.1}}</td>
+                                                    <td> {{item}} </td>
+                                                    <td> {{value}} </td>
                                                     <td> <div class="form-group"> 
                                                             <select class="form-control" id="sel1">
                                                             <option value=0> None </option>
@@ -1968,7 +1968,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <td>data goes here</td>
                                             {% endfor %}
                                         </td>
-                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/data_detail/{{{data.id}}/'>Select Data Values</a></td>                    
+                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/data_detail/{{data.id}}/'>Select Data Values</a></td>                    
                                     </tr>
                                 </table>
                                 <div class="panel-footer">
