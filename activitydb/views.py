@@ -2658,6 +2658,7 @@ class CustomDashboardDetail(DetailView):
 
     model = CustomDashboard
 
+    # TODO: Confirm if this needed for final rendering
     # def get_object(self, queryset=CustomDashboard.objects.all()):
     #     try:
     #         # return queryset.get(customdashboard__id = self.kwarg['id'])
@@ -2680,10 +2681,6 @@ class CustomDashboardDetail(DetailView):
         except CustomDashboard.DoesNotExist:
             getCustomDashboard = None
         context.update({'getCustomDashboard': getCustomDashboard})
-        #this will also return the component map
-        #destring the component map
-        #for each position in the template, render the component by grabbing the component (by ID) and associating its template and data
-        #render the component by getting the data for that component
 
         try:
             selected_theme = getCustomDashboard.theme.id
@@ -2718,17 +2715,19 @@ class CustomDashboardDetail(DetailView):
         # retrieve the data source mapping of data 
         try:
             getComponentDataMaps = {}
-            for position, component_id in getComponentOrder.iteritems():
+            component_order = json.loads(getComponentOrder)
+            for position, component_id in component_order:
                 #add an attribute to the getComponentDataMaps dictionary for all data from this component
                 selected_component = DashboardComponent.objects.get(component_id)
                 getComponentDataMaps[position]['data_sources'] = selected_component.data_sources
-                getComponentDataMaps[position]['data_map'] = json.dumps(selected_component.data_map, sort_keys-True)
+                getComponentDataMaps[position]['data_map'] = json.dumps(selected_component.data_map, sort_keys=True)
         except not getComponentOrder:
             getComponentDataMaps = None
         context.update({'getComponentDataMaps': getComponentDataMaps})
 
         #retrieve data for each componennt in data map
         try:
+            getAllComponentData = {}
             #iterate through the component maps for each position on the page
             for position in getComponentDataMaps:
                 #iterate through the data sources mapped for each components and retrieve data
@@ -2740,7 +2739,7 @@ class CustomDashboardDetail(DetailView):
                     # filter data by the key to just use subset needed
                     filtered_data = dataset[data_source.filter_key]
                     getAllComponentData[position]['data_sources']['data_source.name'] = filtered_data
-        except not getDashboardComponents:
+        except not getDashboardComponentDataMaps:
             getAllComponentData = None
         context.update({'getAllComponentData': getAllComponentData})
         
@@ -2789,11 +2788,11 @@ class CustomDashboardUpdate(UpdateView):
     def get_initial(self):
         getCustomDashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
         getDashboardComponents = DashboardComponent.objects.all().filter(componentset=getCustomDashboard)
-        getComponentDataSources = ComponentDataSource.objects.all()
+        getAllComponentDataSources = ComponentDataSource.objects.all()
         initial = {
             'getCustomDashboard': getCustomDashboard,
             'getDashboardComponents': getDashboardComponents,
-            'getComponentDataSources': getComponentDataSources,
+            'getAllComponentDataSources': getAllComponentDataSources,
             }
 
         return initial
@@ -2841,8 +2840,7 @@ class CustomDashboardUpdate(UpdateView):
 
         # This theme layout helps to map the components to their position on the page
         layout = getDashboardTheme[0].layout_dictionary
-        layoutList = ast.literal_eval(layout)
-        getDashboardLayoutList = list(layoutList.items())
+        getDashboardLayoutList = json.dumps(layout, sort_keys=True)#
         context.update({'getDashboardLayoutList': getDashboardLayoutList})
 
         try:
@@ -2852,10 +2850,10 @@ class CustomDashboardUpdate(UpdateView):
         context.update({'getDashboardComponents': getDashboardComponents})
 
         try:
-            getComponentDataSources = ComponentDataSource.objects.all()
+            getAllComponentDataSources = ComponentDataSource.objects.all()
         except ComponentDataSource.DoesNotExist:
-            getComponentDataSources = None
-        context.update({'getComponentDataSources': getComponentDataSources})
+            getAllComponentDataSources = None
+        context.update({'getAllComponentDataSources': getAllComponentDataSources})
 
         mapped_location = self.request.GET.get('location')
         component_type = self.request.GET.get('type')
