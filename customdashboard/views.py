@@ -117,6 +117,7 @@ def SurveyPublicDashboard(request,id=0):
     join = []
     tola_is = []
     for item in data:
+        print item['tola_is_a_pashto_word_meaning_']
         meaning.append(item['tola_is_a_pashto_word_meaning_'])
         # multiple choice
         join.append(list(x for x in item['thanks_for_coming_what_made_you_join_us_today_'].split()))
@@ -199,7 +200,8 @@ def SurveyTalkPublicDashboard(request,id=0):
     join = []
     tola_is = []
     country_from = []
-    for item in data:
+    for item in data['data']:
+
         meaning.append(item['tola_is_a_pashto_word_meaning_'])
         # multiple choice
         join.append(list(x for x in item['thanks_for_coming_what_made_you_join_us_today_'].split()))
