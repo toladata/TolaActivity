@@ -45,7 +45,7 @@
 				<div class='row'>
 					<div class='col-md-12'>
 						<div class='panel panel-info borderless soft-border-full'>
-							<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213; color: white'><span class='title-white'> PROGRAM HUBS </span><p style='text-align: left; font-size: 80%;'>(Major operations hubs only. Regions may operation in additional project-specific locations)</p></div>
+							<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213; color: white'><span class='title-white'> PROGRAM HUBS </span><p style='text-align: left; font-size: 80%;'>(Major operations hubs only. Regions may operate in additional project-specific locations)</p></div>
 								<div class="panel-body" style="height: 300;">
 								{% with pageMap as tolaMapData %}
 								    {% include 'customdashboard/rrima_components/rrima_map.html' %}
@@ -65,15 +65,7 @@
 					</div>
 				</div>
 				<div class='col-md-12'>
-					<div class='panel panel-info borderless soft-border-full' style="min-height: 200; max-height: 200; ">
-					<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213;  color: white;'><span> PROJECT TIMELINE</span></div>
-						{% with pageText.timelineLinks as tolaTextData %}
-							{% include 'customdashboard/rrima_components/sidebar_events.html' %}
-						{% endwith %}
-		            </div>
-				</div>
-				<div class='col-md-12'>
-					<div class='panel panel-info borderless soft-border-full'>							
+					<div class='panel panel-info borderless soft-border-full'>						
 					<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213; color: white;'><span> RRIMA REPORTS</span></div>
 						<div class="panel-body">
 							<!-- <span class='chart-title' style="overflow-y: scroll; ">NEWSFEED</span> -->
@@ -82,6 +74,14 @@
 							{% endwith %}
 						</div>
 					</div>
+				</div>
+				<div class='col-md-12'>
+					<div class='panel panel-info borderless soft-border-full' style="min-height: 200; max-height: 200; ">
+					<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213;  color: white;'><span> PROJECT TIMELINE</span></div>
+						{% with pageText.timelineLinks as tolaTextData %}
+							{% include 'customdashboard/rrima_components/sidebar_events.html' %}
+						{% endwith %}
+		            </div>
 				</div>
 			</div>
 		</div>

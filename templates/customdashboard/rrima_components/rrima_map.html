@@ -9,7 +9,7 @@
       iconSize: [0,0]
     });
     {% for site in tolaMapData%}
-        L.marker([{{ site.latitude }}, {{ site.longitude }}], {icon: countryIcon}).addTo(layeredCountries).bindPopup("" + "<b>{{ site.location_name }}</b><br><br><b>Site Contact:</b><br>{{ site.site_contact }}<br/><br><br/>");
+        L.marker([{{ site.latitude }}, {{ site.longitude }}], {icon: countryIcon}).addTo(layeredCountries).bindPopup("" + "<b>{{ site.location_name }}</b><br><br><strong>Services Offered:</strong><br>{{ site.site_description }}<br/><br><b>Site Contact:</b><br>{{ site.site_contact }}<br/><br><br/>");
     {%   endfor %}
 
     var mapCoordinates = [38.4237, 27.1428]
