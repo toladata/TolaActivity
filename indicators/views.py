@@ -71,9 +71,6 @@ def import_indicator(service=1,deserialize=True):
     :return:
     """
     service = ExternalService.objects.get(id=service)
-    #hard code the path to the file for now
-    #get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
-    #print service.feed_url
     response = requests.get(service.feed_url)
 
     if deserialize == True:
@@ -841,10 +838,16 @@ def getTableCount(url,table_id):
 
     # loop over the result table and count the number of records for actuals
     actual_data = get_table(filter_url)
-
     count = 0
+
     if actual_data:
-        for item in actual_data:
+        # check if json data is in the 'data' attribute or at the top level of the JSON object
+        try:
+            looper = actual_data['data']
+        except KeyError:
+            looper = actual_data
+
+        for item in looper:
             count = count + 1
 
     # update with new count
@@ -900,7 +903,7 @@ def collecteddata_import(request):
             remote_owner = item['owner']['username']
 
         #send table ID to count items in data
-        count = getTableCount(filter_url,id)
+        count = getTableCount(url,id)
 
         # get the users country
         countries = getCountry(request.user)
