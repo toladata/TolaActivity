@@ -6,9 +6,9 @@ required:
 * elementID for placement on dashboard
 * legendID for placement of legend for graph
 * tooltip to append to tool tip i.e. (USD, KM, LBS, etc.)
---->
+-->
 
-<script>
+<script id="doughnutchart">
 //render project_status in a doughnut chart
 var options = {
     // single tooltip
@@ -16,24 +16,24 @@ var options = {
 };
 var data = [
     {
-    value: {{ approved }},
+    value: {{ getApprovedCount }},
     color:"#637b85",
-    label: "Approved - {{ approved }}"
+    label: "Approved - {{ getApprovedCount }}"
     },
     {
-    value : {{ awaiting }},
+    value : {{ getAwaitingApprovalCount }},
     color : "#2c9c69",
-    label: "Waiting - {{ awaiting }}"
+    label: "Waiting - {{ getAwaitingApprovalCount }}"
     },
     {
-    value : {{ rejected }},
+    value : {{ getRejectedCount }},
     color : "#dbba34",
-    label: "Rejected - {{ rejected }}"
+    label: "Rejected - {{ getRejectedCount }}"
     },
     {
-    value : {{ in_progress }},
+    value : {{ getInProgressCount }},
     color : "#c62f29",
-    label: "In Progress - {{ in_progress }}"
+    label: "In Progress - {{ getInProgressCount }}"
     }
 ];
 var ctx = document.getElementById("status").getContext("2d");
