@@ -364,7 +364,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     """
     This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
     and sums it at the bottom.  Lives in the "Reports" navigation.
-    URL: indicators/data/[id]/[program]/
+    URL: indicators/data/[id]/[program]/[type]
     :param request:
     :param id: Indicator ID
     :param program: Program ID
@@ -551,7 +551,14 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
 
 class CollectedDataList(ListView):
     """
-    CollectedData List
+    This is the Indicator CollectedData report for each indicator and program.  Displays a list collected data entries
+    and sums it at the bottom.  Lives in the "Reports" navigation.
+    URL: indicators/data/[id]/[program]/[type]
+    :param request:
+    :param id: Indicator ID
+    :param program: Program ID
+    :param type: Type ID
+    :return:
     """
     model = CollectedData
     template_name = 'indicators/collecteddata_list.html'
@@ -615,8 +622,7 @@ class CollectedDataList(ListView):
             response = HttpResponse(dataset.csv, content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
             return response
-        print "INDICATOR"
-        print indicator
+
         return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
                                                     'getIndicatorTypes': getIndicatorTypes, 'getIndicators':getIndicators,
                                                     'filter_program':filter_program,'filter_indicator': filter_indicator,
