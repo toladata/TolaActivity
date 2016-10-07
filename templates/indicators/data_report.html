@@ -57,14 +57,17 @@
 
 {% block content %}
 
-<br/>
+<p>
 {% if indicator_name %}
-    <h4>Filtered by Indicator: {{ indicator_name }}</h4>
-{% elif program_name %}
-    <h4>Filtered by Program : {{ program_name }}</h4>
-{% elif type_name %}
-    <h4>Filtered by Indicator Type : {{ type_name }}</h4>
+    <span class="filter">Filtered by Indicator: {{ indicator_name }}</span>
 {% endif %}
+{% if program_name %}
+    <span class="filter">Filtered by Program : {{ program_name }}</span>
+{% endif %}
+{% if type_name %}
+    <span class="filter">Filtered by Indicator Type : {{ type_name }}</span>
+{% endif %}
+</p>
 
 {% if "map" in request.get_full_path %}
     <style>
