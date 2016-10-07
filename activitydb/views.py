@@ -27,6 +27,7 @@ from django_tables2 import RequestConfig
 from filters import ProjectAgreementFilter
 import json
 import simplejson
+from collections import OrderedDict
 import ast
 import requests
 import urllib
@@ -2745,15 +2746,6 @@ class CustomDashboardDetail(DetailView):
         
         return context
 
-#TODO: build out code to import data filters for modal to select filters on wizard
-# def import_data_filters(request, service):
-#     """
-#     For populating data filters in dropdown
-#     """
-#     data_filters = import_filter(service,deserialize=False)
-#     return HttpResponse(data_filters, content_type="application/json")
-
-
 #TODO: build out function for component mapping for dashboard wizard
 def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): #component_map):
 # (?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$
@@ -2840,7 +2832,7 @@ class CustomDashboardUpdate(UpdateView):
 
         # This theme layout helps to map the components to their position on the page
         layout = getDashboardTheme[0].layout_dictionary
-        getDashboardLayoutList = json.dumps(layout, sort_keys=True)#
+        getDashboardLayoutList = json.loads(layout, object_pairs_hook=OrderedDict)
         context.update({'getDashboardLayoutList': getDashboardLayoutList})
 
         try:
@@ -2849,11 +2841,34 @@ class CustomDashboardUpdate(UpdateView):
             getDashboardComponents = None
         context.update({'getDashboardComponents': getDashboardComponents})
 
+        try: 
+            getComponentOrder = json.loads(getCustomDashboard.component_map, object_pairs_hook=OrderedDict)
+        except not getCustomDashboard.component_map:
+            getComponentOrder = None
+        context.update({'getComponentOrder': getComponentOrder})
+
+        try: 
+            getAllComponentMaps = []
+            for component in getCustomDashboard.componentset:
+                getAllComponentMaps[component] = json.loads(component.componentmap)
+        except not getCustomDashboard.componentset:
+            getAllComponentMaps = None
+        context.update({'getAllComponentMaps': getAllComponentMaps})
+
         try:
             getAllComponentDataSources = ComponentDataSource.objects.all()
         except ComponentDataSource.DoesNotExist:
             getAllComponentDataSources = None
         context.update({'getAllComponentDataSources': getAllComponentDataSources})
+
+        # try:
+        #     getAllDataFilters = {}
+        #     for data_source in getAllComponentDataSources:
+        #         data_source_filters = import_data_filter_options(data_source.data_source, data_source.data_filter_key, data_source.authorization_token)
+        #         getAllDataFilters[data_source.id] = data_source_filters
+        # except not getAllComponentDataSources:
+        #     getAllDataFilters = None
+        # context.update({'getAllDataFilters': getAllDataFilters})
 
         mapped_location = self.request.GET.get('location')
         component_type = self.request.GET.get('type')
@@ -2892,6 +2907,21 @@ class CustomDashboardUpdate(UpdateView):
 
         return self.render_to_response(self.get_context_data(form=form))
 
+
+#TODO: build out code to import data filters for modal to select filters on wizard
+
+def import_data_filter_options(data_url, column_filter, authorization_token):
+  """
+  For populating data filters in dropdown -- retrieve data_source using data_url
+  """    
+  filter_url = data_url
+  headers = {'content-type': 'application/json',
+           'Authorization': authorization_token}
+  response = requests.get(data_url, headers=headers, verify=False)
+  get_json = json.loads(response.content)
+  data = get_json
+  data_filters = data[column_filter]
+  return HttpResponse(data_filters, content_type="application/json")
 
 class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
     """
