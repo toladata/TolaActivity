@@ -17,7 +17,6 @@ class IndicatorResource(resources.ModelResource):
     sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
     program = ManyToManyWidget(Program, separator=" | ", field="name")
 
-
     class Meta:
         model = Indicator
         fields = ('id','indicator_type','level','objective','strategic_objective','name','number',\
