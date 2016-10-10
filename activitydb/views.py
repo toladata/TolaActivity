@@ -2584,7 +2584,7 @@ def service_json(request, service):
     service_indicators = import_service(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
 
-<<<<<<< HEAD
+
 # This lists available custom dashboards to view
 class CustomDashboardList(ListView):
     """
