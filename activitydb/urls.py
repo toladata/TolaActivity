@@ -65,7 +65,7 @@ urlpatterns = [
                        url(r'^training_update/(?P<pk>\w+)/$', TrainingUpdate.as_view(), name='training_update'),
                        url(r'^training_delete/(?P<pk>\w+)/$', TrainingDelete.as_view(), name='training_delete'),
 
-                       url(r'^stakeholder_list/(?P<pk>\w+)/$', StakeholderList.as_view(), name='stakeholder_list'),
+                       url(r'^stakeholder_list/(?P<program_id>\w+)/(?P<pk>\w+)/$', StakeholderList.as_view(), name='stakeholder_list'),
                        url(r'^stakeholder_add/(?P<id>\w+)/$', StakeholderCreate.as_view(), name='stakeholder_add'),
                        url(r'^stakeholder_update/(?P<pk>\w+)/$', StakeholderUpdate.as_view(), name='stakeholder_update'),
                        url(r'^stakeholder_delete/(?P<pk>\w+)/$', StakeholderDelete.as_view(), name='stakeholder_delete'),
@@ -98,6 +98,7 @@ urlpatterns = [
 
                        url(r'^report/export/$', 'activitydb.views.report', name='report'),
                        url(r'^report/', 'activitydb.views.report', name='report'),
+                       url(r'^export_stakeholders_list/', 'activitydb.views.export_stakeholders_list', name='export_stakeholders_list'),
 
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),
                        url(r'^country/(?P<country>[-\w]+)/country_json/', 'activitydb.views.country_json', name='country_json'),

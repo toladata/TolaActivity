@@ -2,7 +2,7 @@
 {% load humanize %}
 {% block content %}
 
-<!--- Hosted Leaflet CSS --->
+<!--- Hosted Leaflet CSS -->
 <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,700' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="{{ STATIC_URL }}publicdashboard/css/main.css">
@@ -23,6 +23,8 @@
 <script src="{{ STATIC_URL }}publicdashboard/js/leaflet-providers.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/jquery-1.11.3.js"></script>
 <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
+<script src="{{ STATIC_URL }}js/Chart.HorizontalBar.js"></script>
+
 
 <link rel="borders" type="application/json" href="{{ STATIC_URL }}js/world_borders.geojson">
 
@@ -355,41 +357,24 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
 
                                     <h4>What is the current project status? </h4>
 
-                                    Number of Initiations : <b>{{ getProjectsCount }}</b><br>
+                                    Number of Initiations : <b>{{ total_projects }}</b><br>
 
                                    <h4>
-                                       <span class="label label-success">Approved &nbsp;<span class="badge">0</span></span>
-                                       <span class="label label-success">Awaiting Approval &nbsp;<span class="badge">0</span></span>
-                                       <span class="label label-success">In Progress &nbsp;<span class="badge">0</span></span>
-                                       <span class="label label-success">Rejected &nbsp;<span class="badge">0</span></span>
+                                       <span class="label label-success">Approved &nbsp;<span class="badge">{{ getApprovedCount }}</span></span>
+                                       <span class="label label-success">Awaiting Approval &nbsp;<span class="badge">{{ getAwaitingApprovalCount }}</span></span>
+                                       <span class="label label-success">In Progress &nbsp;<span class="badge">{{ getRejectedCount }}</span></span>
+                                       <span class="label label-success">Rejected &nbsp;<span class="badge">{{ getInProgressCount }}</span></span>
 
                                       </a>
                                     </h4>
 
                       </div>
-                      <div class="list-group  col-md-6">
-                          <div class="panel-heading home-paneltitle">
-                          <table class="table table-striped">
-                                  <tr>
-                                      <td colspan="5"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#summary" href="#collapse2"><b><span class="glyphicon glyphicon-plus-sign"></span></b>
-                                          At what stages are these project initiations at?</a></h4></td>
-                                  </tr>
-                                  <tr>
-                                      <td colspan="5">
-                                        <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#summary" href="#collapse1">
-                                            <b><span class="glyphicon glyphicon-plus-sign"></span></b> Key Performance Indicators (KPIs) </a>
-                                         </h4>
-                                      </td>
-                                  </tr>
-
-                          </table>
-                          </div>
-                      </div>
             </div>
                 <div class="panel-group" id="summary">
+                    <h4 class="panel-title"><a data-toggle="collapse" data-parent="#summary" href="#collapse2"><b><span class="glyphicon glyphicon-plus-sign"></span></b><strong>
+                                          At what stages are these project initiations at?</strong></a></h4>
                         <div class="panel home-panel">
-                          <div id="collapse2" class="panel-collapse collapse">
+                          <div id="collapse2" class="panel-collapse collapse in">
                               <table class="table table-striped">
                                   <tr>
                                       <td colspan="5"><b>Summary of project initiations for - {% if getProgram %}{{ getProgram.name }}{% endif %}</b></td>
@@ -417,17 +402,17 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
 
                                           Project Status
                                       </h4>
-                                        <div id="status-legend" class="chart-legend"></div>
                                       <div class="canvas-container-fixed">
-                                          <canvas id="status"></canvas>
+                                        <canvas id="status"></canvas>
                                       </div>
+                                        <div id="status-legend" class="chart-legend"></div>
                                       <b>Total number of Projects:</b> ( {{ total_projects }} )
                                   </div>
                                   <div class="third widget line">
                                     <div class="chart-legend">
                                         <h4>Program Expenditure</h4>
                                         <div class="canvas-container-fixed">
-                                            <canvas id="expenditure_canvas"></canvas>
+                                            <canvas id="expenditure_canvas" height="200" width="300"></canvas>
                                         </div>
                                         <div id="exp-legend"></div>
                                     </div>
@@ -445,8 +430,12 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
 
                           </div><!-- end of collapse2 -->
                     </div>
+                    <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#summary" href="#collapse1">
+                                            <b><span class="glyphicon glyphicon-plus-sign"></span></b>  <strong>Key Performance Indicators (KPIs) </strong></a>
+                                         </h4>
                     <div class="panel home-panel">
-                      <div id="collapse1" class="panel-collapse collapse">
+                      <div id="collapse1" class="panel-collapse collapse in">
                           <div class="container clearfix widget">
 
                                     <div class="chart-legend">
@@ -468,177 +457,10 @@ The trend of employment in surveyed areas was such that the majority (70%) of bu
         </div>
         <script src="{{ STATIC_URL }}publicdashboard/js/vendor/jquery-1.11.1.min.js"></script>
         <script src="{{ STATIC_URL }}publicdashboard/js/plugins.js"></script>
-        <script>
-
-//render project_status in a doughnut chart
-var status_options = {
-
-    // single tooltip
-    tooltipTemplate: "<%=label + ' Projects' %>",
-};
-var status_data = [
-    {
-    value: {{ approved }},
-    color:"#637b85",
-    label: "Approved - {{ approved }}"
-    },
-    {
-    value : {{ awaiting }},
-    color : "#2c9c69",
-    label: "Waiting - {{ awaiting }}"
-    },
-    {
-    value : {{ rejected }},
-    color : "#dbba34",
-    label: "Rejected - {{ rejected }}"
-    },
-    {
-    value : {{ in_progress }},
-    color : "#c62f29",
-    label: "In Progress - {{ in_progress }}"
-    }
-];
-var ctx = document.getElementById("status").getContext("2d");
-var statusChart = new Chart(ctx).Doughnut(status_data,status_options);
-document.getElementById('status-legend').innerHTML = statusChart.generateLegend();
-
-//KPI JSON data object
-var kpi_options = {
-    maintainAspectRatio: false,
-    responsive: true,
-    scaleOverlay : false,
-
-    scaleSteps : 10,
-    scaleStepWidth : 10,
-    scaleStartValue : 0,
-    scaleLineColor : "rgba(0,0,0,.25)",
-    scaleLineWidth : 1,
-    scaleShowLabels : true,
-    scaleLabel : "<%=value%>",
-    scaleFontFamily : "'Lato'",
-    scaleFontSize : 12,
-    scaleFontStyle : "800",
-    scaleFontColor : "#222",
-    scaleShowGridLines : true,
-    scaleGridLineColor : "rgba(0,0,0,.1)",
-    scaleGridLineWidth : 1,
-    bezierCurve : true,
-    pointDot : true,
-    pointDotRadius : 5,
-    pointDotStrokeWidth : 1,
-    datasetStroke : true,
-    datasetStrokeWidth : 1,
-    datasetFill : true,
-    animation : true,
-    animationSteps : 120,
-    animationEasing : "easeOutQuart",
-    onAnimationComplete : null,
-};
-var kpi_data = {
-    labels : [{% for program in getQuantitativeDataSums %} "{{ program.indicator__number }}", {% endfor %}],
-    datasets : [
-        {
-            label: "KPI Targets",
-            fillColor: "rgba(220,220,220,0.5)",
-            strokeColor: "rgba(220,220,220,0.8)",
-            highlightFill: "rgba(220,220,220,0.75)",
-            highlightStroke: "rgba(220,220,220,1)",
-            data: [{% for program in getQuantitativeDataSums %} "{{ program.targets }}", {% endfor %}],
-            //data : [65,59,90,41,56,55,40]
-        },
-        {
-            label: "KPI Actuals",
-            fillColor: "rgba(151,187,205,0.5)",
-            strokeColor: "rgba(151,187,205,0.8)",
-            highlightFill: "rgba(151,187,205,0.75)",
-            highlightStroke: "rgba(151,187,205,1)",
-            data: [{% for program in getQuantitativeDataSums %} "{{ program.actuals }}", {% endfor %}],
-            //data : [28,48,40,19,96,27,100]
-        }
-    ]
-}
-//retrieve kpi_canvas, pass the kpi_JSON into a Line_chart
-var ctx = document.getElementById("kpi").getContext("2d");
-var kpiChart = new Chart(ctx).Bar(kpi_data, kpi_options);
-document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
-
-//render program_expenditure on bar_chart
-    var expenditure_options = {
-        maintainAspectRatio: false,
-        responsive: true,
-        scaleOverlay : false,
-        scaleSteps : 10,
-        scaleStepWidth : 10,
-        scaleStartValue : 0,
-        scaleLineColor : "rgba(0,0,0,.25)",
-        scaleLineWidth : 1,
-        scaleShowLabels : true,
-        scaleLabel : "<%=value%>",
-        scaleFontFamily : "'Lato'",
-        scaleFontSize : 12,
-        scaleFontStyle : "800",
-        scaleFontColor : "#222",
-        scaleShowGridLines : true,
-        scaleGridLineColor : "rgba(0,0,0,.1)",
-        scaleGridLineWidth : 1,
-        bezierCurve : true,
-        pointDot : true,
-        pointDotRadius : 5,
-        pointDotStrokeWidth : 1,
-        datasetStroke : true,
-        datasetStrokeWidth : 1,
-        datasetFill : true,
-        animation : true,
-        animationSteps : 120,
-        animationEasing : "easeOutQuart",
-        onAnimationComplete : null,
-        //tooltip
-        multiTooltipTemplate: "<%= value + ' USD' %>",
-    };
-    var expenditure_data = {
-        labels: [{% for project in getProjects %} {{ project.id }},{% endfor %}],
-        datasets: [
-            {
-                label: "Budgeted",
-                fillColor: "rgba(220,220,220,0.5)",
-                strokeColor: "rgba(220,220,220,0.8)",
-                highlightFill: "rgba(220,220,220,0.75)",
-                highlightStroke: "rgba(220,220,220,1)",
-                data : [{% for project in getProjects %} {{ project.actual_budget }},{% endfor %}]
-            },
-            {
-                label: "Actuals",
-                fillColor: "rgba(151,187,205,0.5)",
-                strokeColor: "rgba(151,187,205,0.8)",
-                highlightFill: "rgba(151,187,205,0.75)",
-                highlightStroke: "rgba(151,187,205,1)",
-                data : [{% for project in getProjects %} {{ project.total_cost }},{% endfor %}]
-            }
-        ]
-    };
-    //retrieve expenditure_canvas, pass the expenditure_JSON into a bar_chart
-    var ctx = document.getElementById("expenditure_canvas").getContext("2d");
-    var expChart = new Chart(ctx).Bar(expenditure_data,expenditure_options);
-    document.getElementById('exp-legend').innerHTML = expChart.generateLegend();
-
-    //render survey_responses on radar_chart
-    var survey_data = {
-        //labels : [{% for program in getQuantitativeDataSums_2 %} "{{ program.indicator__source }}", {% endfor %}],
-        labels : ["Helpful","Friendly","Kind","Rude","Slow","Frustrating"],
-        datasets : [
-            {
-                fillColor : "rgba(220,220,220,0.5)",
-                strokeColor : "#637b85",
-                pointColor : "#dbba34",
-                pointStrokeColor : "#637b85",
-                //data : [{% for project in getProjects %} {{ project.mc_estimated_budget }},{% endfor %}]
-                data : [65,59,90,81,30,56]
-            }
-        ]
-    }
-    var ctx = document.getElementById("surveys").getContext("2d");
-    new Chart(ctx).Radar(survey_data);
-</script>
+        <div>{% include "charts/doughnut.html" %}</div>
+        <div>{% include "charts/public_program_bar.html" %}</div>
+        <div>{% include "charts/public_radar.html" %}</div>
+        <div>{% include "charts/public_Kpi_bar.html" %}</div>
 
 </div>
 {% endblock content %}

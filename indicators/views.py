@@ -71,9 +71,6 @@ def import_indicator(service=1,deserialize=True):
     :return:
     """
     service = ExternalService.objects.get(id=service)
-    #hard code the path to the file for now
-    #get_json = open(settings.SITE_ROOT + '/fixtures/dig-indicator-feed.json')
-    #print service.feed_url
     response = requests.get(service.feed_url)
 
     if deserialize == True:
@@ -367,7 +364,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     """
     This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
     and sums it at the bottom.  Lives in the "Reports" navigation.
-    URL: indicators/data/[id]/[program]/
+    URL: indicators/data/[id]/[program]/[type]
     :param request:
     :param id: Indicator ID
     :param program: Program ID
@@ -554,7 +551,14 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
 
 class CollectedDataList(ListView):
     """
-    CollectedData List
+    This is the Indicator CollectedData report for each indicator and program.  Displays a list collected data entries
+    and sums it at the bottom.  Lives in the "Reports" navigation.
+    URL: indicators/data/[id]/[program]/[type]
+    :param request:
+    :param id: Indicator ID
+    :param program: Program ID
+    :param type: Type ID
+    :return:
     """
     model = CollectedData
     template_name = 'indicators/collecteddata_list.html'
@@ -618,8 +622,7 @@ class CollectedDataList(ListView):
             response = HttpResponse(dataset.csv, content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
             return response
-        print "INDICATOR"
-        print indicator
+
         return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
                                                     'getIndicatorTypes': getIndicatorTypes, 'getIndicators':getIndicators,
                                                     'filter_program':filter_program,'filter_indicator': filter_indicator,
@@ -841,10 +844,16 @@ def getTableCount(url,table_id):
 
     # loop over the result table and count the number of records for actuals
     actual_data = get_table(filter_url)
-
     count = 0
+
     if actual_data:
-        for item in actual_data:
+        # check if json data is in the 'data' attribute or at the top level of the JSON object
+        try:
+            looper = actual_data['data']
+        except KeyError:
+            looper = actual_data
+
+        for item in looper:
             count = count + 1
 
     # update with new count
@@ -900,7 +909,7 @@ def collecteddata_import(request):
             remote_owner = item['owner']['username']
 
         #send table ID to count items in data
-        count = getTableCount(filter_url,id)
+        count = getTableCount(url,id)
 
         # get the users country
         countries = getCountry(request.user)

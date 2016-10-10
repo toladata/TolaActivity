@@ -26,6 +26,7 @@
         <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ 0 }}/{{ program }}/{{ type }}/"> -- All -- </a></li>
         {% for item in getIndicators %}
             <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ item.id }}/{{ program }}/{{ type }}/">{{ item.number}} - {{ item.name }}</a></li>
         {% endfor %}
@@ -37,7 +38,7 @@
         <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-            <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/collecteddata/{{ indicator }}/{{ program }}/0/">--All--</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/collecteddata/{{ indicator }}/{{ program }}/0/"> -- All -- </a></li>
         {% for item in getIndicatorTypes %}
             <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ indicator}}/{{ program }}/{{ item.id }}/">{{ item.indicator_type}}</a></li>
         {% endfor %}
@@ -46,12 +47,17 @@
     <br/>
     <br/>
 </div>
-
+<p>
 {% if indicator_name %}
-    <h4>Filtered by Indicator: {{ indicator_name }}</h4>
-{% elif program_name %}
-    <h4>Filtered by Program : {{ program_name }}</h4>
+    <span class="filter">Filtered by Indicator: {{ indicator_name }}</span>
 {% endif %}
+{% if program_name %}
+    <span class="filter">Filtered by Program : {{ program_name }}</span>
+{% endif %}
+{% if type_name %}
+    <span class="filter">Filtered by Indicator Type : {{ type_name }}</span>
+{% endif %}
+</p>
     <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
@@ -73,7 +79,6 @@
                     start = start.replace(re,'');
                     end = end.replace(re,'');
                     dateCol = dateCol.replace(re,'');
-
 
                     if ( start === "" && end === "" )
                     {
@@ -131,7 +136,7 @@
                         { title: "Date Collected", data: "date_collected",
                                 "mRender": function ( data, type, row ) {
                                 var javascriptDate = new Date(row.date_collected);
-                                javascriptDate = javascriptDate.getFullYear() + "-" + (javascriptDate.getMonth()+1) + "-" + javascriptDate.getDate();
+                                javascriptDate = javascriptDate.getFullYear() + "-" + ('0' + javascriptDate.getMonth()).slice(-2) + "-" + ('0' + javascriptDate.getDate()).slice(-2);
                                 return "<div class='date'>"+javascriptDate+"<div>";}},
                         { title: "Targeted", data: "targeted"},
                         { title: "Achieved", data: "achieved"},
@@ -184,10 +189,8 @@
             function do_export(type) {
                 // get the program and  indicator id from the url
                 indicator_id = document.URL.split('/')[5];
-                console.log(indicator_id);
                 program_id = document.URL.split('/')[6];
                 type_id = document.URL.split('/')[7];
-                console.log(type_id);
                 new_location="/indicators/collecteddata_report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/" + "export";
                 window.location.assign(new_location);
 

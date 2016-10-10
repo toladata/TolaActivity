@@ -59,3 +59,9 @@ class ProgramResource(resources.ModelResource):
 
     class Meta:
         model = Program
+
+class StakeholderResource(resources.ModelResource):
+    class Meta:
+        model = Stakeholder
+            
+        

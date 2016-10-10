@@ -458,7 +458,7 @@ class ProjectAgreementViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     serializer_class = AgreementSerializer
 
 
-class LoggedUserSerializerViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+class LoggedUserViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     """API endpoint for getting Logged Users."""
 
     queryset = LoggedUser.objects.all()
