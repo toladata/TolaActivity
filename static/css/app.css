@@ -275,3 +275,6 @@ ul.paginate li a:hover:not(.active) {background-color: #ddd;}
 {
   float: right;
 }
+
+/* Keep the picker on top of other elements */
+.ui-datepicker{z-index: 99 !important};
