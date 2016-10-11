@@ -87,6 +87,9 @@ def PublicDashboard(request,id=0):
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
+    getIndicatorsApprovedCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='approved').count()
+    getIndicatorInProgressCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='in progress').count()
+
     #get all countires
     countries = Country.objects.all().filter(program__id=program_id)
     print getProgramNarrative.id
@@ -100,7 +103,7 @@ def PublicDashboard(request,id=0):
                                                                      'getInProgressCount': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
-                                                                     'getSiteProfileIndicator': getSiteProfileIndicator})
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount})
 
 
 def SurveyPublicDashboard(request,id=0):
