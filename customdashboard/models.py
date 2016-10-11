@@ -73,7 +73,6 @@ class JupyterNotebooks(models.Model):
         return self.name
 
 
-
 class JupyterNotebooksAdmin(admin.ModelAdmin):
     list_display = ('name','program','very_custom_dashboard','create_date','edit_date')
     display = 'Jupyter Notebooks'
