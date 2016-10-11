@@ -1,4 +1,5 @@
 <script>
+$('a[href=#projects]').on('shown.bs.tab', function(){
 var expenditure_options = {
         maintainAspectRatio: false,
         responsive: true,
@@ -56,5 +57,7 @@ var expenditure_options = {
     var ctx = document.getElementById("expenditure_canvas").getContext("2d");
     var expChart = new Chart(ctx).Bar(expenditure_data,expenditure_options);
     document.getElementById('exp-legend').innerHTML = expChart.generateLegend();
+
+});
 
 </script>
