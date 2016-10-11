@@ -1,7 +1,7 @@
 from django.views.generic.list import ListView
 
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
+from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites, TrainingAttendance, Distribution, Beneficiary
 from customdashboard.models import ProgramNarratives, JupyterNotebooks
 from indicators.models import CollectedData
 
@@ -92,7 +92,32 @@ def PublicDashboard(request,id=0):
 
     #get all countires
     countries = Country.objects.all().filter(program__id=program_id)
-    print getProgramNarrative.id
+
+    #Trainings
+    agreement_id_list = []
+    training_id_list = []
+
+    for p in getProjects:
+        agreement_id_list.append(p.id)
+
+    getTrainings = TrainingAttendance.objects.all().filter(project_agreement_id__in=agreement_id_list)
+
+    getDistributions = Distribution.objects.all().filter(initiation_id__in=agreement_id_list)
+
+    for t in getTrainings:
+        training_id_list.append(t.id)
+
+    getBeneficiaries = Beneficiary.objects.all().filter(training__in=training_id_list)
+
+    get_project_completed = []
+
+    getProjectsComplete = ProjectComplete.objects.all()
+    for project in getProjects:
+        for complete in getProjectsComplete:
+            if complete.actual_budget != None:
+                if project.id == complete.project_agreement_id:
+
+                    get_project_completed.append(project)
 
     return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
                                                                      'getSiteProfile':getSiteProfile,
@@ -103,7 +128,7 @@ def PublicDashboard(request,id=0):
                                                                      'getInProgressCount': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
-                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount})
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount, 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 
 
 def SurveyPublicDashboard(request,id=0):

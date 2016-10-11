@@ -173,6 +173,12 @@ header .button {
    margin-top: none;
 
 }
+.canvas-container-dash
+{
+   min-height: 260px;
+   position: relative;
+   margin-top: none;
+}
 
 .widget {
    position: relative;
