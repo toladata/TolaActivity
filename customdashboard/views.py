@@ -2,8 +2,7 @@ from django.views.generic.list import ListView
 
 from django.shortcuts import render
 from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
-from customdashboard.models import OverlayGroups, OverlayNarratives, JupyterNotebooks
-from .models import ProjectStatus, Gallery
+from customdashboard.models import ProgramNarratives, JupyterNotebooks
 from indicators.models import CollectedData
 
 from django.db.models import Sum
@@ -77,8 +76,7 @@ def PublicDashboard(request,id=0):
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getProgram = Program.objects.all().get(id=program_id)
-    getOverlayGroups = OverlayGroups.objects.all()
-    getOverlayNarrative = OverlayNarratives.objects.all()
+    getProgramNarrative = ProgramNarratives.objects.get(program_id=program_id)
     getProjects = ProjectComplete.objects.all().filter(program_id=program_id)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
@@ -91,10 +89,11 @@ def PublicDashboard(request,id=0):
 
     #get all countires
     countries = Country.objects.all().filter(program__id=program_id)
+    print getProgramNarrative.id
 
     return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
-                                                                     'getSiteProfile':getSiteProfile, 'getOverlayGroups':getOverlayGroups,
-                                                                     'countries': countries, 'getOverlayNarrative': getOverlayNarrative,
+                                                                     'getSiteProfile':getSiteProfile,
+                                                                     'countries': countries, 'getProgramNarrative': getProgramNarrative,
                                                                      'getAwaitingApprovalCount':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
                                                                      'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount,
