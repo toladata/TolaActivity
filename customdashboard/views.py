@@ -1,9 +1,8 @@
 from django.views.generic.list import ListView
 
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
-from customdashboard.models import OverlayGroups, OverlayNarratives, JupyterNotebooks
-from .models import ProjectStatus, Gallery
+from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites, TrainingAttendance, Distribution, Beneficiary
+from customdashboard.models import ProgramNarratives, JupyterNotebooks
 from indicators.models import CollectedData
 
 from django.db.models import Sum
@@ -77,8 +76,10 @@ def PublicDashboard(request,id=0):
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getProgram = Program.objects.all().get(id=program_id)
-    getOverlayGroups = OverlayGroups.objects.all()
-    getOverlayNarrative = OverlayNarratives.objects.all()
+    try:
+        getProgramNarrative = ProgramNarratives.objects.get(program_id=program_id)
+    except ProgramNarratives.DoesNotExist:
+        getProgramNarrative = None
     getProjects = ProjectComplete.objects.all().filter(program_id=program_id)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
@@ -89,19 +90,48 @@ def PublicDashboard(request,id=0):
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
+    getIndicatorsApprovedCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='approved').count()
+    getIndicatorInProgressCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='in progress').count()
+
     #get all countires
     countries = Country.objects.all().filter(program__id=program_id)
 
+    #Trainings
+    agreement_id_list = []
+    training_id_list = []
+
+    for p in getProjects:
+        agreement_id_list.append(p.id)
+
+    getTrainings = TrainingAttendance.objects.all().filter(project_agreement_id__in=agreement_id_list)
+
+    getDistributions = Distribution.objects.all().filter(initiation_id__in=agreement_id_list)
+
+    for t in getTrainings:
+        training_id_list.append(t.id)
+
+    getBeneficiaries = Beneficiary.objects.all().filter(training__in=training_id_list)
+
+    get_project_completed = []
+
+    getProjectsComplete = ProjectComplete.objects.all()
+    for project in getProjects:
+        for complete in getProjectsComplete:
+            if complete.actual_budget != None:
+                if project.id == complete.project_agreement_id:
+
+                    get_project_completed.append(project)
+
     return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
-                                                                     'getSiteProfile':getSiteProfile, 'getOverlayGroups':getOverlayGroups,
-                                                                     'countries': countries, 'getOverlayNarrative': getOverlayNarrative,
+                                                                     'getSiteProfile':getSiteProfile,
+                                                                     'countries': countries, 'getProgramNarrative': getProgramNarrative,
                                                                      'getAwaitingApprovalCount':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
                                                                      'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount,
                                                                      'getInProgressCount': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
-                                                                     'getSiteProfileIndicator': getSiteProfileIndicator})
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount, 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 
 
 def SurveyPublicDashboard(request,id=0):
