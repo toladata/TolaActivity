@@ -76,7 +76,10 @@ def PublicDashboard(request,id=0):
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getProgram = Program.objects.all().get(id=program_id)
-    getProgramNarrative = ProgramNarratives.objects.get(program_id=program_id)
+    try:
+        getProgramNarrative = ProgramNarratives.objects.get(program_id=program_id)
+    except ProgramNarratives.DoesNotExist:
+        getProgramNarrative = None
     getProjects = ProjectComplete.objects.all().filter(program_id=program_id)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))

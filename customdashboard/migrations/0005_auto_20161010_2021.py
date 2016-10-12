@@ -9,7 +9,6 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('activitydb', '0027_merge'),
         ('customdashboard', '0004_jupyternotebooks'),
     ]
 
