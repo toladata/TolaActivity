@@ -1,4 +1,5 @@
 <script>
+$('a[href=#i_surveys]').on('shown.bs.tab', function(){
 //render survey_responses on radar_chart
     var survey_data = {
         //labels : [{% for program in getQuantitativeDataSums_2 %} "{{ program.indicator__source }}", {% endfor %}],
@@ -16,4 +17,5 @@
     }
     var ctx = document.getElementById("surveys").getContext("2d");
     new Chart(ctx).Radar(survey_data);
+});
 </script>
