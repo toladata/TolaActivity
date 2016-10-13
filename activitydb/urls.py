@@ -69,6 +69,7 @@ urlpatterns = [
                        url(r'^stakeholder_add/(?P<id>\w+)/$', StakeholderCreate.as_view(), name='stakeholder_add'),
                        url(r'^stakeholder_update/(?P<pk>\w+)/$', StakeholderUpdate.as_view(), name='stakeholder_update'),
                        url(r'^stakeholder_delete/(?P<pk>\w+)/$', StakeholderDelete.as_view(), name='stakeholder_delete'),
+                       url(r'^export_stakeholders_list/(?P<program_id>\w+)/$', 'activitydb.views.export_stakeholders_list', name='export_stakeholders_list'),
 
                        url(r'^contact_list/(?P<pk>\w+)/$', ContactList.as_view(), name='contact_list'),
                        url(r'^contact_add/(?P<id>\w+)/$', ContactCreate.as_view(), name='contact_add'),
