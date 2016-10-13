@@ -166,14 +166,19 @@ class ProjectAgreementList(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
-        if int(self.kwargs['pk']) == 0:
-            getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
-            return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
-        else:
+        if int(self.kwargs['pk']) != 0:
             getDashboard = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
             getProgram =Program.objects.get(id=self.kwargs['pk'])
+            return render(request, self.template_name, {'form': FilterForm(),'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
 
-            return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})
+        elif int(self.kwargs['status']) != 0:
+            getDashboard = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
+            return render(request, self.template_name, {'form': FilterForm(), 'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
+ 
+        else:
+            getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
+
+            return render(request, self.template_name, {'form': FilterForm(),'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
 
 
 class ProjectAgreementImport(ListView):
@@ -2493,7 +2498,17 @@ def report(request):
     project agreement list report
     """
     countries=getCountry(request.user)
-    getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries)
+
+    if int(self.kwargs['pk']) != 0:
+        getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
+
+    elif int(self.kwargs['status']) != 0:
+        getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['status'])
+    else:
+        getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries)
+
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+
     filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
     table = ProjectAgreementTable(filtered.queryset)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
@@ -2520,7 +2535,7 @@ def report(request):
 
 
     # send the keys and vars
-    return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
+    return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getPrograms': getPrograms})
 
 
 def country_json(request, country):
