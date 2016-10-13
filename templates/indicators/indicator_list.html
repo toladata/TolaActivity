@@ -36,20 +36,7 @@ function loadIndicators(program){
 };
 </script>
 
-<div class="dropdown">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-        Programs
-    <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/0/">-- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
-    {% endfor %}
-    </ul>
-    <br/>
-    <br/>
-</div>
+{% include "indicators/filter.html"%}
 
 <!-- Default panel contents -->
 {% if getProgramsIndicator %}
