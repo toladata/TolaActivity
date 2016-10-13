@@ -72,7 +72,7 @@
                     var end = document.getElementById('dt2').value;
                     var dateCol = aData[8];
 
-                    //replace the - in all striangs
+                    //replace the - in all strings
                     var find = '-';
                     var re = new RegExp(find, 'g');
 
@@ -99,14 +99,6 @@
                     return false;
                 }
             );
-
-            // Set data picker values and formats
-            $("#dt1").datepicker({
-                dateFormat: "yy-m-dd"
-            });
-            $('#dt2').datepicker({
-                dateFormat: "yy-m-dd"
-            });
 
             function show_indicator_table(indicator_data) {
 
@@ -211,11 +203,11 @@
         <table border="2" cellspacing="5" cellpadding="5">
             <tbody><tr>
                 <td>Start Date: </td>
-                <td><input type="text" id="dt1"></td>
+                <td><input type="text" id="dt1" class="datepicker"></td>
             </tr>
             <tr>
                 <td>End Date: </td>
-                <td><input type="text" id="dt2"></td>
+                <td><input type="text" id="dt2" class="datepicker"></td>
             </tr>
         </tbody>
         </table>
