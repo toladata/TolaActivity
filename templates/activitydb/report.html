@@ -15,9 +15,9 @@
 {% load crispy_forms_tags %}
 {% crispy form form.helper %}
 <br/>
-<!-- <div class="dropdown">
+<div class="dropdown">
 	{% include "activitydb/filter.html" %}
-</div> -->
+</div>
 <br>
 
 {% render_table get_agreements %}
@@ -25,5 +25,15 @@
 <br/>
 
 <button type="submit" class="btn btn-success" onClick="location.href='/activitydb/report?export=true&{{ request.GET.urlencode }}'">Export All</button>
+
+<script type="text/javascript">
+    function program_filter(program_id) {
+    	window.location.href = '/activitydb/report/'+program_id+'/0';      
+      }
+
+    function status_filter(status_id) {
+    	window.location.href = '/activitydb/report/0/'+status_id;      
+      }
+ </script>
 
 {% endblock content %}

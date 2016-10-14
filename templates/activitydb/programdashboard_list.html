@@ -87,4 +87,14 @@
         </div> <!-- /.modal-content -->
     </div> <!-- /.modal-dialog -->
 </div> <!-- /.modal -->
+
+<script type="text/javascript">
+    function program_filter(program_id) {
+      window.location.href = '/activitydb/dashboard/'+program_id+'/none';      
+      }
+
+    function status_filter(status) {
+      window.location.href = '/activitydb/dashboard/0/'+status;      
+      }
+ </script>
 {% endblock content %}

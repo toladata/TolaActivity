@@ -53,4 +53,15 @@
         </div> <!-- /.modal-content -->
     </div> <!-- /.modal-dialog -->
 </div> <!-- /.modal -->
+
+<script type="text/javascript">
+    function program_filter(program_id) {
+      window.location.href = '/activitydb/projectagreement_list/'+program_id+'/none';      
+      }
+
+    function status_filter(status) {
+      window.location.href = '/activitydb/projectagreement_list/0/'+status;      
+      }
+ </script>
+ 
 {% endblock content %}
