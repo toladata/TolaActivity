@@ -22,5 +22,18 @@
 <br/>
 
 <button type="submit" class="btn btn-success" onClick="location.href='/indicators/export/0/{{ program }}/0/'">Export All</button>
+<script type="text/javascript">
+    function program_filter(program_id) {
+      window.location.href = '/indicators/report/'+program_id+'/0/0/';      
+      }
+
+    function indicator_filter(indicator) {
+      window.location.href = '/indicators/report/0/'+indicator+'/0';  
+        }
+
+    function indicator_type_filter(type) {
+      window.location.href = '/indicators/report/0/0/'+type;      
+      }
+ </script>
 
 {% endblock content %}

@@ -62,5 +62,17 @@ function loadIndicators(program){
 {% else %}
     <p>No Programs</p>
 {% endif %}
+<script type="text/javascript">
+    function program_filter(program_id) {
+      window.location.href = '/indicators/home/'+program_id+'/0/0/';      
+      }
 
+    function indicator_filter(indicator) {
+      window.location.href = '/indicators/home/0/'+indicator+'/0';  
+        }
+
+    function indicator_type_filter(type) {
+      window.location.href = '/indicators/home/0/0/'+type;      
+      }
+ </script>
 {% endblock content %}

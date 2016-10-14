@@ -56,10 +56,14 @@ class IndicatorList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
         getIndicatorTypes = IndicatorType.objects.all()
 
-        if int(self.kwargs['pk']) == 0:
-            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
-        else:
+        if int(self.kwargs['pk']) != 0:
             getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk']).order_by('name').annotate(indicator_count=Count('indicator'))
+        elif int(self.kwargs['indicator']) != 0:
+            getProgramsIndicator = Program.objects.all().filter(indicator=self.kwargs['indicator']).order_by('name').annotate(indicator_count=Count('indicator'))
+        if int(self.kwargs['type']) != 0:
+            getProgramsIndicator = Program.objects.all().filter(indicator=self.kwargs['indicator']).order_by('name').annotate(indicator_count=Count('indicator'))
+        else:
+            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
 
         return render(request, self.template_name, {'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator, 'getIndicatorTypes': getIndicatorTypes})
 
@@ -293,7 +297,7 @@ class IndicatorDelete(DeleteView):
     form_class = IndicatorForm
 
 
-def indicator_report(request, program=0):
+def indicator_report(request, program=0, indicator=0, type=0):
     """
     This is the indicator library report.  List of all indicators across a country or countries filtered by
     program.  Lives in the "Report" navigation.
@@ -307,10 +311,14 @@ def indicator_report(request, program=0):
 
     getIndicatorTypes = IndicatorType.objects.all()
 
-    if int(program) == 0:
-        getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries)
-    else:
+    if int(program) != 0:
         getIndicators = Indicator.objects.all().filter(program__id=program).select_related()
+
+    elif int(type) != 0:
+        getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related()
+     
+    else:
+        getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries)
 
     table = IndicatorTable(getIndicators)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
