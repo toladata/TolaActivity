@@ -324,15 +324,15 @@
 			<!-- ***** PAGE MODALS ********* -->
 					<!-- Household Profile Modal -->
 					<div id="householdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
-					  <div class="modal-dialog" style="width:95%; margin: 2.5vh auto; overflow-y: scroll;" role="document">
+					  <div class="modal-dialog" style="width:95%; height: 95%;" role="document">
 
 					    <!-- Modal content-->
-					    <div class="modal-content" style="max-height: 95vh;">
+					    <div class="modal-content" style="height: 100%;">
 					      <div class="modal-header">
 					        <button type="button" class="close" data-dismiss="modal">&times;</button>
 					        <strong><h3 class="modal-title"> Household Profile</h3></strong>
 					      </div>
-					      <div class="modal-body " style='overflow-y: scroll; word-wrap: break-word; max-height: 90vh;'>
+					      <div class="modal-body" style='height: 100%; word-wrap: break-word; overflow-y: auto;'>
 							Profile Goes Here
 					      </div>
 			<!-- 		      <div class="modal-footer">
@@ -344,16 +344,16 @@
 
 					<!-- Jupyter Report Modal -->
 					<div id="reportModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
-					  <div class="modal-dialog" style="width:95%; margin: 2.5vh auto; overflow-y: scroll" role="document">
+					  <div class="modal-dialog" style="width:95%; height: 95%;" role="document">
 
 					    <!-- Modal content-->
-					    <div class="modal-content" style="max-height: 95vh;"">
+					    <div class="modal-content" style="height: 100%;">
 					      <div class="modal-header">
 					        <button type="button" class="close" data-dismiss="modal">&times;</button>
 					        <strong><h3 class="modal-title"> RRIMA Report</h3></strong>
 					      </div>
-					      <div class="modal-body " style='overflow-y: scroll; word-wrap: break-word; max-height: 90vh;'>
-							<iframe style="position: absolute; height: 95% top: 0; border: none; width: 95%;" src="/media/{{ getNotebook.file }}"></iframe><
+					      <div class="modal-body" style='height: 100%; word-wrap: break-word; overflow-y: auto;'>
+							<iframe style="position: absolute; height: 100%; top: 0; right: 0; border: none; width: 100%;" src="/media/{{ getNotebook.file }}"></iframe><
 					      </div>
 			<!-- 		      <div class="modal-footer">
 					          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -363,15 +363,15 @@
 					</div>
 					<!-- News Modal -->
 					<div id="newsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
-					  <div class="modal-dialog" style="width:95%; margin: 2.5vh auto; overflow-y: scroll" role="document">
+					  <div class="modal-dialog" style="width:95%; height: 95%;" role="document">
 
 					    <!-- Modal content-->
-					    <div class="modal-content" style="max-height: 95vh;"">
+					    <div class="modal-content" style="height: 100%;"">
 					      <div class="modal-header">
 					        <button type="button" class="close" data-dismiss="modal">&times;</button>
 					        <strong><h3 class="modal-title"> News Modal Title</h3></strong>
 					      </div>
-					      <div class="modal-body " style='overflow-y: scroll; word-wrap: break-word; max-height: 90vh;'>
+					      <div class="modal-body" style='height: 100%; word-wrap: break-word; overflow-y: auto;'>
 					        <!-- This content will come from curated iMAP news -->
 					      </div>
 			<!-- 		      <div class="modal-footer">
