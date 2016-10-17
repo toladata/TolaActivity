@@ -288,30 +288,10 @@ def RRIMAPublicDashboard(request,id=0):
     #retrieve projects for a program
     getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
 
-
     pageText = {}
-    pageText['pageTitle'] = "Refugee Response Information Management & Analysis (RRIMA)"
-    pageText['objectives'] = ["Rapid Use Interface", "Data Analysis"]
-    pageText['objectives_subtitles'] = ["Rapid Implementation; Nimble and Accessible User Interface","Data Analysis and Dissemination"]
-    pageText['objectives_content'] = ["RRIMA will be a user-friendly dashboarding/data visualization tool that is quick to implement and requires little technical knowledge to use. ", "RRIMA will promote increased transparency and communications across teams, partners and external audiences.\n\nRRIMA will support teams' ability to articulate impact and trends across the whole Aegean Response."]
-    pageText['projectSummary'] = {
-        'title':"Project Description", 
-        'excerpt': "The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.",
-        'full':[
-            "In recent years, we have seen a phenomena of migration taking place originating from geographic areas spanning across North and East Africa, the Middle East and Central Asia flowing into and towards Europe.",
-            "More than a million migrants and refugees crossed into Europe in 2015 - the vast majority of which traveled along the Aegean route from countries such as Syria, Afghanistan and Iraq through Turkey, Greece and the Balkans into Europe, seeking asylum. Approximately 74 percent of those are from the top 10 refugee-producing countries (including Syria, Afghanistan, and Iraq among others) and are likely meet the criteria for protected status under the 1951 Refugee Convention. The remaining 26 percent are migrants who are seeking safety, resources and/or a better life in Europe.", 
-            "Mercy Corps is poised with field teams in active areas along the migration route, including the Turkey, Greece, Serbia and the Former Republic of Macedonia (FYROM). However, despite the fact that teams are gathering similar information and running parallel programming, communication and information flow is limited due to a lack of a unifying framework for analysis.", 
-            "With ECHO funding, we have the opportunity to change that. ", 
-            "The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.", 
-            "Working side by side with the Tola team and utilizing TolaData as the primary platform for data and information merging and management, the RRIMA and Tola partnership aims to:"], 
-            'highlightList':["Centralize existing data sources.", "Identify trends within a given context.", "Analyze real-time data sets.", "Inform adaptive program delivery.", "Promote data sharing and learning."]   
-    }
-    pageText['timelineLinks'] = [{"date": "August 4-5","event": "Kick-Off Meeting (Izmir)","link": "https://docs.google.com/document/d/1luuWETSpsZcyRR_pOoZYxF-2P1KripTWLfGCBaXP2Z4/edit"},
-    {"date": "Aug 28 - Sept 9","event": "RRIMA Team in Izmir","link": ""},
-    {"date": "October","event": "Prototype Presentation to ECHO","link": ""},
-    {"date": "October - December","event": "RRIMA Reports Released; Testing of Data Visualization Prototype","link": ""}, 
-    {"date": "December","event": "Project Conclusion","link": ""}]
-
+    pageText['pageTitle'] = "Refugee Response and Migration News"
+    # pageText['objectives'] = []
+    pageText['projectSummary'] = { }
     pageImages = {}
     pageImages['leadimage_sourcelink'] = 'drive.google.com/a/mercycorps.org/file/d/0B8g-VJ-NXXHiMng0OVVla3FEMlE/view?usp=sharing'
     pageImages['title'] = 'Aegean Response Photos'
