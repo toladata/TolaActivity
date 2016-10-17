@@ -1,94 +1,406 @@
-<!-- import chart.js -->
+{% load staticfiles %}
+{% load humanize %}
 
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Mercy Corps Public Dashboard">
+        <meta name="author" content="Mercy Corps">
+
+        <!-- <title>{% block title %} Program Dashboard {% endblock %}</title> -->
+
+        <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png">
+
+        <!-- Bootstrap -->
+        <link href="{{ STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ STATIC_URL}}css/tola-dashboard.css" rel="stylesheet" type="text/css" />
+
+        <!-- JQuery UI CSS -->
+        <link href="{{ STATIC_URL }}css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+
+        <!-- Custom Footer CSS -->
+        <link href="{{ STATIC_URL }}css/app.css" rel="stylesheet" type="text/css">
+
+        <!-- - Hosted Leaflet CSS --> 
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
+
+        {% block extra_js_in_header %}
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins)  -->
+        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+
+        <!-- <!- Hosted Leaflet -->
+		 <script src="{{ STATIC_URL }}js/leaflet.js"></script>
+        {% endblock %} 
+
+    </head>
+    <style>
+    	a{
+    	  color: #0065a2;
+    	}
+    	body{
+    	  color: #4d525a;
+	  	  padding-top: 100px;
+	  	  background-color: #f6f6f6;
+    	}
+		h3:before { 
+		  display: block; 
+		  content: " "; 
+		  margin-top: -150px; 
+		  height: 150px; 
+		  visibility: hidden; 
+		}
+	  .red-gradient {
+		  background-color: #cf102d;
+		  border-color: #b00e26;
+		  background-image: -webkit-gradient(linear, left 0%, left 100%, from(#ee2443), to(#cf102d));
+		  background-image: -webkit-linear-gradient(top, #ee2443, 0%, #cf102d, 100%);
+		  background-image: -moz-linear-gradient(top, #ee2443 0%, #cf102d 100%);
+		  background-image: linear-gradient(to bottom, #ee2443 0%, #cf102d 100%);
+		  background-repeat: repeat-x;
+		  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee2443', endColorstr='#ffcf102d', GradientType=0);
+	  }
+	  .button-selector {
+	  	height: 40px; 
+	  	padding: .5em; 
+	  	border-radius: 5px; 
+	  	box-shadow: 2.5px 2.5px 2.5px black; 
+	  	color: white;
+	  }
+	  .highlight-title {
+	  	height: 40px; 
+	  	padding: .5em; 
+	  	border-width: 1em;
+	  	border-style: line;
+	  	border-color: black;
+	  	border-radius: 5px; 
+	  	color: #cf102d;
+	  	text-align: center; 
+	  	margin: 0.15em; 
+	  	padding-top: 1em;
+	  }
+	  .highlight-panel {
+	  	height: 80px; 
+	  	border-width: 1em;
+	  	border-style: line;
+	  	border-color: black;
+	  	border-radius: 5px; 
+	  	color: #4d525a;
+	  	text-align: center; 
+	  	margin: 0.15em; 
+	  	padding-top: 1em;
+	  }
+
+	.lightest-grey-gradient {
+		  background-color: #dbdcde;
+		  border-color: #cacbce;
+		  background-image: -webkit-gradient(linear, left 0%, left 100%, from(#f6f6f6), to(#dbdcde));
+		  background-image: -webkit-linear-gradient(top, #f6f6f6, 0%, #dbdcde, 100%);
+		  background-image: -moz-linear-gradient(top, #f6f6f6 0%, #dbdcde 100%);
+		  background-image: linear-gradient(to bottom, #f6f6f6 0%, #dbdcde 100%);
+		  background-repeat: repeat-x;
+		  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff6f6f6', endColorstr='#ffdbdcde', GradientType=0);
+		}
+	.dark-white-gradient {
+	  background-color: #f6f6f6;
+	  border-color: #e5e5e5;
+	  background-image: -webkit-gradient(linear, left 0%, left 100%, from(#ffffff), to(#f6f6f6));
+	  background-image: -webkit-linear-gradient(top, #ffffff, 0%, #f6f6f6, 100%);
+	  background-image: -moz-linear-gradient(top, #ffffff 0%, #f6f6f6 100%);
+	  background-image: linear-gradient(to bottom, #ffffff 0%, #f6f6f6 100%);
+	  background-repeat: repeat-x;
+	  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff6f6f6', GradientType=0);
+	}
+	</style>
 <!-- load basic layout -->
-{% extends "customdashboard/custom_base_layout.html" %}
 {% load staticfiles %}
 
 <!-- humanize numbers -->
 {% load humanize %}
 
-<!-- layout-specific content modules-->
-{% block content %}
+<!-- nav bar -->  
+    <body style='background-color:#4d525a;'>
+        <!--http://getbootstrap.com/examples/sticky-footer-navbar/-->
+        <header class="navbar navbar-tola navbar-fixed-top " role="navigation" style='background-color:#4d525a; padding: .5em .25em 1.25em 1em; margin: 0 0 0 0; box-shadow: 2.5px 2.5px 5px black;' >
+            <!-- <div class='container ' style='float: left; background-color:#cf102d; width:100%; height: 100px;'> -->
+            	<div class='col-lg-3' style="height:100%; width: 100% padding: 0 0 0 0;">
+	            	<nav class="navbar" style="width: 100%; background-color: #cf102d; border-radius: 5px; box-shadow: 2.5px 2.5px 2.5px black; color: white;">
+					  <div class="container-fluid" style="padding-left:.25em;">
+					    <ul class="nav navbar-nav">
+					      <li class='col-lg-1' style="padding-left:.25em; float: left;"><a href="#"><span class="glyphicon glyphicon-home"></span> </a></li>
+					      <li class="dropdown col-lg-6" style="padding-left:.25em; float: left;">
+					        <a class="dropdown-toggle" data-toggle="dropdown" href="#">REPORTS
+					        <span class="caret"></span></a>
+					        <ul class="dropdown-menu">
+					          <li><a href="#report1"><span class="glyphicon glyphicon-stats"></span> Report 1</a></li>
+					          <li><a href="#report2"><span class="glyphicon glyphicon-stats"></span> Report 2</a></li>
+					          <li><a href="#report3"><span class="glyphicon glyphicon-stats"></span> Report 3</a></li> 
+					          <!-- <li><a href="#report4"><span class="glyphicon glyphicon-stats"></span> Report 4</a></li>  -->
+					          <!-- <li><a href="#report4"><span class="glyphicon glyphicon-stats"></span> Report 5</a></li>  -->
+					        </ul>
+					      </li>
+					      <li class="dropdown col-lg-5" style="padding:0; float: left;">
+					        <a class="dropdown-toggle" data-toggle="dropdown" href="#">MORE
+					        <span class="caret"></span></a>
+					        <ul class="dropdown-menu">
+					          <li><a href="#timeline"><span class="glyphicon glyphicon-film"></span> Timeline</a></li>
+					          <li><a href="#programhub"><span class="glyphicon glyphicon-picture"></span> Program Hub</a></li>
+					          <li><a href="#newsresources"><span class="glyphicon glyphicon-paperclip"></span> News Resources</a></li> 
+					        </ul>
+					      </li>
+					    </ul>
 
+					  </div>
+					
+					</nav>
+		        </div>
+		        <div class='col-lg-6' style='border-radius: 5px; background-color: #cf102d; color: white; text-align: left; margin-right: 10em; box-shadow: 2.5px 2.5px 2.5px black;padding: 0em 1.5em .5em 1.5em; float: right'> <h2>RRIMA Refugee & Migration News</h2></div>
+				
+            <!-- </div> -->
+        </header>
 <!-- TODO: define layout sections -->
-<div class="tab-content">
-	  <div id="home" class="tab-pane fade in active">
-		<div class='container-fluid'>
-			<div class='col-lg-9'>
-				<div class='panel panel-info borderless soft-border-full' style="min-height: 200; max-height: 200; background-color:#DB5E11; border-color: #D7D7D7;">
-					<div class="panel-body" style='text-align: center'>
-						<div class='col-lg-12'>
-						<span style='font-size: 2.2em; color: white;'>{{ pageText.pageTitle }}</span>
+			<div class="tab-content">
+				<div id="menu0" class="tab-pane fade in active">
+					<div class='container-fluid col-lg-12 dark-white-gradient'>
+						<div class='col-lg-9' style='height: 100; overflow-y: scroll; color: #4d525a; padding-left: 3em; padding-bottom: 2em; padding-right: 4em' >
+							<h3>{{pageText.projectSummary.title}}</h3>
+							<p>With <a href="http://ec.europa.eu/echo/" style="color: #0065a2;"><u>ECHO</u></a> funding, <strong>Mercy Corps’ Refugee Response Information Management and Analysis (RRIMA)</strong> team aims to:<p>
+							<div class='row' style='margin-left: 2em;'>
+								<div class='col-lg-2  highlight-title'><strong><u>Centralize</u></strong></div>
+								<div class='col-lg-2  highlight-title'><strong><u>Identify</u></strong></div>
+								<div class='col-lg-2  highlight-title'><strong><u>Analyze</u></strong></div>
+								<div class='col-lg-2  highlight-title'><strong><u>Inform</u></strong></div>
+								<div class='col-lg-2  highlight-title'><strong><u>Promote</u></strong></div>
+								<div class='col-lg-2  highlight-panel'>Existing data sources</div>
+								<div class='col-lg-2  highlight-panel'>Trends within a given context</div>
+								<div class='col-lg-2  highlight-panel'>Real-time datasets</div>
+								<div class='col-lg-2  highlight-panel'>Adaptive program delivery</div>
+								<div class='col-lg-2  highlight-panel'>Data sharing and learning</div>
+							</div>
 						</div>
-					</div>
-				</div>
-				<div class='row row-eq-height' >
-					<div class='col-md-6 row-eq-height bounded-column'>
-						<div class='panel panel-info borderless soft-border-full' style="float: left; height: 245pt; border-color: #D7D7D7;">
-							<!-- <div class="panel-body"> -->
-								{% with pageImages.imageset as tolaImageData %}
-								    {% include 'customdashboard/rrima_components/sidebar_gallery.html' %}
-								{% endwith %}
-							<!-- </div> -->
-						</div>
-					</div>
-					<div class='col-md-6 row-eq-height bounded-column'>
-						<div class='panel panel-info borderless soft-border-full' style="float: left; height: 245pt; border-color: #D7D7D7;">
-							<div class="panel-body" style='overflow-y: scroll; ' >
-								{% with pageText.projectSummary as tolaTextData %}
-								    {% include 'customdashboard/rrima_components/context_pane.html' %}
-								{% endwith %}
+						<div class='col-lg-3' style='background-color: white; padding: 0em 2em 0em 2em; margin-top: 2em; float:left'>
+							<div class="panel-body">
+								<img src="{{STATIC_URL}}/img/EU_Logo.png" style='background-color: white;height: 125px; padding: .5em 0 .5em .5em; float: right; border: none;'>
+								<img src="{{STATIC_URL}}/img/MC_Logo.png" style='background-color: white;height: 125px; padding: .5em; float: right; border: none;'>
+							
 							</div>
 						</div>
 					</div>
-				</div>
-				<div class='row'>
-					<div class='col-md-12'>
-						<div class='panel panel-info borderless soft-border-full' style="border-color: #D7D7D7;">
-							<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213; color: white; border-color: #D7D7D7;'><span class='title-white'> PROGRAM HUBS </span><p style='text-align: left; font-size: 80%;'>(Major operations hubs only. Regions may operate in additional project-specific locations)</p></div>
-								<div class="panel-body" style="height: 300;">
-								{% with pageMap as tolaMapData %}
-								    {% include 'customdashboard/rrima_components/rrima_map.html' %}
-								{% endwith %}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class='col-lg-3'>
-				<div class='col-lg-12'>
-					<div class='panel panel-info borderless soft-border-full' style="border-color: #D7D7D7;">						
-					<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213; color: white; border-color: #D7D7D7;'><span> RRIMA REPORTS</span></div>
-						<div class="panel-body">
-							<!-- <span class='chart-title' style="overflow-y: scroll; ">NEWSFEED</span> -->
-							{% with pageNews as tolaTextData %}
-							    {% include 'customdashboard/rrima_components/sidebar_news.html' %}
+
+					<div class='container-fluid col-lg-12 dark-white-gradient' style="padding-top: 40px; ">
+
+						<div class='col-lg-1'></div>
+						<div class='col-lg-11' style="height: 150; padding-bottom: 2em;">
+							<h3 id="programhub" style='text-align: right;'>PROGRAM HUBS </h3>
+							<div style='padding-bottom: 2em;'><h4><strong>The path of a refugee…</strong></h4>
+							<p>According to <a href="http://data.unhcr.org/mediterranean/regional.php/"><u>UNHCR</u></a>, more than 1 million migrants and refugees crossed into Europe in 2015 - the vast majority of which traveled along the Aegean Route from countries such as Syria, Afghanistan, and Iraq through Turkey, Greece and the Balkans. <strong>Mercy Corps is strategically positioned</strong> with teams in active areas along the Aegean Migration Route.</p> </div>
+							{% with pageMap as tolaMapData %}
+							    {% include 'customdashboard/rrima_components/rrima_map.html' %}
 							{% endwith %}
 						</div>
-					</div>
-				</div>
-				<div class='col-md-12'>
+						<div class='col-lg-12' style="height:10px;"></div>
 
-					<div class='panel panel-info borderless soft-border-full' style="min-height: 400; max-height: 400; border-color: #D7D7D7;">
-					<div class='panel-heading borderless soft-border-top' style='background-color: #DB5E11; color: white; border-color: #D7D7D7;'><span> OBJECTIVES</span></div>
-						<div class="panel-body" >
-						  <!-- <span style="margin-left: 20%;"><strong>OBJECTIVES</strong><br><br></span> -->
-						  <li style="margin-bottom: 5%;"">To provide Aegean Response teams with regular, consistent and quality analyses of programmatic and secondary data sources.</li><li>To inform and improve program implementation, Aegean Response strategy and policy discussion.</li>
-						</div>
 					</div>
-				</div>
-				<div class='col-md-12'>
-					<div class='panel panel-info borderless soft-border-full' style="min-height: 200; max-height: 200; border-color: #D7D7D7; ">
-						<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213;  color: white; border-color: #D7D7D7;'><span> QUALITATIVE REPORTS</span></div> 
-						<div style="margin-left: 5%"><br><br> Coming Soon! <br><br><br><br></div>
-<!-- 						{% with pageText.timelineLinks as tolaTextData %}
-							{% include 'customdashboard/rrima_components/sidebar_events.html' %}
-						{% endwith %} -->
-		            </div>
+					<div class='container-fluid col-lg-12 dark-white-gradient' style='padding-top: 1em; padding-bottom: 1em;'>
+						<div class='col-lg-10; style='border-radius: 5px; float: left; width:100%; overflow-y: scroll; box-shadow: 1px 1px 1px 1px #8b8b8b inset;'>
+							<h3 id="timeline">TIMELINE </h3>
+							<div style='padding-bottom: 1.5em;'>2016 has been marked by a series of key events affecting migrant and refugee decisions about if, how, where and when they will attempt the journey to Europe…</div>
+							<iframe src='https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=1lTZN_JUG7clZ8a4FKpGL0dbcFaK-KY_4BvjlWpOlD6c&font=Default&lang=en&initial_zoom=1&height=450' width='1000' height='450' frameborder='0'></iframe>
+						</div>
+						<div class='col-lg-1'></div>
+					</div>
+					<div class='container-fluid col-lg-12 dark-white-gradient' style='padding-left: 5%; padding-right: 5%;'>
+						<div class='row'>
+							<div class='col-lg-9' style='padding-top: 1em; padding-bottom: 1em;'>
+							<h3 id="report1">WHERE ARE PEOPLE COMING FROM?</h3>
+							<p>Over 4 million Syrian refugees. 2.6 million displaced Iraqis. Conflict is tearing countries apart. People are moving at a greater rate than ever before. <i>Who are the primary populations moving? </i>The simple answer is: everyone. Routes are now flooded by families fleeing homes and countries that are no longer safe or habitable.</p>
+							<p>Where are people coming from? Who is staying in Turkey versus moving on to Greece and the Balkans? RRIMA Report 1 focuses on <i><strong>who</strong></i> Mercy Corps is serving along the Aegean Migration Route.</p>
+								<div style='padding-top: 1em; padding-bottom: 1em;'>
+									<!-- TODO: Add Modal Content for the Description of a Typical Refugee HH -->
+									<!-- <a data-toggle="modal" href="#householdModal" style='text-align: left; width: 100%;'><strong>What Does an Average Household Look Like?</strong></a><br><br> -->
+									<ul style='list-style: none;'>
+										<strong>A Deeper Look...</strong>
+										<li><a src="http://www.independent.co.uk/news/world/refugee-crisis-where-are-all-these-people-coming-from-and-why-10490425.html" style='text-align: left; width: 100%;'><u>Refugee crisis: Where are all these people coming from and why?</u></a></li> 
+									</ul>
+								</div>
+							</div>
+							<div class='col-lg-3' style='padding-top: 1em; padding-bottom: 1em;'>
+								<div class='panel red-gradient' style='height: 40px; margin-top: 3em; padding: .5em .5em 2em .5em; border-radius: 5px; box-shadow: 2.5px 2.5px 2.5px black; color: white'>
+									<div class='panel-body' style='padding-top: 0em;'><a src="/customdashboard/notebook/1" data-toggle="modal" href="#reportModal" style='color: white; text-align: left; width: 100%;'>RRIMA Report Vol. 1</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='row'>
+							<div class='col-lg-9' style='padding-top: 1em; padding-bottom: 1em;'>
+							<h3 id="report2">WHAT CHALLENGES ARE THEY FACING?</h3>
+							<p>Refugees, asylum seekers and migrant populations each have their own story for why and how they left their country of origin. But all are arriving in a foreign country with limited resources and knowledge of the language, government policies and services available to them. </p>
+							<P>Turkey is host to at least 2.75 million Syrian refugees (among others). What are the primary needs and concerns for these populations? What issues are they running into? RRIMA Report 2 focuses on needs and challenges for refugee populations in Izmir, Turkey. </p>
+								<div style='padding-top: 1em; padding-bottom: 1em;'>
+								</div>
+							</div>
+							<div class='col-lg-3' style='padding-top: 1em; padding-bottom: 1em;'>
+								<div class='panel red-gradient' style='height: 40px; margin-top: 3em; padding: .5em .5em 2em .5em; border-radius: 5px; box-shadow: 2.5px 2.5px 2.5px black; color: white'>
+									<div class='panel-body' style='padding-top: 0em;'><a src="/customdashboard/notebook/2" data-toggle="modal" href="#reportModal" style='color: white; text-align: left; width: 100%;'>RRIMA Report Vol. 2</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class='row'>
+							<div class='col-lg-9' style='padding-top: 1em; padding-bottom: 1em;'>
+							<h3 id="report3">WHERE IS EVERYONE GOING?</h3>
+							<p>Y2016 has been a tumultuous year for migration patterns across the Mediterranean and European routes.This massive movement of people has placed a strain on existing resources and support services that has never been experienced before. </p><p>Which countries have received the most arrivals, and how has that changed over time? How do challenges and needs for refugees change along the route? RRIMA Report 3 looks at a timeline of events since January 2016, mapping out movements and highlighting moments of note this year. </p>
+								<div style='padding-top: 1em; padding-bottom: 1em;'>
+									<ul style='list-style: none;'><strong>A Deeper Look...:</strong>
+										<li><a href="http://www.medmig.info/"><u>MEDMIG: Unraveling the Mediterranean Crisis</u></a></li> 
+									</ul>
+								</div>
+							</div>
+							<div class='col-lg-3' style='padding-top: 1em; padding-bottom: 1em;'>
+								<div class='panel red-gradient' style='height: 40px; margin-top: 3em; padding: .5em .5em 2em .5em;border-radius: 5px; box-shadow: 2.5px 2.5px 2.5px black; color: white'>
+									<div class='panel-body' style='padding-top: 0em;'><a src="/customdashboard/notebook/3" data-toggle="modal" href="#reportModal" style='color: white; text-align: left; width: 100%;'>RRIMA Report Vol. 3</a></div>
+								</div>
+							</div>
+
+						</div>
+			<!-- 
+						TODO: ADD REPORT 4
+						<div class='row'>
+							<div class='col-lg-9' style='padding-top: 1em; padding-bottom: 1em;'>
+							<h3 id="report4">QUESTION THAT FRAMES REPORT 4?</h3>
+							<p>You can now use The Hub on your phone or your tablet with ease: Mercy Corps' online home -- The Hub -- is now mobile-friendly and responsive! While the new responsive design keeps the old look and feel, we've made some significant changes to the code and, as a result, the site now works on a wide variety of devices, responding to the device's screen resolution and dimensions dynamically.</p>
+								<div style='padding-top: 1em; padding-bottom: 1em;'> -->
+									<!-- TODO: Add List of Resources -->
+									<!-- <ul style='list-style: none;'><strong>A Deeper Look...:</strong>
+										<li>Item 1</li> 
+										<li>Item 1</li> 
+										<li>Item 1</li> 
+									</ul> -->
+			<!-- 					</div>
+							</div>
+							<div class='col-lg-3' style='padding-top: 1em; padding-bottom: 1em;'>
+								<div class='panel red-gradient' style='height: 40px; margin-top: 3em; padding: .5em .5em 2em .5em;border-radius: 5px; box-shadow: 2.5px 2.5px 2.5px black; color: white'>
+									<div class='panel-body' style='padding-top: 0em;'><a src="/customdashboard/notebook/4" data-toggle="modal" href="#reportModal" style='color: white; text-align: left; width: 100%;'>RRIMA Report Vol. 4</a></div>
+								</div>
+							</div>
+							 -->
+						<!-- </div> -->
+					</div>		
+
+					<div class='container-fluid col-lg-12 dark-white-gradient' style='padding-left: 5%; padding-right: 5%; padding-bottom: 5%;'>
+						<div>
+							<h3 id="newsresources" style='padding-top: 1em; padding-bottom: 1em;'>NEWS FEEDS</h3>
+							<ul style='width: 100%;'>
+			<!-- 				TODO: Activate this link once iMAP integration is possible 	
+								<li class='col-lg-4' style='list-style: none;'>
+							 		<div class='panel red-gradient button-selector'><div class='panel-body' style='padding-top: 0em;'><a data-toggle="modal" href="#newsModal">RRIMA Information Hub</a>
+									</div>
+									</div>
+								</li> -->
+							    <li class='col-lg-4' style='list-style: none;'>
+							    	<div class='panel red-gradient button-selector'><div class='panel-body><a href='https://newsthatmoves.org/en/' style='color: white; text-align: left; width: 100%;'>NEWS THAT MOVES</a><br></div>
+							    	</div>
+							    </li>
+							    <li class='col-lg-4'style='list-style: none;'>
+							    	<div class='panel red-gradient button-selector'><div class='panel-body><a href='http://www.unhcr.org/news.html' style='color: white; text-align: left; width: 100%;'>UNHCR</a>
+							    	<br></div>
+							    	</div>
+							    </li>
+							    <li class='col-lg-4' style='list-style: none;'>
+							    	<div class='panel red-gradient button-selector'><div class='panel-body><a href='https://www.newsdeeply.com/refugees' style='color: white; text-align: left; width: 100%;'>News Deeply - Refugees </a>
+							    	<br></div>
+							    	</div>
+							    </li>
+							    <li class='col-lg-4' style='list-style: none;'>
+							    	<div class='panel red-gradient button-selector'><div class='panel-body><a href='http://www.ecre.org/news/news/' style='color: white; text-align: left; width: 100%;'>ECRE News</a>
+							    	</div></br></div>
+							    </li>
+							 </ul>
+						</div>
+					<div class='container-fluid'></div>
+
+			<!-- ***** PAGE MODALS ********* -->
+					<!-- Household Profile Modal -->
+					<div id="householdModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
+					  <div class="modal-dialog" style="width:95%; margin: 2.5vh auto; overflow-y: scroll;" role="document">
+
+					    <!-- Modal content-->
+					    <div class="modal-content" style="max-height: 95vh;">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal">&times;</button>
+					        <strong><h3 class="modal-title"> Household Profile</h3></strong>
+					      </div>
+					      <div class="modal-body " style='overflow-y: scroll; word-wrap: break-word; max-height: 90vh;'>
+							Profile Goes Here
+					      </div>
+			<!-- 		      <div class="modal-footer">
+					          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					      </div> -->
+					    </div>
+					  </div>
+					</div>
+
+					<!-- Jupyter Report Modal -->
+					<div id="reportModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
+					  <div class="modal-dialog" style="width:95%; margin: 2.5vh auto; overflow-y: scroll" role="document">
+
+					    <!-- Modal content-->
+					    <div class="modal-content" style="max-height: 95vh;"">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal">&times;</button>
+					        <strong><h3 class="modal-title"> RRIMA Report</h3></strong>
+					      </div>
+					      <div class="modal-body " style='overflow-y: scroll; word-wrap: break-word; max-height: 90vh;'>
+							<iframe style="position: absolute; height: 95% top: 0; border: none; width: 95%;" src="/media/{{ getNotebook.file }}"></iframe><
+					      </div>
+			<!-- 		      <div class="modal-footer">
+					          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					      </div> -->
+					    </div>
+					  </div>
+					</div>
+					<!-- News Modal -->
+					<div id="newsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
+					  <div class="modal-dialog" style="width:95%; margin: 2.5vh auto; overflow-y: scroll" role="document">
+
+					    <!-- Modal content-->
+					    <div class="modal-content" style="max-height: 95vh;"">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal">&times;</button>
+					        <strong><h3 class="modal-title"> News Modal Title</h3></strong>
+					      </div>
+					      <div class="modal-body " style='overflow-y: scroll; word-wrap: break-word; max-height: 90vh;'>
+					        <!-- This content will come from curated iMAP news -->
+					      </div>
+			<!-- 		      <div class="modal-footer">
+					          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					      </div> -->
+					    </div>
+					  </div>
+					</div>
 				</div>
 			</div>
-		</div>
-	</div>
+	<!-- footer -->
+	    <div id="footer">
+	        <!-- Sticky Footer -->
+	        <div class="container">
+	            <div class="col-md-6 text-left">
+	                <a href="http://www.toladata.com" class="text-muted"><b>Tola</b>Data: Built by</a> <a href="http://www.mercycorps.org" class="text-muted">MercyCorps</a>
+	            </div>
+	            <div class="col-md-6 text-right">
+	                <a href="http://tola.work/documentation" class="text-muted">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a> | <a href="https://github.com/toladata/TolaActivity/blob/master/LICENSE" class="text-muted">License</a>
+	            </div>
+	        </div>
+	    </div><!-- .footer collapse -->
 
-</div>
-{% endblock content %}
+      
+        <!-- <!- {% block extra_js_in_body %} --> 
+        <!-- {% endblock %} -->
+    </body>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+</html>
+
