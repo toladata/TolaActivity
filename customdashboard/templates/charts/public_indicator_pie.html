@@ -9,6 +9,7 @@ required:
 -->
 
 <script id="doughnutchart">
+$('a[href=#indicators]').on('shown.bs.tab', function(){
 //render project_status in a doughnut chart
 var options = {
     // single tooltip
@@ -18,25 +19,16 @@ var data = [
     {
     value: {{ getApprovedCount }},
     color:"#637b85",
-    label: "Approved - {{ getApprovedCount }}"
-    },
-    {
-    value : {{ getAwaitingApprovalCount }},
-    color : "#2c9c69",
-    label: "Waiting - {{ getAwaitingApprovalCount }}"
-    },
-    {
-    value : {{ getRejectedCount }},
-    color : "#dbba34",
-    label: "Rejected - {{ getRejectedCount }}"
+    label: "Approved - {{ getIndicatorsApprovedCount }}"
     },
     {
     value : {{ getInProgressCount }},
     color : "#c62f29",
-    label: "In Progress - {{ getInProgressCount }}"
+    label: "In Progress - {{ getIndicatorInProgressCount }}"
     }
 ];
-var ctx = document.getElementById("status").getContext("2d");
-var statusChart = new Chart(ctx).Doughnut(data,options);
-document.getElementById('status-legend').innerHTML = statusChart.generateLegend();
+var ctx = document.getElementById("ind-status").getContext("2d");
+var statusChart = new Chart(ctx).Pie(data,options);
+document.getElementById('ind-status-legend').innerHTML = statusChart.generateLegend();
+});
 </script>

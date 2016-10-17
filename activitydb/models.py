@@ -958,6 +958,7 @@ class ProjectAgreement(models.Model):
 
 
 class ProjectComplete(models.Model):
+    short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
     project_agreement = models.OneToOneField(ProjectAgreement, verbose_name="Project Initiation")
     activity_code = models.CharField("Project Code", max_length=255, blank=True, null=True)

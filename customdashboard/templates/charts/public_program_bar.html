@@ -1,15 +1,6 @@
-<!---
-BAR GRAPH template for custom charts
-required:
-* dataset[] with label and iterable data[] for each chart item (up to 2)
-  for side by side or stacked
-* elementID for placement on dashboard
-* legendID for placement of legend for graph
-* tooltip to append to tool tip i.e. (USD, KM, LBS, etc.)
--->
 <script>
-    //render bar_chart
-    var options = {
+$('a[href=#projects]').on('shown.bs.tab', function(){
+var expenditure_options = {
         maintainAspectRatio: false,
         responsive: true,
         scaleOverlay : false,
@@ -39,18 +30,18 @@ required:
         animationEasing : "easeOutQuart",
         onAnimationComplete : null,
         //tooltip
-        multiTooltipTemplate: "<%= value + ' USD' %>",  
+        multiTooltipTemplate: "<%= value + ' USD' %>",
     };
-    var data = {
-        labels: [{% for indicator in getQuantitativeDataSums|slice:"20" %}  {{ indicator.indicator_id }}, {% endfor %}],
+    var expenditure_data = {
+        labels: [{% for project in getProjects|slice:"10" %} {{ project.id }},{% endfor %}],
         datasets: [
             {
-                label: "Targeted",
+                label: "Budgeted",
                 fillColor: "rgba(220,220,220,0.5)",
                 strokeColor: "rgba(220,220,220,0.8)",
                 highlightFill: "rgba(220,220,220,0.75)",
                 highlightStroke: "rgba(220,220,220,1)",
-                data : [{% for indicator in getQuantitativeDataSums|slice:"20" %}  {{ indicator.targets }}, {% endfor %}]
+                data : [{% for project in getProjects|slice:"10" %} {{ project.actual_budget }},{% endfor %}]
             },
             {
                 label: "Actuals",
@@ -58,12 +49,15 @@ required:
                 strokeColor: "rgba(151,187,205,0.8)",
                 highlightFill: "rgba(151,187,205,0.75)",
                 highlightStroke: "rgba(151,187,205,1)",
-                data : [{% for indicator in getQuantitativeDataSums|slice:"20"%}  {{ indicator.actuals }}, {% endfor %}]
+                data : [{% for project in getProjects|slice:"10" %} {{ project.total_cost }},{% endfor %}]
             }
         ]
     };
-    //retrieve expenditure_canvas, pass the into a bar_chart
+    //retrieve expenditure_canvas, pass the expenditure_JSON into a bar_chart
     var ctx = document.getElementById("expenditure_canvas").getContext("2d");
-    var expChart = new Chart(ctx).Bar(data,options);
+    var expChart = new Chart(ctx).Bar(expenditure_data,expenditure_options);
     document.getElementById('exp-legend').innerHTML = expChart.generateLegend();
+
+});
+
 </script>

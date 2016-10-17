@@ -1,173 +1,41 @@
 {% extends "base.html" %}
-
 {% block content %}
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Survery Dashboard">
+    <meta name="author" content=TolaData"">
+    <title>TolaData Rollout Dashboard</title>
 
-<script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
-<script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
+    <!-- Bootstrap core CSS -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png"/>
 
-<script>
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 
-$(function () {
+    <!-- Custom styles for this template -->
+    <link href="{{ STATIC_URL}}css/tola-dashboard.css" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL}}css/app.css" rel="stylesheet" type="text/css" />
+    <!-- JQuery UI CSS -->
+    <link href="{{ STATIC_URL }}css/ui-lightness/jquery-ui-1.10.4.min.css" rel="stylesheet" type="text/css" />
 
-    $(document).ready(function () {
-        $('#status').highcharts({
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
-            },
-            title: {
-                text: 'Project Initiations by Status'
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: false
-                    },
-                    showInLegend: true
-                }
-            },
-            series: [{
-                name: 'Project Initiations',
-                colorByPoint: true,
-                data: [{
-                    name: 'Approved',
-                    y: {{getApprovedCount}},
-                    sliced: true,
-                    selected: true
-                }, {
-                    name: 'Awaiting Approval',
-                    y: {{getAwaitingApprovalCount}}
-
-                }, {
-                    name: 'In Progress',
-                    y: {{getInProgressCount}}
-                },  {
-                    name: 'Rejected',
-                    y: {{getRejectedCount}}
-                }]
-            }]
-        });
-    });
-});
-
-
-$(function () {
-    $('#budget').highcharts({
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: 'Activity Budget v Actuals'
-        },
-        xAxis: {
-            categories: [{% for project in getProjects %}
-                '{{ project.activity_code }}',{%endfor%}'Total'
-            ],
-            crosshair: true
-        },
-        yAxis: {
-            min: 0,
-            title: {
-                text: 'Activity Budget (in USD)'
-            }
-        },
-        tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.2f} USD</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-        },
-        plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
-            }
-        },
-        series: [{
-            name: 'Estimated',
-            data: [
-            {% for project in getProjects %}{{ project.total_estimated_budget }},{%endfor%}]
-
-        },  {
-            name: 'Actual',
-            data: [
-            {% for project in getProjects %}{{ project.projectcomplete.actual_budget }},{%endfor%}]
-
-        }]
-    });
-});
-
-$(function () {
-
-    $('#indicator').highcharts({
-
-        chart: {
-            polar: true,
-            type: 'bar'
-        },
-
-        title: {
-            text: 'KPI - TvA',
-            x: -80
-        },
-
-        pane: {
-            size: '80%'
-        },
-
-        xAxis: {
-            categories: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  '{{ indicator.indicator__number }}', {% endfor %} ],
-            tickmarkPlacement: 'on',
-            lineWidth: 0
-        },
-
-        yAxis: {
-            gridLineInterpolation: 'polygon',
-            lineWidth: 0,
-            min: 0
-        },
-
-        tooltip: {
-            shared: true,
-            pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
-        },
-
-        legend: {
-            align: 'right',
-            verticalAlign: 'top',
-            y: 70,
-            layout: 'vertical'
-        },
-        plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
-            }
-        },
-        series: [{
-            name: 'Targets',
-            data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.targets }}, {% endfor %}  ],
-            pointPlacement: 'on'
-        }, {
-            name: 'Actuals',
-            data: [ {% for indicator in getQuantitativeDataSums|slice:":10" %}  {{ indicator.actuals }}, {% endfor %}   ],
-            pointPlacement: 'on'
-        }]
-
-    });
-});
-
-
-</script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.11.1.min.js"></script>
+    <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
+    <link rel="borders" type="application/json" href="js/world_borders.geojson">
+    <!-- Hosted Leaflet -->
+    <script src="{{ STATIC_URL }}js/leaflet.js"></script>
+    <script src="{{ STATIC_URL }}js/Chart.HorizontalBar.js"></script>
+    <!--- Hosted Leaflet CSS -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css"/>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
 
     <div class="row">
         <div class="panel panel-info">
@@ -191,7 +59,7 @@ $(function () {
         </div>
     </div>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="panel panel-info">
                 <div class="panel-heading">
 
@@ -202,55 +70,72 @@ $(function () {
                         Project Dashboard <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu" role="menu">
-                          <li role="presentation">
+                        <li role="presentation">
                          {% for project in getProjects %}
                             <li class="list-group-item">
                                 <a href="/activitydb/dashboard/project/{{ project.id }}/">{{ project.project_name }}</a>
                             </li>
                          {%endfor%}
+                        </li> 
                       </ul>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div id="indicator" style=" width: 100%; height: 460px; margin: 0 auto; float:right"></div>
+                    <div id="indicator" style=" width: 100%; height: 460px; margin: 0 auto; float:right">
+                        <div style="width: 100%">
+                            <canvas id="program_chart" height="200" width="300"></canvas>
+                        <div id="program-legend" class="chart-legend"></div>
+
+                        </div>
+                        
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-           <!-- removed map div -->
+        <div class="col-md-6">
             <div class="panel panel-default">
+                <div class="panel-heading"><b>Project(s) Status</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }} </a>{% endif %}
+                    </div>
                 <div class="panel-body">
-                    <div id="status" style=" width: 100%; height: 280px; margin: 0 auto; float:right"></div>
+                    <div class="col-md-offset-2 col-md-10">
+                        <canvas id="status" height="280"></canvas>
+                        <div id="status-legend" class="chart-legend"></div>
+                    </div>
                 </div>
             </div>
-            <div class="panel panel-info">
-                <div class="panel-heading"><b>Project Activity Budget</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }} </a>{% endif %}</div>
-                <div class="panel-body">
-                <div id="budget" style=" width: 100%; height: 280px; margin: 0 auto; float:right"></div>
-
-                </div>
-            </div>
-
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-20">
+        <div class="col-md-12">
             <div class="panel panel-info">
-                <div class="panel-heading"><b>Project Sites</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}</a> {% endif %}</div>
+                <div class="panel-heading"><b>Project Activity Budget</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }} </a>{% endif %}
+                </div>
                 <div class="panel-body">
-
-                    <style>
-                        #map { height: 350px; }
-                    </style>
-                    <div id="map"></div>
-
-                    {% include "small_site_profile_map.html" %}
-
+                    <div id="budget">
+                        <canvas id="expenditure_canvas" height="300" width="200"></canvas>
+                        <div id="exp-legend" class="chart-legend"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading"><b>Project Sites</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}</a> {% endif %}</div>
+            <div class="panel-body">
 
+                <style>
+                    #map { height: 350px; }
+                </style>
+                <div id="map"></div>
+
+                {% include "small_site_profile_map.html" %}
+
+            </div>
+        </div>
+    </div>
+    <div>{% include "charts/doughnut.html" %}</div>
+    <div>{% include "charts/bar_graph.html" %}</div>
+    <div>{% include "charts/polar.html" %}</div>
+    <div>{% include "charts/horizontal_bar_graph.html" %}</div>
 
 {% endblock content %}

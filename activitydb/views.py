@@ -1463,7 +1463,7 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
 
 class ContactList(ListView):
     """
-    getStakeholders
+    Get Contacts
     """
     model = Contact
     template_name = 'activitydb/contact_list.html'
@@ -1599,9 +1599,13 @@ class StakeholderList(ListView):
     template_name = 'activitydb/stakeholder_list.html'
 
     def get(self, request, *args, **kwargs):
-
+        # Check for project filter
         project_agreement_id = self.kwargs['pk']
-        program_id = int(self.kwargs['program_id'])
+        # Check for program filter
+        if self.kwargs['program_id']:
+            program_id = int(self.kwargs['program_id'])
+        else:
+            program_id = 0
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
@@ -1617,7 +1621,7 @@ class StakeholderList(ListView):
         else:
             getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
 
-        return render(request, self.template_name, {'getStakeholders': getStakeholders, 'project_agreement_id': project_agreement_id, 'getPrograms': getPrograms})
+        return render(request, self.template_name, {'getStakeholders': getStakeholders, 'project_agreement_id': project_agreement_id,'program_id':program_id, 'getPrograms': getPrograms})
 
 
 class StakeholderCreate(CreateView):
@@ -2576,11 +2580,19 @@ def service_json(request, service):
     service_indicators = import_service(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
 
-def export_stakeholders_list(request):
 
-    getStakeholders = Stakeholder.objects.all()
+def export_stakeholders_list(request, **kwargs):
+
+    program_id = int(kwargs['program_id'])
+    countries = getCountry(request.user)
+
+    if program_id != 0:
+        getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct()
+    else:
+        getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
+
     dataset = StakeholderResource().export(getStakeholders)
     response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=activity_report.csv'
+    response['Content-Disposition'] = 'attachment; filename=stakeholders.csv'
 
     return response

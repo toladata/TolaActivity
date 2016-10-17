@@ -87,6 +87,13 @@ body > .container {
     padding: 10px;
 }
 
+.filter {
+    padding: 3px;
+    color: #000000;
+    background-color: #f5f5f5;
+    border-color: #808080;
+    border-radius: .5px
+}
 
 .btn-frozen {
     color: #fff;
@@ -268,3 +275,5 @@ ul.paginate li a:hover:not(.active) {background-color: #ddd;}
 {
   float: right;
 }
+/* Keep the picker on top of other elements */
+.ui-datepicker{z-index: 99 !important};
