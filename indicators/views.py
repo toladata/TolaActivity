@@ -56,8 +56,8 @@ class IndicatorList(ListView):
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
         getIndicatorTypes = IndicatorType.objects.all()
 
-        if int(self.kwargs['pk']) != 0:
-            getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk']).order_by('name').annotate(indicator_count=Count('indicator'))
+        if int(self.kwargs['program']) != 0:
+            getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['program']).order_by('name').annotate(indicator_count=Count('indicator'))
         elif int(self.kwargs['indicator']) != 0:
             getProgramsIndicator = Program.objects.all().filter(indicator=self.kwargs['indicator']).order_by('name').annotate(indicator_count=Count('indicator'))
         if int(self.kwargs['type']) != 0:
