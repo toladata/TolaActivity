@@ -2861,9 +2861,9 @@ class CustomDashboardUpdate(UpdateView):
 
         try: 
             getAllComponentMaps = []
-            for component in getCustomDashboard.componentset:
-                getAllComponentMaps[component] = json.loads(component.componentmap)
-        except not getCustomDashboard.componentset:
+            for component in getDashboardComponents:
+                getAllComponentMaps[component] = json.loads(component.data_map)
+        except not getDashboardComponents:
             getAllComponentMaps = None
         context.update({'getAllComponentMaps': getAllComponentMaps})
 

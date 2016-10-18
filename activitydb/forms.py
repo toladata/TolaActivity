@@ -1911,7 +1911,6 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <th>Select Data Source(s)</th>
                                                 <th></th>
                                                 <th>Add New Data Source</th>
-                                                <th>Select Data Set </th>
                                             </tr>
                                             {% if getComponentOrder.items %}
                                                 {% for key, component in getComponentOrder.items %}
@@ -1955,7 +1954,6 @@ class CustomDashboardForm(forms.ModelForm):
                                                                 {% endif %}
                                                             </td>  
                                                             <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/data_add/'> New </a></td>
-                                                            <td> Display datafilters from getAllDataFilters[data_source.id] </td>
 
                                                         {% endfor %}
                                                         
@@ -1963,7 +1961,6 @@ class CustomDashboardForm(forms.ModelForm):
                                                 {% endfor %}
                                             {% else %}
                                                 <tr>
-                                                    <td>*Missing Map*</td>
                                                     <td>*Missing Map*</td>
                                                     <td>*Missing Map*</td>
                                                     <td>*Missing Map*</td>
@@ -1996,21 +1993,31 @@ class CustomDashboardForm(forms.ModelForm):
                                 <table class="table">
                                     <tr>
                                         <th>Component</th>
-                                        <th>Component Property</th>
+                                        <th>Data Type</th>
                                         <th>Data Source</th>
                                         <th>Data Set</th>
                                     </tr>
-                                    <% for component in CustomDashboard.components %>
+                                    {% for component in getDashboardComponents %}
+                                    <tr>
+                                        <td>{{component.component_name}}</td>
+                                        {% for map_entry in getAllComponentMaps.component %}
                                         <tr>
-                                            <td></td>
-                                            <% for component in getAllComponentMaps %>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>  
-                                            </tr>                  
-                                        </tr>
-                                    <% endfor %>
+                                            <td>{{map_entry.name}}</td>
+                                            <td>{{map_entry.source}}</td>
+                                            <td>{% if map_entry.name == "title" %}
+                                                    <input type="text" name="title">
+                                                {% else %}
+                                                    <select>
+                                                    {% for data_filter in map_entry.source %}
+                                                        <option value={{data_filter}}>{{data_filter}}</option>
+                                                    {% endfor %}
+                                                    </select>
+                                                {% endif %}
+                                            </td>  
+                                        </tr>  
+                                        {% endfor %}               
+                                    </tr>
+                                    {% endfor %}
                                 </table>
                                 <div class="panel-footer">
                                 <a class="btn btn-primary" data-target="#preview-submit" data-toggle="tab">Next Step: Preview & Submit</a>
