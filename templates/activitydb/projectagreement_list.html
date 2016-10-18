@@ -12,16 +12,7 @@
 {% block content %}
 
 <div class="dropdown">
-  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-    Programs
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/projectagreement_list/0">--All--</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/projectagreement_list/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
-    {% endfor %}
-  </ul>
+    {% include "activitydb/filter.html" %}
 </div>
 <br/>
 {% if getProgram %}
@@ -62,4 +53,15 @@
         </div> <!-- /.modal-content -->
     </div> <!-- /.modal-dialog -->
 </div> <!-- /.modal -->
+
+<script type="text/javascript">
+    function program_filter(program_id) {
+      window.location.href = '/activitydb/projectagreement_list/'+program_id+'/none';      
+      }
+
+    function status_filter(status) {
+      window.location.href = '/activitydb/projectagreement_list/0/'+status;      
+      }
+ </script>
+ 
 {% endblock content %}

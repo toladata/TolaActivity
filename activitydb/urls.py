@@ -10,10 +10,10 @@ urlpatterns = [
                        url(r'^dashboard/project/(?P<pk>\w+)/$', ProjectDash.as_view(), name='project_dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)$', ProjectDash.as_view(), name='project_dashboard'),
                        url(r'^dashboard/project', ProjectDash.as_view(), name='project_dashboard'),
-                       url(r'^dashboard/(?P<pk>\w+)/(?P<status>\w+)/$', ProgramDash.as_view(), name='dashboard'),
+                       url(r'^dashboard/(?P<pk>\w+)/(?P<status>[\w ]+)/$', ProgramDash.as_view(), name='dashboard'),
                        url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
 
-                       url(r'^projectagreement_list/(?P<pk>\w+)/$', ProjectAgreementList.as_view(), name='projectagreement_list'),
+                       url(r'^projectagreement_list/(?P<pk>\w+)/(?P<status>[\w ]+)/$', ProjectAgreementList.as_view(), name='projectagreement_list'),
                        url(r'^projectagreement_add/$', ProjectAgreementCreate.as_view(), name='projectagreement_add'),
                        url(r'^projectagreement_update/(?P<pk>\w+)/$', ProjectAgreementUpdate.as_view(), name='projectagreement_update'),
                        url(r'^projectagreement_delete/(?P<pk>\w+)/$', ProjectAgreementDelete.as_view(), name='projectagreement_delete'),
@@ -97,8 +97,8 @@ urlpatterns = [
                        url(r'^budget_update/(?P<pk>\w+)/$', BudgetUpdate.as_view(), name='budget_update'),
                        url(r'^budget_delete/(?P<pk>\w+)/$', BudgetDelete.as_view(), name='budget_delete'),
 
-                       url(r'^report/export/$', 'activitydb.views.report', name='report'),
-                       url(r'^report/', 'activitydb.views.report', name='report'),
+                       url(r'^report/export/$', Report.as_view(), name='report'),
+                       url(r'^report/(?P<pk>\w+)/(?P<status>[\w ]+)/$', Report.as_view(), name='report'),
                        url(r'^export_stakeholders_list/', 'activitydb.views.export_stakeholders_list', name='export_stakeholders_list'),
 
                        url(r'^province/(?P<province>[-\w]+)/province_json/', 'activitydb.views.province_json', name='province_json'),

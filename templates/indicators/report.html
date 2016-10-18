@@ -4,19 +4,8 @@
   <li><a href="/indicators/home/0/">Indicators</a></li>
   <li class="active">Reports</li>
 </ol>
-<div class="dropdown">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-    Programs
-    <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/report/0"> -- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/report/{{ program.id }}">{{ program.gaitid}} - {{ program.name }}</a></li>
-    {% endfor %}
-    </ul>
-</div>
-<br/>
+{% include "indicators/filter.html"%}
+
 {% endblock bread_crumb %}
 {% load render_table from django_tables2 %}
 
@@ -33,5 +22,18 @@
 <br/>
 
 <button type="submit" class="btn btn-success" onClick="location.href='/indicators/export/0/{{ program }}/0/'">Export All</button>
+<script type="text/javascript">
+    function program_filter(program_id) {
+      window.location.href = '/indicators/report/'+program_id+'/0/0/';      
+      }
+
+    function indicator_filter(indicator) {
+      window.location.href = '/indicators/report/0/'+indicator+'/0';  
+        }
+
+    function indicator_type_filter(type) {
+      window.location.href = '/indicators/report/0/0/'+type;      
+      }
+ </script>
 
 {% endblock content %}

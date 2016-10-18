@@ -149,7 +149,9 @@ class ApprovalAuthorityAdmin(admin.ModelAdmin):
     list_filter = ('create_date','country')
 
 class StakeholderAdmin(ImportExportModelAdmin):
-    pass
+    list_display = ('name', 'type', 'country', 'sector', 'approval', 'approved_by', 'filled_by', 'create_date')
+    display = 'Stakeholder List'
+    list_filter = ('country', 'type', 'sector')
 
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Province, ProvinceAdmin)

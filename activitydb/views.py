@@ -42,7 +42,7 @@ from export import ProjectAgreementResource, StakeholderResource
 from django.core.exceptions import PermissionDenied
 
 APPROVALS = (
-    ('in_progress', 'in progress'),
+    ('in_progress',('in progress')),
     ('awaiting_approval', 'awaiting approval'),
     ('approved', 'approved'),
     ('rejected', 'rejected'),
@@ -166,14 +166,19 @@ class ProjectAgreementList(ListView):
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
-        if int(self.kwargs['pk']) == 0:
-            getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
-            return render(request, self.template_name, {'form': form, 'getDashboard':getDashboard,'getPrograms':getPrograms})
-        else:
+        if int(self.kwargs['pk']) != 0:
             getDashboard = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
             getProgram =Program.objects.get(id=self.kwargs['pk'])
+            return render(request, self.template_name, {'form': FilterForm(),'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
 
-            return render(request, self.template_name, {'form': form, 'getProgram': getProgram, 'getDashboard':getDashboard,'getPrograms':getPrograms})
+        elif self.kwargs['status'] != 'none':
+            getDashboard = ProjectAgreement.objects.all().filter(approval=self.kwargs['status'])
+            return render(request, self.template_name, {'form': FilterForm(), 'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
+ 
+        else:
+            getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
+
+            return render(request, self.template_name, {'form': FilterForm(),'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
 
 
 class ProjectAgreementImport(ListView):
@@ -605,7 +610,7 @@ class ProjectCompleteUpdate(UpdateView):
         return super(ProjectCompleteUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_form(self, form_class):
-        check_form_type = ProjectComplete.objects.get(id=self.kwargs['pk'])
+        check_form_type = ProjectComplete.objects.get(id=self.kwargs['pk']).fetch_related('project_agreement')
 
         if check_form_type.project_agreement.short == True:
             form = ProjectCompleteSimpleForm
@@ -2488,39 +2493,51 @@ class ChecklistItemDelete(DeleteView):
     form_class = ChecklistItemForm
 
 
-def report(request):
+class Report(ListView):
     """
     project agreement list report
     """
-    countries=getCountry(request.user)
-    getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries)
-    filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
-    table = ProjectAgreementTable(filtered.queryset)
-    table.paginate(page=request.GET.get('page', 1), per_page=20)
+    def get(self, request, *args, **kwargs):
 
-    if request.method == "GET" and "search" in request.GET:
-        #list1 = list()
-        #for obj in filtered:
-        #    list1.append(obj)
-        """
-         fields = 'program','community'
-        """
-        getAgreements = ProjectAgreement.objects.filter(
-                                           Q(project_name__contains=request.GET["search"]) |
-                                           Q(activity_code__contains=request.GET["search"]))
-        table = ProjectAgreementTable(getAgreements)
+        countries=getCountry(request.user)
 
-    RequestConfig(request).configure(table)
+        if int(self.kwargs['pk']) != 0:
+            getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
 
-    if request.GET.get('export'):
-        dataset = ProjectAgreementResource().export(getAgreements)
-        response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-        response['Content-Disposition'] = 'attachment; filename=activity_report.csv'
-        return response
+        elif self.kwargs['status'] != 'none':
+            getAgreements = ProjectAgreement.objects.all().filter(approval=self.kwargs['status'])
+        else:
+            getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries)
+
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+
+        filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
+        table = ProjectAgreementTable(filtered.queryset)
+        table.paginate(page=request.GET.get('page', 1), per_page=20)
+
+        if request.method == "GET" and "search" in request.GET:
+            #list1 = list()
+            #for obj in filtered:
+            #    list1.append(obj)
+            """
+             fields = 'program','community'
+            """
+            getAgreements = ProjectAgreement.objects.filter(
+                                               Q(project_name__contains=request.GET["search"]) |
+                                               Q(activity_code__contains=request.GET["search"]))
+            table = ProjectAgreementTable(getAgreements)
+
+        RequestConfig(request).configure(table)
+
+        if request.GET.get('export'):
+            dataset = ProjectAgreementResource().export(getAgreements)
+            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=activity_report.csv'
+            return response
 
 
-    # send the keys and vars
-    return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper})
+        # send the keys and vars
+        return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getPrograms': getPrograms})
 
 
 def country_json(request, country):

@@ -16,16 +16,6 @@
         });
         return false;
     });
-
-    $(document).ready(function() {
-        var options = {
-        dateFormat: 'yy-mm-dd'
-        };
-        $('#id_est_start_date').datepicker(options);
-        $('#id_est_end_date').datepicker(options);
-        $('#id_actual_start_date').datepicker(options);
-        $('#id_actual_end_date').datepicker(options);
-    });
 </script>
 
     <div class="modal-header">
@@ -47,7 +37,18 @@
 
         {% csrf_token %}
         {% crispy form %}
+        <script type="text/javascript">
+        $(document).ready(function() {
+                var options = {
+                dateFormat: 'yy-mm-dd'
+                };
+                $('#id_est_start_date').datepicker(options);
+                $('#id_est_end_date').datepicker(options);
+                $('#id_actual_start_date').datepicker(options);
+                $('#id_actual_end_date').datepicker(options);
+            });
 
+        </script>
         <input type="submit" class="btn btn-primary" name="Save changes" value="Save changes"/>
         </form>
     </div>
