@@ -20,7 +20,6 @@ Once all your changes have been commited to the repo, and before pushing them, r
 ## To deploy locally
 Run the following commands from the root of this repository:
   - `docker-compose build`
-  - `docker-compose up -d mysqldb`
   - `docker-compose up`
 
 ## USING virtualenv
