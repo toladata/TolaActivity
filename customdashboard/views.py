@@ -4,9 +4,8 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites
-from customdashboard.models import OverlayGroups, OverlayNarratives, JupyterNotebooks
-from .models import ProjectStatus, Gallery
+from activitydb.models import ProjectAgreement, ProjectComplete, CustomDashboard, Program, SiteProfile,Country, TolaSites, TrainingAttendance, Distribution, Beneficiary
+from customdashboard.models import ProgramNarratives, JupyterNotebooks
 from indicators.models import CollectedData
 
 from django.db.models import Sum
@@ -35,7 +34,6 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     getQuantitativeDataSums = CollectedData.objects.filter(indicator__program__id=program_id,achieved__isnull=False, indicator__key_performance_indicator=True).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved')).exclude(achieved=None,targeted=None)
     
     getFilteredName=Program.objects.get(id=program_id)
-    getProjectStatus = ProjectStatus.objects.all()
     
     getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
     getBudgetEstimated = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).annotate(estimated=Sum('total_estimated_budget'))
@@ -69,7 +67,7 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
                     get_project_completed.append(project)
 
     return render(request, "customdashboard/visual_dashboard.html", {'getSiteProfile':getSiteProfile, 'getBudgetEstimated': getBudgetEstimated, 'getQuantitativeDataSums': getQuantitativeDataSums,
-                                                                     'country': countries, 'getProjectStatus': getProjectStatus, 'getAwaitingApprovalCount':getAwaitingApprovalCount,
+                                                                     'country': countries, 'getAwaitingApprovalCount':getAwaitingApprovalCount,
                                                                      'getFilteredName': getFilteredName,'getProjects': getProjects, 'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,
                                                                      'getCustomDashboard': getCustomDashboard, 'getProjectsCount': getProjectsCount, 'selected_countries_list': selected_countries_list,
@@ -81,8 +79,10 @@ def PublicDashboard(request,id=0):
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getProgram = Program.objects.all().get(id=program_id)
-    getOverlayGroups = OverlayGroups.objects.all()
-    getOverlayNarrative = OverlayNarratives.objects.all()
+    try:
+        getProgramNarrative = ProgramNarratives.objects.get(program_id=program_id)
+    except ProgramNarratives.DoesNotExist:
+        getProgramNarrative = None
     getProjects = ProjectComplete.objects.all().filter(program_id=program_id)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
@@ -93,19 +93,48 @@ def PublicDashboard(request,id=0):
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
+    getIndicatorsApprovedCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='approved').count()
+    getIndicatorInProgressCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='in progress').count()
+
     #get all countires
     countries = Country.objects.all().filter(program__id=program_id)
 
-    return render(request, "customdashboard/themes/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
-                                                                     'getSiteProfile':getSiteProfile, 'getOverlayGroups':getOverlayGroups,
-                                                                     'countries': countries, 'getOverlayNarrative': getOverlayNarrative,
+    #Trainings
+    agreement_id_list = []
+    training_id_list = []
+
+    for p in getProjects:
+        agreement_id_list.append(p.id)
+
+    getTrainings = TrainingAttendance.objects.all().filter(project_agreement_id__in=agreement_id_list)
+
+    getDistributions = Distribution.objects.all().filter(initiation_id__in=agreement_id_list)
+
+    for t in getTrainings:
+        training_id_list.append(t.id)
+
+    getBeneficiaries = Beneficiary.objects.all().filter(training__in=training_id_list)
+
+    get_project_completed = []
+
+    getProjectsComplete = ProjectComplete.objects.all()
+    for project in getProjects:
+        for complete in getProjectsComplete:
+            if complete.actual_budget != None:
+                if project.id == complete.project_agreement_id:
+
+                    get_project_completed.append(project)
+
+    return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
+                                                                     'getSiteProfile':getSiteProfile,
+                                                                     'countries': countries, 'getProgramNarrative': getProgramNarrative,
                                                                      'getAwaitingApprovalCount':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
                                                                      'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount,
                                                                      'getInProgressCount': getInProgressCount,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
-                                                                     'getSiteProfileIndicator': getSiteProfileIndicator})
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount, 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 
 
 def SurveyPublicDashboard(request,id=0):
@@ -298,30 +327,10 @@ def RRIMAPublicDashboard(request,id=0):
     #retrieve projects for a program
     getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
 
-
     pageText = {}
-    pageText['pageTitle'] = "Refugee Response Information Management & Analysis (RRIMA)"
-    pageText['objectives'] = ["Rapid Use Interface", "Data Analysis"]
-    pageText['objectives_subtitles'] = ["Rapid Implementation; Nimble and Accessible User Interface","Data Analysis and Dissemination"]
-    pageText['objectives_content'] = ["RRIMA will be a user-friendly dashboarding/data visualization tool that is quick to implement and requires little technical knowledge to use. ", "RRIMA will promote increased transparency and communications across teams, partners and external audiences.\n\nRRIMA will support teams' ability to articulate impact and trends across the whole Aegean Response."]
-    pageText['projectSummary'] = {
-        'title':"Project Description", 
-        'excerpt': "The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.",
-        'full':[
-            "In recent years, we have seen a phenomena of migration taking place originating from geographic areas spanning across North and East Africa, the Middle East and Central Asia flowing into and towards Europe.",
-            "More than a million migrants and refugees crossed into Europe in 2015 - the vast majority of which traveled along the Aegean route from countries such as Syria, Afghanistan and Iraq through Turkey, Greece and the Balkans into Europe, seeking asylum. Approximately 74 percent of those are from the top 10 refugee-producing countries (including Syria, Afghanistan, and Iraq among others) and are likely meet the criteria for protected status under the 1951 Refugee Convention. The remaining 26 percent are migrants who are seeking safety, resources and/or a better life in Europe.", 
-            "Mercy Corps is poised with field teams in active areas along the migration route, including the Turkey, Greece, Serbia and the Former Republic of Macedonia (FYROM). However, despite the fact that teams are gathering similar information and running parallel programming, communication and information flow is limited due to a lack of a unifying framework for analysis.", 
-            "With ECHO funding, we have the opportunity to change that. ", 
-            "The Refugee Response Information Management & Analysis Platform (RRIMA) is an interactive dashboarding tool that will allow Mercy Corps teams across the Aegean Response to feed their program data into a single platform, providing the ability to view trends and changes across multiple different programs and countries, making decisionmaking and rapid, adaptive management of programs more accurate, targeted and forward-thinking.", 
-            "Working side by side with the Tola team and utilizing TolaData as the primary platform for data and information merging and management, the RRIMA and Tola partnership aims to:"], 
-            'highlightList':["Centralize existing data sources.", "Identify trends within a given context.", "Analyze real-time data sets.", "Inform adaptive program delivery.", "Promote data sharing and learning."]   
-    }
-    pageText['timelineLinks'] = [{"date": "August 4-5","event": "Kick-Off Meeting (Izmir)","link": "https://docs.google.com/document/d/1luuWETSpsZcyRR_pOoZYxF-2P1KripTWLfGCBaXP2Z4/edit"},
-    {"date": "Aug 28 - Sept 9","event": "RRIMA Team in Izmir","link": ""},
-    {"date": "October","event": "Prototype Presentation to ECHO","link": ""},
-    {"date": "October - December","event": "RRIMA Reports Released; Testing of Data Visualization Prototype","link": ""}, 
-    {"date": "December","event": "Project Conclusion","link": ""}]
-
+    pageText['pageTitle'] = "Refugee Response and Migration News"
+    # pageText['objectives'] = []
+    pageText['projectSummary'] = { }
     pageImages = {}
     pageImages['leadimage_sourcelink'] = 'drive.google.com/a/mercycorps.org/file/d/0B8g-VJ-NXXHiMng0OVVla3FEMlE/view?usp=sharing'
     pageImages['title'] = 'Aegean Response Photos'

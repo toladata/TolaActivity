@@ -8,10 +8,10 @@ urlpatterns = [
 
     ###INDICATOR PLANING TOOL
     #Home
-    url(r'^home/(?P<pk>\w+)/$', IndicatorList.as_view(), name='indicator_list'),
+    url(r'^home/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorList.as_view(), name='indicator_list'),
 
     #Indicator Report
-    url(r'^report/(?P<program>\w+)/$', 'indicators.views.indicator_report', name='indicator_report'),
+    url(r'^report/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', 'indicators.views.indicator_report', name='indicator_report'),
     url(r'^program_report/(?P<program>\w+)/$', 'indicators.views.programIndicatorReport', name='programIndicatorReport'),
 
     #Indicator Form

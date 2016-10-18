@@ -31,7 +31,6 @@
                     { title: "Name" ,data: "name"},
                     { title: "Country" ,data: "country__country"},
                     { title: "Cost Center" ,data: "cost_center"},
-                    { title: "Gaitid" ,data: "gaitid"},
                     { title: "Funding Status" ,data: "funding_status"}
                     ]
             } );
@@ -379,7 +378,9 @@
                     var values_array = new Array($(this).val());
                     filters[this.name] = values_array.join(",");
                 }
+
             });
+
 
             if (document.getElementById('report_type').innerHTML.valueOf == "Program Report") {
                 // first time do the program report
@@ -394,6 +395,11 @@
                 // first time do the program report
                 program_report(filters);
             }
+        });
+
+        // full page reset of filters
+        $('#id_search_form_reset_btn').click(function(){
+            location.reload();
         });
 
     });
