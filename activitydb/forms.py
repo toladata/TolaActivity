@@ -1652,7 +1652,7 @@ class StakeholderForm(forms.ModelForm):
             TabHolder(
                 Tab('Details',
                     Fieldset('Details',
-                        'name', 'type', 'contact', HTML("""<a href="/activitydb/contact_add/0/" target="_new">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
+                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/activitydb/contact_add/0/').focus();">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
                     ),
                 ),
 

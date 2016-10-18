@@ -54,13 +54,18 @@ class IndicatorList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
+        getIndicatorTypes = IndicatorType.objects.all()
 
-        if int(self.kwargs['pk']) == 0:
-            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
+        if int(self.kwargs['program']) != 0:
+            getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['program']).order_by('name').annotate(indicator_count=Count('indicator'))
+        elif int(self.kwargs['indicator']) != 0:
+            getProgramsIndicator = Program.objects.all().filter(indicator=self.kwargs['indicator']).order_by('name').annotate(indicator_count=Count('indicator'))
+        if int(self.kwargs['type']) != 0:
+            getProgramsIndicator = Program.objects.all().filter(indicator=self.kwargs['indicator']).order_by('name').annotate(indicator_count=Count('indicator'))
         else:
-            getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['pk']).order_by('name').annotate(indicator_count=Count('indicator'))
+            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
 
-        return render(request, self.template_name, {'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator})
+        return render(request, self.template_name, {'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator, 'getIndicatorTypes': getIndicatorTypes})
 
 
 def import_indicator(service=1,deserialize=True):
@@ -292,7 +297,7 @@ class IndicatorDelete(DeleteView):
     form_class = IndicatorForm
 
 
-def indicator_report(request, program=0):
+def indicator_report(request, program=0, indicator=0, type=0):
     """
     This is the indicator library report.  List of all indicators across a country or countries filtered by
     program.  Lives in the "Report" navigation.
@@ -304,10 +309,16 @@ def indicator_report(request, program=0):
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
-    if int(program) == 0:
-        getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries)
-    else:
+    getIndicatorTypes = IndicatorType.objects.all()
+
+    if int(program) != 0:
         getIndicators = Indicator.objects.all().filter(program__id=program).select_related()
+
+    elif int(type) != 0:
+        getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related()
+     
+    else:
+        getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries)
 
     table = IndicatorTable(getIndicators)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
@@ -324,8 +335,7 @@ def indicator_report(request, program=0):
     RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/report.html", {'program': program, 'get_agreements': table, 'getPrograms': getPrograms,
-                                                      'form': FilterForm(), 'helper': FilterForm.helper})
+    return render(request, "indicators/report.html", {'program': program, 'get_agreements': table, 'getPrograms': getPrograms,'form': FilterForm(), 'helper': FilterForm.helper, 'getIndicatorTypes': getIndicatorTypes})
 
 
 def programIndicatorReport(request, program=0):
@@ -343,6 +353,9 @@ def programIndicatorReport(request, program=0):
     getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
     getProgram = Program.objects.get(id=program)
 
+    getIndicatorTypes = IndicatorType.objects.all()
+
+
     if request.method == "GET" and "search" in request.GET:
         #list1 = list()
         #for obj in filtered:
@@ -357,7 +370,7 @@ def programIndicatorReport(request, program=0):
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms,
-                                                           'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper})
+                                                           'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper, 'getIndicatorTypes': getIndicatorTypes})
 
 
 def indicator_data_report(request, id=0, program=0, type=0):
@@ -469,8 +482,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
 
         countries = getCountry(request.user)
         indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector',
-                                                                                                      'strategic_objectives','level__name','external_service_record__external_service__name',
-                                                                                                      'lop_target','baseline','collecteddata','key_performance_indicator')
+                                                                                                      )
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
 

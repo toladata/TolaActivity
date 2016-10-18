@@ -8,45 +8,8 @@
 
 {% block content %}
 
-<div class="dropdown">
-    <div class="btn-group" role="group">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-            Programs
-        <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        {% for program in getPrograms %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/0/{{ program.id }}/{{ type }}/">{{ program.gaitid}} - {{ program.name }}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="btn-group" role="group">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
-            Indicators
-        <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ 0 }}/{{ program }}/{{ type }}/"> -- All -- </a></li>
-        {% for item in getIndicators %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ item.id }}/{{ program }}/{{ type }}/">{{ item.number}} - {{ item.name }}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="btn-group" role="group">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
-            Indicator Type
-        <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-            <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/collecteddata/{{ indicator }}/{{ program }}/0/"> -- All -- </a></li>
-        {% for item in getIndicatorTypes %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ indicator}}/{{ program }}/{{ item.id }}/">{{ item.indicator_type}}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <br/>
-    <br/>
-</div>
+{% include "indicators/filter.html"%}
+
 <p>
 {% if indicator_name %}
     <span class="filter">Filtered by Indicator: {{ indicator_name }}</span>
@@ -225,9 +188,18 @@
     <button type="button" class="btn btn-success" id="export">Export All</button>
     <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
 
+<script type="text/javascript">
+    function program_filter(program_id) {
+      window.location.href = '/indicators/collecteddata/'+program_id+'/0/0/';      
+      }
 
+    function indicator_filter(indicator) {
+      window.location.href = '/indicators/collecteddata/0/'+indicator+'/0';  
+        }
 
-
-
+    function indicator_type_filter(type) {
+      window.location.href = '/indicators/collecteddata/0/0/'+type;      
+      }
+ </script>
 
 {% endblock content %}
