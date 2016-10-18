@@ -19,11 +19,10 @@
 <h3>Current Dashboards</h3>
 
 <table class="table">
-    {% if getDashboards %}
+    {% if getCustomDashboards %}
     <tr>
         <th>Date Created</th>
         <th>Dashboard Name</th>
-        <th>Dashboard Type</th>
         <th>Dashboard Description</th>
         <th>Public?</th>
         <th>&nbsp;</th>
@@ -35,10 +34,9 @@
     <tr>
        <td>{{ dashboard.create_date }}</td>       
        <td>{{ dashboard.dashboard_name }}</td>
-       <td>{{ dashboard.dashboard_theme }}</td>
        <td>{{ dashboard.dashboard_description }}</td>
        <td>{{ dashboard.is_public }}</td>
-        <td> <a href="/activitydb/custom_dashboard_delete/{{ dashboard.id }}" class="btn btn-xs btn-danger">View</a></td>
+        <td> <a href="/activitydb/custom_dashboard_detail/{{ dashboard.id }}" class="btn btn-xs btn-danger">View</a></td>
         <td> <a href="/activitydb/custom_dashboard_update/{{ dashboard.id }}" class="btn btn-xs btn-danger">Edit</a></td>
         <td> <a href="/activitydb/custom_dashboard_delete/{{ dashboard.id }}" class="btn btn-xs btn-danger">Delete</a></td>
     </tr>
