@@ -1860,9 +1860,9 @@ class CustomDashboardForm(forms.ModelForm):
                                                 <tr>
                                                     <td> {{key}} </td>
                                                     <td> {{value}} </td>
-                                                    <td> <div class="form-group"> 
+                                                    <td> {{getCustomDashboard.componentset}} 
+                                                        <div class="form-group"> 
                                                             <select class="form-control" id="sel1">
-                                                            
                                                             {% for component in getDashboardComponents %}
                                                                 {% if component.component_type == value %}
                                                                     <option value={{component.id}}> {{component.component_name}} </option>
@@ -1873,8 +1873,8 @@ class CustomDashboardForm(forms.ModelForm):
                                                             </select>
                                                         </div>
                                                     </td>
-                                                    <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/component/{{pk}}/'>(i)</a></td>
-                                                    <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}'>New</a></td>
+                                                    <td></td>
+                                                    <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}/'>New</a></td>
                                                 </tr>
                                             {% endfor %}
                                         </table>
@@ -1942,7 +1942,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                                 </select>
                                                             </div>
                                                         </td>
-                                                        <td>(i)</td>
+                                                        <td></td>
                                                         <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/data_add/'> New </a></td>
                                                         {% for component in getCustomDashboard.components.all %}
                                                             <td>{{component.component_name}}</td>
