@@ -2249,7 +2249,7 @@ class ComponentDataSourceForm(forms.ModelForm):
 
     class Meta:
         model = ComponentDataSource
-        exclude = ['create_date', 'edit_date']
+        exclude = ['create_date', 'edit_date', 'data_filter_key']
 
     def __init__(self, *args, **kwargs):
 
