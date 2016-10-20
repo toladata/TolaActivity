@@ -150,6 +150,8 @@
             var status_options = {
                 // single tooltip
                 tooltipTemplate: "<%=label + ' Projects' %>",
+                percentageInnerCutout : 60,
+                tooltipFontSize: 10,
             };
             var status_data = [
                 {
@@ -205,7 +207,9 @@
             //render indicator data in a doughnut chart
             var indicator_options = {
                 // single tooltip
-                tooltipTemplate: "<%=label + ' Indicator' %>",
+                tooltipTemplate: "<%=label%>",
+                percentageInnerCutout : 60,
+                tooltipFontSize: 10,
             };
 
             var indicator_data = [
@@ -233,7 +237,7 @@
                     } else if (activePoints[0].label.indexOf("Indicators") > -1){
                         filters.collecteddata__isnull="True";
                     }
-                    console.log("filters:" + JSON.stringify(filters));
+                    //console.log("filters:" + JSON.stringify(filters));
                     indicator_report(filters);
                 }
             );
@@ -253,9 +257,9 @@
                 achieved.push(obj[i].achieved);
             }
 
-            console.log(labels);
-            console.log(targeted);
-            console.log(achieved);
+            //console.log(labels);
+            //console.log(targeted);
+            //console.log(achieved);
 
             //KPI JSON data object
             var kpi_options = {
@@ -313,7 +317,6 @@
             $.getJSON("/reports/report_data/indicator/", filters, function(data) {
                 //console.log(filters);
                 show_indicator_table(data['indicator'],filters);
-                show_indicator_charts(data['indicator_count'], data['data_count'],filters);
             });
         }
 

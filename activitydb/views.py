@@ -618,7 +618,7 @@ class ProjectCompleteUpdate(UpdateView):
         return super(ProjectCompleteUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_form(self, form_class):
-        check_form_type = ProjectComplete.objects.get(id=self.kwargs['pk']).fetch_related('project_agreement')
+        check_form_type = ProjectComplete.objects.get(id=self.kwargs['pk'])
 
         if check_form_type.project_agreement.short == True:
             form = ProjectCompleteSimpleForm

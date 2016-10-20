@@ -1665,6 +1665,8 @@ class StakeholderForm(forms.ModelForm):
 
         countries = getCountry(self.request.user)
         self.fields['contact'].queryset = Contact.objects.filter(country__in=countries)
+        self.fields['country'].queryset = countries
+        self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries)
         self.fields['formal_relationship_document'].queryset = Documentation.objects.filter(program__country__in=countries)
         self.fields['vetting_document'].queryset = Documentation.objects.filter(program__country__in=countries)
 
@@ -1688,7 +1690,9 @@ class BeneficiaryForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
+
         countries = getCountry(self.request.user)
+        self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
         self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
         self.fields['distribution'].queryset = Distribution.objects.filter(program__country__in=countries)
 

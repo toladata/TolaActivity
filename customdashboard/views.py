@@ -41,6 +41,8 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected', program__country__in=countries).count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(Q(approval='in progress') | Q(approval="") | Q(approval=None)),program__id=program_id, program__country__in=countries).count()
+    nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
+
 
     getSiteProfile = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id))
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
@@ -69,7 +71,7 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     return render(request, "customdashboard/visual_dashboard.html", {'getSiteProfile':getSiteProfile, 'getBudgetEstimated': getBudgetEstimated, 'getQuantitativeDataSums': getQuantitativeDataSums,
                                                                      'country': countries, 'getAwaitingApprovalCount':getAwaitingApprovalCount,
                                                                      'getFilteredName': getFilteredName,'getProjects': getProjects, 'getApprovedCount': getApprovedCount,
-                                                                     'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,
+                                                                     'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
                                                                      'getCustomDashboard': getCustomDashboard, 'getProjectsCount': getProjectsCount, 'selected_countries_list': selected_countries_list,
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'get_project_completed': get_project_completed})
 
@@ -95,6 +97,8 @@ def PublicDashboard(request,id=0):
 
     getIndicatorsApprovedCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='approved').count()
     getIndicatorInProgressCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='in progress').count()
+
+    nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
 
     #get all countires
     countries = Country.objects.all().filter(program__id=program_id)
@@ -131,7 +135,7 @@ def PublicDashboard(request,id=0):
                                                                      'getAwaitingApprovalCount':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
                                                                      'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount,
-                                                                     'getInProgressCount': getInProgressCount,
+                                                                     'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
                                                                      'total_projects': getProjectsCount,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount, 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})

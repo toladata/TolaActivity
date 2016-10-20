@@ -112,7 +112,14 @@ def getAllData(getCountry,file_name):
 
 
 # UNCOMMENT AND UPDATE TO IMPORT
-print "IMPORTING India !!!!!!"
-getCountry, created = Country.objects.get_or_create(country="India")
-file_name = "fixtures/Admin-India.csv"
+print "IMPORTING South Sudan !!!!!!"
+getCountry, created = Country.objects.get_or_create(country="South Sudan")
+file_name = "fixtures/Admin-SouthSudan.csv"
 getAllData(getCountry, file_name)
+
+print "IMPORTING Uganda !!!!!!"
+getCountry, created = Country.objects.get_or_create(country="Uganda")
+file_name = "fixtures/admin-uganda.csv"
+getAllData(getCountry, file_name)
+
+
