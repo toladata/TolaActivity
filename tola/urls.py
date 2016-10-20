@@ -35,7 +35,6 @@ router.register(r'indicatortype', IndicatorTypeViewSet)
 router.register(r'objective', ObjectiveViewSet)
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
 router.register(r'level', LevelViewSet)
-router.register(r'customdashboard', CustomDashboardViewSet)
 router.register(r'externalservice', ExternalServiceViewSet)
 router.register(r'externalservicerecord', ExternalServiceRecordViewSet)
 router.register(r'strategicobjective', StrategicObjectiveViewSet)
@@ -95,8 +94,8 @@ urlpatterns = [ # rest framework
                 # app include of reports urls
                 url(r'^reports/', include('reports.urls')),
 
-                # app include of tables urls
-                url(r'^tables/', include('tables.urls')),
+                # app include of configurable dashboard urls
+                url(r'^configurabledashboard/', include('configurabledashboard.urls')),
 
                 # local login
                 url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
