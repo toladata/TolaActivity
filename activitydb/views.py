@@ -2883,7 +2883,10 @@ class CustomDashboardUpdate(UpdateView):
         try: 
             getAllComponentMaps = []
             for component in getDashboardComponents:
-                getAllComponentMaps[component] = json.loads(component.data_map)
+                if component.data_map:
+                    getAllComponentMaps[component.id] = json.loads(component.data_map)
+                else:
+                    getAllComponentMaps[component.id] = []
         except not getDashboardComponents:
             getAllComponentMaps = None
         context.update({'getAllComponentMaps': getAllComponentMaps})
@@ -3151,8 +3154,9 @@ class DashboardComponentCreate(CreateView):
         form.save()
         context = self.get_context_data()
         messages.success(self.request, 'Success, Component Created!')
+        getCustomDashboard = CustomDashboard.objects.get(id=self.kwargs['id'])
         latestComponent = DashboardComponent.objects.latest('id')
-        getCustomDashboard.componentset.add(latestComponent)
+        getCustomDashboard.components.add(latestComponent)
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentCreateForm 
