@@ -1,14 +1,12 @@
-from .forms import FeedbackForm, RegistrationForm, NewUserRegistrationForm,NewTolaUserRegistrationForm
+from tola.forms import FeedbackForm, RegistrationForm, NewUserRegistrationForm, NewTolaUserRegistrationForm
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites, LoggedUser
-from indicators.models import CollectedData
 from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites
 from indicators.models import CollectedData, Indicator
 
-from .tables import IndicatorDataTable
+from tola.tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
 from tola.util import getCountry
