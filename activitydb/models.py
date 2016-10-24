@@ -819,22 +819,32 @@ class ProjectAgreementManager(models.Manager):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
 
 
-# Project Agreements, admin is handled in the admin.py
+# Project Initiation, admin is handled in the admin.py
+# TODO: Clean up unused fields and rename model with manual migration file
+"""
+https://docs.djangoproject.com/en/dev/ref/migration-operations/#renamemodel
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('activitydb', '0001_initial'),
+    ]
+
+    operations = [
+        operations.RenameModel("ProjectAgreement", "WorkflowLevelOne")
+    ]
+"""
 class ProjectAgreement(models.Model):
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
     short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
     program = models.ForeignKey(Program, verbose_name="Program", related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
+    # Rename to more generic "nonproject" names
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
     project_type = models.ForeignKey(ProjectType, verbose_name="Project Type", help_text='', max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", help_text='This should come directly from the activities listed in the Logframe', max_length=255, blank=True, null=True)
     project_description = models.TextField("Project Description", help_text='', blank=True, null=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
-    community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
-    community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
-    community_mobilizer = models.CharField("Community Mobilizer", max_length=255, blank=True, null=True)
-    community_mobilizer_contact = models.CharField("Community Mobilizer Contact Number", max_length=255, blank=True, null=True)
-    community_proposal = models.FileField("Community Proposal", upload_to='uploads', blank=True, null=True)
     has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy', default=False)
     activity_code = models.CharField("Project Code", help_text='', max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, verbose_name="Office", null=True, blank=True)
@@ -847,7 +857,7 @@ class ProjectAgreement(models.Model):
     staff_responsible = models.CharField("Staff Responsible", max_length=255, blank=True, null=True)
     partners = models.BooleanField("Are there partners involved?", default=0)
     name_of_partners = models.CharField("Name of Partners", max_length=255, blank=True, null=True)
-    stakeholder = models.ManyToManyField(Stakeholder, blank=True)
+    stakeholder = models.ManyToManyField(Stakeholder,verbose_name="Stakeholders", blank=True)
     effect_or_impact = models.TextField("What is the anticipated Outcome or Goal?", blank=True, null=True)
     expected_start_date = models.DateTimeField("Expected starting date", blank=True, null=True)
     expected_end_date = models.DateTimeField("Expected ending date",blank=True, null=True)
@@ -862,6 +872,14 @@ class ProjectAgreement(models.Model):
     local_mc_estimated_budget = models.DecimalField("Estimated Organization Total in Local Currency", decimal_places=2,max_digits=12, help_text="Total portion of estimate for your agency", default=Decimal("0.00"),blank=True)
     exchange_rate = models.CharField(help_text="Local Currency exchange rate to USD", max_length=255, blank=True, null=True)
     exchange_rate_date = models.DateField(help_text="Date of exchange rate", blank=True, null=True)
+    """
+    Start Clean Up - These can be removed
+    """
+    community_rep = models.CharField("Community Representative", max_length=255, blank=True, null=True)
+    community_rep_contact = models.CharField("Community Representative Contact", help_text='Can have mulitple contact numbers', max_length=255, blank=True, null=True)
+    community_mobilizer = models.CharField("Community Mobilizer", max_length=255, blank=True, null=True)
+    community_mobilizer_contact = models.CharField("Community Mobilizer Contact Number", max_length=255, blank=True, null=True)
+    community_proposal = models.FileField("Community Proposal", upload_to='uploads', blank=True, null=True)
     estimate_male_trained = models.IntegerField("Estimated # of Male Trained",blank=True,null=True)
     estimate_female_trained = models.IntegerField("Estimated # of Female Trained",blank=True,null=True)
     estimate_total_trained = models.IntegerField("Estimated Total # Trained",blank=True,null=True)
@@ -876,6 +894,9 @@ class ProjectAgreement(models.Model):
     cfw_estimate_person_days = models.IntegerField("Estimated # of Person Days",blank=True,null=True)
     cfw_estimate_cost_materials = models.CharField("Estimated Total Cost of Materials",max_length=255,blank=True,null=True)
     cfw_estimate_wages_budgeted= models.CharField("Estimated Wages Budgeted",max_length=255,blank=True,null=True)
+    """
+    End Clean Up
+    """
     estimation_date = models.DateTimeField(blank=True, null=True)
     estimated_by = models.ForeignKey(TolaUser, blank=True, null=True,verbose_name="Originated By", related_name="estimating")
     estimated_by_date = models.DateTimeField("Date Originated", null=True, blank=True)
@@ -956,11 +977,26 @@ class ProjectAgreement(models.Model):
         new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
         return new_name
 
+# Project Tracking, admin is handled in the admin.py
+# TODO: Clean up unused fields and rename model with manual migration file
+"""
+https://docs.djangoproject.com/en/dev/ref/migration-operations/#renamemodel
 
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('activitydb', '0001_initial'),
+    ]
+
+    operations = [
+        operations.RenameModel("ProjectComplete", "WorkflowLevelTwo")
+    ]
+"""
 class ProjectComplete(models.Model):
     short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
     program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
     project_agreement = models.OneToOneField(ProjectAgreement, verbose_name="Project Initiation")
+    # Rename to more generic "nonproject" names
     activity_code = models.CharField("Project Code", max_length=255, blank=True, null=True)
     project_name = models.CharField("Project Name", max_length=255, blank=True, null=True)
     project_activity = models.CharField("Project Activity", max_length=255, blank=True, null=True)
@@ -990,6 +1026,9 @@ class ProjectComplete(models.Model):
     local_agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2,max_digits=12, help_text="In Local Currency", default=Decimal("0.00"),blank=True)
     exchange_rate = models.CharField(help_text="Local Currency exchange rate to USD", max_length=255, blank=True, null=True)
     exchange_rate_date = models.DateField(help_text="Date of exchange rate", blank=True, null=True)
+    """
+    Start Clean Up - These can be removed
+    """
     beneficiary_type = models.CharField("Type of direct beneficiaries", help_text="i.e. Farmer, Association, Student, Govt, etc.", max_length=255, blank=True, null=True)
     average_household_size = models.CharField("Average Household Size", help_text="Refer to Form 01 - Community Profile",max_length=255, blank=True, null=True)
     indirect_beneficiaries = models.CharField("Estimated Number of indirect beneficiaries", help_text="This is a calculation - multiply direct beneficiaries by average household size",max_length=255, blank=True, null=True)
@@ -1000,6 +1039,9 @@ class ProjectComplete(models.Model):
     progress_against_targets = models.IntegerField("Progress against Targets (%)",blank=True,null=True)
     government_involvement = models.CharField("Government Involvement", max_length=255, blank=True, null=True)
     community_involvement = models.CharField("Community Involvement", max_length=255, blank=True, null=True)
+    """
+    End Clean Up
+    """
     community_handover = models.BooleanField("CommunityHandover/Sustainability Maintenance Plan", help_text='Check box if it was completed', default=None)
     capacity_built = models.TextField("Describe how sustainability was ensured for this project?", max_length=755, blank=True, null=True)
     quality_assured = models.TextField("How was quality assured for this project", max_length=755, blank=True, null=True)
@@ -1078,6 +1120,20 @@ class Documentation(models.Model):
         verbose_name_plural = "Documentation"
 
 
+# TODO: Rename model with manual migration file
+"""
+https://docs.djangoproject.com/en/dev/ref/migration-operations/#renamemodel
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('activitydb', '0001_initial'),
+    ]
+
+    operations = [
+        operations.RenameModel("Benchmarks", "WorkflowLevelThree")
+    ]
+"""
 class Benchmarks(models.Model):
     percent_complete = models.IntegerField("% complete", blank=True, null=True)
     percent_cumulative = models.IntegerField("% cumulative completion", blank=True, null=True)
@@ -1115,6 +1171,7 @@ class BenchmarksAdmin(admin.ModelAdmin):
     display = 'Project Components'
 
 
+# TODO Delete not in use
 class Monitor(models.Model):
     responsible_person = models.CharField("Person Responsible", max_length=25, blank=True, null=True)
     frequency = models.CharField("Frequency", max_length=25, blank=True, null=True)
@@ -1172,7 +1229,7 @@ class BudgetAdmin(admin.ModelAdmin):
     list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
     display = 'Budget'
 
-
+# TODO Move to new "formlibrary" app
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
@@ -1220,7 +1277,7 @@ class TrainingAttendanceAdmin(admin.ModelAdmin):
     display = 'Training Attendance'
     list_filter = ('program__country','program')
 
-
+# TODO Move to new "formlibrary" app
 class Beneficiary(models.Model):
     beneficiary_name = models.CharField(max_length=255, null=True, blank=True)
     training = models.ManyToManyField(TrainingAttendance, blank=True)
@@ -1312,7 +1369,7 @@ class ChecklistItemAdmin(admin.ModelAdmin):
     list_display = ('item','checklist','in_file')
     list_filter = ('checklist','global_item')
 
-
+# TODO Delete not in use
 # Documentation
 class DocumentationApp(models.Model):
     name = models.CharField(max_length=255,null=True, blank=True)
@@ -1335,7 +1392,7 @@ class DocumentationAppAdmin(admin.ModelAdmin):
     list_display = ('name', 'documentation', 'create_date',)
     display = 'DocumentationApp'
 
-
+# TODO Delete not in use
 # collect feedback from users
 class Feedback(models.Model):
     submitter = models.ForeignKey(TolaUser)
@@ -1360,7 +1417,7 @@ class FeedbackAdmin(admin.ModelAdmin):
     list_display = ('submitter', 'note', 'page', 'severity', 'create_date',)
     display = 'Feedback'
 
-
+# TODO Delete not in use
 # FAQ
 class FAQ(models.Model):
     question = models.TextField(null=True, blank=True)
@@ -1448,7 +1505,7 @@ def get_user_country(request):
         response = "undefined"
         return response
 
-
+# TODO Move to new "formlibrary" app
 class Distribution(models.Model):
     distribution_name = models.CharField(max_length=255)
     program = models.ForeignKey(Program, null=True, blank=True)
