@@ -309,6 +309,9 @@ class ProjectAgreementUpdate(UpdateView):
         pk = self.kwargs['pk']
         context.update({'pk': pk})
         context.update({'program': pk})
+        getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+        context.update({'p_agreement': getAgreement.project_name})
+
 
         try:
             getQuantitative = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
@@ -624,6 +627,7 @@ class ProjectCompleteUpdate(UpdateView):
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
         id = getComplete.project_agreement_id
         context.update({'id': id})
+        context.update({'p_name': getComplete.project_name})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
@@ -1370,6 +1374,9 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(BenchmarkCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
+        getComplete = ProjectComplete.objects.get(id=self.kwargs['id'])
+        if getComplete:
+            context.update({'p_name': getComplete.project_name})
         return context
 
     def get_initial(self):

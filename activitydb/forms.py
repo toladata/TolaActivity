@@ -1062,7 +1062,6 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                 Tab('Components',
                     Fieldset("Project Components",
                         HTML("""
-
                             <div class='panel panel-default'>
                               <!-- Default panel contents -->
                               <div class='panel-heading'>Components</div>

@@ -26,6 +26,9 @@
 
 {% block page_title %}Project Initiation Form{% endblock %}
 {% block content %}
+    {% if p_agreement%}
+    <h4>(<a href="/activitydb/dashboard/project/{{ pk }}/">{{p_agreement}}</a>)</h4>
+    {% endif %}
     {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
