@@ -275,7 +275,7 @@ class IndicatorDelete(DeleteView):
     Delete and Indicator
     """
     model = Indicator
-    success_url = '/indicators/home/0/'
+    success_url = '/indicators/home/0/0/0/'
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -736,7 +736,7 @@ class CollectedDataCreate(CreateView):
 
         messages.success(self.request, 'Success, Data Created!')
 
-        redirect_url = '/indicators/home/0/#hidden-' + str(self.kwargs['program'])
+        redirect_url = '/indicators/home/0/0/0/#hidden-' + str(self.kwargs['program'])
         return HttpResponseRedirect(redirect_url)
 
 
@@ -831,7 +831,7 @@ class CollectedDataUpdate(UpdateView):
 
         messages.success(self.request, 'Success, Data Updated!')
 
-        redirect_url = '/indicators/home/0/#hidden-' + str(getIndicator.program.id)
+        redirect_url = '/indicators/home/0/0/0/#hidden-' + str(getIndicator.program.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = CollectedDataForm
@@ -842,7 +842,7 @@ class CollectedDataDelete(DeleteView):
     CollectedData Delete
     """
     model = CollectedData
-    success_url = '/indicators/home/0/'
+    success_url = '/indicators/home/0/0/0/'
 
     @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
     def dispatch(self, request, *args, **kwargs):
