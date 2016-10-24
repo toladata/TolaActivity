@@ -221,7 +221,7 @@ body > .container {
 
 /* Login buttons for Social */
 .social-buttons{
-    margin:12px;
+    margin:12px 0px 0px 0px;
 }
 .btn-go{
     color: #fff;
