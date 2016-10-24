@@ -36,7 +36,7 @@ DATABASES = app_settings['DATABASES']
 
 # DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = app_settings['DEBUG']
+#DEBUG = app_settings['DEBUG']
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
 TEMPLATE_DEBUG = app_settings['TEMPLATE_DEBUG']
 
