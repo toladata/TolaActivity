@@ -233,6 +233,10 @@ class IndicatorUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(IndicatorUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+        getIndicator = Indicator.objects.get(id=self.kwargs['pk'])
+
+        context.update({'i_name': getIndicator.name})
+
         #get external service data if any
         try:
             getExternalServiceRecord = ExternalServiceRecord.objects.all().filter(indicator__id=self.kwargs['pk'])
