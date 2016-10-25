@@ -25,11 +25,13 @@
     var map = L.map('map', {
                     center: mapCoordinates,
                     zoom: mapScale,
+                    scrollWheelZoom:false,
                     layers: [grayscale, layeredCountries]
                     });
 
     var baseLayers = { "Grayscale": grayscale,"Streets": streets,};
     var overlays = {"RRIMA Location": layeredCountries, };
     L.control.layers(baseLayers, overlays).addTo(map);
+    map.once('focus', function() { map.scrollWheelZoom.enable(); });
 
 </script>
