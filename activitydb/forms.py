@@ -1662,9 +1662,11 @@ class StakeholderForm(forms.ModelForm):
         super(StakeholderForm, self).__init__(*args, **kwargs)
 
         countries = getCountry(self.request.user)
+        users = TolaUser.objects.filter(country__in=countries)
         self.fields['contact'].queryset = Contact.objects.filter(country__in=countries)
         self.fields['country'].queryset = countries
-        self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries)
+        self.fields['approved_by'].queryset = users
+        self.fields['filled_by'].queryset = users
         self.fields['formal_relationship_document'].queryset = Documentation.objects.filter(program__country__in=countries)
         self.fields['vetting_document'].queryset = Documentation.objects.filter(program__country__in=countries)
 
