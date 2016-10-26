@@ -1482,17 +1482,18 @@ class ContactList(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        project_agreement_id = self.kwargs['pk']
+        stakeholder_id = self.kwargs['pk']
 
-        getProject = ProjectAgreement.objects.all().filter(id=project_agreement_id)
+        getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
 
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
         else:
-            getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
-
-        return render(request, self.template_name, {'getContacts': getContacts, 'getProject': getProject})
+            #getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
+            getContacts = Stakeholder.contact.through.objects.filter(stakeholder_id = stakeholder_id)
+            print getContacts
+        return render(request, self.template_name, {'getContacts': getContacts, 'getStakeholder': getStakeholder})
 
 
 class ContactCreate(CreateView):

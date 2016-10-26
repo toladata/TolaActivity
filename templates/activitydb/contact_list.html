@@ -16,13 +16,13 @@
 </div>
 <h3>Contacts</h3>
 
-{% if getProject %}
-    <p>Filtered by project: {{ getProject }}</p>
+{% if getStakeholder %}
+    <p>Filtered by Stakeholder: [{{ getStakeholder.name }}]</p>
 {% endif %}
 
 <ul class="list-group">
 {% for item in getContacts %}
-    <li class="list-group-item"><b><a href="/activitydb/contact_update/{{ item.id }}">{{ item.create_date|date }} - {{ item.name }}</a></b> &nbsp;<a href="/activitydb/contact_delete/{{ item.id }}" class="btn-xs btn-danger">Delete Contact</a></li>
+    <li class="list-group-item"><b><a href="/activitydb/contact_update/{{ item.id }}">{{ item.contact.create_date|date }}&nbsp; - &nbsp; {{ item.contact.name }}</a></b> &nbsp;&nbsp;<a href="/activitydb/contact_delete/{{ item.id }}" class="btn-xs btn-danger">Delete Contact</a></li>
 {% empty %}
     <li class="list-group-item">No contacts yet.</li>
 {% endfor %}
