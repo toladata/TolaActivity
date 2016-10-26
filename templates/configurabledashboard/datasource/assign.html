@@ -15,7 +15,7 @@
 </div>
 {% include "form_guidance.html" %}
     <div class="modal-body">
-    {% if "custom_dashboard/data_assign/" in request.get_full_path  %}
+    {% if "data_assign/" in request.get_full_path  %}
         {% if getDashboardComponent %}
             <form class="form-horizontal" method="post" id="dataAssignForm" action="{{request.get_full_path}}">
              <input id="id_component_name" maxlength="255" type="hidden" readonly="readonly" name="component_name" value="{{ getDashboardComponent.component_name}}"/>
@@ -38,7 +38,7 @@
 </div>
 
 <div class="modal-footer">
-   <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/activitydb/custom_dashboard_update/{{ id }}/#assign-data';parent.location.reload();">Close</button>
+   <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '//configureabledashboard/update/{{ id }}/#assign-data';parent.location.reload();">Close</button>
 </div> 
 
 

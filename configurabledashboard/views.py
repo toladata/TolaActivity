@@ -33,7 +33,7 @@ class CustomDashboardList(ListView):
     :param pk: program_id
     """
     model = CustomDashboard
-    template_name = 'configurabledashboard/admin/dashboard_list.html'
+    template_name = 'configurabledashboard/dashboard/list.html'
 
     def get(self, request, *args, **kwargs):
     ## retrieve program
@@ -58,7 +58,7 @@ class CustomDashboardCreate(CreateView):
     #   :param id:
     #   """
     model = CustomDashboard
-    template_name = 'configurabledashboard/admin/customdashboard_form.html'
+    template_name = 'configurabledashboard/dashboard/form.html'
 
     try:
         guidance = FormGuidance.objects.get(form="CustomDashboard")
@@ -81,6 +81,9 @@ class CustomDashboardCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CustomDashboardCreate, self).get_context_data(**kwargs)
+        pk = self.kwargs['pk']
+        context.update({'pk': pk})
+
         return context
 
     def form_invalid(self, form):
@@ -101,7 +104,7 @@ class CustomDashboardCreate(CreateView):
         latest = CustomDashboard.objects.latest('id')
         getCustomDashboard = CustomDashboard.objects.get(id=latest.id)
         dashboard_id = getCustomDashboard.id
-        redirect_url = '/activitydb/custom_dashboard_update/' + str(dashboard_id) 
+        redirect_url = '/configureabledashbaord/update/' + str(dashboard_id) 
         return HttpResponseRedirect(redirect_url)
 
     form_class = CustomDashboardCreateForm 
@@ -243,7 +246,7 @@ class CustomDashboardUpdate(UpdateView):
 
     def get_form(self, form_class):
         check_form_type = self.request.get_full_path()
-        if check_form_type.startswith('/activitydb/custom_dashboard_edit'):
+        if check_form_type.startswith('/configureabledashboard/edit'):
             form = CustomDashboardModalForm
         else:
             form = CustomDashboardForm
@@ -256,11 +259,11 @@ class CustomDashboardUpdate(UpdateView):
         context.update({'pk': pk})
 
         check_path = self.request.get_full_path()
-        if check_path.startswith('/activitydb/custom_dashboard_map'):
+        if check_path.startswith('/confirgureabledashboard/map'):
             location = self.kwargs['location']
             component_type = self.kwargs['type']
         # TODO: If applicable, work through flow for remapping
-        # else if check_form_type.startswith('/activitydb/custom_dashboard_remap'):
+        # else if check_form_type.startswith('/confirgureabledashboard/remap'):
         #     location = self.kwargs['location']
         #     component_type = self.kwargs['type']
         else:
@@ -343,7 +346,7 @@ class CustomDashboardUpdate(UpdateView):
     def form_valid(self, form):
         check_form_type = self.request.get_full_path()
         #TODO: Once refactoring is done, revisit whether checking form type still needed
-        # if check_form_type.startswith('/activitydb/custom_dashboard_map'):
+        # if check_form_type.startswith('/confirgureabledashboard/map'):
         #     getCustomDashboard.component_map = form.cleaned_data['component_map']
         #     getCustomDashboard.save()
             # for position in getCustomDashboard.component_map:
@@ -380,7 +383,7 @@ class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
     CustomDashboard Delete
     """
     model = CustomDashboard
-    template_name = 'configurabledashboard/admin/customdashboard_confirm_delete.html'
+    template_name = 'configurabledashboard/dashboard/confirm_delete.html'
     success_url = '/'
 
     def get_context_data(self, **kwargs):
@@ -404,7 +407,7 @@ class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
 
 class DashboardThemeList(ListView):
     model = CustomDashboard
-    template_name = 'configurabledashboard/admin/dashboard_theme_list.html'
+    template_name = 'configurabledashboard/themes/admin/list.html'
 
     def get(self, request, *args, **kwargs):
         getDashboardThemes = DashboardTheme.objects.all() 
@@ -413,7 +416,7 @@ class DashboardThemeList(ListView):
 
 class DashboardThemeCreate(CreateView):
     model = DashboardTheme
-    template_name = 'configurabledashboard/admin/dashboard_theme_form.html'
+    template_name = 'configurabledashboard/themes/admin/form.html'
 
     # add the request to the kwargs
     def get_form_kwargs(self):
@@ -448,7 +451,7 @@ class DashboardThemeCreate(CreateView):
 
 class DashboardThemeUpdate(UpdateView):
     model = DashboardTheme
-    template_name = 'configurabledashboard/admin/dashboard_theme_update_form.html'
+    template_name = 'configurabledashboard/themes/admin/update_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         return super(DashboardThemeUpdate, self).dispatch(request, *args, **kwargs)
@@ -487,7 +490,7 @@ class DashboardThemeDelete(DeleteView):
     DashboardTheme Delete
     """
     model = DashboardTheme
-    template_name = 'configurabledashboard/admin/dashboard_theme_confirm_delete.html'
+    template_name = 'configurabledashboard/themes/admin/confirm_delete.html'
     success_url = '/'
 
     def get_context_data(self, **kwargs):
@@ -513,7 +516,7 @@ class DashboardThemeDelete(DeleteView):
 
 class DashboardComponentList(ListView):
     model = DashboardComponent
-    template_name = 'configurabledashboard/admin/dashboard_component_list.html'
+    template_name = 'configurabledashboard/components/admin/list.html'
 
     def get(self, request, *args, **kwargs):
         ## retrieve program
@@ -529,7 +532,7 @@ class DashboardComponentList(ListView):
 
 class DashboardComponentCreate(CreateView):
     model = DashboardComponent
-    template_name = 'configurabledashboard/admin/dashboard_component_form.html'
+    template_name = 'configurabledashboard/components/admin/form.html'
 
      # add the request to the kwargs
     def get_form_kwargs(self):
@@ -646,7 +649,7 @@ class DashboardComponentUpdate(UpdateView):
 
 class DashboardComponentDelete(AjaxableResponseMixin, DeleteView):
     model = DashboardComponent
-    template_name = 'configurabledashboard/admin/dashboard_component_confirm_delete.html'
+    template_name = 'configurabledashboard/components/confirm_delete.html'
     success_url = '/'
 
     def get_context_data(self, **kwargs):
@@ -668,7 +671,7 @@ class DashboardComponentDelete(AjaxableResponseMixin, DeleteView):
 
 class ComponentDataSourceList(ListView):
     model = ComponentDataSource
-    template_name = 'configurabledashboard/admin/component_data_source_list.html'
+    template_name = 'configurabledashboard/datasource/list.html'
 
     def get(self, request, *args, **kwargs):
         getComponentDataSources = ComponentDataSource.objects.all()
@@ -678,7 +681,7 @@ class ComponentDataSourceList(ListView):
 
 class ComponentDataSourceCreate(CreateView):
     model = ComponentDataSource
-    template_name = 'configurabledashboard/admin/component_data_source_form.html'
+    template_name = 'configurabledashboard/datasource/form.html'
 
      # add the request to the kwargs
     def get_form_kwargs(self):
@@ -709,7 +712,7 @@ class ComponentDataSourceCreate(CreateView):
 
 class ComponentDataSourceDetail(DetailView):
     model = ComponentDataSource
-    template_name = 'configurabledashboard/admin/component_data_source_detail.html'
+    template_name = 'configurabledashboard/datasource/detail.html'
 
     def get(self, request, *args, **kwargs):
         getComponentDataSources = ComponentDataSource.objects.all()
@@ -719,7 +722,7 @@ class ComponentDataSourceDetail(DetailView):
 
 class ComponentDataSourceUpdate(UpdateView):
     model = ComponentDataSource
-    template_name = 'configurabledashboard/admin/component_data_source_update_form.html'
+    template_name = 'configurabledashboard/datasource/update_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -765,7 +768,7 @@ class ComponentDataSourceUpdate(UpdateView):
 
 class ComponentDataSourceDelete(AjaxableResponseMixin, DeleteView):    
     model = ComponentDataSource
-    template_name = 'configurabledashboard/admin/component_data_source_confirm_delete.html'
+    template_name = 'configurabledashboard/datasource/confirm_delete.html'
     success_url = '/'
 
     def get_context_data(self, **kwargs):

@@ -1093,7 +1093,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_complete_add/{{ id }}/">Add Component</a>
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/activitydb/benchmark_complete_add/{{ id }}/" id="btn_bench">Add Component</a>
                               </div>
                             </div>
 
@@ -1451,12 +1451,6 @@ class BenchmarkForm(forms.ModelForm):
         model = Benchmarks
         exclude = ['create_date', 'edit_date']
 
-    est_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    est_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-
-    actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
@@ -1474,7 +1468,9 @@ class BenchmarkForm(forms.ModelForm):
 
         if "benchmark_complete" in self.request.path:
             self.helper.layout = Layout(
-                Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date','actual_start_date','actual_end_date','budget','cost','agreement','complete',
+                Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date',
+                Field('actual_start_date', css_class="act_datepicker", id="actual_start_date_id"),
+                 Field('actual_end_date', css_class="act_datepicker", id="actual_end_date_id"),'budget','cost','agreement','complete',
             )
         else:
             self.helper.layout = Layout(
