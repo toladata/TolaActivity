@@ -50,7 +50,7 @@ class CustomDashboardList(ListView):
         #retrieve projects for a program
         getCustomDashboards = CustomDashboard.objects.all().filter(program=program_id)
             
-        return render(request, self.template_name, {'getCustomDashboards': getCustomDashboards, 'getProgram': getProgram})
+        return render(request, self.template_name, {'pk': program_id, 'getCustomDashboards': getCustomDashboards, 'getProgram': getProgram})
 
 
 class CustomDashboardCreate(CreateView):
@@ -83,7 +83,6 @@ class CustomDashboardCreate(CreateView):
         context = super(CustomDashboardCreate, self).get_context_data(**kwargs)
         pk = self.kwargs['pk']
         context.update({'pk': pk})
-
         return context
 
     def form_invalid(self, form):
