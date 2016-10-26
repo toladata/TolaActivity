@@ -17,14 +17,14 @@
 	</div>
 
     <div class="modal-body">
-        <form action="/activitydb/custom_dashboard/theme_delete/{{ pk }}/" id="dashboardThemeDeleteForm" method="post">{% csrf_token %}
+        <form action="/configurabledashboard/theme_delete/{{ pk }}/" id="dashboardThemeDeleteForm" method="post">{% csrf_token %}
             <p>Are you sure you want to delete "{{ object }}"?</p>
             <input type="submit" value="Confirm" />
         </form>
     </div>
 
 	<div class="modal-footer">
-	   <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/activitydb/custom_dashboard_update/{{id}}';parent.location.reload();">Close</button>
+	   <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/configurabledashboard/update/{{id}}';parent.location.reload();">Close</button>
 	</div>
 </body>
 </html>
