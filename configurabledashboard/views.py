@@ -103,7 +103,7 @@ class CustomDashboardCreate(CreateView):
         latest = CustomDashboard.objects.latest('id')
         getCustomDashboard = CustomDashboard.objects.get(id=latest.id)
         dashboard_id = getCustomDashboard.id
-        redirect_url = '/configureabledashbaord/update/' + str(dashboard_id) 
+        redirect_url = '/configurabledashboard/update/' + str(dashboard_id) 
         return HttpResponseRedirect(redirect_url)
 
     form_class = CustomDashboardCreateForm 
@@ -245,7 +245,7 @@ class CustomDashboardUpdate(UpdateView):
 
     def get_form(self, form_class):
         check_form_type = self.request.get_full_path()
-        if check_form_type.startswith('/configureabledashboard/edit'):
+        if check_form_type.startswith('/configurabledashboard/edit'):
             form = CustomDashboardModalForm
         else:
             form = CustomDashboardForm
