@@ -278,15 +278,22 @@ class CustomDashboardUpdate(UpdateView):
         context.update({'getCustomDashboard': getCustomDashboard})
 
         try:
-            selected_theme = getCustomDashboard.theme.id
+            selected_theme = getCustomDashboard.theme
             getDashboardTheme = DashboardTheme.objects.all().filter(id=selected_theme)
         except DashboardTheme.DoesNotExist:
-            getDashboardTheme = None
+            getDashboardTheme = None   
         context.update({'getDashboardTheme': getDashboardTheme})
 
         # This theme layout helps to map the components to their position on the page
-        layout = getDashboardTheme[0].layout_dictionary
-        getDashboardLayoutList = json.loads(layout, object_pairs_hook=OrderedDict)
+        # Dashboard layout should be pairs of the # position in the template (1,2,3...) and 
+        # the component type that needs to be slotted into that position
+        
+        if getDashboardTheme:
+            getDashboardTheme[0].layout_dictionary:
+            layout = getDashboardTheme[0].layout_dictionary
+            getDashboardLayoutList = json.loads(layout, object_pairs_hook=OrderedDict)
+        else: 
+            getDashboardLayoutList = None
         context.update({'getDashboardLayoutList': getDashboardLayoutList})
 
         try:
