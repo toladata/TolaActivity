@@ -36,9 +36,9 @@
        <td>{{ dashboard.dashboard_name }}</td>
        <td>{{ dashboard.dashboard_description }}</td>
        <td>{{ dashboard.is_public }}</td>
-        <td> <a href="/configurabledashboard/detail/{{ dashboard.id }}" class="btn btn-xs btn-danger">View</a></td>
-        <td> <a href="/configurabledashboard/update/{{ dashboard.id }}" class="btn btn-xs btn-danger">Edit</a></td>
-        <td> <a href="/configurabledashboard/delete/{{ dashboard.id }}" class="btn btn-xs btn-danger">Delete</a></td>
+        <td> <a href='/configurabledashboard/detail/{{ dashboard.id }}' class="btn btn-xs btn-danger">View</a></td>
+        <td> <a href='/configurabledashboard/update/{{ dashboard.id }}' class="btn btn-xs btn-danger">Edit</a></td>
+        <td> <a href='/configurabledashboard/delete/{{ dashboard.id }}' class="btn btn-xs btn-danger">Delete</a></td>
     </tr>
     {% empty %}
         <li class="list-group-item">No Custom Dashboards.</li>
