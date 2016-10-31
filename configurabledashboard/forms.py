@@ -183,7 +183,7 @@ class CustomDashboardForm(forms.ModelForm):
                                         </table>
                                     <div>
                                     <div class="panel panel-footer">Don't see a component or need to edit an existing component?<br>
-                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/component/{{pk}}/'> View Component Inventory </a></td>
+                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/configurabledashboard/component/{{pk}}'> View Component Inventory </a></td>
                                     </div>
                                 </div>
                             </div>

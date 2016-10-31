@@ -311,7 +311,8 @@ class CustomDashboardUpdate(UpdateView):
         try: 
             getAllComponentMaps = []
             for component in getDashboardComponents:
-                getAllComponentMaps[component] = json.loads(component.data_map)
+                if component.data_map:
+                    getAllComponentMaps[component] = json.loads(component.data_map)
         except not getDashboardComponents:
             getAllComponentMaps = None
         context.update({'getAllComponentMaps': getAllComponentMaps})
@@ -564,7 +565,7 @@ class DashboardComponentCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardComponentCreate, self).get_context_data(**kwargs)
         try:
-            getCustomDashboard =CustomDashboard.objects.get(id=self.kwargs['id'])
+            getCustomDashboard = CustomDashboard.objects.get(id=self.kwargs['id'])
         except CustomDashboard.DoesNotExist:
             getCustomDashboard = None
         context.update({'getCustomDashboard': getCustomDashboard})
@@ -580,7 +581,8 @@ class DashboardComponentCreate(CreateView):
         context = self.get_context_data()
         messages.success(self.request, 'Success, Component Created!')
         latestComponent = DashboardComponent.objects.latest('id')
-        getCustomDashboard.componentset.add(latestComponent)
+        getCustomDashboard = CustomDashboard.objects.get(id=self.kwargs['id'])
+        getCustomDashboard.components.add(latestComponent)
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardComponentCreateForm 
