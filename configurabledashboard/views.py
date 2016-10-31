@@ -279,7 +279,7 @@ class CustomDashboardUpdate(UpdateView):
 
         try:
             selected_theme = getCustomDashboard.theme
-            getDashboardTheme = DashboardTheme.objects.all().filter(id=selected_theme)
+            getDashboardTheme = DashboardTheme.objects.all().filter(id=selected_theme.id)
         except DashboardTheme.DoesNotExist:
             getDashboardTheme = None   
         context.update({'getDashboardTheme': getDashboardTheme})
@@ -289,7 +289,7 @@ class CustomDashboardUpdate(UpdateView):
         # the component type that needs to be slotted into that position
         
         if getDashboardTheme:
-            getDashboardTheme[0].layout_dictionary:
+            getDashboardTheme[0].layout_dictionary
             layout = getDashboardTheme[0].layout_dictionary
             getDashboardLayoutList = json.loads(layout, object_pairs_hook=OrderedDict)
         else: 
@@ -304,7 +304,7 @@ class CustomDashboardUpdate(UpdateView):
 
         try: 
             getComponentOrder = json.loads(getCustomDashboard.component_map, object_pairs_hook=OrderedDict)
-        except not getCustomDashboard.component_map:
+        except:
             getComponentOrder = None
         context.update({'getComponentOrder': getComponentOrder})
 

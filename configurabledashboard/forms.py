@@ -128,11 +128,11 @@ class CustomDashboardForm(forms.ModelForm):
                                         <td> {% if getCustomDashboard.is_public == 1 %} Yes {% else %} No {% endif %}</td>
                                         <td>{{ getCustomDashboard.theme }}</td>
                                         <td>{{ getCustomDashboard.program }}</td>
-                                        <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard_edit/{{pk}}'>Edit</a> </td>
+                                        <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/configurabledashboard/edit/{{pk}}'>Edit</a> </td>
                                     </tr>
                                   </table>
-                                  <a class="dashboard_components btn btn-primary" data-target="#map-dashboard" data-toggle="tab">Next Step: Add Components</a>      
-                                  <a class="dashboards btn btn-link" style='float: right;' href='/activitydb/custom_dashboard_delete/{{pk}}/' data-toggle="modal" data-target="#myModal">Cancel / Return to Menu</a>
+                                  <a class="dashboard_components btn btn-primary" data-target="#add-components" data-toggle="tab">Next Step: Add Components</a>      
+                                  <a class="dashboards btn btn-link" style='float: right;' href='/configurabledashboard/delete/{{pk}}' data-toggle="modal" data-target="#myModal">Cancel / Return to Menu</a>
                               {% endif %}
                             </div>
                             """),
@@ -172,13 +172,13 @@ class CustomDashboardForm(forms.ModelForm):
                                                         </div>
                                                     </td>
                                                     <td></td>
-                                                    <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/component_add/{{getCustomDashboard.id}}/'>New</a></td>
+                                                    <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/component_add/{{getCustomDashboard.id}}/'>New</a></td>
                                                 </tr>
                                             {% endfor %}
                                         </table>
                                     <div>
                                     <div class="panel panel-footer">Don't see a component or need to edit an existing component?<br>
-                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/component/{{pk}}/'> View Component Inventory </a></td>
+                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/component/{{pk}}/'> View Component Inventory </a></td>
                                     </div>
                                 </div>
                             </div>
@@ -241,17 +241,17 @@ class CustomDashboardForm(forms.ModelForm):
                                                             </div>
                                                         </td>
                                                         <td></td>
-                                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/data_add/'> New </a></td>
+                                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data_add/'> New </a></td>
                                                         {% for component in getCustomDashboard.components.all %}
                                                             <td>{{component.component_name}}</td>
                                                             <td>{{component.data_required}} </td>
-                                                            <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/component/{{pk}}/'>View</a></td>
+                                                            <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/component/{{pk}}/'>View</a></td>
                                                             <td>{% if component.data_sources %} Yes 
                                                                 {% else %} 
                                                                 No
                                                                 {% endif %}
                                                             </td>  
-                                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='/activitydb/custom_dashboard/data_add/'> New </a></td>
+                                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data_add/'> New </a></td>
 
                                                         {% endfor %}
                                                         
