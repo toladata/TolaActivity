@@ -143,7 +143,12 @@ class CustomDashboardForm(forms.ModelForm):
                         HTML("""
                             <div class='panel panel-default'>
                                 <div class='panel panel-heading'>Layout For Your Page:</div>
-                                <div class='panel panel-body'>Layout Image for your Theme Goes Here<br><br>
+                                <div class='panel panel-body'>
+                                    {% if getCustomDashboard.theme == 'test_theme' %}
+                                        Layout Image for Test Theme Goes Here<br><br>
+                                    {% elif getCustomDashboard.theme %}
+                                        Layout Image for your Theme Goes Here: {{getCustomDashboard.theme}}<br><br>
+                                    {% endif %}
                                 <div class='panel panel-default'>
                                     <div class='panel panel-body'>
                                         <table class="table">
@@ -172,7 +177,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                         </div>
                                                     </td>
                                                     <td></td>
-                                                    <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/component_add/{{getCustomDashboard.id}}/'>New</a></td>
+                                                    <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='/configurabledashboard/component_add/{{getCustomDashboard.id}}/'>New</a></td>
                                                 </tr>
                                             {% endfor %}
                                         </table>
