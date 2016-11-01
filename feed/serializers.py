@@ -55,6 +55,7 @@ class AgreementSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ProjectAgreement
         fields=(
+                'id',
                 'program',
                 'date_of_request',
                 'project_name',
