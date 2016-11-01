@@ -211,6 +211,7 @@ DJANGO_APPS = (
     'django.contrib.humanize',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'admin_report',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'social.apps.django_app.default',

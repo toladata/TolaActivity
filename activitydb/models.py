@@ -131,6 +131,10 @@ class TolaUser(models.Model):
         self.edit_date = datetime.now()
         super(TolaUser, self).save()
 
+class TolaUserProxy(TolaUser):
+    class Meta:
+        verbose_name, verbose_name_plural = u"Report Tola User", u"Report Tola Users"
+        proxy = True 
 
 class TolaUserAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
@@ -1559,3 +1563,4 @@ class Distribution(models.Model):
 class DistributionAdmin(admin.ModelAdmin):
     list_display = ('distribution_name', 'program', 'initiation', 'create_date', 'edit_date')
     display = 'Program Dashboard'
+
