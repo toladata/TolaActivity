@@ -158,6 +158,9 @@ class StakeholderAdmin(ImportExportModelAdmin):
 class ReportTolaUserAdmin(ChartReportAdmin):
 
     list_display = ('title','name', 'user','email', 'country', 'create_date')
+    list_filter = ('country', 'create_date')
+
+
 
     def email(self, data):
         auth_users = User.objects.all()
