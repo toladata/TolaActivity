@@ -429,6 +429,8 @@ def indicator_data_report(request, id=0, program=0, type=0):
     if z:
         q.update(z)
 
+        print q
+
     if request.method == "GET" and "search" in request.GET:
         queryset = CollectedData.objects.filter(**q).filter(
                                            Q(agreement__project_name__contains=request.GET["search"]) |
@@ -1010,7 +1012,9 @@ class IndicatorExport(View):
         if int(kwargs['program']) == 0:
             del kwargs['program']
 
-        queryset = Indicator.objects.filter(**kwargs)
+        countries = getCountry(request.user)
+
+        queryset = Indicator.objects.filter(**kwargs).filter(indicator__program__country__in=countries)
         indicator = IndicatorResource().export(queryset)
         response = HttpResponse(indicator.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator.csv'
