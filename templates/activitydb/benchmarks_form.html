@@ -25,6 +25,9 @@
         </div>
 
         <h4 class="modal-title">{% block page_title %}Components Form {% endblock %}</h4>
+        {% if p_name %}
+        <h5>Project: <a href="/activitydb/dashboard/project/{{ id }}/">{{p_name}}</a></h5>
+        {% endif %}
 
     </div>
     <div class="modal-body">

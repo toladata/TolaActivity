@@ -37,7 +37,8 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected', program__country__in=countries).count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(Q(approval='in progress') | Q(approval="") | Q(approval=None)),program__id=program_id, program__country__in=countries).count()
-    nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
+    nostatus_count = ProjectAgreement.objects.all().filter(program__id=program_id).filter(Q(Q(approval=None) | Q(approval=""))).count()
+
 
 
     getSiteProfile = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id))

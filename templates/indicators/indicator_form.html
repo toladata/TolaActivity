@@ -8,6 +8,9 @@
 {% block page_title %}Indicator{% endblock %}
 
 {% block content %}
+    {% if i_name %}
+    <h4>(<a href="/indicators/home/0/0/0/">{{i_name}}</a>)</h4>
+    {% endif %}
     {% include "form_guidance.html" %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
