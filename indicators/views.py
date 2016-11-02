@@ -487,8 +487,8 @@ class IndicatorReportData(View, AjaxableResponseMixin):
             q.update(s)
 
         countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector',)
-        
+        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector',
+                                                                                                      )
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
 
@@ -1005,6 +1005,7 @@ class IndicatorExport(View):
     """
     def get(self, request, *args, **kwargs ):
 
+
         if int(kwargs['id']) == 0:
             del kwargs['id']
         if int(kwargs['indicator_type']) == 0:
@@ -1015,6 +1016,7 @@ class IndicatorExport(View):
         countries = getCountry(request.user)
 
         queryset = Indicator.objects.filter(**kwargs).filter(program__country__in=countries)
+
 
         indicator = IndicatorResource().export(queryset)
         response = HttpResponse(indicator.csv, content_type='application/ms-excel')
