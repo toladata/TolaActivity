@@ -27,7 +27,7 @@
 {% block page_title %}Project Initiation Form{% endblock %}
 {% block content %}
     {% if p_agreement%}
-    <h4>(<a href="/activitydb/dashboard/project/{{ pk }}/">{{p_agreement}}</a>)</h4>
+    <h5><b>{{p_agreement|truncatechars:150}}</b></h5>
     {% endif %}
     {% include "form_guidance.html" %}
     {% if form.errors %}
