@@ -1003,7 +1003,7 @@ class IndicatorExport(View):
     """
     Export all indicators to a CSV file
     """
-    def get(self, *args, **kwargs ):
+    def get(self, request, *args, **kwargs ):
 
         if int(kwargs['id']) == 0:
             del kwargs['id']
@@ -1014,7 +1014,9 @@ class IndicatorExport(View):
 
         countries = getCountry(request.user)
 
-        queryset = Indicator.objects.filter(**kwargs).filter(indicator__program__country__in=countries)
+        queryset = Indicator.objects.filter(**kwargs).filter(program__country__in=countries)
+        print queryset
+
         indicator = IndicatorResource().export(queryset)
         response = HttpResponse(indicator.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator.csv'

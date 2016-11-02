@@ -97,7 +97,6 @@
 
             table = $('#data_table').DataTable( {
                 retrieve: true,
-                columns.defaultContent: '',
                 data: indicator_records,
                 columns: [
                     { title: "Program", data: "program__name"},
@@ -106,18 +105,24 @@
                                 return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
                             }
                         },
-                    { title: "Level", data: "level__name"},
+                    { title: "Level", data: "level__name",
+                    "defaultContent": "<i>Not set</i>"
+                },
                     { title: "Type", data: "indicator_type__indicator_type"},
                     { title: "Sector", data: "sector__sector"},
-                    { title: "Baseline", data: "baseline"},
-                    { title: "LOP Target", data: "lop_target"},
-                    { title: "External", data: "external_service_record__external_service__name"},
+                    { title: "Baseline", data: "baseline",
+                        "defaultContent": "<i>Not set</i>"},
+                    { title: "LOP Target", data: "lop_target",
+                        "defaultContent": "<i>Not set</i>"},
+                    { title: "External", data: "external_service_record__external_service__name",
+                    "defaultContent": "<i>Not set</i>"},
                     { title: "Supporting Data", data: "collecteddata",
                               "mRender": function (data, type, row) {
                                 return '<a class="collecteddata" name=' + row.id + ' href="/indicators/collecteddata/' + row.id + '/0/0/">Collected Data</a>';
                               }
                         },
-                    { title: "KPI",data: "key_performance_indicator"}
+                    { title: "KPI",data: "key_performance_indicator",
+                    "defaultContent": "<i>Not set</i>"}
                     ]
             } );
 
@@ -148,7 +153,6 @@
             console.log(indicator_id);
             program_id = document.URL.split('/')[6];
             type_id = document.URL.split('/')[7];
-
             new_location="/indicators/report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/" + "export";
             window.location.assign(new_location);
 
