@@ -309,6 +309,9 @@ class ProjectAgreementUpdate(UpdateView):
         pk = self.kwargs['pk']
         context.update({'pk': pk})
         context.update({'program': pk})
+        getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
+        context.update({'p_agreement': getAgreement.project_name})
+
 
         try:
             getQuantitative = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')
@@ -624,6 +627,7 @@ class ProjectCompleteUpdate(UpdateView):
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
         id = getComplete.project_agreement_id
         context.update({'id': id})
+        context.update({'p_name': getComplete.project_name})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
@@ -1370,6 +1374,9 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(BenchmarkCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
+        getComplete = ProjectComplete.objects.get(id=self.kwargs['id'])
+        if getComplete:
+            context.update({'p_name': getComplete.project_name})
         return context
 
     def get_initial(self):
@@ -1475,17 +1482,18 @@ class ContactList(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        project_agreement_id = self.kwargs['pk']
+        stakeholder_id = self.kwargs['pk']
 
-        getProject = ProjectAgreement.objects.all().filter(id=project_agreement_id)
+        getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
 
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
         else:
-            getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
-
-        return render(request, self.template_name, {'getContacts': getContacts, 'getProject': getProject})
+            #getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
+            getContacts = Stakeholder.contact.through.objects.filter(stakeholder_id = stakeholder_id)
+            print getContacts
+        return render(request, self.template_name, {'getContacts': getContacts, 'getStakeholder': getStakeholder})
 
 
 class ContactCreate(CreateView):
@@ -1987,6 +1995,7 @@ class BeneficiaryDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = BeneficiaryForm
+
 
 class DistributionList(ListView):
     """

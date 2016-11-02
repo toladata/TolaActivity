@@ -8,7 +8,7 @@ from import_export import fields
 
 class IndicatorResource(resources.ModelResource):
 
-    country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
+    # country = fields.Field(column_name='country', attribute='country', widget=ManyToManyWidget(Program, field='country'))
     indicator_type = fields.Field(column_name='indicator types', attribute='indicator_types')
     objectives = fields.Field(column_name='objectives', attribute='objectives_list')
     strategic_objectives = fields.Field(column_name='strategic objectives', attribute='strategicobjectives_list')

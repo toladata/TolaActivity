@@ -233,6 +233,10 @@ class IndicatorUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(IndicatorUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+        getIndicator = Indicator.objects.get(id=self.kwargs['pk'])
+
+        context.update({'i_name': getIndicator.name})
+
         #get external service data if any
         try:
             getExternalServiceRecord = ExternalServiceRecord.objects.all().filter(indicator__id=self.kwargs['pk'])
@@ -425,6 +429,8 @@ def indicator_data_report(request, id=0, program=0, type=0):
     if z:
         q.update(z)
 
+        print q
+
     if request.method == "GET" and "search" in request.GET:
         queryset = CollectedData.objects.filter(**q).filter(
                                            Q(agreement__project_name__contains=request.GET["search"]) |
@@ -481,7 +487,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
             q.update(s)
 
         countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector',
+        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector',
                                                                                                       )
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
@@ -997,7 +1003,8 @@ class IndicatorExport(View):
     """
     Export all indicators to a CSV file
     """
-    def get(self, *args, **kwargs ):
+    def get(self, request, *args, **kwargs ):
+
 
         if int(kwargs['id']) == 0:
             del kwargs['id']
@@ -1006,7 +1013,12 @@ class IndicatorExport(View):
         if int(kwargs['program']) == 0:
             del kwargs['program']
 
-        queryset = Indicator.objects.filter(**kwargs)
+        countries = getCountry(request.user)
+
+        queryset = Indicator.objects.filter(**kwargs).filter(program__country__in=countries)
+        print queryset
+
+
         indicator = IndicatorResource().export(queryset)
         response = HttpResponse(indicator.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator.csv'
