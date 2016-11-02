@@ -487,7 +487,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
             q.update(s)
 
         countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector',
+        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector',
                                                                                                       )
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
@@ -1003,7 +1003,7 @@ class IndicatorExport(View):
     """
     Export all indicators to a CSV file
     """
-    def get(self, *args, **kwargs ):
+    def get(self, *args, **kwargs):
 
         if int(kwargs['id']) == 0:
             del kwargs['id']
@@ -1011,8 +1011,6 @@ class IndicatorExport(View):
             del kwargs['indicator_type']
         if int(kwargs['program']) == 0:
             del kwargs['program']
-
-        countries = getCountry(request.user)
 
         queryset = Indicator.objects.filter(**kwargs).filter(indicator__program__country__in=countries)
         indicator = IndicatorResource().export(queryset)

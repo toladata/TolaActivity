@@ -1996,6 +1996,7 @@ class BeneficiaryDelete(DeleteView):
 
     form_class = BeneficiaryForm
 
+
 class DistributionList(ListView):
     """
     Distribution

@@ -97,7 +97,7 @@
 
             table = $('#data_table').DataTable( {
                 retrieve: true,
-                columns.defaultContent: '',
+                columns: '',
                 data: indicator_records,
                 columns: [
                     { title: "Program", data: "program__name"},
@@ -143,13 +143,14 @@
 
         // EXPORT DATA
         function do_export(type) {
-            // get the program and  indicator id from the url
+            // get the program and indicator id from the url
             indicator_id = document.URL.split('/')[5];
             console.log(indicator_id);
             program_id = document.URL.split('/')[6];
             type_id = document.URL.split('/')[7];
 
             new_location="/indicators/report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/" + "export";
+            console.log("location:" + new_location);
             window.location.assign(new_location);
 
         }
