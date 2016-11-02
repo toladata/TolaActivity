@@ -23,7 +23,8 @@
 {% endblock %}
 
 {% block content %}
-    <h4>(<a href="/activitydb/dashboard/project/{{ id }}/">{{p_name}}</a>)</h4>
+    <h3>{{p_complete_program}}</h3>
+    <h4><a href="/activitydb/dashboard/project/{{ id }}/">{{ p_name|truncatechars:150 }}</a></h4>
     {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
