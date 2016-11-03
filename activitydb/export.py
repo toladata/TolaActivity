@@ -67,11 +67,17 @@ class StakeholderResource(resources.ModelResource):
     sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
     approved_by = fields.Field(column_name='approved_by', attribute='approved_by', widget=ForeignKeyWidget(TolaUser, 'name'))
     filled_by = fields.Field(column_name='filled_by', attribute='filled_by', widget=ForeignKeyWidget(TolaUser, 'name'))
+    stakeholder_register = fields.Field(column_name='stakeholder_register', attribute='stakeholder_register')
     class Meta:
         model = Stakeholder
 
-    # def dehydrate_contact(self, stakeholder):
+    def dehydrate_stakeholder_register(self, stakeholder):
+        if stakeholder.stakeholder_register == 1:
 
-    #     return '%s' % (stakeholder.contact.name)
+            return 'True' 
+
+        if stakeholder.stakeholder_register == 0:
+
+            return 'False'
             
         

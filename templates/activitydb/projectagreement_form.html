@@ -26,8 +26,9 @@
 
 {% block page_title %}Project Initiation Form{% endblock %}
 {% block content %}
+    <h3>{{ p_agreement_program }}</h3>
     {% if p_agreement%}
-    <h5><b>{{p_agreement|truncatechars:150}}</b></h5>
+    <h4>{{p_agreement|truncatechars:150}}</h4>
     {% endif %}
     {% include "form_guidance.html" %}
     {% if form.errors %}

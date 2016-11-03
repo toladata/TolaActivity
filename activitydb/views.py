@@ -311,6 +311,7 @@ class ProjectAgreementUpdate(UpdateView):
         context.update({'program': pk})
         getAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
         context.update({'p_agreement': getAgreement.project_name})
+        context.update({'p_agreement_program': getAgreement.program})
 
 
         try:
@@ -628,6 +629,7 @@ class ProjectCompleteUpdate(UpdateView):
         id = getComplete.project_agreement_id
         context.update({'id': id})
         context.update({'p_name': getComplete.project_name})
+        context.update({'p_complete_program': getComplete.program})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
 
