@@ -27,7 +27,9 @@ import requests
 
 from django.core import serializers, paginator
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.views.generic.detail import View
+
 
 from django.contrib.sites.shortcuts import get_current_site
 
@@ -2505,7 +2507,7 @@ class ChecklistItemDelete(DeleteView):
     form_class = ChecklistItemForm
 
 
-class Report(ListView):
+class Report(View, AjaxableResponseMixin):
     """
     project agreement list report
     """
@@ -2537,9 +2539,7 @@ class Report(ListView):
             getAgreements = ProjectAgreement.objects.filter(
                                                Q(project_name__contains=request.GET["search"]) |
                                                Q(activity_code__contains=request.GET["search"]))
-            table = ProjectAgreementTable(getAgreements)
 
-        RequestConfig(request).configure(table)
 
         if request.GET.get('export'):
             dataset = ProjectAgreementResource().export(getAgreements)
@@ -2549,7 +2549,34 @@ class Report(ListView):
 
 
         # send the keys and vars
-        return render(request, "activitydb/report.html", {'get_agreements': table, 'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getPrograms': getPrograms})
+        return render(request, "activitydb/report.html", {'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getPrograms': getPrograms})
+
+class ReportData(View, AjaxableResponseMixin):
+    """
+    Render Agreements json object response to the report ajax call
+    """
+
+    def get(self, request, *args, **kwargs):
+
+        countries=getCountry(request.user)
+
+        if int(self.kwargs['pk']) != 0:
+            getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
+
+        elif self.kwargs['status'] != 'none':
+            getAgreements = ProjectAgreement.objects.all().filter(approval=self.kwargs['status'])
+        else:
+            getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries).values('program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
+                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
+
+        from django.core.serializers.json import DjangoJSONEncoder
+
+        getAgreements = json.dumps(list(getAgreements), cls=DjangoJSONEncoder)
+
+        final_dict = { 'get_agreements': getAgreements }
+
+        return JsonResponse(final_dict, safe=False)
+
 
 
 def country_json(request, country):
