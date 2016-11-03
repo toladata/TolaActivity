@@ -37,10 +37,10 @@
                     { title: "Project Name", data: "project_name",},
                     { title: "Sites", data: "site",
                     	"defaultContent": "<i>Not set</i>"},
-                    /*{ title: "Project Code", data: "activity_code",
-                		"defaultContent": "<i>Not set</i>"},*/
-                	{ title: "Office", data: "office__name",
+                    { title: "Project Code", data: "activity_code",
                 		"defaultContent": "<i>Not set</i>"},
+                	/*{ title: "Office", data: "office__name",
+                		"defaultContent": "<i>Not set</i>"},*/
                     { title: "Project Activity", data: "project_activity",
                 		"defaultContent": "<i>Not set</i>"},
                     { title: "Sector", data: "sector__sector",
@@ -49,8 +49,8 @@
                         "defaultContent": "<i>Not set</i>"},
                     /*{ title: "Account Code", data: "account_code",
                         "defaultContent": "<i>Not set</i>"},*/
-                    { title: "LIN Code", data: "lin_code",
-                    	"defaultContent": "<i>Not set</i>"},
+                    /*{ title: "LIN Code", data: "lin_code",
+                    	"defaultContent": "<i>Not set</i>"},*/
 
                     { title: "Est. By", data: "estimated_by__name",
                     	"defaultContent": "<i>Not set</i>"
@@ -59,8 +59,8 @@
                     	"defaultContent": "<i>Not set</i>"},
                     { title: "Organizations Portion of Project Budget",data: "mc_estimated_budget",
                     	"defaultContent": "<i>Not set</i>"},
-                    /*{ title: "Total Cost",data: "total_cost",
-                    	"defaultContent": "<i>Not set</i>"},*/
+                    { title: "Total Cost",data: "total_cost",
+                    	"defaultContent": "<i>Not set</i>"},
                     { title: "Total Project Budget",data: "total_estimated_budget",
                     	"defaultContent": "<i>Not set</i>"}
                     ]
@@ -91,8 +91,9 @@
             <table class="table table-bordered " id="data_table" class="display" cellspacing="0" width="100%">
             </table>
         </div>
-        <br>
-    <button type="submit" class="btn btn-success" onClick="location.href='/activitydb/report/0/none/?export=true&{{ request.GET.urlencode }}'">Export All</button>
+       <div class="row" >
+    		<button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/activitydb/report/0/none/?export=true&{{ request.GET.urlencode }}'">Export All</button>
+       </div>
 
 <br/>
 
