@@ -1016,7 +1016,6 @@ class IndicatorExport(View):
         countries = getCountry(request.user)
 
         queryset = Indicator.objects.filter(**kwargs).filter(program__country__in=countries)
-        print queryset
 
 
         indicator = IndicatorResource().export(queryset)
