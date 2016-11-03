@@ -14,17 +14,88 @@
 
 {% load crispy_forms_tags %}
 {% crispy form form.helper %}
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#data_table').css('width', '50%');
+
+		  function show_agreement_table(agreements_data) {
+
+            agreement_records = JSON.parse(agreements_data);
+            //First destroy any old version of the table to refresh anew
+            if ( $.fn.dataTable.isDataTable( '#data_table' ) ) {
+                table.destroy();
+                $('#data_table').empty();
+            };
+
+            table = $('#data_table').DataTable({
+                retrieve: true,
+                "autoWidth": false,
+                data: agreement_records,
+                columns: [
+                    { title: "Program", data: "program__name",
+                		"defaultContent": "<i>Not set</i>"},
+                    { title: "Project Name", data: "project_name",},
+                    { title: "Sites", data: "site",
+                    	"defaultContent": "<i>Not set</i>"},
+                    { title: "Project Code", data: "activity_code",
+                		"defaultContent": "<i>Not set</i>"},
+                	/*{ title: "Office", data: "office__name",
+                		"defaultContent": "<i>Not set</i>"},*/
+                    { title: "Project Activity", data: "project_activity",
+                		"defaultContent": "<i>Not set</i>"},
+                    { title: "Sector", data: "sector__sector",
+                	"defaultContent": "<i>Not set</i>"},
+                    { title: "Project Type", data: "project_type",
+                        "defaultContent": "<i>Not set</i>"},
+                    /*{ title: "Account Code", data: "account_code",
+                        "defaultContent": "<i>Not set</i>"},*/
+                    /*{ title: "LIN Code", data: "lin_code",
+                    	"defaultContent": "<i>Not set</i>"},*/
+
+                    { title: "Est. By", data: "estimated_by__name",
+                    	"defaultContent": "<i>Not set</i>"
+                	},
+                    { title: "Total Project Budget",data: "total_estimated_budget",
+                    	"defaultContent": "<i>Not set</i>"},
+                    { title: "Organizations Portion of Project Budget",data: "mc_estimated_budget",
+                    	"defaultContent": "<i>Not set</i>"},
+                    { title: "Total Cost",data: "total_cost",
+                    	"defaultContent": "<i>Not set</i>"},
+                    { title: "Total Project Budget",data: "total_estimated_budget",
+                    	"defaultContent": "<i>Not set</i>"}
+                    ]
+            } );
+
+        }
+
+        function agreement_report() {
+            // get the program and indicator id from the url
+            agreement_id = document.URL.split('/')[5];
+            console.log(agreement_id);
+            status_id = document.URL.split('/')[6];
+
+            $.getJSON("/activitydb/report_table/" + agreement_id + "/" + status_id + "/", function(data) {
+                show_agreement_table(data['get_agreements']);
+            });
+        }
+        agreement_report();
+
+	})
+</script>
 <br/>
 <div class="dropdown">
 	{% include "activitydb/filter.html" %}
 </div>
 <br>
-
-{% render_table get_agreements %}
+        <div class="col-md-12 table-responsive row">
+            <table class="table table-bordered " id="data_table" class="display" cellspacing="0" width="100%">
+            </table>
+        </div>
+       <div class="row" >
+    		<button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/activitydb/report/0/none/?export=true&{{ request.GET.urlencode }}'">Export All</button>
+       </div>
 
 <br/>
-
-<button type="submit" class="btn btn-success" onClick="location.href='/activitydb/report?export=true&{{ request.GET.urlencode }}'">Export All</button>
 
 <script type="text/javascript">
     function program_filter(program_id) {
