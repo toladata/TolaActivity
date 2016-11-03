@@ -251,8 +251,8 @@
 								<h3 id="report1">WHO IS MOVING THROUGH THE AEGEAN?</h3>
 								<p>Over 4 million Syrian refugees. 2.6 million displaced Iraqis. Conflict is tearing countries apart. People are moving at a greater rate than ever before. <i>Who are the primary populations moving? </i>The simple answer is: everyone. Routes are now flooded by families fleeing homes and countries that are no longer safe or habitable.</p><p>Where are people coming from? Who is staying in Turkey versus moving on to Greece and the Balkans? RRIMA Report 1 focuses on <i><strong>who</strong></i> Mercy Corps is serving along the Aegean Migration Route.</p>
 								<div style='padding: 1em 0 1em 0;'>
-									<ul target=“_blank” rel="noopener noreferrer" style='list-style: none;'><strong>A Deeper Look...</strong>
-										<li><a href='http://www.independent.co.uk/news/world/refugee-crisis-where-are-all-these-people-coming-from-and-why-10490425.html/'><u>Refugee crisis: Where are all these people coming from and why?</u></a></li> 
+									<ul target=“_blank” rel="noopener noreferrer" style='pointer-events: all; list-style: none;'><strong>A Deeper Look...</strong>
+										<li style="pointer-events: all;"><a href='http://www.independent.co.uk/news/world/refugee-crisis-where-are-all-these-people-coming-from-and-why-10490425.html/'><u>Refugee crisis: Where are all these people coming from and why?</u></a></li> 
 									</ul>
 								</div>
 							</div>
@@ -359,15 +359,15 @@
 					        <strong><h3 class="modal-title"> RRIMA Report</h3></strong>
 					      </div>
 					      <div class="modal-body" style='height: 100%; word-wrap: break-word; overflow-y: auto;'>
-					      	{% if {{id}} == "1" %}:
-							<iframe style="position: absolute; height: 100%; top: 0; right: 0; border: none; width: 100%;" src="/media/{{ getNotebook.1 }}"></iframe>
-							{% elsif {{id}} == "2" %}
-							<iframe style="position: absolute; height: 100%; top: 0; right: 0; border: none; width: 100%;" src="/media/{{ getNotebook.2 }}"></iframe>
-							{% elsif {{id}} == "3" %}
-							<iframe style="position: absolute; height: 100%; top: 0; right: 0; border: none; width: 100%;" src="/media/{{ getNotebook.3 }}"></iframe>
-							{% else %}
-							<p> Report Unavailable </p>
-							{% endif %}
+					      	
+							<!-- <iframe style="position: absolute; height: 100%; top: 0; right: 0; border: none; width: 100%;" src="/media/{{ getNotebook.1 }}"></iframe> -->
+							
+					<!-- 		<iframe style="position: absolute; height: 100%; top: 0; right: 0; border: none; width: 100%;" src="/media/{{ getNotebook.2 }}"></iframe> -->
+							
+							<!-- <iframe style="position: absolute; height: 100%; top: 0; right: 0; border: none; width: 100%;" src="/media/{{ getNotebook.3 }}"></iframe> -->
+							
+								<p> Report Unavailable </p>
+							
 					      </div>
 			<!-- 		      <div class="modal-footer">
 					          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
