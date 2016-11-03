@@ -407,8 +407,9 @@ class ProjectAgreementUpdate(UpdateView):
         else:
             messages.success(self.request, 'Success, form updated!')
         form.save()
-        #save formset from context
-        context = self.get_context_data()
+        # Not in Use
+        # save formset from context
+        # context = self.get_context_data()
         self.object = form.save()
 
         return self.render_to_response(self.get_context_data(form=form))
