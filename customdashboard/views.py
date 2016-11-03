@@ -323,9 +323,9 @@ def RRIMAPublicDashboard(request,id=0):
     getProgram = Program.objects.all().filter(id=program_id)
 
     getNotebook = {}
-    getNotebook[1] = JupyterNotebooks.objects.get(id=1)
-    getNotebook[2] = JupyterNotebooks.objects.get(id=2)
-    getNotebook[3] = JupyterNotebooks.objects.get(id=3)
+    # getNotebook[1] = JupyterNotebooks.objects.get(id=1)
+    # getNotebook[2] = JupyterNotebooks.objects.get(id=2)
+    # getNotebook[3] = JupyterNotebooks.objects.get(id=3)
     ## retrieve the coutries the user has data access for
     countries = getCountry(request.user)
 
@@ -334,12 +334,7 @@ def RRIMAPublicDashboard(request,id=0):
 
     pageText = {}
     pageText['pageTitle'] = "Refugee Response and Migration News"
-    # pageText['objectives'] = []
-    pageText['projectSummary'] = { }
-    pageImages = {}
-    pageImages['leadimage_sourcelink'] = 'drive.google.com/a/mercycorps.org/file/d/0B8g-VJ-NXXHiMng0OVVla3FEMlE/view?usp=sharing'
-    pageImages['title'] = 'Aegean Response Photos'
-    pageImages['imageset'] = ["img/rrima_images/image1.jpg","img/rrima_images/image2.jpg","img/rrima_images/image3.jpg","img/rrima_images/image4.jpg","img/rrima_images/image5.jpg","img/rrima_images/image6.jpg","img/rrima_images/image7.jpg","img/rrima_images/image8.jpg"]
+    pageText['projectSummary'] = {}
 
     pageNews = JupyterNotebooks.objects.all().filter(very_custom_dashboard="RRIMA")
 
@@ -356,7 +351,7 @@ def RRIMAPublicDashboard(request,id=0):
     };
 
     return render(request, 'customdashboard/rrima_dashboard.html', 
-        {'pageText': pageText, 'pageNews': pageNews, 'pageImages': pageImages, 'pageMap': pageMap,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects, 'getNotebook': getNotebook}) #add data 
+        {'pageText': pageText, 'pageNews': pageNews, 'pageMap': pageMap, 'countries': countries, 'getNotebook': getNotebook}) 
 
 
 
