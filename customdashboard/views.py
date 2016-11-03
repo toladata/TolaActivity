@@ -322,6 +322,10 @@ def RRIMAPublicDashboard(request,id=0):
     program_id = id
     getProgram = Program.objects.all().filter(id=program_id)
 
+    getNotebook = {}
+    getNotebook[1] = JupyterNotebooks.objects.get(id=1)
+    getNotebook[2] = JupyterNotebooks.objects.get(id=2)
+    getNotebook[3] = JupyterNotebooks.objects.get(id=3)
     ## retrieve the coutries the user has data access for
     countries = getCountry(request.user)
 
@@ -352,7 +356,7 @@ def RRIMAPublicDashboard(request,id=0):
     };
 
     return render(request, 'customdashboard/rrima_dashboard.html', 
-        {'pageText': pageText, 'pageNews': pageNews, 'pageImages': pageImages, 'pageMap': pageMap,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) #add data 
+        {'pageText': pageText, 'pageNews': pageNews, 'pageImages': pageImages, 'pageMap': pageMap,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects, 'getNotebook': getNotebook}) #add data 
 
 
 
