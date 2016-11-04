@@ -1488,16 +1488,24 @@ class ContactList(ListView):
     def get(self, request, *args, **kwargs):
 
         stakeholder_id = self.kwargs['pk']
+        getStakeholder = None
 
-        getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
+        try:
+            getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
+    
+        except Exception, e:
+            pass
 
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
+            print getContacts
+            
         else:
             #getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
             getContacts = Stakeholder.contact.through.objects.filter(stakeholder_id = stakeholder_id)
             print getContacts
+
         return render(request, self.template_name, {'getContacts': getContacts, 'getStakeholder': getStakeholder})
 
 
@@ -2561,12 +2569,14 @@ class ReportData(View, AjaxableResponseMixin):
         countries=getCountry(request.user)
 
         if int(self.kwargs['pk']) != 0:
-            getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
+            getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk']).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
+                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
 
         elif self.kwargs['status'] != 'none':
-            getAgreements = ProjectAgreement.objects.all().filter(approval=self.kwargs['status'])
+            getAgreements = ProjectAgreement.objects.all().filter(approval=self.kwargs['status']).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
+                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
         else:
-            getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries).values('program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
+            getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
                              'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
 
         from django.core.serializers.json import DjangoJSONEncoder
