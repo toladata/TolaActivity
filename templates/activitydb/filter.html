@@ -4,9 +4,9 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-   <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/0">-- All --</a></li>
+   <li role="presentation"><a role="menuitem" tabindex="-1" href=" ">-- All --</a></li>
     {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/{{ program.id }}">{{ program.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.name }}</a></li>
     {% endfor %}
   </ul>
 </div>
@@ -18,7 +18,7 @@
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/0">-- All --</a></li>
     {% for status in APPROVALS %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/activitydb/dashboard/{{ program_id }}/{{ status.0 }} ">{{ status.1 }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="status_filter('{{status.0}}')">{{ status.1 }}</a></li>
     {% endfor %}
   </ul>
 </div>
