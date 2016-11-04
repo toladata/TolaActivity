@@ -1,7 +1,7 @@
 from .serializers import *
 
 from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
-    ProjectAgreement, Stakeholder, CustomDashboard, Capacity, Evaluate, ProfileType, \
+    ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
@@ -266,15 +266,6 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     queryset = Stakeholder.objects.all()
     serializer_class = StakeholderSerializer
-
-
-class CustomDashboardViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    """
-    queryset = CustomDashboard.objects.all()
-    serializer_class = CustomDashboardSerializer
 
 
 class ExternalServiceViewSet(viewsets.ModelViewSet):

@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib import admin
+from django.conf import settings
+from datetime import datetime
+
 from activitydb.models import Program
 
 
@@ -76,7 +79,4 @@ class JupyterNotebooks(models.Model):
 class JupyterNotebooksAdmin(admin.ModelAdmin):
     list_display = ('name','program','very_custom_dashboard','create_date','edit_date')
     display = 'Jupyter Notebooks'
-
-
-
 

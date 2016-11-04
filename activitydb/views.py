@@ -13,6 +13,8 @@ import pytz
 from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteSimpleForm, ProjectCompleteCreateForm, DocumentationForm, \
     SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
     QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
+
+import pytz
 import logging
 from django.shortcuts import render
 from django.contrib import messages
@@ -23,7 +25,12 @@ from tables import ProjectAgreementTable
 from django_tables2 import RequestConfig
 from filters import ProjectAgreementFilter
 import json
+import simplejson
+from collections import OrderedDict
+import ast
 import requests
+import urllib
+import logging
 
 from django.core import serializers, paginator
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -37,8 +44,7 @@ from django.contrib.sites.shortcuts import get_current_site
 logger = logging.getLogger(__name__)
 
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import user_passes_test
-from tola.util import getCountry, emailGroup
+from tola.util import getCountry, emailGroup, group_excluded, group_required
 from mixins import AjaxableResponseMixin
 from export import ProjectAgreementResource, StakeholderResource
 from django.core.exceptions import PermissionDenied
@@ -56,29 +62,6 @@ from dateutil.relativedelta import relativedelta
 
 def date_handler(obj):
     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
-
-
-def group_required(*group_names, **url):
-    # Requires user membership in at least one of the groups passed in.
-    def in_groups(u):
-        if u.is_authenticated():
-            if bool(u.groups.filter(name__in=group_names)) | u.is_superuser:
-                return True
-            raise PermissionDenied
-        return False
-    return user_passes_test(in_groups)
-
-
-def group_excluded(*group_names, **url):
-    # If user is in the group passed in permission denied
-    def in_groups(u):
-        if u.is_authenticated():
-            if not bool(u.groups.filter(name__in=group_names)):
-                return True
-            raise PermissionDenied
-        return False
-
-    return user_passes_test(in_groups)
 
 
 class ProjectDash(ListView):
