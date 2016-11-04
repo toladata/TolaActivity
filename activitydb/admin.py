@@ -1,5 +1,3 @@
-from django.contrib import admin
-from django.contrib.auth.models import User
 from .models import *
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
@@ -188,21 +186,15 @@ admin.site.register(Monitor)
 admin.site.register(Benchmarks)
 admin.site.register(Evaluate)
 admin.site.register(ProjectType, ProjectTypeAdmin)
-admin.site.register(TrainingAttendance)
-admin.site.register(Distribution, DistributionAdmin)
-admin.site.register(Beneficiary, BeneficiaryAdmin)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
-admin.site.register(FAQ)
 admin.site.register(ApprovalAuthority, ApprovalAuthorityAdmin)
 admin.site.register(ChecklistItem, ChecklistItemAdmin)
 admin.site.register(Checklist, ChecklistAdmin)
-admin.site.register(DocumentationApp)
 admin.site.register(Stakeholder, StakeholderAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(StakeholderType)
-admin.site.register(Feedback,FeedbackAdmin)
 admin.site.register(TolaUser,TolaUserAdmin)
 admin.site.register(TolaSites,TolaSitesAdmin)
 admin.site.register(FormGuidance,FormGuidanceAdmin)
-admin.site.register( TolaUserProxy, ReportTolaUserAdmin )
+admin.site.register(TolaUserProxy, ReportTolaUserAdmin )

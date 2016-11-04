@@ -1,9 +1,9 @@
-from tola.forms import FeedbackForm, RegistrationForm, NewUserRegistrationForm, NewTolaUserRegistrationForm
+from tola.forms import RegistrationForm, NewUserRegistrationForm, NewTolaUserRegistrationForm
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, FAQ, DocumentationApp, TolaUser, TolaSites
+from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, TolaUser,TolaSites
 from indicators.models import CollectedData, Indicator
 
 from tola.tables import IndicatorDataTable
@@ -163,43 +163,6 @@ def index(request, selected_countries=None, id=0, sector=0):
                                           'selected_countries_label_list':selected_countries_label_list,
                                           'user_pending_approvals':user_pending_approvals,
                                           })
-
-
-def contact(request):
-    """
-    Feedback form
-    """
-    form = FeedbackForm(initial={'submitter': request.user})
-
-    if request.method == 'POST':
-        form = FeedbackForm(request.POST) # A form bound to the POST data
-        if form.is_valid(): # All validation rules pass
-            form.save()
-            messages.error(request, 'Thank you', fail_silently=False)
-        else:
-            messages.error(request, 'Invalid', fail_silently=False)
-            print form.errors
-
-    return render(request, "contact.html", {'form': form, 'helper': FeedbackForm.helper})
-
-
-def faq(request):
-    """
-    Get FAQ and display them on template
-    """
-
-    getFAQ = FAQ.objects.all()
-
-    return render(request, 'faq.html', {'getFAQ': getFAQ})
-
-
-def documentation(request):
-    """
-    Get Documentation and display them on template
-    """
-    getDocumentation = DocumentationApp.objects.all()
-
-    return render(request, 'documentation.html', {'getDocumentation': getDocumentation})
 
 
 def register(request):

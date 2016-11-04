@@ -3,7 +3,7 @@ from activitydb.models import Program, SiteProfile, Documentation, ProjectAgreem
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
-from crispy_forms.layout import Layout, Submit, Reset, Field
+from crispy_forms.layout import Layout, Submit, Reset
 from functools import partial
 from django import forms
 from tola.util import getCountry

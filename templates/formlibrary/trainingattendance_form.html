@@ -4,25 +4,25 @@
   <li><a href="/activitydb/dashboard/0/">Program Index</a></li>
   {%  if project_proposal_id %}
     <li><a href="/activitydb/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
-    <li><a href="/activitydb/beneficiary_list/{{ project_proposal_id }}/">Beneficiaries</a></li>
+    <li><a href="/formlibrary/training_list/{{ project_proposal_id }}/">Trainings</a></li>
   {%  else  %}
-    <li><a href="/activitydb/beneficiary_list/0/">Beneficiairies</a></li>
+    <li><a href="/formlibrary/training_list/0/">Trainings</a></li>
   {% endif %}
 
-  <li class="active">Beneficiairy Form</li>
+  <li class="active">Training Attendance Form</li>
 </ol>
 {% endblock %}
-{% block page_title %}Beneficiary Form{% endblock %}
+{% block page_title %}Training Attendance Form{% endblock %}
 
 {% block content %}
     {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
-        {% for field in form %}
-            {% for error in field.errors %}
-                    <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
+            {% for field in form %}
+                {% for error in field.errors %}
+                        <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
         </div>
         {% for error in form.non_field_errors %}
             <div class="alert alert-error">

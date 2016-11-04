@@ -13,7 +13,7 @@
 
 {% block content %}
 <div>
-    <a href="/activitydb/beneficiary_add/0/" class="btn btn-large btn-success">New Beneficiary</a>
+    <a href="/formlibrary/beneficiary_add/0/" class="btn btn-large btn-success">New Beneficiary</a>
 <hr/>
 </div>
 
@@ -21,8 +21,8 @@
 {% for item in getBeneficiaries %}
     <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.beneficiary_name }} - {{ item.age }} - {{ item.gender }}</b>
     <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/activitydb/beneficiary_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Beneficiary</a>
-        <a href="/activitydb/beneficairy_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Beneficiary</a>
+        <a href="/formlibrary/beneficiary_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Beneficiary</a>
+        <a href="/formlibrary/beneficairy_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Beneficiary</a>
     </div>
     </li>
 

@@ -13,7 +13,7 @@
 
 {% block content %}
 <div>
-    <a href="/activitydb/distribution_add/0/" class="btn btn-large btn-success">New Distribution</a>
+    <a href="/formlibrary/distribution_add/0/" class="btn btn-large btn-success">New Distribution</a>
 <!--  TODO: import distribution functionality
    <a href="/activitydb/distribution_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Distribution</a> -->
 <hr/>
@@ -23,8 +23,8 @@
 {% for distribution in getDistribution %}
     <li class="list-group-item"><b>{{ distribution.create_date|date }} - {{ distribution.distribution_name }}</b>&nbsp;
     <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/activitydb/distribution_update/{{ distribution.id }}" class="btn btn-xs btn-warning">Update Distribution</a>
-        <a href="/activitydb/distribution_delete/{{ distribution.id }}" class="btn btn-xs btn-danger">Delete Distribution</a>
+        <a href="/formlibrary/distribution_update/{{ distribution.id }}" class="btn btn-xs btn-warning">Update Distribution</a>
+        <a href="/formlibrary/distribution_delete/{{ distribution.id }}" class="btn btn-xs btn-danger">Delete Distribution</a>
     </div>
     </li>
 

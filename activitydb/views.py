@@ -2,37 +2,31 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, \
-    Documentation, Monitor, Benchmarks, TrainingAttendance, Beneficiary, Distribution, Budget, ApprovalAuthority, Checklist, ChecklistItem, \
-    Stakeholder, Contact, FormGuidance
+    Documentation, Monitor, Benchmarks, Budget, ApprovalAuthority, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance
+from formlibrary.models import TrainingAttendance, Distribution
 from indicators.models import CollectedData, ExternalService
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 
-import pytz
 
 from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteSimpleForm, ProjectCompleteCreateForm, DocumentationForm, \
-    SiteProfileForm, MonitorForm, BenchmarkForm, TrainingAttendanceForm, BeneficiaryForm, DistributionForm, BudgetForm, FilterForm, \
+    SiteProfileForm, MonitorForm, BenchmarkForm, BudgetForm, FilterForm, \
     QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
 
 import pytz
-import logging
+
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db.models import Q
 from tables import ProjectAgreementTable
-from django_tables2 import RequestConfig
 from filters import ProjectAgreementFilter
 import json
-import simplejson
-from collections import OrderedDict
-import ast
 import requests
-import urllib
 import logging
 
-from django.core import serializers, paginator
+from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.generic.detail import View
@@ -47,7 +41,6 @@ from django.utils.decorators import method_decorator
 from tola.util import getCountry, emailGroup, group_excluded, group_required
 from mixins import AjaxableResponseMixin
 from export import ProjectAgreementResource, StakeholderResource
-from django.core.exceptions import PermissionDenied
 
 APPROVALS = (
     ('in_progress',('in progress')),
@@ -1749,367 +1742,6 @@ class StakeholderDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = StakeholderForm
-
-
-class TrainingList(ListView):
-    """
-    Training Attendance
-    """
-    model = TrainingAttendance
-    template_name = 'activitydb/training_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        project_agreement_id = self.kwargs['pk']
-        countries = getCountry(request.user)
-        if int(self.kwargs['pk']) == 0:
-            getTraining = TrainingAttendance.objects.all().filter(program__country__in=countries)
-        else:
-            getTraining = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getTraining': getTraining, 'project_agreement_id': project_agreement_id})
-
-
-class TrainingCreate(CreateView):
-    """
-    Training Form
-    """
-    model = TrainingAttendance
-
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="Training")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
-        return super(TrainingCreate, self).dispatch(request, *args, **kwargs)
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(TrainingCreate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def get_initial(self):
-        initial = {
-            'agreement': self.kwargs['id'],
-            }
-
-        return initial
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Training Created!')
-        latest = TrainingAttendance.objects.latest('id')
-        redirect_url = '/activitydb/training_update/' + str(latest.id)
-        return HttpResponseRedirect(redirect_url)
-
-    form_class = TrainingAttendanceForm
-
-
-class TrainingUpdate(UpdateView):
-    """
-    Training Form
-    """
-    model = TrainingAttendance
-
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="Training")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
-        return super(TrainingUpdate, self).dispatch(request, *args, **kwargs)
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(TrainingUpdate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Training Updated!')
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = TrainingAttendanceForm
-
-
-class TrainingDelete(DeleteView):
-    """
-    Training Delete
-    """
-    model = TrainingAttendance
-    success_url = '/activitydb/training_list/0/'
-    template_name = 'activitydb/training_confirm_delete.html'
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Training Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = TrainingAttendanceForm
-
-
-class BeneficiaryList(ListView):
-    """
-    Beneficiary
-    """
-    model = Beneficiary
-    template_name = 'activitydb/beneficiary_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        project_agreement_id = self.kwargs['pk']
-        countries = getCountry(request.user)
-
-        if int(self.kwargs['pk']) == 0:
-            getBeneficiaries = Beneficiary.objects.all().filter(Q(training__program__country__in=countries) | Q(distribution__program__country__in=countries) )
-        else:
-            getBeneficiaries = Beneficiary.objects.all().filter(training_id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getBeneficiaries': getBeneficiaries, 'project_agreement_id': project_agreement_id})
-
-
-class BeneficiaryCreate(CreateView):
-    """
-    Beneficiary Form
-    """
-    model = Beneficiary
-
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="Beneficiary")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
-        return super(BeneficiaryCreate, self).dispatch(request, *args, **kwargs)
-
-    def get_initial(self):
-        initial = {
-            'training': self.kwargs['id'],
-            }
-
-        return initial
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(BeneficiaryCreate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Beneficiary Created!')
-        latest = Beneficiary.objects.latest('id')
-        redirect_url = '/activitydb/beneficiary_update/' + str(latest.id)
-        return HttpResponseRedirect(redirect_url)
-
-    form_class = BeneficiaryForm
-
-
-class BeneficiaryUpdate(UpdateView):
-    """
-    Training Form
-    """
-    model = Beneficiary
-
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="Beneficiary")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
-        return super(BeneficiaryUpdate, self).dispatch(request, *args, **kwargs)
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(BeneficiaryUpdate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Beneficiary Updated!')
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = BeneficiaryForm
-
-
-class BeneficiaryDelete(DeleteView):
-    """
-    Beneficiary Delete
-    """
-    model = Beneficiary
-    success_url = reverse_lazy('beneficiary_list')
-
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        return super(BeneficiaryDelete, self).dispatch(request, *args, **kwargs)
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Beneficiary Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = BeneficiaryForm
-
-
-class DistributionList(ListView):
-    """
-    Distribution
-    """
-    model = Distribution
-    template_name = 'activitydb/distribution_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        program_id = self.kwargs['pk']
-        countries = getCountry(request.user)
-        if int(self.kwargs['pk']) == 0:
-            getDistribution = Distribution.objects.all().filter(program__country__in=countries)
-        else:
-            getDistribution = Distribution.objects.all().filter(program_id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getDistribution': getDistribution, 'program_id': program_id})
-
-
-class DistributionCreate(CreateView):
-    """
-    Distribution Form
-    """
-    model = Distribution
-
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="Distribution")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
-        return super(DistributionCreate, self).dispatch(request, *args, **kwargs)
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(DistributionCreate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def get_initial(self):
-        initial = {
-            'program': self.kwargs['id']
-            }
-
-        return initial
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Distribution Created!')
-        latest = Distribution.objects.latest('id')
-        redirect_url = '/activitydb/distribution_update/' + str(latest.id)
-        return HttpResponseRedirect(redirect_url)
-
-    form_class = DistributionForm
-
-
-class DistributionUpdate(UpdateView):
-    """
-    Distribution Form
-    """
-    model = Distribution
-
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="Distribution")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
-        return super(DistributionUpdate, self).dispatch(request, *args, **kwargs)
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(DistributionUpdate, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Distribution Updated!')
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = DistributionForm
-
-
-class DistributionDelete(DeleteView):
-    """
-    Distribution Delete
-    """
-    model = Distribution
-    success_url = '/activitydb/distribution_list/0/'
-    template_name = 'activitydb/distribution_confirm_delete.html'
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Distribution Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = DistributionForm
 
 
 class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):

@@ -2,17 +2,11 @@
 {% block bread_crumb %}
 <ol class="breadcrumb">
   <li><a href="/activitydb/dashboard/0/">Program Index</a></li>
-  {%  if project_proposal_id %}
-    <li><a href="/activitydb/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
-    <li><a href="/activitydb/training_list/{{ project_proposal_id }}/">Trainings</a></li>
-  {%  else  %}
-    <li><a href="/activitydb/training_list/0/">Trainings</a></li>
-  {% endif %}
-
-  <li class="active">Training Attendance Form</li>
+  <li><a href="/formlibrary/distribution_list/0/">Distributions</a></li>
+  <li class="active">Distribution Form</li>
 </ol>
 {% endblock %}
-{% block page_title %}Training Attendance Form{% endblock %}
+{% block page_title %}Distribution Form{% endblock %}
 
 {% block content %}
     {% include "form_guidance.html" %}

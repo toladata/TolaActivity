@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, TrainingAttendance, Distribution, Beneficiary, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, Contact, TolaUser
+from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -1536,63 +1536,6 @@ class ChecklistItemForm(forms.ModelForm):
         #self.fields['item'].queryset = ChecklistItem.objects.filter(checklist__country__in=countries)
 
 
-class TrainingAttendanceForm(forms.ModelForm):
-
-    class Meta:
-        model = TrainingAttendance
-        exclude = ['create_date', 'edit_date']
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.request = kwargs.pop('request')
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-6'
-        self.helper.form_error_title = 'Form Errors'
-        self.helper.error_text_inline = True
-        self.helper.help_text_inline = True
-        self.helper.html5_required = True
-        self.helper.add_input(Submit('submit', 'Save'))
-
-        super(TrainingAttendanceForm, self).__init__(*args, **kwargs)
-
-        countries = getCountry(self.request.user)
-        self.fields['project_agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
-        self.fields['program'].queryset = Program.objects.filter(country__in=countries)
-
-
-class DistributionForm(forms.ModelForm):
-
-    start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-    end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
-
-    class Meta:
-        model = Distribution
-        exclude = ['create_date', 'edit_date']
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.request = kwargs.pop('request')
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-6'
-        self.helper.form_error_title = 'Form Errors'
-        self.helper.error_text_inline = True
-        self.helper.help_text_inline = True
-        self.helper.html5_required = True
-        self.helper.add_input(Submit('submit', 'Save'))
-
-        super(DistributionForm, self).__init__(*args, **kwargs)
-
-        countries = getCountry(self.request.user)
-        self.fields['initiation'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
-        self.fields['program'].queryset = Program.objects.filter(country__in=countries)
-        self.fields['office_code'].queryset = Office.objects.filter(province__country__in=countries)
-        self.fields['province'].queryset = Province.objects.filter(country__in=countries)
-
-
 class ContactForm(forms.ModelForm):
 
     class Meta:
@@ -1666,32 +1609,6 @@ class StakeholderForm(forms.ModelForm):
         self.fields['filled_by'].queryset = users
         self.fields['formal_relationship_document'].queryset = Documentation.objects.filter(program__country__in=countries)
         self.fields['vetting_document'].queryset = Documentation.objects.filter(program__country__in=countries)
-
-
-class BeneficiaryForm(forms.ModelForm):
-    class Meta:
-        model = Beneficiary
-        exclude = ['create_date', 'edit_date']
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.request = kwargs.pop('request')
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-6'
-        self.helper.form_error_title = 'Form Errors'
-        self.helper.error_text_inline = True
-        self.helper.help_text_inline = True
-        self.helper.html5_required = True
-        self.helper.add_input(Submit('submit', 'Save'))
-
-        super(BeneficiaryForm, self).__init__(*args, **kwargs)
-
-        countries = getCountry(self.request.user)
-        self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
-        self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
-        self.fields['distribution'].queryset = Distribution.objects.filter(program__country__in=countries)
 
 
 class FilterForm(forms.Form):

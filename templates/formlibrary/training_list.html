@@ -13,8 +13,8 @@
 
 {% block content %}
 <div>
-    <a href="/activitydb/training_add/0/" class="btn btn-large btn-success">New Training</a>
-    <a href="/activitydb/training_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Training</a>
+    <a href="/formlibrary/training_add/0/" class="btn btn-large btn-success">New Training</a>
+    <a href="/formlibrary/training_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Training</a>
 <hr/>
 </div>
 
@@ -22,9 +22,9 @@
 {% for item in getTraining %}
     <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.training_name }}</b>&nbsp;
     <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/activitydb/beneficiary_list/{{ item.id }}" class="btn btn-xs btn-info">Beneficiaries</a>
-        <a href="/activitydb/training_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Training</a>
-        <a href="/activitydb/training_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Training</a>
+        <a href="/formlibrary/beneficiary_list/{{ item.id }}" class="btn btn-xs btn-info">Beneficiaries</a>
+        <a href="/formlibrary/training_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Training</a>
+        <a href="/formlibrary/training_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Training</a>
     </div>
     </li>
 
