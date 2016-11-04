@@ -9,6 +9,8 @@ from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Doc
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
+import ast
+import collections
 
 
 #Global for approvals
@@ -116,7 +118,6 @@ class ProjectAgreementCreateForm(forms.ModelForm):
         self.helper.form_tag = True
         super(ProjectAgreementCreateForm, self).__init__(*args, **kwargs)
 
-
 class ProjectAgreementForm(forms.ModelForm):
 
     class Meta:
@@ -178,7 +179,6 @@ class ProjectAgreementForm(forms.ModelForm):
                     Fieldset('Project Details', 'activity_code','account_code','lin_code','office', 'sector','program', 'project_name', 'project_activity',
                              'project_type', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date',
                         ),
-
                     ),
                 Tab('Components',
                     Fieldset("Project Components",
@@ -229,7 +229,6 @@ class ProjectAgreementForm(forms.ModelForm):
                         Div(
                             "",
                             HTML("""
-
                                 <div class='panel panel-default'>
                                   <!-- Default panel contents -->
                                   <div class='panel-heading'>Budget Contributions</div>
@@ -259,9 +258,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                  """),
                             ),
                         ),
-
                     ),
-
                 Tab('Justification and Description',
                      Fieldset(
                         'Description',

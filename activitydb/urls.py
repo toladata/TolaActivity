@@ -109,5 +109,4 @@ urlpatterns = [
                        #ajax calls
                        url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
 
-
                        ]

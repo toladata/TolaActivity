@@ -228,34 +228,6 @@ class ContactAdmin(admin.ModelAdmin):
 
 
 # For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'
-class CustomDashboard(models.Model):
-    dashboard_name = models.CharField("Custom Dashboard Name", max_length=255, blank=True)
-    dashboard_description = models.TextField("Brief Description", null=True, blank=True, help_text="What does this custom dashboard display to the user?")
-    is_public = models.BooleanField("External Public Dashboard", default=False)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('dashboard_name',)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(CustomDashboard, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.dashboard_name
-
-
-class CustomDashboardAdmin(admin.ModelAdmin):
-    list_display = ('dashboard_name', 'dashboard_description', 'create_date', 'edit_date')
-    display = 'Custom Dashboard'
-
-
-# For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'
 class FundCode(models.Model):
     name = models.CharField("Fund Code", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -275,7 +247,6 @@ class FundCode(models.Model):
     def __unicode__(self):
         return self.name
 
-
 class FundCodeAdmin(admin.ModelAdmin):
     list_display = ('name','program__name', 'create_date', 'edit_date')
     display = 'Fund Code'
@@ -289,7 +260,6 @@ class Program(models.Model):
     fund_code = models.ManyToManyField(FundCode, blank=True)
     description = models.TextField("Program Description", max_length=765, null=True, blank=True)
     sector = models.ManyToManyField(Sector, blank=True)
-    dashboard_name = models.ForeignKey(CustomDashboard, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     budget_check = models.BooleanField("Enable Approval Authority", default=False)
@@ -545,7 +515,6 @@ class LandTypeAdmin(admin.ModelAdmin):
 class SiteProfileManager(models.Manager):
     def get_queryset(self):
         return super(SiteProfileManager, self).get_queryset().prefetch_related().select_related('country','province','district','admin_level_three','type')
-
 
 class SiteProfile(models.Model):
     profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
@@ -823,7 +792,6 @@ class ProjectAgreementManager(models.Manager):
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
 
-
 # Project Initiation, admin is handled in the admin.py
 # TODO: Clean up unused fields and rename model with manual migration file
 """
@@ -855,7 +823,6 @@ class ProjectAgreement(models.Model):
     office = models.ForeignKey(Office, verbose_name="Office", null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True, null=True)
-    dashboard_name = models.ForeignKey(CustomDashboard, blank=True, null=True)
     project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
     account_code = models.CharField("Fund Code", help_text='', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Code", help_text='', max_length=255, blank=True, null=True)
@@ -1008,7 +975,6 @@ class ProjectComplete(models.Model):
     project_type = models.ForeignKey(ProjectType, max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, null=True, blank=True)
     sector = models.ForeignKey("Sector", blank=True, null=True)
-    dashboard_name = models.ForeignKey(CustomDashboard, blank=True, null=True)
     expected_start_date = models.DateTimeField(help_text="Imported from Project Initiation", blank=True, null=True)
     expected_end_date = models.DateTimeField(help_text="Imported Project Initiation", blank=True, null=True)
     expected_duration = models.CharField("Expected Duration", max_length=255, help_text="Imported from Project Initiation", blank=True, null=True)
@@ -1564,7 +1530,6 @@ class Distribution(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return unicode(self.distribution_name)
-
 
 class DistributionAdmin(admin.ModelAdmin):
     list_display = ('distribution_name', 'program', 'initiation', 'create_date', 'edit_date')
