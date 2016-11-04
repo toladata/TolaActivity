@@ -1488,16 +1488,24 @@ class ContactList(ListView):
     def get(self, request, *args, **kwargs):
 
         stakeholder_id = self.kwargs['pk']
+        getStakeholder = None
 
-        getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
+        try:
+            getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
+    
+        except Exception, e:
+            pass
 
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
+            print getContacts
+            
         else:
             #getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
             getContacts = Stakeholder.contact.through.objects.filter(stakeholder_id = stakeholder_id)
             print getContacts
+
         return render(request, self.template_name, {'getContacts': getContacts, 'getStakeholder': getStakeholder})
 
 
