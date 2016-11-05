@@ -1,7 +1,6 @@
 from django.test import TestCase
-from django.test import RequestFactory
-from django.test import Client
-from activitydb.models import Program, Country, Province, Village, District, ProjectAgreement, Sector, ProjectComplete, ProjectType, SiteProfile, Office, Documentation, Monitor, Benchmarks, TrainingAttendance, Distribution, Beneficiary, Budget
+from activitydb.models import Program, Country, Province,ProjectAgreement, Sector, ProjectType, SiteProfile, Office
+from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
 from datetime import datetime
 
 
