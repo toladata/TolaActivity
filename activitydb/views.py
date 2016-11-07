@@ -1721,7 +1721,7 @@ class StakeholderDelete(DeleteView):
     Benchmark Form
     """
     model = Stakeholder
-    success_url = '/'
+    success_url = '/activitydb/stakeholder_list/0/0/'
 
     def get_context_data(self, **kwargs):
         context = super(StakeholderDelete, self).get_context_data(**kwargs)
