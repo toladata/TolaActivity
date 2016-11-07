@@ -25,7 +25,7 @@ urlpatterns = [
     #Collected Data List
     url(r'^collecteddata/(?P<indicator>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
-    url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/(?P<type>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
+    url(r'^collecteddata/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata_add/(?P<program>\w+)/(?P<indicator>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
     url(r'^collecteddata_import/$', 'indicators.views.collecteddata_import', name='collecteddata_import'),
     url(r'^collecteddata_update/(?P<pk>\w+)/$', CollectedDataUpdate.as_view(), name='collecteddata_update'),
