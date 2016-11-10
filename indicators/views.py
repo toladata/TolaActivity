@@ -315,45 +315,25 @@ def indicator_report(request, program=0, indicator=0, type=0):
 
     getIndicatorTypes = IndicatorType.objects.all()
 
-    if int(program) != 0:
-        getIndicators = Indicator.objects.all().filter(program__id=program).select_related()
-
-    elif int(type) != 0:
-        getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related()
-     
-    else:
-        getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries)
-
-    table = IndicatorTable(getIndicators)
-    table.paginate(page=request.GET.get('page', 1), per_page=20)
-
-    if request.method == "GET" and "search" in request.GET:
-        queryset = Indicator.objects.filter(
-                                           Q(indicator_type__indicator_type__contains=request.GET["search"]) |
-                                           Q(name__contains=request.GET["search"]) | Q(number__contains=request.GET["search"]) |
-                                           Q(number__contains=request.GET["search"]) | Q(sector__sector__contains=request.GET["search"]) |
-                                           Q(definition__contains=request.GET["search"])
-                                          )
-        table = IndicatorTable(queryset)
-
-    RequestConfig(request).configure(table)
-
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/report.html", {'program': program, 'get_agreements': table, 'getPrograms': getPrograms,'form': FilterForm(), 'helper': FilterForm.helper, 'getIndicatorTypes': getIndicatorTypes})
+    return render(request, "indicators/report.html", {'program': program, 'getPrograms': getPrograms,'form': FilterForm(), 'helper': FilterForm.helper, 'getIndicatorTypes': getIndicatorTypes})
 
 class IndicatorReport(View, AjaxableResponseMixin):
 
-    def get(self, request, program=0, indicator=0, type=0):
+    def get(self, request,  *args, **kwargs):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
         getIndicatorTypes = IndicatorType.objects.all()
 
-        if int(program) != 0:
+        program = int(self.kwargs['program'])
+        type = int(self.kwargs['type'])
+
+        if program != 0:
             getIndicators = Indicator.objects.all().filter(program__id=program).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector','disaggregation','means_of_verification', 'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source', 'method_of_analysis')
 
-        elif int(type) != 0:
+        elif type != 0:
             getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector','disaggregation','means_of_verification', 'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source', 'method_of_analysis')
          
         else:
