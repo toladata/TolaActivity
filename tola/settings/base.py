@@ -345,9 +345,9 @@ WSGI_APPLICATION = '%s.wsgi.application' % SITE_NAME
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 #Report Builder
-REPORT_BUILDER_INCLUDE = []
-REPORT_BUILDER_EXCLUDE = ['user','groups','read','template','silo','readtoken']
-REPORT_BUILDER_ASYNC_REPORT = False
+# REPORT_BUILDER_INCLUDE = []
+# REPORT_BUILDER_EXCLUDE = ['user','groups','read','template','silo','readtoken']
+# REPORT_BUILDER_ASYNC_REPORT = False
 
 #wysiwyg settings
 DJANGO_WYSIWYG_FLAVOR = "ckeditor"
