@@ -132,12 +132,14 @@ class TolaUser(models.Model):
 
 
 class TolaUserProxy(TolaUser):
+    
     class Meta:
         verbose_name, verbose_name_plural = u"Report Tola User", u"Report Tola Users"
         proxy = True
 
 
 class TolaUserAdmin(admin.ModelAdmin):
+
     list_display = ('name', 'country')
     display = 'Tola User'
     list_filter = ('country',)
