@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('activitydb', '0001_initial'),
+        ('workflow', '0001_initial'),
     ]
 
     operations = [
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('file', models.FileField(blank=True, null=True, upload_to=b'media', verbose_name=b'HTML/Jupyter Nontebook File')),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Program')),
+                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Program')),
             ],
             options={
                 'ordering': ('name',),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
                 ('link', models.ForeignKey(blank=True, max_length=200, on_delete=django.db.models.deletion.CASCADE, to='customdashboard.Link')),
-                ('program', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Program')),
+                ('program', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Program')),
             ],
         ),
         migrations.CreateModel(
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('narrative', models.TextField(blank=True, verbose_name=b'Narrative Text')),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('program', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Program')),
+                ('program', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Program')),
             ],
         ),
     ]

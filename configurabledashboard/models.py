@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib import admin
 from datetime import datetime
-from activitydb.models import Program
+from workflow.models import Program
 
 try:
     from django.utils import timezone

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib import admin
-from activitydb.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
+from workflow.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime
 import uuid
 from simple_history.models import HistoricalRecords

@@ -2,7 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
 from .models import TrainingAttendance, Distribution, Beneficiary
-from activitydb.models import Program, ProjectAgreement, Office, Province
+from workflow.models import Program, ProjectAgreement, Office, Province
 from functools import partial
 from tola.util import getCountry
 

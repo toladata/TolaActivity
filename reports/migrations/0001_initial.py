@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('activitydb', '0001_initial'),
+        ('workflow', '0001_initial'),
         ('indicators', '0001_initial'),
     ]
 
@@ -25,12 +25,12 @@ class Migration(migrations.Migration):
                 ('public', models.BooleanField(default=False)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('agreement', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.ProjectAgreement')),
+                ('agreement', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.ProjectAgreement')),
                 ('collected', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='indicators.CollectedData')),
-                ('complete', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.ProjectComplete')),
-                ('country', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='activitydb.Country')),
+                ('complete', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.ProjectComplete')),
+                ('country', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.Country')),
                 ('indicator', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='indicators.Indicator')),
-                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Program')),
+                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Program')),
             ],
         ),
     ]

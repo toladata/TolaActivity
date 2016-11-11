@@ -334,7 +334,7 @@ class CustomDashboardForm(forms.ModelForm):
                         HTML("""
                             <div class='panel panel-body'>
                                 {% if getCustomDashboard %}
-                                    <a class="btn btn-info" data-toggle="modal" data-target="#myPreviewModal" aria-hidden="true" href="/activitydb/custom_dashboard_preview/{{ pk }}">Preview Dashboard</a>
+                                    <a class="btn btn-info" data-toggle="modal" data-target="#myPreviewModal" aria-hidden="true" href="/workflow/custom_dashboard_preview/{{ pk }}">Preview Dashboard</a>
                                 {% else %}
                                     No dashboard to display.
                                 {% endif %}

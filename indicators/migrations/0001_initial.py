@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('activitydb', '0001_initial'),
+        ('workflow', '0001_initial'),
     ]
 
     operations = [
@@ -29,9 +29,9 @@ class Migration(migrations.Migration):
                 ('update_count_tola_table', models.BooleanField(default=False, verbose_name=b'Would you like to update the achieved total with the row count from TolaTables?')),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('agreement', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='q_agreement2', to='activitydb.ProjectAgreement', verbose_name=b'Project Initiation')),
-                ('approved_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='approving_data', to='activitydb.TolaUser', verbose_name=b'Originated By')),
-                ('complete', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='q_complete2', to='activitydb.ProjectComplete')),
+                ('agreement', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='q_agreement2', to='workflow.ProjectAgreement', verbose_name=b'Project Initiation')),
+                ('approved_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='approving_data', to='workflow.TolaUser', verbose_name=b'Originated By')),
+                ('complete', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='q_complete2', to='workflow.ProjectComplete')),
             ],
             options={
                 'ordering': ('agreement', 'indicator', 'date_collected', 'create_date'),
@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                 ('standard', models.BooleanField(default=False, verbose_name=b'Standard (TolaData Admins Only)')),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('country', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Country')),
+                ('country', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Country')),
             ],
         ),
         migrations.CreateModel(
@@ -106,10 +106,10 @@ class Migration(migrations.Migration):
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField()),
                 ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('agreement', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='activitydb.ProjectAgreement')),
-                ('approved_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='activitydb.TolaUser')),
-                ('complete', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='activitydb.ProjectComplete')),
-                ('evidence', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='activitydb.Documentation')),
+                ('agreement', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.ProjectAgreement')),
+                ('approved_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.TolaUser')),
+                ('complete', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.ProjectComplete')),
+                ('evidence', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.Documentation')),
                 ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -141,8 +141,8 @@ class Migration(migrations.Migration):
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField()),
                 ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('approval_submitted_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='activitydb.TolaUser')),
-                ('approved_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='activitydb.TolaUser')),
+                ('approval_submitted_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.TolaUser')),
+                ('approved_by', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.TolaUser')),
                 ('external_service_record', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='indicators.ExternalServiceRecord')),
                 ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
             ],
@@ -172,8 +172,8 @@ class Migration(migrations.Migration):
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
                 ('notes', models.TextField(blank=True, max_length=500, null=True)),
-                ('approval_submitted_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='indicator_submitted_by', to='activitydb.TolaUser')),
-                ('approved_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='approving_indicator', to='activitydb.TolaUser')),
+                ('approval_submitted_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='indicator_submitted_by', to='workflow.TolaUser')),
+                ('approved_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='approving_indicator', to='workflow.TolaUser')),
                 ('disaggregation', models.ManyToManyField(blank=True, to='indicators.DisaggregationType')),
                 ('external_service_record', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='indicators.ExternalServiceRecord', verbose_name=b'External Service ID')),
             ],
@@ -209,7 +209,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(blank=True, max_length=765)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Program')),
+                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Program')),
             ],
             options={
                 'ordering': ('program', 'name'),
@@ -242,7 +242,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(blank=True, max_length=765)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('country', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Country')),
+                ('country', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Country')),
             ],
             options={
                 'ordering': ('country', 'name'),
@@ -259,7 +259,7 @@ class Migration(migrations.Migration):
                 ('unique_count', models.IntegerField(blank=True, null=True)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('country', models.ManyToManyField(blank=True, to='activitydb.Country')),
+                ('country', models.ManyToManyField(blank=True, to='workflow.Country')),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -281,7 +281,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='indicator',
             name='program',
-            field=models.ManyToManyField(to='activitydb.Program'),
+            field=models.ManyToManyField(to='workflow.Program'),
         ),
         migrations.AddField(
             model_name='indicator',
@@ -291,7 +291,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='indicator',
             name='sector',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Sector'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Sector'),
         ),
         migrations.AddField(
             model_name='indicator',
@@ -306,7 +306,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalindicator',
             name='sector',
-            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='activitydb.Sector'),
+            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.Sector'),
         ),
         migrations.AddField(
             model_name='historicalcollecteddata',
@@ -316,7 +316,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalcollecteddata',
             name='program',
-            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='activitydb.Program'),
+            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.Program'),
         ),
         migrations.AddField(
             model_name='historicalcollecteddata',
@@ -336,7 +336,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='collecteddata',
             name='evidence',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Documentation', verbose_name=b'Evidence Document or Link'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Documentation', verbose_name=b'Evidence Document or Link'),
         ),
         migrations.AddField(
             model_name='collecteddata',
@@ -346,12 +346,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='collecteddata',
             name='program',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='i_program', to='activitydb.Program'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='i_program', to='workflow.Program'),
         ),
         migrations.AddField(
             model_name='collecteddata',
             name='site',
-            field=models.ManyToManyField(blank=True, to='activitydb.SiteProfile'),
+            field=models.ManyToManyField(blank=True, to='workflow.SiteProfile'),
         ),
         migrations.AddField(
             model_name='collecteddata',

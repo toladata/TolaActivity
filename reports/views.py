@@ -1,17 +1,17 @@
 from django.views.generic import TemplateView, View
-from activitydb.models import ProjectAgreement, ProjectComplete, Program
+from workflow.models import ProjectAgreement, ProjectComplete, Program
 from indicators.models import CollectedData, Indicator
 from .forms import FilterForm
 
 from django.db.models import Q
-from activitydb.mixins import AjaxableResponseMixin
+from workflow.mixins import AjaxableResponseMixin
 from django.http import HttpResponse, JsonResponse
 
 import json
 import simplejson
 
-from activitydb.export import ProjectAgreementResource
-from activitydb.export import ProgramResource
+from workflow.export import ProjectAgreementResource
+from workflow.export import ProgramResource
 from indicators.export import CollectedDataResource
 from indicators.export import IndicatorResource
 

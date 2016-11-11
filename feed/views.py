@@ -1,6 +1,6 @@
 from .serializers import *
 
-from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
+from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
@@ -14,7 +14,7 @@ from rest_framework import renderers, viewsets, filters
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
-from activitydb.mixins import APIDefaultsMixin
+from workflow.mixins import APIDefaultsMixin
 
 class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000

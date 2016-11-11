@@ -2,13 +2,13 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from activitydb.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
+from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry, get_table
 from tables import IndicatorTable, IndicatorDataTable
 from django_tables2 import RequestConfig
-from activitydb.forms import FilterForm
+from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
 
 from django.db.models import Count, Sum
@@ -20,7 +20,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 
-from activitydb.mixins import AjaxableResponseMixin
+from workflow.mixins import AjaxableResponseMixin
 import json
 
 import requests
@@ -188,7 +188,7 @@ class IndicatorCreate(CreateView):
         context.update({'id': self.kwargs['id']})
         return context
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(IndicatorCreate, self).dispatch(request, *args, **kwargs)
 
@@ -222,7 +222,7 @@ class IndicatorUpdate(UpdateView):
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="Indicator")
@@ -281,7 +281,7 @@ class IndicatorDelete(DeleteView):
     model = Indicator
     success_url = '/indicators/home/0/0/0/'
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(IndicatorDelete, self).dispatch(request, *args, **kwargs)
 
@@ -691,7 +691,7 @@ class CollectedDataCreate(CreateView):
     template_name = 'indicators/collecteddata_form.html'
     form_class = CollectedDataForm
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="CollectedData")
@@ -785,7 +785,7 @@ class CollectedDataUpdate(UpdateView):
     model = CollectedData
     template_name = 'indicators/collecteddata_form.html'
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="CollectedData")
@@ -882,7 +882,7 @@ class CollectedDataDelete(DeleteView):
     model = CollectedData
     success_url = '/indicators/home/0/0/0/'
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(CollectedDataDelete, self).dispatch(request, *args, **kwargs)
 

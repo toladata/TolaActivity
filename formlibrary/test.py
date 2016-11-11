@@ -1,5 +1,5 @@
 from django.test import TestCase
-from activitydb.models import Program, Country, Province,ProjectAgreement, Sector, ProjectType, SiteProfile, Office
+from workflow.models import Program, Country, Province,ProjectAgreement, Sector, ProjectType, SiteProfile, Office
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
 from datetime import datetime
 

@@ -72,8 +72,8 @@ urlpatterns = [ # rest framework
                 # enable admin documentation:
                 url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-                # app include of activitydb urls
-                url(r'^activitydb/', include('activitydb.urls')),
+                # app include of workflow urls
+                url(r'^workflow/', include('workflow.urls')),
 
                 # app include of indicator urls
                 url(r'^indicators/', include('indicators.urls')),
@@ -84,7 +84,7 @@ urlpatterns = [ # rest framework
                 # app include of reports urls
                 url(r'^reports/', include('reports.urls')),
 
-                # app include of activitydb urls
+                # app include of workflow urls
                 url(r'^formlibrary/', include('formlibrary.urls')),
 
                 # app include of configurable dashboard urls

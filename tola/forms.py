@@ -4,7 +4,7 @@ from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Div
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from activitydb.models import TolaUser
+from workflow.models import TolaUser
 from django.contrib.auth.models import User
 
 

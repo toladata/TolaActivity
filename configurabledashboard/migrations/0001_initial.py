@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('activitydb', '0001_initial'),
+        ('workflow', '0001_initial'),
     ]
 
     operations = [
@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customdashboard',
             name='program',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='dashboard_program', to='activitydb.Program', verbose_name='Program'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='dashboard_program', to='workflow.Program', verbose_name='Program'),
         ),
         migrations.AddField(
             model_name='customdashboard',

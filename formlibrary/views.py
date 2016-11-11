@@ -4,7 +4,7 @@ from .models import TrainingAttendance, Beneficiary, Distribution
 from django.core.urlresolvers import reverse_lazy
 
 from .forms import TrainingAttendanceForm, BeneficiaryForm, DistributionForm
-from activitydb.models import FormGuidance
+from workflow.models import FormGuidance
 from django.utils.decorators import method_decorator
 from tola.util import getCountry, group_excluded
 
@@ -40,7 +40,7 @@ class TrainingCreate(CreateView):
     """
     model = TrainingAttendance
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="Training")
@@ -83,7 +83,7 @@ class TrainingUpdate(UpdateView):
     """
     model = TrainingAttendance
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="Training")
@@ -160,7 +160,7 @@ class BeneficiaryCreate(CreateView):
     """
     model = Beneficiary
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="Beneficiary")
@@ -203,7 +203,7 @@ class BeneficiaryUpdate(UpdateView):
     """
     model = Beneficiary
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="Beneficiary")
@@ -237,7 +237,7 @@ class BeneficiaryDelete(DeleteView):
     model = Beneficiary
     success_url = reverse_lazy('beneficiary_list')
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(BeneficiaryDelete, self).dispatch(request, *args, **kwargs)
 
@@ -282,7 +282,7 @@ class DistributionCreate(CreateView):
     """
     model = Distribution
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="Distribution")
@@ -325,7 +325,7 @@ class DistributionUpdate(UpdateView):
     """
     model = Distribution
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="Distribution")

@@ -36,11 +36,11 @@ $(document).ready(function() {
 function tasklistChange(pk,type,value){
     // send true or false back to the update and set the checkbox class
     if ($('#' + type + '_' + pk ).hasClass( "glyphicon glyphicon-check") == true ) {
-        $.get('/activitydb/checklist_update_link/' + pk + '/' + type + '/0/', function(data){
+        $.get('/workflow/checklist_update_link/' + pk + '/' + type + '/0/', function(data){
             $('#' + type + '_' + pk ).removeClass("glyphicon glyphicon-check").addClass("glyphicon glyphicon-unchecked");
         });
     }else{
-        $.get('/activitydb/checklist_update_link/' + pk + '/' + type + '/1/', function(data){
+        $.get('/workflow/checklist_update_link/' + pk + '/' + type + '/1/', function(data){
             $('#' + type + '_' + pk ).removeClass("glyphicon glyphicon-unchecked").addClass("glyphicon glyphicon-check");
         });
     }
@@ -92,7 +92,7 @@ $(document).ready(function() {
         if (selected_country == undefined || selected_country == -1 || selected_country == '') {
             $("select#id_country").html("<option>--Country--</option>");
         } else {
-            var url = "/activitydb/country/" + selected_country + "/country_json/";
+            var url = "/workflow/country/" + selected_country + "/country_json/";
             $.getJSON(url, function(province) {
                 var options = '<option value="">--Level 1--</option>';
                 for (var i = 0; i < province.length; i++) {
@@ -117,7 +117,7 @@ $(document).ready(function() {
         if (selected_province == undefined || selected_province == -1 || selected_province == '') {
             $("select#id_province").html("<option>--Level 1--</option>");
         } else {
-            var url = "/activitydb/province/" + selected_province + "/province_json/";
+            var url = "/workflow/province/" + selected_province + "/province_json/";
             $.getJSON(url, function(district) {
                 var options = '<option value="">--Level 2--</option>';
                 for (var i = 0; i < district.length; i++) {
@@ -142,7 +142,7 @@ $(document).ready(function() {
         if (selected_district == undefined || selected_district == -1 || selected_district == '') {
             $("select#id_district").html("<option>--Level 2--</option>");
         } else {
-            var url = "/activitydb/district/" + selected_district + "/district_json/";
+            var url = "/workflow/district/" + selected_district + "/district_json/";
             $.getJSON(url, function(adminthree) {
                 var options = '<option value="">--Level 3--</option>';
                 for (var i = 0; i < adminthree.length; i++) {

@@ -7,7 +7,7 @@ from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 
 from .models import *
-from activitydb.models import Country, Program, Sector
+from workflow.models import Country, Program, Sector
 from functools import partial
 
 class DatePicker(forms.DateInput):

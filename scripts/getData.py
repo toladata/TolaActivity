@@ -14,7 +14,7 @@ import unicodedata
 import sys
 import urllib2
 from datetime import date
-from activitydb.models import Country, Program
+from workflow.models import Country, Program
 import urllib
 
 def run():

@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
 
-from activitydb.models import Program
+from workflow.models import Program
 
 
 LINK_TYPE_CHOICES = (

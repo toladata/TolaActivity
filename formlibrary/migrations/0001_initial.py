@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('activitydb', '0002_auto_20161104_0345'),
+        ('workflow', '0002_auto_20161104_0345'),
     ]
 
     operations = [
@@ -66,10 +66,10 @@ class Migration(migrations.Migration):
                 ('total_age_25_59_female', models.IntegerField(blank=True, null=True)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('initiation', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.ProjectAgreement', verbose_name='Project Initiation')),
-                ('office_code', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Office')),
-                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Program')),
-                ('province', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Province')),
+                ('initiation', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.ProjectAgreement', verbose_name='Project Initiation')),
+                ('office_code', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Office')),
+                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Program')),
+                ('province', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Province')),
             ],
             options={
                 'ordering': ('distribution_name',),
@@ -102,8 +102,8 @@ class Migration(migrations.Migration):
                 ('total_age_25_59_female', models.IntegerField(blank=True, null=True)),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.Program')),
-                ('project_agreement', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.ProjectAgreement', verbose_name='Project Initiation')),
+                ('program', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Program')),
+                ('project_agreement', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.ProjectAgreement', verbose_name='Project Initiation')),
             ],
             options={
                 'ordering': ('training_name',),
@@ -117,12 +117,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='beneficiary',
             name='program',
-            field=models.ManyToManyField(blank=True, to='activitydb.Program'),
+            field=models.ManyToManyField(blank=True, to='workflow.Program'),
         ),
         migrations.AddField(
             model_name='beneficiary',
             name='site',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='activitydb.SiteProfile'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.SiteProfile'),
         ),
         migrations.AddField(
             model_name='beneficiary',
