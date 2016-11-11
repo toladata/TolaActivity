@@ -91,8 +91,16 @@
         // INDICATOR REPORT
         function indicator_report() {
             // get the program and indicator id from the url
+            // get the program and indicator id from the url
+            program_id = document.URL.split('/')[5];
+            console.log(program_id);
+            indicator_id = document.URL.split('/')[6];
+            console.log(indicator_id);
+            type_id = document.URL.split('/')[7];
+            console.log(type_id);
 
-            $.getJSON("/indicators/report_table/", function(data) {
+
+            $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id, function(data) {
                 show_indicator_table(data);
             });
         }
