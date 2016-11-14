@@ -154,6 +154,11 @@ class StakeholderAdmin(ImportExportModelAdmin):
     list_filter = ('country', 'type', 'sector')
 
 class ReportTolaUserAdmin(ChartReportAdmin):
+    
+    def get_queryset(self, request): 
+        
+        qs = super(ReportTolaUserAdmin, self).get_queryset(request) 
+        return qs.filter(user__is_active= True)
 
     def get_queryset(self, request): 
         
