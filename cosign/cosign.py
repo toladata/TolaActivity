@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User,Permission, Group
 from django.conf import settings
 import datetime, ldap, re, logging
-from activitydb.models import TolaUser, Country
+from workflow.models import TolaUser, Country
 
 from django.contrib.auth.backends import RemoteUserBackend
 from django.utils.timezone import utc

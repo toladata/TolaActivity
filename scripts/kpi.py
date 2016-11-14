@@ -18,7 +18,7 @@ def run():
     print "Setting KPI"
 
 
-from activitydb.models import Program
+from workflow.models import Program
 from indicators.models import Indicator, Level
 
 for program in Program.objects.all():

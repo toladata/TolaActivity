@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import CustomDashboard, DashboardComponent, ComponentDataSource, DashboardTheme
-from activitydb.models import Program, FormGuidance
+from workflow.models import Program, FormGuidance
 from .forms import CustomDashboardCreateForm, CustomDashboardForm, CustomDashboardModalForm, \
     CustomDashboardMapForm, DashboardThemeCreateForm, DashboardThemeForm, DashboardComponentCreateForm, DashboardComponentForm, ComponentDataSourceForm, \
     ComponentDataSourceCreateForm
@@ -65,7 +65,7 @@ class CustomDashboardCreate(CreateView):
     except FormGuidance.DoesNotExist:
         guidance = None
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         return super(CustomDashboardCreate, self).dispatch(request, *args, **kwargs)
 
@@ -222,7 +222,7 @@ class CustomDashboardUpdate(UpdateView):
     model = CustomDashboard
     form_class = CustomDashboardForm
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             guidance = FormGuidance.objects.get(form="CustomDashboard")
@@ -431,7 +431,7 @@ class DashboardThemeCreate(CreateView):
         kwargs['request'] = self.request
         return kwargs
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             self.guidance = FormGuidance.objects.get(form="DashboardTheme")
@@ -548,7 +548,7 @@ class DashboardComponentCreate(CreateView):
         id = self.kwargs['id']
         return kwargs
 
-    @method_decorator(group_excluded('ViewOnly', url='activitydb/permission'))
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
         try:
             guidance = FormGuidance.objects.get(form="DashboardComponent")

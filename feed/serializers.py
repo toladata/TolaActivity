@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
+from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \

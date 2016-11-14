@@ -14,7 +14,7 @@ import unicodedata
 import sys
 import urllib2
 from datetime import date
-from activitydb.models import ProjectAgreement, ProjectComplete
+from workflow.models import ProjectAgreement, ProjectComplete
 import re
 
 def run():

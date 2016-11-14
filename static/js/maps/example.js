@@ -40,7 +40,7 @@ var mappingFunction = function(data, countries, getOverlayGroups, getSiteProfile
             .addTo(partners)
             .bindPopup("<b>{{ item.country }}</b>
                         <br/>Project Site:
-                        <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
+                        <br/><a href='/workflow/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
                         <br/>ADM1: {{ item.province }}
                         <br/>ADM2: {{ item.district }}
                         <br/>ADM3: {{ item.village }}
@@ -56,7 +56,7 @@ var mappingFunction = function(data, countries, getOverlayGroups, getSiteProfile
                     .addTo(indicators)
                     .bindPopup("" + "<b>{{ item.country }}</b>
                                 <br/>Collected Indicator Data Site:
-                                <br/><a href='/activitydb/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
+                                <br/><a href='/workflow/siteprofile_update/{{ item.id }}'>{{ item.name }}</a>
                                 <br/>ADM1: {{ item.province }}
                                 <br/>ADM2: {{ item.district }}
                                 <br/>ADM3: {{ item.village }}

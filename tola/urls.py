@@ -1,15 +1,10 @@
-from feed import views
 from tola import views
 from feed.views import *
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.views.generic import TemplateView
-from django.contrib.auth.models import User
-from rest_framework.routers import DefaultRouter
-from rest_framework.urlpatterns import format_suffix_patterns
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.views import login, logout
 from rest_framework.authtoken import views as auth_views
 
 # Uncomment the next two lines to enable the admin:
@@ -77,13 +72,8 @@ urlpatterns = [ # rest framework
                 # enable admin documentation:
                 url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-                # home
-                url(r'^contact', views.contact, name='contact'),
-                url(r'^faq', views.faq, name='faq'),
-                url(r'^documentation', views.documentation, name='documentation'),
-
-                # app include of activitydb urls
-                url(r'^activitydb/', include('activitydb.urls')),
+                # app include of workflow urls
+                url(r'^workflow/', include('workflow.urls')),
 
                 # app include of indicator urls
                 url(r'^indicators/', include('indicators.urls')),
@@ -93,6 +83,9 @@ urlpatterns = [ # rest framework
 
                 # app include of reports urls
                 url(r'^reports/', include('reports.urls')),
+
+                # app include of workflow urls
+                url(r'^formlibrary/', include('formlibrary.urls')),
 
                 # app include of configurable dashboard urls
                 url(r'^configurabledashboard/', include('configurabledashboard.urls')),

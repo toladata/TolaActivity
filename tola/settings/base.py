@@ -235,7 +235,8 @@ THIRD_PARTY_APPS = (
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
-    'activitydb',
+    'workflow',
+    'formlibrary',
     'tola',
     'feed',
     'indicators',

@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib import admin
 from datetime import datetime
-from activitydb.models import Program
+from workflow.models import Program
 
 try:
     from django.utils import timezone
@@ -109,7 +109,7 @@ class CustomDashboard(models.Model):
     theme = models.ForeignKey(DashboardTheme, blank=True, null=True, related_name='theme')
     program = models.ForeignKey(Program, verbose_name="Program", related_name="dashboard_program", null=True, blank=True)
     color_palette = models.CharField("Color Scheme", max_length=255, blank=False, default="bright")
-    components = models.ManyToManyField(DashboardComponent, blank=True, null=True, related_name="componentset")
+    components = models.ManyToManyField(DashboardComponent, blank=True, related_name="componentset")
     component_map = models.TextField("Dashboard Layout Dictionary", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)

@@ -7,7 +7,7 @@ Runs twice via function calls at bottom once
 """
 
 from djangocosign.models import UserProfile, Country as CosignCountry
-from activitydb.models import TolaUser, Country
+from workflow.models import TolaUser, Country
 
 
 def run():

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import *
-from activitydb.models import Sector, Country, Program
+from workflow.models import Sector, Country, Program
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export.admin import ImportExportModelAdmin

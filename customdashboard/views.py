@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 
 from django.shortcuts import render
-from activitydb.models import ProjectAgreement, ProjectComplete, Program, SiteProfile,Country, TolaSites, TrainingAttendance, Distribution, Beneficiary
+from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile,Country, TolaSites
 from customdashboard.models import ProgramNarratives, JupyterNotebooks
+from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
 from indicators.models import CollectedData
 
 from django.db.models import Sum

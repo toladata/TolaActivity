@@ -1,5 +1,5 @@
 from indicators.models import Indicator, CollectedData
-from activitydb.models import ProjectAgreement
+from workflow.models import ProjectAgreement
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *

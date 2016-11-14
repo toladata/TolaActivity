@@ -4,7 +4,7 @@ import json
 import sys
 import requests
 
-from activitydb.models import Country, TolaUser, TolaSites
+from workflow.models import Country, TolaUser, TolaSites
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
 from django.core.exceptions import PermissionDenied
