@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib import admin
-from activitydb.models import Program
+from django.conf import settings
+from datetime import datetime
+
+from workflow.models import Program
 
 
 LINK_TYPE_CHOICES = (
@@ -76,7 +79,4 @@ class JupyterNotebooks(models.Model):
 class JupyterNotebooksAdmin(admin.ModelAdmin):
     list_display = ('name','program','very_custom_dashboard','create_date','edit_date')
     display = 'Jupyter Notebooks'
-
-
-
 

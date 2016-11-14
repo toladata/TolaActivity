@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test import RequestFactory
 from django.test import Client
 from indicators.models import Indicator, IndicatorType, Objective, DisaggregationType, ReportingFrequency, CollectedData
-from activitydb.models import Program, Sector, Country
+from workflow.models import Program, Sector, Country
 from django.contrib.auth.models import User
 
 

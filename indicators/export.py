@@ -1,6 +1,6 @@
 from import_export import resources
 from .models import Indicator, CollectedData, Country, Program, Sector, DisaggregationValue, ReportingFrequency
-from activitydb.models import ProjectAgreement, ProjectComplete, TolaUser
+from workflow.models import ProjectAgreement, ProjectComplete, TolaUser
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export import fields

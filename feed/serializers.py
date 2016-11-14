@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from activitydb.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
-    ProjectAgreement, CustomDashboard, Stakeholder, Capacity, Evaluate, ProfileType, \
+from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
+    ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
@@ -159,12 +159,6 @@ class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Stakeholder
-
-
-class CustomDashboardSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = CustomDashboard
 
 
 class ExternalServiceSerializer(serializers.HyperlinkedModelSerializer):

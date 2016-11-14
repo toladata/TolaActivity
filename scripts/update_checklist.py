@@ -14,7 +14,7 @@ import unicodedata
 import sys
 import urllib2
 from datetime import date
-from activitydb.models import ProjectAgreement, Checklist, ChecklistItem
+from workflow.models import ProjectAgreement, Checklist, ChecklistItem
 
 def run():
     print "Uploading Country Admin data"
