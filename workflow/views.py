@@ -1566,7 +1566,7 @@ class ContactDelete(DeleteView):
     Benchmark Form
     """
     model = Contact
-    success_url = '/'
+    success_url = '/workflow/contact_list/0/'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1721,7 +1721,7 @@ class StakeholderDelete(DeleteView):
     Benchmark Form
     """
     model = Stakeholder
-    success_url = '/activitydb/stakeholder_list/0/0/'
+    success_url = '/workflow/stakeholder_list/0/0/'
 
     def get_context_data(self, **kwargs):
         context = super(StakeholderDelete, self).get_context_data(**kwargs)
@@ -2174,6 +2174,7 @@ class Report(View, AjaxableResponseMixin):
         # send the keys and vars
         return render(request, "workflow/report.html", {'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getPrograms': getPrograms})
 
+
 class ReportData(View, AjaxableResponseMixin):
     """
     Render Agreements json object response to the report ajax call
@@ -2315,6 +2316,6 @@ class StakeholderTable(View, AjaxableResponseMixin):
 
         getStakeholders = json.dumps(list(getStakeholders), cls=DjangoJSONEncoder)
 
-        final_dict = { 'getStakeholders': getStakeholders }
+        final_dict = {'getStakeholders': getStakeholders}
 
         return JsonResponse(final_dict, safe=False)
