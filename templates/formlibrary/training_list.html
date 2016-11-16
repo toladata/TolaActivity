@@ -54,12 +54,12 @@
                     { title: "Date Created", data: "create_date",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, record, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.create_date + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.create_date + '</a>';
                             }},
-                    { title: "Training Name", data: "tra_name",
+                    { title: "Training Name", data: "training_name",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, record, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.training_name + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.training_name + '</a>';
                             }},
                     { title: "Beneficiaries/Update/Delete/ ",
                         "mRender": function (data, record, row) {

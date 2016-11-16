@@ -28,7 +28,7 @@
 </div>
 <br/>
 <!-- Table -->
-<table id="documentationtable">
+<table class="table" id="documentationtable">
 </table>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -63,18 +63,18 @@
                     { title: "Date Created", data: "create_date",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, records, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.create_date + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + row.create_date + '</a>';
                             }},
                     { title: "Document Name", data: "name",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, narecord, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.name + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + row.name + '</a>';
                             }},
                     { title: "Project", data: "project__project_name",
                         "defaultContent": "<i>Not set</i>"},
                     { title: "Delete/Update",
                         "mRender": function (data, record, row) {
-                                return '<a href="/workflow/documentation_update/{{ item.id }}" class="btn btn-xs btn-info">Update</a><a href="/workflow/documentation_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Document</a>';
+                                return '<a href="/workflow/documentation_update/'+row.id+'" class="btn btn-xs btn-info">Update</a><a href="/workflow/documentation_delete/'+row.id+'" class="btn btn-xs btn-danger">Delete Document</a>';
                             }
                     }
                     ]
