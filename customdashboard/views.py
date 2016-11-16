@@ -373,15 +373,15 @@ class ProgramList(ListView):
     Documentation
     """
     model = Program
-    template_name = 'customdashboard/themes/program_list.html'
+    template_name = 'customdashboard/program_list.html'
 
     def get(self, request, *args, **kwargs):
         getCountry = Country.objects.all()
 
         if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(dashboard_name__is_public=1)
+            getProgram = Program.objects.all().filter(public_dashboard=1)
         else:
-            getProgram = Program.objects.all().filter(dashboard_name__is_public=1, country__id=self.kwargs['pk'])
+            getProgram = Program.objects.all().filter(public_dashboard=1, country__id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
 
@@ -391,15 +391,15 @@ class InternalDashboard(ListView):
     Internal Dashboard for user.is_authenticated
     """
     model = Program
-    template_name = 'customdashboard/themes/internal_dashboard.html'
+    template_name = 'customdashboard/program_list.html'
 
     def get(self, request, *args, **kwargs):
         getCountry = Country.objects.all()
 
         if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(dashboard_name__is_public=0)
+            getProgram = Program.objects.all().filter(public_dashboard=0)
         else:
-            getProgram = Program.objects.all().filter(dashboard_name__is_public=0, country__id=self.kwargs['pk'])
+            getProgram = Program.objects.all().filter(public_dashboard=0, country__id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
 
