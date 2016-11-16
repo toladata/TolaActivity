@@ -1355,9 +1355,12 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(BenchmarkCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
-        getComplete = ProjectComplete.objects.get(id=self.kwargs['id'])
-        if getComplete:
+        try:
+            getComplete = ProjectComplete.objects.get(id=self.kwargs['id'])
             context.update({'p_name': getComplete.project_name})
+        except ProjectComplete.DoesNotExist:
+            # do nothing
+            context = context
         return context
 
     def get_initial(self):
