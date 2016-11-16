@@ -1566,7 +1566,7 @@ class ContactDelete(DeleteView):
     Benchmark Form
     """
     model = Contact
-    success_url = '/'
+    success_url = '/workflow/contact_list/0/'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1721,7 +1721,7 @@ class StakeholderDelete(DeleteView):
     Benchmark Form
     """
     model = Stakeholder
-    success_url = '/activitydb/stakeholder_list/0/0/'
+    success_url = '/workflow/stakeholder_list/0/0/'
 
     def get_context_data(self, **kwargs):
         context = super(StakeholderDelete, self).get_context_data(**kwargs)
@@ -2174,6 +2174,7 @@ class Report(View, AjaxableResponseMixin):
         # send the keys and vars
         return render(request, "workflow/report.html", {'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getPrograms': getPrograms})
 
+
 class ReportData(View, AjaxableResponseMixin):
     """
     Render Agreements json object response to the report ajax call
@@ -2277,3 +2278,44 @@ def export_stakeholders_list(request, **kwargs):
     response['Content-Disposition'] = 'attachment; filename=stakeholders.csv'
 
     return response
+
+
+
+#Ajax views for single page filtering
+class StakeholderTable(View, AjaxableResponseMixin):
+    """
+    Render Agreements json object response to the report ajax call
+    """
+
+    def get(self, request, *args, **kwargs):
+
+        # Check for project filter
+        project_agreement_id = self.kwargs['pk']
+        # Check for program filter
+
+        if self.kwargs['program_id']:
+            program_id = int(self.kwargs['program_id'])
+        else:
+            program_id = 0
+
+        countries = getCountry(request.user)
+
+        countries = getCountry(request.user)
+
+        if program_id != 0:
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+
+        elif int(self.kwargs['pk']) != 0:
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+
+
+        else:
+            getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+
+        from django.core.serializers.json import DjangoJSONEncoder
+
+        getStakeholders = json.dumps(list(getStakeholders), cls=DjangoJSONEncoder)
+
+        final_dict = {'getStakeholders': getStakeholders}
+
+        return JsonResponse(final_dict, safe=False)

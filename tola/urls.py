@@ -50,11 +50,21 @@ router.register(r'disaggregationvalue', DisaggregationValueViewSet)
 router.register(r'projectagreements', ProjectAgreementViewSet)
 router.register(r'loggedusers', LoggedUserViewSet)
 
+from rest_framework.schemas import get_schema_view
+from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
+
+schema_view = get_schema_view(
+    title='Example API',
+    renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer]
+)
+
+
 
 urlpatterns = [ # rest framework
                 url(r'^api/', include(router.urls)),
                 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
                 url(r'^api-token-auth/', auth_views.obtain_auth_token),
+                url(r'^api/swagger/$', schema_view),
 
                 # index
                 url(r'^$', views.index, name='index'),

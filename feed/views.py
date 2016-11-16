@@ -10,9 +10,10 @@ from django.contrib.auth.models import User
 from tola.util import getCountry
 from django.shortcuts import get_object_or_404
 
-from rest_framework import renderers, viewsets, filters
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+import django_filters
 
 from workflow.mixins import APIDefaultsMixin
 
@@ -55,7 +56,7 @@ class ProgramViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('country__country','name')
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Program.objects.all()
     serializer_class = ProgramSerializer
 
@@ -101,7 +102,7 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('country__country',)
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = SiteProfile .objects.all()
     serializer_class = SiteProfileSerializer
 
@@ -139,7 +140,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
     """
 
     filter_fields = ('program__country__country','program__name')
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ProjectAgreement.objects.all()
     serializer_class = AgreementSerializer
     pagination_class = SmallResultsSetPagination
@@ -159,7 +160,7 @@ class CompleteViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('program__country__country','program__name')
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ProjectComplete.objects.all()
     serializer_class = CompleteSerializer
     pagination_class = SmallResultsSetPagination
@@ -179,7 +180,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('program__country__country','program__name')
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
 
@@ -263,7 +264,7 @@ class StakeholderViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('country__country',)
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Stakeholder.objects.all()
     serializer_class = StakeholderSerializer
 
@@ -398,7 +399,7 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('indicator__program__country__country', 'indicator__program__name')
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CollectedData.objects.all()
     serializer_class = CollectedDataSerializer
     pagination_class = SmallResultsSetPagination
@@ -417,7 +418,7 @@ class TolaTableViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('country__country', 'collecteddata__indicator__program__name')
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = TolaTable.objects.all()
     serializer_class = TolaTableSerializer
     pagination_class = StandardResultsSetPagination
@@ -436,7 +437,7 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('country__country', 'indicator__program__name')
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = DisaggregationValue.objects.all()
     serializer_class = DisaggregationValueSerializer
     pagination_class = StandardResultsSetPagination

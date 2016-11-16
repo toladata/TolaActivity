@@ -61,7 +61,6 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
        getProjects = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries)
 
     get_project_completed = []
-    getCustomDashboard = CustomDashboard.objects.all()
     getProjectsComplete = ProjectComplete.objects.all()
     for project in getProjects:
         for complete in getProjectsComplete:
@@ -74,7 +73,7 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
                                                                      'country': countries, 'getAwaitingApprovalCount':getAwaitingApprovalCount,
                                                                      'getFilteredName': getFilteredName,'getProjects': getProjects, 'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
-                                                                     'getCustomDashboard': getCustomDashboard, 'getProjectsCount': getProjectsCount, 'selected_countries_list': selected_countries_list,
+                                                                     'getProjectsCount': getProjectsCount, 'selected_countries_list': selected_countries_list,
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'get_project_completed': get_project_completed})
 
 
