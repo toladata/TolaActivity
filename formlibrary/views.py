@@ -397,6 +397,42 @@ class TrainingListObjects(View, AjaxableResponseMixin):
         return JsonResponse(final_dict, safe=False)
 
 
+class BeneficiaryListObjects(View, AjaxableResponseMixin):
+    
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+        countries = getCountry(request.user)
+
+        if int(self.kwargs['pk']) == 0:
+            getBeneficiaries = Beneficiary.objects.all().filter(Q(training__program__country__in=countries) | Q(distribution__program__country__in=countries) ).values('id', 'beneficiary_name', 'create_date')
+        else:
+            getBeneficiaries = Beneficiary.objects.all().filter(training__id=self.kwargs['pk']).values('id', 'beneficiary_name', 'create_date')
+
+        getBeneficiaries = json.dumps(list(getBeneficiaries), cls=DjangoJSONEncoder)
+
+        final_dict = {'getBeneficiaries': getBeneficiaries}
+
+        return JsonResponse(final_dict, safe=False)
+
+class DistributionListObjects(View, AjaxableResponseMixin):
+
+    def get(self, request, *args, **kwargs):
+
+        program_id = self.kwargs['pk']
+        countries = getCountry(request.user)
+        if int(self.kwargs['pk']) == 0:
+            getDistribution = Distribution.objects.all().filter(program__country__in=countries).values('id', 'distribution_name', 'create_date')
+        else:
+            getDistribution = Distribution.objects.all().filter(program_id=self.kwargs['pk']).values('id', 'distribution_name', 'create_date')
+        
+        getDistribution = json.dumps(list(getDistribution), cls=DjangoJSONEncoder)
+
+        final_dict = {'getDistribution': getDistribution}
+
+        return JsonResponse(final_dict, safe=False)
+
+
 
 
 

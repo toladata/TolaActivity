@@ -18,20 +18,78 @@
    <a href="/workflow/distribution_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Distribution</a> -->
 <hr/>
 </div>
+<!-- Table -->
+<table class="table" id="distributiontable">
+</table>
+<script type="text/javascript">
+    $(document).ready(function() {
+      program_filter(0);
+    });
 
-<ul class="list-group">
-{% for distribution in getDistribution %}
-    <li class="list-group-item"><b>{{ distribution.create_date|date }} - {{ distribution.distribution_name }}</b>&nbsp;
-    <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/formlibrary/distribution_update/{{ distribution.id }}" class="btn btn-xs btn-warning">Update Distribution</a>
-        <a href="/formlibrary/distribution_delete/{{ distribution.id }}" class="btn btn-xs btn-danger">Delete Distribution</a>
-    </div>
-    </li>
+     function show_training_table(distribution_data) {
+            distribution_records = JSON.parse(distribution_data);
+            //First destroy any old version of the table to refresh anew
+            if ( $.fn.dataTable.isDataTable( '#distributiontable' ) ) {
+                table.destroy();
+                $('#distributiontable').empty();
+            };
 
-{% empty %}
-    <li class="list-group-item">No distributions yet.</li>
-{% endfor %}
-</ul>
+            $('#distributiontable').on( 'page.dt', function () {
+                $('html, body').animate({
+                    scrollTop: 0
+                }, 300);
+            } );
+
+
+            table = $('#distributiontable').DataTable( {
+                 "order": [], 
+                 "bFilter": false,
+                 'bLengthChange': false,
+                 "aoColumnDefs": [
+                           { "bSortable": false, "targets": [0, 1, 2] }
+                        ],
+                retrieve: true,
+                data: distribution_records,
+                columns: [
+                    { title: "Date Created", data: "create_date",
+                        "defaultContent": "<i>Not set</i>",
+                        "mRender": function (data, record, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.create_date + '</a>';
+                            }},
+                    { title: "Training Name", data: "distribution_name",
+                        "defaultContent": "<i>Not set</i>",
+                        "mRender": function (data, record, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.distribution_name + '</a>';
+                            }},
+                    { title: "Update/Delete/ ",
+                        "mRender": function (data, record, row) {
+                                return '<a href="/formlibrary/distribution_update/' + row.id + '" class="btn btn-xs btn-warning">Update Distribution</a><a href="/formlibrary/distribution_delete/' + row.id + '" class="btn btn-xs btn-danger">Delete Distribution</a>';
+                            }
+                    }
+                    ]
+            } );
+
+        }
+
+        function program_filter(program_id) {
+                // Filter documents
+                console.log(program_id);
+
+                if (program_id != 0) {
+
+                    $.getJSON("/formlibrary/distribution_objects/"+ program_id + "/", function(data) {  
+                        show_training_table(data['getDistribution']);                                          
+                    }); 
+
+                }  else{
+
+                    $.getJSON("/formlibrary/distribution_objects/0/", function(data) {  
+                        show_training_table(data['getDistribution']);          
+                    });     
+                }
+            } 
+
+</script>
 
 <!-- Modal -->
 <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
