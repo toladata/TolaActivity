@@ -7,6 +7,7 @@ from django.conf.urls import *
 urlpatterns = [
 
                        url(r'^training_list/(?P<pk>\w+)/$', TrainingList.as_view(), name='training_list'),
+                       url(r'^training_objects/(?P<pk>\w+)/$', TrainingListObjects.as_view(), name='training_list'),
                        url(r'^training_add/(?P<id>\w+)/$', TrainingCreate.as_view(), name='training_add'),
                        url(r'^training_update/(?P<pk>\w+)/$', TrainingUpdate.as_view(), name='training_update'),
                        url(r'^training_delete/(?P<pk>\w+)/$', TrainingDelete.as_view(), name='training_delete'),

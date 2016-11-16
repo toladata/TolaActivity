@@ -12,8 +12,11 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.db.models import Q
 
-from django.http import  HttpResponseRedirect
-
+from django.http import  HttpResponseRedirect, JsonResponse
+from django.views.generic.detail import View
+from mixins import AjaxableResponseMixin
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
 class TrainingList(ListView):
     """
@@ -375,6 +378,23 @@ class DistributionDelete(DeleteView):
 
     form_class = DistributionForm
 
+#Ajax views for ajax filters and paginators
+class TrainingListObjects(View, AjaxableResponseMixin):
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['pk']
+        countries = getCountry(request.user)
+        if int(self.kwargs['pk']) == 0:
+            getTraining = TrainingAttendance.objects.all().filter(program__country__in=countries).values('id', 'create_date', 'training_name', 'project_agreement__project_name')
+        else:
+            getTraining = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk']).values('id','create_date', 'training_name', 'project_agreement__project_name')
+
+        getTraining = json.dumps(list(getTraining), cls=DjangoJSONEncoder)
+
+        final_dict = {'getTraining': getTraining}
+
+        return JsonResponse(final_dict, safe=False)
 
 
 
