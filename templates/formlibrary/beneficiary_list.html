@@ -17,19 +17,78 @@
 <hr/>
 </div>
 
-<ul class="list-group">
-{% for item in getBeneficiaries %}
-    <li class="list-group-item"><b>{{ item.create_date|date }} - {{ item.beneficiary_name }} - {{ item.age }} - {{ item.gender }}</b>
-    <div class="btn-group align-right" role="group" aria-label="...">
-        <a href="/formlibrary/beneficiary_update/{{ item.id }}" class="btn btn-xs btn-warning">Update Beneficiary</a>
-        <a href="/formlibrary/beneficairy_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Beneficiary</a>
-    </div>
-    </li>
+<!-- Table -->
+<table class="table" id="beneficiarytable">
+</table>
+<script type="text/javascript">
+    $(document).ready(function() {
+      program_filter(0);
+    });
 
-{% empty %}
-    <li class="list-group-item">No beneficiaries yet.</li>
-{% endfor %}
-</ul>
+     function show_beneficiary_table(beneficiary_data) {
+            beneficiary_records = JSON.parse(beneficiary_data);
+            //First destroy any old version of the table to refresh anew
+            if ( $.fn.dataTable.isDataTable( '#beneficiarytable' ) ) {
+                table.destroy();
+                $('#beneficiarytable').empty();
+            };
+
+            $('#beneficiarytable').on( 'page.dt', function () {
+                $('html, body').animate({
+                    scrollTop: 0
+                }, 300);
+            } );
+
+
+            table = $('#beneficiarytable').DataTable( {
+                 "order": [], 
+                 "bFilter": false,
+                 'bLengthChange': false,
+                 "aoColumnDefs": [
+                           { "bSortable": false, "targets": [0, 1, 2] }
+                        ],
+                retrieve: true,
+                data: beneficiary_records,
+                columns: [
+                    { title: "Date Created", data: "create_date",
+                        "defaultContent": "<i>Not set</i>",
+                        "mRender": function (data, record, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.create_date + '</a>';
+                            }},
+                    { title: "Beneficiary Name", data: "beeficiary_name",
+                        "defaultContent": "<i>Not set</i>",
+                        "mRender": function (data, record, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.beneficiary_name + '</a>';
+                            }},
+                    { title: "Update/Delete/ ",
+                        "mRender": function (data, record, row) {
+                                return '<a href="/formlibrary/beneficiary_update/'+ row.id + '" class="btn btn-xs btn-warning">Update Beneficiary</a><a href="/formlibrary/beneficairy_delete/'+ row.id + '" class="btn btn-xs btn-danger">Delete Beneficiary</a>';
+                            }
+                    }
+                    ]
+            } );
+
+        }
+
+        function program_filter(program_id) {
+                // Filter documents
+                console.log(program_id);
+
+                if (program_id != 0) {
+
+                    $.getJSON("/formlibrary/beneficiary_objects/"+ program_id + "/", function(data) {  
+                        show_beneficiary_table(data['getBeneficiaries']);                                          
+                    }); 
+
+                }  else{
+
+                    $.getJSON("/formlibrary/beneficiary_objects/0/", function(data) {  
+                        show_beneficiary_table(data['getBeneficiaries']);          
+                    });     
+                }
+            } 
+
+</script>
 
 <!-- Modal -->
 <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
