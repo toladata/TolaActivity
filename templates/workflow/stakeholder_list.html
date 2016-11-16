@@ -48,6 +48,12 @@
                 $('#stakeholdertable').empty();
             };
 
+            $('#stakeholdertable').on( 'page.dt', function () {
+                $('html, body').animate({
+                    scrollTop: 0
+                }, 300);
+            } );
+
             table = $('#stakeholdertable').DataTable( {
                  "order": [], 
                  "bFilter": false,
@@ -114,8 +120,6 @@ function program_filter(program_id) {
                   show_stakeholder_table(data['getStakeholders']);          
             });     
         }
-
-        console.log(program_id);
       }
 
 </script>
