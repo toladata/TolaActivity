@@ -267,6 +267,7 @@ class Program(models.Model):
     budget_check = models.BooleanField("Enable Approval Authority", default=False)
     country = models.ManyToManyField(Country)
     user_access = models.ManyToManyField(TolaUser, blank=True)
+    public_dashboard = models.BooleanField("Enable Public Dashboard", default=False)
 
     class Meta:
         ordering = ('name',)
