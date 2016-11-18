@@ -67,7 +67,7 @@
                 columns: [
                     { title: "Date Created", data: "create_date",
                         "mRender": function (data, sector, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.name + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.create_date + '</a>';
                             },
                         "defaultContent": "<i>Not set</i>"},
                     { title: "Stakeholder Name", data: "name",
@@ -77,12 +77,12 @@
                         "defaultContent": "<i>Not set</i>"},
                     { title: "Stakeholder Type", data: "type__name",
                         "mRender": function (data, type, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.name + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.type__name + '</a>';
                             },
                         "defaultContent": "<i>Not set</i>"},
                     { title: "Sector", data: "sector__sector",
                             "mRender": function (data, sector, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.name + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.sector__sector + '</a>';
                             },
                             "defaultContent": "<i>Not set</i>"
                         },
