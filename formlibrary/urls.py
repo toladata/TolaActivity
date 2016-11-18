@@ -24,4 +24,6 @@ urlpatterns = [
                        url(r'^distribution_update/(?P<pk>\w+)/$', DistributionUpdate.as_view(), name='distribution_update'),
                        url(r'^distribution_delete/(?P<pk>\w+)/$', DistributionDelete.as_view(), name='distribution_delete'),
 
+                        url(r'^getagreements/(?P<program>\w+)/(?P<project>\w+)/$', GetAgreements.as_view(), name='getagreements'),
+
                        ]

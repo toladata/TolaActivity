@@ -4,7 +4,7 @@ from .models import TrainingAttendance, Beneficiary, Distribution
 from django.core.urlresolvers import reverse_lazy
 
 from .forms import TrainingAttendanceForm, BeneficiaryForm, DistributionForm
-from workflow.models import FormGuidance
+from workflow.models import FormGuidance, Program, ProjectAgreement
 from django.utils.decorators import method_decorator
 from tola.util import getCountry, group_excluded
 
@@ -271,12 +271,14 @@ class DistributionList(ListView):
 
         program_id = self.kwargs['pk']
         countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+
         if int(self.kwargs['pk']) == 0:
             getDistribution = Distribution.objects.all().filter(program__country__in=countries)
         else:
             getDistribution = Distribution.objects.all().filter(program_id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getDistribution': getDistribution, 'program_id': program_id})
+        return render(request, self.template_name, {'getDistribution': getDistribution, 'program_id': program_id, 'getPrograms': getPrograms})
 
 
 class DistributionCreate(CreateView):
@@ -433,6 +435,23 @@ class DistributionListObjects(View, AjaxableResponseMixin):
         return JsonResponse(final_dict, safe=False)
 
 
+#program and project filters
+class GetAgreements(View, AjaxableResponseMixin):
 
+    def get(self, request, *args, **kwargs):
 
+        program_id = self.kwargs['program']
+        countries = getCountry(request.user)
+        if program_id != 0:
+            getAgreements = ProjectAgreement.objects.all().filter(program = program_id).values('id', 'project_name')
+        else:
+            pass
+        
+        final_dict = {}
+        if getAgreements:
 
+            getAgreements = json.dumps(list(getAgreements), cls=DjangoJSONEncoder)
+
+            final_dict = {'getAgreements': getAgreements}
+
+        return JsonResponse(final_dict, safe=False)
