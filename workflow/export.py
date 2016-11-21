@@ -2,7 +2,7 @@ from import_export import resources
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export import fields
 from .models import ProjectAgreement, Program, SiteProfile, Capacity, Evaluate, \
-    Stakeholder, Sector, ProjectType, Office, TolaUser, ProjectComplete, Country, Contact, StakeholderType
+    Stakeholder, Sector, ProjectType, Office, TolaUser, ProjectComplete, Country, Contact, StakeholderType, TolaUserProxy
 
 
 class ProjectAgreementResource(resources.ModelResource):
