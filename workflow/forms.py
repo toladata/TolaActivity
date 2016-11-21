@@ -1238,6 +1238,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
         # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        #self.fields['project_agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
         # override the office queryset to use request.user for country
@@ -1259,6 +1260,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
+            self.fields['project_agreement'].widget.attrs['disabled'] = "disabled"
 
 
 class SiteProfileForm(forms.ModelForm):
