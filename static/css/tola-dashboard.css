@@ -101,6 +101,31 @@ body {
 }
 
 
+
+
+/*
+* Custom dashboard
+*/
+.borderless {
+  border-style: none; 
+}
+
+.soft-border-top {
+  border-radius: 5px 5px 0 0;
+}
+
+.soft-border-full {
+  border-radius: 5px;
+}
+
+.padding-no-bottom {
+ padding:1% 1% 0 1%; 
+}
+
+.title-white {
+  color: white;
+}
+
 /* Chart.js legends */
 
 .chart-legend {
@@ -134,4 +159,13 @@ body {
   width: 20px;
   height: 20px;
   border-radius: 5px;
+}
+.row-eq-height {
+    display: table;
+}
+.row-eq-height .bounded-column {
+    display: table-cell;
+    height: 100%;
+    bottom: 0;
+    top: 0;
 }

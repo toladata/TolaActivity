@@ -9,7 +9,7 @@ from django.db import connection
 
 cursor = connection.cursor()
 import csv
-from activitydb.models import Country, Province, District, AdminLevelThree, Village
+from workflow.models import Country, Province, District, AdminLevelThree, Village
 
 def run():
     print "Uploading Country Admin data"

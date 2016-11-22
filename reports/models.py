@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib import admin
 from django.conf import settings
 from datetime import datetime
-from activitydb.models import Program, ProjectAgreement, ProjectComplete, Country
+from workflow.models import Program, ProjectAgreement, ProjectComplete, Country
 from indicators.models import Indicator, CollectedData
 
 

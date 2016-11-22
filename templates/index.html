@@ -43,15 +43,15 @@ $(function () {
         series: [
         {
             name: 'Approved',
-            data: [{ y:{{ agreement_approved_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_approved_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+            data: [{ y:{{ agreement_approved_count }},ownURL:'/workflow/projectagreement_list/0/' }, { y:{{ complete_approved_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
         },
         {
             name: 'Pending',
-            data: [{ y:{{ agreement_wait_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_wait_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+            data: [{ y:{{ agreement_wait_count }},ownURL:'/workflow/projectagreement_list/0/' }, { y:{{ complete_wait_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
         },
         {
             name: 'Open',
-            data: [{ y:{{ agreement_open_count }},ownURL:'/activitydb/projectagreement_list/0/' }, { y:{{ complete_open_count }},ownURL:'/activitydb/projectcomplete_list/0/' }],
+            data: [{ y:{{ agreement_open_count }},ownURL:'/workflow/projectagreement_list/0/' }, { y:{{ complete_open_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
         },
 
         ]
@@ -304,7 +304,7 @@ $(function () {
                             </ul>
                         </div>
                         {% if report_server == False%}
-                          <a href="/activitydb/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a Project</a>
+                          <a href="/workflow/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a Project</a>
                         {% endif %}
                     </div>
                 </div>

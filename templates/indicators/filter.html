@@ -6,7 +6,7 @@
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
         {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/0/{{ program.id }}/{{ type }}/">{{ program.gaitid}} - {{ program.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
         {% endfor %}
         </ul>
     </div>
@@ -16,9 +16,9 @@
         <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ 0 }}/{{ program }}/{{ type }}/"> -- All -- </a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href=" "> -- All -- </a></li>
         {% for item in getIndicators %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ item.id }}/{{ program }}/{{ type }}/">{{ item.number}} - {{ item.name }}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{item.id}})">{{ item.number}} - {{ item.name }}</a></li>
         {% endfor %}
         </ul>
     </div>
@@ -28,9 +28,9 @@
         <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-        <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/collecteddata/{{ indicator }}/{{ program }}/0/"> -- All -- </a></li>
+        <li role="presentation"><a role="menuitem" tabindex="1" href=""> -- All -- </a></li>
         {% for item in getIndicatorTypes %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/collecteddata/{{ indicator}}/{{ program }}/{{ item.id }}/">{{ item.indicator_type}}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_type_filter({{item.id}})">{{ item.indicator_type}}</a></li>
         {% endfor %}
         </ul>
     </div>

@@ -16,12 +16,115 @@
 {% load crispy_forms_tags %}
 {% crispy form form.helper %}
 <br/>
+<script type="text/javascript">
+  $(document).ready(function(){
+     function show_indicator_table(indicator_data) {
 
-{% render_table get_agreements %}
+            indicator_records = JSON.parse(indicator_data);
+            //First destroy any old version of the table to refresh anew
+            if ( $.fn.dataTable.isDataTable( '#data_table' ) ) {
+                table.destroy();
+                $('#data_table').empty();
+            };
+
+            table = $('#data_table').DataTable( {
+                retrieve: true,
+                data: indicator_records,
+                'columnDefs': [{
+                   'targets': 0,
+                   'searchable':false,
+                   'orderable':false,
+                   'className': 'dt-body-center',
+                   'render': function (data, type, row){
+                       return '<div class="btn-group btn-group-xs"><a type="button" class="btn btn-warning" href="/indicators/indicator_update/'+row.id+'">Edit</a><br><a type="button" class="btn btn-default" href="/indicators/data/'+row.id+'">View</a></div>';
+                   }
+                }],
+                columns: [
+                    { title: "Edit"},
+                    { title: "Program", data: "program__name",
+                      "defaultContent": "<i>Not set</i>"},
+                    { title: "Indicator", data: "name",
+                      "defaultContent": "<i>Not set</i>",
+                            "mRender": function (data, type, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
+                            }
+                        },
+                    { title: "Level", data: "level__name",
+                    "defaultContent": "<i>Not set</i>"
+                },
+                    { title: "Type", data: "indicator_type__indicator_type",
+                      "defaultContent": "<i>Not set</i>"},
+                    { title: "Sector", data: "sector__sector",
+                      "defaultContent": "<i>Not set</i>"},
+                    { title: "Disaggregation", data: "disaggregation",
+                      "defaultContent": "<i>Not set</i>"},
+                    { title: "Method of Analysis", data: "method_of_analysis",
+                      "defaultContent": "<i>Not set</i>"},
+                    { title: "source", data: "source",
+                      "defaultContent": "<i>Not set</i>"},
+                    { title: "Reporting Frequency", data: "reporting_frequency",
+                      "defaultContent": "<i>Not set</i>"},
+                    { title: "Baseline", data: "baseline",
+                        "defaultContent": "<i>Not set</i>"},
+                    { title: "LOP Target", data: "lop_target",
+                        "defaultContent": "<i>Not set</i>"},
+                    { title: "External", data: "external_service_record__external_service__name",
+                    "defaultContent": "<i>Not set</i>"},
+                    { title: "Supporting Data", data: "collecteddata",
+                              "mRender": function (data, type, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="/indicators/collecteddata/' + row.id + '/0/0/">Collected Data</a>';
+                              }
+                        },
+                    { title: "Key Performance Indicators",data: "key_performance_indicator",
+                    "defaultContent": "<i>Not set</i>"},
+                    { title: "Means of Verification",data: "means_of_verification",
+                    "defaultContent": "<i>Not set</i>"},
+                    { title: "Create Date",data: "create_date",
+                    "defaultContent": "<i>Not set</i>"},
+                    { title: "Edit Date",data: "edit_date",
+                    "defaultContent": "<i>Not set</i>"}
+                    ]
+            } );
+
+        }
+
+        // INDICATOR REPORT
+        function indicator_report() {
+            // get the program and indicator id from the url
+            // get the program and indicator id from the url
+            program_id = document.URL.split('/')[5];
+            console.log(program_id);
+            indicator_id = document.URL.split('/')[6];
+            console.log(indicator_id);
+            type_id = document.URL.split('/')[7];
+            console.log(type_id);
+
+
+            $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id, function(data) {
+                show_indicator_table(data);
+            });
+        }
+
+        indicator_report();
+  })
+</script>
+<div class="row">
+        <div class="row table-responsive">
+            <div id="program_table_div">
+                <table class="table table-bordered" id="data_table">
+                </table>
+            </div>
+            <br/>
+            <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
+        </div>
+        <div class"row">
+          <button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/indicators/export/0/{{ program }}/0/'">Export All</button>
+        </div>
+    </div>
 
 <br/>
 
-<button type="submit" class="btn btn-success" onClick="location.href='/indicators/export/0/{{ program }}/0/'">Export All</button>
+
 <script type="text/javascript">
     function program_filter(program_id) {
       window.location.href = '/indicators/report/'+program_id+'/0/0/';      

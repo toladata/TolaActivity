@@ -2,7 +2,7 @@ from django.contrib.auth.models import User,Group
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 import datetime, ldap, re, logging
-from activitydb.models import Country, TolaUser
+from workflow.models import Country, TolaUser
 
 from django.utils.timezone import utc
 
