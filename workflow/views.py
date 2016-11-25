@@ -51,6 +51,7 @@ APPROVALS = (
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def date_handler(obj):
@@ -2285,7 +2286,8 @@ def export_stakeholders_list(request, **kwargs):
 
 
 #Ajax views for single page filtering
-class StakeholderTable(View, AjaxableResponseMixin):
+
+class StakeholderObjects(View, AjaxableResponseMixin):
     """
     Render Agreements json object response to the report ajax call
     """
@@ -2315,10 +2317,32 @@ class StakeholderTable(View, AjaxableResponseMixin):
         else:
             getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sector__sector')
 
-        from django.core.serializers.json import DjangoJSONEncoder
 
         getStakeholders = json.dumps(list(getStakeholders), cls=DjangoJSONEncoder)
 
         final_dict = {'getStakeholders': getStakeholders}
 
         return JsonResponse(final_dict, safe=False)
+
+class DocumentationListObjects(View, AjaxableResponseMixin):
+
+    def get(self, request, *args, **kwargs):
+
+        project_agreement_id = self.kwargs['project']
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries)
+
+        if int(self.kwargs['program']) != 0 & int(self.kwargs['project']) == 0:
+            getDocumentation = Documentation.objects.all().prefetch_related('program','project').filter(program__id=self.kwargs['program']).values('id', 'name', 'project__project_name', 'create_date')
+        elif int(self.kwargs['project']) != 0:
+            getDocumentation = Documentation.objects.all().prefetch_related('program','project').filter(project__id=self.kwargs['project']).values('id', 'name', 'project__project_name', 'create_date')
+        else:
+            countries = getCountry(request.user)
+            getDocumentation = Documentation.objects.all().prefetch_related('program','project','project__office').filter(program__country__in=countries).values('id', 'name', 'project__project_name', 'create_date')
+
+        getDocumentation = json.dumps(list(getDocumentation), cls=DjangoJSONEncoder)
+        final_dict  = {'getDocumentation': getDocumentation}
+
+        return JsonResponse(final_dict, safe=False)
+
+
