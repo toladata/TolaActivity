@@ -1,4 +1,4 @@
-{% extends "publicdashboards.html" %}
+{% extends "customdashboard/publicdashboards.html" %}
 {% load humanize %}
 {% block content %}
 
@@ -375,10 +375,10 @@
 
         <script src="{{ STATIC_URL }}publicdashboard/js/vendor/jquery-1.11.1.min.js"></script>
         <script src="{{ STATIC_URL }}publicdashboard/js/plugins.js"></script>
-        <div>{% include "charts/doughnut.html" %}</div>
-        <div>{% include "charts/public_program_bar.html" %}</div>
-        <div>{% include "charts/public_radar.html" %}</div>
-        <div>{% include "charts/public_Kpi_bar.html" %}</div>
-        <div>{% include "charts/public_indicator_pie.html" %}</div>
-        <div>{% include "charts/public_horizontal_bar.html" %}</div>
+        <div>{% include "customdashboard/charts/doughnut.html" %}</div>
+        <div>{% include "customdashboard/charts/public_program_bar.html" %}</div>
+        <div>{% include "customdashboard/charts/public_radar.html" %}</div>
+        <div>{% include "customdashboard/charts/public_Kpi_bar.html" %}</div>
+        <div>{% include "customdashboard/charts/public_indicator_pie.html" %}</div>
+        <div>{% include "customdashboard/charts/public_horizontal_bar.html" %}</div>
 {% endblock content %}

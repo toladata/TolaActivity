@@ -62,8 +62,42 @@ class TolaSitesAdmin(admin.ModelAdmin):
     search_fields = ('name','agency_name')
 
 
+class Organization(models.Model):
+    name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
+    description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
+    organization_url = models.CharField(blank=True, null=True, max_length=255)
+    level_1_label = models.CharField("Project/Program Organization Level 1 label", default="Program", max_length=255, blank=True)
+    level_2_label = models.CharField("Project/Program Organization Level 2 label", default="Project", max_length=255, blank=True)
+    level_3_label = models.CharField("Project/Program Organization Level 3 label", default="Component", max_length=255, blank=True)
+    level_4_label = models.CharField("Project/Program Organization Level 4 label", default="Activity", max_length=255, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name_plural = "Organizations"
+        app_label = 'workflow'
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Organization, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class OrganizationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Organization'
+
+
 class Country(models.Model):
     country = models.CharField("Country Name", max_length=255, blank=True)
+    organization = models.ForeignKey(Organization, default=1)
     code = models.CharField("2 Letter Country Code", max_length=4, blank=True)
     description = models.TextField("Description/Notes", max_length=765,blank=True)
     latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
@@ -89,11 +123,6 @@ class Country(models.Model):
         return self.country
 
 
-class CountryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'create_date', 'edit_date')
-    display = 'Country'
-
-
 TITLE_CHOICES = (
     ('mr', 'Mr.'),
     ('mrs', 'Mrs.'),
@@ -106,9 +135,11 @@ class TolaUser(models.Model):
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
+    organization = models.ForeignKey(Organization, default=1)
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
+    activity_api_token = models.CharField(blank=True, null=True, max_length=255)
     privacy_disclaimer_accepted = models.BooleanField(default=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -249,6 +280,7 @@ class FundCode(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class FundCodeAdmin(admin.ModelAdmin):
     list_display = ('name','program__name', 'create_date', 'edit_date')
     display = 'Fund Code'
@@ -267,6 +299,7 @@ class Program(models.Model):
     budget_check = models.BooleanField("Enable Approval Authority", default=False)
     country = models.ManyToManyField(Country)
     user_access = models.ManyToManyField(TolaUser, blank=True)
+    public_dashboard = models.BooleanField("Enable Public Dashboard", default=False)
 
     class Meta:
         ordering = ('name',)

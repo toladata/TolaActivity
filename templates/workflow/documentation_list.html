@@ -18,9 +18,9 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/workflow/documentation_list/0/0/">-- All --</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter(0)">{{ program.gaitid}} - {{ program.name }}</a></li>>-- All --</a></li>
     {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/workflow/documentation_list/{{ program.id }}/0/">{{ program.gaitid}} - {{ program.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
     {% endfor %}
   </ul>
     <a href="/workflow/documentation_add" class="btn btn-large btn-success">New Document</a>
@@ -28,28 +28,79 @@
 </div>
 <br/>
 <!-- Table -->
-<table class="table">
-    <tr>
-        <th>Date Created</th>
-        <th>Document Name</th>
-        <th>Project</th>
-        <th>Program</th>
-        <th>&nbsp;</th>
-    </tr>
-    {% for item in getDocumentation %}
-    <tr>
-        <td><a href="/workflow/documentation_update/{{ item.id }}">{{ item.create_date}}</a></td>
-        <td><a href="/workflow/documentation_update/{{ item.id }}">{{ item.name|truncatechars:90 }}</a></td>
-        <td>{{ item.program|truncatechars:90 }}</td>
-        <td><a href="/workflow/documentation_update/{{ item.id }}" class="btn btn-xs btn-info">Update</a>
-            <a href="/workflow/documentation_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Document</a>
-        </td>
-    </tr>
-    {% empty %}
-        <li class="list-group-item">No Documents.</li>
-    {% endfor %}
+<table class="table" id="documentationtable">
 </table>
+<script type="text/javascript">
+    $(document).ready(function() {
+      program_filter(0);
+    });
 
+     function show_documentation_table(documentation_data) {
+            documentation_records = JSON.parse(documentation_data);
+            //First destroy any old version of the table to refresh anew
+            if ( $.fn.dataTable.isDataTable( '#documentationtable' ) ) {
+                table.destroy();
+                $('#documentationtable').empty();
+            };
+
+            $('#documentationtable').on( 'page.dt', function () {
+                $('html, body').animate({
+                    scrollTop: 0
+                }, 300);
+            } );
+
+
+            table = $('#documentationtable').DataTable( {
+                 "order": [], 
+                 "bFilter": false,
+                 'bLengthChange': false,
+                 "aoColumnDefs": [
+                           { "bSortable": false, "targets": [0, 1, 2, 3] }
+                        ],
+                retrieve: true,
+                data: documentation_records,
+                columns: [
+                    { title: "Date Created", data: "create_date",
+                        "defaultContent": "<i>Not set</i>",
+                        "mRender": function (data, records, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + row.create_date + '</a>';
+                            }},
+                    { title: "Document Name", data: "name",
+                        "defaultContent": "<i>Not set</i>",
+                        "mRender": function (data, narecord, row) {
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + row.name + '</a>';
+                            }},
+                    { title: "Project", data: "project__project_name",
+                        "defaultContent": "<i>Not set</i>"},
+                    { title: "Delete/Update",
+                        "mRender": function (data, record, row) {
+                                return '<a href="/workflow/documentation_update/'+row.id+'" class="btn btn-xs btn-info">Update</a><a href="/workflow/documentation_delete/'+row.id+'" class="btn btn-xs btn-danger">Delete Document</a>';
+                            }
+                    }
+                    ]
+            } );
+
+        }
+
+        function program_filter(program_id) {
+                // Filter documents
+                console.log(program_id);
+
+                if (program_id != 0) {
+
+                    $.getJSON("/workflow/documentation_objects/"+ program_id + "/0/", function(data) {  
+                        show_documentation_table(data['getDocumentation']);                                          
+                    }); 
+
+                }  else{
+
+                    $.getJSON("/workflow/documentation_objects/0/0/", function(data) {  
+                        show_documentation_table(data['getDocumentation']);          
+                    });     
+                }
+            } 
+
+</script>
 
 
 <!-- Modal -->
