@@ -106,8 +106,8 @@ class CountryResource(resources.ModelResource):
 class CountryAdmin(ImportExportModelAdmin):
     resource_class = CountryResource
 
-    list_display = ('country','code', 'create_date', 'edit_date')
-    list_filter = ('country','code')
+    list_display = ('country','code','organization','create_date', 'edit_date')
+    list_filter = ('country','code','organization')
     pass
 
 
@@ -186,7 +186,7 @@ class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin )
                 email = a_user.email
         return email
 
-
+admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Province, ProvinceAdmin)
 admin.site.register(Office, OfficeAdmin)
