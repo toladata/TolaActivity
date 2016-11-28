@@ -68,8 +68,8 @@ class Organization(models.Model):
     organization_url = models.CharField(blank=True, null=True, max_length=255)
     level_1_label = models.CharField("Project/Program Organization Level 1 label", default="Program", max_length=255, blank=True)
     level_2_label = models.CharField("Project/Program Organization Level 2 label", default="Project", max_length=255, blank=True)
-    level_3_label = models.CharField("Project/Program Organization Level 3 label", default="Activity", max_length=255, blank=True)
-    level_4_label = models.CharField("Project/Program Organization Level 4 label", default="Component", max_length=255, blank=True)
+    level_3_label = models.CharField("Project/Program Organization Level 3 label", default="Component", max_length=255, blank=True)
+    level_4_label = models.CharField("Project/Program Organization Level 4 label", default="Activity", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
