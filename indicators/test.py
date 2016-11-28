@@ -13,7 +13,7 @@ class IndicatorTestCase(TestCase):
     def setUp(self):
         new_organization = Organization.objects.create(name="tola")
         new_organization.save()
-        get_organization = Country.objects.get(name="tola")
+        get_organization = Organization.objects.get(name="tola")
         new_country = Country.objects.create(country="testcountry", organization=get_organization)
         new_country.save()
         get_country = Country.objects.get(country="testcountry")

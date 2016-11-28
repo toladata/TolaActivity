@@ -4,12 +4,12 @@ from workflow.models import Organization, Program, Country, Province, ProjectAgr
 
 class SiteProfileTestCase(TestCase):
 
-    fixtures = ['fixtures/province.json','fixtures/district.json','fixtures/district.json','fixtures/profiletypes.json']
+    fixtures = ['fixtures/organization.json','fixtures/country.json','fixtures/province.json','fixtures/district.json','fixtures/district.json','fixtures/profiletypes.json']
 
     def setUp(self):
         new_organization = Organization.objects.create(name="tola")
         new_organization.save()
-        get_organization = Country.objects.get(name="tola")
+        get_organization = Organization.objects.get(name="tola")
         new_country = Country.objects.create(country="testcountry", organization=get_organization)
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
@@ -35,7 +35,7 @@ class AgreementTestCase(TestCase):
     def setUp(self):
         new_organization = Organization.objects.create(name="tola")
         new_organization.save()
-        get_organization = Country.objects.get(name="tola")
+        get_organization = Organization.objects.get(name="tola")
         new_country = Country.objects.create(country="testcountry", organization=get_organization)
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
@@ -98,7 +98,7 @@ class CompleteTestCase(TestCase):
     def setUp(self):
         new_organization = Organization.objects.create(name="tola")
         new_organization.save()
-        get_organization = Country.objects.get(name="tola")
+        get_organization = Organization.objects.get(name="tola")
         new_country = Country.objects.create(country="testcountry", organization=get_organization)
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
