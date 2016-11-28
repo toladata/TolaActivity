@@ -130,7 +130,7 @@ def PublicDashboard(request,id=0):
 
                     get_project_completed.append(project)
 
-    return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
+    return render(request, "customdashboard/publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
                                                                      'getSiteProfile':getSiteProfile,
                                                                      'countries': countries, 'getProgramNarrative': getProgramNarrative,
                                                                      'getAwaitingApprovalCount':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
@@ -376,14 +376,17 @@ class ProgramList(ListView):
     template_name = 'customdashboard/program_list.html'
 
     def get(self, request, *args, **kwargs):
-        getCountry = Country.objects.all()
+
+        ## retrieve the coutries the user has data access for
+        countries = getCountry(request.user)
+        country_list = Country.objects.all().filter(country__in=countries)
 
         if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(public_dashboard=1)
+            getProgram = Program.objects.all().filter(country__in=countries)
         else:
             getProgram = Program.objects.all().filter(public_dashboard=1, country__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
+        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': country_list})
 
 
 class InternalDashboard(ListView):
