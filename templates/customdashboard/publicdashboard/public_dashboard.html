@@ -137,7 +137,11 @@
              <div class="tab-pane" id="indicators">
                 <h1 class="sidebar-header">Key Performance Indicators</h1>
                     <br>
-                    <h4><strong>Number of Indicator(s)</strong> <span class="badge">{{ getSiteProfileIndicatorCount }}</span></h4>
+                    <h4>
+                        <strong>Number of Indicator(s)</strong> <span class="badge">{{ getIndicatorCount }}</span>
+                        <strong>With Data</strong> <span class="badge">{{ getIndicatorCountData }}</span>
+                        <strong>KPIs</strong> <span class="badge">{{ getIndicatorCountKPI }}</span>
+                    </h4>
                      <!-- The table collapse panel -->
                         <div class="panel-group">
                         <div class="panel panel-default">
@@ -158,10 +162,10 @@
                                       </tr>
                                       {% for indicator in getQuantitativeDataSums %}
                                       <tr>
-                                          <td>{{ indicator.id }}</td>
-                                          <td>{{ indicator.name }}</td>
-                                          <td>{{ indicator.targeted }}</td>
-                                          <td>{{ indicator.achieved }}</td>
+                                          <td>{{ indicator.indicator__number }}</td>
+                                          <td>{{ indicator.indicator__name }}</td>
+                                          <td>{{ indicator.targets }}</td>
+                                          <td>{{ indicator.actuals }}</td>
                                           <td>{{ indicator.date_collected }}</td>
                                       </tr>
                                       {% endfor %}
