@@ -105,10 +105,8 @@ class CountryResource(resources.ModelResource):
 
 class CountryAdmin(ImportExportModelAdmin):
     resource_class = CountryResource
-
     list_display = ('country','code','organization','create_date', 'edit_date')
-    list_filter = ('country','code','organization')
-    pass
+    list_filter = ('country','organization__name')
 
 
 # Resource for CSV export
