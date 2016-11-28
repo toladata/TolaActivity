@@ -19,8 +19,50 @@ import uuid
 import requests
 import json
 
-@login_required(login_url='/accounts/login/')
 
+class ProgramList(ListView):
+    """
+    List of Programs with links to the dashboards
+    http://127.0.0.1:8000/customdashboard/program_list/0/
+    """
+    model = Program
+    template_name = 'customdashboard/program_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        ## retrieve the coutries the user has data access for
+        countries = getCountry(request.user)
+        country_list = Country.objects.all().filter(country__in=countries)
+
+        if int(self.kwargs['pk']) == 0:
+            getProgram = Program.objects.all().filter(country__in=countries)
+        else:
+            getProgram = Program.objects.all().filter(public_dashboard=1, country__id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': country_list})
+
+
+class InternalDashboard(ListView):
+    """
+    List of Programs with links to the dashboards
+    Internal Dashboard for user.is_authenticated
+    http://127.0.0.1:8000/customdashboard/program_list/0/
+    """
+    model = Program
+    template_name = 'customdashboard/program_list.html'
+
+    def get(self, request, *args, **kwargs):
+        getCountry = Country.objects.all()
+
+        if int(self.kwargs['pk']) == 0:
+            getProgram = Program.objects.all().filter(public_dashboard=0)
+        else:
+            getProgram = Program.objects.all().filter(public_dashboard=0, country__id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
+
+
+@login_required(login_url='/accounts/login/')
 def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     """
     # of agreements, approved, rejected, waiting, archived and total for dashboard
@@ -142,7 +184,16 @@ def PublicDashboard(request,id=0):
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount, 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 
 
+"""
+Extremely Customized dashboards
+This section contains custom dashboards or one-off dashboard for demo, or specific
+customer requests outside the scope of customized program dashboards
+"""
 def SurveyPublicDashboard(request,id=0):
+    """
+    DEMO only survey for Tola survey
+    :return:
+    """
 
     # get all countires
     countries = Country.objects.all()
@@ -228,7 +279,12 @@ def SurveyPublicDashboard(request,id=0):
 
 
 def SurveyTalkPublicDashboard(request,id=0):
-
+    """
+    DEMO only survey for Tola survey for use with public talks about TolaData
+    Share URL to survey and data will be aggregated in tolatables
+    then imported to this dashboard
+    :return:
+    """
     # get all countires
     countries = Country.objects.all()
 
@@ -319,8 +375,14 @@ def ReportPublicDashboard(request,id=0):
 
     return render(request, "customdashboard/themes/survey_public_dashboard.html", {'countries': countries, 'report':report})
 
-def RRIMAPublicDashboard(request,id=0):
 
+def RRIMAPublicDashboard(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -352,62 +414,27 @@ def RRIMAPublicDashboard(request,id=0):
     };
 
     return render(request, 'customdashboard/rrima_dashboard.html', 
-        {'pageText': pageText, 'pageNews': pageNews, 'pageMap': pageMap, 'countries': countries }) 
-
-
-
-def Gallery(request,id=0):
-    program_id = id
-    getProgram = Program.objects.all().filter(id=program_id)
-    getGallery = Gallery.objects.all().filter(program_name__id=program_id)
-    return render(request, "gallery/gallery.html", {'getGallery':getGallery, 'getProgram':getProgram})
+        {'pageText': pageText, 'pageNews': pageNews, 'pageMap': pageMap, 'countries': countries })
 
 
 def Notebook(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     getNotebook = JupyterNotebooks.objects.get(id=id)
     return render(request, "customdashboard/notebook.html", {'getNotebook':getNotebook})
 
 
-class ProgramList(ListView):
-    """
-    Documentation
-    """
-    model = Program
-    template_name = 'customdashboard/program_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        ## retrieve the coutries the user has data access for
-        countries = getCountry(request.user)
-        country_list = Country.objects.all().filter(country__in=countries)
-
-        if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(country__in=countries)
-        else:
-            getProgram = Program.objects.all().filter(public_dashboard=1, country__id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': country_list})
-
-
-class InternalDashboard(ListView):
-    """
-    Internal Dashboard for user.is_authenticated
-    """
-    model = Program
-    template_name = 'customdashboard/program_list.html'
-
-    def get(self, request, *args, **kwargs):
-        getCountry = Country.objects.all()
-
-        if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(public_dashboard=0)
-        else:
-            getProgram = Program.objects.all().filter(public_dashboard=0, country__id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
-
 def AnalyticsDashboard(request,id=0):
-
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -506,7 +533,12 @@ def AnalyticsDashboard(request,id=0):
         {'colorPalettes': colorPalettes, 'tableData1': tableData1,'table4': table4,'table2': table2,'table3': table3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
 def NewsDashboard(request,id=0):
-
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -582,11 +614,17 @@ def NewsDashboard(request,id=0):
     'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
     };
     
-    return render(request, 'customdashboard/themes/news_dashboard.html', 
+    return render(request, 'customdashboard/themes/news_dashboard.html',
         {'colorPalettes': colorPalettes, 'pageNewsFeedOne': pageNewsFeedOne, 'pageText': pageText, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
 
 def NarrativeDashboard(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -653,6 +691,12 @@ def NarrativeDashboard(request,id=0):
 
 
 def MapDashboard(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -732,7 +776,13 @@ def MapDashboard(request,id=0):
     return render(request, 'customdashboard/themes/map_dashboard.html', 
         {'pageMap':pageMap,'colorPalettes':colorPalettes,'table1': table1,'table2': table2,'table3': table3,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) 
 
-def RRIMAJupyterView1(request,id=0): 
+def RRIMAJupyterView1(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     model = Program
     program_id = 1#id ##USE TURKEY PROGRAM ID HERE
     # getProgram = Program.objects.all().filter(id=program_id)
