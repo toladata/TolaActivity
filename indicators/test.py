@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.test import RequestFactory
 from django.test import Client
-from indicators.models import Indicator, IndicatorType, Objective, DisaggregationType, ReportingFrequency, CollectedData
-from workflow.models import Program, Sector, Country
+from indicators.models import Indicator, IndicatorType, DisaggregationType, ReportingFrequency, CollectedData
+from workflow.models import Program, Country, Organization
 from django.contrib.auth.models import User
 
 
@@ -11,7 +11,10 @@ class IndicatorTestCase(TestCase):
     fixtures = ['fixtures/country.json']
 
     def setUp(self):
-        new_country = Country.objects.create(country="testcountry")
+        new_organization = Organization.objects.create(name="tola")
+        new_organization.save()
+        get_organization = Country.objects.get(name="tola")
+        new_country = Country.objects.create(country="testcountry", organization=get_organization)
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
         new_program = Program.objects.create(name="testprogram")
