@@ -45,7 +45,7 @@ class ProgramList(ListView):
 class InternalDashboard(ListView):
     """
     List of Programs with links to the dashboards
-    Internal Dashboard for user.is_authenticated
+    Internal Dashboard user.is_authenticated can see all programs and links to internal dashboard
     http://127.0.0.1:8000/customdashboard/program_list/0/
     """
     model = Program
