@@ -54,8 +54,8 @@
               </div>
             </div>
         </td>
-        <td>{% if item.is_public %}<a href="/customdashboard/public/{{ item.id }}">Public</a> {% else %} N/A {% endif %}</td>
-        <td><a href="/customdashboard/public/{{ item.id }}">Internal</a></td>
+        <td>{% if item.public_dashboard %}<a href="/customdashboard/program_dashboard/{{ item.id }}/1/">Public</a> {% else %} N/A {% endif %}</td>
+        <td><a href="/customdashboard/program_dashboard/{{ item.id }}/0/">Internal</a></td>
     </tr>
     {% empty %}
         <tr>
