@@ -1,4 +1,4 @@
-from .views import DefaultCustomDashboard, PublicDashboard, ProgramList, InternalDashboard
+from .views import ProgramList, InternalDashboard
 
 from django.conf.urls import *
 
@@ -29,9 +29,6 @@ urlpatterns = patterns('',
 
                        #project status
                        url(r'^(?P<id>[0-9]+)/(?P<status>[\w ]+)/$', 'customdashboard.views.DefaultCustomDashboard', name='project_status'),
-
-                       #gallery
-                       url(r'^public/(?P<id>\w+)/gallery/([0-9]+)/$', 'customdashboard.views.Gallery', name='gallery'),
 
                        #dashboard schemes
                        url(r'^(?P<id>[0-9]+)/data/public/$', 'customdashboard.views.AnalyticsDashboard', name='analytics_custom_dashboard'),

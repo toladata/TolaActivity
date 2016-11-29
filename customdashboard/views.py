@@ -7,7 +7,7 @@ from django.shortcuts import render
 from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile,Country, TolaSites
 from customdashboard.models import ProgramNarratives, JupyterNotebooks
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
-from indicators.models import CollectedData
+from indicators.models import CollectedData, Indicator
 
 from django.db.models import Sum
 from django.db.models import Q
@@ -45,7 +45,7 @@ class ProgramList(ListView):
 class InternalDashboard(ListView):
     """
     List of Programs with links to the dashboards
-    Internal Dashboard for user.is_authenticated
+    Internal Dashboard user.is_authenticated can see all programs and links to internal dashboard
     http://127.0.0.1:8000/customdashboard/program_list/0/
     """
     model = Program
@@ -121,8 +121,11 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
 
 def PublicDashboard(request,id=0):
     program_id = id
-    getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
-    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+    getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
+    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+    getIndicatorCount = Indicator.objects.all().filter(program__id=program_id).count()
+    getIndicatorCountData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).count()
+    getIndicatorCountKPI = Indicator.objects.all().filter(program__id=program_id,key_performance_indicator=1).count()
     getProgram = Program.objects.all().get(id=program_id)
     try:
         getProgramNarrative = ProgramNarratives.objects.get(program_id=program_id)
@@ -138,8 +141,6 @@ def PublicDashboard(request,id=0):
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
-    getIndicatorsApprovedCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='approved').count()
-    getIndicatorInProgressCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='in progress').count()
 
     nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
 
@@ -180,8 +181,11 @@ def PublicDashboard(request,id=0):
                                                                      'getRejectedCount': getRejectedCount,
                                                                      'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
                                                                      'total_projects': getProjectsCount,
+                                                                     'getIndicatorCount': getIndicatorCount,
+                                                                     'getIndicatorCountData':getIndicatorCountData,
+                                                                     'getIndicatorCountKPI': getIndicatorCountKPI,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
-                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount, 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 
 
 """
@@ -775,6 +779,7 @@ def MapDashboard(request,id=0):
 
     return render(request, 'customdashboard/themes/map_dashboard.html', 
         {'pageMap':pageMap,'colorPalettes':colorPalettes,'table1': table1,'table2': table2,'table3': table3,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) 
+
 
 def RRIMAJupyterView1(request,id=0):
     """
