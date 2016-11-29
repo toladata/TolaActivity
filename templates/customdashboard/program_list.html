@@ -10,15 +10,15 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-            <li role="presentation"><a role="menuitem" tabindex="-1" href="/customdashboard/program_list/0">--All--</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/customdashboard/program_list/0">--All--</a></li>
     {% for country in getCountry %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/customdashboard/program_list/{{ country.id }}">{{ country.name}}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/customdashboard/program_list/{{ country.id }}">{{ country.country}}</a></li>
     {% endfor %}
   </ul>
 </div>
 <br/>
-{% if getCountry %}
-<h3>{{getCountry.name }}</h3>
+{% if country %}
+<h3>{{ country }}</h3>
 {% endif %}
 
  <!-- Table -->
@@ -26,6 +26,7 @@
     <tr>
         <th>Date Created</th>
         <th>Program Name</th>
+        <th>Data Complete</th>
         <th>Public Dashboard</th>
         <th>View Dashboard</th>
     </tr>
@@ -33,6 +34,26 @@
     <tr>
         <td>{{ item.create_date}}</td>
         <td>{{ item.name}}</td>
+        <td width="250">
+            <strong>Indicators</strong>
+            <div class="progress">
+              <div class="progress-bar progress-bar-warning" style="width: {{ item.indicator_data_percent }}%">
+                <font color="black">Data {{ item.indicator_data_percent }} %</font>
+              </div>
+              <div class="progress-bar progress-bar-success" style="width: {{ item.indicator_percent }}%">
+                <font color="black">No Data {{ item.indicator_percent }} %</font>
+              </div>
+            </div>
+            <strong>Projects</strong>
+            <div class="progress">
+              <div class="progress-bar progress-bar-warning" style="width: {{ item.project_percent }}%">
+                <font color="black">Tracking {{ item.project_percent }} %</font>
+              </div>
+              <div class="progress-bar progress-bar-info" style="width: {{ item.project_agreement_percent }}%">
+                <font color="black">Initiation {{ item.project_agreement_percent }} %</font>
+              </div>
+            </div>
+        </td>
         <td>{% if item.is_public %}<a href="/customdashboard/public/{{ item.id }}">Public</a> {% else %} N/A {% endif %}</td>
         <td><a href="/customdashboard/public/{{ item.id }}">Internal</a></td>
     </tr>
