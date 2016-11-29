@@ -1,7 +1,7 @@
 from .models import *
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportModelAdmin, ExportMixin
 from tola.util import getCountry
 from admin_report.mixins import ChartReportAdmin
 
@@ -105,10 +105,8 @@ class CountryResource(resources.ModelResource):
 
 class CountryAdmin(ImportExportModelAdmin):
     resource_class = CountryResource
-
-    list_display = ('country','code', 'create_date', 'edit_date')
-    list_filter = ('country','code')
-    pass
+    list_display = ('country','code','organization','create_date', 'edit_date')
+    list_filter = ('country','organization__name')
 
 
 # Resource for CSV export
@@ -153,16 +151,27 @@ class StakeholderAdmin(ImportExportModelAdmin):
     display = 'Stakeholder List'
     list_filter = ('country', 'type', 'sector')
 
-class ReportTolaUserAdmin(ChartReportAdmin):
+class TolaUserProxyResource(resources.ModelResource):
+    country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
+    user = fields.Field(column_name='user', attribute='user', widget=ForeignKeyWidget(User, 'username'))
+    email = fields.Field()
+
+    def dehydrate_email(self, user):
+            return '%s' % (user.user.email)
+
+    class Meta:
+        model = TolaUserProxy
+        fields = ('title', 'name', 'user','country','create_date', 'email' )
+        export_order = ('title', 'name', 'user','country','email','create_date')
+
+
+class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin ):
+
+    resource_class = TolaUserProxyResource
     
     def get_queryset(self, request): 
         
-        qs = super(ReportTolaUserAdmin, self).get_queryset(request) 
-        return qs.filter(user__is_active= True)
-
-    def get_queryset(self, request): 
-        
-        qs = super(ReportTolaUserAdmin, self).get_queryset(request) 
+        qs = super(ReportTolaUserProxyAdmin, self).get_queryset(request) 
         return qs.filter(user__is_active= True)
 
     list_display = ('title','name', 'user','email', 'country', 'create_date')
@@ -175,7 +184,7 @@ class ReportTolaUserAdmin(ChartReportAdmin):
                 email = a_user.email
         return email
 
-
+admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Province, ProvinceAdmin)
 admin.site.register(Office, OfficeAdmin)
@@ -205,4 +214,4 @@ admin.site.register(StakeholderType)
 admin.site.register(TolaUser,TolaUserAdmin)
 admin.site.register(TolaSites,TolaSitesAdmin)
 admin.site.register(FormGuidance,FormGuidanceAdmin)
-admin.site.register(TolaUserProxy, ReportTolaUserAdmin )
+admin.site.register(TolaUserProxy, ReportTolaUserProxyAdmin )

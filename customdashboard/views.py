@@ -7,7 +7,7 @@ from django.shortcuts import render
 from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile,Country, TolaSites
 from customdashboard.models import ProgramNarratives, JupyterNotebooks
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
-from indicators.models import CollectedData
+from indicators.models import CollectedData, Indicator
 
 from django.db.models import Sum
 from django.db.models import Q
@@ -19,8 +19,77 @@ import uuid
 import requests
 import json
 
-@login_required(login_url='/accounts/login/')
 
+class ProgramList(ListView):
+    """
+    List of Programs with links to the dashboards
+    http://127.0.0.1:8000/customdashboard/program_list/0/
+    """
+    model = Program
+    template_name = 'customdashboard/program_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        ## retrieve the coutries the user has data access for
+        country = None
+        countries = getCountry(request.user)
+        country_list = Country.objects.all().filter(id__in=countries)
+        if int(self.kwargs['pk']) == 0:
+            getProgram = Program.objects.all().filter(country=countries)
+        else:
+            getProgram = Program.objects.all().filter(country__id=self.kwargs['pk'])
+            country = Country.objects.get(id=self.kwargs['pk']).country
+
+        program_list = []
+        for program in getProgram:
+            # get the percentage of indicators with data
+            getInidcatorDataCount = Indicator.objects.filter(program__id=program.id).exclude(collecteddata__targeted=None).count()
+            getInidcatorCount = Indicator.objects.filter(program__id=program.id).count()
+            if getInidcatorCount > 0 and getInidcatorDataCount > 0:
+                getInidcatorDataPercent = 100 * float(getInidcatorDataCount) / float(getInidcatorCount)
+            else:
+                getInidcatorDataPercent = 0
+
+            program.indicator_data_percent = int(getInidcatorDataPercent)
+            program.indicator_percent = int(100 - getInidcatorDataPercent)
+
+            # get the percentage of projects with completes (tracking)
+            getProjectAgreementCount = ProjectAgreement.objects.filter(program__id=program.id).count()
+            getProjectCompleteCount = ProjectComplete.objects.filter(program__id=program.id).count()
+            if getProjectAgreementCount > 0 and getProjectCompleteCount > 0:
+                project_percent = 100 * float(getProjectCompleteCount) / float(getProjectAgreementCount)
+            else:
+                project_percent = 0
+
+            # append the percentages to the program list
+            program.project_percent = int(project_percent)
+            program.project_agreement_percent = int(100 - project_percent)
+            program_list.append(program)
+
+        return render(request, self.template_name, {'getProgram': program_list, 'getCountry': country_list, 'country': country})
+
+
+class InternalDashboard(ListView):
+    """
+    List of Programs with links to the dashboards
+    Internal Dashboard user.is_authenticated can see all programs and links to internal dashboard
+    http://127.0.0.1:8000/customdashboard/program_list/0/
+    """
+    model = Program
+    template_name = 'customdashboard/program_list.html'
+
+    def get(self, request, *args, **kwargs):
+        getCountry = Country.objects.all()
+
+        if int(self.kwargs['pk']) == 0:
+            getProgram = Program.objects.all().filter(public_dashboard=0)
+        else:
+            getProgram = Program.objects.all().filter(public_dashboard=0, country__id=self.kwargs['pk'])
+
+        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
+
+
+@login_required(login_url='/accounts/login/')
 def DefaultCustomDashboard(request,id=0,sector=0,status=0):
     """
     # of agreements, approved, rejected, waiting, archived and total for dashboard
@@ -79,8 +148,11 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
 
 def PublicDashboard(request,id=0):
     program_id = id
-    getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
-    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+    getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
+    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+    getIndicatorCount = Indicator.objects.all().filter(program__id=program_id).count()
+    getIndicatorCountData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).count()
+    getIndicatorCountKPI = Indicator.objects.all().filter(program__id=program_id,key_performance_indicator=1).count()
     getProgram = Program.objects.all().get(id=program_id)
     try:
         getProgramNarrative = ProgramNarratives.objects.get(program_id=program_id)
@@ -95,9 +167,6 @@ def PublicDashboard(request,id=0):
     getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved').count()
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
-
-    getIndicatorsApprovedCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='approved').count()
-    getIndicatorInProgressCount = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id), approval='in progress').count()
 
     nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
 
@@ -130,7 +199,7 @@ def PublicDashboard(request,id=0):
 
                     get_project_completed.append(project)
 
-    return render(request, "publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
+    return render(request, "customdashboard/publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
                                                                      'getSiteProfile':getSiteProfile,
                                                                      'countries': countries, 'getProgramNarrative': getProgramNarrative,
                                                                      'getAwaitingApprovalCount':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
@@ -138,11 +207,23 @@ def PublicDashboard(request,id=0):
                                                                      'getRejectedCount': getRejectedCount,
                                                                      'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
                                                                      'total_projects': getProjectsCount,
+                                                                     'getIndicatorCount': getIndicatorCount,
+                                                                     'getIndicatorCountData':getIndicatorCountData,
+                                                                     'getIndicatorCountKPI': getIndicatorCountKPI,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
-                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getIndicatorsApprovedCount':getIndicatorsApprovedCount, 'getIndicatorInProgressCount':getIndicatorInProgressCount, 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 
 
+"""
+Extremely Customized dashboards
+This section contains custom dashboards or one-off dashboard for demo, or specific
+customer requests outside the scope of customized program dashboards
+"""
 def SurveyPublicDashboard(request,id=0):
+    """
+    DEMO only survey for Tola survey
+    :return:
+    """
 
     # get all countires
     countries = Country.objects.all()
@@ -228,7 +309,12 @@ def SurveyPublicDashboard(request,id=0):
 
 
 def SurveyTalkPublicDashboard(request,id=0):
-
+    """
+    DEMO only survey for Tola survey for use with public talks about TolaData
+    Share URL to survey and data will be aggregated in tolatables
+    then imported to this dashboard
+    :return:
+    """
     # get all countires
     countries = Country.objects.all()
 
@@ -319,8 +405,14 @@ def ReportPublicDashboard(request,id=0):
 
     return render(request, "customdashboard/themes/survey_public_dashboard.html", {'countries': countries, 'report':report})
 
-def RRIMAPublicDashboard(request,id=0):
 
+def RRIMAPublicDashboard(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -352,59 +444,27 @@ def RRIMAPublicDashboard(request,id=0):
     };
 
     return render(request, 'customdashboard/rrima_dashboard.html', 
-        {'pageText': pageText, 'pageNews': pageNews, 'pageMap': pageMap, 'countries': countries }) 
-
-
-
-def Gallery(request,id=0):
-    program_id = id
-    getProgram = Program.objects.all().filter(id=program_id)
-    getGallery = Gallery.objects.all().filter(program_name__id=program_id)
-    return render(request, "gallery/gallery.html", {'getGallery':getGallery, 'getProgram':getProgram})
+        {'pageText': pageText, 'pageNews': pageNews, 'pageMap': pageMap, 'countries': countries })
 
 
 def Notebook(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     getNotebook = JupyterNotebooks.objects.get(id=id)
     return render(request, "customdashboard/notebook.html", {'getNotebook':getNotebook})
 
 
-class ProgramList(ListView):
-    """
-    Documentation
-    """
-    model = Program
-    template_name = 'customdashboard/program_list.html'
-
-    def get(self, request, *args, **kwargs):
-        getCountry = Country.objects.all()
-
-        if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(public_dashboard=1)
-        else:
-            getProgram = Program.objects.all().filter(public_dashboard=1, country__id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
-
-
-class InternalDashboard(ListView):
-    """
-    Internal Dashboard for user.is_authenticated
-    """
-    model = Program
-    template_name = 'customdashboard/program_list.html'
-
-    def get(self, request, *args, **kwargs):
-        getCountry = Country.objects.all()
-
-        if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(public_dashboard=0)
-        else:
-            getProgram = Program.objects.all().filter(public_dashboard=0, country__id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
-
 def AnalyticsDashboard(request,id=0):
-
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -503,7 +563,12 @@ def AnalyticsDashboard(request,id=0):
         {'colorPalettes': colorPalettes, 'tableData1': tableData1,'table4': table4,'table2': table2,'table3': table3,'tableHeaders': tableHeaders,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
 def NewsDashboard(request,id=0):
-
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -579,11 +644,17 @@ def NewsDashboard(request,id=0):
     'light':['#BAEE46','#FDFB4A','#4BCF3D','#F2637A','#FFA268','#C451A4','#4BC3BE','#5B7FCC','#9F54CC','#FFE464','#FFA964','#FFFE64','#D7D7D7','#7F7F7F','#D2A868','#FFD592']
     };
     
-    return render(request, 'customdashboard/themes/news_dashboard.html', 
+    return render(request, 'customdashboard/themes/news_dashboard.html',
         {'colorPalettes': colorPalettes, 'pageNewsFeedOne': pageNewsFeedOne, 'pageText': pageText, 'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects})
 
 
 def NarrativeDashboard(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -650,6 +721,12 @@ def NarrativeDashboard(request,id=0):
 
 
 def MapDashboard(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     ## retrieve program
     model = Program
     program_id = id
@@ -729,7 +806,14 @@ def MapDashboard(request,id=0):
     return render(request, 'customdashboard/themes/map_dashboard.html', 
         {'pageMap':pageMap,'colorPalettes':colorPalettes,'table1': table1,'table2': table2,'table3': table3,'getProgram': getProgram, 'countries': countries, 'getProjects': getProjects}) 
 
-def RRIMAJupyterView1(request,id=0): 
+
+def RRIMAJupyterView1(request,id=0):
+    """
+    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
+    :param request:
+    :param id:
+    :return:
+    """
     model = Program
     program_id = 1#id ##USE TURKEY PROGRAM ID HERE
     # getProgram = Program.objects.all().filter(id=program_id)
