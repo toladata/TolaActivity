@@ -35,7 +35,7 @@ class ProgramList(ListView):
         countries = getCountry(request.user)
         country_list = Country.objects.all().filter(id__in=countries)
         if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(country=countries)
+            getProgram = Program.objects.all().filter(country__in=countries)
         else:
             getProgram = Program.objects.all().filter(country__id=self.kwargs['pk'])
             country = Country.objects.get(id=self.kwargs['pk']).country
@@ -146,7 +146,7 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'get_project_completed': get_project_completed})
 
 
-def PublicDashboard(request,id=0):
+def PublicDashboard(request,id=0,public=0):
     program_id = id
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
@@ -196,10 +196,15 @@ def PublicDashboard(request,id=0):
         for complete in getProjectsComplete:
             if complete.actual_budget != None:
                 if project.id == complete.project_agreement_id:
-
                     get_project_completed.append(project)
 
-    return render(request, "customdashboard/publicdashboard/public_dashboard.html", {'getProgram':getProgram,'getProjects':getProjects,
+    # public dashboards have a different template display
+    if public == 1:
+        template = "customdashboard/publicdashboard/public_dashboard.html"
+    else:
+        template = "customdashboard/publicdashboard/program_dashboard.html"
+
+    return render(request, template, {'getProgram':getProgram,'getProjects':getProjects,
                                                                      'getSiteProfile':getSiteProfile,
                                                                      'countries': countries, 'getProgramNarrative': getProgramNarrative,
                                                                      'getAwaitingApprovalCount':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
