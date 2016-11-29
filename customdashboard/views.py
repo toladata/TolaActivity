@@ -31,15 +31,42 @@ class ProgramList(ListView):
     def get(self, request, *args, **kwargs):
 
         ## retrieve the coutries the user has data access for
+        country = None
         countries = getCountry(request.user)
-        country_list = Country.objects.all().filter(country__in=countries)
-
+        country_list = Country.objects.all().filter(id__in=countries)
         if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(country__in=countries)
+            getProgram = Program.objects.all().filter(country=countries)
         else:
-            getProgram = Program.objects.all().filter(public_dashboard=1, country__id=self.kwargs['pk'])
+            getProgram = Program.objects.all().filter(country__id=self.kwargs['pk'])
+            country = Country.objects.get(id=self.kwargs['pk']).country
 
-        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': country_list})
+        program_list = []
+        for program in getProgram:
+            # get the percentage of indicators with data
+            getInidcatorDataCount = Indicator.objects.filter(program__id=program.id).exclude(collecteddata__targeted=None).count()
+            getInidcatorCount = Indicator.objects.filter(program__id=program.id).count()
+            if getInidcatorCount > 0 and getInidcatorDataCount > 0:
+                getInidcatorDataPercent = 100 * float(getInidcatorDataCount) / float(getInidcatorCount)
+            else:
+                getInidcatorDataPercent = 0
+
+            program.indicator_data_percent = int(getInidcatorDataPercent)
+            program.indicator_percent = int(100 - getInidcatorDataPercent)
+
+            # get the percentage of projects with completes (tracking)
+            getProjectAgreementCount = ProjectAgreement.objects.filter(program__id=program.id).count()
+            getProjectCompleteCount = ProjectComplete.objects.filter(program__id=program.id).count()
+            if getProjectAgreementCount > 0 and getProjectCompleteCount > 0:
+                project_percent = 100 * float(getProjectCompleteCount) / float(getProjectAgreementCount)
+            else:
+                project_percent = 0
+
+            # append the percentages to the program list
+            program.project_percent = int(project_percent)
+            program.project_agreement_percent = int(100 - project_percent)
+            program_list.append(program)
+
+        return render(request, self.template_name, {'getProgram': program_list, 'getCountry': country_list, 'country': country})
 
 
 class InternalDashboard(ListView):
@@ -140,7 +167,6 @@ def PublicDashboard(request,id=0):
     getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved').count()
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
-
 
     nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
 
