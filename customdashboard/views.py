@@ -35,7 +35,7 @@ class ProgramList(ListView):
         countries = getCountry(request.user)
         country_list = Country.objects.all().filter(id__in=countries)
         if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(country=countries)
+            getProgram = Program.objects.all().filter(country__in=countries)
         else:
             getProgram = Program.objects.all().filter(country__id=self.kwargs['pk'])
             country = Country.objects.get(id=self.kwargs['pk']).country
