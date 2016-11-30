@@ -1,6 +1,4 @@
 from django.views.generic.list import ListView
-from django.views.generic import TemplateView
-from django.contrib.auth.models import User
 from django.http import HttpResponse
 
 from django.shortcuts import render
@@ -15,7 +13,6 @@ from django.db.models import Q
 from tola.util import getCountry
 
 from django.contrib.auth.decorators import login_required
-import uuid
 import requests
 import json
 
@@ -129,6 +126,13 @@ def DefaultCustomDashboard(request,id=0,status=0):
 
 
 def PublicDashboard(request,id=0,public=0):
+    """
+    This is used as the internal and external (public) dashboard view
+    the template is changed for public
+    :public: if URL contains a 0 then show the internal dashboard
+    if 1 then public dashboard
+    http://127.0.0.1:8000/customdashboard/program_dashboard/65/0/
+    """
     program_id = id
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
@@ -181,7 +185,8 @@ def PublicDashboard(request,id=0,public=0):
                     get_project_completed.append(project)
 
     # public dashboards have a different template display
-    if public == 1:
+    if int(public) == 1:
+        print "public"
         template = "customdashboard/publicdashboard/public_dashboard.html"
     else:
         template = "customdashboard/publicdashboard/program_dashboard.html"
