@@ -61,7 +61,7 @@ class ProgramList(ListView):
             else:
                 project_percent = 0
 
-            # append the percentages to the program list
+            # append the rounded percentages to the program list
             program.project_percent = int(project_percent)
             program.project_agreement_percent = int(100 - project_percent)
             program_list.append(program)
@@ -69,30 +69,12 @@ class ProgramList(ListView):
         return render(request, self.template_name, {'getProgram': program_list, 'getCountry': country_list, 'country': country})
 
 
-class InternalDashboard(ListView):
-    """
-    List of Programs with links to the dashboards
-    Internal Dashboard user.is_authenticated can see all programs and links to internal dashboard
-    http://127.0.0.1:8000/customdashboard/program_list/0/
-    """
-    model = Program
-    template_name = 'customdashboard/program_list.html'
-
-    def get(self, request, *args, **kwargs):
-        getCountry = Country.objects.all()
-
-        if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(public_dashboard=0)
-        else:
-            getProgram = Program.objects.all().filter(public_dashboard=0, country__id=self.kwargs['pk'])
-
-        return render(request, self.template_name, {'getProgram': getProgram, 'getCountry': getCountry})
-
-
 @login_required(login_url='/accounts/login/')
-def DefaultCustomDashboard(request,id=0,sector=0,status=0):
+def DefaultCustomDashboard(request,id=0,status=0):
     """
+    This is used as the workflow program dashboard
     # of agreements, approved, rejected, waiting, archived and total for dashboard
+    http://127.0.0.1:8000/customdashboard/65/
     """
     program_id = id
 
@@ -138,7 +120,7 @@ def DefaultCustomDashboard(request,id=0,sector=0,status=0):
 
                     get_project_completed.append(project)
 
-    return render(request, "customdashboard/visual_dashboard.html", {'getSiteProfile':getSiteProfile, 'getBudgetEstimated': getBudgetEstimated, 'getQuantitativeDataSums': getQuantitativeDataSums,
+    return render(request, "customdashboard/customdashboard/visual_dashboard.html", {'getSiteProfile':getSiteProfile, 'getBudgetEstimated': getBudgetEstimated, 'getQuantitativeDataSums': getQuantitativeDataSums,
                                                                      'country': countries, 'getAwaitingApprovalCount':getAwaitingApprovalCount,
                                                                      'getFilteredName': getFilteredName,'getProjects': getProjects, 'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
