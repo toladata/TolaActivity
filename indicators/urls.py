@@ -23,8 +23,6 @@ urlpatterns = [
     url(r'^indicator_delete/(?P<pk>\w+)/$', IndicatorDelete.as_view(), name='indicator_delete'),
 
     #Collected Data List
-    url(r'^collecteddata/(?P<indicator>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
-    url(r'^collecteddata/(?P<indicator>\w+)/(?P<program>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata_add/(?P<program>\w+)/(?P<indicator>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
     url(r'^collecteddata_import/$', 'indicators.views.collecteddata_import', name='collecteddata_import'),
@@ -48,8 +46,8 @@ urlpatterns = [
     url(r'^program_indicators/(?P<program>[-\w]+)/', 'indicators.views.program_indicators_json', name='program_indicators_json'),
     url(r'^report_data/(?P<id>\w+)/(?P<program>\w+)/(?P<type>\w+)/$', IndicatorReportData.as_view(),name='indicator_report_data'),
     url(r'^report_data/(?P<id>\w+)/(?P<program>\w+)/(?P<indicator_type>\w+)/export/$', IndicatorExport.as_view(),name='indicator_export'),
-    url(r'^collecteddata_report_data/(?P<indicator>\w+)/(?P<program>\w+)/(?P<type>\w+)/$', CollectedDataReportData.as_view(), name='collecteddata_report_data'),
-    url(r'^collecteddata_report_data/(?P<indicator>\w+)/(?P<program>\w+)/(?P<type>\w+)/export/$', IndicatorDataExport.as_view(), name='collecteddata_report_data'),
+    url(r'^collecteddata_report_data/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', CollectedDataReportData.as_view(), name='collecteddata_report_data'),
+    url(r'^collecteddata_report_data/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/export/$', IndicatorDataExport.as_view(), name='collecteddata_report_data'),
 
 
 ]

@@ -590,7 +590,7 @@ class CollectedDataList(ListView):
     and sums it at the bottom.  Lives in the "Reports" navigation.
     URL: indicators/data/[id]/[program]/[type]
     :param request:
-    :param id: Indicator ID
+    :param indicator: Indicator ID
     :param program: Program ID
     :param type: Type ID
     :return:
@@ -604,8 +604,6 @@ class CollectedDataList(ListView):
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
-        getCollectedData = None
-        collected_sum = None
         program = self.kwargs['program']
         indicator = self.kwargs['indicator']
         type = self.kwargs['type']
@@ -621,7 +619,7 @@ class CollectedDataList(ListView):
             }
             # redress the indicator list based on program
             getIndicators = Indicator.objects.select_related().filter(program=program)
-            program_name = Program.objects.get(id=program).name
+            program_name = Program.objects.get(id=program)
         # if we have an indicator type active
         if int(type) != 0:
             r = {
@@ -634,33 +632,35 @@ class CollectedDataList(ListView):
         # if we have an indicator id append it to the query filter
         if int(indicator) != 0:
             s = {
-                'id': indicator,
+                'indicator': indicator,
             }
             q.update(s)
-            indicator_name = Indicator.objects.get(id=indicator).name
+            indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = Indicator.objects.all().filter(program__country__in=countries).filter(**q)
+        print q
 
-        #get details about the filtered indicator or program
-        try:
-            filter_indicator = Indicator.objects.get(id=indicator)
-        except Indicator.DoesNotExist:
-            filter_indicator = None
-
-        try:
-            filter_program = Program.objects.get(id=program)
-        except Program.DoesNotExist:
-            filter_program = None
+        indicators = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+                                                                        'indicator__objectives',
+                                                                        'indicator__strategic_objectives').filter(
+            program__country__in=countries).filter(
+            **q).order_by(
+            'indicator__program__name',
+            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__program__name',
+                                        'indicator__indicator_type__indicator_type', 'indicator__level__name',
+                                        'indicator__sector__sector', 'date_collected', 'indicator__baseline',
+                                        'indicator__lop_target', 'indicator__key_performance_indicator',
+                                        'indicator__external_service_record__external_service__name', 'evidence',
+                                        'tola_table', 'targeted', 'achieved')
 
         if self.request.GET.get('export'):
-            dataset = CollectedDataResource().export(getCollectedData)
+            dataset = CollectedDataResource().export(indicators)
             response = HttpResponse(dataset.csv, content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
             return response
 
         return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
                                                     'getIndicatorTypes': getIndicatorTypes, 'getIndicators':getIndicators,
-                                                    'filter_program':filter_program,'filter_indicator': filter_indicator,
+                                                    'filter_program':program_name,'filter_indicator': indicator_name,
                                                     'indicator': indicator,'program': program,'type': type,'indicator_name':indicator_name,
                                                     'program_name': program_name, 'type_name': type_name})
 
