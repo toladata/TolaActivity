@@ -623,7 +623,7 @@ class CollectedDataList(ListView):
         # if we have an indicator type active
         if int(type) != 0:
             r = {
-                'indicator_type__id': type,
+                'indicator__indicator_type__id': type,
             }
             q.update(r)
             # redress the indicator list based on type
@@ -660,6 +660,7 @@ class CollectedDataList(ListView):
 
         return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
                                                     'getIndicatorTypes': getIndicatorTypes, 'getIndicators':getIndicators,
+                                                    'program':program, 'indicator': indicator, 'type': type,
                                                     'filter_program':program_name,'filter_indicator': indicator_name,
                                                     'indicator': indicator,'program': program,'type': type,'indicator_name':indicator_name,
                                                     'program_name': program_name, 'type_name': type_name})
