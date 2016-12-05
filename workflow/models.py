@@ -135,7 +135,7 @@ class TolaUser(models.Model):
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
-    organization = models.ForeignKey(Organization, default=1)
+    organization = models.ForeignKey(Organization, default=1,blank=True, null=True,)
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
