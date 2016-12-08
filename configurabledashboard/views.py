@@ -91,19 +91,23 @@ class CustomDashboardCreate(CreateView):
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    def form_valid(self, form):
-        print form
-        form.save()
+    def form_valid(self, form):        
+        if form.is_valid():
+            data = form.save(commit=False)
+            form_theme = data.theme
+            getSelectedTheme = DashboardTheme.objects.all().filter(id=form_theme.id)
+            parsedLayout = json.loads(getSelectedTheme[0].layout_dictionary, object_pairs_hook=OrderedDict)
+            new_map = {}
+            for key in parsedLayout:
+                new_map[key] = "NONE"
+            data.component_map = json.dumps(new_map)
+            data.save()
 
         #save formset from context
         context = self.get_context_data()
 
         messages.success(self.request, 'Success, Dashboard Created!')
-
-        latest = CustomDashboard.objects.latest('id')
-        getCustomDashboard = CustomDashboard.objects.get(id=latest.id)
-        dashboard_id = getCustomDashboard.id
-        redirect_url = '/configurabledashboard/update/' + str(dashboard_id) 
+        redirect_url = '/configurabledashboard/' + str(self.kwargs['pk'])
         return HttpResponseRedirect(redirect_url)
 
     form_class = CustomDashboardCreateForm 
@@ -112,13 +116,6 @@ class CustomDashboardCreate(CreateView):
 class CustomDashboardDetail(DetailView):
 
     model = CustomDashboard
-
-    # TODO: Confirm if this needed for final rendering
-    # def get_object(self, queryset=CustomDashboard.objects.all()):
-    #     try:
-    #         # return queryset.get(customdashboard__id = self.kwarg['id'])
-    #     except CustomDashboard.DoesNotExist:
-    #         return None
 
     def get_template_names(self):
         dashboard = CustomDashboard.objects.get(id = self.kwargs['pk'])
@@ -160,40 +157,39 @@ class CustomDashboardDetail(DetailView):
                 getColorPalette = None
         context.update({'getColorPalette': getColorPalette})
 
-        # retrieve the layout order of the components on the dashboard    
-        try: 
-            getComponentOrder = json.dumps(getCustomDashboard.component_map, sort_keys=True)
+        try:
+            getComponentOrder = json.loads(getCustomDashboard.component_map)
         except not getCustomDashboard.component_map:
             getComponentOrder = None
         context.update({'getComponentOrder': getComponentOrder})
-
         # retrieve the data source mapping of data 
         try:
             getComponentDataMaps = {}
-            component_order = json.loads(getComponentOrder)
-            for position, component_id in component_order:
+            for position, component_id in getComponentOrder.items():
                 #add an attribute to the getComponentDataMaps dictionary for all data from this component
-                selected_component = DashboardComponent.objects.get(component_id)
-                getComponentDataMaps[position]['data_sources'] = selected_component.data_sources
-                getComponentDataMaps[position]['data_map'] = json.dumps(selected_component.data_map, sort_keys=True)
-        except not getComponentOrder:
+                selected_id = int(component_id)
+                selected_component = DashboardComponent.objects.get(id = selected_id)
+                getComponentDataMaps[position] = {}
+                getComponentDataMaps[position]['component_id'] = selected_id
+                getComponentDataMaps[position]['data_map'] = selected_component.data_map
+        except not getCustomDashboard.component_map:
             getComponentDataMaps = None
         context.update({'getComponentDataMaps': getComponentDataMaps})
 
         #retrieve data for each componennt in data map
         try:
             getAllComponentData = {}
-            #iterate through the component maps for each position on the page
-            for position in getComponentDataMaps:
-                #iterate through the data sources mapped for each components and retrieve data
-                for mapped_item, data_source in getComponentDataMaps[position]['data_map']:
-                    # get that DataSource by id
-                    data_source = ComponentDataSource.objects.get(data_source)
-                    #retrieve data 
-                    dataset = data_source.data_source  # do JSON request here
-                    # filter data by the key to just use subset needed
-                    filtered_data = dataset[data_source.filter_key]
-                    getAllComponentData[position]['data_sources']['data_source.name'] = filtered_data
+        #     #iterate through the component maps for each position on the page
+            # for position in getComponentDataMaps:
+        #         #iterate through the data sources mapped for each components and retrieve data
+        #         for mapped_item, data_source in getComponentDataMaps[position]['data_map']:
+        #             # get that DataSource by id
+        #             data_source = ComponentDataSource.objects.get(data_source)
+        #             #retrieve data 
+        #             dataset = data_source.data_source  # do JSON request here
+        #             # filter data by the key to just use subset needed
+        #             filtered_data = dataset[data_source.filter_key]
+        #             getAllComponentData[position]['data_sources']['data_source.name'] = filtered_data
         except not getDashboardComponentDataMaps:
             getAllComponentData = None
         context.update({'getAllComponentData': getAllComponentData})
