@@ -95,5 +95,6 @@ urlpatterns = [
 
                        #ajax calls
                        url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
+                       url(r'^new_bookmark/$', 'workflow.views.save_bookmark',name='save_bookmark'),
 
-                       ]
+]
