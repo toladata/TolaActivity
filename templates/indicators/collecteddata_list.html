@@ -79,7 +79,7 @@
                         { title: "Program", data: "indicator__program__name"},
                         { title: "Indicator", data: "name",
                                 "mRender": function (data, type, row) {
-                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/' + row.indicator__id + '/{{ program }}/0/">' + row.indicator__name + '</a>';
+                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ program }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
                                 }
                             },
                         { title: "Level", data: "indicator__level__name"},
