@@ -18,6 +18,7 @@ from mixins import AjaxableResponseMixin
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
+
 class TrainingList(ListView):
     """
     Training Attendance

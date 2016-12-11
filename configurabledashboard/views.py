@@ -60,13 +60,12 @@ class CustomDashboardCreate(CreateView):
     model = CustomDashboard
     template_name = 'configurabledashboard/dashboard/form.html'
 
-    try:
-        guidance = FormGuidance.objects.get(form="CustomDashboard")
-    except FormGuidance.DoesNotExist:
-        guidance = None
-
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
+        try:
+            self.guidance = FormGuidance.objects.get(form="CustomDashboard")
+        except FormGuidance.DoesNotExist:
+            self.guidance = None
         return super(CustomDashboardCreate, self).dispatch(request, *args, **kwargs)
 
      # add the request to the kwargs
