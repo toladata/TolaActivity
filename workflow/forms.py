@@ -1374,6 +1374,7 @@ class SiteProfileForm(forms.ModelForm):
 
         #override the office queryset to use request.user for country
         countries = getCountry(self.request.user)
+        self.fields['date_of_firstcontact'].label = "Date of First Contact"
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
         self.fields['province'].queryset = Province.objects.filter(country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
