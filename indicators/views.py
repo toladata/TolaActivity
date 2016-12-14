@@ -89,7 +89,7 @@ class IndicatorList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = Program.objects.all().filter(country__in=countries).filter(**q).order_by('name','indicator__number').annotate(indicator_count=Count('indicator'))
+        indicators = Program.objects.all().filter(funding_status="Funded", country__in=countries).filter(**q).order_by('name','indicator__number').annotate(indicator_count=Count('indicator'))
 
         return render(request, self.template_name, {'getPrograms': getPrograms,'getIndicators':getIndicators,
                                                     'program_name':program_name, 'indicator_name':indicator_name,
