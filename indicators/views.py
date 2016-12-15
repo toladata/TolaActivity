@@ -6,7 +6,7 @@ from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, To
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry, get_table
-from tables import IndicatorTable, IndicatorDataTable
+from tables import IndicatorDataTable
 from django_tables2 import RequestConfig
 from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
@@ -53,21 +53,48 @@ class IndicatorList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(country__in=countries, funding_status="Funded").distinct()
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
+        program = self.kwargs['program']
+        indicator = self.kwargs['indicator']
+        type = self.kwargs['type']
+        indicator_name = ""
+        type_name = ""
+        program_name = ""
 
-        print int(self.kwargs['program'])
+        q = {'id__isnull': False}
+        # if we have a program filter active
+        if int(program) != 0:
+            q = {
+                'id': program,
+            }
+            # redress the indicator list based on program
+            getIndicators = Indicator.objects.select_related().filter(program=program)
+            program_name = Program.objects.get(id=program)
+        # if we have an indicator type active
+        if int(type) != 0:
+            r = {
+                'indicator__indicator_type__id': type,
+            }
+            q.update(r)
+            # redress the indicator list based on type
+            getIndicators = Indicator.objects.select_related().filter(indicator_type__id=type)
+            type_name = IndicatorType.objects.get(id=type).indicator_type
+        # if we have an indicator id append it to the query filter
+        if int(indicator) != 0:
+            s = {
+                'indicator': indicator,
+            }
+            q.update(s)
+            indicator_name = Indicator.objects.get(id=indicator)
 
-        if int(self.kwargs['program']) != 0:
-            getProgramsIndicator = Program.objects.all().filter(id=self.kwargs['program']).order_by('name').annotate(indicator_count=Count('indicator'))
-        elif int(self.kwargs['indicator']) != 0:
-            getProgramsIndicator = Program.objects.all().filter(indicator=self.kwargs['indicator']).order_by('name').annotate(indicator_count=Count('indicator'))
-        elif int(self.kwargs['type']) != 0:
-            getProgramsIndicator = Program.objects.all().filter(indicator__indicator_type=self.kwargs['type']).order_by('name').annotate(indicator_count=Count('indicator'))
-        else:
-            getProgramsIndicator = Program.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(indicator_count=Count('indicator'))
+        indicators = Program.objects.all().filter(country__in=countries).filter(**q).order_by('name','indicator__number').annotate(indicator_count=Count('indicator'))
 
-        return render(request, self.template_name, {'getPrograms': getPrograms, 'getProgramsIndicator': getProgramsIndicator, 'getIndicatorTypes': getIndicatorTypes})
+        return render(request, self.template_name, {'getPrograms': getPrograms,'getIndicators':getIndicators,
+                                                    'program_name':program_name, 'indicator_name':indicator_name,
+                                                    'type_name':type_name, 'program':program, 'indicator': indicator, 'type': type,
+                                                    'getProgramsIndicator': indicators, 'getIndicatorTypes': getIndicatorTypes})
 
 
 def import_indicator(service=1,deserialize=True):
@@ -83,7 +110,7 @@ def import_indicator(service=1,deserialize=True):
     if deserialize == True:
         data = json.loads(response.content) # deserialises it
     else:
-        #send json data back not deserialized data
+        # send json data back not deserialized data
         data = response
     #debug the json data string uncomment dump and print
     #data2 = json.dumps(json_data) # json formatted string
@@ -301,368 +328,6 @@ class IndicatorDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = IndicatorForm
-
-
-def indicator_report(request, program=0, indicator=0, type=0):
-    """
-    This is the indicator library report.  List of all indicators across a country or countries filtered by
-    program.  Lives in the "Report" navigation.
-    URL: indicators/report/0/
-    :param request:
-    :param program:
-    :return:
-    """
-    countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-
-    getIndicatorTypes = IndicatorType.objects.all()
-
-    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/report.html", {'program': program, 'getPrograms': getPrograms,'form': FilterForm(), 'helper': FilterForm.helper, 'getIndicatorTypes': getIndicatorTypes})
-
-class IndicatorReport(View, AjaxableResponseMixin):
-
-    def get(self, request,  *args, **kwargs):
-
-        countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-
-        getIndicatorTypes = IndicatorType.objects.all()
-
-        program = int(self.kwargs['program'])
-        type = int(self.kwargs['type'])
-
-        if program != 0:
-            getIndicators = Indicator.objects.all().filter(program__id=program).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector','disaggregation','means_of_verification', 'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source', 'method_of_analysis')
-
-        elif type != 0:
-            getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector','disaggregation','means_of_verification', 'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source', 'method_of_analysis')
-         
-        else:
-            getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries).values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector','disaggregation','means_of_verification', 'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source', 'method_of_analysis') 
-
-        if request.method == "GET" and "search" in request.GET:
-            getIndicators = Indicator.objects.filter(
-                                               Q(indicator_type__indicator_type__contains=request.GET["search"]) |
-                                               Q(name__contains=request.GET["search"]) | Q(number__contains=request.GET["search"]) |
-                                               Q(number__contains=request.GET["search"]) | Q(sector__sector__contains=request.GET["search"]) |
-                                               Q(definition__contains=request.GET["search"])
-                                              ).values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector','disaggregation','means_of_verification', 'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source', 'method_of_analysis')
-
-        from django.core.serializers.json import DjangoJSONEncoder
-
-        get_indicators = json.dumps(list(getIndicators), cls=DjangoJSONEncoder)
-
-        return JsonResponse(get_indicators, safe=False)
-
-
-
-def programIndicatorReport(request, program=0):
-    """
-    This is the GRID report or indicator plan for a program.  Shows a simple list of indicators sorted by level
-    and number. Lives in the "Indicator" home page as a link.
-    URL: indicators/program_report/[program_id]/
-    :param request:
-    :param program:
-    :return:
-    """
-    program = int(program)
-    countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
-    getProgram = Program.objects.get(id=program)
-
-    getIndicatorTypes = IndicatorType.objects.all()
-
-
-    if request.method == "GET" and "search" in request.GET:
-        #list1 = list()
-        #for obj in filtered:
-        #    list1.append(obj)
-        getIndicators = Indicator.objects.all().filter(
-                                           Q(indicator_type__icontains=request.GET["search"]) |
-                                           Q(name__icontains=request.GET["search"]) |
-                                           Q(number__icontains=request.GET["search"]) |
-                                           Q(definition__startswith=request.GET["search"])
-                                          ).filter(program__id=program).select_related().order_by('level','number')
-
-
-    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms,
-                                                           'getProgram': getProgram, 'form': FilterForm(), 'helper': FilterForm.helper, 'getIndicatorTypes': getIndicatorTypes})
-
-
-def indicator_data_report(request, id=0, program=0, type=0):
-    """
-    This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
-    and sums it at the bottom.  Lives in the "Reports" navigation.
-    URL: indicators/data/[id]/[program]/[type]
-    :param request:
-    :param id: Indicator ID
-    :param program: Program ID
-    :param type: Type ID
-    :return:
-    """
-    countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-    getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
-    getTypes = IndicatorType.objects.all()
-    indicator_name = None
-    program_name = None
-    type_name = None
-    q = {'indicator__id__isnull': False}
-    z = None
-
-    #Build query based on filters and search
-    if int(id) != 0:
-        getSiteProfile = Indicator.objects.all().filter(id=id).select_related()
-        indicator_name = Indicator.objects.get(id=id).name
-        z = {
-            'indicator__id': id
-        }
-    else:
-        getSiteProfile = SiteProfile.objects.all().select_related()
-        z = {
-            'indicator__program__country__in': countries,
-        }
-
-    if int(program) != 0:
-        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program).select_related()
-        program_name = Program.objects.get(id=program).name
-        q = {
-            'program__id':program
-        }
-        #redress the indicator list based on program
-        getIndicators = Indicator.objects.select_related().filter(program=program)
-
-    if int(type) != 0:
-        type_name = IndicatorType.objects.get(id=type).indicator_type
-        q = {
-            'indicator__indicator_type__id':type,
-        }
-
-    if z:
-        q.update(z)
-
-        print q
-
-    if request.method == "GET" and "search" in request.GET:
-        queryset = CollectedData.objects.filter(**q).filter(
-                                           Q(agreement__project_name__contains=request.GET["search"]) |
-                                           Q(description__icontains=request.GET["search"]) |
-                                           Q(indicator__name__contains=request.GET["search"])
-                                          ).select_related()
-    else:
-
-        queryset = CollectedData.objects.all().filter(**q).select_related()
-
-    #pass query to table and configure
-    table = IndicatorDataTable(queryset)
-    table.paginate(page=request.GET.get('page', 1), per_page=20)
-
-    RequestConfig(request).configure(table)
-
-    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html", {'getQuantitativeData': queryset, 'countries':countries,'getSiteProfile': getSiteProfile,
-                                                           'getPrograms':getPrograms, 'getIndicators': getIndicators,
-                                                           'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
-                                                           'id': id,'program': program,'type': type,'indicator': id,'indicator_name':indicator_name,
-                                                           'type_name': type_name, 'program_name': program_name})
-
-
-class IndicatorReportData(View, AjaxableResponseMixin):
-    """
-    This is the Indicator Visual report data, returns a json object of report data to be displayed in the table report
-    URL: indicators/report_data/[id]/[program]/
-    :param request:
-    :param id: Indicator ID
-    :param program: Program ID
-    :param type: Type ID
-    :return: json dataset
-    """
-
-    def get(self, request,program,type,id):
-        q = {'program__id__isnull': False}
-        # if we have a program filter active
-        if int(program) != 0:
-            q = {
-                'program__id': program,
-            }
-        # if we have an indicator type active
-        if int(type) != 0:
-            r = {
-                'indicator_type__id': type,
-            }
-            q.update(r)
-        # if we have an indicator id append it to the query filter
-        if int(id) != 0:
-            s ={
-                    'id': id,
-                }
-            q.update(s)
-
-        countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name', 'indicator_type__indicator_type', 'sector__sector',)
-        indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=True).count()
-        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).count()
-
-        indicator_serialized = json.dumps(list(indicator))
-
-        final_dict = {
-            'indicator': indicator_serialized,
-            'indicator_count': indicator_count,
-            'data_count': indicator_data_count
-        }
-
-        if request.GET.get('export'):
-            indicator_export = Indicator.objects.all().filter(**q)
-            dataset = IndicatorResource().export(indicator_export)
-            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
-            return response
-
-        return JsonResponse(final_dict, safe=False)
-
-
-class CollectedDataReportData(View, AjaxableResponseMixin):
-    """
-    This is the Collected Data reports data in JSON format for a specific indicator
-    URL: indicators/collectedaata/[id]/
-    :param request:
-    :param indicator: Indicator ID
-    :return: json dataset
-    """
-
-    def get(self, request, *args, **kwargs):
-
-        countries = getCountry(request.user)
-        program = kwargs['program']
-        indicator = kwargs['indicator']
-        type = kwargs['type']
-
-        q = {'program__id__isnull': False}
-        # if we have a program filter active
-        if int(program) != 0:
-            q = {
-                'indicator__program__id': program,
-            }
-        # if we have an indicator type active
-        if int(type) != 0:
-            r = {
-                'indicator__indicator_type__id': type,
-            }
-            q.update(r)
-        # if we have an indicator id append it to the query filter
-        if int(indicator) != 0:
-            s ={
-                    'indicator__id': indicator,
-                }
-            q.update(s)
-
-        getCollectedData = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
-                                                                        'indicator__objectives',
-                                                                        'indicator__strategic_objectives').filter(program__country__in=countries).filter(
-            **q).order_by(
-            'indicator__program__name',
-            'indicator__number').values('indicator__id','indicator__name','indicator__program__name','indicator__indicator_type__indicator_type','indicator__level__name',
-                                        'indicator__sector__sector','date_collected','indicator__baseline','indicator__lop_target','indicator__key_performance_indicator',
-                                        'indicator__external_service_record__external_service__name','evidence','tola_table','targeted','achieved')
-
-
-        collected_sum = CollectedData.objects.filter(program__country__in=countries).filter(**q).aggregate(Sum('targeted'), Sum('achieved'))
-        
-        # datetime encoding breaks without using this
-        from django.core.serializers.json import DjangoJSONEncoder
-        collected_serialized = json.dumps(list(getCollectedData), cls=DjangoJSONEncoder)
-
-
-        final_dict = {
-            'collected': collected_serialized,
-            'collected_sum': collected_sum
-        }
-
-        return JsonResponse(final_dict, safe=False)
-
-
-class CollectedDataList(ListView):
-    """
-    This is the Indicator CollectedData report for each indicator and program.  Displays a list collected data entries
-    and sums it at the bottom.  Lives in the "Reports" navigation.
-    URL: indicators/data/[id]/[program]/[type]
-    :param request:
-    :param indicator: Indicator ID
-    :param program: Program ID
-    :param type: Type ID
-    :return:
-    """
-    model = CollectedData
-    template_name = 'indicators/collecteddata_list.html'
-
-    def get(self, request, *args, **kwargs):
-
-        countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(collecteddata__isnull=True)
-        getIndicatorTypes = IndicatorType.objects.all()
-        program = self.kwargs['program']
-        indicator = self.kwargs['indicator']
-        type = self.kwargs['type']
-        indicator_name = ""
-        type_name = ""
-        program_name = ""
-
-        q = {'program__id__isnull': False}
-        # if we have a program filter active
-        if int(program) != 0:
-            q = {
-                'program__id': program,
-            }
-            # redress the indicator list based on program
-            getIndicators = Indicator.objects.select_related().filter(program=program)
-            program_name = Program.objects.get(id=program)
-        # if we have an indicator type active
-        if int(type) != 0:
-            r = {
-                'indicator_type__id': type,
-            }
-            q.update(r)
-            # redress the indicator list based on type
-            getIndicators = Indicator.objects.select_related().filter(indicator_type__id=type)
-            type_name = IndicatorType.objects.get(id=type).indicator_type
-        # if we have an indicator id append it to the query filter
-        if int(indicator) != 0:
-            s = {
-                'indicator': indicator,
-            }
-            q.update(s)
-            indicator_name = Indicator.objects.get(id=indicator)
-
-        print q
-
-        indicators = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
-                                                                        'indicator__objectives',
-                                                                        'indicator__strategic_objectives').filter(
-            program__country__in=countries).filter(
-            **q).order_by(
-            'indicator__program__name',
-            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__program__name',
-                                        'indicator__indicator_type__indicator_type', 'indicator__level__name',
-                                        'indicator__sector__sector', 'date_collected', 'indicator__baseline',
-                                        'indicator__lop_target', 'indicator__key_performance_indicator',
-                                        'indicator__external_service_record__external_service__name', 'evidence',
-                                        'tola_table', 'targeted', 'achieved')
-
-        if self.request.GET.get('export'):
-            dataset = CollectedDataResource().export(indicators)
-            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
-            return response
-
-        return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
-                                                    'getIndicatorTypes': getIndicatorTypes, 'getIndicators':getIndicators,
-                                                    'filter_program':program_name,'filter_indicator': indicator_name,
-                                                    'indicator': indicator,'program': program,'type': type,'indicator_name':indicator_name,
-                                                    'program_name': program_name, 'type_name': type_name})
 
 
 class CollectedDataCreate(CreateView):
@@ -991,7 +656,7 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
                                               'indicator_id': indicator, 'program_id': program})
 
 
-def program_indicators_json(AjaxableResponseMixin,program):
+def program_indicators_json(AjaxableResponseMixin,program,indicator,type):
     """
     Displayed on the Indicator home page as a table of indicators related to a Program
     Called from Program "Indicator" button onClick
@@ -1000,7 +665,28 @@ def program_indicators_json(AjaxableResponseMixin,program):
     :return: List of Indicators and the Program they are related to
     """
     template_name = 'indicators/program_indicators_table.html'
-    indicators = Indicator.objects.all().filter(program=program).annotate(data_count=Count('collecteddata'))
+
+    q = {'program__id__isnull': False}
+    # if we have a program filter active
+    if int(program) != 0:
+        q = {
+            'program__id': program,
+        }
+    # if we have an indicator type active
+    if int(type) != 0:
+        r = {
+            'indicator_type__id': type,
+        }
+        q.update(r)
+    # if we have an indicator id append it to the query filter
+    if int(indicator) != 0:
+        s = {
+            'id': indicator,
+        }
+        q.update(s)
+    print q
+
+    indicators = Indicator.objects.all().filter(**q).annotate(data_count=Count('collecteddata'))
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
 
 
@@ -1011,6 +697,446 @@ def tool(request):
     :return:
     """
     return render(request, 'indicators/tool.html')
+
+
+# REPORT VIEWS
+def indicator_report(request, program=0, indicator=0, type=0):
+    """
+    This is the indicator library report.  List of all indicators across a country or countries filtered by
+    program.  Lives in the "Report" navigation.
+    URL: indicators/report/0/
+    :param request:
+    :param program:
+    :return:
+    """
+    countries = getCountry(request.user)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+
+    getIndicatorTypes = IndicatorType.objects.all()
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/report.html",
+                  {'program': program, 'getPrograms': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper,
+                   'getIndicatorTypes': getIndicatorTypes})
+
+
+class IndicatorReport(View, AjaxableResponseMixin):
+    def get(self, request, *args, **kwargs):
+
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+
+        getIndicatorTypes = IndicatorType.objects.all()
+
+        program = int(self.kwargs['program'])
+        type = int(self.kwargs['type'])
+
+        if program != 0:
+            getIndicators = Indicator.objects.all().filter(program__id=program).select_related().values('id',
+                                                                                                        'program__name',
+                                                                                                        'baseline',
+                                                                                                        'level__name',
+                                                                                                        'lop_target',
+                                                                                                        'program__id',
+                                                                                                        'external_service_record__external_service__name',
+                                                                                                        'key_performance_indicator',
+                                                                                                        'name',
+                                                                                                        'indicator_type__indicator_type',
+                                                                                                        'sector__sector',
+                                                                                                        'disaggregation',
+                                                                                                        'means_of_verification',
+                                                                                                        'data_collection_method',
+                                                                                                        'reporting_frequency',
+                                                                                                        'create_date',
+                                                                                                        'edit_date',
+                                                                                                        'source',
+                                                                                                        'method_of_analysis')
+
+        elif type != 0:
+            getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related().values('id',
+                                                                                                        'program__name',
+                                                                                                        'baseline',
+                                                                                                        'level__name',
+                                                                                                        'lop_target',
+                                                                                                        'program__id',
+                                                                                                        'external_service_record__external_service__name',
+                                                                                                        'key_performance_indicator',
+                                                                                                        'name',
+                                                                                                        'indicator_type__indicator_type',
+                                                                                                        'sector__sector',
+                                                                                                        'disaggregation',
+                                                                                                        'means_of_verification',
+                                                                                                        'data_collection_method',
+                                                                                                        'reporting_frequency',
+                                                                                                        'create_date',
+                                                                                                        'edit_date',
+                                                                                                        'source',
+                                                                                                        'method_of_analysis')
+
+        else:
+            getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries).values('id',
+                                                                                                                   'program__name',
+                                                                                                                   'baseline',
+                                                                                                                   'level__name',
+                                                                                                                   'lop_target',
+                                                                                                                   'program__id',
+                                                                                                                   'external_service_record__external_service__name',
+                                                                                                                   'key_performance_indicator',
+                                                                                                                   'name',
+                                                                                                                   'indicator_type__indicator_type',
+                                                                                                                   'sector__sector',
+                                                                                                                   'disaggregation',
+                                                                                                                   'means_of_verification',
+                                                                                                                   'data_collection_method',
+                                                                                                                   'reporting_frequency',
+                                                                                                                   'create_date',
+                                                                                                                   'edit_date',
+                                                                                                                   'source',
+                                                                                                                   'method_of_analysis')
+
+        if request.method == "GET" and "search" in request.GET:
+            getIndicators = Indicator.objects.filter(
+                Q(indicator_type__indicator_type__contains=request.GET["search"]) |
+                Q(name__contains=request.GET["search"]) | Q(number__contains=request.GET["search"]) |
+                Q(number__contains=request.GET["search"]) | Q(sector__sector__contains=request.GET["search"]) |
+                Q(definition__contains=request.GET["search"])
+            ).values('id', 'program__name', 'baseline', 'level__name', 'lop_target', 'program__id',
+                     'external_service_record__external_service__name', 'key_performance_indicator', 'name',
+                     'indicator_type__indicator_type', 'sector__sector', 'disaggregation', 'means_of_verification',
+                     'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source',
+                     'method_of_analysis')
+
+        from django.core.serializers.json import DjangoJSONEncoder
+
+        get_indicators = json.dumps(list(getIndicators), cls=DjangoJSONEncoder)
+
+        return JsonResponse(get_indicators, safe=False)
+
+
+def programIndicatorReport(request, program=0):
+    """
+    This is the GRID report or indicator plan for a program.  Shows a simple list of indicators sorted by level
+    and number. Lives in the "Indicator" home page as a link.
+    URL: indicators/program_report/[program_id]/
+    :param request:
+    :param program:
+    :return:
+    """
+    program = int(program)
+    countries = getCountry(request.user)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
+    getProgram = Program.objects.get(id=program)
+
+    getIndicatorTypes = IndicatorType.objects.all()
+
+    if request.method == "GET" and "search" in request.GET:
+        # list1 = list()
+        # for obj in filtered:
+        #    list1.append(obj)
+        getIndicators = Indicator.objects.all().filter(
+            Q(indicator_type__icontains=request.GET["search"]) |
+            Q(name__icontains=request.GET["search"]) |
+            Q(number__icontains=request.GET["search"]) |
+            Q(definition__startswith=request.GET["search"])
+        ).filter(program__id=program).select_related().order_by('level', 'number')
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms,
+                                                           'getProgram': getProgram, 'form': FilterForm(),
+                                                           'helper': FilterForm.helper,
+                                                           'getIndicatorTypes': getIndicatorTypes})
+
+
+def indicator_data_report(request, id=0, program=0, type=0):
+    """
+    This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
+    and sums it at the bottom.  Lives in the "Reports" navigation.
+    URL: indicators/data/[id]/[program]/[type]
+    :param request:
+    :param id: Indicator ID
+    :param program: Program ID
+    :param type: Type ID
+    :return:
+    """
+    countries = getCountry(request.user)
+    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
+    getTypes = IndicatorType.objects.all()
+    indicator_name = None
+    program_name = None
+    type_name = None
+    q = {'indicator__id__isnull': False}
+    z = None
+
+    # Build query based on filters and search
+    if int(id) != 0:
+        getSiteProfile = Indicator.objects.all().filter(id=id).select_related()
+        indicator_name = Indicator.objects.get(id=id).name
+        z = {
+            'indicator__id': id
+        }
+    else:
+        getSiteProfile = SiteProfile.objects.all().select_related()
+        z = {
+            'indicator__program__country__in': countries,
+        }
+
+    if int(program) != 0:
+        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program).select_related()
+        program_name = Program.objects.get(id=program).name
+        q = {
+            'program__id': program
+        }
+        # redress the indicator list based on program
+        getIndicators = Indicator.objects.select_related().filter(program=program)
+
+    if int(type) != 0:
+        type_name = IndicatorType.objects.get(id=type).indicator_type
+        q = {
+            'indicator__indicator_type__id': type,
+        }
+
+    if z:
+        q.update(z)
+
+        print q
+
+    if request.method == "GET" and "search" in request.GET:
+        queryset = CollectedData.objects.filter(**q).filter(
+            Q(agreement__project_name__contains=request.GET["search"]) |
+            Q(description__icontains=request.GET["search"]) |
+            Q(indicator__name__contains=request.GET["search"])
+        ).select_related()
+    else:
+
+        queryset = CollectedData.objects.all().filter(**q).select_related()
+
+    # pass query to table and configure
+    table = IndicatorDataTable(queryset)
+    table.paginate(page=request.GET.get('page', 1), per_page=20)
+
+    RequestConfig(request).configure(table)
+
+    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+    return render(request, "indicators/data_report.html",
+                  {'getQuantitativeData': queryset, 'countries': countries, 'getSiteProfile': getSiteProfile,
+                   'getPrograms': getPrograms, 'getIndicators': getIndicators,
+                   'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
+                   'id': id, 'program': program, 'type': type, 'indicator': id, 'indicator_name': indicator_name,
+                   'type_name': type_name, 'program_name': program_name})
+
+
+class IndicatorReportData(View, AjaxableResponseMixin):
+    """
+    This is the Indicator Visual report data, returns a json object of report data to be displayed in the table report
+    URL: indicators/report_data/[id]/[program]/
+    :param request:
+    :param id: Indicator ID
+    :param program: Program ID
+    :param type: Type ID
+    :return: json dataset
+    """
+
+    def get(self, request, program, type, id):
+        q = {'program__id__isnull': False}
+        # if we have a program filter active
+        if int(program) != 0:
+            q = {
+                'program__id': program,
+            }
+        # if we have an indicator type active
+        if int(type) != 0:
+            r = {
+                'indicator_type__id': type,
+            }
+            q.update(r)
+        # if we have an indicator id append it to the query filter
+        if int(id) != 0:
+            s = {
+                'id': id,
+            }
+            q.update(s)
+
+        countries = getCountry(request.user)
+        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id',
+                                                                                                      'program__name',
+                                                                                                      'baseline',
+                                                                                                      'level__name',
+                                                                                                      'lop_target',
+                                                                                                      'program__id',
+                                                                                                      'external_service_record__external_service__name',
+                                                                                                      'key_performance_indicator',
+                                                                                                      'name',
+                                                                                                      'indicator_type__indicator_type',
+                                                                                                      'sector__sector', )
+        indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
+            collecteddata__isnull=True).count()
+        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
+            collecteddata__isnull=False).count()
+
+        indicator_serialized = json.dumps(list(indicator))
+
+        final_dict = {
+            'indicator': indicator_serialized,
+            'indicator_count': indicator_count,
+            'data_count': indicator_data_count
+        }
+
+        if request.GET.get('export'):
+            indicator_export = Indicator.objects.all().filter(**q)
+            dataset = IndicatorResource().export(indicator_export)
+            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+            return response
+
+        return JsonResponse(final_dict, safe=False)
+
+
+class CollectedDataReportData(View, AjaxableResponseMixin):
+    """
+    This is the Collected Data reports data in JSON format for a specific indicator
+    URL: indicators/collectedaata/[id]/
+    :param request:
+    :param indicator: Indicator ID
+    :return: json dataset
+    """
+
+    def get(self, request, *args, **kwargs):
+
+        countries = getCountry(request.user)
+        program = kwargs['program']
+        indicator = kwargs['indicator']
+        type = kwargs['type']
+
+        q = {'program__id__isnull': False}
+        # if we have a program filter active
+        if int(program) != 0:
+            q = {
+                'indicator__program__id': program,
+            }
+        # if we have an indicator type active
+        if int(type) != 0:
+            r = {
+                'indicator__indicator_type__id': type,
+            }
+            q.update(r)
+        # if we have an indicator id append it to the query filter
+        if int(indicator) != 0:
+            s = {
+                'indicator__id': indicator,
+            }
+            q.update(s)
+
+        getCollectedData = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+                                                                        'indicator__objectives',
+                                                                        'indicator__strategic_objectives').filter(
+            program__country__in=countries).filter(
+            **q).order_by(
+            'indicator__program__name',
+            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__program__name',
+                                        'indicator__indicator_type__indicator_type', 'indicator__level__name',
+                                        'indicator__sector__sector', 'date_collected', 'indicator__baseline',
+                                        'indicator__lop_target', 'indicator__key_performance_indicator',
+                                        'indicator__external_service_record__external_service__name', 'evidence',
+                                        'tola_table', 'targeted', 'achieved')
+
+        collected_sum = CollectedData.objects.filter(program__country__in=countries).filter(**q).aggregate(
+            Sum('targeted'), Sum('achieved'))
+
+        # datetime encoding breaks without using this
+        from django.core.serializers.json import DjangoJSONEncoder
+        collected_serialized = json.dumps(list(getCollectedData), cls=DjangoJSONEncoder)
+
+        final_dict = {
+            'collected': collected_serialized,
+            'collected_sum': collected_sum
+        }
+
+        return JsonResponse(final_dict, safe=False)
+
+
+class CollectedDataList(ListView):
+    """
+    This is the Indicator CollectedData report for each indicator and program.  Displays a list collected data entries
+    and sums it at the bottom.  Lives in the "Reports" navigation.
+    URL: indicators/data/[id]/[program]/[type]
+    :param request:
+    :param indicator: Indicator ID
+    :param program: Program ID
+    :param type: Type ID
+    :return:
+    """
+    model = CollectedData
+    template_name = 'indicators/collecteddata_list.html'
+
+    def get(self, request, *args, **kwargs):
+
+        countries = getCountry(request.user)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(
+            collecteddata__isnull=True)
+        getIndicatorTypes = IndicatorType.objects.all()
+        program = self.kwargs['program']
+        indicator = self.kwargs['indicator']
+        type = self.kwargs['type']
+        indicator_name = ""
+        type_name = ""
+        program_name = ""
+
+        q = {'program__id__isnull': False}
+        # if we have a program filter active
+        if int(program) != 0:
+            q = {
+                'program__id': program,
+            }
+            # redress the indicator list based on program
+            getIndicators = Indicator.objects.select_related().filter(program=program)
+            program_name = Program.objects.get(id=program)
+        # if we have an indicator type active
+        if int(type) != 0:
+            r = {
+                'indicator__indicator_type__id': type,
+            }
+            q.update(r)
+            # redress the indicator list based on type
+            getIndicators = Indicator.objects.select_related().filter(indicator_type__id=type)
+            type_name = IndicatorType.objects.get(id=type).indicator_type
+        # if we have an indicator id append it to the query filter
+        if int(indicator) != 0:
+            s = {
+                'indicator': indicator,
+            }
+            q.update(s)
+            indicator_name = Indicator.objects.get(id=indicator)
+
+        indicators = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+                                                                  'indicator__objectives',
+                                                                  'indicator__strategic_objectives').filter(
+            program__country__in=countries).filter(
+            **q).order_by(
+            'indicator__program__name',
+            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__program__name',
+                                        'indicator__indicator_type__indicator_type', 'indicator__level__name',
+                                        'indicator__sector__sector', 'date_collected', 'indicator__baseline',
+                                        'indicator__lop_target', 'indicator__key_performance_indicator',
+                                        'indicator__external_service_record__external_service__name', 'evidence',
+                                        'tola_table', 'targeted', 'achieved')
+
+        if self.request.GET.get('export'):
+            dataset = CollectedDataResource().export(indicators)
+            response = HttpResponse(dataset.csv, content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
+            return response
+
+        return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
+                                                    'getIndicatorTypes': getIndicatorTypes,
+                                                    'getIndicators': getIndicators,
+                                                    'program': program, 'indicator': indicator, 'type': type,
+                                                    'filter_program': program_name, 'filter_indicator': indicator_name,
+                                                    'indicator': indicator, 'program': program, 'type': type,
+                                                    'indicator_name': indicator_name,
+                                                    'program_name': program_name, 'type_name': type_name})
 
 
 class IndicatorExport(View):

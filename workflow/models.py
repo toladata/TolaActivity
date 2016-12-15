@@ -135,7 +135,7 @@ class TolaUser(models.Model):
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
-    organization = models.ForeignKey(Organization, default=1)
+    organization = models.ForeignKey(Organization, default=1,blank=True, null=True,)
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
@@ -160,6 +160,35 @@ class TolaUser(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(TolaUser, self).save()
+
+
+class TolaBookmarks(models.Model):
+    user = models.ForeignKey(TolaUser, related_name='tolabookmark')
+    name = models.CharField(blank=True, null=True, max_length=255)
+    bookmark_url = models.CharField(blank=True, null=True, max_length=255)
+    program = models.ForeignKey("Program", blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __unicode__(self):
+        return self.name
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(TolaBookmarks, self).save()
+
+class TolaBookmarksAdmin(admin.ModelAdmin):
+
+    list_display = ('user', 'name')
+    display = 'Tola User Bookmarks'
+    list_filter = ('user__name',)
+    search_fields = ('name','user')
 
 
 class TolaUserProxy(TolaUser):
