@@ -9,9 +9,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Mercy Corps Public Dashboard">
         <meta name="author" content="Mercy Corps">
-
-        <!-- <title>{% block title %} Program Dashboard {% endblock %}</title> -->
-
         <link rel="shortcut icon" href="{{ STATIC_URL }}img/favicon.png" type="image/png">
 
         <!-- Bootstrap -->
@@ -23,97 +20,20 @@
 
         <!-- Custom Footer CSS -->
         <link href="{{ STATIC_URL }}css/app.css" rel="stylesheet" type="text/css">
-
+        <!-- - RRIMA CSS --> 
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/rrima.css">
         <!-- - Hosted Leaflet CSS --> 
         <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
 
         {% block extra_js_in_header %}
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins)  -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
-
-        <!-- <!- Hosted Leaflet -->
-		 <script src="{{ STATIC_URL }}js/leaflet.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/leaflet.js"></script>
+		 
         {% endblock %} 
 
     </head>
-    <style>
-
-    	@media (min-width: 1024px) {
-    		body{
-    			padding-top: 100px;
-    		}
-    	}
-    	@media (max-width: 1024px) {
-    		body{
-    			padding-top: 120px;
-    		}
-    	}
-    	@media (max-width: 768px) {
-    		body{
-    			padding-top: 80px;
-    		}
-    	}
-    	body{
-    	  color: #4d525a;
-	  	  background-color: #f6f6f6;
-    	}
-
-		h3:before { 
-		  display: block; 
-		  margin-top: -9.375em; 
-		  height: 9.375em; 
-		  visibility: hidden; 
-		}
-	  .red-solid {
-	  	background-color:#cf102d;
-	  }
-	  .red-gradient {
-		  background-color: #cf102d;
-		  border-color: #b00e26;
-		  background-image: -webkit-gradient(linear, left 0%, left 100%, from(#ee2443), to(#cf102d));
-		  background-image: -webkit-linear-gradient(top, #ee2443, 0%, #cf102d, 100%);
-		  background-image: -moz-linear-gradient(top, #ee2443 0%, #cf102d 100%);
-		  background-image: linear-gradient(to bottom, #ee2443 0%, #cf102d 100%);
-		  background-repeat: repeat-x;
-		  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee2443', endColorstr='#ffcf102d', GradientType=0);
-	  }
-	  .button-selector {
-	  	height: 40px; 
-	  	padding: .5em; 
-	  	border-radius:0.313em; 
-	  	box-shadow: 0.156em 0.156em 0.156em black; 
-	  	color: white;
-	  }
-	  .highlight-title {
-	  	height: 3em; 
-	  	padding-top: 1em;
-	  }
-	  .highlight-panel {
-	  	height: 3em; 
-	  	padding-top: 1em;
-	  }
-
-	.lightest-grey-gradient {
-		  background-color: #dbdcde;
-		  border-color: #cacbce;
-		  background-image: -webkit-gradient(linear, left 0%, left 100%, from(#f6f6f6), to(#dbdcde));
-		  background-image: -webkit-linear-gradient(top, #f6f6f6, 0%, #dbdcde, 100%);
-		  background-image: -moz-linear-gradient(top, #f6f6f6 0%, #dbdcde 100%);
-		  background-image: linear-gradient(to bottom, #f6f6f6 0%, #dbdcde 100%);
-		  background-repeat: repeat-x;
-		  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff6f6f6', endColorstr='#ffdbdcde', GradientType=0);
-		}
-	.dark-white-gradient {
-	  background-color: #f6f6f6;
-	  border-color: #e5e5e5;
-	  background-image: -webkit-gradient(linear, left 0%, left 100%, from(#ffffff), to(#f6f6f6));
-	  background-image: -webkit-linear-gradient(top, #ffffff, 0%, #f6f6f6, 100%);
-	  background-image: -moz-linear-gradient(top, #ffffff 0%, #f6f6f6 100%);
-	  background-image: linear-gradient(to bottom, #ffffff 0%, #f6f6f6 100%);
-	  background-repeat: repeat-x;
-	  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff6f6f6', GradientType=0);
-	}
-	</style>
 <!-- load basic layout -->
 {% load staticfiles %}
 
@@ -153,11 +73,19 @@
 		               RRIMA REPORTS<b class = "caret"></b>
 		            </a>
 		            
-		            <ul class = "dropdown-menu"">
+		            <ul class = "dropdown-menu">
 		               <li><a href = "#report1"><span class="glyphicon glyphicon-stats"></span> Report 1</a></li>
 		               <li><a href = "#report2"><span class="glyphicon glyphicon-stats"></span> Report 2</a></li>
 		               <li><a href = "#report3"><span class="glyphicon glyphicon-stats"></span> Report 3</a></li>
 		               <li><a href = "#report4"><span class="glyphicon glyphicon-stats"></span> Report 4</a></li>
+		               <li><a href = "#report5"><span class="glyphicon glyphicon-stats"></span> Report 5</a></li>
+<!-- 		               {% for notebook in getNotebooks %}
+			               <li>
+			               		<a href = "{{getNotebook.file}}">
+			               			<span class="glyphicon glyphicon-stats"></span>{{getNotebook.name}}
+			               		</a>
+			               	</li>
+		               {% endfor %} -->
 		            </ul>
 					
 		         <li class = "dropdown col-lg-5 col-md-5 col-sm-5" style="padding:0; float: left;">
@@ -177,10 +105,7 @@
 		      </ul>
 		      <div class='col-lg-6 col-md-6 col-sm-6 red-solid' style='border-radius:0.313em; text-align: left; margin: 0.5em 2em 0em .5em; box-shadow: 0.156em 0.156em 0.156em black;padding: 0em 1.5em .5em 1.5em; float: right'> <h2>RRIMA Refugee & Migration News</h2></div>
 		   </div>
-		   
-		   
 		</nav>
-
 
 <!-- TODO: define layout sections -->
 			<div class="tab-content">
@@ -290,7 +215,7 @@
 						</div>
 						<div class='row'>
 							<div class='col-lg-9 col-md-12 col-sm-12' style='padding: 0em 2em 4em 0em;'>
-							<h3 id="report3">WHAT COPING MECHANSIMS ARE BEING USED?</h3>
+							<h3 id="report4">WHAT COPING MECHANSIMS ARE BEING USED?</h3>
 							<p>In both Turkey and Syria there are many barriers to working and earning enough income to support a family. Despite the fact that there are support services in place, that is often not enough to meet the needs of those who have been displaced by conflict.</p><p>How are displaced persons, both within and outside of Syria, coping with the challenges they are facing? Are they able to get work? If so, are they earning enough to support their families? RRIMA Report #4 explores the coping mechanisms most in use in North Syria and across the Turkish border, in Gaziantep.  </p>
 							</div>
 							<div class='col-lg-3 col-md-3 col-sm-6 col-xs-12' style='padding: 0em 0 0em 0;'>
@@ -302,17 +227,77 @@
 
 						</div>
 					</div>		
-
+					<div class='container-fluid col-lg-12 col-md-12 col-sm-12 dark-white-gradient' style='padding: 0 4em 0em 4em;'>
+						<div class='row'>
+						<div class='col-lg-9 col-md-12 col-sm-12' style='width: 100%; padding: 0em 2em 2em 0;'>
+							<h3 id="familyresources" style="text-align:left;">FAMILY PROFILES</h3>
+					    	<p> A typical family profile is provided for households across each of the 4 operation focus areas in Turkey and Greece, and lists challenges that households often face in that area. <br>
+					    	<br>
+					    	Typical refugee households in Turkey were, on average, larger than typical refugee households found in Greece.  This is likely because families with children tended to remain in Turkey or move on to new locations more slovely, while single travelers and young couples were more likely to travel on through Greece.  Also noteable, most refugee populations in Turkey originated in Syria, while a more diverse group of refugees (from Syria, Afghanistan, Iraq, Iran, and Pakistan) is located in Greece.</p>
+				    	</div>
+					<div id="custom_carousel" class="container-fluid col-lg-12 col-md-12 col-sm-12 carousel slide" style='padding: 0 0em 0em 15em;' data-ride="carousel" data-interval="10000">
+						<div class='col-lg-9 col-md-12 col-sm-12' style='padding: 0em 2em 2em 0em;'>
+					        <!-- Wrapper for slides -->
+					        <div class="carousel-inner" style='background-color:#eee; width: 100%;'>
+					            <div class="item active ">
+					                <div class="container-fluid bigger">
+					                    <div class="row bigger">
+					                        <div class="col-md-12">
+					                            <h3 style='text-align: left; padding-left: 10em;'>Gaziantep</h3>
+					                            <div class="bigger"><img src="{{STATIC_URL}}img/GZTfamily.png" class="img-responsive" ></div>
+					                        </div>
+					                    </div>
+					                </div>            
+					            </div> 
+					            <div class="item">
+					                <div class="container-fluid bigger">
+					                    <div class="row bigger">
+					                        <div class="col-md-12">
+					                            <h3 style='text-align: left; padding-left: 10em;'>Izmir</h3>
+					                            <div class="bigger"><img src="{{STATIC_URL}}img/IZMfamily.png" class="img-responsive" ></div>
+					                        </div>
+					                    </div>
+					                </div>            
+					            </div> 
+					            <div class="item">
+					                <div class="container-fluid bigger">
+					                    <div class="row bigger">
+					                        <div class="col-md-12">
+					                            <h3 style='text-align: left; padding-left: 10em;'>Greece (Mainland)</h3>
+					                            <div class="bigger"><img src="{{STATIC_URL}}img/GRC2family.png" class="img-responsive mediumbig" style="padding-left: 5em;"></div>
+					                        </div>
+					                    </div>
+					                </div>           
+					            </div> 
+					            <div class="item">
+					                <div class="container-fluid bigger">
+					                    <div class="row bigger">
+					                        <div class="col-md-12">
+					                            <h3 style='text-align: left; padding-left: 10em;'>Greece (Islands)</h3>
+					                            <div class="bigger"><img src="{{STATIC_URL}}img/GRC1family.png" class="img-responsive mediumbig" style="padding-left: 10em;"></div>
+					                        </div>
+					                    </div>
+					                </div>           
+					            </div> 
+					        <!-- End Item -->
+					        </div>
+				        <!-- End Carousel Inner -->
+					        <div class="controls">
+					            <ul class="nav">
+					                <li data-target="#custom_carousel" data-slide-to="0" class="active smaller"><a href="#"><img src="{{STATIC_URL}}img/GZTfamily.png" class="smaller"><small>Gaziantep</small></a></li>
+					                <li data-target="#custom_carousel" data-slide-to="1" class="smaller"><a href="#"><img src="{{STATIC_URL}}img/IZMfamily.png" class="smaller"><small>Izmir</small></a></li>
+					                <li data-target="#custom_carousel" data-slide-to="2"><a href="#"><img src="{{STATIC_URL}}img/GRC1family.png" class="smaller" class="smaller"><small>Greece (Mainland)</small></a></li>
+					                <li data-target="#custom_carousel" data-slide-to="3" class="smaller"><a href="#"><img src="{{STATIC_URL}}img/GRC2family.png" class="smaller"><small>Greece (Island)</small></a></li>
+					            </ul>
+					        </div>
+    					</div>
+    					</div>
+    				</div>
+    <!-- End Carousel -->
 					<div class='container-fluid col-lg-12 col-md-12 col-sm-12 dark-white-gradient' style='padding: 0 4em 4em 4em;'>
 						<div style='width: 100%; padding: 0em 2em 0em 0;'>
 							<h3 id="newsresources" style='padding: 1em 0 1em 0;'>NEWS FEEDS</h3>
 							<ul style='width: 100%;'>
-			<!-- 				TODO: Activate this link once iMAP integration is possible 	
-								<li class='col-lg-4' style='list-style: none;'>
-							 		<div class='panel red-gradient button-selector'><div class='panel-body' style='padding-top: 0em;'><a data-toggle="modal" href="#newsModal">RRIMA Information Hub</a>
-									</div>
-									</div>
-								</li> -->
 							    <li class='col-lg-3 col-md-4 col-sm-6 col-xs-12' style='list-style: none;'>
 							    	<div class='panel red-gradient button-selector'><div class='panel-body' style='padding-top: 0em;'><a href='https://newsthatmoves.org/en/' style='color: white; text-align: left; width: 100%;'>NEWS THAT MOVES</a><br></div>
 							    	</div>
@@ -334,24 +319,6 @@
 							 </ul>
 						</div>
 					<div class='container-fluid'></div>
-
-			<!-- ***** PAGE MODALS ********* -->
-				<!-- News Modal -->
-					<div id="newsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newsModalLabel" aria-hidden="true">
-					  <div class="modal-dialog" style="width:95%; height: 95%;" role="document">
-
-					    <!-- Modal content-->
-					    <div class="modal-content" style="height: 100%;"">
-					      <div class="modal-header">
-					        <button type="button" class="close" data-dismiss="modal">&times;</button>
-					        <strong><h3 class="modal-title"> News Modal Title</h3></strong>
-					      </div>
-					      <div class="modal-body" style='height: 100%; word-wrap: break-word; overflow-y: auto;'>
-					        <!-- This content will come from curated iMAP news -->
-					      </div>
-					    </div>
-					  </div>
-					</div>
 				</div>
 			</div>
 	<!-- footer -->
@@ -366,8 +333,22 @@
 	            </div>
 	        </div>
 	    </div><!-- .footer collapse -->
+<!-- 		<div id="infoModal" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
 
-      
+		    <!-Modal content-->
+<!-- 		    <div class="modal-content">
+		      <div class="modal-body">
+		        <p>{{request.get_full_path}}</p>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+
+		  </div>
+		</div> --> 
+    
         {% block extra_js_in_body %}
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -382,7 +363,14 @@
 
         {% endblock %}
     </body>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+
+  <script type="text/javascript">
+$(document).ready(function(ev){
+    $('#custom_carousel').on('slide.bs.carousel', function (evt) {
+      $('#custom_carousel .controls li.active').removeClass('active');
+      $('#custom_carousel .controls li:eq('+$(evt.relatedTarget).index()+')').addClass('active');
+    })
+});
+
+  </script>
 </html>
