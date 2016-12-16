@@ -1,12 +1,12 @@
-var doughnutFunction = function(data, tolaDoughnutColors){
-    var ctx = document.getElementById(data.component_id);
+var doughnutFunction = function(componentID,dataSet, dataLabels, tolaDoughnutColors){
+    var ctx = document.getElementById(componentID);
     var tolaDoughnutChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: data.labels,
+            labels: dataLabels,
             datasets: [{
                 label: "placeholder", // user input axis label
-                data: data.data_set,
+                data: dataSet,
                 backgroundColor: tolaDoughnutColors,
                 borderColor: tolaDoughnutColors,
                 borderWidth: 1,
