@@ -1,15 +1,15 @@
-var radarFunction = function(data, tolaRadarColors){
-    var ctx = document.getElementById(data.component_id);
+var radarFunction = function(componentID,dataSet, dataLabels,tolaRadarColors){
+    var ctx = document.getElementById(componentID);
 
     var tolaRadarChart = new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: ['1', '5', '10'], //data.labels
+            labels: dataLabels,
             datasets: [{
                 label: '# of Things', // user input axis label
-                data: data,
-                backgroundColor: tolaRadarColors,
-                borderColor: tolaRadarColors,
+                data: dataSet,
+                backgroundColor: tolaRadarColors[0],
+                borderColor: tolaRadarColors[0],
                 borderWidth: 1,
             }]
         },
