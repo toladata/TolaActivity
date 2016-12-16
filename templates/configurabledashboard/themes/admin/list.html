@@ -27,7 +27,12 @@
        <td> {{item.theme_name}} </td>
        <td> {{item.theme_description}} </td>
        <td> {{item.number_of_components}} </td>
-       <td> {{item.is_public}} </td>        
+       <td> {% if item.is_public == "True" %}
+            Public
+            {% else %}
+            Private
+            {% endif %} 
+            </td>        
        <td> <a href="" >Example </a></td> <!-- This is a sample image of the layout -->
        <td> 
       <a data-toggle="modal" data-target="#myModal" href="/configurabledashboard/theme_update/{{ item.id }}/" class="dashboards btn btn-xs btn-danger">Edit </a></td>
