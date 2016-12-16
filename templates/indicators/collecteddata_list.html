@@ -79,7 +79,7 @@
                         { title: "Program", data: "indicator__program__name"},
                         { title: "Indicator", data: "name",
                                 "mRender": function (data, type, row) {
-                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/' + row.indicator__id + '/{{ program }}/0/">' + row.indicator__name + '</a>';
+                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ program }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
                                 }
                             },
                         { title: "Level", data: "indicator__level__name"},
@@ -119,14 +119,14 @@
             // INDICATOR REPORT
             function indicator_report() {
                 // get the program and indicator id from the url
-                indicator_id = document.URL.split('/')[5];
-                //console.log(indicator_id);
-                program_id = document.URL.split('/')[6];
+                program_id = document.URL.split('/')[5];
                 //console.log(program_id);
+                indicator_id = document.URL.split('/')[6];
+                //console.log(indicator_id);
                 type_id = document.URL.split('/')[7];
                 //console.log(type_id);
 
-                $.getJSON("/indicators/collecteddata_report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/", function(data) {
+                $.getJSON("/indicators/collecteddata_report_data/" + program_id + "/"  + indicator_id + "/" + type_id + "/", function(data) {
                     show_indicator_table(data['collected']);
                     // If the indicator id is passed then sum up for the indicator
                     if (indicator_id > 0){
@@ -143,10 +143,10 @@
             // EXPORT DATA
             function do_export(type) {
                 // get the program and  indicator id from the url
-                indicator_id = document.URL.split('/')[5];
-                program_id = document.URL.split('/')[6];
+                program_id = document.URL.split('/')[5];
+                indicator_id = document.URL.split('/')[6];
                 type_id = document.URL.split('/')[7];
-                new_location="/indicators/collecteddata_report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/" + "export";
+                new_location="/indicators/collecteddata_report_data/" + program_id + "/" + indicator_id + "/" + type_id + "/" + "export";
                 window.location.assign(new_location);
 
             }
@@ -193,12 +193,12 @@
       window.location.href = '/indicators/collecteddata/'+program_id+'/0/0/';      
       }
 
-    function indicator_filter(indicator) {
-      window.location.href = '/indicators/collecteddata/0/'+indicator+'/0';  
+    function indicator_filter(program,indicator,type) {
+      window.location.href = '/indicators/collecteddata/'+program+'/'+indicator+'/'+type;
         }
 
-    function indicator_type_filter(type) {
-      window.location.href = '/indicators/collecteddata/0/0/'+type;      
+    function indicator_type_filter(program,indicator,type) {
+      window.location.href = '/indicators/collecteddata/'+program+'/'+indicator+'/'+type;
       }
  </script>
 

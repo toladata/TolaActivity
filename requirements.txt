@@ -39,4 +39,5 @@ django-simple-history==1.8.0
 requests-oauthlib==0.6.1
 pytz==2016.4
 django_admin_report
+pyyaml
 

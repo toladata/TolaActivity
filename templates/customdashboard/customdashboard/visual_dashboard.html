@@ -42,18 +42,18 @@
             <div class="panel-body">
                 <div style="float:left;">
 
-                    <h4>Project Status {% if getFilteredName %} for <a href="/workflow/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}{% endif %} </a></h4>
+                    <h4>Project Status {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}{% endif %} </a></h4>
                     Number of Initiations : <b>{{ getProjectsCount }}</b><br>
                     <!-- approved count-->
-                   <h4> <a href="/workflow/dashboard/{{ getFilteredName.id }}/approved/"><span class="label label-success">Approved &nbsp;<span class="badge">{{ getApprovedCount }}</span></span></a>
+                   <h4> <a href="/activitydb/dashboard/{{ getFilteredName.id }}/approved/"><span class="label label-success">Approved &nbsp;<span class="badge">{{ getApprovedCount }}</span></span></a>
                        <!-- awaiting approval count-->
-                    <a href="/workflow/dashboard/{{ getFilteredName.id }}/awaiting_approval/"><span class="label label-success">Awaiting Approval &nbsp;<span class="badge">{{ getAwaitingApprovalCount }}</span></span></a>
+                    <a href="/activitydb/dashboard/{{ getFilteredName.id }}/awaiting_approval/"><span class="label label-success">Awaiting Approval &nbsp;<span class="badge">{{ getAwaitingApprovalCount }}</span></span></a>
                     <!-- in progress count-->
-                    <a href="/workflow/dashboard/{{ getFilteredName.id }}/in_progress/"><span class="label label-success">In Progress &nbsp;<span class="badge">{{ getInProgressCount }}</span></span></a>
+                    <a href="/activitydb/dashboard/{{ getFilteredName.id }}/in_progress/"><span class="label label-success">In Progress &nbsp;<span class="badge">{{ getInProgressCount }}</span></span></a>
                     <!-- in progress count-->
-                    <a href="/workflow/dashboard/{{ getFilteredName.id }}/new/"><span class="label label-success">New &nbsp;<span class="badge">{{ nostatus_count }}</span></span></a>
+                    <a href="/activitydb/dashboard/{{ getFilteredName.id }}/in_progress/"><span class="label label-success">New &nbsp;<span class="badge">{{ nostatus_count }}</span></span></a>
                     <!-- rejected count-->
-                    <a href="/workflow/dashboard/{{ getFilteredName.id }}/rejected/"><span class="label label-success">Rejected &nbsp;<span class="badge">{{ getRejectedCount }}</span></span></a></h4>
+                    <a href="/activitydb/dashboard/{{ getFilteredName.id }}/rejected/"><span class="label label-success">Rejected &nbsp;<span class="badge">{{ getRejectedCount }}</span></span></a></h4>
 
                 </div>
 
@@ -75,7 +75,7 @@
                         <li role="presentation">
                          {% for project in getProjects %}
                             <li class="list-group-item">
-                                <a href="/workflow/dashboard/project/{{ project.id }}/">{{ project.project_name }}</a>
+                                <a href="/activitydb/dashboard/project/{{ project.id }}/">{{ project.project_name }}</a>
                             </li>
                          {%endfor%}
                         </li>
@@ -85,18 +85,18 @@
                 <div class="panel-body">
                     <div id="indicator" style=" width: 100%; height: 460px; margin: 0 auto; float:right">
                         <div style="width: 100%">
-                            <canvas id="program_chart" height="200" width="300"></canvas>
+                        <canvas id="program_chart" height="200" width="300"></canvas>
                         <div id="program-legend" class="chart-legend"></div>
 
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading"><b>Project(s) Status</b> {% if getFilteredName %} for <a href="/workflow/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }} </a>{% endif %}
+                <div class="panel-heading"><b>Project(s) Status</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }} </a>{% endif %}
                     </div>
                 <div class="panel-body">
                     <div class="col-md-offset-2 col-md-10">
@@ -109,7 +109,7 @@
 
         <div class="col-md-12">
             <div class="panel panel-info">
-                <div class="panel-heading"><b>Project Activity Budget</b> {% if getFilteredName %} for <a href="/workflow/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }} </a>{% endif %}
+                <div class="panel-heading"><b>Project Activity Budget</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }} </a>{% endif %}
                 </div>
                 <div class="panel-body">
                     <div id="budget">
@@ -122,7 +122,7 @@
     </div>
     <div class="col-md-12">
         <div class="panel panel-info">
-            <div class="panel-heading"><b>Project Sites</b> {% if getFilteredName %} for <a href="/workflow/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}</a> {% endif %}</div>
+            <div class="panel-heading"><b>Project Sites</b> {% if getFilteredName %} for <a href="/activitydb/dashboard/{{ getFilteredName.id }}">{{ getFilteredName }}</a> {% endif %}</div>
             <div class="panel-body">
 
                 <style>
@@ -135,9 +135,9 @@
             </div>
         </div>
     </div>
-    <div>{% include "charts/doughnut.html" %}</div>
-    <div>{% include "charts/bar_graph.html" %}</div>
-    <div>{% include "charts/polar.html" %}</div>
-    <div>{% include "charts/horizontal_bar_graph.html" %}</div>
+    <div>{% include "customdashboard/charts/doughnut.html" %}</div>
+    <div>{% include "customdashboard/charts/bar_graph.html" %}</div>
+    <div>{% include "customdashboard/charts/polar.html" %}</div>
+    <div>{% include "customdashboard/charts/horizontal_bar_graph.html" %}</div>
 
 {% endblock content %}

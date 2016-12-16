@@ -19,10 +19,10 @@ function loadCollected(indicator,program){
 /*
 *  Load the collected data for an indicator on the results page
 */
-function loadIndicators(program){
+function loadIndicators(program,indicator,type){
     var program;
     $('.ajaxLoader').show();
-    $.get('/indicators/program_indicators/' + program + '/', function(data){
+    $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
         $('#hidden-' + program).html(data);
       });
     $('.ajaxLoader').hide();
@@ -50,7 +50,7 @@ function loadIndicators(program){
                 </div>
             {% else %}
                 <div class='panel-body'>
-                    <a onclick="loadIndicators({{ program.id }})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
+                    <a onclick="loadIndicators({{ program.id }},{{indicator}},{{type}})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
                 </div>
                 <div id="hidden-{{ program.id }}" class="accordian-body collapse">
                     {% include "indicators/program_indicators_table.html" %}
@@ -67,12 +67,12 @@ function loadIndicators(program){
       window.location.href = '/indicators/home/'+program_id+'/0/0/';      
       }
 
-    function indicator_filter(indicator) {
-      window.location.href = '/indicators/home/0/'+indicator+'/0';  
+    function indicator_filter(program,indicator,type) {
+      window.location.href = '/indicators/home/'+program+'/'+indicator+'/'+type;
         }
 
-    function indicator_type_filter(type) {
-      window.location.href = '/indicators/home/0/0/'+type;      
+    function indicator_type_filter(program,indicator,type) {
+      window.location.href = '/indicators/home/'+program+'/'+indicator+'/'+type;
       }
  </script>
 {% endblock content %}
