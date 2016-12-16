@@ -1,9 +1,11 @@
-from tola.forms import RegistrationForm, NewUserRegistrationForm, NewTolaUserRegistrationForm
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
+from tola.forms import RegistrationForm, NewUserRegistrationForm, NewTolaUserRegistrationForm, BookmarkForm
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, TolaUser,TolaSites
+from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, TolaUser,TolaSites, TolaBookmarks, FormGuidance
 from indicators.models import CollectedData, Indicator
 
 from tola.tables import IndicatorDataTable
@@ -13,6 +15,7 @@ from tola.util import getCountry
 from django.contrib.auth.models import Group
 
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 
 @login_required(login_url='/accounts/login/')
@@ -211,6 +214,129 @@ def profile(request):
         })
     else:
         return HttpResponseRedirect("/accounts/register")
+
+
+class BookmarkList(ListView):
+    """
+    Bookmark Report filtered by project
+    """
+    model = TolaBookmarks
+    template_name = 'registration/bookmark_list.html'
+
+    def get(self, request, *args, **kwargs):
+        getUser = TolaUser.objects.all().filter(user=request.user)
+        getBookmarks = TolaBookmarks.objects.all().filter(user=getUser)
+
+        return render(request, self.template_name, {'getBookmarks':getBookmarks})
+
+
+class BookmarkCreate(CreateView):
+    """
+    Using Bookmark Form for new bookmark per user
+    """
+    model = TolaBookmarks
+    template_name = 'registration/bookmark_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.guidance = FormGuidance.objects.get(form="Bookmarks")
+        except FormGuidance.DoesNotExist:
+            self.guidance = None
+        return super(BookmarkCreate, self).dispatch(request, *args, **kwargs)
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(BookmarkCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get_initial(self):
+
+        initial = {
+            'user': self.request.user,
+        }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Bookmark Created!')
+        latest = TolaBookmarks.objects.latest('id')
+        redirect_url = '/bookmark_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
+
+    form_class = BookmarkForm
+
+
+class BookmarkUpdate(UpdateView):
+    """
+    Bookmark Form Update an existing site profile
+    """
+    model = TolaBookmarks
+    template_name = 'registration/bookmark_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.guidance = FormGuidance.objects.get(form="Bookmarks")
+        except FormGuidance.DoesNotExist:
+            self.guidance = None
+        return super(BookmarkUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+
+        initial = {
+            'user': self.request.user,
+        }
+
+        return initial
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Success, Bookmark Updated!')
+        latest = TolaBookmarks.objects.latest('id')
+        redirect_url = '/bookmark_update/' + str(latest.id)
+        return HttpResponseRedirect(redirect_url)
+
+    form_class = BookmarkForm
+
+
+class BookmarkDelete(DeleteView):
+    """
+    Bookmark Form Delete an existing bookmark
+    """
+    model = TolaBookmarks
+    template_name = 'registration/bookmark_confirm_delete.html'
+    success_url = "/bookmark_list"
+
+    def dispatch(self, request, *args, **kwargs):
+        return super(BookmarkDelete, self).dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Bookmark Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = BookmarkForm
 
 
 def logout_view(request):
