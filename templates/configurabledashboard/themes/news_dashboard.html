@@ -26,24 +26,25 @@
 					</div>
 				</div>
 				<div class='row'>
-					<div class='col-md-6 row-eq-height'>
+					<div class='col-md-6'>
 						<div class='panel panel-info borderless soft-border-full' style="float: left;">							
 							<div class="panel-body">
-									{% with pageText.projectSummary as tolaTextData %}
-									    {% include 'customdashboard/components/narratives/context_pane.html' %}
-
-									    <!-- {% include {{getLayoutComponents.0}} %} -->
-									{% endwith %}
-								</div>
-							</div>
-					</div>
-					<div class='col-md-6 row-eq-height'>
-						<div class='panel panel-info borderless soft-border-full' style="float: left;">
-							<div class="panel-body" style='overflow-y: scroll; ' >
-								{% with pageText.projectSummary as tolaTextData %}
-								    {% include 'customdashboard/components/narratives/context_pane.html' %}
-								    <!-- {% include {{getLayoutComponents.1}} %} -->
+								<!-- TODO: update this once data source logic is in place-->
+								{% with getComponentDataMaps.1.data_map as tolaTextData %}
+									<!-- TODO: replace this with a lookup template for the component -->
+								    {% include 'configurabledashboard/components/narratives/context_pane.html' %}					   
 								{% endwith %}
+							</div>
+						</div>
+					</div>
+					<div class='col-md-6'>
+						<div class='panel panel-info borderless soft-border-full' style="float: left;">
+							<div class="panel-body" style='overflow-y: scroll;' >
+								<!-- TODO: update this once data source logic is in place-->
+								{% with getComponentDataMaps.3 as tolaTableData %}
+										<!-- TODO: replace this with a lookup template for the component -->
+								    {% include 'configurabledashboard/components/charts/bar_graph.html' %}
+								{% endwith %} 
 							</div>
 						</div>
 					</div>
@@ -53,9 +54,11 @@
 						<div class='panel panel-info borderless soft-border-full'>
 							<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213;'><span class='title-white'> PROGRAM MAP </span></div>
 								<div class="panel-body" style="height: 300;">
-								{% with pageNewsFeedOne as tolaTextData %}
-								    {% include 'customdashboard/components/narratives/sidebar_news.html' %}
-								    <!-- {% include {{getLayoutComponents.2}} %} -->
+								<!-- TODO: update this once data source logic is in place-->
+								{% with getComponentDataMaps.2.data_map as tolaMapData %}
+									<!-- TODO: replace this with a lookup template for the component -->
+								    {% include 'configurabledashboard/components/maps/content_map.html' %}
+								    
 								{% endwith %}
 							</div>
 						</div>
