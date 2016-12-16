@@ -17,7 +17,7 @@
     {% include "form_guidance.html" %}
     <div class="modal-body">
         {% load crispy_forms_tags %}
-        <form class="form-horizontal" method="post" id="dashboardThemeUpdateForm" action="/configurabledashboard/theme_update/{{pk}}/">
+        <form class="form-horizontal" method="post" id="dashboardThemeAddForm" action="/configurabledashboard/theme_add/">
 
         {% csrf_token %}
         {% crispy form %}
@@ -27,11 +27,11 @@
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/configurabledashboard/theme/';parent.location.reload();"> Close</button>
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/configurabledashboard/update/{{ id }}/#add-dashboard-data-sources';parent.location.reload();">Close</button>
     </div> 
 
 <script type="text/javascript">
-    var frm = $('#dashboardThemeUpdateForm');
+    var frm = $('#dashboardThemeAddForm');
     frm.submit(function () {
         $.ajax({
             type: frm.attr('method'),

@@ -24,7 +24,8 @@ from mixins import AjaxableResponseMixin
 
 
 
-# Class views for configureable dashboards
+
+# This lists available custom dashboards to view
 class CustomDashboardList(ListView):
     """
     CustomDashboard
@@ -406,10 +407,6 @@ class CustomDashboardDelete(AjaxableResponseMixin, DeleteView):
     form_class = CustomDashboardForm     
 
 
-# Class views for dashboard themes
-# Note: theme_layout must be in a string/JSON format like this: 
-# '{"1": "context_pane","2": "content_map","3": "bar_graph","4": "sidebar_events"}'
-
 class DashboardThemeList(ListView):
     model = CustomDashboard
     template_name = 'configurabledashboard/themes/admin/list.html'
@@ -439,6 +436,7 @@ class DashboardThemeCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(DashboardThemeCreate, self).get_context_data(**kwargs)
+
         return context 
 
     def form_invalid(self, form):
@@ -481,7 +479,9 @@ class DashboardThemeUpdate(UpdateView):
     def form_valid(self, form):
         form.save()
         self.object = form.save()
+
         messages.success(self.request, 'Success, form updated!')
+
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardThemeForm
@@ -501,18 +501,21 @@ class DashboardThemeDelete(DeleteView):
         return context
 
     def form_invalid(self, form):
+
         messages.error(self.request, 'Invalid Form', fail_silently=False)
+
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
+
         form.save()
+
         messages.success(self.request, 'Success, Dashboard Theme Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DashboardThemeForm 
 
 
-# Class views for components that are used in dashboard creation
 class DashboardComponentList(ListView):
     model = DashboardComponent
     template_name = 'configurabledashboard/components/admin/list.html'
@@ -669,7 +672,6 @@ class DashboardComponentDelete(AjaxableResponseMixin, DeleteView):
     form_class = DashboardComponentForm  
 
 
-# Class views for data sources that are used by components
 class ComponentDataSourceList(ListView):
     model = ComponentDataSource
     template_name = 'configurabledashboard/datasource/list.html'
