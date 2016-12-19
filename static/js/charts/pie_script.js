@@ -1,12 +1,12 @@
-var pieFunction = function(data, tolaPieColors){
-    var ctx = document.getElementById(data.component_id);
+var pieFunction = function(componentID,dataSet, dataLabels, tolaPieColors){
+    var ctx = document.getElementById(componentID);
     var tolaPieChart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: ['1', '5', '10'], //data.labels
+            labels: dataLabels,
             datasets: [{
                 label: '# of Things', // user input axis label
-                data: data.data_set,
+                data: dataSet,
                 backgroundColor: tolaPieColors,
                 borderColor: tolaPieColors,
                 borderWidth: 1,

@@ -79,7 +79,7 @@
                         { title: "Program", data: "indicator__program__name"},
                         { title: "Indicator", data: "name",
                                 "mRender": function (data, type, row) {
-                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/' + row.indicator__id + '/{{ program }}/0/">' + row.indicator__name + '</a>';
+                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ program }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
                                 }
                             },
                         { title: "Level", data: "indicator__level__name"},
@@ -193,12 +193,12 @@
       window.location.href = '/indicators/collecteddata/'+program_id+'/0/0/';      
       }
 
-    function indicator_filter(indicator) {
-      window.location.href = '/indicators/collecteddata/0/'+indicator+'/0';  
+    function indicator_filter(program,indicator,type) {
+      window.location.href = '/indicators/collecteddata/'+program+'/'+indicator+'/'+type;
         }
 
-    function indicator_type_filter(type) {
-      window.location.href = '/indicators/collecteddata/0/0/'+type;      
+    function indicator_type_filter(program,indicator,type) {
+      window.location.href = '/indicators/collecteddata/'+program+'/'+indicator+'/'+type;
       }
  </script>
 

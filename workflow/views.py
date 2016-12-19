@@ -2,10 +2,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import Program, Country, Province, AdminLevelThree, District, ProjectAgreement, ProjectComplete, SiteProfile, \
-    Documentation, Monitor, Benchmarks, Budget, ApprovalAuthority, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance
+    Documentation, Monitor, Benchmarks, Budget, ApprovalAuthority, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
+    TolaBookmarks, TolaUser
 from formlibrary.models import TrainingAttendance, Distribution
 from indicators.models import CollectedData, ExternalService
-from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 
 
@@ -2208,7 +2208,6 @@ class ReportData(View, AjaxableResponseMixin):
         return JsonResponse(final_dict, safe=False)
 
 
-
 def country_json(request, country):
     """
     For populating the province dropdown based  country dropdown value
@@ -2284,9 +2283,21 @@ def export_stakeholders_list(request, **kwargs):
     return response
 
 
+def save_bookmark(request):
+    """
+    Create Bookmark from Link
+    """
+    print request.POST
+    url = request.POST['url']
+    username = request.user
+    tola_user = TolaUser.objects.get(user=username)
+
+    TolaBookmarks.objects.create(bookmark_url=url, name=url, user=tola_user)
+
+    return HttpResponse(url)
+
 
 #Ajax views for single page filtering
-
 class StakeholderObjects(View, AjaxableResponseMixin):
     """
     Render Agreements json object response to the report ajax call
@@ -2323,6 +2334,7 @@ class StakeholderObjects(View, AjaxableResponseMixin):
         final_dict = {'getStakeholders': getStakeholders}
 
         return JsonResponse(final_dict, safe=False)
+
 
 class DocumentationListObjects(View, AjaxableResponseMixin):
 
