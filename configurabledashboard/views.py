@@ -534,7 +534,7 @@ class DashboardComponentList(ListView):
         
         getDashboardListComponents = DashboardComponent.objects.all().filter(componentset=dashboard_id)
             
-        return render(request, self.template_name, {'getDashboardListComponents': getDashboardListComponents})
+        return render(request, self.template_name, {'getDashboardListComponents': getDashboardListComponents, 'dashboard_id':dashboard_id})
 
 
 class DashboardComponentCreate(CreateView):
