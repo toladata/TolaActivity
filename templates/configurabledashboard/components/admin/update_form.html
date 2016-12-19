@@ -14,9 +14,9 @@
     {% include "form_guidance.html" %}
     <div class="modal-body">
         {% load crispy_forms_tags %}
-        {% if "/workflow/custom_dashboard/component_update" in request.get_full_path  %}
+<!--         {% if "/component_update" in request.get_full_path  %} -->
             <form class="form-horizontal" method="post" id="dashboardComponentForm" action='../../custom_dashboard/component_update/{{pk}}/'>
-        {% endif %}
+        <!-- {% endif %} -->
 
             {% csrf_token %}
             {% crispy form %}
@@ -25,7 +25,8 @@
     </div>
 
     <div class="modal-footer">
-       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/workflow/custom_dashboard_update/{{ id }}/#add-dashboard-components';parent.location.reload();">Close</button>
+          <td><a data-toggle="modal" data-target="#dashboardComponentForm" href="/component/{{dashboard_id}}/" data-dismiss="modal"  class="dashboards btn btn-xs btn-danger">Return to Component List</a></td>
+       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.href = '/configurabledashboard/update/{{ dashboard_id }}/#add-dashboard-components';parent.location.reload();">Close</button>
     </div> 
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
