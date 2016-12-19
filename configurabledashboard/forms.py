@@ -277,7 +277,7 @@ class CustomDashboardForm(forms.ModelForm):
                                         </table>
                                     <div>
                                     <div class="panel panel-footer">Don't see your data source or need to edit an existing data source?<br>
-                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/data/{{pk}}/'> View All Data Sources</a></td>
+                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data/{{pk}}/'> View All Data Sources</a></td>
                                     </div>
                                 </div>
                             </div>
