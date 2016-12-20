@@ -18,12 +18,19 @@ body{
 	  background-color: #f6f6f6;
 }
 
-h3:before { 
+a.anchor { 
   display: block; 
+  position: relative;
   margin-top: -9.375em; 
   height: 9.375em; 
   visibility: hidden; 
 }
+/*h3:before { 
+  display: block; 
+  margin-top: -19.375em; 
+  height: 19.375em; 
+  visibility: hidden; 
+}*/
 .red-solid {
 	background-color:#cf102d;
 }
@@ -86,8 +93,8 @@ h3:before {
     width: 225px;
 }
 .smaller{
-	height: 50px;
-    width: 75px;
+	height: 60px;
+    width: 90px;
 }
 .centerpadded{
 	margin: 0 0 0 50%;
@@ -115,7 +122,7 @@ h3:before {
 }
 #custom_carousel .controls li.active {
     background-color:#eee;
-    border-top:3px solid orange;
+    border-top:10px solid #e89424;;
 }
 #custom_carousel .controls a small {
     overflow:hidden;
