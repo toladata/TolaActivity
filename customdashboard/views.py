@@ -15,7 +15,7 @@ from tola.util import getCountry
 from django.contrib.auth.decorators import login_required
 import requests
 import json
-
+import ast
 
 class ProgramList(ListView):
     """
@@ -231,11 +231,11 @@ def SurveyPublicDashboard(request,id=0):
 
     response = requests.get(filter_url, headers=headers, verify=False)
     get_json = json.loads(response.content)
-    data = get_json
+    data = ast.literal_eval(get_json)
     meaning = []
     join = []
     tola_is = []
-    for item in data:
+    for item in data['data']:
         print item['tola_is_a_pashto_word_meaning_']
         meaning.append(item['tola_is_a_pashto_word_meaning_'])
         # multiple choice
@@ -315,7 +315,6 @@ def SurveyTalkPublicDashboard(request,id=0):
     headers = {'content-type': 'application/json',
                'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
 
-    import ast
     response = requests.get(filter_url, headers=headers, verify=False)
     get_json = json.loads(json.dumps(response.content))
     data = ast.literal_eval(get_json)
