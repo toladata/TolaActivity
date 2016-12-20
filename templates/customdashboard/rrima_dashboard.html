@@ -386,13 +386,5 @@
         {% endblock %}
     </body>
 
-  <script type="text/javascript">
-$(document).ready(function(ev){
-    $('#custom_carousel').on('slide.bs.carousel', function (evt) {
-      $('#custom_carousel .controls li.active').removeClass('active');
-      $('#custom_carousel .controls li:eq('+$(evt.relatedTarget).index()+')').addClass('active');
-    })
-});
-
-  </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/rrima.js"></script>
 </html>
