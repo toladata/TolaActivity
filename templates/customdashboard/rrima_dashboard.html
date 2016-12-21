@@ -257,7 +257,7 @@
 						<div id="custom_carousel" class="container-fluid col-lg-12 col-md-12 col-sm-12 carousel slide" style='padding: 0 0em 2em 10em;' data-ride="carousel" data-interval="10000">
 							<div class='col-lg-10 col-md-12 col-sm-12' style='padding: 0em 0em 0em 0em;'>
 						        <!-- Wrapper for slides -->
-						        <p><strong>The average refugee household size in Turkey was larger than in Greece, which seems to be in part due to the limited mobility of families with children.  Single travelers and young couples traveling without families were more likely to travel onward. The majority of refugees in Turkey came from Syria, while refugees in Greece came from many places (Syria, Afghanistan, Iraq, Iran, and Pakistan). </strong></p>
+						        <p><strong>The average refugee household size in Turkey was larger than in Greece.  Single travelers and young couples traveling without families were more likely to travel onward to Greece than families with children. The majority of refugees in Turkey are Syrian, while refugees in Greece come from many different countries of origin (Syria, Afghanistan, Iraq, Iran, and Pakistan). </strong></p>
 						        <div class="carousel-inner" style='background-color:#eee; width: 100%;'>
 						            <div class="item active ">
 						                <div class="container-fluid bigger">
@@ -303,7 +303,7 @@
 						        </div>
 					        <!-- End Carousel Inner -->
 						        <div class="controls">
-						            <ul class="nav">
+						            <ul class="nav" id="carousel-buttons">
 						                <li data-target="#custom_carousel" data-slide-to="0" class="active smaller"><a href="#"><img src="{{STATIC_URL}}img/GZTfamily.png" class="smaller"><small>Gaziantep</small></a></li>
 						                <li data-target="#custom_carousel" data-slide-to="1" class="smaller"><a href="#"><img src="{{STATIC_URL}}img/IZMfamily.png" class="smaller"><small>Izmir</small></a></li>
 						                <li data-target="#custom_carousel" data-slide-to="2"><a href="#"><img src="{{STATIC_URL}}img/GRC1family.png" class="smaller" class="smaller"><small>Greece (Mainland)</small></a></li>
@@ -317,7 +317,7 @@
     <!-- End Carousel -->
 					<div class='container-fluid col-lg-12 col-md-12 col-sm-12 dark-white-gradient' style='padding: 0 4em 4em 4em;'>
 						<div style='width: 100%; padding: 0em 2em 0em 0;'>
-							<a id="newsresources" class="anchor"></a>
+
 							<h3 style='padding: 1em 0 1em 0;'>NEWS FEEDS</h3>
 							<ul style='width: 100%;'>
 							    <li class='col-lg-3 col-md-4 col-sm-6 col-xs-12' style='list-style: none;'>
@@ -339,6 +339,7 @@
 							    	</div></br></div>
 							    </li>
 							 </ul>
+							 <a id="newsresources" class="anchor"></a>
 						</div>
 					<div class='container-fluid'></div>
 				</div>
@@ -385,6 +386,13 @@
 
         {% endblock %}
     </body>
+    <script type="text/javascript">
+    	$(document).ready(function(evt){
 
-    <script type="text/javascript" src="{{ STATIC_URL }}js/rrima.js"></script>
+		    $('#custom_carousel').on('slide.bs.carousel', function (evt) {
+		      $('#custom_carousel .controls li.active').removeClass('active');
+		      $('#custom_carousel .controls li:eq('+$(evt.relatedTarget).index()+')').addClass('active');
+		    })
+		})
+    </script>
 </html>
