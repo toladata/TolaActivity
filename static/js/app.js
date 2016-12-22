@@ -321,3 +321,13 @@ function confirmshort() {
 
       }
     }
+
+//Handle change to component map on Configureable Dashboard
+// $("select#id_y").change(function() {
+//         var selected_component = $(this).val();
+//         AjaxableResponseMixin = 
+//         pk = 
+//         location = 
+//         type =
+//         if(typeof country_dropdown_has_changed != 'undefined') custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type);
+// }

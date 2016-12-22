@@ -199,17 +199,11 @@ class CustomDashboardDetail(DetailView):
 #TODO: build out function for component mapping for dashboard wizard
 def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): #component_map):
 # (?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$
-    # form_mapping = component_map
-    mapped = false
     current_dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
     current_map = current_dashboard.component_map
-    # for mapped_object in current_map:
-    #     if mapping.0 == form_mapping.0
-    #         update = current_dashboard.update(component_map=form_mapping)
-    #         mapped = true
-    # if mapped == false:
-    #     update = current_dashboard.component_map.append(form_mapping)
-    #     current_dashboard.save()
+    for mapped_object in current_map:
+        update = current_dashboard.update(component_map=form_mapping)
+    current_dashboard.save()
     return HttpResponse(component_map)
 
 
