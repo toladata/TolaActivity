@@ -167,6 +167,14 @@ header .button {
    margin-top: none;
 
 }
+
+.indicator-line-graph {
+   min-height: 550px;
+   margin-top: none;
+   text-align: center;
+   padding-left: 20px;
+
+}
 .canvas-container-radar {
    min-height: 280px;
    position: relative;

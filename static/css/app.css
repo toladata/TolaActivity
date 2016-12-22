@@ -277,3 +277,10 @@ ul.paginate li a:hover:not(.active) {background-color: #ddd;}
 }
 /* Keep the picker on top of other elements */
 .ui-datepicker{z-index: 10000 !important};
+
+/*Indicator line graph with slider*/
+.clear-fix
+{
+  margin-top: 10px;
+  min-height: 10px;
+}
