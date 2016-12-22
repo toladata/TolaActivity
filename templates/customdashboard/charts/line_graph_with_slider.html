@@ -1,0 +1,80 @@
+
+  
+  <!-- import plugin script -->
+<script src="{{ STATIC_URL }}js/RangeSlider-all.min.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/RangeSlider-all.min.css">
+<div>
+
+
+  <script>
+
+    // line chart data
+    var iniData = {
+      labels:[
+
+      {% for data in getIndicatorData %}
+        {% if data.date_collected  %}
+         "{{data.date_collected | date}}",
+        {% endif %}
+      {% endfor %}
+      ],
+      datasets:[{
+        label: "Targets",
+        fillColor:"rgba(172,194,132,0)",
+        strokeColor:"#C45662",
+        pointColor:"#C45662",
+        pointStrokeColor:"#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "#C45662",
+        data:[
+
+          {% for data in getIndicatorData %}
+            {% if data.date_collected  %}
+             {{data.targeted}},
+            {% endif %}
+          {% endfor %}
+        ]
+      },
+      {
+        label: "Achieved",
+        fillColor:"rgba(172,190,132,0)",
+        strokeColor:"#C45662",
+        pointColor:"#C45662",
+        pointStrokeColor:"#fff",
+        pointHighlightFill: "#fff",
+        pointHighlightStroke: "#C45662",
+        data:[
+          {% for data in getIndicatorData %}
+            {% if data.date_collected  %}
+             {{data.achieved}},
+            {% endif %}
+          {% endfor %}
+        ],
+      }]
+    },
+
+
+    // create the options
+    options = {
+      scaleBeginAtZero: true,
+      /*This is how to customize the way the labels look :) */
+      tooltipTemplate: " ",
+      label: 'test'
+    },
+
+    // get line chart canvas
+    ini = document.getElementById('ini').getContext('2d')
+
+
+    rs = new RangeSliderChart({
+
+      chartData: iniData,
+      chartOpts: options,
+      chartType: 'line',
+      chartCTX: ini,
+
+      initial: [3, 12]
+    })
+
+  </script>
+</div>
