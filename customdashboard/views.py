@@ -137,7 +137,11 @@ def PublicDashboard(request,id=0,public=0):
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getIndicatorCount = Indicator.objects.all().filter(program__id=program_id).count()
-    getIndicatorCountData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).count()
+
+    getIndicatorData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False)
+
+    getIndicatorCountData = getIndicatorData.count()
+
     getIndicatorCountKPI = Indicator.objects.all().filter(program__id=program_id,key_performance_indicator=1).count()
     getProgram = Program.objects.all().get(id=program_id)
     try:
@@ -200,6 +204,7 @@ def PublicDashboard(request,id=0,public=0):
                                                                      'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
                                                                      'total_projects': getProjectsCount,
                                                                      'getIndicatorCount': getIndicatorCount,
+                                                                     'getIndicatorData': getIndicatorData,
                                                                      'getIndicatorCountData':getIndicatorCountData,
                                                                      'getIndicatorCountKPI': getIndicatorCountKPI,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
