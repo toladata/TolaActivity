@@ -100,6 +100,7 @@ class CustomDashboardCreate(CreateView):
             for key in parsedLayout:
                 new_map[key] = "NONE"
             data.component_map = json.dumps(new_map)
+            data.program_id = self.kwargs['pk']
             data.save()
 
         #save formset from context
@@ -201,7 +202,7 @@ def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): 
     # form_mapping = component_map
     mapped = false
     current_dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
-    current_map = current_dashboard.component_map#.split("]","],")
+    current_map = current_dashboard.component_map
     # for mapped_object in current_map:
     #     if mapping.0 == form_mapping.0
     #         update = current_dashboard.update(component_map=form_mapping)
@@ -256,10 +257,6 @@ class CustomDashboardUpdate(UpdateView):
         if check_path.startswith('/confirgureabledashboard/map'):
             location = self.kwargs['location']
             component_type = self.kwargs['type']
-        # TODO: If applicable, work through flow for remapping
-        # else if check_form_type.startswith('/confirgureabledashboard/remap'):
-        #     location = self.kwargs['location']
-        #     component_type = self.kwargs['type']
         else:
             location = None
             component_type = None
