@@ -1,12 +1,12 @@
-var barFunction = function(data, tolaBarColors){
-    var ctx = document.getElementById(data.component_id);
+var barFunction = function(componentID,dataSet, dataLabels, tolaBarColors){
+    var ctx = document.getElementById(componentID);
     var tolaBarChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: data.labels,
+            labels: dataLabels,
             datasets: [{
                 label: "# of people", // user input axis label
-                data: data.data_set,
+                data: dataSet,
                 backgroundColor: tolaBarColors,
                 borderColor: tolaBarColors,
                 borderWidth: 1,

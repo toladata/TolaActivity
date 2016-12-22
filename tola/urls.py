@@ -1,4 +1,5 @@
 from tola import views
+from tola.views import *
 from feed.views import *
 from django.conf.urls import include, url
 from django.views.generic import TemplateView
@@ -98,6 +99,12 @@ urlpatterns = [ # rest framework
                 # accounts
                 url(r'^accounts/profile/$', views.profile, name='profile'),
                 url(r'^accounts/register/$', views.register, name='register'),
+
+                #bookmarks
+                url(r'^bookmark_list', BookmarkList.as_view(), name='bookmark_list'),
+                url(r'^bookmark_add', BookmarkCreate.as_view(), name='bookmark_add'),
+                url(r'^bookmark_update/(?P<pk>\w+)/$', BookmarkUpdate.as_view(), name='bookmark_update'),
+                url(r'^bookmark_delete/(?P<pk>\w+)/$', BookmarkDelete.as_view(), name='bookmark_delete'),
 
                 # Auth backend URL's
                 url('', include('django.contrib.auth.urls', namespace='auth')),
