@@ -165,7 +165,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                     <td> {{value}} </td>
                                                     <td> {{getCustomDashboard.componentset}} 
                                                         <div class="form-group"> 
-                                                            <select class="form-control" id="sel1">
+                                                            <select class="form-control" id="component_selector">
                                                             {% for component in getDashboardComponents %}
                                                                 {% if component.component_type == value %}
                                                                     <option value={{component.id}}> {{component.component_name}} </option>

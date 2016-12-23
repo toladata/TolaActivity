@@ -322,12 +322,8 @@ function confirmshort() {
       }
     }
 
-//Handle change to component map on Configureable Dashboard
-// $("select#id_y").change(function() {
-//         var selected_component = $(this).val();
-//         AjaxableResponseMixin = 
-//         pk = 
-//         location = 
-//         type =
-//         if(typeof country_dropdown_has_changed != 'undefined') custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type);
-// }
+// Handle change to component map on Configureable Dashboard
+$("#component_selector").change(function(pk, location,type) {
+        var selected_component = $(this).val();
+        if(typeof component_selector_has_changed != 'undefined') custom_dashboard_update_components(pk,location,type);
+}
