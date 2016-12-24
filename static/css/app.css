@@ -284,3 +284,16 @@ ul.paginate li a:hover:not(.active) {background-color: #ddd;}
   margin-top: 10px;
   min-height: 10px;
 }
+
+select.listoption_filters
+{
+  height:36px; 
+  width:150px;
+  border: 2px solid#ddd;
+  background: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  padding-left: 5px;
+  -moz-appearance: none;
+}

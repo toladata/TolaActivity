@@ -1,7 +1,7 @@
 
 <div class="btn-group" role="group">
-  <select id="program" style="height:36px; width:150px">
-    <option>Program</option>
+  <select id="program" class="listoption_filters">
+    <option>Program(s)</option>
     <option value="all">---ALL---</option>
     {% for program in getPrograms %}
       <option value="{{program.id}}">{{program.name}}</option>
@@ -9,7 +9,7 @@
   </select>
 </div>
 <div class="btn-group" role="group">
-  <select id="project" disabled="true" style="height:36px;  width:150px">
-    <option>Project</option>
+  <select id="project" disabled="true" class="listoption_filters">
+    <option>Project(s)</option>
   </select>
 </div>
