@@ -197,14 +197,15 @@ class CustomDashboardDetail(DetailView):
         return context
 
 #TODO: build out function for component mapping for dashboard wizard
-def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): #component_map):
-# (?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$
+def custom_dashboard_update_components(pk,location,mapped_component): 
     current_dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
-    current_map = current_dashboard.component_map
-    for mapped_object in current_map:
-        update = current_dashboard.update(component_map=form_mapping)
+    old_dashboard_map = current_dashboard.component_map
+    unpacked_map = json.loads(old_dashboard_map)
+    unpacked_map[{{location}}] = mapped_component
+    updated_map = json.dumps(unpacked)
+    current_dashboard.update(component_map=updated_map)
     current_dashboard.save()
-    return HttpResponse(component_map)
+    return HttpResponse(current_dashboard)
 
 
 class CustomDashboardUpdate(UpdateView):
