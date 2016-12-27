@@ -290,22 +290,14 @@ class CustomDashboardForm(forms.ModelForm):
                                     {% for component in getDashboardComponents %}
                                     <tr>
                                         <td>{{component.component_name}}</td>
-                                        {% for map_entry in getAllComponentMaps.component %}
-                                        <tr>
-                                            <td>{{map_entry.name}}</td>
-                                            <td>{{map_entry.source}}</td>
-                                            <td>{% if map_entry.name == "title" %}
-                                                    <input type="text" name="title">
-                                                {% else %}
-                                                    <select>
-                                                    {% for data_filter in map_entry.source %}
-                                                        <option value={{data_filter}}>{{data_filter}}</option>
-                                                    {% endfor %}
-                                                    </select>
-                                                {% endif %}
-                                            </td>  
-                                        </tr>  
-                                        {% endfor %}               
+                                        <td> {% if component.data_map %}
+                                            Insert rows for each data map position
+                                            {% else %}
+                                            No Component Map
+                                            {% endif %}    
+                                        </td>
+                                        <td> Either (1) data source listed in the data_map or a list of {{component.data_sources}}  </td>
+                                        <td>  Either (1) data filter listed in the data_map or a list of data filteres </td>   
                                     </tr>
                                     {% endfor %}
                                 </table>
