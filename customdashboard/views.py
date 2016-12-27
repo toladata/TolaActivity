@@ -5,12 +5,12 @@ from django.shortcuts import render
 from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile,Country, TolaSites
 from customdashboard.models import ProgramNarratives, JupyterNotebooks
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
-from indicators.models import CollectedData, Indicator
+from indicators.models import CollectedData, Indicator, TolaTable
 
 from django.db.models import Sum
 from django.db.models import Q
 
-from tola.util import getCountry
+from tola.util import getCountry, get_table
 
 from django.contrib.auth.decorators import login_required
 import requests
@@ -160,13 +160,20 @@ def PublicDashboard(request,id=0,public=0):
 
     nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
 
-    #get all countires
+    # get all countires
     countries = Country.objects.all().filter(program__id=program_id)
 
-    #Trainings
+    # Trainings
     agreement_id_list = []
     training_id_list = []
 
+    # Indicator Evidence
+    getEvidence = TolaTable.objects.all().filter(collecteddata__program__id=program_id)
+    evidence_tables = []
+    for table in getEvidence:
+        evidence_tables.append(get_table(table.url))
+        evidence_tables['name'] = get_table(evidence_tables)
+        print table.url
     for p in getProjects:
         agreement_id_list.append(p.id)
 
@@ -207,6 +214,8 @@ def PublicDashboard(request,id=0,public=0):
                                                                      'getIndicatorData': getIndicatorData,
                                                                      'getIndicatorCountData':getIndicatorCountData,
                                                                      'getIndicatorCountKPI': getIndicatorCountKPI,
+                                                                     'getEvidence': getEvidence,
+                                                                     'evidence_tables': evidence_tables,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 
