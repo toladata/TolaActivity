@@ -246,20 +246,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                             </div>
                                                         </td>
                                                         <td></td>
-                                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data_add/'> New </a></td>
-                                                        {% for component in getCustomDashboard.components.all %}
-                                                            <td>{{component.component_name}}</td>
-                                                            <td>{{component.data_required}} </td>
-                                                            <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/component/{{pk}}/'>View</a></td>
-                                                            <td>{% if component.data_sources %} Yes 
-                                                                {% else %} 
-                                                                No
-                                                                {% endif %}
-                                                            </td>  
-                                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data_add/'> New </a></td>
-
-                                                        {% endfor %}
-                                                        
+                                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data_add/'> New </a></td>                     
                                                     </tr>
                                                 {% endfor %}
                                             {% else %}
