@@ -165,14 +165,20 @@ class CustomDashboardDetail(DetailView):
         # retrieve the data source mapping of data 
         try:
             getComponentDataMaps = {}
+
             for position, component_id in getComponentOrder.items():
-                #add an attribute to the getComponentDataMaps dictionary for all data from this component
-                selected_id = int(component_id)
-                selected_component = DashboardComponent.objects.get(id = selected_id)
-                getComponentDataMaps[position] = {}
-                getComponentDataMaps[position]['component_id'] = selected_id
-                getComponentDataMaps[position]['data_map'] = selected_component.data_map
-        except not getCustomDashboard.component_map:
+                #add an attribute to the getComponentDataMaps dictionary for all data from this component     
+                if component_id != "NONE":
+                    selected_id = component_id 
+                    selected_component = DashboardComponent.objects.get(id = selected_id)
+                    getComponentDataMaps[position] = {}
+                    getComponentDataMaps[position]['component_id'] = selected_id
+                    getComponentDataMaps[position]['data_map'] = selected_component.data_map
+                else:
+                    getComponentDataMaps[position] = {}
+                    getComponentDataMaps[position]['component_id'] = ""
+                    getComponentDataMaps[position]['data_map'] = ""
+        except getComponentOrder.DoesNotExist:
             getComponentDataMaps = None
         context.update({'getComponentDataMaps': getComponentDataMaps})
 
