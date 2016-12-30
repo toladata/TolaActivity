@@ -115,13 +115,16 @@ class ProgramDash(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-
+        filtered_program = None
         if int(self.kwargs['pk']) == 0:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
         else:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
+            filtered_program = Program.objects.only('name').get(pk=self.kwargs['pk']).name
+            print filtered_program
 
         if self.kwargs.get('status', None):
+
             status = self.kwargs['status']
             if status == "in progress":
                 getDashboard.filter(Q(agreement__approval=self.kwargs['status']) | Q(agreement__approval=None))
@@ -130,7 +133,7 @@ class ProgramDash(ListView):
         else:
             status = None
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': status})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': status, 'filtered_program': filtered_program})
 
 
 class ProjectAgreementList(ListView):
