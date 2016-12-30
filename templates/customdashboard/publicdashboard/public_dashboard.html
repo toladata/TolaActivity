@@ -297,9 +297,10 @@
                 <br>
                 <p>{{ getProgramNarrative.narrative }}</p>
                 <div class="col-md-6">
+                    {% for table in evidence_tables %}
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <strong>Survey Responses</strong><br>
+                            <strong>{{ table }}</strong><br>
                             How do you rate our program team?
                         </div>
                         <div class="panel-body">
@@ -309,6 +310,7 @@
 
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
                     
             </div>
