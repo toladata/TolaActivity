@@ -374,7 +374,7 @@ class ProjectAgreementUpdate(UpdateView):
 
             if form.instance.approval == 'approved':
                 #email the approver group so they know this was approved
-                link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+                link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_detail/" + str(self.kwargs['pk']) + "/"
                 subject = "Project Initiation Approved: " + project_name
                 message = "A new initiation was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
                 getSubmiter = User.objects.get(username=self.request.user)
@@ -382,7 +382,7 @@ class ProjectAgreementUpdate(UpdateView):
         elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
             messages.success(self.request, 'Success, Initiation has been saved and is now Awaiting Approval (Notifications have been Sent)')
             #email the approver group so they know this was approved
-            link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+            link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_detail/" + str(self.kwargs['pk']) + "/"
             subject = "Project Initiation Waiting for Approval: " + project_name
             message = "A new initiation was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
             emailGroup(country=country,group=form.instance.approved_by,link=link,subject=subject,message=message)
