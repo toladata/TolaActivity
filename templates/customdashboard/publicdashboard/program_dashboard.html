@@ -287,18 +287,20 @@
                 <br>
                 <p>{{ getProgramNarrative.narrative }}</p>
                 <div class="col-md-6">
+                    {% for item in evidence_tables  %}
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <strong>Survey Responses</strong><br>
-                            How do you rate our program team?
+                            <strong><a href="{{ item.url }}">{{ item.url }} </a>
+                                <br>Owner: {{ item.owner }}  Total Records = {{ item.table_data.recordsTotal }}</strong>
                         </div>
                         <div class="panel-body">
-                              <div class="canvas-container-radar">
-                                  <canvas id="surveys"></canvas>
-                              </div>
+                            <div class="canvas-container-radar">
 
+                              <canvas id="surveys"></canvas>
+                            </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
                     
             </div>
