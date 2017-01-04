@@ -172,7 +172,6 @@ def PublicDashboard(request,id=0,public=0):
     evidence_tables = []
     for table in getEvidence:
         evidence_tables.append(get_table(table.url))
-        evidence_tables['name'] = get_table(evidence_tables)
         print table.url
     for p in getProjects:
         agreement_id_list.append(p.id)
