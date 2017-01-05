@@ -171,9 +171,10 @@ def PublicDashboard(request,id=0,public=0):
     getEvidence = TolaTable.objects.all().filter(collecteddata__program__id=program_id)
     evidence_tables = []
     for table in getEvidence:
-        evidence_tables.append(get_table(table.url))
-        evidence_tables['name'] = get_table(evidence_tables)
-        print table.url
+        table.table_data = get_table(table.url)
+
+        evidence_tables.append(table)
+
     for p in getProjects:
         agreement_id_list.append(p.id)
 
