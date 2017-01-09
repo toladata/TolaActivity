@@ -94,7 +94,10 @@
 
                 }  else{
 
-                    $.getJSON("/workflow/documentation_objects/0/0/", function(data) {  
+                    program_id = document.URL.split('/')[5];
+                    project_id = document.URL.split('/')[6];
+
+                    $.getJSON("/workflow/documentation_objects/"+program_id+"/"+project_id+"/", function(data) {  
                         show_documentation_table(data['getDocumentation']);          
                     });     
                 }

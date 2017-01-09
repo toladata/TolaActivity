@@ -115,13 +115,16 @@ class ProgramDash(ListView):
 
         countries = getCountry(request.user)
         getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-
+        filtered_program = None
         if int(self.kwargs['pk']) == 0:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_agreement=Count('agreement'),has_complete=Count('complete'))
         else:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
+            filtered_program = Program.objects.only('name').get(pk=self.kwargs['pk']).name
+            print filtered_program
 
         if self.kwargs.get('status', None):
+
             status = self.kwargs['status']
             if status == "in progress":
                 getDashboard.filter(Q(agreement__approval=self.kwargs['status']) | Q(agreement__approval=None))
@@ -130,7 +133,7 @@ class ProgramDash(ListView):
         else:
             status = None
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': status})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getPrograms, 'APPROVALS': APPROVALS, 'program_id':  self.kwargs['pk'], 'status': status, 'filtered_program': filtered_program})
 
 
 class ProjectAgreementList(ListView):
@@ -371,7 +374,7 @@ class ProjectAgreementUpdate(UpdateView):
 
             if form.instance.approval == 'approved':
                 #email the approver group so they know this was approved
-                link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+                link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_detail/" + str(self.kwargs['pk']) + "/"
                 subject = "Project Initiation Approved: " + project_name
                 message = "A new initiation was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
                 getSubmiter = User.objects.get(username=self.request.user)
@@ -379,7 +382,7 @@ class ProjectAgreementUpdate(UpdateView):
         elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
             messages.success(self.request, 'Success, Initiation has been saved and is now Awaiting Approval (Notifications have been Sent)')
             #email the approver group so they know this was approved
-            link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_update/" + str(self.kwargs['pk']) + "/"
+            link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_detail/" + str(self.kwargs['pk']) + "/"
             subject = "Project Initiation Waiting for Approval: " + project_name
             message = "A new initiation was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
             emailGroup(country=country,group=form.instance.approved_by,link=link,subject=subject,message=message)
