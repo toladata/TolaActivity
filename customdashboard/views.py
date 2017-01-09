@@ -5,12 +5,12 @@ from django.shortcuts import render
 from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile,Country, TolaSites
 from customdashboard.models import ProgramNarratives, JupyterNotebooks
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
-from indicators.models import CollectedData, Indicator
+from indicators.models import CollectedData, Indicator, TolaTable
 
 from django.db.models import Sum
 from django.db.models import Q
 
-from tola.util import getCountry
+from tola.util import getCountry, get_table
 
 from django.contrib.auth.decorators import login_required
 import requests
@@ -137,7 +137,11 @@ def PublicDashboard(request,id=0,public=0):
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getIndicatorCount = Indicator.objects.all().filter(program__id=program_id).count()
-    getIndicatorCountData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).count()
+
+    getIndicatorData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False)
+
+    getIndicatorCountData = getIndicatorData.count()
+
     getIndicatorCountKPI = Indicator.objects.all().filter(program__id=program_id,key_performance_indicator=1).count()
     getProgram = Program.objects.all().get(id=program_id)
     try:
@@ -156,12 +160,20 @@ def PublicDashboard(request,id=0,public=0):
 
     nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
 
-    #get all countires
+    # get all countires
     countries = Country.objects.all().filter(program__id=program_id)
 
-    #Trainings
+    # Trainings
     agreement_id_list = []
     training_id_list = []
+
+    # Indicator Evidence
+    getEvidence = TolaTable.objects.all().filter(collecteddata__program__id=program_id)
+    evidence_tables = []
+    for table in getEvidence:
+        table.table_data = get_table(table.url)
+
+        evidence_tables.append(table)
 
     for p in getProjects:
         agreement_id_list.append(p.id)
@@ -200,8 +212,11 @@ def PublicDashboard(request,id=0,public=0):
                                                                      'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
                                                                      'total_projects': getProjectsCount,
                                                                      'getIndicatorCount': getIndicatorCount,
+                                                                     'getIndicatorData': getIndicatorData,
                                                                      'getIndicatorCountData':getIndicatorCountData,
                                                                      'getIndicatorCountKPI': getIndicatorCountKPI,
+                                                                     'getEvidence': getEvidence,
+                                                                     'evidence_tables': evidence_tables,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 

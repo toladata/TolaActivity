@@ -11,8 +11,12 @@
 <br/>
 <div>
 {% if getDashboard %}
-  {% if status %}
-    <p>Filtered by: {{ status }}</p>
+  {% ifnotequal status 'none' %}
+    <p>Filtered by (Status): {{ status }}</p>
+  {% endifnotequal %}
+
+  {% if filtered_program %}
+    <p>Filtered by (Program): {{filtered_program}}</p>
   {% endif %}
     {% for program in getDashboard %}
         {% if program.agreement.all %}

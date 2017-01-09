@@ -4,7 +4,7 @@ from workflow.models import Program, Sector, SiteProfile, ProjectAgreement, Proj
 from datetime import datetime
 import uuid
 from simple_history.models import HistoricalRecords
-
+from decimal import Decimal
 
 class TolaTable(models.Model):
     name = models.CharField(max_length=255, blank=True)
@@ -313,8 +313,8 @@ class CollectedDataManager(models.Manager):
 
 class CollectedData(models.Model):
     data_key = models.UUIDField(default=uuid.uuid4, unique=True),
-    targeted = models.IntegerField("Targeted", blank=True, null=True)
-    achieved = models.IntegerField("Achieved", blank=True, null=True)
+    targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)

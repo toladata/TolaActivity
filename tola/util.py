@@ -61,7 +61,7 @@ def emailGroup(country,group,link,subject,message,submiter=None):
         mail_admins(subject, message, fail_silently=False)
 
 
-def get_table(url):
+def get_table(url,data=None):
     """
     Get table data from a Silo.  First get the Data url from the silo details
     then get data and return it
@@ -77,8 +77,10 @@ def get_table(url):
         print "Token Not Found"
 
     response = requests.get(url,headers=headers, verify=False)
-    data = json.loads(response.content)
-
+    if data:
+        data = json.loads(response.content['data'])
+    else:
+        data = json.loads(response.content)
     return data
 
 
