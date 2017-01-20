@@ -235,7 +235,7 @@ def SurveyPublicDashboard(request,id=0):
     # get all countires
     countries = Country.objects.all()
 
-    filter_url = "https://tola-tables.mercycorps.org/api/silo/430/data/"
+    filter_url = "http://tola-tables.mercycorps.org/api/silo/430/data/"
     token = TolaSites.objects.get(site_id=1)
     if token.tola_tables_token:
         headers = {'content-type': 'application/json',
@@ -400,16 +400,9 @@ def SurveyTalkPublicDashboard(request,id=0):
 
     dashboard = True
 
-    return render(request, "customdashboard/themes/survey_talk_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'country_from': country_from, 'countries': countries, 'dashboard':dashboard})
+    return render(request, "customdashboard/survey_talk_public_dashboard.html", {'meaning':meaningcount,'join':joincount,'tola_is':tolacount, 'country_from': country_from, 'countries': countries, 'dashboard':dashboard})
 
 
-def ReportPublicDashboard(request,id=0):
-
-    # get all countires
-    countries = Country.objects.all()
-    report = True
-
-    return render(request, "customdashboard/themes/survey_public_dashboard.html", {'countries': countries, 'report':report})
 
 #RRIMA PROJECT DASHBOARD (in use 12/16)
 def RRIMAPublicDashboard(request,id=0):
