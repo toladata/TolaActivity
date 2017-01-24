@@ -171,6 +171,7 @@ header .button {
 .indicator-line-graph {
    min-height: 550px;
    margin-top: none;
+   margin-bottom: 10px;
    text-align: center;
    padding-left: 20px;
 
@@ -183,7 +184,7 @@ header .button {
 }
 .canvas-container-dash
 {
-   min-height: 260px;
+   min-height: 300px;
    position: relative;
    margin-top: none;
 }

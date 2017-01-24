@@ -15,6 +15,7 @@ from tola.util import getCountry, get_table
 from django.contrib.auth.decorators import login_required
 import requests
 import json
+from datetime import *
 import ast
 
 class ProgramList(ListView):
@@ -168,7 +169,7 @@ def PublicDashboard(request,id=0,public=0):
     training_id_list = []
 
     # Indicator Evidence
-    getEvidence = TolaTable.objects.all().filter(collecteddata__program__id=program_id)
+    getEvidence = TolaTable.objects.all()
     evidence_tables = []
     for table in getEvidence:
         table.table_data = get_table(table.url)
