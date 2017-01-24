@@ -1,4 +1,4 @@
-Tola Activity [![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
+Install
 ====
 http://toladata.github.io/TolaActivity
 
@@ -14,7 +14,7 @@ files.
 Ensure that the configuration files (`.secret`, `.secret.yml`) are in the `config` folder.
 
 ## To deploy changes in activity servers
-Once all your changes have been commited to the repo, and before pushing them, run: 
+Once all your changes have been commited to the repo, and before pushing them, run:
 `. travis.sh`
 
 ## To deploy locally

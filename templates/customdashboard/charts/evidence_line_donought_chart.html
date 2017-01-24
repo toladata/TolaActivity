@@ -97,7 +97,7 @@ $(document).ready(function(){
 					};
 
 					//Get context with jQuery - using jQuery's .get() method.
-					var ctx = $("#collected_data_line").get(0).getContext("2d");
+					var ctx = $("#evidence_line").get(0).getContext("2d");
 					var evidence_chart = new Chart(ctx).Line(data,options);
 					document.getElementById('collected_data_d-legend').innerHTML = evidence_chart.generateLegend();
 

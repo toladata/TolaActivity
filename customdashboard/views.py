@@ -176,6 +176,8 @@ def PublicDashboard(request,id=0,public=0):
 
         evidence_tables.append(table)
 
+    print evidence_tables
+
     for p in getProjects:
         agreement_id_list.append(p.id)
 
