@@ -119,20 +119,6 @@
 
                     </div>
 
-
-                    <!-- End of bar charts -->
-
-                    <!-- The map -->
-                    <!-- <div class="row">
-                        <div class="panel panel-info">
-                            <div class="panel-heading"><strong> Projects Sites</strong></div>
-                            <div class="panel-body">
-
-
-                            </div>
-                        </div>
-                    </div> -->
-                    <!-- End of the map -->
             </div>
              <div class="tab-pane" id="indicators">
                 <h1 class="sidebar-header">Key Performance Indicators</h1>
@@ -286,21 +272,52 @@
                 <h1 class="sidebar-header">{{ getProgramNarrative.narrative_title }}</h1>
                 <br>
                 <p>{{ getProgramNarrative.narrative }}</p>
-                <div class="col-md-6">
-                    {% for item in evidence_tables  %}
-                    <div class="panel panel-info">
-                        <div class="panel-heading">
-                            <strong><a href="{{ item.url }}">{{ item.url }} </a>
-                                <br>Owner: {{ item.owner }}  Total Records = {{ item.table_data.recordsTotal }}</strong>
-                        </div>
-                        <div class="panel-body">
-                            <div class="canvas-container-radar">
+                <!-- {% for item in evidence_tables  %}
+                  <div class="col-md-6">
+                      <div class="panel panel-info">
+                          <div class="panel-heading">
+                              <strong><a href="{{ item.url }}">{{ item.url }} </a>
+                                  <br>Owner: {{ item.owner }}  Total Records = {{ item.table_data.recordsTotal }}</strong>
+                          </div>
+                          <div class="panel-body">
+                              <div class="canvas-container-radar">
 
-                              <canvas id="surveys"></canvas>
+                                <canvas id="surveys"></canvas>
+                              </div>
+                          </div>
+                      </div>
+                  </div><br>
+                {% endfor %} -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-info" style="height:500px">
+                            <div class="panel-heading">
+                                 <strong>Indicator Evidence by Date</strong><br>
+                            </div>
+                            <div class="panel-body">
+                                  <div class="canvas-container-dash">
+                            
+                                    <canvas id="collected_data_line" width="800" height="400"></canvas>
+                                   <!--  <canvas id="collected_data_line"></canvas> -->
+                                  </div>
+                                    <!-- <div id="collected_data_d-legend" class="chart-legend"></div> -->
+
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+                    <!-- <div class="col-md-6">
+                        <div class="panel panel-info">
+                            <div class="panel-heading"><strong>Survey Questions & Responses</strong></div>
+                            <div class="panel-body">
+                                  <div class="canvas-container-fixed">
+                                    <canvas id="collected_data_donought"></canvas>
+                                  </div>
+                                    <div id="collected_data-legend" class="chart-legend"></div>
+
+                            </div>
+                        </div>
+                    </div> -->
+
                 </div>
                     
             </div>
@@ -372,6 +389,7 @@
         <div>{% include "customdashboard/charts/public_horizontal_bar.html" %}</div>
         <div>{% include "customdashboard/charts/line_graph_with_slider.html" %}</div>
         <div>{% include "customdashboard/charts/indicator_sparklines.html" %}</div>
+        <div>{% include "customdashboard/charts/evidence_line_donought_chart.html" %}</div>
 
         <script src="{{ STATIC_URL }}publicdashboard/js/vendor/jquery-1.11.1.min.js"></script>
         <script src="{{ STATIC_URL }}publicdashboard/js/plugins.js"></script>
@@ -384,6 +402,6 @@ $('a[href=#indicators]').on('shown.bs.tab', function(){
         $(this).highcharts().reflow();
     });
 
-})
+});
 </script>
 {% endblock content %}

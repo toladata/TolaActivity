@@ -175,7 +175,7 @@ class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin )
         return qs.filter(user__is_active= True)
 
     list_display = ('title','name', 'user','email', 'country', 'create_date')
-    list_filter = ('country', 'create_date')
+    list_filter = ('country', 'create_date', 'user__is_staff')
 
     def email(self, data):
         auth_users = User.objects.all()

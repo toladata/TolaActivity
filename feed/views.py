@@ -2,7 +2,7 @@ from .serializers import *
 
 from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
-    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation
+    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, Checklist
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
 
@@ -455,3 +455,7 @@ class LoggedUserViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
 
     queryset = LoggedUser.objects.all()
     serializer_class = LoggedUserSerializer
+
+class ChecklistViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+    queryset = Checklist.objects.all()
+    serializer_class = ChecklistSerializer

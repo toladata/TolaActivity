@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
-    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser
+    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser, Checklist
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
 from django.contrib.auth.models import User
@@ -288,3 +288,8 @@ class LoggedUserSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = LoggedUser
 		fields = ('username', 'country', 'email')
+
+class ChecklistSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Checklist
+        fields = '__all__'
