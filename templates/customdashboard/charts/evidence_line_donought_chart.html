@@ -56,19 +56,16 @@ $(document).ready(function(){
 */
 			$(function () {
 
-					var data = {
+					/*var data = {
 						labels : [
-									{% for item in evidence_tables  %}
 
-										{% for item2 in item.table_data.data|slice:"25" %}
+										{% for item2 in item.table_data.data %}
 
 											{% if item2.evidence and item2.date_collected%}
 												"{{item2.date_collected|truncatechars:13}}",
 											{% endif %}
 
-										{% endfor %}
-
-									{% endfor %}],
+										{% endfor %}],
 						datasets : [
 							{
 								fillColor : "rgba(220,220, 220,0.5)",
@@ -76,17 +73,13 @@ $(document).ready(function(){
 								pointColor : "rgba(255,165,0,1)",
 								pointStrokeColor : "#fff",
 								data : [
-											{% for item in evidence_tables  %}
-
-												{% for item2 in item.table_data.data|slice:"25" %}
+												{% for item2 in item.table_data.data %}
 
 													{% if item2.evidence and item2.date_collected%}
 														"{{item2.evidence}}",
 													{% endif %}
 
-												{% endfor %}
-
-											{% endfor %}]
+												{% endfor %}]
 							}
 						]
 					}
@@ -94,12 +87,58 @@ $(document).ready(function(){
 
 					var options={					
 						
-					};
+					};*/
 
-					//Get context with jQuery - using jQuery's .get() method.
-					var ctx = $("#evidence_line").get(0).getContext("2d");
+
+    				document.getElementById('metterpanel').innerHTML = '';
+
+    				{% for item in evidence_tables %}
+
+				        var newElement = $('<div class="col-md-6">'+'<div class="panel panel-info">'+'<div class="panel-heading">'+'<strong><br>Owner:{{ item.owner }} Total Records = {{ item.table_data.recordsTotal}}</strong>'+'</div>'+'<div class="panel-body">'+'<div class="canvas-container-radar">'+'<canvas id="{{item.id}}" width="350" height="250"></canvas>'+'</div>'+'</div>'+'</div>'+'</div>'+'<br>');
+
+						$('#metterpanel').append(newElement);
+				        var startingData = {
+				            labels: [
+				            			{% for item2 in item.table_data.data|slice:"20" %}
+
+											{% if item2.evidence and item2.date_collected%}
+												"{{item2.date_collected|truncatechars:13}}",
+											{% endif %}
+
+										{% endfor %}],
+				            datasets: [
+				                {
+				                    fillColor : "rgba(220,220, 220,0.5)",
+									strokeColor : "rgba(135,206,250,1)",
+									pointColor : "rgba(255,165,0,1)",
+									pointStrokeColor : "#fff",
+				                    data: [
+				                    		{% for item2 in item.table_data.data|slice:"20" %}
+												{% if item2.evidence and item2.date_collected%}
+													"{{item2.evidence}}",
+												{% endif %}
+
+											{% endfor %}]
+				                }
+				            ]
+				        };
+
+				        var areaChartOptions = {
+
+				        };
+				        //-------------
+				        //- LINE CHART -
+				        //--------------
+				        var lineChartCanvas = $("#"+{{item.id}}).get(0).getContext("2d");
+				        var datakey = new Chart(lineChartCanvas).Line(startingData, areaChartOptions);
+				        var lineChartOptions = areaChartOptions;
+				        lineChartOptions.datasetFill = false;
+				    {% endfor %}
+
+					/*//Get context with jQuery - using jQuery's .get() method.
+					var ctx = $("#evidence_line60").get(0).getContext("2d");
 					var evidence_chart = new Chart(ctx).Line(data,options);
-					document.getElementById('collected_data_d-legend').innerHTML = evidence_chart.generateLegend();
+					document.getElementById('collected_data_d-legend{{item.id}}').innerHTML = evidence_chart.generateLegend();*/
 
 				});
 		});
