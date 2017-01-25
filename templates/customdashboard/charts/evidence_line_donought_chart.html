@@ -56,47 +56,15 @@ $(document).ready(function(){
 */
 			$(function () {
 
-					/*var data = {
-						labels : [
 
-										{% for item2 in item.table_data.data %}
-
-											{% if item2.evidence and item2.date_collected%}
-												"{{item2.date_collected|truncatechars:13}}",
-											{% endif %}
-
-										{% endfor %}],
-						datasets : [
-							{
-								fillColor : "rgba(220,220, 220,0.5)",
-								strokeColor : "rgba(135,206,250,1)",
-								pointColor : "rgba(255,165,0,1)",
-								pointStrokeColor : "#fff",
-								data : [
-												{% for item2 in item.table_data.data %}
-
-													{% if item2.evidence and item2.date_collected%}
-														"{{item2.evidence}}",
-													{% endif %}
-
-												{% endfor %}]
-							}
-						]
-					}
-
-
-					var options={					
-						
-					};*/
-
-
-    				document.getElementById('metterpanel').innerHTML = '';
+    				document.getElementById('main_panel').innerHTML = '';
 
     				{% for item in evidence_tables %}
+    					var url = '{{item.url}}';
 
-				        var newElement = $('<div class="col-md-6">'+'<div class="panel panel-info">'+'<div class="panel-heading">'+'<strong><br>Owner:{{ item.owner }} Total Records = {{ item.table_data.recordsTotal}}</strong>'+'</div>'+'<div class="panel-body">'+'<div class="canvas-container-radar">'+'<canvas id="{{item.id}}" width="350" height="250"></canvas>'+'</div>'+'</div>'+'</div>'+'</div>'+'<br>');
+				        var newDivElement = $('<div class="col-md-6">'+'<div class="panel panel-info">'+'<div class="panel-heading">'+'<strong><a href="'+String(url)+'">'+String(url)+' </a><br>Owner:{{ item.owner }} Total Records = {{ item.table_data.recordsTotal}}</strong>'+'</div>'+'<div class="panel-body">'+'<div class="canvas-container-radar">'+'<canvas id="{{item.id}}" width="350" height="250"></canvas>'+'</div>'+'</div>'+'</div>'+'</div>'+'<br>');
 
-						$('#metterpanel').append(newElement);
+						$('#main_panel').append(newDivElement);
 				        var startingData = {
 				            labels: [
 				            			{% for item2 in item.table_data.data|slice:"20" %}
@@ -123,22 +91,15 @@ $(document).ready(function(){
 				            ]
 				        };
 
-				        var areaChartOptions = {
+				        var chartOptions = {
 
 				        };
-				        //-------------
-				        //- LINE CHART -
-				        //--------------
+
 				        var lineChartCanvas = $("#"+{{item.id}}).get(0).getContext("2d");
-				        var datakey = new Chart(lineChartCanvas).Line(startingData, areaChartOptions);
-				        var lineChartOptions = areaChartOptions;
+				        var datakey = new Chart(lineChartCanvas).Line(startingData, chartOptions);
+				        var lineChartOptions = chartOptions;
 				        lineChartOptions.datasetFill = false;
 				    {% endfor %}
-
-					/*//Get context with jQuery - using jQuery's .get() method.
-					var ctx = $("#evidence_line60").get(0).getContext("2d");
-					var evidence_chart = new Chart(ctx).Line(data,options);
-					document.getElementById('collected_data_d-legend{{item.id}}').innerHTML = evidence_chart.generateLegend();*/
 
 				});
 		});
