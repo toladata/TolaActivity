@@ -279,7 +279,7 @@ class IndicatorUpdate(UpdateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values("program__id")
+        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values_list("program__id", flat=True)
         kwargs['program'] = program
         return kwargs
 
