@@ -746,7 +746,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
                                                                                                         'disaggregation',
                                                                                                         'means_of_verification',
                                                                                                         'data_collection_method',
-                                                                                                        'reporting_frequency',
+                                                                                                        'reporting_frequency__frequency',
                                                                                                         'create_date',
                                                                                                         'edit_date',
                                                                                                         'source',
@@ -767,7 +767,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
                                                                                                         'disaggregation',
                                                                                                         'means_of_verification',
                                                                                                         'data_collection_method',
-                                                                                                        'reporting_frequency',
+                                                                                                        'reporting_frequency__frequency',
                                                                                                         'create_date',
                                                                                                         'edit_date',
                                                                                                         'source',
@@ -788,7 +788,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
                                                                                                                    'disaggregation',
                                                                                                                    'means_of_verification',
                                                                                                                    'data_collection_method',
-                                                                                                                   'reporting_frequency',
+                                                                                                                   'reporting_frequency__frequency',
                                                                                                                    'create_date',
                                                                                                                    'edit_date',
                                                                                                                    'source',
@@ -803,11 +803,11 @@ class IndicatorReport(View, AjaxableResponseMixin):
             ).values('id', 'program__name', 'baseline', 'level__name', 'lop_target', 'program__id',
                      'external_service_record__external_service__name', 'key_performance_indicator', 'name',
                      'indicator_type__indicator_type', 'sector__sector', 'disaggregation', 'means_of_verification',
-                     'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source',
+                     'data_collection_method', 'reporting_frequency__frequency', 'create_date', 'edit_date', 'source',
                      'method_of_analysis')
 
         from django.core.serializers.json import DjangoJSONEncoder
-
+        print getIndicators
         get_indicators = json.dumps(list(getIndicators), cls=DjangoJSONEncoder)
 
         return JsonResponse(get_indicators, safe=False)
