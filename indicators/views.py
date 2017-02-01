@@ -684,7 +684,6 @@ def program_indicators_json(AjaxableResponseMixin,program,indicator,type):
             'id': indicator,
         }
         q.update(s)
-    print q
 
     indicators = Indicator.objects.all().filter(**q).annotate(data_count=Count('collecteddata'))
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
@@ -807,7 +806,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
                      'method_of_analysis')
 
         from django.core.serializers.json import DjangoJSONEncoder
-        print getIndicators
+
         get_indicators = json.dumps(list(getIndicators), cls=DjangoJSONEncoder)
 
         return JsonResponse(get_indicators, safe=False)
@@ -899,8 +898,6 @@ def indicator_data_report(request, id=0, program=0, type=0):
 
     if z:
         q.update(z)
-
-        print q
 
     if request.method == "GET" and "search" in request.GET:
         queryset = CollectedData.objects.filter(**q).filter(
