@@ -83,6 +83,9 @@ def DefaultCustomDashboard(request,id=0,status=0):
 
     getQuantitativeDataSums = CollectedData.objects.filter(indicator__program__id=program_id,achieved__isnull=False, indicator__key_performance_indicator=True).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved')).exclude(achieved=None,targeted=None)
     
+    totalTargets = getQuantitativeDataSums.aggregate(Sum('targets'))
+    totalActuals = getQuantitativeDataSums.aggregate(Sum('actuals'))
+
     getFilteredName=Program.objects.get(id=program_id)
     
     getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
@@ -92,8 +95,6 @@ def DefaultCustomDashboard(request,id=0,status=0):
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected', program__country__in=countries).count()
     getInProgressCount = ProjectAgreement.objects.all().filter(program__id=program_id).filter(Q(Q(approval='in progress') | Q(approval=None)), program__country__in=countries).count()
     nostatus_count = ProjectAgreement.objects.all().filter(program__id=program_id).filter(Q(Q(approval=None) | Q(approval=""))).count()
-    print getInProgressCount
-
 
     getSiteProfile = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id))
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
@@ -110,11 +111,17 @@ def DefaultCustomDashboard(request,id=0,status=0):
        getProjects = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries)
 
     get_project_completed = []
+
+    totalBudgetted = 0.00
+    totalActual = 0.00
+
     getProjectsComplete = ProjectComplete.objects.all()
     for project in getProjects:
         for complete in getProjectsComplete:
             if complete.actual_budget != None:
                 if project.id == complete.project_agreement_id:
+                    totalBudgetted = float(totalBudgetted) + float(project.total_estimated_budget)
+                    totalActual = float(totalActual) + float(complete.actual_budget)
 
                     get_project_completed.append(project)
 
@@ -123,7 +130,7 @@ def DefaultCustomDashboard(request,id=0,status=0):
                                                                      'getFilteredName': getFilteredName,'getProjects': getProjects, 'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount, 'getInProgressCount': getInProgressCount,'nostatus_count': nostatus_count,
                                                                      'getProjectsCount': getProjectsCount, 'selected_countries_list': selected_countries_list,
-                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'get_project_completed': get_project_completed})
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'get_project_completed': get_project_completed, 'totalActuals': totalActuals, 'totalTargets': totalTargets, 'totalBudgetted': totalBudgetted, 'totalActual': totalActual})
 
 
 def PublicDashboard(request,id=0,public=0):
@@ -150,6 +157,7 @@ def PublicDashboard(request,id=0,public=0):
     except ProgramNarratives.DoesNotExist:
         getProgramNarrative = None
     getProjects = ProjectComplete.objects.all().filter(program_id=program_id)
+    getAllProjects = ProjectAgreement.objects.all().filter(program_id=program_id)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
 
@@ -159,7 +167,7 @@ def PublicDashboard(request,id=0,public=0):
     getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
     getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
-    nostatus_count = ProjectAgreement.objects.all().filter(Q(Q(approval=None) | Q(approval=""))).count()
+    nostatus_count = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval=None) | Q(approval=""))).count()
 
     # get all countires
     countries = Country.objects.all().filter(program__id=program_id)
@@ -227,7 +235,7 @@ def PublicDashboard(request,id=0,public=0):
                                                                      'evidence_tables': evidence_tables,
                                                                      'evidence_tables_count': evidence_tables_count,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
-                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
+                                                                     'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed, 'getAllProjects': getAllProjects})
 
 
 """
