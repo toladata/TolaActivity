@@ -1,6 +1,8 @@
 <script>
-	//KPI JSON data object
+$(document).ready(function(){
+
 $('a[href=#projects]').on('shown.bs.tab', function(){
+	//KPI JSON data object
 
 var kpi_options = {
     maintainAspectRatio: false,
@@ -61,5 +63,6 @@ var ctx = document.getElementById("kpi").getContext("2d");
 var kpiChart = new Chart(ctx).Bar(kpi_data, kpi_options);
 document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
 
+});
 });
 </script>
