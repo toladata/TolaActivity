@@ -74,6 +74,8 @@ class BudgetForm(forms.ModelForm):
 
 
     def __init__(self, *args, **kwargs):
+
+        self.request = kwargs.pop('request')
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -89,13 +91,10 @@ class BudgetForm(forms.ModelForm):
 
 
         super(BudgetForm, self).__init__(*args, **kwargs)
+        
+        countries = getCountry(self.request.user)
 
-        # try:
-        #     countries = getCountry(self.request.user)
-        # except Exception, e:
-        #     countries = []
-
-        # self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
+        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
 
     def save(self, *args, **kwargs):
         # Commit is already set to false
