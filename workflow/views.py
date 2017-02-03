@@ -418,7 +418,7 @@ class ProjectAgreementDetail(DetailView):
             getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
         except Benchmarks.DoesNotExist:
             getBenchmark = None
-        context.update({'getBenchmark': getBenchmark})
+        context.update({'getBenchmarks': getBenchmark})
 
         try:
             getBudget = Budget.objects.all().filter(agreement__id=self.kwargs['pk'])
@@ -431,6 +431,13 @@ class ProjectAgreementDetail(DetailView):
         except Documentation.DoesNotExist:
             getDocuments = None
         context.update({'getDocuments': getDocuments})
+
+        try:
+            getQuantitativeOutputs = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk'])
+            
+        except CollectedData.DoesNotExist:
+            getQuantitativeOutputs = None
+        context.update({'getQuantitativeOutputs': getQuantitativeOutputs})
 
         return context
 
@@ -718,6 +725,12 @@ class ProjectCompleteDetail(DetailView):
         context.update({'jsonData': jsonData})
         """
         context.update({'id':self.kwargs['pk']})
+
+        try:
+            getBenchmark = Benchmarks.objects.all().filter(complete__id=self.kwargs['pk'])
+        except Benchmarks.DoesNotExist:
+            getBenchmark = None
+        context.update({'getBenchmarks': getBenchmark})
 
         return context
 
