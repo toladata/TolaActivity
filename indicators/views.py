@@ -652,7 +652,8 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
     """
 
     template_name = 'indicators/collected_data_table.html'
-    collecteddata = CollectedData.objects.all().filter(indicator=indicator)
+    collecteddata = CollectedData.objects.all().filter(indicator=indicator).prefetch_related('evidence')
+
     detail_url = ''
     try:
         for data in collecteddata:
