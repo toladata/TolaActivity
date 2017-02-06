@@ -1,4 +1,4 @@
-Tola Activity [![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
+Install
 ====
 http://toladata.github.io/TolaActivity
 
@@ -11,13 +11,13 @@ and exporting of project specific data from 3rd party data sources or excel
 files.
 
 ## Configuration
-Copy the tola/settings/local-sample.py to local.py and modify 
+Ensure that the configuration files (`.secret`, `.secret.yml`) are in the `config` folder.
 
 ## To deploy changes in activity servers
-Once all your changes have been commited to the repo, and before pushing them, run: 
+Once all your changes have been commited to the repo, and before pushing them, run:
 `. travis.sh`
 
-## To deploy locally via Docker
+## To deploy locally
 Run the following commands from the root of this repository:
   - `docker-compose build`
   - `docker-compose up`

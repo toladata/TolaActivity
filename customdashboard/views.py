@@ -15,6 +15,7 @@ from tola.util import getCountry, get_table
 from django.contrib.auth.decorators import login_required
 import requests
 import json
+from datetime import *
 import ast
 
 class ProgramList(ListView):
@@ -168,12 +169,15 @@ def PublicDashboard(request,id=0,public=0):
     training_id_list = []
 
     # Indicator Evidence
-    getEvidence = TolaTable.objects.all().filter(collecteddata__program__id=program_id)
+    getEvidence = TolaTable.objects.all()
+    evidence_tables_count = getEvidence.count()
     evidence_tables = []
     for table in getEvidence:
         table.table_data = get_table(table.url)
 
         evidence_tables.append(table)
+
+    print evidence_tables
 
     for p in getProjects:
         agreement_id_list.append(p.id)
@@ -217,6 +221,7 @@ def PublicDashboard(request,id=0,public=0):
                                                                      'getIndicatorCountKPI': getIndicatorCountKPI,
                                                                      'getEvidence': getEvidence,
                                                                      'evidence_tables': evidence_tables,
+                                                                     'evidence_tables_count': evidence_tables_count,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed})
 
