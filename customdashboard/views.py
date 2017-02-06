@@ -146,7 +146,7 @@ def PublicDashboard(request,id=0,public=0):
     getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     getIndicatorCount = Indicator.objects.all().filter(program__id=program_id).count()
 
-    getIndicatorData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False)
+    getIndicatorData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('date_collected')
 
     getIndicatorCountData = getIndicatorData.count()
 
@@ -188,8 +188,6 @@ def PublicDashboard(request,id=0,public=0):
             
     except Exception, e:
         pass
-
-    print evidence_tables
 
     for p in getProjects:
         agreement_id_list.append(p.id)
