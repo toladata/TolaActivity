@@ -121,7 +121,6 @@ class ProgramDash(ListView):
         else:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
             filtered_program = Program.objects.only('name').get(pk=self.kwargs['pk']).name
-            print filtered_program
 
         if self.kwargs.get('status', None):
 
@@ -1495,12 +1494,10 @@ class ContactList(ListView):
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
-            print getContacts
             
         else:
             #getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
             getContacts = Stakeholder.contact.through.objects.filter(stakeholder_id = stakeholder_id)
-            print getContacts
 
         return render(request, self.template_name, {'getContacts': getContacts, 'getStakeholder': getStakeholder})
 
@@ -2313,7 +2310,6 @@ def save_bookmark(request):
     """
     Create Bookmark from Link
     """
-    print request.POST
     url = request.POST['url']
     username = request.user
     tola_user = TolaUser.objects.get(user=username)
