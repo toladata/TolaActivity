@@ -121,7 +121,6 @@ class ProgramDash(ListView):
         else:
             getDashboard = Program.objects.all().prefetch_related('agreement','agreement__projectcomplete','agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
             filtered_program = Program.objects.only('name').get(pk=self.kwargs['pk']).name
-            print filtered_program
 
         if self.kwargs.get('status', None):
 
@@ -418,7 +417,7 @@ class ProjectAgreementDetail(DetailView):
             getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
         except Benchmarks.DoesNotExist:
             getBenchmark = None
-        context.update({'getBenchmark': getBenchmark})
+        context.update({'getBenchmarks': getBenchmark})
 
         try:
             getBudget = Budget.objects.all().filter(agreement__id=self.kwargs['pk'])
@@ -431,6 +430,13 @@ class ProjectAgreementDetail(DetailView):
         except Documentation.DoesNotExist:
             getDocuments = None
         context.update({'getDocuments': getDocuments})
+
+        try:
+            getQuantitativeOutputs = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk'])
+            
+        except CollectedData.DoesNotExist:
+            getQuantitativeOutputs = None
+        context.update({'getQuantitativeOutputs': getQuantitativeOutputs})
 
         return context
 
@@ -718,6 +724,12 @@ class ProjectCompleteDetail(DetailView):
         context.update({'jsonData': jsonData})
         """
         context.update({'id':self.kwargs['pk']})
+
+        try:
+            getBenchmark = Benchmarks.objects.all().filter(complete__id=self.kwargs['pk'])
+        except Benchmarks.DoesNotExist:
+            getBenchmark = None
+        context.update({'getBenchmarks': getBenchmark})
 
         return context
 
@@ -1482,12 +1494,10 @@ class ContactList(ListView):
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
-            print getContacts
             
         else:
             #getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
             getContacts = Stakeholder.contact.through.objects.filter(stakeholder_id = stakeholder_id)
-            print getContacts
 
         return render(request, self.template_name, {'getContacts': getContacts, 'getStakeholder': getStakeholder})
 
@@ -1903,6 +1913,10 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
             }
 
         return initial
+    def get_form_kwargs(self):
+        kwargs = super(BudgetCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_invalid(self, form):
 
@@ -1938,6 +1952,12 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
+        
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(BudgetUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def form_valid(self, form):
         form.save()
@@ -2290,7 +2310,6 @@ def save_bookmark(request):
     """
     Create Bookmark from Link
     """
-    print request.POST
     url = request.POST['url']
     username = request.user
     tola_user = TolaUser.objects.get(user=username)

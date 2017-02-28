@@ -1,4 +1,6 @@
 <script>
+$(document).ready(function(){
+    
 $('a[href=#projects]').on('shown.bs.tab', function(){
 var expenditure_options = {
         maintainAspectRatio: false,
@@ -59,5 +61,5 @@ var expenditure_options = {
     document.getElementById('exp-legend').innerHTML = expChart.generateLegend();
 
 });
-
+});
 </script>

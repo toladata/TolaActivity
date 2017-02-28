@@ -59,6 +59,11 @@ def index(request, selected_countries=None, id=0, sector=0):
             complete_total_count = ProjectComplete.objects.all().filter(project_agreement__sector__in=sectors, program__country__in=selected_countries).count()
             agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved', sector__in=sectors, program__country__in=selected_countries).count()
             complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', project_agreement__sector__in=sectors, program__country__in=selected_countries).count()
+
+            agreement_awaiting_count = ProjectAgreement.objects.all().filter(approval='awaiting approval', sector__in=sectors, program__country__in=selected_countries).count()
+
+            complete_awaiting_count = ProjectComplete.objects.all().filter(approval='awaiting approval', project_agreement__sector__in=sectors, program__country__in=selected_countries).count()
+
             agreement_open_count = ProjectAgreement.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), sector__id__in=sectors, program__country__in=selected_countries).count()
             complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), project_agreement__sector__in=sectors, program__country__in=selected_countries).count()
             agreement_wait_count = ProjectAgreement.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), sector__in=sectors, program__country__in=selected_countries).count()
@@ -71,6 +76,10 @@ def index(request, selected_countries=None, id=0, sector=0):
             complete_total_count = ProjectComplete.objects.all().filter(program__country__in=selected_countries).count()
             agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved', program__country__in=selected_countries).count()
             complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', program__country__in=selected_countries).count()
+
+            agreement_awaiting_count = ProjectAgreement.objects.all().filter(approval='awaiting approval', program__country__in=selected_countries).count()
+            complete_awaiting_count = ProjectComplete.objects.all().filter(approval='awaiting approval', program__country__in=selected_countries).count()
+
             agreement_open_count = ProjectAgreement.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), program__country__in=selected_countries).count()
             complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), program__country__in=selected_countries).count()
             agreement_wait_count = ProjectAgreement.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), program__country__in=selected_countries).count()
@@ -143,9 +152,11 @@ def index(request, selected_countries=None, id=0, sector=0):
                                           'agreement_approved_count':agreement_approved_count,\
                                           'agreement_open_count':agreement_open_count,\
                                           'agreement_wait_count':agreement_wait_count,\
+                                          'agreement_awaiting_count':agreement_awaiting_count,\
                                           'complete_open_count':complete_open_count,\
                                           'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,\
                                           'complete_wait_count':complete_wait_count,\
+                                          'complete_awaiting_count':complete_awaiting_count,\
                                           'programs':getPrograms,'getSiteProfile':getSiteProfile,\
                                           'countries': user_countries,'selected_countries':selected_countries,\
                                           'getFilteredName':getFilteredName,'getSectors':getSectors,\

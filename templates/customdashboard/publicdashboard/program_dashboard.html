@@ -68,7 +68,7 @@
                                               <th>Status</th>
                                               <th>EXp. Start Date</th>
                                           </tr>
-                                          {% for project in getProjects|slice:"10" %}
+                                          {% for project in getAllProjects %}
                                           <tr>
                                               <td>{{ project.activity_code }}</td>
                                               <td>{{ project.project_name }}</td>
