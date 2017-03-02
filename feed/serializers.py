@@ -138,7 +138,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TolaUser
-        fields = ('url', 'name','country', 'countries')
+        fields = '__all__'
 
 class IndicatorTypeSerializer(serializers.HyperlinkedModelSerializer):
 
