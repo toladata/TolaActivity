@@ -1,6 +1,8 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from urlparse import urlparse
+import re
 from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
 from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
@@ -90,7 +92,6 @@ class IndicatorList(ListView):
             indicator_name = Indicator.objects.get(id=indicator)
 
         indicators = Program.objects.all().filter(funding_status="Funded", country__in=countries).filter(**q).order_by('name').annotate(indicator_count=Count('indicator'))
-
         return render(request, self.template_name, {'getPrograms': getPrograms,'getIndicators':getIndicators,
                                                     'program_name':program_name, 'indicator_name':indicator_name,
                                                     'type_name':type_name, 'program':program, 'indicator': indicator, 'type': type,
@@ -279,7 +280,7 @@ class IndicatorUpdate(UpdateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values("program__id")
+        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values_list("program__id", flat=True)
         kwargs['program'] = program
         return kwargs
 
@@ -649,8 +650,18 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
     :param program:
     :return: List of CollectedData entries and sum of there achieved & Targets as well as related indicator and program
     """
+
     template_name = 'indicators/collected_data_table.html'
-    collecteddata = CollectedData.objects.all().filter(indicator=indicator)
+    collecteddata = CollectedData.objects.all().filter(indicator=indicator).prefetch_related('evidence')
+
+    detail_url = ''
+    try:
+        for data in collecteddata:
+            if data.tola_table:
+                data.tola_table.detail_url = const_table_det_url(str(data.tola_table.url))
+    except Exception, e:
+        pass
+
     collected_sum = CollectedData.objects.filter(indicator=indicator).aggregate(Sum('targeted'),Sum('achieved'))
     return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum,
                                               'indicator_id': indicator, 'program_id': program})
@@ -684,7 +695,6 @@ def program_indicators_json(AjaxableResponseMixin,program,indicator,type):
             'id': indicator,
         }
         q.update(s)
-    print q
 
     indicators = Indicator.objects.all().filter(**q).annotate(data_count=Count('collecteddata'))
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
@@ -746,7 +756,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
                                                                                                         'disaggregation',
                                                                                                         'means_of_verification',
                                                                                                         'data_collection_method',
-                                                                                                        'reporting_frequency',
+                                                                                                        'reporting_frequency__frequency',
                                                                                                         'create_date',
                                                                                                         'edit_date',
                                                                                                         'source',
@@ -767,7 +777,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
                                                                                                         'disaggregation',
                                                                                                         'means_of_verification',
                                                                                                         'data_collection_method',
-                                                                                                        'reporting_frequency',
+                                                                                                        'reporting_frequency__frequency',
                                                                                                         'create_date',
                                                                                                         'edit_date',
                                                                                                         'source',
@@ -788,7 +798,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
                                                                                                                    'disaggregation',
                                                                                                                    'means_of_verification',
                                                                                                                    'data_collection_method',
-                                                                                                                   'reporting_frequency',
+                                                                                                                   'reporting_frequency__frequency',
                                                                                                                    'create_date',
                                                                                                                    'edit_date',
                                                                                                                    'source',
@@ -803,7 +813,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
             ).values('id', 'program__name', 'baseline', 'level__name', 'lop_target', 'program__id',
                      'external_service_record__external_service__name', 'key_performance_indicator', 'name',
                      'indicator_type__indicator_type', 'sector__sector', 'disaggregation', 'means_of_verification',
-                     'data_collection_method', 'reporting_frequency', 'create_date', 'edit_date', 'source',
+                     'data_collection_method', 'reporting_frequency__frequency', 'create_date', 'edit_date', 'source',
                      'method_of_analysis')
 
         from django.core.serializers.json import DjangoJSONEncoder
@@ -899,8 +909,6 @@ def indicator_data_report(request, id=0, program=0, type=0):
 
     if z:
         q.update(z)
-
-        print q
 
     if request.method == "GET" and "search" in request.GET:
         queryset = CollectedData.objects.filter(**q).filter(
@@ -1196,3 +1204,18 @@ class CountryExport(View):
         response = HttpResponse(country.csv, content_type="csv")
         response['Content-Disposition'] = 'attachment; filename=country.csv'
         return response
+
+def const_table_det_url(url):
+    url_data = urlparse(url)
+    root = url_data.scheme
+    org_host = url_data.netloc
+    path = url_data.path
+    components = re.split('/', path)
+
+    s = []
+    for c in components:
+        s.append(c)
+
+    new_url = str(root)+'://'+str(org_host)+'/silo_detail/'+str(s[3])+'/'
+
+    return new_url

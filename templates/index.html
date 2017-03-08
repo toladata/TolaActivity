@@ -43,15 +43,19 @@ $(function () {
         series: [
         {
             name: 'Approved',
-            data: [{ y:{{ agreement_approved_count }},ownURL:'/workflow/projectagreement_list/0/' }, { y:{{ complete_approved_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
+            data: [{ y:{{ agreement_approved_count }},ownURL:'/workflow/projectagreement_list/0/none/' }, { y:{{ complete_approved_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
         },
         {
             name: 'Pending',
-            data: [{ y:{{ agreement_wait_count }},ownURL:'/workflow/projectagreement_list/0/' }, { y:{{ complete_wait_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
+            data: [{ y:{{ agreement_wait_count }},ownURL:'/workflow/projectagreement_list/0/none/' }, { y:{{ complete_wait_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
+        },
+        {
+            name: 'Awaiting Approval',
+            data: [{ y:{{ agreement_awaiting_count }},ownURL:'/workflow/projectagreement_list/0/none/' }, { y:{{ complete_awaiting_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
         },
         {
             name: 'Open',
-            data: [{ y:{{ agreement_open_count }},ownURL:'/workflow/projectagreement_list/0/' }, { y:{{ complete_open_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
+            data: [{ y:{{ agreement_open_count }},ownURL:'/workflow/projectagreement_list/0/none/' }, { y:{{ complete_open_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
         },
 
         ]
