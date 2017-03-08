@@ -291,6 +291,7 @@ select.listoption_filters
   width:150px;
   border: 2px solid#ddd;
   background: none;
+  -webkit-appearance: none;
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
   border-radius: 0;
