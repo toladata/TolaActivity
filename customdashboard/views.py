@@ -177,18 +177,22 @@ def PublicDashboard(request,id=0,public=0):
     training_id_list = []
 
     # Indicator Evidence
-    getEvidence = TolaTable.objects.all().filter(country__in=countries)
+    getEvidence = TolaTable.objects.all()
     evidence_tables_count = getEvidence.count()
     evidence_tables = []
+
     try:
         for table in getEvidence:
             table.table_data = get_table(table.url)
+            
+            print table.table_data
 
             evidence_tables.append(table)
             
     except Exception, e:
         pass
 
+    print evidence_tables
     for p in getProjects:
         agreement_id_list.append(p.id)
 
