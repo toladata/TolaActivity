@@ -13,8 +13,12 @@
 
 {% block content %}
 
-{% load crispy_forms_tags %}
-{% crispy form form.helper %}
+<div class="row" id="search-form">
+  <form class="col-md-3">
+    {% load crispy_forms_tags %}
+    {% crispy form form.helper %}
+  </form>
+</div>
 <br/>
 <script type="text/javascript">
   $(document).ready(function(){
@@ -93,17 +97,27 @@
             // get the program and indicator id from the url
             // get the program and indicator id from the url
             program_id = document.URL.split('/')[5];
-            console.log(program_id);
             indicator_id = document.URL.split('/')[6];
-            console.log(indicator_id);
             type_id = document.URL.split('/')[7];
-            console.log(type_id);
+            var _GET = get_query();
+
+            console.log(_GET.search)
 
 
-            $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id, function(data) {
+            $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id+'/?search='+_GET.search, function(data) {
                 show_indicator_table(data);
             });
         }
+
+        function get_query(){
+              var url = location.search;
+              var qs = url.substring(url.indexOf('?') + 1).split('&');
+              for(var i = 0, result = {}; i < qs.length; i++){
+                  qs[i] = qs[i].split('=');
+                  result[qs[i][0]] = decodeURIComponent(qs[i][1]);
+              }
+              return result;
+            }
 
         indicator_report();
   })
@@ -138,8 +152,24 @@
       program_id = document.URL.split('/')[5];
       indicator_id = document.URL.split('/')[6];
       type_id = document.URL.split('/')[7];
-      window.location.href = '/indicators/report/'+program_id+'/0/'+type;      
+      window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type;      
       }
+
+      $('#search-form').submit(function(){
+
+        })
+
+      $('#search-form').on('submit', function(event){
+          event.preventDefault();
+          program_id = document.URL.split('/')[5];
+          indicator_id = document.URL.split('/')[6];
+          type_id = document.URL.split('/')[7];
+
+          search = $('#id_search').val();
+          window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type_id+'/?search='+search; 
+
+              
+            });
  </script>
 
 {% endblock content %}

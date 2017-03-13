@@ -747,123 +747,37 @@ class IndicatorReport(View, AjaxableResponseMixin):
         indicator = int(self.kwargs['indicator'])
         type = int(self.kwargs['type'])
 
-        if program != 0 and type == 0:
-            getIndicators = Indicator.objects.all().filter(program__id=program).select_related().values('id',
-                                                                                                        'program__name',
-                                                                                                        'baseline',
-                                                                                                        'level__name',
-                                                                                                        'lop_target',
-                                                                                                        'program__id',
-                                                                                                        'external_service_record__external_service__name',
-                                                                                                        'key_performance_indicator',
-                                                                                                        'name',
-                                                                                                        'indicator_type__indicator_type',
-                                                                                                        'sector__sector',
-                                                                                                        'disaggregation',
-                                                                                                        'means_of_verification',
-                                                                                                        'data_collection_method',
-                                                                                                        'reporting_frequency__frequency',
-                                                                                                        'create_date',
-                                                                                                        'edit_date',
-                                                                                                        'source',
-                                                                                                        'method_of_analysis')
+    
 
+        if program != 0 and type == 0:
+            getIndicators = Indicator.objects.all().filter(program__id=program).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
+                
         elif type != 0 and program == 0:
-            getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related().values('id',
-                                                                                                        'program__name',
-                                                                                                        'baseline',
-                                                                                                        'level__name',
-                                                                                                        'lop_target',
-                                                                                                        'program__id',
-                                                                                                        'external_service_record__external_service__name',
-                                                                                                        'key_performance_indicator',
-                                                                                                        'name',
-                                                                                                        'indicator_type__indicator_type',
-                                                                                                        'sector__sector',
-                                                                                                        'disaggregation',
-                                                                                                        'means_of_verification',
-                                                                                                        'data_collection_method',
-                                                                                                        'reporting_frequency__frequency',
-                                                                                                        'create_date',
-                                                                                                        'edit_date',
-                                                                                                        'source',
-                                                                                                        'method_of_analysis')
+            getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
+
         elif program != 0 and type != 0:
 
-            getIndicators = Indicator.objects.all().filter(program__id = program, indicator_type=type).select_related().values('id',
-                                                                                                        'program__name',
-                                                                                                        'baseline',
-                                                                                                        'level__name',
-                                                                                                        'lop_target',
-                                                                                                        'program__id',
-                                                                                                        'external_service_record__external_service__name',
-                                                                                                        'key_performance_indicator',
-                                                                                                        'name',
-                                                                                                        'indicator_type__indicator_type',
-                                                                                                        'sector__sector',
-                                                                                                        'disaggregation',
-                                                                                                        'means_of_verification',
-                                                                                                        'data_collection_method',
-                                                                                                        'reporting_frequency__frequency',
-                                                                                                        'create_date',
-                                                                                                        'edit_date',
-                                                                                                        'source',
-                                                                                                        'method_of_analysis')
+            getIndicators = Indicator.objects.all().filter(program__id = program, indicator_type=type).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
 
 
         elif indicator != 0:
-            getIndicators = Indicator.objects.all().filter(id=indicator).select_related().values('id',
-                                                                                                        'program__name',
-                                                                                                        'baseline',
-                                                                                                        'level__name',
-                                                                                                        'lop_target',
-                                                                                                        'program__id',
-                                                                                                        'external_service_record__external_service__name',
-                                                                                                        'key_performance_indicator',
-                                                                                                        'name',
-                                                                                                        'indicator_type__indicator_type',
-                                                                                                        'sector__sector',
-                                                                                                        'disaggregation',
-                                                                                                        'means_of_verification',
-                                                                                                        'data_collection_method',
-                                                                                                        'reporting_frequency__frequency',
-                                                                                                        'create_date',
-                                                                                                        'edit_date',
-                                                                                                        'source',
-                                                                                                        'method_of_analysis')
+            getIndicators = Indicator.objects.all().filter(id=indicator).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
 
         else:
-            getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries).values('id',
-                                                                                                                   'program__name',
-                                                                                                                   'baseline',
-                                                                                                                   'level__name',
-                                                                                                                   'lop_target',
-                                                                                                                   'program__id',
-                                                                                                                   'external_service_record__external_service__name',
-                                                                                                                   'key_performance_indicator',
-                                                                                                                   'name',
-                                                                                                                   'indicator_type__indicator_type',
-                                                                                                                   'sector__sector',
-                                                                                                                   'disaggregation',
-                                                                                                                   'means_of_verification',
-                                                                                                                   'data_collection_method',
-                                                                                                                   'reporting_frequency__frequency',
-                                                                                                                   'create_date',
-                                                                                                                   'edit_date',
-                                                                                                                   'source',
-                                                                                                                   'method_of_analysis')
+            getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries).values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
+        
 
-        if request.method == "GET" and "search" in request.GET:
-            getIndicators = Indicator.objects.filter(
-                Q(indicator_type__indicator_type__contains=request.GET["search"]) |
-                Q(name__contains=request.GET["search"]) | Q(number__contains=request.GET["search"]) |
-                Q(number__contains=request.GET["search"]) | Q(sector__sector__contains=request.GET["search"]) |
-                Q(definition__contains=request.GET["search"])
-            ).values('id', 'program__name', 'baseline', 'level__name', 'lop_target', 'program__id',
-                     'external_service_record__external_service__name', 'key_performance_indicator', 'name',
-                     'indicator_type__indicator_type', 'sector__sector', 'disaggregation', 'means_of_verification',
-                     'data_collection_method', 'reporting_frequency__frequency', 'create_date', 'edit_date', 'source',
-                     'method_of_analysis')
+        q = request.GET.get('search', None)
+        if q:
+
+            getIndicators = getIndicators.filter(
+                Q(indicator_type__indicator_type__contains=q) |
+                Q(name__contains=q) | 
+                Q(number__contains=q) |
+                Q(number__contains=q) | 
+                Q(sector__sector__contains=q) |
+                Q(definition__contains=q)
+            )
 
         from django.core.serializers.json import DjangoJSONEncoder
 
