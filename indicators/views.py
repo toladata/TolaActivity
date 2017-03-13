@@ -722,12 +722,17 @@ def indicator_report(request, program=0, indicator=0, type=0):
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
+    getIndicators = []
+
+    if program != 0:
+        getIndicators = Indicator.objects.filter(program__id= program)
+
     getIndicatorTypes = IndicatorType.objects.all()
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/report.html",
                   {'program': program, 'getPrograms': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper,
-                   'getIndicatorTypes': getIndicatorTypes})
+                   'getIndicatorTypes': getIndicatorTypes, 'getIndicators': getIndicators})
 
 
 class IndicatorReport(View, AjaxableResponseMixin):
@@ -739,9 +744,10 @@ class IndicatorReport(View, AjaxableResponseMixin):
         getIndicatorTypes = IndicatorType.objects.all()
 
         program = int(self.kwargs['program'])
+        indicator = int(self.kwargs['indicator'])
         type = int(self.kwargs['type'])
 
-        if program != 0:
+        if program != 0 and type == 0:
             getIndicators = Indicator.objects.all().filter(program__id=program).select_related().values('id',
                                                                                                         'program__name',
                                                                                                         'baseline',
@@ -762,8 +768,51 @@ class IndicatorReport(View, AjaxableResponseMixin):
                                                                                                         'source',
                                                                                                         'method_of_analysis')
 
-        elif type != 0:
+        elif type != 0 and program == 0:
             getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related().values('id',
+                                                                                                        'program__name',
+                                                                                                        'baseline',
+                                                                                                        'level__name',
+                                                                                                        'lop_target',
+                                                                                                        'program__id',
+                                                                                                        'external_service_record__external_service__name',
+                                                                                                        'key_performance_indicator',
+                                                                                                        'name',
+                                                                                                        'indicator_type__indicator_type',
+                                                                                                        'sector__sector',
+                                                                                                        'disaggregation',
+                                                                                                        'means_of_verification',
+                                                                                                        'data_collection_method',
+                                                                                                        'reporting_frequency__frequency',
+                                                                                                        'create_date',
+                                                                                                        'edit_date',
+                                                                                                        'source',
+                                                                                                        'method_of_analysis')
+        elif program != 0 and type != 0:
+
+            getIndicators = Indicator.objects.all().filter(program__id = program, indicator_type=type).select_related().values('id',
+                                                                                                        'program__name',
+                                                                                                        'baseline',
+                                                                                                        'level__name',
+                                                                                                        'lop_target',
+                                                                                                        'program__id',
+                                                                                                        'external_service_record__external_service__name',
+                                                                                                        'key_performance_indicator',
+                                                                                                        'name',
+                                                                                                        'indicator_type__indicator_type',
+                                                                                                        'sector__sector',
+                                                                                                        'disaggregation',
+                                                                                                        'means_of_verification',
+                                                                                                        'data_collection_method',
+                                                                                                        'reporting_frequency__frequency',
+                                                                                                        'create_date',
+                                                                                                        'edit_date',
+                                                                                                        'source',
+                                                                                                        'method_of_analysis')
+
+
+        elif indicator != 0:
+            getIndicators = Indicator.objects.all().filter(id=indicator).select_related().values('id',
                                                                                                         'program__name',
                                                                                                         'baseline',
                                                                                                         'level__name',

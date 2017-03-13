@@ -135,7 +135,10 @@
         }
 
     function indicator_type_filter(type) {
-      window.location.href = '/indicators/report/0/0/'+type;      
+      program_id = document.URL.split('/')[5];
+      indicator_id = document.URL.split('/')[6];
+      type_id = document.URL.split('/')[7];
+      window.location.href = '/indicators/report/'+program_id+'/0/'+type;      
       }
  </script>
 
