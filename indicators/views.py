@@ -746,7 +746,6 @@ class IndicatorReport(View, AjaxableResponseMixin):
         program = int(self.kwargs['program'])
         indicator = int(self.kwargs['indicator'])
         type = int(self.kwargs['type'])
-
     
 
         if program != 0 and type == 0:
