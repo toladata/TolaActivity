@@ -929,21 +929,13 @@ class IndicatorReportData(View, AjaxableResponseMixin):
             q.update(s)
 
         countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id',
-                                                                                                      'program__name',
-                                                                                                      'baseline',
-                                                                                                      'level__name',
-                                                                                                      'lop_target',
-                                                                                                      'program__id',
-                                                                                                      'external_service_record__external_service__name',
-                                                                                                      'key_performance_indicator',
-                                                                                                      'name',
-                                                                                                      'indicator_type__indicator_type',
-                                                                                                      'sector__sector', )
+        indcator_data = Indicator.objects.filter(program__country__in=countries).filter(**q).values('id','program__name', 'baseline','level__name','lop_target','program__id','external_service_record__external_service__name', 'key_performance_indicator','name','indicator_type__indicator_type','sector__sector').distinct().order_by('create_date')
+
+        indicator = {x['id']:x for x in indcator_data}.values()
+
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
-            collecteddata__isnull=True).count()
-        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
-            collecteddata__isnull=False).count()
+            collecteddata__isnull=True).distinct().count()
+        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).distinct().count()
 
         indicator_serialized = json.dumps(list(indicator))
 
