@@ -1768,6 +1768,12 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
     model = CollectedData
     template_name = 'workflow/quantitativeoutputs_form.html'
 
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(QuantitativeOutputsCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
         getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
@@ -1810,6 +1816,12 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     """
     model = CollectedData
     template_name = 'workflow/quantitativeoutputs_form.html'
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(QuantitativeOutputsUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):

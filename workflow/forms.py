@@ -1434,6 +1434,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.request = kwargs.pop('request')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -1451,7 +1452,10 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
         super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
 
+        countries = getCountry(self.request.user)
+
         self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
+        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
 
 
 class BenchmarkForm(forms.ModelForm):
