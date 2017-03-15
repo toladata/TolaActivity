@@ -268,7 +268,7 @@ class Contact(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('country','name','title')
+        ordering = ('name', 'country','title')
         verbose_name_plural = "Contact"
 
     # onsave add create date or update edit date
@@ -280,7 +280,7 @@ class Contact(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.title + " " + self.name
+        return self.name + " " + self.title 
 
 
 class ContactAdmin(admin.ModelAdmin):
@@ -837,7 +837,7 @@ class Stakeholder(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
 class StakeholderAdmin(admin.ModelAdmin):
