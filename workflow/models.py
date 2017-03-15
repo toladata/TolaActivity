@@ -97,7 +97,7 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 class Country(models.Model):
     country = models.CharField("Country Name", max_length=255, blank=True)
-    organization = models.ForeignKey(Organization, default=1)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
     code = models.CharField("2 Letter Country Code", max_length=4, blank=True)
     description = models.TextField("Description/Notes", max_length=765,blank=True)
     latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
@@ -135,7 +135,7 @@ class TolaUser(models.Model):
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
-    organization = models.ForeignKey(Organization, default=1,blank=True, null=True,)
+    organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
@@ -182,6 +182,7 @@ class TolaBookmarks(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(TolaBookmarks, self).save()
+
 
 class TolaBookmarksAdmin(admin.ModelAdmin):
 
@@ -267,7 +268,7 @@ class Contact(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('country','name','title')
+        ordering = ('name', 'country','title')
         verbose_name_plural = "Contact"
 
     # onsave add create date or update edit date
@@ -279,7 +280,7 @@ class Contact(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.title + " " + self.name
+        return self.name + " " + self.title 
 
 
 class ContactAdmin(admin.ModelAdmin):
@@ -465,36 +466,6 @@ class AdminLevelThreeAdmin(admin.ModelAdmin):
     display = 'Admin Level 3'
 
 
-class Office(models.Model):
-    name = models.CharField("Office Name", max_length=255, blank=True)
-    code = models.CharField("Office Code", max_length=255, blank=True)
-    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name',)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Office, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
-        return new_name
-
-
-class OfficeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
-    search_fields = ('name','province__name','code')
-    list_filter = ('create_date','province__country__country')
-    display = 'Office'
-
-
 class Village(models.Model):
     name = models.CharField("Admin Level 4", max_length=255, blank=True)
     district = models.ForeignKey(District,null=True,blank=True)
@@ -523,6 +494,35 @@ class VillageAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date', 'edit_date')
     list_filter = ('district__province__country__country','district')
     display = 'Admin Level 4'
+
+class Office(models.Model):
+    name = models.CharField("Office Name", max_length=255, blank=True)
+    code = models.CharField("Office Code", max_length=255, blank=True)
+    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Office, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
+        return new_name
+
+
+class OfficeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
+    search_fields = ('name','province__name','code')
+    list_filter = ('create_date','province__country__country')
+    display = 'Office'
 
 
 class ProfileType(models.Model):
@@ -580,6 +580,7 @@ class SiteProfileManager(models.Manager):
     def get_queryset(self):
         return super(SiteProfileManager, self).get_queryset().prefetch_related().select_related('country','province','district','admin_level_three','type')
 
+
 class SiteProfile(models.Model):
     profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
     name = models.CharField("Site Name", max_length=255, blank=False)
@@ -592,14 +593,22 @@ class SiteProfile(models.Model):
     info_source = models.CharField("Data Source",max_length=255, blank=True, null=True)
     total_num_households = models.IntegerField("Total # Households", help_text="", null=True, blank=True)
     avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, default=Decimal("0.00"))
-    male_0_14 = models.IntegerField("Male age 0-14", null=True, blank=True)
-    female_0_14 = models.IntegerField("Female age 0-14", null=True, blank=True)
-    male_15_24 = models.IntegerField("Male age 15-24 ", null=True, blank=True)
-    female_15_24 = models.IntegerField("Female age 15-24", null=True, blank=True)
-    male_25_59 = models.IntegerField("Male age 25-59", null=True, blank=True)
-    female_25_59 = models.IntegerField("Female age 25-59", null=True, blank=True)
-    male_over_60 = models.IntegerField("Male Over 60", null=True, blank=True)
-    female_over_60 = models.IntegerField("Female Over 60", null=True, blank=True)
+    male_0_5 = models.IntegerField("Male age 0-5", null=True, blank=True)
+    female_0_5 = models.IntegerField("Female age 0-5", null=True, blank=True)
+    male_6_9 = models.IntegerField("Male age 6-9 ", null=True, blank=True)
+    female_6_9 = models.IntegerField("Female age 6-9", null=True, blank=True)
+    male_10_14 = models.IntegerField("Male age 10-14", null=True, blank=True)
+    female_10_14 = models.IntegerField("Female age 10-14", null=True, blank=True)
+    male_15_19 = models.IntegerField("Male age 15-19", null=True, blank=True)
+    female_15_19 = models.IntegerField("Female age 15-19", null=True, blank=True)
+    male_20_24 = models.IntegerField("Male age 20-24", null=True, blank=True)
+    female_20_24 = models.IntegerField("Female age 20-24", null=True, blank=True)
+    male_25_34 = models.IntegerField("Male age 25-34", null=True, blank=True)
+    female_25_34 = models.IntegerField("Female age 25-34", null=True, blank=True)
+    male_35_49 = models.IntegerField("Male age 35-49", null=True, blank=True)
+    female_35_49 = models.IntegerField("Female age 35-49", null=True, blank=True)
+    male_over_50 = models.IntegerField("Male Over 50", null=True, blank=True)
+    female_over_50 = models.IntegerField("Female Over 50", null=True, blank=True)
     total_population = models.IntegerField(null=True, blank=True)
     total_male = models.IntegerField(null=True, blank=True)
     total_female = models.IntegerField(null=True, blank=True)
@@ -828,7 +837,7 @@ class Stakeholder(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
 class StakeholderAdmin(admin.ModelAdmin):

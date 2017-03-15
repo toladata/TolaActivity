@@ -51,6 +51,7 @@ router.register(r'disaggregationvalue', DisaggregationValueViewSet)
 router.register(r'projectagreements', ProjectAgreementViewSet)
 router.register(r'loggedusers', LoggedUserViewSet)
 router.register(r'checklist', ChecklistViewSet)
+router.register(r'organization', OrganizationViewSet)
 
 
 urlpatterns = [ # rest framework
@@ -112,3 +113,9 @@ urlpatterns = [ # rest framework
                 url('', include('social.apps.django_app.urls', namespace='social')),
 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ]

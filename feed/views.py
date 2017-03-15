@@ -459,3 +459,7 @@ class LoggedUserViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
 class ChecklistViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
+
+class OrganizationViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+    queryset = Organization.objects.all()
+    serializer_class = OrganizationSerializer
