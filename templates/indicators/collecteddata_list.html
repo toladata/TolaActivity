@@ -90,8 +90,7 @@
                         { title: "KPI",data: "indicator__key_performance_indicator"},
                         { title: "Date Collected", data: "date_collected",
                                 "mRender": function ( data, type, row ) {
-                                var javascriptDate = new Date(row.date_collected);
-                                javascriptDate = javascriptDate.getFullYear() + "-" + ('0' + javascriptDate.getMonth()).slice(-2) + "-" + ('0' + javascriptDate.getDate()).slice(-2);
+                                var javascriptDate = new Date(row.date_collected).toISOString().slice(0, 10);
                                 return "<div class='date'>"+javascriptDate+"<div>";}},
                         { title: "Targeted", data: "targeted"},
                         { title: "Achieved", data: "achieved"},
@@ -128,6 +127,7 @@
                 //console.log(type_id);
 
                 $.getJSON("/indicators/collecteddata_report_data/" + program_id + "/"  + indicator_id + "/" + type_id + "/", function(data) {
+                    console.log(data['collected']);
                     show_indicator_table(data['collected']);
                     // If the indicator id is passed then sum up for the indicator
                     if (indicator_id > 0){
@@ -191,7 +191,7 @@
 
 <script type="text/javascript">
     function program_filter(program_id) {
-      window.location.href = '/indicators/collecteddata/'+program_id+'/0/0/';      
+      window.location.href = '/indicators/collecteddata/'+program_id+'/0/0/';
       }
 
     function indicator_filter(program,indicator,type) {
