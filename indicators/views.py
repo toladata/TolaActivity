@@ -990,18 +990,20 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             }
             q.update(s)
 
-        getCollectedData = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+        getCollectedData_dup = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
                                                                         'indicator__objectives',
                                                                         'indicator__strategic_objectives').filter(
             program__country__in=countries).filter(
             **q).order_by(
             'indicator__program__name',
-            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__program__name',
+            'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__program__name',
                                         'indicator__indicator_type__indicator_type', 'indicator__level__name',
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
                                         'indicator__external_service_record__external_service__name', 'evidence',
                                         'tola_table', 'targeted', 'achieved')
+
+        getCollectedData = {x['id']:x for x in getCollectedData_dup}.values()
 
         collected_sum = CollectedData.objects.filter(program__country__in=countries).filter(**q).aggregate(
             Sum('targeted'), Sum('achieved'))
