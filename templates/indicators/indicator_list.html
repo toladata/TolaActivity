@@ -67,12 +67,16 @@ function loadIndicators(program,indicator,type){
       window.location.href = '/indicators/home/'+program_id+'/0/0/';      
       }
 
-    function indicator_filter(program,indicator,type) {
-      window.location.href = '/indicators/home/'+program+'/'+indicator+'/'+type;
+    function indicator_filter(indicator) {
+      window.location.href = '/indicators/report/0/'+indicator+'/0';  
         }
 
-    function indicator_type_filter(program,indicator,type) {
-      window.location.href = '/indicators/home/'+program+'/'+indicator+'/'+type;
+    function indicator_type_filter(type) {
+      program_id = document.URL.split('/')[5];
+      indicator_id = document.URL.split('/')[6];
+      type_id = document.URL.split('/')[7];
+      window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type;      
       }
+
  </script>
 {% endblock content %}

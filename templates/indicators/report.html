@@ -155,21 +155,17 @@
       window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type;      
       }
 
-      $('#search-form').submit(function(){
+    $('#search-form').on('submit', function(event){
+        event.preventDefault();
+        program_id = document.URL.split('/')[5];
+        indicator_id = document.URL.split('/')[6];
+        type_id = document.URL.split('/')[7];
 
-        })
-
-      $('#search-form').on('submit', function(event){
-          event.preventDefault();
-          program_id = document.URL.split('/')[5];
-          indicator_id = document.URL.split('/')[6];
-          type_id = document.URL.split('/')[7];
-
-          search = $('#id_search').val();
-          window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type_id+'/?search='+search; 
+        search = $('#id_search').val();
+        window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type_id+'/?search='+search; 
 
               
-            });
+      });
  </script>
 
 {% endblock content %}
