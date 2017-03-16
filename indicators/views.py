@@ -931,7 +931,6 @@ class IndicatorReportData(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
         indcator_data = Indicator.objects.filter(program__country__in=countries).filter(**q).values('id','program__name', 'baseline','level__name','lop_target','program__id','external_service_record__external_service__name', 'key_performance_indicator','name','indicator_type__indicator_type','sector__sector').distinct().order_by('create_date')
 
-        indicator = {x['id']:x for x in indcator_data}.values()
 
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
             collecteddata__isnull=True).distinct().count()
@@ -990,13 +989,13 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             }
             q.update(s)
 
-        getCollectedData = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+        getCollectedData_dup = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
                                                                         'indicator__objectives',
                                                                         'indicator__strategic_objectives').filter(
             program__country__in=countries).filter(
             **q).order_by(
             'indicator__program__name',
-            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__program__name',
+            'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__program__name',
                                         'indicator__indicator_type__indicator_type', 'indicator__level__name',
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',

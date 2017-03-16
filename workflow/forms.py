@@ -711,11 +711,11 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','project_activity','site','stakeholder',
+                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','site','stakeholder',
                     ),
                     Fieldset(
                         'Dates',
-                        'expected_start_date','expected_end_date', 'expected_duration', 'actual_start_date', 'actual_end_date', 'actual_duration',
+                        'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
                         PrependedText('on_time', ''), 'no_explanation',
 
                     ),
