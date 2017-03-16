@@ -931,7 +931,6 @@ class IndicatorReportData(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
         indcator_data = Indicator.objects.filter(program__country__in=countries).filter(**q).values('id','program__name', 'baseline','level__name','lop_target','program__id','external_service_record__external_service__name', 'key_performance_indicator','name','indicator_type__indicator_type','sector__sector').distinct().order_by('create_date')
 
-        indicator = {x['id']:x for x in indcator_data}.values()
 
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
             collecteddata__isnull=True).distinct().count()
@@ -1002,8 +1001,6 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
                                         'indicator__external_service_record__external_service__name', 'evidence',
                                         'tola_table', 'targeted', 'achieved')
-
-        getCollectedData = {x['id']:x for x in getCollectedData_dup}.values()
 
         collected_sum = CollectedData.objects.filter(program__country__in=countries).filter(**q).aggregate(
             Sum('targeted'), Sum('achieved'))
