@@ -711,11 +711,11 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','project_activity','site','stakeholder',
+                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','site','stakeholder',
                     ),
                     Fieldset(
                         'Dates',
-                        'expected_start_date','expected_end_date', 'expected_duration', 'actual_start_date', 'actual_end_date', 'actual_duration',
+                        'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
                         PrependedText('on_time', ''), 'no_explanation',
 
                     ),
@@ -1325,8 +1325,8 @@ class SiteProfileForm(forms.ModelForm):
                 ),
                 Tab('Demographic Information',
                     Fieldset('Households',
-                        'total_num_households','avg_household_size', 'male_0_14', 'female_0_14', 'male_15_24', 'female_15_24',
-                        'male_25_59', 'female_25_59', 'male_over_60', 'female_over_60', 'total_population',
+                        'total_num_households','avg_household_size', 'male_0_5', 'female_0_5', 'male_6_9', 'female_6_9',
+                        'male_10_14', 'female_10_14','male_15_19', 'female_15_19', 'male_20_24', 'female_20_24', 'male_25_34', 'female_25_34', 'male_35_49', 'female_35_49', 'male_over_50', 'female_over_50', 'total_population',
                     ),
                     Fieldset('Land',
                         'classify_land','total_land','total_agricultural_land','total_rainfed_land','total_horticultural_land',
@@ -1434,6 +1434,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
+        self.request = kwargs.pop('request')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
@@ -1451,7 +1452,10 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
         super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
 
+        countries = getCountry(self.request.user)
+
         self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
+        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
 
 
 class BenchmarkForm(forms.ModelForm):

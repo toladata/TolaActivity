@@ -62,7 +62,7 @@ $(document).ready(function(){
     				{% for item in evidence_tables %}
     					var url = '{{item.url}}';
 
-				        var newDivElement = $('<div class="col-md-6">'+'<div class="panel panel-info">'+'<div class="panel-heading">'+'<strong><a href="'+String(url)+'">'+String(url)+' </a><br>Owner:{{ item.owner }} Total Records = {{ item.table_data.recordsTotal}}</strong>'+'</div>'+'<div class="panel-body">'+'<div class="canvas-container-radar">'+'<canvas id="{{item.id}}" width="350" height="250"></canvas>'+'</div>'+'</div>'+'</div>'+'</div>'+'<br>');
+				        var newDivElement = $('<div class="col-md-6">'+'<div class="panel panel-info">'+'<div class="panel-heading">'+'<strong><a href="'+String(url)+'">'+String(url)+' </a><br>Owner:{{ item.owner }} Total Records = {{ item.table_data.recordsTotal}}</strong>'+'</div>'+'<div class="panel-body">'+'{% if not item.table_data.data %}'+' <b>'+'No data for this table '+'</b>'+'{% endif %}'+'<div class="canvas-container-radar">'+'<canvas id="{{item.id}}" width="350" height="250"></canvas>'+'</div>'+'</div>'+'</div>'+'</div>'+'<br>');
 
 						$('#main_panel').append(newDivElement);
 				        var startingData = {
