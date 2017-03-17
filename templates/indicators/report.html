@@ -60,7 +60,7 @@
                       "defaultContent": "<i>Not set</i>"},
                     { title: "Sector", data: "sector__sector",
                       "defaultContent": "<i>Not set</i>"},
-                    { title: "Disaggregation", data: "disaggregation",
+                    { title: "Disaggregation", data: "disaggregation__disaggregation_type",
                       "defaultContent": "<i>Not set</i>"},
                     { title: "Method of Analysis", data: "method_of_analysis",
                       "defaultContent": "<i>Not set</i>"},
@@ -108,6 +108,7 @@
             });
             } else{
               $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id, function(data) {
+                console.log(data);
                 show_indicator_table(data);
               });
             }
@@ -145,18 +146,18 @@
 
 <script type="text/javascript">
     function program_filter(program_id) {
-      window.location.href = '/indicators/report/'+program_id+'/0/0/';      
+      window.location.href = '/indicators/report/'+program_id+'/0/0/';
       }
 
     function indicator_filter(indicator) {
-      window.location.href = '/indicators/report/0/'+indicator+'/0';  
+      window.location.href = '/indicators/report/0/'+indicator+'/0';
         }
 
     function indicator_type_filter(type) {
       program_id = document.URL.split('/')[5];
       indicator_id = document.URL.split('/')[6];
       type_id = document.URL.split('/')[7];
-      window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type;      
+      window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type;
       }
 
       $('#search-form').on('submit', function(event){
@@ -166,9 +167,9 @@
           type_id = document.URL.split('/')[7];
 
           search = $('#id_search').val();
-          window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type_id+'/?search='+search; 
+          window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type_id+'/?search='+search;
 
-              
+
             });
  </script>
 

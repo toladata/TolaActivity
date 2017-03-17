@@ -746,34 +746,36 @@ class IndicatorReport(View, AjaxableResponseMixin):
         program = int(self.kwargs['program'])
         indicator = int(self.kwargs['indicator'])
         type = int(self.kwargs['type'])
-    
 
-        if program != 0 and type == 0:
-            getIndicators = Indicator.objects.all().filter(program__id=program).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
-                
-        elif type != 0 and program == 0:
-            getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
+        filters = {}
+        if program != 0:
+            filters['program__id'] = program
+        if type != 0:
+            filters['indicator_type'] = type
+        if indicator != 0:
+            filters['id'] = indicator
+        if program == 0 and type == 0:
+            filters['program__country__in'] = countries
 
-        elif program != 0 and type != 0:
+        getIndicators = Indicator.objects.filter(**filters).select_related(\
+            'program', 'external_service_record','indicator_type', 'sector', \
+            'disaggregation', 'reporting_frequency').\
+            values('id','program__name','baseline','level__name','lop_target',\
+                   'program__id','external_service_record__external_service__name',\
+                   'key_performance_indicator','name','indicator_type__indicator_type',\
+                   'sector__sector','disaggregation__disaggregation_type',\
+                   'means_of_verification','data_collection_method',\
+                   'reporting_frequency__frequency','create_date','edit_date',\
+                   'source','method_of_analysis')
 
-            getIndicators = Indicator.objects.all().filter(program__id = program, indicator_type=type).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
-
-
-        elif indicator != 0:
-            getIndicators = Indicator.objects.all().filter(id=indicator).select_related().values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
-
-        else:
-            getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries).values('id','program__name','baseline','level__name','lop_target','program__id','external_service_record__external_service__name','key_performance_indicator','name','indicator_type__indicator_type','sector__sector','disaggregation','means_of_verification','data_collection_method','reporting_frequency__frequency','create_date','edit_date','source','method_of_analysis')
-        
 
         q = request.GET.get('search', None)
         if q:
-
             getIndicators = getIndicators.filter(
                 Q(indicator_type__indicator_type__contains=q) |
-                Q(name__contains=q) | 
+                Q(name__contains=q) |
                 Q(number__contains=q) |
-                Q(number__contains=q) | 
+                Q(number__contains=q) |
                 Q(sector__sector__contains=q) |
                 Q(definition__contains=q)
             )
