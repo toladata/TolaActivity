@@ -102,11 +102,15 @@
             var _GET = get_query();
 
             console.log(_GET.search)
-
-
-            $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id+'/?search='+_GET.search, function(data) {
+            if (_GET.search) {
+              $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id+'/?search='+_GET.search, function(data) {
                 show_indicator_table(data);
             });
+            } else{
+              $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id, function(data) {
+                show_indicator_table(data);
+              });
+            }
         }
 
         function get_query(){
