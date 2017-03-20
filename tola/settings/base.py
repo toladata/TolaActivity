@@ -172,7 +172,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 
