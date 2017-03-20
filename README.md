@@ -11,13 +11,13 @@ and exporting of project specific data from 3rd party data sources or excel
 files.
 
 ## Configuration
-Ensure that the configuration files (`.secret`, `.secret.yml`) are in the `config` folder.
+Copy the tola/settings/local-sample.py to local.py and modify 
 
 ## To deploy changes in activity servers
 Once all your changes have been commited to the repo, and before pushing them, run: 
 `. travis.sh`
 
-## To deploy locally
+## To deploy locally via Docker
 Run the following commands from the root of this repository:
   - `docker-compose build`
   - `docker-compose up`

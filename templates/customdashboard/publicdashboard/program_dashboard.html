@@ -34,7 +34,7 @@
             <li><a href="#indicators"  data-toggle="tab"><i class="fa fa-bars"></i> Indicators</a></li>
             <li><a href="#monitoring"  data-toggle="tab"><i class="fa fa-tasks"></i> Monitoring</a></li>
             <li><a href="#i_surveys" data-toggle="tab"><i class="fa fa-list-alt"></i> Evidence</a></li>
-    
+            <li><a href="#analysis" data-toggle="tab"><i class="fa fa-list-alt"></i> Analysis</a></li>
         </ul>
         <div class="tab-content col-md-10 row">
             
@@ -185,6 +185,27 @@
 
             
             </div>
+
+             <!-- Analysis contents -->
+            <div class="sidebar-pane" id="analysis">
+                <h1 class="sidebar-header">Analysis (Analysis reports, visualizations and Notebooks)</h1>
+                <br>
+                {% for notebook in getNotebooks %}
+                    <div class="row">
+                        <div class="panel panel-info">
+                            <div class="panel-heading"><strong>{{ notebook.name }}</strong></div>
+                            <div class="panel-body">
+                                <a href="/customdashboard/notebook/{{ notebook.id }}">{{ notebook.name }}</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <h3>No analysis yet.</h3>
+                {% endfor %}
+
+            </div>
+            <!-- End of Monitoring Contents -->
+
 
             <!-- Monitoring contents -->
             <div class="sidebar-pane" id="monitoring">
