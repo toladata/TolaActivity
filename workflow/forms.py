@@ -91,7 +91,7 @@ class BudgetForm(forms.ModelForm):
 
 
         super(BudgetForm, self).__init__(*args, **kwargs)
-        
+
         countries = getCountry(self.request.user)
 
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
@@ -1267,7 +1267,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
-            self.fields['project_agreement'].widget.attrs['disabled'] = "disabled"
+            self.fields['project_agreement'].widget.attrs['readonly'] = "readonly"
 
 
 class SiteProfileForm(forms.ModelForm):
