@@ -193,7 +193,7 @@ class TolaBookmarksAdmin(admin.ModelAdmin):
 
 
 class TolaUserProxy(TolaUser):
-    
+
     class Meta:
         verbose_name, verbose_name_plural = u"Report Tola User", u"Report Tola Users"
         proxy = True
@@ -280,7 +280,7 @@ class Contact(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name + " " + self.title 
+        return self.name + ", " + self.title
 
 
 class ContactAdmin(admin.ModelAdmin):
@@ -1332,7 +1332,7 @@ class ChecklistItemAdmin(admin.ModelAdmin):
 
 
 #Logged users
-from django.contrib.auth.signals import user_logged_in, user_logged_out 
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from urllib2 import urlopen
 import json
 
@@ -1342,14 +1342,14 @@ class LoggedUser(models.Model):
     username = models.CharField(max_length=30, primary_key=True)
     country = models.CharField(max_length=100, blank=False)
     email = models.CharField(max_length=100, blank=False, default='user@mercycorps.com')
-    
+
     def __unicode__(self):
         return self.username
 
     def login_user(sender, request, user, **kwargs):
         country = get_user_country(request)
         active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-        
+
         user_id_list = []
         logged_user_id = request.user.id
 
@@ -1367,8 +1367,8 @@ class LoggedUser(models.Model):
 
         except Exception, e:
             pass
-                
-    
+
+
 
     def logout_user(sender, request, user, **kwargs):
 
@@ -1378,7 +1378,7 @@ class LoggedUser(models.Model):
 
         except LoggedUser.DoesNotExist:
             pass
-        
+
     user_logged_in.connect(login_user)
     user_logged_out.connect(logout_user)
 
