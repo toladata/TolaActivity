@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
-    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser, Checklist
+    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser, Checklist, Organization
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
 from django.contrib.auth.models import User
@@ -138,7 +138,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TolaUser
-        fields = ('url', 'name','country', 'countries')
+        fields = '__all__'
 
 class IndicatorTypeSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -276,8 +276,9 @@ class TolaTableSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TolaTable
-        fields = '__all__'
-
+        # HyperlinkedModelSerializer does not include id field by default so manually setting it
+        fields = ('id', 'name', 'table_id', 'owner', 'remote_owner', 'country', 'url', 'unique_count', 'create_date', 'edit_date')
+        #fields = '__all__'
 
 class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -292,4 +293,9 @@ class LoggedUserSerializer(serializers.HyperlinkedModelSerializer):
 class ChecklistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Checklist
+        fields = '__all__'
+
+class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Organization
         fields = '__all__'

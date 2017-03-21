@@ -16,9 +16,12 @@
         <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{ program }},0,{{ type }} )"> -- All -- </a></li>
+        {% if not getIndicators %}
+             <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter(0)"> -- All -- </a></li>
+        {% endif %}
+
         {% for item in getIndicators %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{ program }},{{ item.id }},{{ type }} )">{{ item.number}} - {{ item.name }}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{item.id}})">{{ item.number}} - {{ item.name }}</a></li>
         {% endfor %}
         </ul>
     </div>
@@ -28,9 +31,9 @@
         <span class="caret"></span>
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-        <li role="presentation"><a role="menuitem" tabindex="1" onclick="indicator_type_filter({{program}},0,{{ indicator}})"> -- All -- </a></li>
+        <li role="presentation"><a role="menuitem" tabindex="1" onclick="indicator_type_filter(0)"> -- All -- </a></li>
         {% for item in getIndicatorTypes %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_type_filter({{program}},{{indicator}},{{ item.id}})">{{ item.indicator_type}}</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_type_filter({{ item.id}})">{{ item.indicator_type}}</a></li>
         {% endfor %}
         </ul>
     </div>

@@ -169,6 +169,8 @@ def PublicDashboard(request,id=0,public=0):
 
     nostatus_count = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval=None) | Q(approval=""))).count()
 
+    getNotebooks = JupyterNotebooks.objects.all().filter(program__id=program_id)
+
     # get all countires
     countries = Country.objects.all().filter(program__id=program_id)
 
@@ -180,9 +182,13 @@ def PublicDashboard(request,id=0,public=0):
     getEvidence = TolaTable.objects.all().filter(country__in=countries)
     evidence_tables_count = getEvidence.count()
     evidence_tables = []
+
     try:
         for table in getEvidence:
+
             table.table_data = get_table(table.url)
+            
+            print table.table_data
 
             evidence_tables.append(table)
             
@@ -231,6 +237,7 @@ def PublicDashboard(request,id=0,public=0):
                                                                      'getIndicatorCountKPI': getIndicatorCountKPI,
                                                                      'getEvidence': getEvidence,
                                                                      'evidence_tables': evidence_tables,
+                                                                     'getNotebooks': getNotebooks,
                                                                      'evidence_tables_count': evidence_tables_count,
                                                                      'getQuantitativeDataSums': getQuantitativeDataSums,
                                                                      'getSiteProfileIndicator': getSiteProfileIndicator, 'getSiteProfileIndicatorCount': getSiteProfileIndicator.count(), 'getBeneficiaries': getBeneficiaries, 'getDistributions': getDistributions, 'getTrainings': getTrainings, 'get_project_completed': get_project_completed, 'getAllProjects': getAllProjects})

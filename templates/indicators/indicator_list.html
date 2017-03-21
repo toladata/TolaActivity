@@ -63,16 +63,21 @@ function loadIndicators(program,indicator,type){
     <p>No Programs</p>
 {% endif %}
 <script type="text/javascript">
+    var program_id = document.URL.split('/')[5];
+    var indicator_id = document.URL.split('/')[6];
+    var type_id = document.URL.split('/')[7];
+
     function program_filter(program_id) {
       window.location.href = '/indicators/home/'+program_id+'/0/0/';      
       }
 
-    function indicator_filter(program,indicator,type) {
-      window.location.href = '/indicators/home/'+program+'/'+indicator+'/'+type;
+    function indicator_filter(indicator) {
+      window.location.href = '/indicators/home/'+program_id+'/'+indicator+'/0';  
         }
 
-    function indicator_type_filter(program,indicator,type) {
-      window.location.href = '/indicators/home/'+program+'/'+indicator+'/'+type;
+    function indicator_type_filter(type) {
+      window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;      
       }
+
  </script>
 {% endblock content %}
