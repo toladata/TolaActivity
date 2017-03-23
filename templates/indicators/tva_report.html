@@ -7,34 +7,42 @@
     {% block page_title %}TVA Report{% endblock %}
 {% block content %}
 
+    <div id="tva_table_div" class="table-responsive">
+        <table id="tva_table" class="table table-hover table-striped table-bordered">
+            <thead>
+                <th>No</th>
+                <th>Indicator</th>
+                <th>Type</th>
+                <th>Level</th>
+                <th>Sector</th>
+                <th>LOP Target</th>
+                <th>Actuals</th>
+            </thead>
+            {% for row in data %}
+                <tr>
+                    <td>{{row.number}}</td>
+                    <td>{{row.name}}</td>
+                    <td>{{row.indicator_type.all.0.indicator_type}}</td>
+                    <td>{{row.level.all.0.name}}</td>
+                    <td>{{row.sector.name}}</td>
+                    <td>{{row.lop_target}}</td>
+                    <td>{{row.actuals}}</td>
 
-            <div id="tva_table_div" class="table-responsive">
-                <table id="tva_table" class="table table-hover table-striped table-bordered">
-                    <thead>
-                        <th>No</th>
-                        <th>Indicator</th>
-                        <th>Actuals</th>
-                    </thead>
-                    {% for row in data %}
-                        <tr>
-                            <td>{{row.id}}</td>
-                            <td>{{row.name}}</td>
-                            <td>{{row.actuals}}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 
+    <script type="text/javascript">
+        $(document).ready(function() {
 
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#tva_table").DataTable({
-            dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-            buttons: [
-                { extend: 'csv', text: 'Export to CSV' }
-            ]
+            $("#tva_table").DataTable({
+                dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                buttons: [
+                    { extend: 'csv', text: 'Export to CSV' }
+                ]
+            });
         });
-    });
-</script>
+    </script>
 
 {% endblock content %}

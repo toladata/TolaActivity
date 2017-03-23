@@ -1031,7 +1031,7 @@ class TVAReport(TemplateView):
         context = super(TVAReport, self).get_context_data(**kwargs)
         indicators = Indicator.objects.filter(program=223)\
             .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))\
-            .values('actuals', 'name', 'id')
+            #.values('actuals', 'number', 'name', 'indicator_type__indicator_type')
         context['data'] = indicators
         return context
 
