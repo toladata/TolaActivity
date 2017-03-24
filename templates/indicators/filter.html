@@ -1,42 +1,46 @@
 <div class="dropdown">
-    <div class="btn-group" role="group">
-        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-            Programs
-        <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="btn-group" role="group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
-            Indicators
-        <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-        {% if not getIndicators %}
-             <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter(0)"> -- All -- </a></li>
-        {% endif %}
+    {% if getPrograms %}
+        <div class="btn-group" role="group">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+                Programs
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                {% for program in getPrograms %}
+                    <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if getIndicators %}
+        <div class="btn-group" role="group">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+                Indicators
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+                <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter(0)"> -- All -- </a></li>
+                {% for item in getIndicators %}
+                    <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{item.id}})">{{ item.number}} - {{ item.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
-        {% for item in getIndicators %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{item.id}})">{{ item.number}} - {{ item.name }}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="btn-group" role="group">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
-            Indicator Type
-        <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-        <li role="presentation"><a role="menuitem" tabindex="1" onclick="indicator_type_filter(0)"> -- All -- </a></li>
-        {% for item in getIndicatorTypes %}
-            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_type_filter({{ item.id}})">{{ item.indicator_type}}</a></li>
-        {% endfor %}
-        </ul>
-    </div>
+    {%if getIndicatorTypes %}
+        <div class="btn-group" role="group">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+                Indicator Type
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+                <li role="presentation"><a role="menuitem" tabindex="1" onclick="indicator_type_filter(0)"> -- All -- </a></li>
+                {% for item in getIndicatorTypes %}
+                    <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_type_filter({{ item.id}})">{{ item.indicator_type}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
     <br/>
     <br/>
 </div>
