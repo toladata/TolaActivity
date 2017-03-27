@@ -837,7 +837,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
-    getTypes = IndicatorType.objects.all()
+    getIndicatorTypes = IndicatorType.objects.all()
     indicator_name = None
     program_name = None
     type_name = None
@@ -895,7 +895,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     return render(request, "indicators/data_report.html",
                   {'getQuantitativeData': queryset, 'countries': countries, 'getSiteProfile': getSiteProfile,
                    'getPrograms': getPrograms, 'getIndicators': getIndicators,
-                   'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
+                   'getIndicatorTypes': getIndicatorTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
                    'id': id, 'program': program, 'type': type, 'indicator': id, 'indicator_name': indicator_name,
                    'type_name': type_name, 'program_name': program_name})
 
@@ -933,7 +933,11 @@ class IndicatorReportData(View, AjaxableResponseMixin):
 
         countries = getCountry(request.user)
 
-        indicator = Indicator.objects.filter(program__country__in=countries).filter(**q).values('id', 'program__name', 'baseline','level__name','lop_target','program__id','external_service_record__external_service__name', 'key_performance_indicator','name','indicator_type__indicator_type','sector__sector').order_by('create_date')
+        indicator = Indicator.objects.filter(program__country__in=countries).filter(**q).values(\
+            'id', 'program__name', 'baseline','level__name','lop_target','program__id',\
+            'external_service_record__external_service__name', 'key_performance_indicator',\
+            'name','indicator_type__id', 'indicator_type__indicator_type', \
+            'sector__sector').order_by('create_date')
 
         #indicator = {x['id']:x for x in indcator}.values()
 
