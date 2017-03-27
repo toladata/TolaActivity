@@ -1000,8 +1000,8 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             program__country__in=countries).filter(
             **q).order_by(
             'indicator__program__name',
-            'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__program__name',
-                                        'indicator__indicator_type__indicator_type', 'indicator__level__name',
+            'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__program__id', 'indicator__program__name',
+                                        'indicator__indicator_type__indicator_type', 'indicator__indicator_type__id', 'indicator__level__name',
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
                                         'indicator__external_service_record__external_service__name', 'evidence',
