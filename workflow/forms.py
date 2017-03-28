@@ -1456,6 +1456,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
         self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
+        self.fields['program'].widget.attrs['disabled'] = "disabled"
 
 
 class BenchmarkForm(forms.ModelForm):
