@@ -31,7 +31,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.generic.detail import View
 
-
 from django.contrib.sites.shortcuts import get_current_site
 
 # Get an instance of a logger
@@ -155,7 +154,7 @@ class ProjectAgreementList(ListView):
         elif self.kwargs['status'] != 'none':
             getDashboard = ProjectAgreement.objects.all().filter(approval=self.kwargs['status'])
             return render(request, self.template_name, {'form': FilterForm(), 'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
- 
+
         else:
             getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
 
@@ -433,7 +432,7 @@ class ProjectAgreementDetail(DetailView):
 
         try:
             getQuantitativeOutputs = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk'])
-            
+
         except CollectedData.DoesNotExist:
             getQuantitativeOutputs = None
         context.update({'getQuantitativeOutputs': getQuantitativeOutputs})
@@ -1487,14 +1486,14 @@ class ContactList(ListView):
 
         try:
             getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
-    
+
         except Exception, e:
             pass
 
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
-            
+
         else:
             #getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
             getContacts = Stakeholder.contact.through.objects.filter(stakeholder_id = stakeholder_id)
@@ -1964,7 +1963,7 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
-        
+
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(BudgetUpdate, self).get_form_kwargs()
@@ -2222,19 +2221,19 @@ class ReportData(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         countries=getCountry(request.user)
-
+        filters = {}
         if int(self.kwargs['pk']) != 0:
-            getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk']).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
-
+            filters['program__id'] = self.kwargs['pk']
         elif self.kwargs['status'] != 'none':
-            getAgreements = ProjectAgreement.objects.all().filter(approval=self.kwargs['status']).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
+            filters['approval'] = self.kwargs['status']
         else:
-            getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
+            filters['program__country__in'] = countries
 
-        from django.core.serializers.json import DjangoJSONEncoder
+        getAgreements = ProjectAgreement.objects.filter(**filters).values('id', 'program__id', 'approval', \
+                'program__name', 'project_name','site', 'activity_code', 'office__name', \
+                'project_name', 'sector__sector', 'project_activity', 'project_type__name', \
+                'account_code', 'lin_code','estimated_by__name','total_estimated_budget',\
+                'mc_estimated_budget','total_estimated_budget')
 
         getAgreements = json.dumps(list(getAgreements), cls=DjangoJSONEncoder)
 
