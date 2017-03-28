@@ -56,19 +56,22 @@
             table = $('#data_table').DataTable({
                 retrieve: true,
                 data: agreement_records,
-                'columnDefs': [{
-                   'targets': 0,
-                   'searchable':false,
-                   'orderable':false,
-                   'className': 'dt-body-center',
-                   'render': function (data, type, row){
-                       return '<div class="btn-group btn-group-xs"><a type="button" class="btn btn-warning" href="/workflow/projectagreement_update/'+row.id+'">Edit</a><br><a type="button" class="btn btn-default" href="/workflow/projectagreement_detail/'+row.id+'">View</a></div>';
-                   }
+                'columnDefs': [
+                    { "visible": false, "targets": 1 },
+                    { "visible": false, "targets": 2 },
+                    {
+                        'targets': 0,
+                        'searchable':false,
+                        'orderable':false,
+                        'className': 'dt-body-center',
+                        'render': function (data, type, row){
+                            return '<div class="btn-group btn-group-xs"><a type="button" class="btn btn-warning" href="/workflow/projectagreement_update/'+row.id+'">Edit</a><br><a type="button" class="btn btn-default" href="/workflow/projectagreement_detail/'+row.id+'">View</a></div>';
+                    }
                 }],
                 columns: [
-                    { title: "Edit"},
-                    { title: "PID", data: "program__id" },
-                    { title: "SID", data: "approval"},
+                    { title: "Edit", class: "noExport"},
+                    { title: "PID", class: "noExport", data: "program__id" },
+                    { title: "SID", class: "noExport", data: "approval"},
                     { title: "Program", data: "program__name",
                 		"defaultContent": "<i>Not set</i>"},
                     { title: "Project Name", data: "project_name",},
@@ -98,7 +101,15 @@
                     	"defaultContent": "<i>Not set</i>"},
                     { title: "Total Cost",data: "total_cost",
                     	"defaultContent": "<i>Not set</i>"}
-                    ]
+                ],
+                dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                buttons: [
+                    {
+                        extend: 'csv',
+                        text: 'Export to CSV',
+                        exportOptions: { columns: "thead th:not(.noExport)" }
+                    }
+                ]
             } );
         }
 
@@ -142,9 +153,11 @@
             <table class="table table-bordered " id="data_table" class="display" cellspacing="0" width="100%">
             </table>
         </div>
+        <!--
        <div class="row" >
     		<button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/workflow/report/0/none/?export=true&{{ request.GET.urlencode }}'">Export All</button>
        </div>
+       -->
 
 <br/>
 
