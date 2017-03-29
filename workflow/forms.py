@@ -2,6 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Field
+from django.forms import HiddenInput
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
@@ -1456,7 +1457,8 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
         self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
-        self.fields['program'].widget.attrs['disabled'] = "disabled"
+        #self.fields['program'].widget.attrs['disabled'] = "disabled"
+        self.fields['program'].widget = HiddenInput()
 
 
 class BenchmarkForm(forms.ModelForm):
