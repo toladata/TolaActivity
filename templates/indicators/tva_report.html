@@ -17,9 +17,9 @@
     <div id="tva_table_div" class="table-responsive">
         <table id="tva_table" class="table table-hover table-striped table-bordered">
             <thead>
-                <th style="display:none;">PID</th>
-                <th style="display:none;">IID</th>
-                <th style="display:none;">ITID</th>
+                <th class="noExport" style="display:none;">PID</th>
+                <th class="noExport" style="display:none;">IID</th>
+                <th clsss="noExport" style="display:none;">ITID</th>
                 <th>No</th>
                 <th>Indicator</th>
                 <th>Type</th>
@@ -83,7 +83,11 @@
             tva_table = $("#tva_table").DataTable({
                 dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 buttons: [
-                    { extend: 'csv', text: 'Export to CSV' }
+                    {
+                        extend: 'csv',
+                        text: 'Export to CSV',
+                        exportOptions: { columns: "thead th:not(.noExport)" }
+                    }
                 ]
             });
         });
