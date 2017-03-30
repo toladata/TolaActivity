@@ -267,6 +267,7 @@ class IndicatorUpdate(UpdateView):
         getIndicator = Indicator.objects.get(id=self.kwargs['pk'])
 
         context.update({'i_name': getIndicator.name})
+        context['programId'] = getIndicator.program.all()[0].id
 
         #get external service data if any
         try:
