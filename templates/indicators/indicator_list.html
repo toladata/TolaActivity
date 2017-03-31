@@ -92,11 +92,9 @@ function loadIndicators(workflowlevel1,indicator,type){
     var type_id = document.URL.split('/')[7];
     $(document).ready(function() {
         if (typeof program_id !== 'undefined' && program_id > 0) {
-            console.log("coolapseing");
-            var a = $('#hidden-68').collapse('hide');
+            var a = $('#hidden-' + program_id).collapse('hide');
             loadIndicators(program_id, 0, 0);
             a.collapse('show');
-            console.log(a);
         }
     });
 
@@ -122,14 +120,14 @@ function loadIndicators(workflowlevel1,indicator,type){
         ).done(function(data, textStatus, jqXHR) {
             // if there are any erros show them and then STOP
             if (jqXHR.getResponseHeader('error') == "True") {
-                $("#modalerrors").html(data);
+                //$("#modalerrors").html(data);
+                createAlert("danger", data, true, "#modalmessages");
                 return;
             }
-
-            var item = $.parseJSON(data);
             var json = $.parseJSON(jqXHR.responseText);
             createAlert("success", "Indicator saved sccessfully.", true, "#modalmessages");
-            console.log(item[0]);
+            var item = $.parseJSON(data);
+            //console.log(item[0]);
         });
 
     });
