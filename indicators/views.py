@@ -246,12 +246,17 @@ class IndicatorCreate(CreateView):
     form_class = IndicatorForm
 
 
+from django.core import serializers
 class IndicatorUpdate(UpdateView):
     """
     Update and Edit Indicators.
     """
     model = Indicator
-    template_name = 'indicators/indicator_form.html'
+    #template_name = 'indicators/indicator_form.html'
+    def get_template_names(self):
+        if self.request.GET.get('modal'):
+            return 'indicators/indicator_form_modal.html'
+        return 'indicators/indicator_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -293,8 +298,11 @@ class IndicatorUpdate(UpdateView):
     def form_valid(self, form):
         form.save()
 
-        messages.success(self.request, 'Success, Indicator Updated!')
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [self.object])
+            return HttpResponse(data)
 
+        messages.success(self.request, 'Success, Indicator Updated!')
         if self.request.POST.has_key('_addanother'):
             url = "/indicators/indicator_create/"
             program = self.request.POST['program']

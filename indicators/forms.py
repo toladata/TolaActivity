@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse_lazy
 from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
 from workflow.models import Program, SiteProfile, Documentation, ProjectAgreement, TolaUser
 from crispy_forms.helper import FormHelper
@@ -27,10 +28,13 @@ class IndicatorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
+        indicator = kwargs.get('instance', None)
         self.request = kwargs.pop('request')
         self.program = kwargs.pop('program')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_action = reverse_lazy('indicator_update', kwargs={'pk': indicator.id})
+        self.helper.form_id = 'indicator_update_form'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-6'

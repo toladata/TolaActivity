@@ -38,6 +38,7 @@ function loadIndicators(program,indicator,type){
 
 {% include "indicators/filter.html"%}
 
+<div id="toplevel_div">
 <!-- Default panel contents -->
 {% if getProgramsIndicator %}
     {% for program in getProgramsIndicator %}
@@ -62,6 +63,29 @@ function loadIndicators(program,indicator,type){
 {% else %}
     <p>No Programs</p>
 {% endif %}
+</div>
+
+<!--
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#indicator_modal_div">Large modal</button>
+-->
+
+<div id="indicator_modal_div" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="indicator_modal_title">Indicator Update Form</h4>
+            </div>
+            <div class="modal-body" id="indicator_modal_body">
+                <span id = "modalmessages"></span>
+                <div id="indicator_modal_content"></div>
+            </div>
+            <div id="modalerrors">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
     var program_id = document.URL.split('/')[5];
     var indicator_id = document.URL.split('/')[6];
@@ -75,17 +99,52 @@ function loadIndicators(program,indicator,type){
             console.log(a);
         }
     });
+
+    $("#toplevel_div").on("click", ".indicator-link", function(e) {
+        e.preventDefault();
+        var url = $(this).attr("href");
+        $("#indicator_modal_content").empty();
+
+        $("#indicator_modal_content").load(url+"/?modal=1");
+        $("#indicator_modal_div").modal('show');
+
+    });
+
+    $("#indicator_modal_body").on("submit", "#indicator_update_form", function(e){
+        e.preventDefault();
+        var form_url = $(this).attr('action');
+        var form_data = $(this).serialize();
+        $.ajax({
+            method: 'POST',
+            url: form_url,
+            data: form_data,
+            global: false, }
+        ).done(function(data, textStatus, jqXHR) {
+            // if there are any erros show them and then STOP
+            if (jqXHR.getResponseHeader('error') == "True") {
+                $("#modalerrors").html(data);
+                return;
+            }
+
+            var item = $.parseJSON(data);
+            var json = $.parseJSON(jqXHR.responseText);
+            createAlert("success", "Indicator saved sccessfully.", true, "#modalmessages");
+            console.log(item[0]);
+        });
+
+    });
+
     function program_filter(program_id) {
-      window.location.href = '/indicators/home/'+program_id+'/0/0/';
-      }
+        window.location.href = '/indicators/home/'+program_id+'/0/0/';
+    }
 
     function indicator_filter(indicator) {
-      window.location.href = '/indicators/home/'+program_id+'/'+indicator+'/0';
-        }
+        window.location.href = '/indicators/home/'+program_id+'/'+indicator+'/0';
+    }
 
     function indicator_type_filter(type) {
-      window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;
-      }
+        window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;
+    }
 
  </script>
 {% endblock content %}
