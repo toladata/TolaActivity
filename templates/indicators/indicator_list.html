@@ -69,18 +69,17 @@ function loadIndicators(program,indicator,type){
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#indicator_modal_div">Large modal</button>
 -->
 
+
 <div id="indicator_modal_div" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="indicator_modal_title">Indicator Update Form</h4>
+                <h4 class="modal-title" id="indicator_modal_title"></h4>
             </div>
             <div class="modal-body" id="indicator_modal_body">
                 <span id = "modalmessages"></span>
                 <div id="indicator_modal_content"></div>
-            </div>
-            <div id="modalerrors">
             </div>
         </div>
     </div>
@@ -98,10 +97,32 @@ function loadIndicators(program,indicator,type){
         }
     });
 
+
+
+    $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
+        e.preventDefault();
+        var url = $(this).attr("href");
+        $("#indicator_modal_content").empty();
+        $("#modalmessages").empty();
+
+        $("#indicator_modal_content").load(url+"/?modal=1");
+        $("#indicator_modal_div").modal('show');
+
+    });
+
+
+
+
+
+
+
+
+
     $("#toplevel_div").on("click", ".indicator-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
         $("#indicator_modal_content").empty();
+        $("#modalmessages").empty();
 
         $("#indicator_modal_content").load(url+"/?modal=1");
         $("#indicator_modal_div").modal('show');
