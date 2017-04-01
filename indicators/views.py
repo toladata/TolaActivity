@@ -20,6 +20,7 @@ from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.core import serializers
 
 from workflow.mixins import AjaxableResponseMixin
 import json
@@ -244,7 +245,6 @@ class IndicatorCreate(CreateView):
     form_class = IndicatorForm
 
 
-from django.core import serializers
 class IndicatorUpdate(UpdateView):
     """
     Update and Edit Indicators.
@@ -439,7 +439,11 @@ class CollectedDataUpdate(UpdateView):
     CollectedData Form
     """
     model = CollectedData
-    template_name = 'indicators/collecteddata_form.html'
+    #template_name = 'indicators/collecteddata_form.html'
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return 'indicators/collecteddata_form_modal.html'
+        return 'indicators/collecteddata_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -522,6 +526,10 @@ class CollectedDataUpdate(UpdateView):
                     value_to_insert = value
                     save = getCollectedData.disaggregation_value.create(disaggregation_label=label, value=value_to_insert)
                     getCollectedData.disaggregation_value.add(save.id)
+
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [self.object])
+            return HttpResponse(data)
 
         messages.success(self.request, 'Success, Data Updated!')
 
