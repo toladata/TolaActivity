@@ -133,7 +133,7 @@ class CollectedDataForm(forms.ModelForm):
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
         self.program = kwargs.pop('program')
-        self.indicator = kwargs.pop('indicator')
+        self.indicator = kwargs.pop('indicator', None)
         self.tola_table = kwargs.pop('tola_table')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
