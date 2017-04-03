@@ -73,11 +73,8 @@ function loadIndicators(program,indicator,type){
 <div id="indicator_modal_div" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="indicator_modal_title"></h4>
-            </div>
             <div class="modal-body" id="indicator_modal_body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <span id = "modalmessages"></span>
                 <div id="indicator_modal_content"></div>
             </div>
@@ -86,6 +83,7 @@ function loadIndicators(program,indicator,type){
 </div>
 
 <script type="text/javascript">
+    /*
     var program_id = document.URL.split('/')[5];
     var indicator_id = document.URL.split('/')[6];
     var type_id = document.URL.split('/')[7];
@@ -96,9 +94,10 @@ function loadIndicators(program,indicator,type){
             a.collapse('show');
         }
     });
+    */
 
 
-
+    // Open the CollectDataUpdate form in a modal
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
@@ -110,14 +109,17 @@ function loadIndicators(program,indicator,type){
 
     });
 
+    // Intercept CollectedDataUpdate form submission and then use ajax to submit it.
+    $("#indicator_modal_body").on("submit", "#collecteddata_update_form", function(e){
+        e.preventDefault();
+        var form_url = $(this).attr('action');
+        var form_data = $(this).serialize();
+        submitForm(form_url, form_data);
+        $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
+    });
 
 
-
-
-
-
-
-
+    // Open the IndicatorUpdate Form in a modal
     $("#toplevel_div").on("click", ".indicator-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
@@ -129,10 +131,15 @@ function loadIndicators(program,indicator,type){
 
     });
 
+    // Intercept IndicatorUpdate form submission and then use ajax to submit it.
     $("#indicator_modal_body").on("submit", "#indicator_update_form", function(e){
         e.preventDefault();
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
+        submitForm(form_url, form_data);
+    });
+
+    function submitForm(form_url, form_data) {
         $.ajax({
             method: 'POST',
             url: form_url,
@@ -146,12 +153,11 @@ function loadIndicators(program,indicator,type){
                 return;
             }
             var json = $.parseJSON(jqXHR.responseText);
-            createAlert("success", "Indicator saved sccessfully.", true, "#modalmessages");
+            createAlert("success", "Success, form data saved.", true, "#modalmessages");
             var item = $.parseJSON(data);
             //console.log(item[0]);
         });
-
-    });
+    }
 
     function program_filter(program_id) {
         window.location.href = '/indicators/home/'+program_id+'/0/0/';
