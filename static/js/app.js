@@ -31,6 +31,27 @@ $(document).ready(function() {
 
 
 /*
+ * Create and show a Bootstrap alert.
+ */
+function createAlert (type, message, fade, whereToAppend) {
+    if (whereToAppend == undefined ){
+        whereToAppend = "#messages";
+    }
+    $(whereToAppend).append(
+        $(
+            "<div class='alert alert-" + type + " dynamic-alert alert-dismissable' style='margin-top:0;'>" +
+            "<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>" +
+            "<p>" + message + "</p>" +
+            "</div>"
+        )
+    );
+    if (fade == true) {
+        // Remove the alert after 5 seconds if the user does not close it.
+        $(".dynamic-alert").delay(5000).fadeOut("slow", function () { $(this).remove(); });
+    }
+}
+
+/*
 * Save the task checkbox state
 */
 function tasklistChange(pk,type,value){
