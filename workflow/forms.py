@@ -6,7 +6,7 @@ from django.forms import HiddenInput
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
+from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact, Sector
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -1578,6 +1578,7 @@ class StakeholderForm(forms.ModelForm):
 
     class Meta:
         model = Stakeholder
+        #fields = ['contact', 'country', 'approved_by', 'filled_by', 'sectors', 'formal_relationship_document', 'vetting_document', ]
         exclude = ['create_date', 'edit_date']
 
     approval = forms.ChoiceField(
@@ -1604,7 +1605,7 @@ class StakeholderForm(forms.ModelForm):
             TabHolder(
                 Tab('Details',
                     Fieldset('Details',
-                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/0/').focus();">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
+                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/0/').focus();">Add New Contact</a>"""), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
                     ),
                 ),
 
@@ -1621,6 +1622,7 @@ class StakeholderForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         users = TolaUser.objects.filter(country__in=countries)
         self.fields['contact'].queryset = Contact.objects.filter(country__in=countries)
+        self.fields['sectors'].queryset = Sector.objects.all()
         self.fields['country'].queryset = countries
         self.fields['approved_by'].queryset = users
         self.fields['filled_by'].queryset = users
