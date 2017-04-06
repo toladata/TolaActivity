@@ -2088,7 +2088,7 @@ class ReportData(View, AjaxableResponseMixin):
             getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries).values('id', 'workflowlevel1__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
                              'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
 
-        getAgreements = ProjectAgreement.objects.select_related('program', 'project_type', 'office', 'estimated_by', 'sector').filter(**filters).values('id', 'program__id', 'approval', \
+        getAgreements = ProjectAgreement.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
                 'program__name', 'project_name','site', 'activity_code', 'office__name', \
                 'project_name', 'sector__sector', 'project_activity', 'project_type__name', \
                 'account_code', 'lin_code','estimated_by__name','total_estimated_budget',\
