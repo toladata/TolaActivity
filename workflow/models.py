@@ -804,7 +804,7 @@ class TemplateAdmin(admin.ModelAdmin):
 
 class StakeholderManager(models.Manager):
     def get_queryset(self):
-        return super(StakeholderManager, self).get_queryset().prefetch_related('contact').select_related('country','sector','type','formal_relationship_document','vetting_document')
+        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related('country','type','formal_relationship_document','vetting_document')
 
 
 class Stakeholder(models.Model):
@@ -812,7 +812,8 @@ class Stakeholder(models.Model):
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
-    sector = models.ForeignKey(Sector, blank=True, null=True)
+    #sector = models.ForeignKey(Sector, blank=True, null=True, related_name='sects')
+    sectors = models.ManyToManyField(Sector, blank=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?")
     formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
     vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, blank=True, related_name="vetting_document")
