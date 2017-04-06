@@ -2233,7 +2233,7 @@ class ReportData(View, AjaxableResponseMixin):
         else:
             filters['program__country__in'] = countries
 
-        getAgreements = ProjectAgreement.objects.select_related('program', 'project_type', 'office', 'estimated_by', 'sector').filter(**filters).values('id', 'program__id', 'approval', \
+        getAgreements = ProjectAgreement.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
                 'program__name', 'project_name','site', 'activity_code', 'office__name', \
                 'project_name', 'sector__sector', 'project_activity', 'project_type__name', \
                 'account_code', 'lin_code','estimated_by__name','total_estimated_budget',\

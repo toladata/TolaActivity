@@ -804,7 +804,7 @@ class TemplateAdmin(admin.ModelAdmin):
 
 class StakeholderManager(models.Manager):
     def get_queryset(self):
-        return super(StakeholderManager, self).get_queryset().prefetch_related('contact').select_related('country','sector','type','formal_relationship_document','vetting_document')
+        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related('country','type','formal_relationship_document','vetting_document')
 
 
 class Stakeholder(models.Model):
