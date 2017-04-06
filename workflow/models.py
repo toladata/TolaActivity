@@ -906,6 +906,7 @@ class Stakeholder(models.Model):
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser, help_text='', blank=True, null=True, related_name="stake_approving")
     filled_by = models.ForeignKey(TolaUser, help_text='', blank=True, null=True, related_name="stake_filled")
+    notes = models.TextField(max_length=765, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     #optimize query
