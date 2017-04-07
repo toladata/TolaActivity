@@ -1791,7 +1791,11 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        form.save()
+        obj = form.save()
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [obj])
+            return HttpResponse(data)
+
         messages.success(self.request, 'Success, Budget Created!')
         form = ""
         return self.render_to_response(self.get_context_data(form=form))
@@ -1826,7 +1830,11 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        form.save()
+        obj = form.save()
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [obj])
+            return HttpResponse(data)
+
         messages.success(self.request, 'Success, Budget Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
