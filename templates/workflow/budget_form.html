@@ -16,7 +16,7 @@
 
                 //$("#alert-error").html("Success! ");
                 createAlert("success", "Budget information saved successfully.", true, "#alert-error");
-                var markup = "<td>" + contributor + "</td><td>" + description + "</td><td>"+ value+"</td><td><a class='output' data-toggle='modal' data-target='#myModal' href='/workflow/budget_update/" + pk + "/'>Edit</a> | <a class='output' href='/workflow/budget_delete/" + pk + "/' data-toggle'modal' data-target='#myModal' >Delete</a></td>";
+                var markup = "<td>" + contributor + "</td><td>" + description + "</td><td>"+ value+"</td><td><a class='output' href='/workflow/budget_update/" + pk + "/'>Edit</a> | <a class='output' href='/workflow/budget_delete/" + pk + "/'>Delete</a></td>";
 
                 $("#budget_contributions_table tbody tr").each(function (i, row){
                     if (i == 0 ) { return true; }
