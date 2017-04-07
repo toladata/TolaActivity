@@ -241,7 +241,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                   <div class='panel-heading'>Budget Contributions</div>
                                   {% if getBudget %}
                                       <!-- Table -->
-                                      <table class="table">
+                                      <table class="table" id="budget_contributions_table">
                                         <tr>
                                         <th>Contributor</th>
                                         <th>Description</th>
@@ -557,7 +557,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
                                   <div class='panel-heading'>Budget Contributions</div>
                                   {% if getBudget %}
                                       <!-- Table -->
-                                      <table class="table">
+                                      <table class="table" id="budget_contributions_table">
                                         <tr>
                                         <th>Contributor</th>
                                         <th>Description</th>
@@ -857,7 +857,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                       <div class='panel-heading'>Budget Contributions</div>
                                       {% if getBudget %}
                                           <!-- Table -->
-                                          <table class="table">
+                                          <table class="table" id="budget_contributions_table">
                                             <tr>
                                             <th>Contributor</th>
                                             <th>Description</th>
@@ -1122,7 +1122,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                       <div class='panel-heading'>Budget Contributions</div>
                                       {% if getBudget %}
                                           <!-- Table -->
-                                          <table class="table">
+                                          <table class="table" id="budget_contributions_table>
                                             <tr>
                                             <th>Contributor</th>
                                             <th>Description</th>
