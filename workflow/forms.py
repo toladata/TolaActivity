@@ -574,7 +574,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
                                             <td>{{ item.contributor}}</td>
                                             <td>{{ item.description_of_contribution}}</td>
                                             <td>{{ item.proposed_value}}</td>
-                                            <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
+                                            <td><a class="output" href='/workflow/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/'>Delete</a>
                                         </tr>
                                         {% endfor %}
                                       </table>
