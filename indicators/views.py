@@ -346,7 +346,12 @@ class CollectedDataCreate(CreateView):
     CollectedData Form
     """
     model = CollectedData
-    template_name = 'indicators/collecteddata_form.html'
+    #template_name = 'indicators/collecteddata_form.html'
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return 'indicators/collecteddata_form_modal.html'
+        return 'indicators/collecteddata_form.html'
+
     form_class = CollectedDataForm
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
@@ -430,6 +435,10 @@ class CollectedDataCreate(CreateView):
             if value_to_insert:
                 insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=new)
                 insert_disaggregationvalue.save()
+
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [new])
+            return HttpResponse(data)
 
         messages.success(self.request, 'Success, Data Created!')
 
