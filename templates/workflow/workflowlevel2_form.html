@@ -24,7 +24,6 @@
         $("#budget_contributions_table").on("click", ".output", function(e){
             e.preventDefault();
             var url = $(this).attr("href");
-            console.log(url);
             $("#myModalContent").empty();
             $("#myModalContent").load(url);
             $("#myModal").modal('show');
