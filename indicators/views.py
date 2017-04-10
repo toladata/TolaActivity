@@ -7,6 +7,7 @@ from .models import Indicator, DisaggregationLabel, DisaggregationValue, Collect
 from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
+from django.core.serializers.json import DjangoJSONEncoder
 from tola.util import getCountry, get_table
 from tables import IndicatorDataTable
 from django_tables2 import RequestConfig
@@ -751,18 +752,39 @@ def indicator_report(request, program=0, indicator=0, type=0):
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-
-    getIndicators = []
-
-    if program != 0:
-        getIndicators = Indicator.objects.filter(program__id= program)
-
     getIndicatorTypes = IndicatorType.objects.all()
 
+    filters = {}
+    if int(program) != 0:
+        filters['program__id'] = program
+    if int(type) != 0:
+        filters['indicator_type'] = type
+    if int(indicator) != 0:
+        filters['id'] = indicator
+    if program == 0 and type == 0:
+        filters['program__country__in'] = countries
+
+    indicator_data = Indicator.objects.filter(**filters)\
+            .prefetch_related('sector')\
+            .select_related('program', 'external_service_record','indicator_type',\
+                'disaggregation', 'reporting_frequency')\
+            .values('id','program__name','baseline','level__name','lop_target',\
+                   'program__id','external_service_record__external_service__name',\
+                   'key_performance_indicator','name','indicator_type__id', 'indicator_type__indicator_type',\
+                   'sector__sector','disaggregation__disaggregation_type',\
+                   'means_of_verification','data_collection_method',\
+                   'reporting_frequency__frequency','create_date','edit_date',\
+                   'source','method_of_analysis')
+
+    data = json.dumps(list(indicator_data), cls=DjangoJSONEncoder)
+
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/report.html",
-                  {'program': program, 'getPrograms': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper,
-                   'getIndicatorTypes': getIndicatorTypes, 'getIndicators': getIndicators})
+    return render(request, "indicators/report.html", {
+                  'program': program,
+                  'getPrograms': getPrograms,
+                  'getIndicatorTypes': getIndicatorTypes,
+                  'getIndicators': indicator_data,
+                  'data': data})
 
 
 class IndicatorReport(View, AjaxableResponseMixin):
@@ -787,10 +809,11 @@ class IndicatorReport(View, AjaxableResponseMixin):
         if program == 0 and type == 0:
             filters['program__country__in'] = countries
 
-        getIndicators = Indicator.objects.filter(**filters).select_related(\
-            'program', 'external_service_record','indicator_type', 'sector', \
-            'disaggregation', 'reporting_frequency').\
-            values('id','program__name','baseline','level__name','lop_target',\
+        getIndicators = Indicator.objects.filter(**filters)\
+            .prefetch_related('sector')\
+            .select_related('program', 'external_service_record','indicator_type',\
+                'disaggregation', 'reporting_frequency')\
+            .values('id','program__name','baseline','level__name','lop_target',\
                    'program__id','external_service_record__external_service__name',\
                    'key_performance_indicator','name','indicator_type__indicator_type',\
                    'sector__sector','disaggregation__disaggregation_type',\
@@ -809,8 +832,6 @@ class IndicatorReport(View, AjaxableResponseMixin):
                 Q(sector__sector__contains=q) |
                 Q(definition__contains=q)
             )
-
-        from django.core.serializers.json import DjangoJSONEncoder
 
         get_indicators = json.dumps(list(getIndicators), cls=DjangoJSONEncoder)
 
