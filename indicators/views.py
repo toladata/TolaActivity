@@ -22,6 +22,7 @@ from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.core import serializers
 
 from workflow.mixins import AjaxableResponseMixin
 import json
@@ -251,7 +252,11 @@ class IndicatorUpdate(UpdateView):
     Update and Edit Indicators.
     """
     model = Indicator
-    template_name = 'indicators/indicator_form.html'
+    #template_name = 'indicators/indicator_form.html'
+    def get_template_names(self):
+        if self.request.GET.get('modal'):
+            return 'indicators/indicator_form_modal.html'
+        return 'indicators/indicator_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -267,6 +272,7 @@ class IndicatorUpdate(UpdateView):
         getIndicator = Indicator.objects.get(id=self.kwargs['pk'])
 
         context.update({'i_name': getIndicator.name})
+        context['programId'] = getIndicator.program.all()[0].id
 
         #get external service data if any
         try:
@@ -292,8 +298,11 @@ class IndicatorUpdate(UpdateView):
     def form_valid(self, form):
         form.save()
 
-        messages.success(self.request, 'Success, Indicator Updated!')
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [self.object])
+            return HttpResponse(data)
 
+        messages.success(self.request, 'Success, Indicator Updated!')
         if self.request.POST.has_key('_addanother'):
             url = "/indicators/indicator_create/"
             program = self.request.POST['program']
@@ -337,7 +346,12 @@ class CollectedDataCreate(CreateView):
     CollectedData Form
     """
     model = CollectedData
-    template_name = 'indicators/collecteddata_form.html'
+    #template_name = 'indicators/collecteddata_form.html'
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return 'indicators/collecteddata_form_modal.html'
+        return 'indicators/collecteddata_form.html'
+
     form_class = CollectedDataForm
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
@@ -381,6 +395,7 @@ class CollectedDataCreate(CreateView):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['program'] = self.kwargs['program']
+        kwargs['indicator'] = self.kwargs['indicator']
         kwargs['tola_table'] = None
 
         return kwargs
@@ -421,6 +436,10 @@ class CollectedDataCreate(CreateView):
                 insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=new)
                 insert_disaggregationvalue.save()
 
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [new])
+            return HttpResponse(data)
+
         messages.success(self.request, 'Success, Data Created!')
 
         redirect_url = '/indicators/home/0/0/0/#hidden-' + str(self.kwargs['program'])
@@ -432,7 +451,11 @@ class CollectedDataUpdate(UpdateView):
     CollectedData Form
     """
     model = CollectedData
-    template_name = 'indicators/collecteddata_form.html'
+    #template_name = 'indicators/collecteddata_form.html'
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return 'indicators/collecteddata_form_modal.html'
+        return 'indicators/collecteddata_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -500,7 +523,9 @@ class CollectedDataUpdate(UpdateView):
             except TolaTable.DoesNotExist:
                 getTable = None
             if getTable:
-                count = getTableCount(getTable.url,getTable.table_id)
+                # if there is a trailing slash, remove it since TT api does not like it.
+                url = getTable.url if getTable.url[-1:] != "/" else getTable.url[:-1]
+                count = getTableCount(url, getTable.table_id)
             else:
                 count = 0
             form.instance.achieved = count
@@ -515,6 +540,10 @@ class CollectedDataUpdate(UpdateView):
                     value_to_insert = value
                     save = getCollectedData.disaggregation_value.create(disaggregation_label=label, value=value_to_insert)
                     getCollectedData.disaggregation_value.add(save.id)
+
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [self.object])
+            return HttpResponse(data)
 
         messages.success(self.request, 'Success, Data Updated!')
 

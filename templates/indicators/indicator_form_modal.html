@@ -1,0 +1,16 @@
+
+    <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+    <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
+    <script type="text/javascript">
+        //Searchable select option for service indicator
+        $(document).ready(function() {
+            /* add select2 js library to the indicator select box */
+            $("#id_program").select2();
+            $("#id_strategic_objectives").select2();
+        });
+    </script>
+    {% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+
+

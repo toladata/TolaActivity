@@ -1941,7 +1941,11 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        form.save()
+        obj = form.save()
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [obj])
+            return HttpResponse(data)
+
         messages.success(self.request, 'Success, Budget Created!')
         form = ""
         return self.render_to_response(self.get_context_data(form=form))
@@ -1976,7 +1980,11 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        form.save()
+        obj = form.save()
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [obj])
+            return HttpResponse(data)
+
         messages.success(self.request, 'Success, Budget Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -2234,7 +2242,7 @@ class ReportData(View, AjaxableResponseMixin):
         else:
             filters['program__country__in'] = countries
 
-        getAgreements = ProjectAgreement.objects.select_related('program', 'project_type', 'office', 'estimated_by', 'sector').filter(**filters).values('id', 'program__id', 'approval', \
+        getAgreements = ProjectAgreement.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
                 'program__name', 'project_name','site', 'activity_code', 'office__name', \
                 'project_name', 'sector__sector', 'project_activity', 'project_type__name', \
                 'account_code', 'lin_code','estimated_by__name','total_estimated_budget',\
@@ -2357,14 +2365,14 @@ class StakeholderObjects(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
 
         if program_id != 0:
-            getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
         elif int(self.kwargs['pk']) != 0:
-            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
 
         else:
-            getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+            getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
 
         getStakeholders = json.dumps(list(getStakeholders), cls=DjangoJSONEncoder)

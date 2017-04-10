@@ -18,24 +18,27 @@
     {% if collecteddata %}
         {% for item in collecteddata %}
         <tr>
-            <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.date_collected|date:"m-d-Y" }}</a></td>
+            <td>
+                <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">{{ item.date_collected|date:"m-d-Y" }}</a>
+            </td>
+
             <td>{{item.agreement}}</td>
-            <td>{% if item.evidence %}{% if item.evidence.url%}<a href="{{item.evidence.url}}">{% endif %}{{ item.evidence }} {% if item.evidence.url%}</a>{% endif %}{%endif%} {% if item.tola_table %} <a href="{{ item.tola_table.detail_url }}">{{ item.tola_table }}</a> {% endif %}</td>
+            <td>{% if item.evidence %}{% if item.evidence.url%}<a href="{{item.evidence.url}}" target="_blank">{% endif %}{{ item.evidence }} {% if item.evidence.url%}</a>{% endif %}{%endif%} {% if item.tola_table %} <a href="{{ item.tola_table.detail_url }}" target="_blank">{{ item.tola_table }}</a> {% endif %}</td>
             <td>{{ item.targeted }}</td>
             <td>{{ item.achieved }}</td>
-            <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+            <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info collecteddata-link">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
         </tr>
         {% endfor %}
         <tr>
             <td colspan="3"><span style="float: right;">Sum:</span></td>
             <td>{{ collected_sum.targeted__sum }}</td>
             <td>{{ collected_sum.achieved__sum }}</td>
-            <td width="100"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info">New Data</a></td>
+            <td width="100"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
         </tr>
     {% else %}
         <tr>
-            <td colspan="4">No Data Collected</td>
-            <td><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info">New Data</a></td>
+            <td colspan="5">No Data Collected</td>
+            <td><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
         </tr>
     {% endif %}
 </table>
