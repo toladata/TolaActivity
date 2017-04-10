@@ -18,7 +18,10 @@
     {% if collecteddata %}
         {% for item in collecteddata %}
         <tr>
-            <td><a href="/indicators/collecteddata_update/{{ item.id }}">{{ item.date_collected|date:"m-d-Y" }}</a></td>
+            <td>
+                <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">{{ item.date_collected|date:"m-d-Y" }}</a>
+            </td>
+
             <td>{{item.agreement}}</td>
             <td>{% if item.evidence %}{% if item.evidence.url%}<a href="{{item.evidence.url}}">{% endif %}{{ item.evidence }} {% if item.evidence.url%}</a>{% endif %}{%endif%} {% if item.tola_table %} <a href="{{ item.tola_table.detail_url }}">{{ item.tola_table }}</a> {% endif %}</td>
             <td>{{ item.targeted }}</td>

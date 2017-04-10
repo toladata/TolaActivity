@@ -21,11 +21,24 @@
     <tr>
         <td>{{ indicator.indicator_types}}</td>
         <td>{{ indicator.levels }}</td>
-        <td><a href="/indicators/indicator_update/{{ indicator.id }}">{{ indicator.name}}</a>&nbsp {% if indicator.key_performance_indicator %} <span class="badge">KPI</span>{% endif %}</td>
+        <td>
+            <a href="/indicators/indicator_update/{{ indicator.id }}" class="indicator-link">
+                {{ indicator.name}}
+            </a>
+            {% if indicator.key_performance_indicator %}
+                <span class="badge">KPI</span>
+            {% endif %}
+        </td>
         <td>{{ indicator.number}}</td>
         <td>{{ indicator.lop_target}}</td>
         <td>{{ indicator.sector}}</td>
-        <td width="150"><span class="btn-group" role="group"><a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info">Edit</a><a onclick="loadCollected({{ indicator.id }}, {{ program_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ indicator.id }}">Data {{ indicator.data_count }} </a><a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a></span></td>
+        <td width="150"><span class="btn-group" role="group">
+
+            <a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info indicator-link">Edit</a>
+
+            <a onclick="loadCollected({{ indicator.id }}, {{ program_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ indicator.id }}">Data {{ indicator.data_count }} </a>
+
+            <a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a></span></td>
     </tr>
     <tr class="hiddenRow">
         <td colspan="7">

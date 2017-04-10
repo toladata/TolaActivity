@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse_lazy
 from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
 from workflow.models import Program, SiteProfile, Documentation, ProjectAgreement, TolaUser
 from crispy_forms.helper import FormHelper
@@ -27,10 +28,13 @@ class IndicatorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
+        indicator = kwargs.get('instance', None)
         self.request = kwargs.pop('request')
         self.program = kwargs.pop('program')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
+        self.helper.form_action = reverse_lazy('indicator_update', kwargs={'pk': indicator.id})
+        self.helper.form_id = 'indicator_update_form'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-6'
@@ -125,15 +129,19 @@ class CollectedDataForm(forms.ModelForm):
     date_collected = forms.DateField(widget=DatePicker.DateInput(), required=True)
 
     def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', None)
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
         self.program = kwargs.pop('program')
+        self.indicator = kwargs.pop('indicator', None)
         self.tola_table = kwargs.pop('tola_table')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-6'
         self.helper.form_error_title = 'Form Errors'
+        self.helper.form_action = reverse_lazy('collecteddata_update' if instance else 'collecteddata_add', kwargs={'pk': instance.id} if instance else {'program': self.program, 'indicator': self.indicator})
+        self.helper.form_id = 'collecteddata_update_form'
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
