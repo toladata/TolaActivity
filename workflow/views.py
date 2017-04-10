@@ -727,9 +727,10 @@ class ProjectCompleteDetail(DetailView):
         context.update({'jsonData': jsonData})
         """
         context.update({'id':self.kwargs['pk']})
+        getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
 
         try:
-            getBenchmark = Benchmarks.objects.all().filter(complete__id=self.kwargs['pk'])
+            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
         except Benchmarks.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmarks': getBenchmark})
