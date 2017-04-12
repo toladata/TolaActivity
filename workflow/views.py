@@ -607,7 +607,7 @@ class ProjectCompleteUpdate(UpdateView):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
         id = getComplete.project_agreement_id
-        print(".............................%s............................" % id)
+
         context.update({'id': id})
         context.update({'p_name': getComplete.project_name})
         context.update({'p_complete_workflowlevel1': getComplete.workflowlevel1})
@@ -715,7 +715,6 @@ class ProjectCompleteDetail(DetailView):
         context.update({'jsonData': jsonData})
         """
         context.update({'id':self.kwargs['pk']})
-        getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
 
         try:
             getBenchmark = WorkflowLevel3.objects.all().filter(complete__id=self.kwargs['pk'])
