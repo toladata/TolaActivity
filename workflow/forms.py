@@ -1062,200 +1062,175 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.layout = Layout(
-
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_agreement', 'activity_code',
-                             'office', 'sector','project_name','site','stakeholder',
-                        ),
-                    Fieldset(
-                        'Dates',
+                    Fieldset('Program', 
+                        'project_agreement', 'activity_code', 'office', 'sector','project_name','site','stakeholder'
+                    ),
+                    Fieldset('Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
                         PrependedText('on_time', ''), 'no_explanation',
-
-                        ),
                     ),
+                ),
                 Tab('Components',
                     Fieldset("Project Components",
                         HTML("""
                             <div class='panel panel-default'>
-                              <!-- Default panel contents -->
-                              <div class='panel-heading'>Components</div>
-                              {% if getBenchmark %}
-                                  <!-- Table -->
-                                  <table class="table">
-                                    <tr>
-                                    <th>Description</th>
-                                    <th>Site</th>
-                                    <th>Est. Start Date</th>
-                                    <th>Est. End Date</th>
-                                    <th>Actual Start Date</th>
-                                    <th>Actual End Date</th>
-                                    <th>Budget</th>
-                                    <th>Actual Cost</th>
-                                    <th>View</th>
-                                    </tr>
-                                    {% for item in getBenchmark %}
-                                    <tr>
-                                        <td>{{ item.description}}</td>
-                                        <td>{{ item.site }}</td>
-                                        <td>{{ item.est_start_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.est_end_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.actual_start_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.actual_end_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.budget}}</td>
-                                        <td>{{ item.cost}}</td>
-                                        <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/workflow/benchmark_complete_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/workflow/benchmark_complete_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
-                                    </tr>
-                                    {% endfor %}
-                                  </table>
-                              {% endif %}
-                              <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/" id="btn_bench">Add Component</a>
-                              </div>
+                                <!-- Default panel contents -->
+                                <div class='panel-heading'>Components</div>
+                                {% if getBenchmark %}
+                                    <table class="table">
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Site</th>
+                                            <th>Est. Start Date</th>
+                                            <th>Est. End Date</th>
+                                            <th>Actual Start Date</th>
+                                            <th>Actual End Date</th>
+                                            <th>Budget</th>
+                                            <th>Actual Cost</th>
+                                            <th>View</th>
+                                        </tr>
+                                        {% for item in getBenchmark %}
+                                            <tr>
+                                                <td>{{ item.description}}</td>
+                                                <td>{{ item.site }}</td>
+                                                <td>{{ item.est_start_date|date:"m-d-Y"}}</td>
+                                                <td>{{ item.est_end_date|date:"m-d-Y"}}</td>
+                                                <td>{{ item.actual_start_date|date:"m-d-Y"}}</td>
+                                                <td>{{ item.actual_end_date|date:"m-d-Y"}}</td>
+                                                <td>{{ item.budget}}</td>
+                                                <td>{{ item.cost}}</td>
+                                                <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/workflow/benchmark_complete_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/workflow/benchmark_complete_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                {% endif %}
+                                <div class="panel-footer">
+                                    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/" id="btn_bench">Add Component</a>
+                                </div>
                             </div>
-
-                            """),
-                        ),
+                        """),
                     ),
+                ),
                 Tab('Budget',
                     Fieldset(
                         '',
                         PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00')
                     ),
                     Fieldset("Other Budget Contributions:",
-                         Div(
-                             "",
-                             HTML("""
-
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Budget Contributions</div>
-                                      <!-- Table -->
-                                      <table class="table" id="budget_contributions_table>
-                                      <tbody>
-                                      {% if getBudget %}
-
-                                            <tr>
-                                            <th>Contributor</th>
-                                            <th>Description</th>
-                                            <th>Value</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getBudget %}
-                                            <tr>
-                                                <td>{{ item.contributor}}</td>
-                                                <td>{{ item.contributor_description}}</td>
-                                                <td>{{ item.proposed_value}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/budget_update/{{ item.id }}/'>View</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
-                                            </tr>
-                                            {% endfor %}
-
-                                      {% endif %}
-                                      </tbody>
-                                      </table>
-                                      <div class="panel-footer">
+                         Div("",
+                            HTML("""
+                                <div class='panel panel-default'>
+                                    <div class='panel-heading'>Budget Contributions</div>
+                                    <table class="table" id="budget_contributions_table">
+                                        <tbody>
+                                            {% if getBudget %}
+                                                <tr>
+                                                    <th>Contributor</th>
+                                                    <th>Description</th>
+                                                    <th>Value</th>
+                                                    <th>View</th>
+                                                </tr>
+                                                {% for item in getBudget %}
+                                                    <tr>
+                                                        <td>{{ item.contributor}}</td>
+                                                        <td>{{ item.contributor_description}}</td>
+                                                        <td>{{ item.proposed_value}}</td>
+                                                        <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/budget_update/{{ item.id }}/'>View</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                    <div class="panel-footer">
                                         <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ id }}">Add Budget Contribution</a>
-                                      </div>
                                     </div>
+                                </div>
                             """),
-                            ),
                         ),
                     ),
-
+                ),
                 Tab('Impact',
                     Fieldset(
                         '',
                         Div(
                             '',
                              HTML("""
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator</div>
-                                      {% if getQuantitative %}
-                                          <!-- Table -->
-                                          <table class="table">
+                                <div class='panel panel-default'>
+                                    <div class='panel-heading'>Indicator</div>
+                                    {% if getQuantitative %}
+                                        <table class="table">
                                             <tr>
-                                            <th>Targeted</th>
-                                            <th>Achieved</th>
-                                            <th>Indicator</th>
-                                            <th>View</th>
+                                                <th>Targeted</th>
+                                                <th>Achieved</th>
+                                                <th>Indicator</th>
+                                                <th>View</th>
                                             </tr>
                                             {% for item in getQuantitative %}
-                                            <tr>
-                                                <td>{{ item.targeted}}</td>
-                                                <td>{{ item.achieved}}</td>
-                                                <td>{{ item.description}}</td>
-                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
-                                            </tr>
+                                                <tr>
+                                                    <td>{{ item.targeted}}</td>
+                                                    <td>{{ item.achieved}}</td>
+                                                    <td>{{ item.description}}</td>
+                                                    <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
+                                                    <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                                </tr>
                                             {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
+                                        </table>
+                                    {% endif %}
+                                    <div class="panel-footer">
                                         <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}">Add Indicators</a>
-                                      </div>
                                     </div>
-                             """),
+                                </div>
+                            """),
                         ),
                     ),
-                    Fieldset(
-                        '',AppendedText('progress_against_targets','%'),'actual_contribution','beneficiary_type', 'capacity_built', 'quality_assured','issues_and_challenges', 'lessons_learned',
+                    Fieldset('',
+                        AppendedText('progress_against_targets','%'), 'beneficiary_type', 'capacity_built', 'quality_assured','issues_and_challenges', 'lessons_learned'
                     ),
                 ),
-
                 Tab('Approval',
                     Fieldset('Approval',
-                             'approval', 'approved_by',
-                             Field('approval_remarks', rows="3", css_class='input-xlarge')
+                        'approval', 'approved_by', Field('approval_remarks', rows="3", css_class='input-xlarge')
                     ),
                 ),
             ),
-
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
             ),
-
             HTML("""<br/>"""),
-
-            Fieldset(
-                'Project Files',
-                Div(
-                    '',
+            Fieldset('Project Files',
+                Div('',
                     HTML("""
-
                         <div class='panel panel-default'>
-                          <!-- Default panel contents -->
-                          <div class='panel-heading'>Documentation</div>
-                          {% if getDocuments %}
-                              <!-- Table -->
-                              <table class="table">
-                                <tr>
-                                <th>Name</th>
-                                <th>Link(URL)</th>
-                                <th>Description</th>
-                                <th>&nbsp;</th>
-                                </tr>
-                                {% for item in getDocuments %}
-                                <tr>
-                                    <td>{{ item.name}}</td>
-                                    <td><a href="{{ item.url}}" target="_new">{{ item.url}}</a></td>
-                                    <td>{{ item.description}}</td>
-                                    <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/workflow/documentation_agreement_update/{{ item.id }}/{{ pk }}/'>Edit</a> | <a class="monitoring" href='/workflow/documentation_agreement_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
-                                </tr>
-                                {% endfor %}
-                              </table>
-                          {% endif %}
-                          <div class="panel-footer">
-                            <a onclick="newPopup('/workflow/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
-                          </div>
+                            <div class='panel-heading'>Documentation</div>
+                            {% if getDocuments %}
+                                <table class="table">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Link(URL)</th>
+                                        <th>Description</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                    {% for item in getDocuments %}
+                                        <tr>
+                                            <td>{{ item.name}}</td>
+                                            <td><a href="{{ item.url}}" target="_new">{{ item.url}}</a></td>
+                                            <td>{{ item.description}}</td>
+                                            <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/workflow/documentation_agreement_update/{{ item.id }}/{{ pk }}/'>Edit</a> | <a class="monitoring" href='/workflow/documentation_agreement_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            {% endif %}
+                            <div class="panel-footer">
+                                <a onclick="newPopup('/workflow/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
+                            </div>
                         </div>
-                         """),
+                    """),
                 ),
             ),
-
         )
         super(ProjectCompleteSimpleForm, self).__init__(*args, **kwargs)
 
