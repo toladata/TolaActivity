@@ -86,16 +86,16 @@ class BudgetForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = False
-        self.helper.layout = Layout(
-            Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement',
-        )
+        #self.helper.layout = Layout(
+        #    Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement',
+        #)
 
 
         super(BudgetForm, self).__init__(*args, **kwargs)
 
-        countries = getCountry(self.request.user)
+        #countries = getCountry(self.request.user)
 
-        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
+        #self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
 
     def save(self, *args, **kwargs):
         # Commit is already set to false
@@ -717,7 +717,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','site','stakeholder',
+                    Fieldset('Program', 'program', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','site','stakeholder',
                     ),
                     Fieldset(
                         'Dates',
@@ -788,7 +788,7 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code','account_code','lin_code',\
+                    Fieldset('', 'program', 'project_agreement', 'activity_code','account_code','lin_code',\
                              'office', 'sector','project_name', 'project_activity', 'site', 'stakeholder',
                         ),
                     Fieldset(
@@ -926,7 +926,7 @@ class ProjectCompleteForm(forms.ModelForm):
                         ),
                     ),
                     Fieldset(
-                        '',AppendedText('progress_against_targets','%'),'actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
+                        '',AppendedText('progress_against_targets','%'),'beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
                     ),
                 ),
 
@@ -980,7 +980,6 @@ class ProjectCompleteForm(forms.ModelForm):
                          """),
                 ),
             ),
-
         )
         super(ProjectCompleteForm, self).__init__(*args, **kwargs)
 
@@ -1060,7 +1059,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 
+                    Fieldset('Program',
                         'project_agreement', 'activity_code', 'office', 'sector','project_name','site','stakeholder'
                     ),
                     Fieldset('Dates',
@@ -1110,12 +1109,11 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                     ),
                 ),
                 Tab('Budget',
-                    Fieldset(
-                        '',
+                    Fieldset('',
                         PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00')
                     ),
                     Fieldset("Other Budget Contributions:",
-                         Div("",
+                         Div(
                             HTML("""
                                 <div class='panel panel-default'>
                                     <div class='panel-heading'>Budget Contributions</div>
@@ -1140,7 +1138,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                         </tbody>
                                     </table>
                                     <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ id }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ pk }}/?is_it_project_complete_form=true">Add Budget Contribution</a>
                                     </div>
                                 </div>
                             """),
@@ -1148,10 +1146,8 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                     ),
                 ),
                 Tab('Impact',
-                    Fieldset(
-                        '',
+                    Fieldset('',
                         Div(
-                            '',
                              HTML("""
                                 <div class='panel panel-default'>
                                     <div class='panel-heading'>Indicator</div>
@@ -1197,7 +1193,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
             ),
             HTML("""<br/>"""),
             Fieldset('Project Files',
-                Div('',
+                Div(
                     HTML("""
                         <div class='panel panel-default'>
                             <div class='panel-heading'>Documentation</div>
