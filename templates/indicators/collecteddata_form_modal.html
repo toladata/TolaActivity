@@ -10,7 +10,7 @@
             $("#id_evidence").select2();
             $("#id_agreement").select2();
 
-            $('#myModal').on('hidden.bs.modal', function (e) {
+            $('#tolatablemodal').on('hidden.bs.modal', function (e) {
                 var sel = $("#service_table option:selected");
                 $.get('/api/tolatable/?table_id=' + sel.val() , function(data){
                     if (data.length == 1) {
@@ -47,14 +47,6 @@
     {% csrf_token %}
     {% load crispy_forms_tags %}
     {% crispy form %}
-
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            </div> <!-- /.modal-content -->
-        </div> <!-- /.modal-dialog -->
-    </div> <!-- /.modal -->
 
 
 {% endblock content %}
