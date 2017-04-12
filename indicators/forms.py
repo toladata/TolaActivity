@@ -159,7 +159,7 @@ class CollectedDataForm(forms.ModelForm):
 
             Fieldset('Evidence',
                 'agreement','method','evidence','tola_table','update_count_tola_table',
-                HTML("""<a class="output" data-toggle="modal" data-target="#myModal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>"""),
+                HTML("""<a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>"""),
 
             ),
 
