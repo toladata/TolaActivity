@@ -619,6 +619,7 @@ class ProjectCompleteUpdate(UpdateView):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
         id = getComplete.project_agreement_id
+
         context.update({'id': id})
         context.update({'p_name': getComplete.project_name})
         context.update({'p_complete_program': getComplete.program})
@@ -627,7 +628,7 @@ class ProjectCompleteUpdate(UpdateView):
 
         # get budget data
         try:
-            getBudget = Budget.objects.all().filter(agreement__id=getComplete.project_agreement_id)
+            getBudget = Budget.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk) )
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
@@ -727,7 +728,6 @@ class ProjectCompleteDetail(DetailView):
         context.update({'jsonData': jsonData})
         """
         context.update({'id':self.kwargs['pk']})
-        getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
 
         try:
             getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
@@ -1924,11 +1924,12 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
         return super(BudgetCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        initial = {
-            'agreement': self.kwargs['id'],
-            }
-
+        if self.request.GET.get('is_it_project_complete_form', None):
+            initial = {'complete': self.kwargs['id']}
+        else:
+            initial = {'agreement': self.kwargs['id']}
         return initial
+
     def get_form_kwargs(self):
         kwargs = super(BudgetCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
