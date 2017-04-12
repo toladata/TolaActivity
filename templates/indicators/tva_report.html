@@ -3,11 +3,11 @@
 {% block bread_crumb %}
 <ol class="breadcrumb">
   <li><a href="/indicators/home/{{ getPrograms.all.0.id|default:0 }}/0/0/">Indicators</a></li>
-  <li class="active">TvAReports</li>
+  <li class="active">TvA Report</li>
 </ol>
 {% endblock %}
 
-{% block page_title %}TvA Report{% endblock %}
+{% block page_title %}Indicator Targets vs Actuals Report{% endblock %}
 
 {% block content %}
     {% include "indicators/filter.html"%}
@@ -89,6 +89,7 @@
                 buttons: [
                     {
                         extend: 'csv',
+                        title: 'Target vs Actuals Report',
                         text: 'Export to CSV',
                         exportOptions: { columns: "thead th:not(.noExport)" }
                     }
