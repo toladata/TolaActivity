@@ -21,6 +21,7 @@ try:
     from django.utils import timezone
 except ImportError:
     from datetime import datetime as timezone
+from django.db.models import Q
 
 
 # New user created generate a token
@@ -949,6 +950,8 @@ class ProjectAgreementManager(models.Manager):
 
     def get_rejected(self):
         return self.filter(approval="rejected")
+    def get_new(self):
+        return self.filter(Q(Q(approval=None) | Q(approval="")))
 
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
