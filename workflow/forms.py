@@ -1477,8 +1477,9 @@ class BenchmarkForm(forms.ModelForm):
             )
         super(BenchmarkForm, self).__init__(*args, **kwargs)
 
+        countries = getCountry(self.request.user)
         # override the site queryset to use request.user for country
-        self.fields['site'].queryset = SiteProfile.objects.all().filter(projectagreement__id=self.agreement)
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
 
 class MonitorForm(forms.ModelForm):
