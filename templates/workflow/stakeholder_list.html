@@ -24,9 +24,9 @@
 <hr/>
 <br/>
 
-    
+
     <h3>Stakeholder</h3>
-    
+
 <a href="/workflow/export_stakeholders_list/{{ program_id }}/" class="btn btn-sm btn-primary float-right"><span class="glyphicon glyphicon-export"></span> Export to Excel</a>&nbsp;
 <br><br>
 
@@ -55,7 +55,7 @@
             } );
 
             table = $('#stakeholdertable').DataTable( {
-                 "order": [], 
+                 "order": [],
                  "bFilter": false,
                  'bLengthChange': false,
                  "aoColumnDefs": [
@@ -82,7 +82,7 @@
                         "defaultContent": "<i>Not set</i>"},
                     { title: "Sector", data: "sector__sector",
                             "mRender": function (data, sector, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.sector__sector + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.sectors__sector + '</a>';
                             },
                             "defaultContent": "<i>Not set</i>"
                         },
@@ -106,9 +106,9 @@ function program_filter(program_id) {
         // get the program and indicator id from the url
         if (program_id != 0) {
 
-            $.getJSON("/workflow/stakeholder_table/"+ program_id + "/0/", function(data) {  
-                  show_stakeholder_table(data['getStakeholders']);          
-            }); 
+            $.getJSON("/workflow/stakeholder_table/"+ program_id + "/0/", function(data) {
+                  show_stakeholder_table(data['getStakeholders']);
+            });
 
         }  else{
 
@@ -116,9 +116,9 @@ function program_filter(program_id) {
             console.log(program_id);
             stakeholder_id = document.URL.split('/')[6];
 
-            $.getJSON("/workflow/stakeholder_table/"+ program_id + "/" + stakeholder_id + "/", function(data) {  
-                  show_stakeholder_table(data['getStakeholders']);          
-            });     
+            $.getJSON("/workflow/stakeholder_table/"+ program_id + "/" + stakeholder_id + "/", function(data) {
+                  show_stakeholder_table(data['getStakeholders']);
+            });
         }
       }
 
