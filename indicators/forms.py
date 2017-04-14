@@ -25,7 +25,7 @@ class IndicatorForm(forms.ModelForm):
     class Meta:
         model = Indicator
         exclude = ['create_date','edit_date']
-        widgets = {'program': forms.Select()}
+        #widgets = {'program': forms.Select()}
 
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
@@ -119,7 +119,7 @@ class IndicatorForm(forms.ModelForm):
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
-
+        self.fields['program'].widget.attrs['disabled'] = "disabled"
 
 class CollectedDataForm(forms.ModelForm):
 
