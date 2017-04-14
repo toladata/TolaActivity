@@ -25,6 +25,7 @@ class IndicatorForm(forms.ModelForm):
     class Meta:
         model = Indicator
         exclude = ['create_date','edit_date']
+        widgets = {'program': forms.Select()}
 
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
