@@ -94,7 +94,7 @@ $(function () {
         },
         series: [{
             name: 'Targets',
-            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.targets }}, {% endfor %}  ]
+            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator__lop_target }}, {% endfor %}  ]
         }, {
             name: 'Actuals',
             data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.actuals }}, {% endfor %}   ]
