@@ -9,8 +9,8 @@ class IndicatorDataTable(tables.Table):
     class Meta:
         model = CollectedData
         attrs = {"class": "paleblue"}
-        fields = ('targets', 'actuals','indicator__program__name', 'indicator__number', 'indicator__name')
-        sequence = ('targets', 'actuals', 'indicator__program__name','indicator__number', 'indicator__name')
+        fields = ('indicator__lop_target', 'actuals','indicator__program__name', 'indicator__number', 'indicator__name')
+        sequence = ('indicator__lop_target', 'actuals', 'indicator__program__name','indicator__number', 'indicator__name')
 
 
 class CollectedDataTable(tables.Table):
