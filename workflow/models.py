@@ -951,7 +951,7 @@ class ProjectAgreementManager(models.Manager):
     def get_rejected(self):
         return self.filter(approval="rejected")
     def get_new(self):
-        return self.filter(Q(Q(approval=None) | Q(approval="")))
+        return self.filter(Q(approval=None) | Q(approval=""))
 
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
