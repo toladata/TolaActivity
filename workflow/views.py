@@ -1384,16 +1384,11 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
         return context
 
     def get_initial(self):
-        try:
-            getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['id'])
-            initial = {
-                'agreement': self.kwargs['id'],
-                'complete': getComplete.id,
-                }
-        except ProjectComplete.DoesNotExist:
-            initial = {
-                'agreement': self.kwargs['id'],
-                }
+        
+        if self.request.GET.get('is_it_project_complete_form', None):
+            initial = { 'complete': self.kwargs['id'] }
+        else:
+            initial = { 'agreement': self.kwargs['id'] }
 
         return initial
 
@@ -1791,11 +1786,17 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
 
     def get_initial(self):
         getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
-        initial = {
-            'agreement': self.kwargs['id'],
-            'program': getProgram.id,
-            }
 
+        if self.request.GET.get('is_it_project_complete_form', None):
+            initial = {
+                        'complete': self.kwargs['id'],
+                        'program': getProgram.id,
+                      }
+        else:
+            initial = {
+                        'agreement': self.kwargs['id'],
+                        'program': getProgram.id,
+                      }
         return initial
 
     def form_invalid(self, form):

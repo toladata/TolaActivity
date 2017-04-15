@@ -1430,7 +1430,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted','achieved','indicator','agreement','program'
+                'targeted','achieved','indicator','agreement','complete','program'
 
         )
 
@@ -1442,6 +1442,9 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
         #self.fields['program'].widget.attrs['disabled'] = "disabled"
         self.fields['program'].widget = HiddenInput()
+        self.fields['agreement'].widget = HiddenInput()
+        self.fields['complete'].widget = HiddenInput()
+
 
 
 class BenchmarkForm(forms.ModelForm):
@@ -1479,6 +1482,9 @@ class BenchmarkForm(forms.ModelForm):
 
         # override the site queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.all().filter(projectagreement__id=self.agreement)
+
+        self.fields['agreement'].widget = HiddenInput()
+        self.fields['complete'].widget = HiddenInput()
 
 
 class MonitorForm(forms.ModelForm):
