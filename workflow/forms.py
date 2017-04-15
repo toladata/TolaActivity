@@ -737,7 +737,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
@@ -1480,8 +1480,9 @@ class BenchmarkForm(forms.ModelForm):
             )
         super(BenchmarkForm, self).__init__(*args, **kwargs)
 
+        countries = getCountry(self.request.user)
         # override the site queryset to use request.user for country
-        self.fields['site'].queryset = SiteProfile.objects.all().filter(projectagreement__id=self.agreement)
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         self.fields['agreement'].widget = HiddenInput()
         self.fields['complete'].widget = HiddenInput()
