@@ -18,10 +18,9 @@
         //Searchable select option for service indicator
         $(document).ready(function() {
             /* add select2 js library to the indicator select box */
-            $("#id_program").select2();
+            $("#id_program").select2().attr('disabled','disabled');
             $("#id_strategic_objectives").select2();
         });
-
     </script>
 
     {% if form.errors %}
