@@ -836,7 +836,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/">Add Component</a>
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/?is_it_project_complete_form=true">Add Component</a>
                               </div>
                             </div>
 
@@ -883,7 +883,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                       </tbody>
                                       </table>
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ id }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ id }}/?is_it_project_complete_form=true">Add Budget Contribution</a>
                                       </div>
                                     </div>
                                 """),
@@ -920,7 +920,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}/?is_it_project_complete_form=true">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                              """),
@@ -1103,7 +1103,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                     </table>
                                 {% endif %}
                                 <div class="panel-footer">
-                                    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/" id="btn_bench">Add Component</a>
+                                    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/?is_it_project_complete_form=true" id="btn_bench">Add Component</a>
                                 </div>
                             </div>
                         """),
@@ -1172,7 +1172,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                         </table>
                                     {% endif %}
                                     <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}">Add Indicators</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}/?is_it_project_complete_form=true">Add Indicators</a>
                                     </div>
                                 </div>
                             """),

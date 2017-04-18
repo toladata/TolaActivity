@@ -618,31 +618,32 @@ class ProjectCompleteUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
-        id = getComplete.project_agreement_id
+        #id = getComplete.project_agreement_id
 
-        context.update({'id': id})
+        context.update({'id': getComplete.pk})
         context.update({'p_name': getComplete.project_name})
         context.update({'p_complete_program': getComplete.program})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
+        context.update({'project_id':getComplete.project_agreement_id})
 
         # get budget data
         try:
-            getBudget = Budget.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk) )
+            getBudget = Budget.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk))
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
 
         # get Quantitative data
         try:
-            getQuantitative = CollectedData.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('indicator')
+            getQuantitative = CollectedData.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk)).order_by('indicator')
         except CollectedData.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
 
         # get benchmark or project components
         try:
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('description')
+            getBenchmark = Benchmarks.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk)).order_by('description')
         except Benchmarks.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
