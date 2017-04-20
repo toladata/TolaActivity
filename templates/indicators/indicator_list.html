@@ -163,6 +163,7 @@ function loadIndicators(program,indicator,type){
             var json = $.parseJSON(jqXHR.responseText);
             createAlert("success", "Success, form data saved.", true, "#modalmessages");
             var item = $.parseJSON(data);
+            $("#id_achieved").val(item[0]['fields']['achieved']);
             //console.log(item[0]);
         });
     }
