@@ -1097,7 +1097,8 @@ class TVAReport(TemplateView):
             .select_related('sector')\
             .prefetch_related('indicator_type', 'level', 'program')\
             .filter(**filters)\
-            .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))
+            .annotate(actuals=Sum('collecteddata__achieved'))
+            #.annotate(actuals=Sum('collecteddata__disaggregation_value__value'))
         context['data'] = indicators
         context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
