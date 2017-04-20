@@ -523,7 +523,7 @@ class CollectedDataUpdate(UpdateView):
                 getTable = None
             if getTable:
                 # if there is a trailing slash, remove it since TT api does not like it.
-                url = getTable.url if getTable.url[-1:] != "/" else getTable.url[:-1]
+                url = getTable.url if getTable.url[-6:] != "/data/" else getTable.url[:-6]
                 count = getTableCount(url, getTable.table_id)
             else:
                 count = 0
@@ -570,24 +570,21 @@ def getTableCount(url,table_id):
     :param table_id: The TolaTable ID to update count from and return
     :return: count : count of rows from TolaTable
     """
-    filter_url = url
+    token = TolaSites.objects.get(site_id=1)
+    if token.tola_tables_token:
+        headers = {'content-type': 'application/json', 'Authorization': 'Token ' + token.tola_tables_token }
+    else:
+        headers = {'content-type': 'application/json'}
+        print "Token Not Found"
 
-    # loop over the result table and count the number of records for actuals
-    actual_data = get_table(filter_url)
-    count = 0
-
-    if actual_data:
-        # check if json data is in the 'data' attribute or at the top level of the JSON object
-        try:
-            looper = actual_data['data']
-        except KeyError:
-            looper = actual_data
-
-        for item in looper:
-            count = count + 1
-
-    # update with new count
-    TolaTable.objects.filter(table_id = table_id).update(unique_count=count)
+    response = requests.get(url,headers=headers, verify=False)
+    data = json.loads(response.content)
+    count = None
+    try:
+        count = data['data_count']
+        TolaTable.objects.filter(table_id = table_id).update(unique_count=count)
+    except KeyError:
+        pass
 
     return count
 
