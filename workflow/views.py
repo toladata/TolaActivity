@@ -716,25 +716,18 @@ class ProjectCompleteDetail(DetailView):
 
         context = super(ProjectCompleteDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
-        try:
-            data = ProjectComplete.objects.all().filter(project_agreement__id=self.kwargs['pk'])
-        except ProjectComplete.DoesNotExist:
-            data = None
-        """
-        getData = serializers.serialize('python', data)
-        #return just the fields and skip the object name
-        justFields = [d['fields'] for d in getData]
-        #temp name fiels
-        jsonData =json.dumps(justFields, default=date_handler)
-        context.update({'jsonData': jsonData})
-        """
+
         context.update({'id':self.kwargs['pk']})
 
         try:
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
+            getBenchmark = Benchmarks.objects.filter(Q(agreement__id=self.kwargs['pk']) | Q(complete__id=self.get_object().pk))
         except Benchmarks.DoesNotExist:
             getBenchmark = None
-        context.update({'getBenchmarks': getBenchmark})
+
+        budgetContribs = getBudget = Budget.objects.filter(Q(agreement__id=self.kwargs['pk']) | Q(complete__id=self.get_object().pk))
+
+        context['budgetContribs'] = budgetContribs
+        context['getBenchmarks'] =  getBenchmark
 
         return context
 
@@ -1385,7 +1378,7 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
         return context
 
     def get_initial(self):
-        
+
         if self.request.GET.get('is_it_project_complete_form', None):
             initial = { 'complete': self.kwargs['id'] }
         else:
@@ -1786,14 +1779,16 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
         return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
+        getProgram = None
 
         if self.request.GET.get('is_it_project_complete_form', None):
+            getProgram = Program.objects.get(complete__id = self.kwargs['id'])
             initial = {
                         'complete': self.kwargs['id'],
                         'program': getProgram.id,
                       }
         else:
+            getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
             initial = {
                         'agreement': self.kwargs['id'],
                         'program': getProgram.id,

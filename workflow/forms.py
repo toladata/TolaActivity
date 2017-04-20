@@ -692,6 +692,9 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         model = ProjectComplete
         fields = '__all__'
 
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+    project_agreement2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
@@ -718,7 +721,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','site','stakeholder',
+                    Fieldset('Program', 'program2', 'program', 'project_agreement2', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','site','stakeholder',
                     ),
                     Fieldset(
                         'Dates',
@@ -738,6 +741,10 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
+        self.fields['program2'].initial = kwargs['initial'].get('program')
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['project_agreement2'].initial = "%s - %s" % (kwargs['initial'].get('office'),  kwargs['initial'].get('project_name', 'No project name') )
+        self.fields['project_agreement'].widget = forms.HiddenInput()
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
