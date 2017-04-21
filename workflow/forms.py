@@ -742,6 +742,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
 
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
+        self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
         self.fields['program2'].initial = kwargs['initial'].get('program')
         self.fields['program'].widget = forms.HiddenInput()
         self.fields['project_agreement2'].initial = "%s - %s" % (kwargs['initial'].get('office'),  kwargs['initial'].get('project_name', 'No project name') )
