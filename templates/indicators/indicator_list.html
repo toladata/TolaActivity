@@ -9,11 +9,9 @@
 */
 function loadCollected(indicator,program){
     var indicator;
-    $('.ajaxLoader').show();
     $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
         $('#hidden-' + indicator).html(data);
     });
-    $('.ajaxLoader').hide();
 };
 
 /*
@@ -21,11 +19,9 @@ function loadCollected(indicator,program){
 */
 function loadIndicators(program,indicator,type){
     var program;
-    $('.ajaxLoader').show();
     $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
         $('#hidden-' + program).html(data);
       });
-    $('.ajaxLoader').hide();
     $('#hidden-' + program).on('shown', function () {
        $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
     });
@@ -148,6 +144,7 @@ function loadIndicators(program,indicator,type){
     });
 
     function submitForm(form_url, form_data) {
+        $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
         $.ajax({
             method: 'POST',
             url: form_url,
@@ -161,10 +158,10 @@ function loadIndicators(program,indicator,type){
                 return;
             }
             var json = $.parseJSON(jqXHR.responseText);
+            $("#modalmessages").html('');
             createAlert("success", "Success, form data saved.", true, "#modalmessages");
             var item = $.parseJSON(data);
             $("#id_achieved").val(item[0]['fields']['achieved']);
-            //console.log(item[0]);
         });
     }
 

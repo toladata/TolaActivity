@@ -1,5 +1,18 @@
 //Bootstrap remember tab
 // Javascript to enable link to tab
+
+/*
+ * A global ajaxComplete method that shows you any messages that are set in Django's view
+ */
+$( document )
+    .ajaxStart( function() {
+        $('#ajaxloading').show();
+    })
+    .ajaxStop( function() {
+         $('#ajaxloading').hide();
+    });
+
+
 $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
