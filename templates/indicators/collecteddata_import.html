@@ -23,8 +23,10 @@
             type: frm.attr('method'),
             url: frm.attr('action'),
             data: frm.serialize(),
-            success: function (data) {
-                $("#alert-error").html("Success! ");
+            success: function (response) {
+                //update the selected option value with the record id that was just created.
+                $("#service_table option:selected").val(response);
+                $("#tolatablemodal").modal('toggle');
             },
             error: function(data) {
                 $("#alert-error").html("Something went wrong!");
@@ -78,7 +80,7 @@
               </div>
 
               <br/>
-              <input type="submit" name="submit" value="save" class="btn btn-success" data-dismiss="modal">
+              <input type="submit" name="submit" value="save" class="btn btn-success">
             </form>
         </div>
     </div>
