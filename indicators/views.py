@@ -417,7 +417,10 @@ class CollectedDataCreate(CreateView):
             except DisaggregationLabel.DoesNotExist:
                 getTable = None
             if getTable:
-                count = getTableCount(getTable.url,getTable.table_id)
+                # if there is a trailing slash, remove it since TT api does not like it.
+                url = getTable.url if getTable.url[-1:] != "/" else getTable.url[:-1]
+                url = url if url[-5:] != "/data" else url[:-5]
+                count = getTableCount(url, getTable.table_id)
             else:
                 count = 0
             form.instance.achieved = count
