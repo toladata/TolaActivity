@@ -525,7 +525,8 @@ class CollectedDataUpdate(UpdateView):
                 getTable = None
             if getTable:
                 # if there is a trailing slash, remove it since TT api does not like it.
-                url = getTable.url if getTable.url[-6:] != "/data/" else getTable.url[:-6]
+                url = getTable.url if getTable.url[-1:] != "/" else getTable.url[:-1]
+                url = url if url[-5:] != "/data" else url[:-5]
                 count = getTableCount(url, getTable.table_id)
             else:
                 count = 0
@@ -644,12 +645,12 @@ def collecteddata_import(request):
         countries = getCountry(request.user)
         check_for_existence = TolaTable.objects.all().filter(name=name,owner=owner)
         if check_for_existence:
-            result = "error"
+            result = check_for_existence[0].id
         else:
             create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url, unique_count=count)
             create_table.country.add(countries[0].id)
             create_table.save()
-            result = "success"
+            result = create_table.id
 
         # send result back as json
         message = result
