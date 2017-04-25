@@ -1097,6 +1097,58 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
 
         return JsonResponse(final_dict, safe=False)
 
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
+
+from django.db import connection
+class DisaggregationReport(TemplateView):
+    template_name = 'indicators/disaggregation_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DisaggregationReport, self).get_context_data(**kwargs)
+        disagg_query = "SELECT p.id AS Program, i.id AS IndicatorID, l.label AS Disaggregation, "\
+            "SUM(dv.value) AS Actuals "\
+                "FROM indicators_collecteddata_disaggregation_value AS cdv "\
+                "INNER JOIN indicators_collecteddata AS c ON c.id = cdv.collecteddata_id "\
+                "INNER JOIN indicators_indicator AS i ON i.id = c.indicator_id "\
+                "INNER JOIN indicators_indicator_program AS ip ON ip.indicator_id = i.id "\
+                "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
+                "INNER JOIN indicators_disaggregationvalue AS dv ON dv.id = cdv.disaggregationvalue_id "\
+                "INNER JOIN indicators_disaggregationlabel AS l ON l.id = dv.disaggregation_label_id "\
+                "WHERE p.id = 442 "\
+                "GROUP BY Program, IndicatorID, Disaggregation "\
+                "ORDER BY IndicatorID, Disaggregation;"
+        cursor = connection.cursor()
+        cursor.execute(disagg_query)
+        disdata = dictfetchall(cursor)
+
+
+        indicator_query = "SELECT DISTINCT i.id AS IndicatorID, i.name AS Indicator, "\
+            "SUM(cd.achieved) AS Overall "\
+            "FROM indicators_indicator AS i "\
+            "INNER JOIN indicators_indicator_program AS ip ON ip.indicator_id = i.id "\
+            "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
+            "LEFT OUTER JOIN indicators_collecteddata AS cd ON i.id = cd.indicator_id "\
+            "WHERE p.id = 442 "\
+            "GROUP BY IndicatorID "\
+            "ORDER BY Indicator ";
+
+        cursor.execute(indicator_query)
+        idata = dictfetchall(cursor)
+
+        for indicator in idata:
+            indicator["disdata"] = []
+            for i, dis in enumerate(disdata):
+                if dis['IndicatorID'] == indicator['IndicatorID']:
+                    indicator["disdata"].append(disdata[i])
+
+        context['data'] = idata
+        return context
 
 class TVAReport(TemplateView):
     template_name = 'indicators/tva_report.html'

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block bread_crumb %}
+<ol class="breadcrumb">
+  <li><a href="/indicators/home/{{ getPrograms.all.0.id|default:0 }}/0/0/">Indicators</a></li>
+  <li class="active">Indicator Disaggregation Report</li>
+</ol>
+{% endblock %}
+
+{% block page_title %} Indicator Disaggregation Report {% endblock %}
+
+{% block content %}
+{{data}}
+    <div id="tva_table_div" class="table-responsive">
+        <table id="tva_table" class="table table-hover table-striped table-bordered">
+            <thead>
+                <th class="noExport" style="display:none;">PID</th>
+                <th>IndicatorID</th>
+                <th>Indicator</th>
+                <th>Disaggregation</th>
+                <th>Actuals</th>
+            </thead>
+            {% for row in data %}
+                <tr>
+                    <td style="display:none;">{{row.Program}}</td>
+                    <td>{{row.IndicatorID}}</td>
+                    <td>{{row.Indicator}}</td>
+                    <td>
+                        <table>
+                        {% for d in row.disdata %}
+                            <tr>
+                            <td>{{d.Disaggregation}}</td><td>{{d.Actuals}}<td/>
+                            </tr>
+                        {% endfor %}
+                        </table>
+                    </td>
+                    <td>{{row.Overall}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+{% endblock content %}
