@@ -1092,8 +1092,8 @@ class DisaggregationReport(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DisaggregationReport, self).get_context_data(**kwargs)
-        disagg_query = "SELECT p.id AS Program, i.id AS IndicatorID, l.label AS Disaggregation, "\
-            "SUM(dv.value) AS Actuals "\
+        disagg_query = "SELECT i.id AS IndicatorID, dt.disaggregation_type AS DType, "\
+            "l.label AS Disaggregation, SUM(dv.value) AS Actuals "\
                 "FROM indicators_collecteddata_disaggregation_value AS cdv "\
                 "INNER JOIN indicators_collecteddata AS c ON c.id = cdv.collecteddata_id "\
                 "INNER JOIN indicators_indicator AS i ON i.id = c.indicator_id "\
@@ -1101,9 +1101,10 @@ class DisaggregationReport(TemplateView):
                 "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
                 "INNER JOIN indicators_disaggregationvalue AS dv ON dv.id = cdv.disaggregationvalue_id "\
                 "INNER JOIN indicators_disaggregationlabel AS l ON l.id = dv.disaggregation_label_id "\
+                "INNER JOIN indicators_disaggregationtype AS dt ON dt.id = l.disaggregation_type_id "\
                 "WHERE p.id = 442 "\
-                "GROUP BY Program, IndicatorID, Disaggregation "\
-                "ORDER BY IndicatorID, Disaggregation;"
+                "GROUP BY IndicatorID, DType,Disaggregation "\
+                "ORDER BY IndicatorID, DType, Disaggregation;"
         cursor = connection.cursor()
         cursor.execute(disagg_query)
         disdata = dictfetchall(cursor)
