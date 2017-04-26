@@ -30,13 +30,6 @@
             {% for row in data %}
                 {% for d in row.disdata %}
                     <tr>
-                        <!--
-                        {% comment %}
-                            <td rowspan="{{row.disdata|length}}">{{row.IndicatorID}}</td>
-                            <td>{{row.Indicator}}</td>
-                            <td>{{row.Overall}}</td>
-                        {% endcomment %}
-                        -->
                         {% ifchanged row.IndicatorID %}
                             <td style="border-bottom:none;">{{row.IndicatorID}}</td>
                             <td style="border-bottom:none;">{{row.Indicator}}</td>
@@ -46,10 +39,11 @@
                             <td style="border-bottom:none; border-top:none;"></td>
                             <td style="border-bottom:none; border-top:none;"></td>
                         {% endifchanged %}
+
                         {% ifchanged d.DType %}
                             <td style="border-bottom:none;">{{d.DType}}</td>
                         {% else %}
-                            <td style="border:none;"></td>
+                            <td style="border-bottom:none; border-top:none;"></td>
                         {% endifchanged %}
                         <td>{{d.Disaggregation}}</td>
                         <td>{{d.Actuals}}</td>
@@ -65,6 +59,8 @@
         $(document).ready(function() {
             disrep_table = $("#disrep_table").DataTable({
                 bSort: false,
+                iDisplayLength: 100,
+                lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
                 dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 buttons: [
                     {
