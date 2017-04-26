@@ -1110,8 +1110,8 @@ class DisaggregationReport(TemplateView):
         disdata = dictfetchall(cursor)
 
 
-        indicator_query = "SELECT DISTINCT i.id AS IndicatorID, i.name AS Indicator, "\
-            "SUM(cd.achieved) AS Overall "\
+        indicator_query = "SELECT DISTINCT i.id AS IndicatorID, i.number AS INumber, i.name AS Indicator, "\
+            "i.lop_target AS LOP_Target, SUM(cd.achieved) AS Overall "\
             "FROM indicators_indicator AS i "\
             "INNER JOIN indicators_indicator_program AS ip ON ip.indicator_id = i.id "\
             "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
