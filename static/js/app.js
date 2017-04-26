@@ -1,5 +1,18 @@
 //Bootstrap remember tab
 // Javascript to enable link to tab
+
+/*
+ * A global ajaxComplete method that shows you any messages that are set in Django's view
+ */
+$( document )
+    .ajaxStart( function() {
+        $('#ajaxloading').show();
+    })
+    .ajaxStop( function() {
+         $('#ajaxloading').hide();
+    });
+
+
 $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
@@ -29,6 +42,27 @@ $(document).ready(function() {
     $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
 });
 
+
+/*
+ * Create and show a Bootstrap alert.
+ */
+function createAlert (type, message, fade, whereToAppend) {
+    if (whereToAppend == undefined ){
+        whereToAppend = "#messages";
+    }
+    $(whereToAppend).append(
+        $(
+            "<div class='alert alert-" + type + " dynamic-alert alert-dismissable' style='margin-top:0;'>" +
+            "<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>" +
+            "<p>" + message + "</p>" +
+            "</div>"
+        )
+    );
+    if (fade == true) {
+        // Remove the alert after 5 seconds if the user does not close it.
+        $(".dynamic-alert").delay(5000).fadeOut("slow", function () { $(this).remove(); });
+    }
+}
 
 /*
 * Save the task checkbox state

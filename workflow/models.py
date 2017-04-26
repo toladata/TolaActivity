@@ -18,6 +18,7 @@ try:
     from django.utils import timezone
 except ImportError:
     from datetime import datetime as timezone
+from django.db.models import Q
 
 
 # New user created generate a token
@@ -97,7 +98,7 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 class Country(models.Model):
     country = models.CharField("Country Name", max_length=255, blank=True)
-    organization = models.ForeignKey(Organization, default=1)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
     code = models.CharField("2 Letter Country Code", max_length=4, blank=True)
     description = models.TextField("Description/Notes", max_length=765,blank=True)
     latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
@@ -135,7 +136,7 @@ class TolaUser(models.Model):
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
-    organization = models.ForeignKey(Organization, default=1,blank=True, null=True,)
+    organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
@@ -183,6 +184,7 @@ class TolaBookmarks(models.Model):
         self.edit_date = datetime.now()
         super(TolaBookmarks, self).save()
 
+
 class TolaBookmarksAdmin(admin.ModelAdmin):
 
     list_display = ('user', 'name')
@@ -192,7 +194,7 @@ class TolaBookmarksAdmin(admin.ModelAdmin):
 
 
 class TolaUserProxy(TolaUser):
-    
+
     class Meta:
         verbose_name, verbose_name_plural = u"Report Tola User", u"Report Tola Users"
         proxy = True
@@ -267,7 +269,7 @@ class Contact(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('country','name','title')
+        ordering = ('name', 'country','title')
         verbose_name_plural = "Contact"
 
     # onsave add create date or update edit date
@@ -279,7 +281,7 @@ class Contact(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.title + " " + self.name
+        return self.name + ", " + self.title
 
 
 class ContactAdmin(admin.ModelAdmin):
@@ -465,36 +467,6 @@ class AdminLevelThreeAdmin(admin.ModelAdmin):
     display = 'Admin Level 3'
 
 
-class Office(models.Model):
-    name = models.CharField("Office Name", max_length=255, blank=True)
-    code = models.CharField("Office Code", max_length=255, blank=True)
-    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name',)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Office, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
-        return new_name
-
-
-class OfficeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
-    search_fields = ('name','province__name','code')
-    list_filter = ('create_date','province__country__country')
-    display = 'Office'
-
-
 class Village(models.Model):
     name = models.CharField("Admin Level 4", max_length=255, blank=True)
     district = models.ForeignKey(District,null=True,blank=True)
@@ -523,6 +495,35 @@ class VillageAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date', 'edit_date')
     list_filter = ('district__province__country__country','district')
     display = 'Admin Level 4'
+
+class Office(models.Model):
+    name = models.CharField("Office Name", max_length=255, blank=True)
+    code = models.CharField("Office Code", max_length=255, blank=True)
+    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Office, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
+        return new_name
+
+
+class OfficeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
+    search_fields = ('name','province__name','code')
+    list_filter = ('create_date','province__country__country')
+    display = 'Office'
 
 
 class ProfileType(models.Model):
@@ -580,6 +581,7 @@ class SiteProfileManager(models.Manager):
     def get_queryset(self):
         return super(SiteProfileManager, self).get_queryset().prefetch_related().select_related('country','province','district','admin_level_three','type')
 
+
 class SiteProfile(models.Model):
     profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
     name = models.CharField("Site Name", max_length=255, blank=False)
@@ -592,14 +594,22 @@ class SiteProfile(models.Model):
     info_source = models.CharField("Data Source",max_length=255, blank=True, null=True)
     total_num_households = models.IntegerField("Total # Households", help_text="", null=True, blank=True)
     avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, default=Decimal("0.00"))
-    male_0_14 = models.IntegerField("Male age 0-14", null=True, blank=True)
-    female_0_14 = models.IntegerField("Female age 0-14", null=True, blank=True)
-    male_15_24 = models.IntegerField("Male age 15-24 ", null=True, blank=True)
-    female_15_24 = models.IntegerField("Female age 15-24", null=True, blank=True)
-    male_25_59 = models.IntegerField("Male age 25-59", null=True, blank=True)
-    female_25_59 = models.IntegerField("Female age 25-59", null=True, blank=True)
-    male_over_60 = models.IntegerField("Male Over 60", null=True, blank=True)
-    female_over_60 = models.IntegerField("Female Over 60", null=True, blank=True)
+    male_0_5 = models.IntegerField("Male age 0-5", null=True, blank=True)
+    female_0_5 = models.IntegerField("Female age 0-5", null=True, blank=True)
+    male_6_9 = models.IntegerField("Male age 6-9 ", null=True, blank=True)
+    female_6_9 = models.IntegerField("Female age 6-9", null=True, blank=True)
+    male_10_14 = models.IntegerField("Male age 10-14", null=True, blank=True)
+    female_10_14 = models.IntegerField("Female age 10-14", null=True, blank=True)
+    male_15_19 = models.IntegerField("Male age 15-19", null=True, blank=True)
+    female_15_19 = models.IntegerField("Female age 15-19", null=True, blank=True)
+    male_20_24 = models.IntegerField("Male age 20-24", null=True, blank=True)
+    female_20_24 = models.IntegerField("Female age 20-24", null=True, blank=True)
+    male_25_34 = models.IntegerField("Male age 25-34", null=True, blank=True)
+    female_25_34 = models.IntegerField("Female age 25-34", null=True, blank=True)
+    male_35_49 = models.IntegerField("Male age 35-49", null=True, blank=True)
+    female_35_49 = models.IntegerField("Female age 35-49", null=True, blank=True)
+    male_over_50 = models.IntegerField("Male Over 50", null=True, blank=True)
+    female_over_50 = models.IntegerField("Female Over 50", null=True, blank=True)
     total_population = models.IntegerField(null=True, blank=True)
     total_male = models.IntegerField(null=True, blank=True)
     total_female = models.IntegerField(null=True, blank=True)
@@ -795,7 +805,7 @@ class TemplateAdmin(admin.ModelAdmin):
 
 class StakeholderManager(models.Manager):
     def get_queryset(self):
-        return super(StakeholderManager, self).get_queryset().prefetch_related('contact').select_related('country','sector','type','formal_relationship_document','vetting_document')
+        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related('country','type','formal_relationship_document','vetting_document')
 
 
 class Stakeholder(models.Model):
@@ -803,13 +813,15 @@ class Stakeholder(models.Model):
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
-    sector = models.ForeignKey(Sector, blank=True, null=True)
+    #sector = models.ForeignKey(Sector, blank=True, null=True, related_name='sects')
+    sectors = models.ManyToManyField(Sector, blank=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?")
     formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
     vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, blank=True, related_name="vetting_document")
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser, help_text='', blank=True, null=True, related_name="stake_approving")
     filled_by = models.ForeignKey(TolaUser, help_text='', blank=True, null=True, related_name="stake_filled")
+    notes = models.TextField(max_length=765, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     #optimize query
@@ -828,7 +840,7 @@ class Stakeholder(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
 class StakeholderAdmin(admin.ModelAdmin):
@@ -852,6 +864,8 @@ class ProjectAgreementManager(models.Manager):
 
     def get_rejected(self):
         return self.filter(approval="rejected")
+    def get_new(self):
+        return self.filter(Q(approval=None) | Q(approval=""))
 
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
@@ -1323,7 +1337,7 @@ class ChecklistItemAdmin(admin.ModelAdmin):
 
 
 #Logged users
-from django.contrib.auth.signals import user_logged_in, user_logged_out 
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from urllib2 import urlopen
 import json
 
@@ -1333,14 +1347,14 @@ class LoggedUser(models.Model):
     username = models.CharField(max_length=30, primary_key=True)
     country = models.CharField(max_length=100, blank=False)
     email = models.CharField(max_length=100, blank=False, default='user@mercycorps.com')
-    
+
     def __unicode__(self):
         return self.username
 
     def login_user(sender, request, user, **kwargs):
         country = get_user_country(request)
         active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-        
+
         user_id_list = []
         logged_user_id = request.user.id
 
@@ -1358,8 +1372,8 @@ class LoggedUser(models.Model):
 
         except Exception, e:
             pass
-                
-    
+
+
 
     def logout_user(sender, request, user, **kwargs):
 
@@ -1369,7 +1383,7 @@ class LoggedUser(models.Model):
 
         except LoggedUser.DoesNotExist:
             pass
-        
+
     user_logged_in.connect(login_user)
     user_logged_out.connect(logout_user)
 

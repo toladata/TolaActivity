@@ -4,7 +4,7 @@ from workflow.models import Organization, Program, Country, Province, ProjectAgr
 
 class SiteProfileTestCase(TestCase):
 
-    fixtures = ['fixtures/organization.json','fixtures/country.json','fixtures/province.json','fixtures/district.json','fixtures/district.json','fixtures/profiletypes.json']
+    fixtures = ['fixtures/organization.json','fixtures/profiletypes.json']
 
     def setUp(self):
         new_organization = Organization.objects.create(name="tola")

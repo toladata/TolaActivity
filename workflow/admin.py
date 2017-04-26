@@ -147,9 +147,9 @@ class ApprovalAuthorityAdmin(admin.ModelAdmin):
     list_filter = ('create_date','country')
 
 class StakeholderAdmin(ImportExportModelAdmin):
-    list_display = ('name', 'type', 'country', 'sector', 'approval', 'approved_by', 'filled_by', 'create_date')
+    list_display = ('name', 'type', 'country', 'approval', 'approved_by', 'filled_by', 'create_date')
     display = 'Stakeholder List'
-    list_filter = ('country', 'type', 'sector')
+    list_filter = ('country', 'type')
 
 class TolaUserProxyResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
@@ -168,10 +168,10 @@ class TolaUserProxyResource(resources.ModelResource):
 class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin ):
 
     resource_class = TolaUserProxyResource
-    
-    def get_queryset(self, request): 
-        
-        qs = super(ReportTolaUserProxyAdmin, self).get_queryset(request) 
+
+    def get_queryset(self, request):
+
+        qs = super(ReportTolaUserProxyAdmin, self).get_queryset(request)
         return qs.filter(user__is_active= True)
 
     list_display = ('title','name', 'user','email', 'country', 'create_date')

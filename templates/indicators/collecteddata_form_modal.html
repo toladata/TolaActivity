@@ -1,27 +1,29 @@
-{% extends "base.html" %}
-{% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/indicators/home/{{ programId|default:0 }}/0/0/">Indicators</a></li>
-  <li class="active">Indicator Form</li>
-</ol>
-{% endblock %}
-{% block page_title %}Indicator{% endblock %}
-
 {% block content %}
-    {% if i_name %}
-    <h4>(<a href="/indicators/home/0/0/0/">{{i_name}}</a>)</h4>
-    {% endif %}
-    {% include "form_guidance.html" %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
+
+
     <script type="text/javascript">
         //Searchable select option for service indicator
         $(document).ready(function() {
+            $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
+
             /* add select2 js library to the indicator select box */
-            $("#id_program").select2().on("select2:selecting select2:unselecting", function(e) {
-                e.preventDefault();
+            $("#id_site").select2();
+            $("#id_tola_table").select2();
+            $("#id_evidence").select2();
+            $("#id_agreement").select2();
+
+            $('#tolatablemodal').on('hidden.bs.modal', function (e) {
+                var sel = $("#service_table option:selected");
+                $("#id_tola_table").append($("<option></option>")
+                            .attr("value", sel.val())
+                            .text(sel.text()));
             });
-            $("#id_strategic_objectives").select2();
+        });
+
+        $(document).on('hidden.bs.modal', '.modal', function () {
+            $('.modal:visible').length && $(document.body).addClass('modal-open');
         });
     </script>
 
@@ -39,9 +41,9 @@
             </div>
         {% endfor %}
     {% endif %}
-
-	{% csrf_token %}
+    {% csrf_token %}
     {% load crispy_forms_tags %}
     {% crispy form %}
+
 
 {% endblock content %}

@@ -7,6 +7,7 @@ from .models import Indicator, DisaggregationLabel, DisaggregationValue, Collect
 from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
+from django.core.serializers.json import DjangoJSONEncoder
 from tola.util import getCountry, get_table
 from tables import IndicatorDataTable
 from django_tables2 import RequestConfig
@@ -18,9 +19,11 @@ from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View
+from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.core import serializers
 
 from workflow.mixins import AjaxableResponseMixin
 import json
@@ -250,7 +253,11 @@ class IndicatorUpdate(UpdateView):
     Update and Edit Indicators.
     """
     model = Indicator
-    template_name = 'indicators/indicator_form.html'
+    #template_name = 'indicators/indicator_form.html'
+    def get_template_names(self):
+        if self.request.GET.get('modal'):
+            return 'indicators/indicator_form_modal.html'
+        return 'indicators/indicator_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -266,6 +273,7 @@ class IndicatorUpdate(UpdateView):
         getIndicator = Indicator.objects.get(id=self.kwargs['pk'])
 
         context.update({'i_name': getIndicator.name})
+        context['programId'] = getIndicator.program.all()[0].id
 
         #get external service data if any
         try:
@@ -291,8 +299,11 @@ class IndicatorUpdate(UpdateView):
     def form_valid(self, form):
         form.save()
 
-        messages.success(self.request, 'Success, Indicator Updated!')
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [self.object])
+            return HttpResponse(data)
 
+        messages.success(self.request, 'Success, Indicator Updated!')
         if self.request.POST.has_key('_addanother'):
             url = "/indicators/indicator_create/"
             program = self.request.POST['program']
@@ -336,7 +347,12 @@ class CollectedDataCreate(CreateView):
     CollectedData Form
     """
     model = CollectedData
-    template_name = 'indicators/collecteddata_form.html'
+    #template_name = 'indicators/collecteddata_form.html'
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return 'indicators/collecteddata_form_modal.html'
+        return 'indicators/collecteddata_form.html'
+
     form_class = CollectedDataForm
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
@@ -380,6 +396,7 @@ class CollectedDataCreate(CreateView):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['program'] = self.kwargs['program']
+        kwargs['indicator'] = self.kwargs['indicator']
         kwargs['tola_table'] = None
 
         return kwargs
@@ -402,7 +419,10 @@ class CollectedDataCreate(CreateView):
             except DisaggregationLabel.DoesNotExist:
                 getTable = None
             if getTable:
-                count = getTableCount(getTable.url,getTable.table_id)
+                # if there is a trailing slash, remove it since TT api does not like it.
+                url = getTable.url if getTable.url[-1:] != "/" else getTable.url[:-1]
+                url = url if url[-5:] != "/data" else url[:-5]
+                count = getTableCount(url, getTable.table_id)
             else:
                 count = 0
             form.instance.achieved = count
@@ -420,6 +440,10 @@ class CollectedDataCreate(CreateView):
                 insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=new)
                 insert_disaggregationvalue.save()
 
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [new])
+            return HttpResponse(data)
+
         messages.success(self.request, 'Success, Data Created!')
 
         redirect_url = '/indicators/home/0/0/0/#hidden-' + str(self.kwargs['program'])
@@ -431,7 +455,11 @@ class CollectedDataUpdate(UpdateView):
     CollectedData Form
     """
     model = CollectedData
-    template_name = 'indicators/collecteddata_form.html'
+    #template_name = 'indicators/collecteddata_form.html'
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return 'indicators/collecteddata_form_modal.html'
+        return 'indicators/collecteddata_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -499,7 +527,10 @@ class CollectedDataUpdate(UpdateView):
             except TolaTable.DoesNotExist:
                 getTable = None
             if getTable:
-                count = getTableCount(getTable.url,getTable.table_id)
+                # if there is a trailing slash, remove it since TT api does not like it.
+                url = getTable.url if getTable.url[-1:] != "/" else getTable.url[:-1]
+                url = url if url[-5:] != "/data" else url[:-5]
+                count = getTableCount(url, getTable.table_id)
             else:
                 count = 0
             form.instance.achieved = count
@@ -514,6 +545,10 @@ class CollectedDataUpdate(UpdateView):
                     value_to_insert = value
                     save = getCollectedData.disaggregation_value.create(disaggregation_label=label, value=value_to_insert)
                     getCollectedData.disaggregation_value.add(save.id)
+
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [self.object])
+            return HttpResponse(data)
 
         messages.success(self.request, 'Success, Data Updated!')
 
@@ -541,24 +576,21 @@ def getTableCount(url,table_id):
     :param table_id: The TolaTable ID to update count from and return
     :return: count : count of rows from TolaTable
     """
-    filter_url = url
+    token = TolaSites.objects.get(site_id=1)
+    if token.tola_tables_token:
+        headers = {'content-type': 'application/json', 'Authorization': 'Token ' + token.tola_tables_token }
+    else:
+        headers = {'content-type': 'application/json'}
+        print "Token Not Found"
 
-    # loop over the result table and count the number of records for actuals
-    actual_data = get_table(filter_url)
-    count = 0
-
-    if actual_data:
-        # check if json data is in the 'data' attribute or at the top level of the JSON object
-        try:
-            looper = actual_data['data']
-        except KeyError:
-            looper = actual_data
-
-        for item in looper:
-            count = count + 1
-
-    # update with new count
-    TolaTable.objects.filter(table_id = table_id).update(unique_count=count)
+    response = requests.get(url,headers=headers, verify=False)
+    data = json.loads(response.content)
+    count = None
+    try:
+        count = data['data_count']
+        TolaTable.objects.filter(table_id = table_id).update(unique_count=count)
+    except KeyError:
+        pass
 
     return count
 
@@ -616,12 +648,12 @@ def collecteddata_import(request):
         countries = getCountry(request.user)
         check_for_existence = TolaTable.objects.all().filter(name=name,owner=owner)
         if check_for_existence:
-            result = "error"
+            result = check_for_existence[0].id
         else:
             create_table = TolaTable.objects.create(name=name,owner=owner,remote_owner=remote_owner,table_id=id,url=url, unique_count=count)
             create_table.country.add(countries[0].id)
             create_table.save()
-            result = "success"
+            result = create_table.id
 
         # send result back as json
         message = result
@@ -721,13 +753,39 @@ def indicator_report(request, program=0, indicator=0, type=0):
     """
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-
     getIndicatorTypes = IndicatorType.objects.all()
 
+    filters = {}
+    if int(program) != 0:
+        filters['program__id'] = program
+    if int(type) != 0:
+        filters['indicator_type'] = type
+    if int(indicator) != 0:
+        filters['id'] = indicator
+    if program == 0 and type == 0:
+        filters['program__country__in'] = countries
+
+    indicator_data = Indicator.objects.filter(**filters)\
+            .prefetch_related('sector')\
+            .select_related('program', 'external_service_record','indicator_type',\
+                'disaggregation', 'reporting_frequency')\
+            .values('id','program__name','baseline','level__name','lop_target',\
+                   'program__id','external_service_record__external_service__name',\
+                   'key_performance_indicator','name','indicator_type__id', 'indicator_type__indicator_type',\
+                   'sector__sector','disaggregation__disaggregation_type',\
+                   'means_of_verification','data_collection_method',\
+                   'reporting_frequency__frequency','create_date','edit_date',\
+                   'source','method_of_analysis')
+
+    data = json.dumps(list(indicator_data), cls=DjangoJSONEncoder)
+
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/report.html",
-                  {'program': program, 'getPrograms': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper,
-                   'getIndicatorTypes': getIndicatorTypes})
+    return render(request, "indicators/report.html", {
+                  'program': program,
+                  'getPrograms': getPrograms,
+                  'getIndicatorTypes': getIndicatorTypes,
+                  'getIndicators': indicator_data,
+                  'data': data})
 
 
 class IndicatorReport(View, AjaxableResponseMixin):
@@ -739,84 +797,42 @@ class IndicatorReport(View, AjaxableResponseMixin):
         getIndicatorTypes = IndicatorType.objects.all()
 
         program = int(self.kwargs['program'])
+        indicator = int(self.kwargs['indicator'])
         type = int(self.kwargs['type'])
 
+        filters = {}
         if program != 0:
-            getIndicators = Indicator.objects.all().filter(program__id=program).select_related().values('id',
-                                                                                                        'program__name',
-                                                                                                        'baseline',
-                                                                                                        'level__name',
-                                                                                                        'lop_target',
-                                                                                                        'program__id',
-                                                                                                        'external_service_record__external_service__name',
-                                                                                                        'key_performance_indicator',
-                                                                                                        'name',
-                                                                                                        'indicator_type__indicator_type',
-                                                                                                        'sector__sector',
-                                                                                                        'disaggregation',
-                                                                                                        'means_of_verification',
-                                                                                                        'data_collection_method',
-                                                                                                        'reporting_frequency__frequency',
-                                                                                                        'create_date',
-                                                                                                        'edit_date',
-                                                                                                        'source',
-                                                                                                        'method_of_analysis')
+            filters['program__id'] = program
+        if type != 0:
+            filters['indicator_type'] = type
+        if indicator != 0:
+            filters['id'] = indicator
+        if program == 0 and type == 0:
+            filters['program__country__in'] = countries
 
-        elif type != 0:
-            getIndicators = Indicator.objects.all().filter(indicator_type=type).select_related().values('id',
-                                                                                                        'program__name',
-                                                                                                        'baseline',
-                                                                                                        'level__name',
-                                                                                                        'lop_target',
-                                                                                                        'program__id',
-                                                                                                        'external_service_record__external_service__name',
-                                                                                                        'key_performance_indicator',
-                                                                                                        'name',
-                                                                                                        'indicator_type__indicator_type',
-                                                                                                        'sector__sector',
-                                                                                                        'disaggregation',
-                                                                                                        'means_of_verification',
-                                                                                                        'data_collection_method',
-                                                                                                        'reporting_frequency__frequency',
-                                                                                                        'create_date',
-                                                                                                        'edit_date',
-                                                                                                        'source',
-                                                                                                        'method_of_analysis')
+        getIndicators = Indicator.objects.filter(**filters)\
+            .prefetch_related('sector')\
+            .select_related('program', 'external_service_record','indicator_type',\
+                'disaggregation', 'reporting_frequency')\
+            .values('id','program__name','baseline','level__name','lop_target',\
+                   'program__id','external_service_record__external_service__name',\
+                   'key_performance_indicator','name','indicator_type__indicator_type',\
+                   'sector__sector','disaggregation__disaggregation_type',\
+                   'means_of_verification','data_collection_method',\
+                   'reporting_frequency__frequency','create_date','edit_date',\
+                   'source','method_of_analysis')
 
-        else:
-            getIndicators = Indicator.objects.all().select_related().filter(program__country__in=countries).values('id',
-                                                                                                                   'program__name',
-                                                                                                                   'baseline',
-                                                                                                                   'level__name',
-                                                                                                                   'lop_target',
-                                                                                                                   'program__id',
-                                                                                                                   'external_service_record__external_service__name',
-                                                                                                                   'key_performance_indicator',
-                                                                                                                   'name',
-                                                                                                                   'indicator_type__indicator_type',
-                                                                                                                   'sector__sector',
-                                                                                                                   'disaggregation',
-                                                                                                                   'means_of_verification',
-                                                                                                                   'data_collection_method',
-                                                                                                                   'reporting_frequency__frequency',
-                                                                                                                   'create_date',
-                                                                                                                   'edit_date',
-                                                                                                                   'source',
-                                                                                                                   'method_of_analysis')
 
-        if request.method == "GET" and "search" in request.GET:
-            getIndicators = Indicator.objects.filter(
-                Q(indicator_type__indicator_type__contains=request.GET["search"]) |
-                Q(name__contains=request.GET["search"]) | Q(number__contains=request.GET["search"]) |
-                Q(number__contains=request.GET["search"]) | Q(sector__sector__contains=request.GET["search"]) |
-                Q(definition__contains=request.GET["search"])
-            ).values('id', 'program__name', 'baseline', 'level__name', 'lop_target', 'program__id',
-                     'external_service_record__external_service__name', 'key_performance_indicator', 'name',
-                     'indicator_type__indicator_type', 'sector__sector', 'disaggregation', 'means_of_verification',
-                     'data_collection_method', 'reporting_frequency__frequency', 'create_date', 'edit_date', 'source',
-                     'method_of_analysis')
-
-        from django.core.serializers.json import DjangoJSONEncoder
+        q = request.GET.get('search', None)
+        if q:
+            getIndicators = getIndicators.filter(
+                Q(indicator_type__indicator_type__contains=q) |
+                Q(name__contains=q) |
+                Q(number__contains=q) |
+                Q(number__contains=q) |
+                Q(sector__sector__contains=q) |
+                Q(definition__contains=q)
+            )
 
         get_indicators = json.dumps(list(getIndicators), cls=DjangoJSONEncoder)
 
@@ -872,7 +888,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     countries = getCountry(request.user)
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
-    getTypes = IndicatorType.objects.all()
+    getIndicatorTypes = IndicatorType.objects.all()
     indicator_name = None
     program_name = None
     type_name = None
@@ -930,7 +946,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     return render(request, "indicators/data_report.html",
                   {'getQuantitativeData': queryset, 'countries': countries, 'getSiteProfile': getSiteProfile,
                    'getPrograms': getPrograms, 'getIndicators': getIndicators,
-                   'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
+                   'getIndicatorTypes': getIndicatorTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
                    'id': id, 'program': program, 'type': type, 'indicator': id, 'indicator_name': indicator_name,
                    'type_name': type_name, 'program_name': program_name})
 
@@ -967,21 +983,18 @@ class IndicatorReportData(View, AjaxableResponseMixin):
             q.update(s)
 
         countries = getCountry(request.user)
-        indicator = Indicator.objects.all().filter(program__country__in=countries).filter(**q).values('id',
-                                                                                                      'program__name',
-                                                                                                      'baseline',
-                                                                                                      'level__name',
-                                                                                                      'lop_target',
-                                                                                                      'program__id',
-                                                                                                      'external_service_record__external_service__name',
-                                                                                                      'key_performance_indicator',
-                                                                                                      'name',
-                                                                                                      'indicator_type__indicator_type',
-                                                                                                      'sector__sector', )
+
+        indicator = Indicator.objects.filter(program__country__in=countries).filter(**q).values(\
+            'id', 'program__name', 'baseline','level__name','lop_target','program__id',\
+            'external_service_record__external_service__name', 'key_performance_indicator',\
+            'name','indicator_type__id', 'indicator_type__indicator_type', \
+            'sector__sector').order_by('create_date')
+
+        #indicator = {x['id']:x for x in indcator}.values()
+
         indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
-            collecteddata__isnull=True).count()
-        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
-            collecteddata__isnull=False).count()
+            collecteddata__isnull=True).distinct().count()
+        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).distinct().count()
 
         indicator_serialized = json.dumps(list(indicator))
 
@@ -1042,12 +1055,14 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             program__country__in=countries).filter(
             **q).order_by(
             'indicator__program__name',
-            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__program__name',
-                                        'indicator__indicator_type__indicator_type', 'indicator__level__name',
+            'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__program__id', 'indicator__program__name',
+                                        'indicator__indicator_type__indicator_type', 'indicator__indicator_type__id', 'indicator__level__name',
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
                                         'indicator__external_service_record__external_service__name', 'evidence',
                                         'tola_table', 'targeted', 'achieved')
+
+        #getCollectedData = {x['id']:x for x in getCollectedData}.values()
 
         collected_sum = CollectedData.objects.filter(program__country__in=countries).filter(**q).aggregate(
             Sum('targeted'), Sum('achieved'))
@@ -1062,6 +1077,37 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
         }
 
         return JsonResponse(final_dict, safe=False)
+
+
+class TVAReport(TemplateView):
+    template_name = 'indicators/tva_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TVAReport, self).get_context_data(**kwargs)
+        countries = getCountry(self.request.user)
+        filters = {'program__country__in': countries}
+        program = Program.objects.filter(id=kwargs.get('program', None)).first()
+        indicator_type = IndicatorType.objects.filter(id=kwargs.get('type', None)).first()
+        indicator = Indicator.objects.filter(id=kwargs.get('indicator', None)).first()
+
+        if program:
+            filters['program'] = program.pk
+        if indicator_type:
+            filters['indicator__indicator_type__id'] = indicator_type.pk
+        if indicator:
+            filters['indicator'] = indicator.pk
+
+        indicators = Indicator.objects\
+            .select_related('sector')\
+            .prefetch_related('indicator_type', 'level', 'program')\
+            .filter(**filters)\
+            .annotate(actuals=Sum('collecteddata__achieved'))
+            #.annotate(actuals=Sum('collecteddata__disaggregation_value__value'))
+        context['data'] = indicators
+        context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
+        context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        context['getIndicatorTypes'] = IndicatorType.objects.all()
+        return context
 
 
 class CollectedDataList(ListView):
