@@ -28,7 +28,7 @@ urlpatterns = [
     # Indicator Report
     url(r'^report/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', 'indicators.views.indicator_report', name='indicator_report'),
     url(r'^tvareport/$', TVAReport.as_view(), name='tvareport'),
-    url(r'^disrep/$', DisaggregationReport.as_view(), name='disrep'),
+    url(r'^disrep/(?P<program>\w+)/$', DisaggregationReport.as_view(), name='disrep'),
     url(r'^report_table/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorReport.as_view(), name='indicator_table'),
     url(r'^program_report/(?P<program>\w+)/$', 'indicators.views.programIndicatorReport',name='programIndicatorReport'),
 
