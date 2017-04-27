@@ -75,9 +75,6 @@
             $("#dropdownProgram").html("{{ program_selected.gaitid}} - {{ program_selected.name }}" + ' <span class="caret"></span>');
 
             disrep_table = $("#disrep_table").DataTable({
-                language: {
-                    "emptyTable": "Select a program from the dropdwon above to show its indicators"
-                },
                 bSort: true,
                 iDisplayLength: 100,
                 lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
