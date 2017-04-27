@@ -120,7 +120,7 @@ def index(request, selected_countries=None, id=0, sector=0):
                     targeted=None,\
                     program__funding_status="Archived")\
               .order_by('indicator__program','indicator__number')\
-              .values('indicator__lop_target', 'indicator__program__name','indicator__number','indicator__name','indicator__id')\
+              .values('indicator__lop_target', 'indicator__program__id', 'indicator__program__name','indicator__number','indicator__name','indicator__id')\
               .annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
     #Evidence and Objectives are for the global leader dashboard items and are the same every time
