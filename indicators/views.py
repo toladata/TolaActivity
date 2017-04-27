@@ -1111,6 +1111,14 @@ class DisaggregationReport(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DisaggregationReport, self).get_context_data(**kwargs)
+
+        countries = getCountry(self.request.user)
+        programs = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+
+        program_selected = Program.objects.filter(id=kwargs.get('program', None)).first()
+        if not program_selected:
+            program_selected = programs.first()
+
         disagg_query = "SELECT i.id AS IndicatorID, dt.disaggregation_type AS DType, "\
             "l.label AS Disaggregation, SUM(dv.value) AS Actuals "\
                 "FROM indicators_collecteddata_disaggregation_value AS cdv "\
@@ -1121,24 +1129,23 @@ class DisaggregationReport(TemplateView):
                 "INNER JOIN indicators_disaggregationvalue AS dv ON dv.id = cdv.disaggregationvalue_id "\
                 "INNER JOIN indicators_disaggregationlabel AS l ON l.id = dv.disaggregation_label_id "\
                 "INNER JOIN indicators_disaggregationtype AS dt ON dt.id = l.disaggregation_type_id "\
-                "WHERE p.id = 442 "\
+                "WHERE p.id = %s "\
                 "GROUP BY IndicatorID, DType,Disaggregation "\
-                "ORDER BY IndicatorID, DType, Disaggregation;"
+                "ORDER BY IndicatorID, DType, Disaggregation;"  % program_selected.id
         cursor = connection.cursor()
         cursor.execute(disagg_query)
         disdata = dictfetchall(cursor)
 
 
-        indicator_query = "SELECT DISTINCT i.id AS IndicatorID, i.number AS INumber, i.name AS Indicator, "\
+        indicator_query = "SELECT DISTINCT p.id as PID, i.id AS IndicatorID, i.number AS INumber, i.name AS Indicator, "\
             "i.lop_target AS LOP_Target, SUM(cd.achieved) AS Overall "\
             "FROM indicators_indicator AS i "\
             "INNER JOIN indicators_indicator_program AS ip ON ip.indicator_id = i.id "\
             "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
             "LEFT OUTER JOIN indicators_collecteddata AS cd ON i.id = cd.indicator_id "\
-            "WHERE p.id = 442 "\
-            "GROUP BY IndicatorID "\
-            "ORDER BY Indicator ";
-
+            "WHERE p.id = %s "\
+            "GROUP BY PID, IndicatorID "\
+            "ORDER BY Indicator; " % program_selected.id
         cursor.execute(indicator_query)
         idata = dictfetchall(cursor)
 
@@ -1148,7 +1155,10 @@ class DisaggregationReport(TemplateView):
                 if dis['IndicatorID'] == indicator['IndicatorID']:
                     indicator["disdata"].append(disdata[i])
 
+
         context['data'] = idata
+        context['getPrograms'] = programs
+        context['program_selected'] = program_selected
         return context
 
 class TVAReport(TemplateView):

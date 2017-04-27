@@ -10,11 +10,19 @@
 {% block page_title %} Indicator Disaggregation Report {% endblock %}
 
 {% block content %}
+    {% include "indicators/filter.html"%}
+
+    <div style="display: none;">
+        <span class="filter" id="indicator_filter_value"></span>
+        <span class="filter" id="program_filter_value"></span>
+        <span class="filter" id="type_filter_value"></span>
+    </div>
 
     <div id="tdisrep_table_div" class="table-responsive">
         <table id="disrep_table" class="table table-bordered">
             <thead>
                 <tr>
+                    <th class="noExport" style="display:none;" rowspan="2">PID</th>
                     <th class="noExport" style="display:none;" rowspan="2">IndicatorID</th>
                     <th rowspan="2">Number</th>
                     <th rowspan="2">Indicator</th>
@@ -32,8 +40,9 @@
             {% for row in data %}
                 {% for d in row.disdata %}
                     <tr>
+                        <td style="display:none;">{{row.PID}}</td>
                         <td style="display:none;">{{row.IndicatorID}}</td>
-                        <td>{{row.INumber}}</td>
+                        <td>{{row.INumber|default_if_none:""}}</td>
                         <td>{{row.Indicator}}</td>
                         <td>{{row.LOP_Target|default_if_none:""}}</td>
                         <td>{{row.Overall}}</td>
@@ -43,8 +52,9 @@
                     </tr>
                 {% empty %}
                     <tr>
+                        <td style="display:none;">{{row.PID}}</td>
                         <td style="display:none;">{{row.IndicatorID}}</td>
-                        <td>{{row.INumber}}</td>
+                        <td>{{row.INumber|default_if_none:""}}</td>
                         <td>{{row.Indicator}}</td>
                         <td>{{row.LOP_Target|default_if_none:""}}</td>
                         <td>{{row.Overall|default_if_none:""}}</td>
@@ -61,7 +71,13 @@
     <script type="text/javascript">
         var disrep_table;
         $(document).ready(function() {
+
+            $("#dropdownProgram").html("{{ program_selected.gaitid}} - {{ program_selected.name }}" + ' <span class="caret"></span>');
+
             disrep_table = $("#disrep_table").DataTable({
+                language: {
+                    "emptyTable": "Select a program from the dropdwon above to show its indicators"
+                },
                 bSort: true,
                 iDisplayLength: 100,
                 lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
@@ -77,6 +93,9 @@
             });
         });
 
+        function program_filter(program_id) {
+            window.location.href = '/indicators/disrep/' + program_id + '/';
+        }
     </script>
 
 {% endblock content %}
