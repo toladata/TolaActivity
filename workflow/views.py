@@ -700,7 +700,7 @@ class ProjectCompleteUpdate(UpdateView):
 
     form_class = ProjectCompleteForm
 
-
+import operator
 class ProjectCompleteDetail(DetailView):
 
     model = ProjectComplete
@@ -720,11 +720,17 @@ class ProjectCompleteDetail(DetailView):
         context.update({'id':self.kwargs['pk']})
 
         try:
-            getBenchmark = Benchmarks.objects.filter(Q(agreement__id=self.kwargs['pk']) | Q(complete__id=self.get_object().pk))
+            q_list = [Q(agreement__id=self.kwargs['pk'])]
+            if self.get_object():
+                q_list.append(Q(complete__id=self.get_object().pk))
+            getBenchmark = Benchmarks.objects.filter(reduce(operator.or_, q_list))
         except Benchmarks.DoesNotExist:
             getBenchmark = None
 
-        budgetContribs = getBudget = Budget.objects.filter(Q(agreement__id=self.kwargs['pk']) | Q(complete__id=self.get_object().pk))
+        q_list = [Q(agreement__id=self.kwargs['pk']) ]
+        if self.get_object():
+            q_list.append( Q(complete__id=self.get_object().pk))
+        budgetContribs = Budget.objects.filter(reduce(operator.or_, q_list))
 
         context['budgetContribs'] = budgetContribs
         context['getBenchmarks'] =  getBenchmark
