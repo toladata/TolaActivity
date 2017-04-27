@@ -1,3 +1,6 @@
+import operator
+import unicodedata
+
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -345,7 +348,7 @@ class ProjectAgreementUpdate(UpdateView):
         country = getworkflowlevel1.country
 
         #convert form field unicode project name to ascii safe string for email content
-        import unicodedata
+
         project_name = unicodedata.normalize('NFKD', form.instance.project_name).encode('ascii','ignore')
         #check to see if the approval status has changed
         if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
@@ -687,7 +690,7 @@ class ProjectCompleteUpdate(UpdateView):
 
     form_class = ProjectCompleteForm
 
-import operator
+
 class ProjectCompleteDetail(DetailView):
 
     model = WorkflowLevel2
