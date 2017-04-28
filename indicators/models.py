@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib import admin
 from workflow.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils import timezone
 import uuid
 from simple_history.models import HistoricalRecords
 from decimal import Decimal
@@ -274,6 +275,12 @@ class Indicator(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Indicator, self).save(*args, **kwargs)
+
+    @property
+    def just_created(self):
+        if self.create_date >= timezone.now() - timedelta(minutes=5):
+            return True
+        return False
 
     @property
     def name_clean(self):
