@@ -136,6 +136,7 @@ class DisaggregationTypeAdmin(admin.ModelAdmin):
 class DisaggregationLabel(models.Model):
     disaggregation_type = models.ForeignKey(DisaggregationType)
     label = models.CharField(max_length=765, blank=True)
+    customsort = models.IntegerField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -144,7 +145,7 @@ class DisaggregationLabel(models.Model):
 
 
 class DisaggregationLabelAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type','label',)
+    list_display = ('disaggregation_type', 'customsort', 'label',)
     display = 'Disaggregation Label'
     list_filter = ('disaggregation_type__disaggregation_type',)
 
