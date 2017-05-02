@@ -184,10 +184,14 @@ class DataCollectionFrequency(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
-
 class ReportingFrequencyAdmin(admin.ModelAdmin):
     list_display = ('frequency','description','create_date','edit_date')
     display = 'Reporting Frequency'
+
+
+class DataCollectionFrequencyAdmin(admin.ModelAdmin):
+    list_display = ('frequency', 'description', 'create_date', 'edit_date')
+    display = 'Data Collection Frequency'
 
 
 class ReportingPeriod(models.Model):
