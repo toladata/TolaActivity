@@ -25,7 +25,15 @@ class IndicatorForm(forms.ModelForm):
     class Meta:
         model = Indicator
         exclude = ['create_date','edit_date']
-        #widgets = {'program': forms.Select()}
+        widgets = {
+            #{'program': forms.Select()}
+            'definition': forms.Textarea(attrs={'rows':4}),
+            'quality_assurance': forms.Textarea(attrs={'rows':4}),
+            'data_issues': forms.Textarea(attrs={'rows':4}),
+            'indicator_changes': forms.Textarea(attrs={'rows':4}),
+            'comments': forms.Textarea(attrs={'rows':4}),
+            'notes': forms.Textarea(attrs={'rows':4}),
+        }
 
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
@@ -54,22 +62,22 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name', 'type', 'level', 'number', 'source', 'definition', 'disaggregation','indicator_type',PrependedText('key_performance_indicator','')
+                        'name', 'type', 'level', 'number', 'source', 'definition', 'unit_of_measure', 'disaggregation','indicator_type',PrependedText('key_performance_indicator','')
                         ),
                 ),
                 Tab('Targets',
                     Fieldset('Targets',
-                             'baseline','lop_target',
+                             'baseline','lop_target', 'justification',
                              ),
                 ),
                 Tab('Data Acquisition',
                     Fieldset('Data Acquisition',
-                        'means_of_verification','data_collection_method','responsible_person',
+                        'means_of_verification','data_collection_method', 'data_collection_frequency', 'data_points', 'responsible_person',
                         ),
                 ),
                 Tab('Analysis and Reporting',
                     Fieldset('Analysis and Reporting',
-                        'method_of_analysis','information_use', 'reporting_frequency','comments','notes'
+                        'method_of_analysis','information_use', 'reporting_frequency', 'quality_assurance', 'data_issues', 'indicator_changes', 'comments','notes'
                     ),
                 ),
                 Tab('Approval',
