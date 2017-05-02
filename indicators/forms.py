@@ -291,8 +291,21 @@ class CollectedDataForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        try:
+            int(self.program)
+            self.program = Program.objects.get(id=self.program)
+        except TypeError:
+            pass
+
         self.fields['program2'].initial = self.program
         self.fields['program2'].label = "Program"
+
+        try:
+            int(self.indicator)
+            self.indicator = Indicator.objects.get(id=self.indicator)
+        except TypeError:
+            pass
+
         self.fields['indicator2'].initial = self.indicator
         self.fields['indicator2'].label = "Indicator"
         self.fields['program'].widget = forms.HiddenInput()
