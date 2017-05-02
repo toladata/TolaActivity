@@ -507,6 +507,7 @@ class CollectedDataUpdate(UpdateView):
         kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['program'] = get_data.program
+        kwargs['indicator'] = get_data.indicator
         if get_data.tola_table:
             kwargs['tola_table'] = get_data.tola_table.id
         else:
