@@ -1101,7 +1101,7 @@ class DisaggregationReport(TemplateView):
             program_selected = programs.first()
 
         disagg_query = "SELECT i.id AS IndicatorID, dt.disaggregation_type AS DType, "\
-            "l.label AS Disaggregation, SUM(dv.value) AS Actuals "\
+            "l.customsort AS customsort, l.label AS Disaggregation, SUM(dv.value) AS Actuals "\
                 "FROM indicators_collecteddata_disaggregation_value AS cdv "\
                 "INNER JOIN indicators_collecteddata AS c ON c.id = cdv.collecteddata_id "\
                 "INNER JOIN indicators_indicator AS i ON i.id = c.indicator_id "\
@@ -1111,8 +1111,8 @@ class DisaggregationReport(TemplateView):
                 "INNER JOIN indicators_disaggregationlabel AS l ON l.id = dv.disaggregation_label_id "\
                 "INNER JOIN indicators_disaggregationtype AS dt ON dt.id = l.disaggregation_type_id "\
                 "WHERE p.id = %s "\
-                "GROUP BY IndicatorID, DType,Disaggregation "\
-                "ORDER BY IndicatorID, DType, Disaggregation;"  % program_selected.id
+                "GROUP BY IndicatorID, DType, customsort, Disaggregation "\
+                "ORDER BY IndicatorID, DType, customsort, Disaggregation;"  % program_selected.id
         cursor = connection.cursor()
         cursor.execute(disagg_query)
         disdata = dictfetchall(cursor)
