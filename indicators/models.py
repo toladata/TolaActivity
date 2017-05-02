@@ -177,6 +177,14 @@ class ReportingFrequency(models.Model):
         return self.frequency
 
 
+class DataCollectionFrequency(models.Model):
+    frequency = models.CharField(max_length=135, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    numdays = models.PositiveIntegerField(default=0, verbose_name="Frequency in number of days")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+
 class ReportingFrequencyAdmin(admin.ModelAdmin):
     list_display = ('frequency','description','create_date','edit_date')
     display = 'Reporting Frequency'
@@ -243,15 +251,23 @@ class Indicator(models.Model):
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
     definition = models.TextField(null=True, blank=True)
+    justification = models.TextField(max_length=500, null=True, blank=True, verbose_name="Rationale or Justification for Indicator")
+    unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of Measure")
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
     lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)
-    means_of_verification = models.CharField(max_length=255, null=True, blank=True)
-    data_collection_method = models.CharField(max_length=255, null=True, blank=True)
-    responsible_person = models.CharField(max_length=255, null=True, blank=True)
-    method_of_analysis = models.CharField(max_length=255, null=True, blank=True)
-    information_use = models.CharField(max_length=255, null=True, blank=True)
-    reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True)
+    rationale_for_target = models.TextField(max_length=255, null=True, blank=True)
+    means_of_verification = models.CharField(max_length=255, null=True, blank=True, verbose_name="Means of Verification / Data Source")
+    data_collection_method = models.CharField(max_length=255, null=True, blank=True, verbose_name="Data Collection Method")
+    data_collection_frequency = models.ForeignKey(DataCollectionFrequency, null=True, blank=True, verbose_name="Frequency of Data Collection")
+    data_points = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Points")
+    responsible_person = models.CharField(max_length=255, null=True, blank=True, verbose_name="Responsible Person(s) and Team")
+    method_of_analysis = models.CharField(max_length=255, null=True, blank=True, verbose_name="Method of Analysis")
+    information_use = models.CharField(max_length=255, null=True, blank=True, verbose_name="Information User")
+    reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True, verbose_name="Frequency of Reporting")
+    quality_assurance = models.TextField(max_length=500, null=True, blank=True, verbose_name="Quality Assurance Measures")
+    data_issues = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Issues")
+    indicator_changes = models.TextField(max_length=500, null=True, blank=True, verbose_name="Changes to Indicator")
     comments = models.TextField(max_length=255, null=True, blank=True)
     program = models.ManyToManyField(Program)
     sector = models.ForeignKey(Sector, null=True, blank=True)
