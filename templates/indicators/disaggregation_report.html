@@ -72,6 +72,40 @@
         var disrep_table;
         $(document).ready(function() {
 
+            $.fn.dataTable.ext.search.push(
+                function( settings, data, dataIndex ) {
+                    var programId = $("#program_filter_value").data('programid');
+                    var programIdInTable = parseInt(data[0]) || 0;
+
+                    var indicatorId = $("#indicator_filter_value").data('indicatorid');
+                    var indicatorIdInTable = parseInt(data[1]) || 0;
+
+                    var typeId = $("#type_filter_value").data('typeid');
+                    var typeIdInTable = parseInt(data[2]) || 0;
+
+                    if (programId == 0) programId = undefined;
+                    if (indicatorId == 0) indicatorId = undefined;
+                    if (typeId == 0) typeId = undefined;
+
+                    if (
+                        ( isNaN(programId) && isNaN(indicatorId) && isNaN(typeId) ) ||
+                        ( isNaN(programId) && isNaN(indicatorId) && typeId == typeIdInTable) ||
+                        ( isNaN(programId) && indicatorId == indicatorIdInTable && isNaN(typeId)) ||
+                        ( isNaN(programId) && indicatorId == indicatorIdInTable && typeId == typeIdInTable) ||
+                        ( programId == programIdInTable && isNaN(indicatorId) && isNaN(typeId)) ||
+                        ( programId == programIdInTable && isNaN(indicatorId) && typeId == typeIdInTable) ||
+                        ( programId == programIdInTable && indicatorId == indicatorIdInTable && isNaN(typeId) ) ||
+                        ( programId == programIdInTable && indicatorId == indicatorIdInTable && typeId == typeIdInTable)
+                        )
+                    {
+                        return true; //
+                    }
+                    //if ((indicatorIdInTable == indicatorId)|| (indicatorId == undefined)) return true;
+                    return false;
+                }
+            );
+
+
             $("#dropdownProgram").html("{{ program_selected.gaitid}} - {{ program_selected.name }}" + ' <span class="caret"></span>');
 
             disrep_table = $("#disrep_table").DataTable({
@@ -93,6 +127,12 @@
         function program_filter(program_id) {
             window.location.href = '/indicators/disrep/' + program_id + '/';
         }
+
+        function indicator_filter(indicator) {
+            $("#indicator_filter_value").data("indicatorid", indicator);
+            disrep_table.draw();
+        }
+
     </script>
 
 {% endblock content %}

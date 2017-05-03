@@ -1,3 +1,4 @@
+from django.db import connection
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -1087,7 +1088,7 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
 
-from django.db import connection
+
 class DisaggregationReport(TemplateView):
     template_name = 'indicators/disaggregation_report.html'
 
@@ -1096,10 +1097,15 @@ class DisaggregationReport(TemplateView):
 
         countries = getCountry(self.request.user)
         programs = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        indicators = Indicator.objects.filter(program__country__in=countries)
 
         program_selected = Program.objects.filter(id=kwargs.get('program', None)).first()
         if not program_selected:
             program_selected = programs.first()
+
+        if program_selected:
+            if program_selected.indicator_set.count() > 0:
+                indicators = indicators.filter(program=program_selected.id)
 
         disagg_query = "SELECT i.id AS IndicatorID, dt.disaggregation_type AS DType, "\
             "l.customsort AS customsort, l.label AS Disaggregation, SUM(dv.value) AS Actuals "\
@@ -1140,6 +1146,7 @@ class DisaggregationReport(TemplateView):
 
         context['data'] = idata
         context['getPrograms'] = programs
+        context['getIndicators'] = indicators
         context['program_selected'] = program_selected
         return context
 
