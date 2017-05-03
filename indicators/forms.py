@@ -28,6 +28,7 @@ class IndicatorForm(forms.ModelForm):
         widgets = {
             #{'program': forms.Select()}
             'definition': forms.Textarea(attrs={'rows':4}),
+            'justification': forms.Textarea(attrs={'rows':4}),
             'quality_assurance': forms.Textarea(attrs={'rows':4}),
             'data_issues': forms.Textarea(attrs={'rows':4}),
             'indicator_changes': forms.Textarea(attrs={'rows':4}),
@@ -62,12 +63,12 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name', 'type', 'level', 'number', 'source', 'definition', 'unit_of_measure', 'disaggregation','indicator_type',PrependedText('key_performance_indicator','')
+                        'name', 'type', 'level', 'number', 'source', 'definition', 'unit_of_measure', 'justification', 'disaggregation','indicator_type',PrependedText('key_performance_indicator','')
                         ),
                 ),
                 Tab('Targets',
                     Fieldset('Targets',
-                             'baseline','lop_target', 'justification',
+                             'baseline','lop_target',
                              ),
                 ),
                 Tab('Data Acquisition',
