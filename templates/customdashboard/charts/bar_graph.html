@@ -39,10 +39,10 @@ required:
         animationEasing : "easeOutQuart",
         onAnimationComplete : null,
         //tooltip
-        multiTooltipTemplate: "<%= value + ' USD' %>",  
+        multiTooltipTemplate: "<%= value + ' USD' %>",
     };
     var data = {
-        labels: [{% for indicator in getQuantitativeDataSums|slice:"20" %}  {{ indicator.indicator__id }}, {% endfor %} '','',"Total A & T"],
+        labels: [{% for indicator in getQuantitativeDataSums|slice:"20" %}  {{ indicator.indicator__name }}, {% endfor %} '','',"Total A & T"],
         datasets: [
             {
                 label: "Targeted",
