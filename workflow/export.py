@@ -46,7 +46,7 @@ class StakeholderResource(resources.ModelResource):
     type = fields.Field(column_name='type', attribute='type', widget=ForeignKeyWidget(StakeholderType, 'name'))
     contact = fields.Field(column_name='contact', attribute='contact', widget=ManyToManyWidget(Contact, field='name'))
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
-    sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
+    sectors = fields.Field(column_name='sectors', attribute='sectors', widget=ManyToManyWidget(Sector, field='sector'))
     approved_by = fields.Field(column_name='approved_by', attribute='approved_by', widget=ForeignKeyWidget(TolaUser, 'name'))
     filled_by = fields.Field(column_name='filled_by', attribute='filled_by', widget=ForeignKeyWidget(TolaUser, 'name'))
     stakeholder_register = fields.Field(column_name='stakeholder_register', attribute='stakeholder_register')
@@ -56,10 +56,10 @@ class StakeholderResource(resources.ModelResource):
     def dehydrate_stakeholder_register(self, stakeholder):
         if stakeholder.stakeholder_register == 1:
 
-            return 'True' 
+            return 'True'
 
         if stakeholder.stakeholder_register == 0:
 
             return 'False'
-            
-        
+
+
