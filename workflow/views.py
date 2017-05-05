@@ -2326,9 +2326,9 @@ def export_stakeholders_list(request, **kwargs):
     countries = getCountry(request.user)
 
     if program_id != 0:
-        getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct()
+        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(projectagreement__program__id=program_id).distinct()
     else:
-        getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
+        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(country__in=countries)
 
     dataset = StakeholderResource().export(getStakeholders)
     response = HttpResponse(dataset.csv, content_type='application/ms-excel')
