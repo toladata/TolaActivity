@@ -1070,7 +1070,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
             TabHolder(
                 Tab('Executive Summary',
                     Fieldset('Program',
-                        'project_agreement', 'activity_code', 'office', 'sector','project_name','site','stakeholder'
+                        'program', 'project_agreement', 'activity_code', 'office', 'sector','project_name','site','stakeholder'
                     ),
                     Fieldset('Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
