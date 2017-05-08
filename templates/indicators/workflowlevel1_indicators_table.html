@@ -8,7 +8,7 @@
         <th>Sector</th>
         <th>&nbsp;</th>
     </tr>
-    {% for indicator in indicators|dictsort:"levels" %}
+    {% for indicator in indicators|dictsort:"level.all.0.create_date" %}
     <tr {% if indicator.just_created %} style="background-color: lightyellow;" {% endif %} >
         <td>{{ indicator.indicator_types}}</td>
         <td>{{ indicator.levels }}</td>
