@@ -68,7 +68,7 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Targets',
                     Fieldset('Targets',
-                             'baseline','lop_target',
+                             'baseline','lop_target', 'rationale_for_target',
                              ),
                 ),
                 Tab('Data Acquisition',
