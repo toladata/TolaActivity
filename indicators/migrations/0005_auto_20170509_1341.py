@@ -28,12 +28,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='collecteddata',
-            name='period_target',
+            name='periodic_target',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='indicators.PeriodicTarget'),
         ),
         migrations.AddField(
             model_name='historicalcollecteddata',
-            name='period_target',
+            name='periodic_target',
             field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='indicators.PeriodicTarget'),
         ),
     ]

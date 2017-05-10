@@ -17,10 +17,12 @@ def moveTargetedToPeriodicTargets(apps, schema_editor):
         if prev_indicator != data.indicator.pk:
             prev_indicator = data.indicator.pk
             counter = 1
-        PeriodicTarget.objects.create(period="Temp %s" % counter,
+        pt = PeriodicTarget.objects.create(period="Temp %s" % counter,
                                       target=data.targeted,
                                       indicator=data.indicator,
                                       create_date=timezone.now())
+        data.periodic_target = pt
+        data.save()
         counter += 1
 
 
