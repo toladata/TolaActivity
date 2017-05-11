@@ -67,6 +67,11 @@ class CollectedDataAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
     pass
 
 
+class ReportingFrequencyAdmin(admin.ModelAdmin):
+    list_display = ('frequency','description','create_date','edit_date')
+    display = 'Reporting Frequency'
+
+
 admin.site.register(IndicatorType)
 admin.site.register(Indicator,IndicatorAdmin)
 admin.site.register(ReportingFrequency)
@@ -79,3 +84,4 @@ admin.site.register(Level)
 admin.site.register(ExternalService, ExternalServiceAdmin)
 admin.site.register(ExternalServiceRecord, ExternalServiceRecordAdmin)
 admin.site.register(TolaTable, TolaTableAdmin)
+admin.site.register(DataCollectionFrequency)

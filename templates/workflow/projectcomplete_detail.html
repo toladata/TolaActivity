@@ -60,8 +60,8 @@
             <th>Duration</th>
         </tr>
         <tr>
-            <td>{{ complete.expected_start_date }}</td>
-            <td>{{ complete.expected_end_date }}</td>
+            <td>{{ complete.expected_start_date|date:"M d, Y"  }}</td>
+            <td>{{ complete.expected_end_date|date:"M d, Y"  }}</td>
             <td>{{ complete.expected_duration }}</td>
         </tr>
     </table>
@@ -74,8 +74,8 @@
             <th>Actual Duration</th>
         </tr>
         <tr>
-            <td>{{ complete.actual_start_date }}</td>
-            <td>{{ complete.actual_end_date }}</td>
+            <td>{{ complete.actual_start_date|date:"M d, Y"  }}</td>
+            <td>{{ complete.actual_end_date|date:"M d, Y"  }}</td>
             <td>{{ complete.actual_duration }}</td>
         </tr>
     </table>
@@ -239,37 +239,37 @@
         <tr>
             <td>Submitted By</td>
             <td>{{ complete.approval_submitted_by }}</td>
-            <td>{{ complete.approval_submitted_by_date}}</td>
+            <td>{{ complete.approval_submitted_by_date|date:"M d, Y" }}</td>
         </tr>
         <tr>
             <td>Estimated</td>
             <td>{{ complete.approved_by }}</td>
-            <td>{{ complete.approved_date}}</td>
+            <td>{{ complete.approved_date|date:"M d, Y" }}</td>
         </tr>
         <tr>
             <td>Checked</td>
             <td>{{ complete.estimated_by }}</td>
-            <td>{{ complete.estimated_by_date}}</td>
+            <td>{{ complete.estimated_by_date|date:"M d, Y" }}</td>
         </tr>
         <tr>
             <td>Reviewed by MEL</td>
             <td>{{ complete.reviewed_by }}</td>
-            <td>{{ complete.reviewed_by_date}}</td>
+            <td>{{ complete.reviewed_by_date|date:"M d, Y" }}</td>
         </tr>
         <tr>
             <td>Reviewed</td>
             <td>{{ complete.reviewed_by }}</td>
-            <td>{{ complete.reviewed_by_date}}</td>
+            <td>{{ complete.reviewed_by_date|date:"M d, Y" }}</td>
         </tr>
         <tr>
             <td>Approved</td>
             <td>{{ complete.approved_by }}</td>
-            <td>{{ complete.approved_date}}</td>
+            <td>{{ complete.approved_date|date:"M d, Y" }}</td>
         </tr>
         <tr>
             <td>Financial Review</td>
             <td>{{ complete.approved_by }}</td>
-            <td>{{ complete.approved_date}}</td>
+            <td>{{ complete.approved_date|date:"M d, Y" }}</td>
         </tr>
     </table>
     <table class="table" border="1">

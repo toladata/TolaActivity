@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib import admin
 from workflow.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils import timezone
 import uuid
 from simple_history.models import HistoricalRecords
 from decimal import Decimal
@@ -136,6 +137,7 @@ class DisaggregationTypeAdmin(admin.ModelAdmin):
 class DisaggregationLabel(models.Model):
     disaggregation_type = models.ForeignKey(DisaggregationType)
     label = models.CharField(max_length=765, blank=True)
+    customsort = models.IntegerField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -144,7 +146,7 @@ class DisaggregationLabel(models.Model):
 
 
 class DisaggregationLabelAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type','label',)
+    list_display = ('disaggregation_type', 'customsort', 'label',)
     display = 'Disaggregation Label'
     list_filter = ('disaggregation_type__disaggregation_type',)
 
@@ -175,9 +177,19 @@ class ReportingFrequency(models.Model):
         return self.frequency
 
 
-class ReportingFrequencyAdmin(admin.ModelAdmin):
-    list_display = ('frequency','description','create_date','edit_date')
-    display = 'Reporting Frequency'
+class DataCollectionFrequency(models.Model):
+    frequency = models.CharField(max_length=135, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    numdays = models.PositiveIntegerField(default=0, verbose_name="Frequency in number of days")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return self.frequency
+
+class DataCollectionFrequencyAdmin(admin.ModelAdmin):
+    list_display = ('frequency', 'description', 'create_date', 'edit_date')
+    display = 'Data Collection Frequency'
 
 
 class ReportingPeriod(models.Model):
@@ -241,15 +253,23 @@ class Indicator(models.Model):
     number = models.CharField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, null=True, blank=True)
     definition = models.TextField(null=True, blank=True)
+    justification = models.TextField(max_length=500, null=True, blank=True, verbose_name="Rationale or Justification for Indicator")
+    unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of Measure")
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
     lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)
-    means_of_verification = models.CharField(max_length=255, null=True, blank=True)
-    data_collection_method = models.CharField(max_length=255, null=True, blank=True)
-    responsible_person = models.CharField(max_length=255, null=True, blank=True)
-    method_of_analysis = models.CharField(max_length=255, null=True, blank=True)
-    information_use = models.CharField(max_length=255, null=True, blank=True)
-    reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True)
+    rationale_for_target = models.TextField(max_length=255, null=True, blank=True)
+    means_of_verification = models.CharField(max_length=255, null=True, blank=True, verbose_name="Means of Verification / Data Source")
+    data_collection_method = models.CharField(max_length=255, null=True, blank=True, verbose_name="Data Collection Method")
+    data_collection_frequency = models.ForeignKey(DataCollectionFrequency, null=True, blank=True, verbose_name="Frequency of Data Collection")
+    data_points = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Points")
+    responsible_person = models.CharField(max_length=255, null=True, blank=True, verbose_name="Responsible Person(s) and Team")
+    method_of_analysis = models.CharField(max_length=255, null=True, blank=True, verbose_name="Method of Analysis")
+    information_use = models.CharField(max_length=255, null=True, blank=True, verbose_name="Information User")
+    reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True, verbose_name="Frequency of Reporting")
+    quality_assurance = models.TextField(max_length=500, null=True, blank=True, verbose_name="Quality Assurance Measures")
+    data_issues = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Issues")
+    indicator_changes = models.TextField(max_length=500, null=True, blank=True, verbose_name="Changes to Indicator")
     comments = models.TextField(max_length=255, null=True, blank=True)
     program = models.ManyToManyField(Program)
     sector = models.ForeignKey(Sector, null=True, blank=True)
@@ -273,6 +293,12 @@ class Indicator(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Indicator, self).save(*args, **kwargs)
+
+    @property
+    def just_created(self):
+        if self.create_date >= timezone.now() - timedelta(minutes=5):
+            return True
+        return False
 
     @property
     def name_clean(self):

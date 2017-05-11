@@ -1164,6 +1164,10 @@ class Documentation(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def name_n_url(self):
+        return "%s %s" % (self.name, self.url)
+
     class Meta:
         ordering = ('name',)
         verbose_name_plural = "Documentation"
