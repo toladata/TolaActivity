@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from urlparse import urlparse
 import re
-from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
+from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
 from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -275,6 +275,7 @@ class IndicatorUpdate(UpdateView):
 
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
+        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
 
         #get external service data if any
         try:

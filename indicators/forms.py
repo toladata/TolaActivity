@@ -34,6 +34,7 @@ class IndicatorForm(forms.ModelForm):
             'indicator_changes': forms.Textarea(attrs={'rows':4}),
             'comments': forms.Textarea(attrs={'rows':4}),
             'notes': forms.Textarea(attrs={'rows':4}),
+            'rationale_for_target': forms.Textarea(attrs={'rows': 4}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -70,6 +71,25 @@ class IndicatorForm(forms.ModelForm):
                     Fieldset('Targets',
                              'baseline','lop_target', 'rationale_for_target',
                              ),
+                    Div("",
+                        HTML("""<br/>
+                            <div class='panel panel-default'>
+                                <div class='panel-heading'>Periodic Targets</div>
+                                <table class="table">
+                                    <tr>
+                                        <th>Period</th>
+                                        <th>Target</th>
+                                    </tr>
+                                    {% for item in periodic_targets %}
+                                        <tr>
+                                            <td><input type="text" name="period{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
+                                            <td><input type="text" name="target{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        """),
+                    ),
                 ),
                 Tab('Data Acquisition',
                     Fieldset('Data Acquisition',
