@@ -74,16 +74,19 @@ class IndicatorForm(forms.ModelForm):
                     Div("",
                         HTML("""<br/>
                             <div class='panel panel-default'>
-                                <div class='panel-heading'>Periodic Targets</div>
-                                <table class="table">
+                                <div class='panel-heading'>
+                                    Periodic Targets
+                                    <a class="pull-right" href="#">Add new Periodic Target</a>
+                                </div>
+                                <table class="table" id="periodid_targets_table">
                                     <tr>
                                         <th>Period</th>
                                         <th>Target</th>
                                     </tr>
                                     {% for item in periodic_targets %}
-                                        <tr>
-                                            <td><input type="text" name="period{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
-                                            <td><input type="text" name="target{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
+                                        <tr id="{{item.id}}">
+                                            <td><input type="text" name="period-{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
+                                            <td><input type="text" name="target-{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
                                         </tr>
                                     {% endfor %}
                                 </table>
