@@ -162,6 +162,14 @@ function loadIndicators(program,indicator,type){
 
     });
 
+    function addPeriodicTarget() {
+        console.log("adding periodic_targets");
+        $("#periodid_targets_table tbody").app
+        var markup = '<tr id="0"><td><input type="text" name="period-0" class="textinput textInput form-control"></td><td><input type="text" name="target-0" class="textinput textInput form-control"></td></tr>'
+
+        $("table tbody").append(markup);
+
+    }
     function submitForm(form_url, form_data) {
         $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
         $.ajax({

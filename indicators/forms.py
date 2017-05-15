@@ -76,19 +76,23 @@ class IndicatorForm(forms.ModelForm):
                             <div class='panel panel-default'>
                                 <div class='panel-heading'>
                                     Periodic Targets
-                                    <a class="pull-right" href="#">Add new Periodic Target</a>
+                                    <a class="pull-right" href="#" onclick="addPeriodicTarget()";>Add new Periodic Target</a>
                                 </div>
                                 <table class="table" id="periodid_targets_table">
-                                    <tr>
-                                        <th>Period</th>
-                                        <th>Target</th>
-                                    </tr>
-                                    {% for item in periodic_targets %}
-                                        <tr id="{{item.id}}">
-                                            <td><input type="text" name="period-{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
-                                            <td><input type="text" name="target-{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
+                                    <thead>
+                                        <tr>
+                                            <th>Period</th>
+                                            <th>Target</th>
                                         </tr>
-                                    {% endfor %}
+                                    </thead>
+                                    <tbody>
+                                        {% for item in periodic_targets %}
+                                            <tr id="{{item.id}}">
+                                                <td><input type="text" name="period-{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
+                                                <td><input type="text" name="target-{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
                                 </table>
                             </div>
                         """),
