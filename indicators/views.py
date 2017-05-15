@@ -304,11 +304,11 @@ class IndicatorUpdate(UpdateView):
         if periodic_targets:
             pt_json = json.loads(periodic_targets)
             for pt in pt_json:
-                periotic_target,created = PeriodicTarget.objects.update_or_create(indicator=indicatr,\
-                                    id=int(pt.get('id')), \
+                pk = int(pt.get('id'))
+                if pk == 0: pk = None
+                periotic_target,created = PeriodicTarget.objects.update_or_create(indicator=indicatr, id=pk, \
                                     defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0) })
-
-                print("%s|%s = %s, %s" % (created, pt.get('id'), pt.get('period'), pt.get('target') ))
+                #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
         form.save()
 
         if self.request.is_ajax():
