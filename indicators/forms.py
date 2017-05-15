@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse_lazy
-from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
+from indicators.models import Indicator, PeriodicTarget, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
 from workflow.models import Program, SiteProfile, Documentation, ProjectAgreement, TolaUser
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
@@ -190,7 +190,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'targeted', 'achieved', 'description',
+                'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
 
             ),
 
@@ -324,6 +324,8 @@ class CollectedDataForm(forms.ModelForm):
             self.program = Program.objects.get(id=self.program)
         except TypeError:
             pass
+
+        self.fields['periodic_target'].queryset = PeriodicTarget.objects.filter(indicator=self.indicator)
 
         self.fields['program2'].initial = self.program
         self.fields['program2'].label = "Program"
