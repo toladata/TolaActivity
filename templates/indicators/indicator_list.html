@@ -140,9 +140,34 @@ function loadIndicators(program,indicator,type){
         e.preventDefault();
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
+        var periodic_targets = [];
+        $('#periodid_targets_table tr').each(function () {
+            var $this = $(this);
+            var values = [];
+            $this.find('input[type=text]').each(function (i, input) {
+                if (i == 0) {
+                    values.push($(input).attr('name').split('-')[1]);
+                }
+                values.push($(input).val());
+            });
+            if(values.length > 0) {
+                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
+            }
+        });
+        form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
+        //console.log(JSON.stringify(periodic_targets));
         submitForm(form_url, form_data);
+
     });
 
+    function addPeriodicTarget() {
+        console.log("adding periodic_targets");
+        $("#periodid_targets_table tbody").app
+        var markup = '<tr id="0"><td><input type="text" name="period-0" class="textinput textInput form-control"></td><td><input type="text" name="target-0" class="textinput textInput form-control"></td></tr>'
+
+        $("table tbody").append(markup);
+
+    }
     function submitForm(form_url, form_data) {
         $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
         $.ajax({

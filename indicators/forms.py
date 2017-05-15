@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse_lazy
-from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
+from indicators.models import Indicator, PeriodicTarget, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
 from workflow.models import Program, SiteProfile, Documentation, ProjectAgreement, TolaUser
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
@@ -34,6 +34,7 @@ class IndicatorForm(forms.ModelForm):
             'indicator_changes': forms.Textarea(attrs={'rows':4}),
             'comments': forms.Textarea(attrs={'rows':4}),
             'notes': forms.Textarea(attrs={'rows':4}),
+            'rationale_for_target': forms.Textarea(attrs={'rows': 4}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -70,6 +71,32 @@ class IndicatorForm(forms.ModelForm):
                     Fieldset('Targets',
                              'baseline','lop_target', 'rationale_for_target',
                              ),
+                    Div("",
+                        HTML("""<br/>
+                            <div class='panel panel-default'>
+                                <div class='panel-heading'>
+                                    Periodic Targets
+                                    <a class="pull-right" href="#" onclick="addPeriodicTarget()";>Add new Periodic Target</a>
+                                </div>
+                                <table class="table" id="periodid_targets_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Period</th>
+                                            <th>Target</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in periodic_targets %}
+                                            <tr id="{{item.id}}">
+                                                <td><input type="text" name="period-{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
+                                                <td><input type="text" name="target-{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        """),
+                    ),
                 ),
                 Tab('Data Acquisition',
                     Fieldset('Data Acquisition',
@@ -163,7 +190,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'targeted', 'achieved', 'description',
+                'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
 
             ),
 
@@ -297,6 +324,8 @@ class CollectedDataForm(forms.ModelForm):
             self.program = Program.objects.get(id=self.program)
         except TypeError:
             pass
+
+        self.fields['periodic_target'].queryset = PeriodicTarget.objects.filter(indicator=self.indicator)
 
         self.fields['program2'].initial = self.program
         self.fields['program2'].label = "Program"

@@ -332,6 +332,25 @@ class Indicator(models.Model):
         return self.name
 
 
+
+class PeriodicTarget(models.Model):
+    indicator = models.ForeignKey(Indicator, null=False, blank=False)
+    period = models.CharField(max_length=255, null=True, blank=True)
+    target = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    customsort = models.IntegerField(blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    def __unicode__(self):
+        return "%s %s" % (self.period, self.target)
+
+
+class PeriodicTargetAdmin(admin.ModelAdmin):
+    list_display = ('period', 'target', 'customsort',)
+    display = 'Indicator Periodic Target'
+    list_filter = ('period',)
+
+
 class CollectedDataManager(models.Manager):
     def get_queryset(self):
         return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('program','indicator','agreement','complete','evidence','tola_table')
@@ -339,7 +358,8 @@ class CollectedDataManager(models.Manager):
 
 class CollectedData(models.Model):
     data_key = models.UUIDField(default=uuid.uuid4, unique=True),
-    targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True)
+    #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)

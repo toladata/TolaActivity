@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from urlparse import urlparse
 import re
-from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
+from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
 from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -275,6 +275,7 @@ class IndicatorUpdate(UpdateView):
 
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
+        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
 
         #get external service data if any
         try:
@@ -298,6 +299,16 @@ class IndicatorUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
+        periodic_targets = self.request.POST.get('periodic_targets', None)
+        indicatr = Indicator.objects.get(pk=self.kwargs.get('pk'))
+        if periodic_targets:
+            pt_json = json.loads(periodic_targets)
+            for pt in pt_json:
+                pk = int(pt.get('id'))
+                if pk == 0: pk = None
+                periotic_target,created = PeriodicTarget.objects.update_or_create(indicator=indicatr, id=pk, \
+                                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0) })
+                #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
         form.save()
 
         if self.request.is_ajax():
@@ -696,7 +707,7 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
     except Exception, e:
         pass
 
-    collected_sum = CollectedData.objects.filter(indicator=indicator).aggregate(Sum('targeted'),Sum('achieved'))
+    collected_sum = CollectedData.objects.select_related('periodic_target').filter(indicator=indicator).aggregate(Sum('periodic_target__target'),Sum('achieved'))
     return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum,
                                               'indicator_id': indicator, 'program_id': program})
 
@@ -1051,7 +1062,7 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             }
             q.update(s)
 
-        getCollectedData = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+        getCollectedData = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
                                                                         'indicator__objectives',
                                                                         'indicator__strategic_objectives').filter(
             program__country__in=countries).filter(
@@ -1062,12 +1073,12 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
                                         'indicator__external_service_record__external_service__name', 'evidence',
-                                        'tola_table', 'targeted', 'achieved')
+                                        'tola_table', 'periodic_target', 'achieved')
 
         #getCollectedData = {x['id']:x for x in getCollectedData}.values()
 
-        collected_sum = CollectedData.objects.filter(program__country__in=countries).filter(**q).aggregate(
-            Sum('targeted'), Sum('achieved'))
+        collected_sum = CollectedData.objects.select_related('periodic_target').filter(program__country__in=countries).filter(**q).aggregate(
+            Sum('periodic_target__target'), Sum('achieved'))
 
         # datetime encoding breaks without using this
         from django.core.serializers.json import DjangoJSONEncoder
@@ -1235,7 +1246,7 @@ class CollectedDataList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+        indicators = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
                                                                   'indicator__objectives',
                                                                   'indicator__strategic_objectives').filter(
             program__country__in=countries).filter(
@@ -1246,7 +1257,7 @@ class CollectedDataList(ListView):
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
                                         'indicator__external_service_record__external_service__name', 'evidence',
-                                        'tola_table', 'targeted', 'achieved')
+                                        'tola_table', 'periodic_target', 'achieved')
 
         if self.request.GET.get('export'):
             dataset = CollectedDataResource().export(indicators)
