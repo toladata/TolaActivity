@@ -499,7 +499,7 @@ class VillageAdmin(admin.ModelAdmin):
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
     code = models.CharField("Office Code", max_length=255, blank=True)
-    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
+    country = models.ForeignKey(Country,verbose_name="Admin Level 1")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -967,7 +967,7 @@ class ProjectAgreement(models.Model):
     description_of_project_activities = models.TextField(blank=True, null=True)
     description_of_government_involvement = models.TextField(blank=True, null=True)
     description_of_community_involvement = models.TextField(blank=True, null=True)
-    community_project_description = models.TextField("Describe the project you would like the program to consider", blank=True, null=True, help_text="Description must describe how the Community Proposal meets the project criteria")
+    community_project_description = models.TextField("Describe the project you would like considered", blank=True, null=True, help_text="Description must describe how the Community Proposal meets the project criteria")
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
     history = HistoricalRecords()
