@@ -6,7 +6,7 @@
 </ol>
 <div class="btn-group" role="group">
   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
-    Program
+    WorkflowLevel1
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
@@ -61,7 +61,7 @@
     <span class="filter">Filtered by Indicator: {{ indicator_name }}</span>
 {% endif %}
 {% if program_name %}
-    <span class="filter">Filtered by Program : {{ program_name }}</span>
+    <span class="filter">Filtered by WorkflowLevel1 : {{ program_name }}</span>
 {% endif %}
 {% if type_name %}
     <span class="filter">Filtered by Indicator Type : {{ type_name }}</span>
@@ -99,7 +99,7 @@
                 retrieve: true,
                 data: indicator_records,
                 columns: [
-                    { title: "Program", data: "program__name"},
+                    { title: "WorkflowLevel1", data: "program__name"},
                     { title: "Indicator", data: "name",
                             "mRender": function (data, type, row) {
                                 return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';

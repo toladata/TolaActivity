@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load mathfilters %}
-{% block page_title %}Program Index{% endblock %}
+{% block page_title %}WorkflowLevel1 Index{% endblock %}
 
 {% block content %}
 
@@ -16,7 +16,7 @@
   {% endifnotequal %}
 
   {% if filtered_program %}
-    <p>Filtered by (Program): {{filtered_program}}</p>
+    <p>Filtered by (WorkflowLevel1): {{filtered_program}}</p>
   {% endif %}
     {% for program in getDashboard %}
         {% if program.agreement.all %}

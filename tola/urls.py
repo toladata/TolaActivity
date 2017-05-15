@@ -90,9 +90,6 @@ urlpatterns = [ # rest framework
                 # app include of workflow urls
                 url(r'^formlibrary/', include('formlibrary.urls')),
 
-                # app include of configurable dashboard urls
-                url(r'^configurabledashboard/', include('configurabledashboard.urls')),
-
                 # local login
                 url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
                 url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),

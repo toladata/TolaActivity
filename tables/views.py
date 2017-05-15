@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 import json
 from django.http import HttpResponseRedirect
 from indicators.models import Indicator, TolaTable, ExternalService
-from workflow.models import Program, SiteProfile, Country, Sector, TolaUser
+from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaUser
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry

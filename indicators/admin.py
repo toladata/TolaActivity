@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import *
-from workflow.models import Sector, Country, Program
+from workflow.models import Sector, Country, WorkflowLevel1
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export.admin import ImportExportModelAdmin
@@ -15,7 +15,7 @@ class IndicatorResource(resources.ModelResource):
     level = ManyToManyWidget(Level, separator=" | ", field="level")
     reporting_frequency = fields.Field(column_name='reporting_frequency', attribute='reporting_frequency', widget=ForeignKeyWidget(ReportingFrequency, 'frequency'))
     sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
-    program = ManyToManyWidget(Program, separator=" | ", field="name")
+    program = ManyToManyWidget(WorkflowLevel1, separator=" | ", field="name")
 
     class Meta:
         model = Indicator

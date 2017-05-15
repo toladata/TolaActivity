@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView, View
-from workflow.models import ProjectAgreement, ProjectComplete, Program
+from workflow.models import ProjectAgreement, ProjectComplete, WorkflowLevel1
 from indicators.models import CollectedData, Indicator
 from .forms import FilterForm
 
@@ -94,7 +94,7 @@ class ReportData(View, AjaxableResponseMixin):
         project_filter = filter['project']
         indicator_filter = filter['indicator']
 
-        program = Program.objects.all().filter(**program_filter).values('gaitid', 'name','funding_status','cost_center','country__country','sector__sector')
+        program = WorkflowLevel1.objects.all().filter(**program_filter).values('gaitid', 'name', 'funding_status', 'cost_center', 'country__country', 'sector__sector')
         approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='awaiting approval').count()
         approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='approved').count()
         rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='rejected').count()
@@ -118,7 +118,7 @@ class ReportData(View, AjaxableResponseMixin):
         }
 
         if request.GET.get('export'):
-            program_export = Program.objects.all().filter(**program_filter)
+            program_export = WorkflowLevel1.objects.all().filter(**program_filter)
             program_dataset = ProgramResource().export(program_export)
             response = HttpResponse(program_dataset.csv, content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=program_data.csv'

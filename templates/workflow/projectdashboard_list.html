@@ -2,7 +2,7 @@
 {% block bread_crumb %}
 <div>
 <ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
+  <li><a href="/workflow/dashboard/0/">WorkflowLevel1 Index</a></li>
   <li class="active">Project Dashboard</li>
 </ol>
 </div>
@@ -14,11 +14,11 @@
 {% if project_id == 0 %}
 
     <div class="jumbotron">
-        <p>Name your new Project and associate it with a Program</p>
+        <p>Name your new Project and associate it with a WorkflowLevel1</p>
         <form role="form" class="form-inline" action="/workflow/projectagreement_add/" method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="program">Program:</label>
+                <label for="program">WorkflowLevel1:</label>
                 <select class="form-control" id="program" name="program" required="">
                     {% for item in getPrograms %}
                         <option value="{{ item.id }} ">{{ item.name|truncatechars:50 }}</option>

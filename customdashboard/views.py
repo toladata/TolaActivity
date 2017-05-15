@@ -2,8 +2,8 @@ from django.views.generic.list import ListView
 from django.http import HttpResponse
 
 from django.shortcuts import render
-from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile,Country, TolaSites
-from customdashboard.models import ProgramNarratives, JupyterNotebooks
+from workflow.models import ProjectAgreement, ProjectComplete, WorkflowLevel1, SiteProfile,Country, TolaSites
+from customdashboard.models import JupyterNotebooks
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
 from indicators.models import CollectedData, Indicator, TolaTable
 
@@ -15,15 +15,15 @@ from tola.util import getCountry, get_table
 from django.contrib.auth.decorators import login_required
 import requests
 import json
-from datetime import *
 import ast
+
 
 class ProgramList(ListView):
     """
-    List of Programs with links to the dashboards
-    http://127.0.0.1:8000/customdashboard/program_list/0/
+    List of workflowlevel1s with links to the dashboards
+    http://127.0.0.1:8000/customdashboard/workflowlevel1_list/0/
     """
-    model = Program
+    model = WorkflowLevel1
     template_name = 'customdashboard/program_list.html'
 
     def get(self, request, *args, **kwargs):
@@ -33,82 +33,82 @@ class ProgramList(ListView):
         countries = getCountry(request.user)
         country_list = Country.objects.all().filter(id__in=countries)
         if int(self.kwargs['pk']) == 0:
-            getProgram = Program.objects.all().filter(country__in=countries)
+            getworkflowlevel1 = WorkflowLevel1.objects.all().filter(country__in=countries)
         else:
-            getProgram = Program.objects.all().filter(country__id=self.kwargs['pk'])
+            getworkflowlevel1 = WorkflowLevel1.objects.all().filter(country__id=self.kwargs['pk'])
             country = Country.objects.get(id=self.kwargs['pk']).country
 
-        program_list = []
-        for program in getProgram:
+        workflowlevel1_list = []
+        for workflowlevel1 in getworkflowlevel1:
             # get the percentage of indicators with data
-            getInidcatorDataCount = Indicator.objects.filter(program__id=program.id).exclude(collecteddata__targeted=None).count()
-            getInidcatorCount = Indicator.objects.filter(program__id=program.id).count()
+            getInidcatorDataCount = Indicator.objects.filter(workflowlevel1__id=workflowlevel1.id).exclude(collecteddata__targeted=None).count()
+            getInidcatorCount = Indicator.objects.filter(workflowlevel1__id=workflowlevel1.id).count()
             if getInidcatorCount > 0 and getInidcatorDataCount > 0:
                 getInidcatorDataPercent = 100 * float(getInidcatorDataCount) / float(getInidcatorCount)
             else:
                 getInidcatorDataPercent = 0
 
-            program.indicator_data_percent = int(getInidcatorDataPercent)
-            program.indicator_percent = int(100 - getInidcatorDataPercent)
+            workflowlevel1.indicator_data_percent = int(getInidcatorDataPercent)
+            workflowlevel1.indicator_percent = int(100 - getInidcatorDataPercent)
 
             # get the percentage of projects with completes (tracking)
-            getProjectAgreementCount = ProjectAgreement.objects.filter(program__id=program.id).count()
-            getProjectCompleteCount = ProjectComplete.objects.filter(program__id=program.id).count()
+            getProjectAgreementCount = ProjectAgreement.objects.filter(workflowlevel1__id=workflowlevel1.id).count()
+            getProjectCompleteCount = ProjectComplete.objects.filter(workflowlevel1__id=workflowlevel1.id).count()
             if getProjectAgreementCount > 0 and getProjectCompleteCount > 0:
                 project_percent = 100 * float(getProjectCompleteCount) / float(getProjectAgreementCount)
             else:
                 project_percent = 0
 
-            # append the rounded percentages to the program list
-            program.project_percent = int(project_percent)
-            program.project_agreement_percent = int(100 - project_percent)
-            program_list.append(program)
+            # append the rounded percentages to the workflowlevel1 list
+            workflowlevel1.project_percent = int(project_percent)
+            workflowlevel1.project_agreement_percent = int(100 - project_percent)
+            workflowlevel1_list.append(workflowlevel1)
 
-        return render(request, self.template_name, {'getProgram': program_list, 'getCountry': country_list, 'country': country})
+        return render(request, self.template_name, {'getworkflowlevel1': workflowlevel1_list, 'getCountry': country_list, 'country': country})
 
 
 @login_required(login_url='/accounts/login/')
 def DefaultCustomDashboard(request,id=0,status=0):
     """
-    This is used as the workflow program dashboard
+    This is used as the workflow workflowlevel1 dashboard
     # of agreements, approved, rejected, waiting, archived and total for dashboard
     http://127.0.0.1:8000/customdashboard/65/
     """
-    program_id = id
+    workflowlevel1_id = id
 
     countries = getCountry(request.user)
 
     #transform to list if a submitted country
-    selected_countries_list = Country.objects.all().filter(program__id=program_id)
+    selected_countries_list = Country.objects.all().filter(workflowlevel1__id=workflowlevel1_id)
 
-    getQuantitativeDataSums = CollectedData.objects.filter(indicator__program__id=program_id,achieved__isnull=False, indicator__key_performance_indicator=True).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved')).exclude(achieved=None,targeted=None)
+    getQuantitativeDataSums = CollectedData.objects.filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False, indicator__key_performance_indicator=True).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved')).exclude(achieved=None,targeted=None)
     
     totalTargets = getQuantitativeDataSums.aggregate(Sum('targets'))
     totalActuals = getQuantitativeDataSums.aggregate(Sum('actuals'))
 
-    getFilteredName=Program.objects.get(id=program_id)
+    getFilteredName=WorkflowLevel1.objects.get(id=workflowlevel1_id)
     
-    getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).count()
-    getBudgetEstimated = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries).annotate(estimated=Sum('total_estimated_budget'))
-    getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='awaiting approval', program__country__in=countries).count()
-    getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved', program__country__in=countries).count()
-    getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected', program__country__in=countries).count()
-    getInProgressCount = ProjectAgreement.objects.all().filter(program__id=program_id).filter(Q(Q(approval='in progress') | Q(approval=None)), program__country__in=countries).count()
-    nostatus_count = ProjectAgreement.objects.all().filter(program__id=program_id).filter(Q(Q(approval=None) | Q(approval=""))).count()
+    getProjectsCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries).count()
+    getBudgetEstimated = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries).annotate(estimated=Sum('total_estimated_budget'))
+    getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval', workflowlevel1__country__in=countries).count()
+    getApprovedCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved', workflowlevel1__country__in=countries).count()
+    getRejectedCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='rejected', workflowlevel1__country__in=countries).count()
+    getInProgressCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id).filter(Q(Q(approval='in progress') | Q(approval=None)), workflowlevel1__country__in=countries).count()
+    nostatus_count = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id).filter(Q(Q(approval=None) | Q(approval=""))).count()
 
-    getSiteProfile = SiteProfile.objects.all().filter(Q(projectagreement__program__id=program_id) | Q(collecteddata__program__id=program_id))
-    getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
+    getSiteProfile = SiteProfile.objects.all().filter(Q(projectagreement__workflowlevel1__id=workflowlevel1_id) | Q(collecteddata__workflowlevel1__id=workflowlevel1_id))
+    getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__workflowlevel1__id=workflowlevel1_id))
 
     if (status) =='Approved':
-       getProjects = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries, approval='approved').prefetch_related('projectcomplete')
+       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='approved').prefetch_related('projectcomplete')
     elif(status) =='Rejected':
-       getProjects = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries, approval='rejected').prefetch_related('projectcomplete')
+       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='rejected').prefetch_related('projectcomplete')
     elif(status) =='In Progress':
-       getProjects = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries, approval='in progress').prefetch_related('projectcomplete')
+       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='in progress').prefetch_related('projectcomplete')
     elif(status) =='Awaiting Approval':
-       getProjects = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries, approval='awaiting approval').prefetch_related('projectcomplete')
+       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='awaiting approval').prefetch_related('projectcomplete')
     else:
-       getProjects = ProjectAgreement.objects.all().filter(program__id=program_id, program__country__in=countries)
+       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries)
 
     get_project_completed = []
 
@@ -139,40 +139,40 @@ def PublicDashboard(request,id=0,public=0):
     the template is changed for public
     :public: if URL contains a 0 then show the internal dashboard
     if 1 then public dashboard
-    http://127.0.0.1:8000/customdashboard/program_dashboard/65/0/
+    http://127.0.0.1:8000/customdashboard/workflowlevel1_dashboard/65/0/
     """
-    program_id = id
-    getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
-    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
-    getIndicatorCount = Indicator.objects.all().filter(program__id=program_id).count()
+    workflowlevel1_id = id
+    getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
+    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+    getIndicatorCount = Indicator.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
 
-    getIndicatorData = CollectedData.objects.all().filter(indicator__program__id=program_id,achieved__isnull=False).order_by('date_collected')
+    getIndicatorData = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).order_by('date_collected')
 
     getIndicatorCountData = getIndicatorData.count()
 
-    getIndicatorCountKPI = Indicator.objects.all().filter(program__id=program_id,key_performance_indicator=1).count()
-    getProgram = Program.objects.all().get(id=program_id)
+    getIndicatorCountKPI = Indicator.objects.all().filter(workflowlevel1__id=workflowlevel1_id,key_performance_indicator=1).count()
+    getworkflowlevel1 = WorkflowLevel1.objects.all().get(id=workflowlevel1_id)
     try:
-        getProgramNarrative = ProgramNarratives.objects.get(program_id=program_id)
-    except ProgramNarratives.DoesNotExist:
-        getProgramNarrative = None
-    getProjects = ProjectComplete.objects.all().filter(program_id=program_id)
-    getAllProjects = ProjectAgreement.objects.all().filter(program_id=program_id)
-    getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program_id)
-    getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__program__id=program_id))
+        getworkflowlevel1Narrative = workflowlevel1Narratives.objects.get(workflowlevel1_id=workflowlevel1_id)
+    except workflowlevel1Narratives.DoesNotExist:
+        getworkflowlevel1Narrative = None
+    getProjects = ProjectComplete.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
+    getAllProjects = ProjectAgreement.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
+    getSiteProfile = SiteProfile.objects.all().filter(projectagreement__workflowlevel1__id=workflowlevel1_id)
+    getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__workflowlevel1__id=workflowlevel1_id))
 
-    getProjectsCount = ProjectAgreement.objects.all().filter(program__id=program_id).count()
-    getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='awaiting approval').count()
-    getApprovedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved').count()
-    getRejectedCount = ProjectAgreement.objects.all().filter(program__id=program_id, approval='rejected').count()
-    getInProgressCount = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
+    getProjectsCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
+    getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval').count()
+    getApprovedCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved').count()
+    getRejectedCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='rejected').count()
+    getInProgressCount = ProjectAgreement.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
-    nostatus_count = ProjectAgreement.objects.all().filter(Q(program__id=program_id) & Q(Q(approval=None) | Q(approval=""))).count()
+    nostatus_count = ProjectAgreement.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(approval=None) | Q(approval=""))).count()
 
-    getNotebooks = JupyterNotebooks.objects.all().filter(program__id=program_id)
+    getNotebooks = JupyterNotebooks.objects.all().filter(workflowlevel1__id=workflowlevel1_id)
 
     # get all countires
-    countries = Country.objects.all().filter(program__id=program_id)
+    countries = Country.objects.all().filter(workflowlevel1__id=workflowlevel1_id)
 
     # Trainings
     agreement_id_list = []
@@ -221,11 +221,11 @@ def PublicDashboard(request,id=0,public=0):
         print "public"
         template = "customdashboard/publicdashboard/public_dashboard.html"
     else:
-        template = "customdashboard/publicdashboard/program_dashboard.html"
+        template = "customdashboard/publicdashboard/workflowlevel1_dashboard.html"
 
-    return render(request, template, {'getProgram':getProgram,'getProjects':getProjects,
+    return render(request, template, {'getworkflowlevel1':getworkflowlevel1,'getProjects':getProjects,
                                                                      'getSiteProfile':getSiteProfile,
-                                                                     'countries': countries, 'getProgramNarrative': getProgramNarrative,
+                                                                     'countries': countries, 'getworkflowlevel1Narrative': getworkflowlevel1Narrative,
                                                                      'getAwaitingApprovalCount':getAwaitingApprovalCount,'getQuantitativeDataSums_2':getQuantitativeDataSums_2,
                                                                      'getApprovedCount': getApprovedCount,
                                                                      'getRejectedCount': getRejectedCount,
@@ -246,7 +246,7 @@ def PublicDashboard(request,id=0,public=0):
 """
 Extremely Customized dashboards
 This section contains custom dashboards or one-off dashboard for demo, or specific
-customer requests outside the scope of customized program dashboards
+customer requests outside the scope of customized workflowlevel1 dashboards
 """
 def SurveyPublicDashboard(request,id=0):
     """
@@ -433,26 +433,26 @@ def RRIMAPublicDashboard(request,id=0):
     :param id:
     :return:
     """
-    ## retrieve program
-    model = Program
-    program_id = id
-    getProgram = Program.objects.all().filter(id=program_id)
+    ## retrieve workflowlevel1
+    model = WorkflowLevel1
+    workflowlevel1_id = id
+    getworkflowlevel1 = WorkflowLevel1.objects.all().filter(id=workflowlevel1_id)
 
 
     ## retrieve the coutries the user has data access for
     countries = getCountry(request.user)
 
-    #retrieve projects for a program
-    getProjects = ProjectAgreement.objects.all()##.filter(program__id=1, program__country__in=1)
+    #retrieve projects for a workflowlevel1
+    getProjects = ProjectAgreement.objects.all()##.filter(workflowlevel1__id=1, workflowlevel1__country__in=1)
 
     pageText = {}
     pageText['pageTitle'] = "Refugee Response and Migration News"
     pageText['projectSummary'] = {}
 
     pageMap = [{"latitude":39.9334, "longitude":32.8597, "location_name":"Ankara","site_contact":"Sonal Shinde, Migration Response Director, sshinde@mercycorps.org", "site_description":"Migration Response Coordination","region_name":"Turkey"},
-        {"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir","site_contact":"Tracy Lucas, Emergency Program Manager, ECHO Aegean Response, tlucas@mercycorps.org", "site_description":"Cash, Information Dissemination, Youth, Protection", "region_name":"Turkey"},
-        {"latitude":37.0660, "longitude":37.3781, "location_name":"Gaziantep","site_contact":"Jihane Nami, Director of Programs Turkey, jnami@mercycorps.org", "site_description":"Cash, NFI, Shelter, Protection, Information Dissemination","region_name":"Turkey"},
-        {"latitude":39.2645, "longitude":26.2777, "location_name":"Lesvos", "site_contact":"Chiara Bogoni, Island Emergency Program Manager, cbogoni@mercycorps.org", "site_description":"Cash, Youth Programs, Food","region_link":"Greece"},
+        {"latitude":38.4237, "longitude":27.1428, "location_name":"Izmir","site_contact":"Tracy Lucas, Emergency workflowlevel1 Manager, ECHO Aegean Response, tlucas@mercycorps.org", "site_description":"Cash, Information Dissemination, Youth, Protection", "region_name":"Turkey"},
+        {"latitude":37.0660, "longitude":37.3781, "location_name":"Gaziantep","site_contact":"Jihane Nami, Director of workflowlevel1s Turkey, jnami@mercycorps.org", "site_description":"Cash, NFI, Shelter, Protection, Information Dissemination","region_name":"Turkey"},
+        {"latitude":39.2645, "longitude":26.2777, "location_name":"Lesvos", "site_contact":"Chiara Bogoni, Island Emergency workflowlevel1 Manager, cbogoni@mercycorps.org", "site_description":"Cash, Youth workflowlevel1s, Food","region_link":"Greece"},
         {"latitude":37.9838, "longitude":23.7275, "location_name":"Athens", "site_contact":"Josh Kreger, Team Leader - Greece, jkreger@mercycorps.org and Kaja Wislinska, Team Leader - Athens and Mainland, kwislinska@mercycorps.org","site_description":"Cash, Youth Psychosocial Support, Legal Support","region_link":"Greece","region_link":"Greece"},
         {"latitude":44.7866, "longitude":20.4489, "location_name":"Belgrade","site_contact":"","site_description":"RRIMA (In partnership with IRC) ","region_name":"Balkans"}]
    # Borrowed data for bar graph
@@ -484,9 +484,9 @@ def RRIMAJupyterView1(request,id=0):
     :param id:
     :return:
     """
-    model = Program
-    program_id = 1#id ##USE TURKEY PROGRAM ID HERE
-    # getProgram = Program.objects.all().filter(id=program_id)
+    model = WorkflowLevel1
+    workflowlevel1_id = 1#id ##USE TURKEY workflowlevel1 ID HERE
+    # getworkflowlevel1 = workflowlevel1.objects.all().filter(id=workflowlevel1_id)
 
     ## retrieve the coutries the user has data access for
     countries = getCountry(request.user)

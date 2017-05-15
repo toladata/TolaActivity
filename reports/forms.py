@@ -7,7 +7,7 @@ from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 
 from .models import *
-from workflow.models import Country, Program, Sector
+from workflow.models import Country, WorkflowLevel1, Sector
 from functools import partial
 
 class DatePicker(forms.DateInput):
@@ -28,7 +28,7 @@ class FilterForm(forms.Form):
         widget = forms.SelectMultiple(),
     )
     program = forms.ModelChoiceField(
-        queryset = Program.objects.all(),
+        queryset = WorkflowLevel1.objects.all(),
         required = False,
         empty_label = None,
         widget = forms.SelectMultiple(),

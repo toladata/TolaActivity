@@ -166,7 +166,7 @@ class TolaBookmarks(models.Model):
     user = models.ForeignKey(TolaUser, related_name='tolabookmark')
     name = models.CharField(blank=True, null=True, max_length=255)
     bookmark_url = models.CharField(blank=True, null=True, max_length=255)
-    program = models.ForeignKey("Program", blank=True, null=True)
+    program = models.ForeignKey("WorkflowLevel1", blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -316,13 +316,13 @@ class FundCodeAdmin(admin.ModelAdmin):
     display = 'Fund Code'
 
 
-class Program(models.Model):
+class WorkflowLevel1(models.Model):
     gaitid = models.CharField("ID", max_length=255, blank=True, unique=True)
-    name = models.CharField("Program Name", max_length=255, blank=True)
+    name = models.CharField("Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
     fund_code = models.ManyToManyField(FundCode, blank=True)
-    description = models.TextField("Program Description", max_length=765, null=True, blank=True)
+    description = models.TextField("Description", max_length=765, null=True, blank=True)
     sector = models.ManyToManyField(Sector, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -333,6 +333,7 @@ class Program(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name_plural = "Level 1s"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -341,7 +342,7 @@ class Program(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Program, self).save()
+        super(WorkflowLevel1, self).save()
 
     @property
     def countries(self):
@@ -377,15 +378,15 @@ class ApprovalAuthority(models.Model):
 
 
 class Province(models.Model):
-    name = models.CharField("Admin Level 1", max_length=255, blank=True)
+    name = models.CharField("Admin Boundary 1", max_length=255, blank=True)
     country = models.ForeignKey(Country)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
-        verbose_name = "Admin Level 1"
-        verbose_name_plural = "Admin Level 1"
+        verbose_name = "Admin Boundary 1"
+        verbose_name_plural = "Admin Boundary 1"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -403,19 +404,19 @@ class ProvinceAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'create_date')
     search_fields = ('name','country__country')
     list_filter = ('create_date','country')
-    display = 'Admin Level 1'
+    display = 'Admin Boundary 1'
 
 
 class District(models.Model):
-    name = models.CharField("Admin Level 2", max_length=255, blank=True)
+    name = models.CharField("Admin Boundary 2", max_length=255, blank=True)
     province = models.ForeignKey(Province,verbose_name="Admin Level 1")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
-        verbose_name = "Admin Level 2"
-        verbose_name_plural = "Admin Level 2"
+        verbose_name = "Admin Boundary 2"
+        verbose_name_plural = "Admin Boundary 2"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -433,19 +434,19 @@ class DistrictAdmin(admin.ModelAdmin):
     list_display = ('name', 'province', 'create_date')
     search_fields = ('create_date','province')
     list_filter = ('province__country__country','province')
-    display = 'Admin Level 2'
+    display = 'Admin Boundary 2'
 
 
 class AdminLevelThree(models.Model):
-    name = models.CharField("Admin Level 3", max_length=255, blank=True)
+    name = models.CharField("Admin Boundary 3", max_length=255, blank=True)
     district = models.ForeignKey(District,verbose_name="Admin Level 2")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
-        verbose_name = "Admin Level 3"
-        verbose_name_plural = "Admin Level 3"
+        verbose_name = "Admin Boundary 3"
+        verbose_name_plural = "Admin Boundary 3"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -463,20 +464,20 @@ class AdminLevelThreeAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date')
     search_fields = ('name','district__name')
     list_filter = ('district__province__country__country','district')
-    display = 'Admin Level 3'
+    display = 'Admin Boundary 3'
 
 
 class Village(models.Model):
-    name = models.CharField("Admin Level 4", max_length=255, blank=True)
+    name = models.CharField("Admin Boundary 4", max_length=255, blank=True)
     district = models.ForeignKey(District,null=True,blank=True)
-    admin_3 = models.ForeignKey(AdminLevelThree,verbose_name="Admin Level 3",null=True,blank=True)
+    admin_3 = models.ForeignKey(AdminLevelThree,verbose_name="Admin Boundary 3",null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
-        verbose_name = "Admin Level 4"
-        verbose_name_plural = "Admin Level 4"
+        verbose_name = "Admin Boundary 4"
+        verbose_name_plural = "Admin Boundary 4"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -493,7 +494,7 @@ class Village(models.Model):
 class VillageAdmin(admin.ModelAdmin):
     list_display = ('name', 'district', 'create_date', 'edit_date')
     list_filter = ('district__province__country__country','district')
-    display = 'Admin Level 4'
+    display = 'Admin Boundary 4'
 
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
@@ -883,7 +884,7 @@ class Migration(migrations.Migration):
 class ProjectAgreement(models.Model):
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
     short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
-    program = models.ForeignKey(Program, verbose_name="Program", related_name="agreement")
+    program = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     # Rename to more generic "nonproject" names
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
@@ -975,7 +976,7 @@ class ProjectAgreement(models.Model):
 
     class Meta:
         ordering = ('project_name',)
-        verbose_name_plural = "Project Initiation"
+        verbose_name_plural = "Level 2s"
         permissions = (
             ("can_approve", "Can approve initiation"),
         )
@@ -1039,7 +1040,7 @@ class Migration(migrations.Migration):
 """
 class ProjectComplete(models.Model):
     short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
-    program = models.ForeignKey(Program, null=True, blank=True, related_name="complete")
+    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True, related_name="complete")
     project_agreement = models.OneToOneField(ProjectAgreement, verbose_name="Project Initiation")
     # Rename to more generic "nonproject" names
     activity_code = models.CharField("Project Code", max_length=255, blank=True, null=True)
@@ -1145,7 +1146,7 @@ class Documentation(models.Model):
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     project = models.ForeignKey(ProjectAgreement, blank=True, null=True)
-    program = models.ForeignKey(Program)
+    program = models.ForeignKey(WorkflowLevel1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1196,7 +1197,7 @@ class Benchmarks(models.Model):
 
     class Meta:
         ordering = ('description',)
-        verbose_name_plural = "Project Components"
+        verbose_name_plural = "Level 3s"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):

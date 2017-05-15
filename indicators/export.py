@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import Indicator, CollectedData, Country, Program, Sector, DisaggregationValue, ReportingFrequency
+from .models import Indicator, CollectedData, Country, WorkflowLevel1, Sector, DisaggregationValue, ReportingFrequency
 from workflow.models import ProjectAgreement, ProjectComplete, TolaUser
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
@@ -36,7 +36,7 @@ class CollectedDataResource(resources.ModelResource):
     indicator_level = fields.Field(column_name='indicator_level', attribute='indicator',widget=ForeignKeyWidget(Indicator, 'levels'))
     agreement = fields.Field(column_name='agreement', attribute='agreement',  widget=ForeignKeyWidget(ProjectAgreement, 'project_name_clean'))
     complete = fields.Field(column_name='complete', attribute='complete',  widget=ForeignKeyWidget(ProjectComplete, 'project_name_clean'))
-    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
+    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
     disaggregations = fields.Field(column_name='dissaggregations', attribute='disaggregations')
 
     class Meta:

@@ -13,7 +13,7 @@ $(function () {
             type: 'bar'
         },
         title: {
-            text: 'Program Projects by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
+            text: 'WorkflowLevel1 Projects by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
         },
         xAxis: {
             categories: ['Initiation', 'Tracking']
@@ -296,7 +296,7 @@ $(function () {
                         </div>
                         <div class="btn-group">
                             <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="false">
-                            Filter by Program <span class="caret"></span>
+                            Filter by WorkflowLevel1 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>

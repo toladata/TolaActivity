@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
+from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser, Checklist, Organization
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
@@ -17,7 +17,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class ProgramSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = Program
+        model = WorkflowLevel1
         fields = '__all__'
 
 

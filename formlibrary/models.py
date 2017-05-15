@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib import admin
 from datetime import datetime
-from workflow.models import Program, SiteProfile, ProjectAgreement, Office, Province
+from workflow.models import WorkflowLevel1, SiteProfile, ProjectAgreement, Office, Province
 
 try:
     from django.utils import timezone
@@ -12,7 +12,7 @@ except ImportError:
 
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
-    program = models.ForeignKey(Program, null=True, blank=True)
+    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
@@ -60,7 +60,7 @@ class TrainingAttendanceAdmin(admin.ModelAdmin):
 
 class Distribution(models.Model):
     distribution_name = models.CharField(max_length=255)
-    program = models.ForeignKey(Program, null=True, blank=True)
+    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     initiation = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     office_code = models.ForeignKey(Office, null=True, blank=True)
     distribution_indicator = models.CharField(max_length=255)
@@ -123,7 +123,7 @@ class Beneficiary(models.Model):
     site = models.ForeignKey(SiteProfile, null=True, blank=True)
     signature = models.BooleanField(default=True)
     remarks = models.CharField(max_length=255, null=True, blank=True)
-    program = models.ManyToManyField(Program, blank=True)
+    program = models.ManyToManyField(WorkflowLevel1, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

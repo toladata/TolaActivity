@@ -131,34 +131,34 @@ TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. This License applies to any program or other work which contains
 a notice placed by the copyright holder saying it may be distributed
-under the terms of this General Public License.  The "Program", below,
-refers to any such program or work, and a "work based on the Program"
-means either the Program or any derivative work under copyright law:
-that is to say, a work containing the Program or a portion of it,
+under the terms of this General Public License.  The "WorkflowLevel1", below,
+refers to any such program or work, and a "work based on the WorkflowLevel1"
+means either the WorkflowLevel1 or any derivative work under copyright law:
+that is to say, a work containing the WorkflowLevel1 or a portion of it,
 either verbatim or with modifications and/or translated into another
 language.  (Hereinafter, translation is included without limitation in
 the term "modification".)  Each licensee is addressed as "you".
 
 Activities other than copying, distribution and modification are not
 covered by this License; they are outside its scope.  The act of
-running the Program is not restricted, and the output from the Program
+running the WorkflowLevel1 is not restricted, and the output from the WorkflowLevel1
 is covered only if its contents constitute a work based on the
-Program (independent of having been made by running the Program).
-Whether that is true depends on what the Program does.
+WorkflowLevel1 (independent of having been made by running the WorkflowLevel1).
+Whether that is true depends on what the WorkflowLevel1 does.
 
-  1. You may copy and distribute verbatim copies of the Program's
+  1. You may copy and distribute verbatim copies of the WorkflowLevel1's
 source code as you receive it, in any medium, provided that you
 conspicuously and appropriately publish on each copy an appropriate
 copyright notice and disclaimer of warranty; keep intact all the
 notices that refer to this License and to the absence of any warranty;
-and give any other recipients of the Program a copy of this License
-along with the Program.
+and give any other recipients of the WorkflowLevel1 a copy of this License
+along with the WorkflowLevel1.
 
 You may charge a fee for the physical act of transferring a copy, and
 you may at your option offer warranty protection in exchange for a fee.
 
-  2. You may modify your copy or copies of the Program or any portion
-of it, thus forming a work based on the Program, and copy and
+  2. You may modify your copy or copies of the WorkflowLevel1 or any portion
+of it, thus forming a work based on the WorkflowLevel1, and copy and
 distribute such modifications or work under the terms of Section 1
 above, provided that you also meet all of these conditions:
 
@@ -166,7 +166,7 @@ above, provided that you also meet all of these conditions:
     stating that you changed the files and the date of any change.
 
     b) You must cause any work that you distribute or publish, that in
-    whole or in part contains or is derived from the Program or any
+    whole or in part contains or is derived from the WorkflowLevel1 or any
     part thereof, to be licensed as a whole at no charge to all third
     parties under the terms of this License.
 
@@ -177,31 +177,31 @@ above, provided that you also meet all of these conditions:
     notice that there is no warranty (or else, saying that you provide
     a warranty) and that users may redistribute the program under
     these conditions, and telling the user how to view a copy of this
-    License.  (Exception: if the Program itself is interactive but
+    License.  (Exception: if the WorkflowLevel1 itself is interactive but
     does not normally print such an announcement, your work based on
-    the Program is not required to print an announcement.)
+    the WorkflowLevel1 is not required to print an announcement.)
 
 These requirements apply to the modified work as a whole.  If
-identifiable sections of that work are not derived from the Program,
+identifiable sections of that work are not derived from the WorkflowLevel1,
 and can be reasonably considered independent and separate works in
 themselves, then this License, and its terms, do not apply to those
 sections when you distribute them as separate works.  But when you
 distribute the same sections as part of a whole which is a work based
-on the Program, the distribution of the whole must be on the terms of
+on the WorkflowLevel1, the distribution of the whole must be on the terms of
 this License, whose permissions for other licensees extend to the
 entire whole, and thus to each and every part regardless of who wrote it.
 
 Thus, it is not the intent of this section to claim rights or contest
 your rights to work written entirely by you; rather, the intent is to
 exercise the right to control the distribution of derivative or
-collective works based on the Program.
+collective works based on the WorkflowLevel1.
 
-In addition, mere aggregation of another work not based on the Program
-with the Program (or with a work based on the Program) on a volume of
+In addition, mere aggregation of another work not based on the WorkflowLevel1
+with the WorkflowLevel1 (or with a work based on the WorkflowLevel1) on a volume of
 a storage or distribution medium does not bring the other work under
 the scope of this License.
 
-  3. You may copy and distribute the Program (or a work based on it,
+  3. You may copy and distribute the WorkflowLevel1 (or a work based on it,
 under Section 2) in object code or executable form under the terms of
 Sections 1 and 2 above provided that you also do one of the following:
 
@@ -239,9 +239,9 @@ access to copy the source code from the same place counts as
 distribution of the source code, even though third parties are not
 compelled to copy the source along with the object code.
 
-  4. You may not copy, modify, sublicense, or distribute the Program
+  4. You may not copy, modify, sublicense, or distribute the WorkflowLevel1
 except as expressly provided under this License.  Any attempt
-otherwise to copy, modify, sublicense or distribute the Program is
+otherwise to copy, modify, sublicense or distribute the WorkflowLevel1 is
 void, and will automatically terminate your rights under this License.
 However, parties who have received copies, or rights, from you under
 this License will not have their licenses terminated so long as such
@@ -249,16 +249,16 @@ parties remain in full compliance.
 
   5. You are not required to accept this License, since you have not
 signed it.  However, nothing else grants you permission to modify or
-distribute the Program or its derivative works.  These actions are
+distribute the WorkflowLevel1 or its derivative works.  These actions are
 prohibited by law if you do not accept this License.  Therefore, by
-modifying or distributing the Program (or any work based on the
-Program), you indicate your acceptance of this License to do so, and
+modifying or distributing the WorkflowLevel1 (or any work based on the
+WorkflowLevel1), you indicate your acceptance of this License to do so, and
 all its terms and conditions for copying, distributing or modifying
-the Program or works based on it.
+the WorkflowLevel1 or works based on it.
 
-  6. Each time you redistribute the Program (or any work based on the
-Program), the recipient automatically receives a license from the
-original licensor to copy, distribute or modify the Program subject to
+  6. Each time you redistribute the WorkflowLevel1 (or any work based on the
+WorkflowLevel1), the recipient automatically receives a license from the
+original licensor to copy, distribute or modify the WorkflowLevel1 subject to
 these terms and conditions.  You may not impose any further
 restrictions on the recipients' exercise of the rights granted herein.
 You are not responsible for enforcing compliance by third parties to
@@ -271,11 +271,11 @@ otherwise) that contradict the conditions of this License, they do not
 excuse you from the conditions of this License.  If you cannot
 distribute so as to satisfy simultaneously your obligations under this
 License and any other pertinent obligations, then as a consequence you
-may not distribute the Program at all.  For example, if a patent
-license would not permit royalty-free redistribution of the Program by
+may not distribute the WorkflowLevel1 at all.  For example, if a patent
+license would not permit royalty-free redistribution of the WorkflowLevel1 by
 all those who receive copies directly or indirectly through you, then
 the only way you could satisfy both it and this License would be to
-refrain entirely from distribution of the Program.
+refrain entirely from distribution of the WorkflowLevel1.
 
 If any portion of this section is held invalid or unenforceable under
 any particular circumstance, the balance of the section is intended to
@@ -296,9 +296,9 @@ impose that choice.
 This section is intended to make thoroughly clear what is believed to
 be a consequence of the rest of this License.
 
-  8. If the distribution and/or use of the Program is restricted in
+  8. If the distribution and/or use of the WorkflowLevel1 is restricted in
 certain countries either by patents or by copyrighted interfaces, the
-original copyright holder who places the Program under this License
+original copyright holder who places the WorkflowLevel1 under this License
 may add an explicit geographical distribution limitation excluding
 those countries, so that distribution is permitted only in or among
 countries not thus excluded.  In such case, this License incorporates
@@ -309,15 +309,15 @@ of the General Public License from time to time.  Such new versions will
 be similar in spirit to the present version, but may differ in detail to
 address new problems or concerns.
 
-Each version is given a distinguishing version number.  If the Program
+Each version is given a distinguishing version number.  If the WorkflowLevel1
 specifies a version number of this License which applies to it and "any
 later version", you have the option of following the terms and conditions
 either of that version or of any later version published by the Free
-Software Foundation.  If the Program does not specify a version number of
+Software Foundation.  If the WorkflowLevel1 does not specify a version number of
 this License, you may choose any version ever published by the Free Software
 Foundation.
 
-  10. If you wish to incorporate parts of the Program into other free
+  10. If you wish to incorporate parts of the WorkflowLevel1 into other free
 programs whose distribution conditions are different, write to the author
 to ask for permission.  For software which is copyrighted by the Free
 Software Foundation, write to the Free Software Foundation; we sometimes

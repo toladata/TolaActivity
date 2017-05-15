@@ -1,4 +1,4 @@
-from .views import ProgramList
+from .views import *
 
 from django.conf.urls import *
 

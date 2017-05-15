@@ -9,7 +9,7 @@ from admin_report.mixins import ChartReportAdmin
 # Resource for CSV export
 class DocumentationResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
-    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
+    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
     project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(ProjectAgreement, 'project_name'))
 
     class Meta:
@@ -146,10 +146,12 @@ class ApprovalAuthorityAdmin(admin.ModelAdmin):
     search_fields = ('approval_user__user__first_name', 'approval_user__user__last_name', 'country__country')
     list_filter = ('create_date','country')
 
+
 class StakeholderAdmin(ImportExportModelAdmin):
     list_display = ('name', 'type', 'country', 'sector', 'approval', 'approved_by', 'filled_by', 'create_date')
     display = 'Stakeholder List'
     list_filter = ('country', 'type', 'sector')
+
 
 class TolaUserProxyResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
@@ -191,7 +193,7 @@ admin.site.register(Office, OfficeAdmin)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
 admin.site.register(Village)
-admin.site.register(Program, ProgramAdmin)
+admin.site.register(WorkflowLevel1, ProgramAdmin)
 admin.site.register(Sector)
 admin.site.register(ProjectAgreement, ProjectAgreementAdmin)
 admin.site.register(ProjectComplete, ProjectCompleteAdmin)

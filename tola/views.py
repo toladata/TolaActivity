@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from workflow.models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Sector,Country, TolaUser,TolaSites, TolaBookmarks, FormGuidance
+from workflow.models import ProjectAgreement, ProjectComplete, WorkflowLevel1, SiteProfile, Sector,Country, TolaUser,TolaSites, TolaBookmarks, FormGuidance
 from indicators.models import CollectedData, Indicator
 
 from tola.tables import IndicatorDataTable
@@ -38,14 +38,14 @@ def index(request, selected_countries=None, id=0, sector=0):
         selected_countries_label_list = Country.objects.all().filter(id__in=selected_countries).values('country')
 
     getAgencySite = TolaSites.objects.all().filter(id=1)
-    getSectors = Sector.objects.all().exclude(program__isnull=True).select_related()
+    getSectors = Sector.objects.all().exclude(workflowlevel1__isnull=True).select_related()
 
     #limit the programs by the selected sector
     if int(sector) == 0:
-        getPrograms = Program.objects.all().prefetch_related('agreement','agreement__office').filter(funding_status="Funded", country__in=selected_countries).exclude(agreement__isnull=True)
+        getPrograms = WorkflowLevel1.objects.all().prefetch_related('agreement', 'agreement__office').filter(funding_status="Funded", country__in=selected_countries).exclude(agreement__isnull=True)
         sectors = Sector.objects.all()
     else:
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=selected_countries, sector=sector).exclude(agreement__isnull=True)
+        getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=selected_countries, sector=sector).exclude(agreement__isnull=True)
         sectors = Sector.objects.all().filter(id=sector)
 
     #get data for just one program or all programs
@@ -86,7 +86,7 @@ def index(request, selected_countries=None, id=0, sector=0):
             complete_wait_count = ProjectComplete.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")),program__country__in=selected_countries).count()
             getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, achieved__isnull=False, targeted__isnull=False, indicator__program__country__in=selected_countries).exclude(achieved=None,targeted=None,program__funding_status="Archived").order_by('indicator__program','indicator__number').values('indicator__program__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     else:
-        getFilteredName=Program.objects.get(id=program_id)
+        getFilteredName=WorkflowLevel1.objects.get(id=program_id)
         agreement_total_count = ProjectAgreement.objects.all().filter(program__id=program_id).count()
         complete_total_count = ProjectComplete.objects.all().filter(program__id=program_id).count()
         agreement_approved_count = ProjectAgreement.objects.all().filter(program__id=program_id, approval='approved').count()
@@ -108,7 +108,7 @@ def index(request, selected_countries=None, id=0, sector=0):
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
 
-    count_program = Program.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
+    count_program = WorkflowLevel1.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
 
     approved_by = TolaUser.objects.get(user_id=request.user)
     user_pending_approvals = ProjectAgreement.objects.all().filter(approved_by=approved_by).exclude(approval='approved').count()

@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from urlparse import urlparse
 import re
 from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
+from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry, get_table
@@ -55,7 +55,7 @@ class IndicatorList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
         program = self.kwargs['program']
@@ -73,7 +73,7 @@ class IndicatorList(ListView):
             }
             # redress the indicator list based on program
             getIndicators = Indicator.objects.select_related().filter(program=program)
-            program_name = Program.objects.get(id=program)
+            program_name = WorkflowLevel1.objects.get(id=program)
         # if we have an indicator type active
         if int(type) != 0:
             r = {
@@ -91,7 +91,7 @@ class IndicatorList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = Program.objects.all().filter(funding_status="Funded", country__in=countries).filter(**q).order_by('name').annotate(indicator_count=Count('indicator'))
+        indicators = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).filter(**q).order_by('name').annotate(indicator_count=Count('indicator'))
         return render(request, self.template_name, {'getPrograms': getPrograms,'getIndicators':getIndicators,
                                                     'program_name':program_name, 'indicator_name':indicator_name,
                                                     'type_name':type_name, 'program':program, 'indicator': indicator, 'type': type,
@@ -132,7 +132,7 @@ def indicator_create(request, id=0):
     getCountries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getServices = ExternalService.objects.all()
     program_id = id
 
@@ -141,7 +141,7 @@ def indicator_create(request, id=0):
 
         type = IndicatorType.objects.get(indicator_type="custom")
         country = Country.objects.get(id=request.POST['country'])
-        program = Program.objects.get(id=request.POST['program'])
+        program = WorkflowLevel1.objects.get(id=request.POST['program'])
         service = request.POST['services']
         level = Level.objects.all()[0]
         node_id = request.POST['service_indicator']
@@ -720,7 +720,7 @@ def indicator_report(request, program=0, indicator=0, type=0):
     :return:
     """
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
     getIndicators = []
 
@@ -739,7 +739,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
         getIndicatorTypes = IndicatorType.objects.all()
 
@@ -798,9 +798,9 @@ def programIndicatorReport(request, program=0):
     """
     program = int(program)
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
-    getProgram = Program.objects.get(id=program)
+    getProgram = WorkflowLevel1.objects.get(id=program)
 
     getIndicatorTypes = IndicatorType.objects.all()
 
@@ -834,7 +834,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
     :return:
     """
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
     getTypes = IndicatorType.objects.all()
     indicator_name = None
@@ -858,7 +858,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
 
     if int(program) != 0:
         getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program).select_related()
-        program_name = Program.objects.get(id=program).name
+        program_name = WorkflowLevel1.objects.get(id=program).name
         q = {
             'program__id': program
         }
@@ -1040,7 +1040,7 @@ class CollectedDataList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(
             collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
@@ -1059,7 +1059,7 @@ class CollectedDataList(ListView):
             }
             # redress the indicator list based on program
             getIndicators = Indicator.objects.select_related().filter(program=program)
-            program_name = Program.objects.get(id=program)
+            program_name = WorkflowLevel1.objects.get(id=program)
         # if we have an indicator type active
         if int(type) != 0:
             r = {

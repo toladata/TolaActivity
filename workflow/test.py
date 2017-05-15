@@ -1,5 +1,5 @@
 from django.test import TestCase
-from workflow.models import Organization, Program, Country, Province, ProjectAgreement, Sector, ProjectComplete, ProjectType, SiteProfile, Office, Monitor, Benchmarks, Budget
+from workflow.models import Organization, WorkflowLevel1, Country, Province, ProjectAgreement, Sector, ProjectComplete, ProjectType, SiteProfile, Office, Monitor, Benchmarks, Budget
 
 
 class SiteProfileTestCase(TestCase):
@@ -39,10 +39,10 @@ class AgreementTestCase(TestCase):
         new_country = Country.objects.create(country="testcountry", organization=get_organization)
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
-        new_program = Program.objects.create(name="testprogram")
+        new_program = WorkflowLevel1.objects.create(name="testprogram")
         new_program.save()
         new_program.country.add(get_country)
-        get_program = Program.objects.get(name="testprogram")
+        get_program = WorkflowLevel1.objects.get(name="testprogram")
         new_province = Province.objects.create(name="testprovince", country=get_country)
         new_province.save()
         get_province = Province.objects.get(name="testprovince")
@@ -102,10 +102,10 @@ class CompleteTestCase(TestCase):
         new_country = Country.objects.create(country="testcountry", organization=get_organization)
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
-        new_program = Program.objects.create(name="testprogram")
+        new_program = WorkflowLevel1.objects.create(name="testprogram")
         new_program.save()
         new_program.country.add(get_country)
-        get_program = Program.objects.get(name="testprogram")
+        get_program = WorkflowLevel1.objects.get(name="testprogram")
         new_province = Province.objects.create(name="testprovince", country=get_country)
         new_province.save()
         get_province = Province.objects.get(name="testprovince")

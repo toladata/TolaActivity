@@ -12,7 +12,7 @@
     $(document).ready(function() {
         $("#countries").select2({ placeholder: "Country", allowClear: true });
         $("#id_sector").select2({placeholder: "Sector", allowClear: true,});
-        $("#id_program").select2({placeholder: "Program", allowClear: true,});
+        $("#id_program").select2({placeholder: "WorkflowLevel1", allowClear: true,});
         $('.dateinput').datepicker({  dateFormat: 'yyyy-mm-dd', });
 
         //Show the program table
@@ -58,7 +58,7 @@
                 retrieve: true,
                 data: indicator_records,
                 columns: [
-                    { title: "Program", data: "program__name",
+                    { title: "WorkflowLevel1", data: "program__name",
                                 "mRender": function (data, type, row) {
                                     return '<a id="program_report" name=' + row.program__id + '>' + data + '</a>';
                                 }
@@ -102,7 +102,7 @@
                 retrieve: true,
                 data: collecteddata_records,
                 columns: [
-                    { title: "Program", data: "indicator__program__name"},
+                    { title: "WorkflowLevel1", data: "indicator__program__name"},
                     { title: "Indicator Num.", data: "indicator__number"},
                     { title: "Indicator", data: "indicator__name"},
                     { title: "Targets", data: "targeted"},
@@ -129,7 +129,7 @@
                 retrieve: true,
                 data: project_records,
                 columns: [
-                    { title: "Program", data: "program__name"},
+                    { title: "WorkflowLevel1", data: "program__name"},
                     { title: "Project", data: "project_name"},
                     { title: "Activity Code", data: "activity_code"},
                     { title: "Type", data: "project_type__name"},
@@ -297,7 +297,7 @@
 
         // PROGRAM REPORT
         function program_report(filters) {
-            document.getElementById('report_type').innerHTML = "Program Report";
+            document.getElementById('report_type').innerHTML = "WorkflowLevel1 Report";
             $("#bar-chart").hide();
             $("#doughnut-chart").show();
             $.getJSON("/reports/report_data/", filters, function(data) {
@@ -385,7 +385,7 @@
             });
 
 
-            if (document.getElementById('report_type').innerHTML.valueOf == "Program Report") {
+            if (document.getElementById('report_type').innerHTML.valueOf == "WorkflowLevel1 Report") {
                 // first time do the program report
                 program_report(filters);
             } else if (document.getElementById('report_type').innerHTML.valueOf == "Indicator Report") {
@@ -419,7 +419,7 @@
         </div>
         <div class="col-sm-9">
             <div id='welcome-panel' class="panel panel-success">
-                <div class="panel-heading"> Program Filter Reports</div>
+                <div class="panel-heading"> WorkflowLevel1 Filter Reports</div>
                 <div class="panel-body" id="welcome" style="padding:5px;"> Filter your search in the panel on the left to see results.</div>
             </div>
             <div id='data-panel' class="panel panel-primary" style="display: none;">

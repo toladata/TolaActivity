@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
+from .models import ProjectAgreement, ProjectComplete, WorkflowLevel1, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -409,7 +409,7 @@ class ProjectAgreementForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
@@ -653,7 +653,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
@@ -693,7 +693,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
     actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
+    program = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
 
     def __init__(self, *args, **kwargs):
         #get the user object from request to check permissions
@@ -729,7 +729,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries)
 
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
@@ -751,7 +751,7 @@ class ProjectCompleteForm(forms.ModelForm):
     actual_cost_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
+    program = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -978,7 +978,7 @@ class ProjectCompleteForm(forms.ModelForm):
 
         # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
         # override the office queryset to use request.user for country
@@ -1022,7 +1022,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
     actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
+    program = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -1244,7 +1244,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
 
         # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries)
         #self.fields['project_agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
@@ -1423,7 +1423,7 @@ class DocumentationForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['project'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
-        self.fields['program'].queryset = Program.objects.filter(country__in=countries)
+        self.fields['program'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
 
 
 class QuantitativeOutputsForm(forms.ModelForm):

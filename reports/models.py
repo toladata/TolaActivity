@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib import admin
-from workflow.models import Program, ProjectAgreement, ProjectComplete, Country
+from workflow.models import WorkflowLevel1, ProjectAgreement, ProjectComplete, Country
 from indicators.models import Indicator, CollectedData
 
 
 class Report(models.Model):
     country = models.ForeignKey(Country)
-    program = models.ForeignKey(Program, null=True, blank=True)
+    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
     complete = models.ForeignKey(ProjectComplete, null=True, blank=True)
     indicator = models.ForeignKey(Indicator, null=True, blank=True)

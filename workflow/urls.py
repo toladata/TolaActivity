@@ -8,8 +8,8 @@ urlpatterns = [
                        url(r'^dashboard/project/(?P<pk>\w+)/$', ProjectDash.as_view(), name='project_dashboard'),
                        url(r'^dashboard/project/(?P<pk>\w+)$', ProjectDash.as_view(), name='project_dashboard'),
                        url(r'^dashboard/project', ProjectDash.as_view(), name='project_dashboard'),
-                       url(r'^dashboard/(?P<pk>\w+)/(?P<status>[\w ]+)/$', ProgramDash.as_view(), name='dashboard'),
-                       url(r'^dashboard/(?P<pk>\w+)/$', ProgramDash.as_view(), name='dashboard'),
+                       url(r'^dashboard/(?P<pk>\w+)/(?P<status>[\w ]+)/$', Level1Dash.as_view(), name='dashboard'),
+                       url(r'^dashboard/(?P<pk>\w+)/$', Level1Dash.as_view(), name='dashboard'),
 
                        url(r'^projectagreement_list/(?P<pk>\w+)/(?P<status>[\w ]+)/$', ProjectAgreementList.as_view(), name='projectagreement_list'),
                        url(r'^projectagreement_add/$', ProjectAgreementCreate.as_view(), name='projectagreement_add'),

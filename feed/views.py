@@ -1,6 +1,6 @@
 from .serializers import *
 
-from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
+from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, Checklist
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
@@ -51,13 +51,13 @@ class ProgramViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = Program.objects.all().filter(country__in=user_countries)
+        queryset = WorkflowLevel1.objects.all().filter(country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     filter_fields = ('country__country','name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    queryset = Program.objects.all()
+    queryset = WorkflowLevel1.objects.all()
     serializer_class = ProgramSerializer
 
 

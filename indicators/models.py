@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib import admin
-from workflow.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
+from workflow.models import WorkflowLevel1, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime
 import uuid
 from simple_history.models import HistoricalRecords
 from decimal import Decimal
+
 
 class TolaTable(models.Model):
     name = models.CharField(max_length=255, blank=True)
@@ -71,7 +72,7 @@ class StrategicObjectiveAdmin(admin.ModelAdmin):
 
 class Objective(models.Model):
     name = models.CharField(max_length=135, blank=True)
-    program = models.ForeignKey(Program, null=True, blank=True)
+    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -228,14 +229,14 @@ class ExternalServiceRecordAdmin(admin.ModelAdmin):
 
 class IndicatorManager(models.Manager):
     def get_queryset(self):
-        return super(IndicatorManager, self).get_queryset().prefetch_related('program').select_related('sector')
+        return super(IndicatorManager, self).get_queryset().prefetch_related('workflowlevel1').select_related('sector')
 
 
 class Indicator(models.Model):
     indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
-    objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Program Objective", related_name="obj_indicator")
+    objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Objective", related_name="obj_indicator")
     strategic_objectives = models.ManyToManyField(StrategicObjective, verbose_name="Country Strategic Objective", blank=True, related_name="strat_indicator")
     name = models.CharField(max_length=255, null=False)
     number = models.CharField(max_length=255, null=True, blank=True)
@@ -251,9 +252,9 @@ class Indicator(models.Model):
     information_use = models.CharField(max_length=255, null=True, blank=True)
     reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True)
     comments = models.TextField(max_length=255, null=True, blank=True)
-    program = models.ManyToManyField(Program)
+    program = models.ManyToManyField(WorkflowLevel1)
     sector = models.ForeignKey(Sector, null=True, blank=True)
-    key_performance_indicator = models.BooleanField("Key Performance Indicator for this program?",default=False)
+    key_performance_indicator = models.BooleanField("Key Performance Indicator?",default=False)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
     approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="indicator_submitted_by")
     external_service_record = models.ForeignKey(ExternalServiceRecord, verbose_name="External Service ID", blank=True, null=True)
@@ -288,7 +289,7 @@ class Indicator(models.Model):
 
     @property
     def programs(self):
-        return ', '.join([x.name for x in self.program.all()])
+        return ', '.join([x.name for x in self.workflowlevel1.all()])
 
     @property
     def indicator_types(self):
@@ -320,7 +321,7 @@ class CollectedData(models.Model):
     indicator = models.ForeignKey(Indicator)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
-    program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
+    program = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="i_level1")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
@@ -363,5 +364,5 @@ class CollectedData(models.Model):
 
 class CollectedDataAdmin(admin.ModelAdmin):
     list_display = ('indicator','date_collected', 'create_date', 'edit_date')
-    list_filter = ['indicator__program__country__country']
+    list_filter = ['indicator__workflowlevel1__country__country']
     display = 'Indicator Output/Outcome Collected Data'
