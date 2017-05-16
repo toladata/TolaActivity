@@ -452,7 +452,7 @@ class ProjectAgreementDelete(DeleteView):
     Project Agreement Delete
     """
     model = ProjectAgreement
-    success_url = 'workflow/dashboard/0/'
+    success_url = '/workflow/dashboard/0/'
 
     @method_decorator(group_required('Country',url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
