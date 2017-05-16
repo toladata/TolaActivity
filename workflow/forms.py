@@ -757,7 +757,9 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
         self.fields['program2'].initial = kwargs['initial'].get('program')
         self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].label = "Program"
         self.fields['project_agreement2'].initial = "%s - %s" % (kwargs['initial'].get('office'),  kwargs['initial'].get('project_name', 'No project name') )
+        self.fields['project_agreement2'].label = "Project Initiation"
         self.fields['project_agreement'].widget = forms.HiddenInput()
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
