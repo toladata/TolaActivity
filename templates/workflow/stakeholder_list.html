@@ -15,8 +15,8 @@
   </button>
 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
         <li role="presentation"><a role="menuitem" tabindex="-1" href=" ">-- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% for workflowlevel1 in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>
     {% endfor %}
   </ul>
 <a href="/workflow/stakeholder_add/0/" class="btn btn-large btn-success">New Stakeholder</a> &nbsp;
@@ -103,7 +103,7 @@
         }
 
 function program_filter(program_id) {
-        // get the program and indicator id from the url
+        // get the workflowlevel1 and indicator id from the url
         if (program_id != 0) {
 
             $.getJSON("/workflow/stakeholder_table/"+ program_id + "/0/", function(data) {  

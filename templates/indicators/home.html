@@ -15,8 +15,8 @@
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/0/0/0/"> -- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}/0/0/">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% for workflowlevel1 in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}/0/0/">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>
     {% endfor %}
     </ul>
     <a href="/indicators/indicator" class="btn btn-large btn-success">New Indicator</a>
@@ -24,10 +24,10 @@
     <br/>
     <div class="jumbotron">
         <h3>Indicators</h3>
-        {% regroup getIndicators by program.gaitid as programs_by_gaitid %}
+        {% regroup getIndicators by workflowlevel1.gaitid as programs_by_gaitid %}
         {% for item in programs_by_gaitid %}
         <div class="jumbotron dashboard">
-            <h4>{{ item.program.gaitid }} - {{ item.program.name }}</h4>
+            <h4>{{ item.workflowlevel1.gaitid }} - {{ item.workflowlevel1.name }}</h4>
             {% if item.programs.agreement.indicator.all %}
                 <!-- Table -->
                 <table class="table">

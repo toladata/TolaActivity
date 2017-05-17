@@ -27,7 +27,7 @@ class FilterForm(forms.Form):
         empty_label = None,
         widget = forms.SelectMultiple(),
     )
-    program = forms.ModelChoiceField(
+    workflowlevel1 = forms.ModelChoiceField(
         queryset = WorkflowLevel1.objects.all(),
         required = False,
         empty_label = None,
@@ -51,7 +51,7 @@ class FilterForm(forms.Form):
         self.helper.layout = Layout(
             # set custom id for country becasue of javascript reuse of default id
             Field('country', css_class="input-sm", id="countries"),
-            Field('program', css_class="input-sm"),
+            Field('workflowlevel1', css_class="input-sm"),
             Field('sector', css_class='input-sm'),
             #Field('start_date', css_class='input-sm'),
             #Field('end_date', css_class='input-sm'),

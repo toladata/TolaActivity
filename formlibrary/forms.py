@@ -39,7 +39,7 @@ class TrainingAttendanceForm(forms.ModelForm):
 
         countries = getCountry(self.request.user)
         self.fields['project_agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
-        self.fields['program'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
+        self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
 
 
 class DistributionForm(forms.ModelForm):
@@ -68,7 +68,7 @@ class DistributionForm(forms.ModelForm):
 
         countries = getCountry(self.request.user)
         self.fields['initiation'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
-        self.fields['program'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
+        self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
         self.fields['office_code'].queryset = Office.objects.filter(province__country__in=countries)
         self.fields['province'].queryset = Province.objects.filter(country__in=countries)
 

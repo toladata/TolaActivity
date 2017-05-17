@@ -24,7 +24,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
-        $("select#program").change(function() {
+        $("select#workflowlevel1").change(function() {
 
             if ($(this).val() == 'all') {
                     $("select#project").html("<option>project(s)</option>");
@@ -61,7 +61,7 @@
 
         $('select#project').change(function(){
             project_id = $(this).val();
-            program_id = $('select#program').val();
+            program_id = $('select#workflowlevel1').val();
             program_filter(program_id, project_id);
         });
       program_filter(0, 0);

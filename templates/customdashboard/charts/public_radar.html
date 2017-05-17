@@ -2,7 +2,7 @@
 $('a[href=#i_surveys]').on('shown.bs.tab', function(){
 //render survey_responses on radar_chart
     var survey_data = {
-        //labels : [{% for program in getQuantitativeDataSums_2 %} "{{ program.indicator__source }}", {% endfor %}],
+        //labels : [{% for workflowlevel1 in getQuantitativeDataSums_2 %} "{{ workflowlevel1.indicator__source }}", {% endfor %}],
         labels : ["Helpful","Friendly","Kind","Rude","Slow","Frustrating"],
         datasets : [
             {

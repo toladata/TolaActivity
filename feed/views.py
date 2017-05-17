@@ -139,7 +139,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
         return blank
     """
 
-    filter_fields = ('program__country__country','program__name')
+    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ProjectAgreement.objects.all()
     serializer_class = AgreementSerializer
@@ -159,7 +159,7 @@ class CompleteViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('program__country__country','program__name')
+    filter_fields = ('workflowlevel1_country__country','workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ProjectComplete.objects.all()
     serializer_class = CompleteSerializer
@@ -179,7 +179,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('program__country__country','program__name')
+    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
@@ -398,7 +398,7 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('indicator__program__country__country', 'indicator__program__name')
+    filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CollectedData.objects.all()
     serializer_class = CollectedDataSerializer
@@ -417,7 +417,7 @@ class TolaTableViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'collecteddata__indicator__program__name')
+    filter_fields = ('country__country', 'collecteddata__indicator__workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = TolaTable.objects.all()
     serializer_class = TolaTableSerializer
@@ -436,7 +436,7 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'indicator__program__name')
+    filter_fields = ('country__country', 'indicator__workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = DisaggregationValue.objects.all()
     serializer_class = DisaggregationValueSerializer

@@ -62,7 +62,7 @@ class AgreementSerializer(serializers.HyperlinkedModelSerializer):
         model = ProjectAgreement
         fields=(
                 'id',
-                'program',
+                'workflowlevel1',
                 'date_of_request',
                 'project_name',
                 'project_type',

@@ -12,7 +12,7 @@ class IndicatorResource(resources.ModelResource):
     indicator_type = fields.Field(column_name='indicator types', attribute='indicator_types')
     objectives = fields.Field(column_name='objectives', attribute='objectives_list')
     strategic_objectives = fields.Field(column_name='strategic objectives', attribute='strategicobjectives_list')
-    program = fields.Field(column_name='program', attribute='programs')
+    workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1')
     sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
     reporting_frequency = fields.Field(column_name='reporting_frequency', attribute='reporting_frequency', widget=ForeignKeyWidget(ReportingFrequency, 'frequency'))
     level = fields.Field(column_name='levels', attribute='levels')
@@ -36,7 +36,7 @@ class CollectedDataResource(resources.ModelResource):
     indicator_level = fields.Field(column_name='indicator_level', attribute='indicator',widget=ForeignKeyWidget(Indicator, 'levels'))
     agreement = fields.Field(column_name='agreement', attribute='agreement',  widget=ForeignKeyWidget(ProjectAgreement, 'project_name_clean'))
     complete = fields.Field(column_name='complete', attribute='complete',  widget=ForeignKeyWidget(ProjectComplete, 'project_name_clean'))
-    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
+    workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
     disaggregations = fields.Field(column_name='dissaggregations', attribute='disaggregations')
 
     class Meta:

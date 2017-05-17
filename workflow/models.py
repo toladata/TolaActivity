@@ -166,7 +166,7 @@ class TolaBookmarks(models.Model):
     user = models.ForeignKey(TolaUser, related_name='tolabookmark')
     name = models.CharField(blank=True, null=True, max_length=255)
     bookmark_url = models.CharField(blank=True, null=True, max_length=255)
-    program = models.ForeignKey("WorkflowLevel1", blank=True, null=True)
+    workflowlevel1 = models.ForeignKey("WorkflowLevel1", blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -290,7 +290,7 @@ class ContactAdmin(admin.ModelAdmin):
     search_fields = ('name','country','title','city')
 
 
-# For programs that have custom dashboards. The default dashboard for all other programs is 'Program Dashboard'
+# For workflowlevel1 that have custom dashboards. The default dashboard for all other workflowlevel1 is 'workflowlevel1 Dashboard'
 class FundCode(models.Model):
     name = models.CharField("Fund Code", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -312,7 +312,7 @@ class FundCode(models.Model):
 
 
 class FundCodeAdmin(admin.ModelAdmin):
-    list_display = ('name','program__name', 'create_date', 'edit_date')
+    list_display = ('name','workflowlevel1__name', 'create_date', 'edit_date')
     display = 'Fund Code'
 
 
@@ -520,9 +520,9 @@ class Office(models.Model):
 
 
 class OfficeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'province', 'create_date', 'edit_date')
-    search_fields = ('name','province__name','code')
-    list_filter = ('create_date','province__country__country')
+    list_display = ('name', 'code', 'country', 'create_date', 'edit_date')
+    search_fields = ('name','country__country','code')
+    list_filter = ('create_date','country__country')
     display = 'Office'
 
 
@@ -884,7 +884,7 @@ class Migration(migrations.Migration):
 class ProjectAgreement(models.Model):
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
     short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
-    program = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="agreement")
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="WorkflowLevel1", related_name="agreement")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     # Rename to more generic "nonproject" names
     project_name = models.CharField("Project Name", help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW', max_length=255)
@@ -1040,7 +1040,7 @@ class Migration(migrations.Migration):
 """
 class ProjectComplete(models.Model):
     short = models.BooleanField(default=True,verbose_name="Short Form (recommended)")
-    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True, related_name="complete")
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True, related_name="complete")
     project_agreement = models.OneToOneField(ProjectAgreement, verbose_name="Project Initiation")
     # Rename to more generic "nonproject" names
     activity_code = models.CharField("Project Code", max_length=255, blank=True, null=True)
@@ -1146,7 +1146,7 @@ class Documentation(models.Model):
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     project = models.ForeignKey(ProjectAgreement, blank=True, null=True)
-    program = models.ForeignKey(WorkflowLevel1)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

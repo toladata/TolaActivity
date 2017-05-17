@@ -15,7 +15,7 @@
         $("#id_program").select2({placeholder: "WorkflowLevel1", allowClear: true,});
         $('.dateinput').datepicker({  dateFormat: 'yyyy-mm-dd', });
 
-        //Show the program table
+        //Show the workflowlevel1 table
         function show_program_table(program_data,filters) {
             myRecords = JSON.parse(program_data);
             //First destroy any old version of the table to refresh anew
@@ -35,8 +35,8 @@
                     ]
             } );
 
-            // provide export url and filters for program
-            $('#export').click(function(){ do_export(filters,"program"); });
+            // provide export url and filters for workflowlevel1
+            $('#export').click(function(){ do_export(filters,"workflowlevel1"); });
 
         }
 
@@ -49,7 +49,7 @@
                 $('#data_table').empty();
             };
 
-            //go back to a program report if clicks
+            //go back to a workflowlevel1 report if clicks
             $("#id_search_form_reset_btn").on('click',function(){
                 program_report(filters);
             });
@@ -93,7 +93,7 @@
                 $('#data_table').empty();
             };
 
-            //go back to a program report if clicks
+            //go back to a workflowlevel1 report if clicks
             $("#id_search_form_reset_btn").on('click',function(){
                 program_report(filters);
             });
@@ -302,7 +302,7 @@
             $("#doughnut-chart").show();
             $.getJSON("/reports/report_data/", filters, function(data) {
                 //console.log(filters);
-                show_program_table(data['program'],filters);
+                show_program_table(data['workflowlevel1'],filters);
                 show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count'],data['nostatus_count'],filters);
                 show_indicator_charts(data['indicator_count'], data['data_count'],filters);
 
@@ -386,16 +386,16 @@
 
 
             if (document.getElementById('report_type').innerHTML.valueOf == "WorkflowLevel1 Report") {
-                // first time do the program report
+                // first time do the workflowlevel1 report
                 program_report(filters);
             } else if (document.getElementById('report_type').innerHTML.valueOf == "Indicator Report") {
-                // first time do the program report
+                // first time do the workflowlevel1 report
                 indicator_report(filters);
             } else if (document.getElementById('report_type').innerHTML.valueOf == "Collected Data Report") {
-                // first time do the program report
+                // first time do the workflowlevel1 report
                 collecteddata_report(filters);
             } else {
-                // first time do the program report
+                // first time do the workflowlevel1 report
                 program_report(filters);
             }
         });

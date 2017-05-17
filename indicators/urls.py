@@ -28,7 +28,7 @@ urlpatterns = [
     # Indicator Report
     url(r'^report/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', 'indicators.views.indicator_report', name='indicator_report'),
     url(r'^report_table/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorReport.as_view(), name='indicator_table'),
-    url(r'^program_report/(?P<program>\w+)/$', 'indicators.views.programIndicatorReport',name='programIndicatorReport'),
+    url(r'^program_report/(?P<program>\w+)/$', 'indicators.views.WorkflowLevel1IndicatorReport',name='programIndicatorReport'),
 
     # Indicator Data Report
     url(r'^data/(?P<id>\w+)/(?P<program>\w+)/(?P<type>\w+)/$', 'indicators.views.indicator_data_report', name='indicator_data_report'),
@@ -42,7 +42,7 @@ urlpatterns = [
     # ajax calls
     url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
     url(r'^collected_data_table/(?P<indicator>[-\w]+)/(?P<program>[-\w]+)/', 'indicators.views.collected_data_json', name='collected_data_json'),
-    url(r'^program_indicators/(?P<program>[-\w]+)/(?P<indicator>[-\w]+)/(?P<type>[-\w]+)', 'indicators.views.program_indicators_json', name='program_indicators_json'),
+    url(r'^program_indicators/(?P<program>[-\w]+)/(?P<indicator>[-\w]+)/(?P<type>[-\w]+)', 'indicators.views.workflowlevel1_indicators_json', name='workflowlevel1_indicators_json'),
     url(r'^report_data/(?P<id>\w+)/(?P<program>\w+)/(?P<type>\w+)/$', IndicatorReportData.as_view(),name='indicator_report_data'),
     url(r'^report_data/(?P<id>\w+)/(?P<program>\w+)/(?P<indicator_type>\w+)/export/$', IndicatorExport.as_view(),name='indicator_export'),
     url(r'^collecteddata_report_data/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', CollectedDataReportData.as_view(), name='collecteddata_report_data'),

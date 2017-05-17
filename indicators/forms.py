@@ -28,7 +28,7 @@ class IndicatorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
         self.request = kwargs.pop('request')
-        self.program = kwargs.pop('program')
+        self.workflowlevel1 = kwargs.pop('workflowlevel1')
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -44,7 +44,7 @@ class IndicatorForm(forms.ModelForm):
             TabHolder(
                 Tab('Summary',
                      Fieldset('',
-                        'program','sector','objectives','strategic_objectives', 'country',
+                        'workflowlevel1','sector','objectives','strategic_objectives', 'country',
                         ),
                 ),
                 Tab('Performance',
@@ -108,9 +108,9 @@ class IndicatorForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['disaggregation'].queryset = DisaggregationType.objects.filter(country__in=countries).filter(standard=False)
-        self.fields['objectives'].queryset = Objective.objects.all().filter(program__id__in=self.program)
+        self.fields['objectives'].queryset = Objective.objects.all().filter(program__id__in=self.workflowlevel1)
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
@@ -127,7 +127,7 @@ class CollectedDataForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
-        self.program = kwargs.pop('program')
+        self.workflowlevel1 = kwargs.pop('workflowlevel1')
         self.tola_table = kwargs.pop('tola_table')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
@@ -143,7 +143,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'date_collected','indicator', 'program','description','site',
+                'targeted', 'achieved', 'date_collected','indicator', 'workflowlevel1','description','site',
 
             ),
 
@@ -264,17 +264,17 @@ class CollectedDataForm(forms.ModelForm):
         super(CollectedDataForm, self).__init__(*args, **kwargs)
 
         #override the program queryset to use request.user for country
-        self.fields['evidence'].queryset = Documentation.objects.filter(program=self.program)
+        self.fields['evidence'].queryset = Documentation.objects.filter(workflowlevel1=self.workflowlevel1)
 
         #override the program queryset to use request.user for country
-        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
+        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(workflowlevel1=self.workflowlevel1)
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
 
         #override the program queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
-        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
+        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False,workflowlevel1__country__in=countries)
         self.fields['tola_table'].queryset = TolaTable.objects.filter(Q(owner=self.request.user) | Q(id=self.tola_table))

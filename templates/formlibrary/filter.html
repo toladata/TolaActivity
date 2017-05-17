@@ -3,8 +3,8 @@
   <select id="program" class="listoption_filters">
     <option>WorkflowLevel1(s)</option>
     <option value="all">---ALL---</option>
-    {% for program in getPrograms %}
-      <option value="{{program.id}}">{{program.name}}</option>
+    {% for workflowlevel1 in getPrograms %}
+      <option value="{{program.id}}">{{workflowlevel1.name}}</option>
     {% endfor %}
   </select>
 </div>

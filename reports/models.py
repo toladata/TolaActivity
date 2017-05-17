@@ -6,7 +6,7 @@ from indicators.models import Indicator, CollectedData
 
 class Report(models.Model):
     country = models.ForeignKey(Country)
-    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True)
     complete = models.ForeignKey(ProjectComplete, null=True, blank=True)
     indicator = models.ForeignKey(Indicator, null=True, blank=True)
@@ -22,7 +22,7 @@ class Report(models.Model):
 
 
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('country','program','description','create_date','edit_date')
+    list_display = ('country','workflowlevel1','description','create_date','edit_date')
     display = 'Project Status'
 
 

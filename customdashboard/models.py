@@ -6,7 +6,7 @@ from workflow.models import WorkflowLevel1
 
 class JupyterNotebooks(models.Model):
     name = models.CharField("Notebook Name", max_length=255)
-    program = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
     very_custom_dashboard = models.CharField("Specialty Custom Dashboard Links",blank=True, null=True, max_length=255)
     file = models.FileField("HTML/Jupyter Nontebook File", blank=True,null=True,upload_to="media")
     create_date = models.DateTimeField(null=True, blank=True)
@@ -22,6 +22,6 @@ class JupyterNotebooks(models.Model):
 
 
 class JupyterNotebooksAdmin(admin.ModelAdmin):
-    list_display = ('name','program','very_custom_dashboard','create_date','edit_date')
+    list_display = ('name','workflowlevel1','very_custom_dashboard','create_date','edit_date')
     display = 'Jupyter Notebooks'
 

@@ -12,7 +12,7 @@ except ImportError:
 
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
-    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
@@ -53,14 +53,14 @@ class TrainingAttendance(models.Model):
 
 
 class TrainingAttendanceAdmin(admin.ModelAdmin):
-    list_display = ('training_name', 'program', 'project_agreement', 'create_date', 'edit_date')
+    list_display = ('training_name', 'workflowlevel1', 'project_agreement', 'create_date', 'edit_date')
     display = 'Training Attendance'
-    list_filter = ('program__country','program')
+    list_filter = ('workflowlevel1__country','workflowlevel1')
 
 
 class Distribution(models.Model):
     distribution_name = models.CharField(max_length=255)
-    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     initiation = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
     office_code = models.ForeignKey(Office, null=True, blank=True)
     distribution_indicator = models.CharField(max_length=255)
@@ -109,7 +109,7 @@ class Distribution(models.Model):
 
 
 class DistributionAdmin(admin.ModelAdmin):
-    list_display = ('distribution_name', 'program', 'initiation', 'create_date', 'edit_date')
+    list_display = ('distribution_name', 'workflowlevel1', 'initiation', 'create_date', 'edit_date')
     display = 'Program Dashboard'
 
 
@@ -123,7 +123,7 @@ class Beneficiary(models.Model):
     site = models.ForeignKey(SiteProfile, null=True, blank=True)
     signature = models.BooleanField(default=True)
     remarks = models.CharField(max_length=255, null=True, blank=True)
-    program = models.ManyToManyField(WorkflowLevel1, blank=True)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

@@ -72,13 +72,13 @@ class StrategicObjectiveAdmin(admin.ModelAdmin):
 
 class Objective(models.Model):
     name = models.CharField(max_length=135, blank=True)
-    program = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('program','name')
+        ordering = ('workflowlevel1','name')
 
     def __unicode__(self):
         return self.name
@@ -90,9 +90,9 @@ class Objective(models.Model):
 
 
 class ObjectiveAdmin(admin.ModelAdmin):
-    list_display = ('program','name')
-    search_fields = ('name','program__name')
-    list_filter = ('program__country__country',)
+    list_display = ('workflowlevel1','name')
+    search_fields = ('name','workflowlevel1__name')
+    list_filter = ('workflowlevel1__country__country',)
     display = 'Objectives'
 
 
@@ -252,7 +252,7 @@ class Indicator(models.Model):
     information_use = models.CharField(max_length=255, null=True, blank=True)
     reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True)
     comments = models.TextField(max_length=255, null=True, blank=True)
-    program = models.ManyToManyField(WorkflowLevel1)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1)
     sector = models.ForeignKey(Sector, null=True, blank=True)
     key_performance_indicator = models.BooleanField("Key Performance Indicator?",default=False)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
@@ -309,7 +309,7 @@ class Indicator(models.Model):
 
 class CollectedDataManager(models.Manager):
     def get_queryset(self):
-        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('program','indicator','agreement','complete','evidence','tola_table')
+        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('workflowlevel1','indicator','agreement','complete','evidence','tola_table')
 
 
 class CollectedData(models.Model):
@@ -321,7 +321,7 @@ class CollectedData(models.Model):
     indicator = models.ForeignKey(Indicator)
     agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
     complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
-    program = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="i_level1")
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="i_workflowlevel1")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")

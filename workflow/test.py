@@ -55,7 +55,7 @@ class AgreementTestCase(TestCase):
         #load from fixtures
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
-        new_agreement = ProjectAgreement.objects.create(program=get_program, project_name="testproject", project_type=get_project_type,
+        new_agreement = ProjectAgreement.objects.create(workflowlevel1=get_program, project_name="testproject", project_type=get_project_type,
                                                       activity_code="111222",office=get_office,
                                                       sector=get_sector)
         new_agreement.save()
@@ -118,13 +118,13 @@ class CompleteTestCase(TestCase):
         #load from fixtures
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
-        new_agreement = ProjectAgreement.objects.create(program=get_program, project_name="testproject", project_type=get_project_type,
+        new_agreement = ProjectAgreement.objects.create(workflowlevel1=get_program, project_name="testproject", project_type=get_project_type,
                                                         activity_code="111222", office=get_office,
                                                         sector=get_sector)
         new_agreement.save()
         new_agreement.site.add(get_community)
         get_agreement = ProjectAgreement.objects.get(project_name="testproject")
-        new_complete = ProjectComplete.objects.create(program=get_program, project_name="testproject",
+        new_complete = ProjectComplete.objects.create(workflowlevel1=get_program, project_name="testproject",
                                                       activity_code="111222",office=get_office,on_time=True,
                                                        community_handover=1, project_agreement=get_agreement)
         new_complete.save()

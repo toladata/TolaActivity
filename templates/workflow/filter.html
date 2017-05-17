@@ -5,8 +5,8 @@
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
    <li role="presentation"><a role="menuitem" tabindex="-1" href=" ">-- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.name }}</a></li>
+    {% for workflowlevel1 in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ workflowlevel1.name }}</a></li>
     {% endfor %}
   </ul>
 </div>

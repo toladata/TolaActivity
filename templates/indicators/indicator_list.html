@@ -7,10 +7,10 @@
 /*
 *  Load the collected data for an indicator on the results page
 */
-function loadCollected(indicator,program){
+function loadCollected(indicator,workflowlevel1){
     var indicator;
     $('.ajaxLoader').show();
-    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
+    $.get('/indicators/collected_data_table/' + indicator + '/' + workflowlevel1 + '/', function(data){
         $('#hidden-' + indicator).html(data);
     });
     $('.ajaxLoader').hide();
@@ -19,18 +19,18 @@ function loadCollected(indicator,program){
 /*
 *  Load the collected data for an indicator on the results page
 */
-function loadIndicators(program,indicator,type){
-    var program;
+function loadIndicators(workflowlevel1,indicator,type){
+    var workflowlevel1;
     $('.ajaxLoader').show();
-    $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
-        $('#hidden-' + program).html(data);
+    $.get('/indicators/program_indicators/' + workflowlevel1 + '/' + indicator + '/' + type + '/', function(data){
+        $('#hidden-' + workflowlevel1).html(data);
       });
     $('.ajaxLoader').hide();
-    $('#hidden-' + program).on('shown', function () {
+    $('#hidden-' + workflowlevel1).on('shown', function () {
        $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
     });
 
-    $('#hidden-' + program).on('hidden', function () {
+    $('#hidden-' + workflowlevel1).on('hidden', function () {
        $(".icon-chevron-up").removeClass("icon-chevron-up").addClass("icon-chevron-down");
     });
 };
@@ -40,17 +40,17 @@ function loadIndicators(program,indicator,type){
 
 <!-- Default panel contents -->
 {% if getProgramsIndicator %}
-    {% for program in getProgramsIndicator %}
+    {% for workflowlevel1 in getProgramsIndicator %}
         <div class='panel panel-default'>
-            <div class='panel-heading'><h4>{{ program.name|truncatechars:85 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
-            {% if not program.indicator_set.all %}
+            <div class='panel-heading'><h4>{{ workflowlevel1.name|truncatechars:85 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
+            {% if not workflowlevel1.indicator_set.all %}
                 <div class='panel-body'>
-                    <h4>No Indicators have been entered for this program</h4>
+                    <h4>No Indicators have been entered for this workflowlevel1</h4>
                     <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
                 </div>
             {% else %}
                 <div class='panel-body'>
-                    <a onclick="loadIndicators({{ program.id }},{{indicator}},{{type}})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
+                    <a onclick="loadIndicators({{ workflowlevel1.id }},{{indicator}},{{type}})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ workflowlevel1.indicator_count }} Indicators </a>
                 </div>
                 <div id="hidden-{{ program.id }}" class="accordian-body collapse">
                     {% include "indicators/program_indicators_table.html" %}

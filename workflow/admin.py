@@ -9,7 +9,7 @@ from admin_report.mixins import ChartReportAdmin
 # Resource for CSV export
 class DocumentationResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
-    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
+    workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
     project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(ProjectAgreement, 'project_name'))
 
     class Meta:
@@ -23,8 +23,8 @@ class DocumentationResource(resources.ModelResource):
 
 class DocumentationAdmin(ImportExportModelAdmin):
     resource_class = DocumentationResource
-    list_display = ('program','project')
-    list_filter = ('program__country',)
+    list_display = ('workflowlevel1','project')
+    list_filter = ('workflowlevel1__country',)
     pass
 
 
@@ -43,8 +43,8 @@ class ProjectAgreementResource(resources.ModelResource):
 
 class ProjectAgreementAdmin(ImportExportModelAdmin):
     resource_class = ProjectAgreementResource
-    list_display = ('program','project_name','short','create_date')
-    list_filter = ('program__country','short')
+    list_display = ('workflowlevel1','project_name','short','create_date')
+    list_filter = ('workflowlevel1__country','short')
     filter_horizontal = ('capacity','evaluate','site','stakeholder')
 
     def queryset(self, request, queryset):
@@ -78,8 +78,8 @@ class ProjectCompleteResource(resources.ModelResource):
 
 class ProjectCompleteAdmin(ImportExportModelAdmin):
     resource_class = ProjectCompleteResource
-    list_display = ('program', 'project_name', 'activity_code','short','create_date')
-    list_filter = ('program__country', 'office', 'short')
+    list_display = ('workflowlevel1', 'project_name', 'activity_code','short','create_date')
+    list_filter = ('workflowlevel1__country', 'office', 'short')
     display = 'project_name'
 
     def queryset(self, request, queryset):
@@ -133,7 +133,7 @@ class SiteProfileAdmin(ImportExportModelAdmin):
     pass
 
 
-class ProgramAdmin(admin.ModelAdmin):
+class WorkflowLevel1Admin(admin.ModelAdmin):
     list_display = ('countries','name','gaitid', 'description','budget_check','funding_status')
     search_fields = ('name','gaitid')
     list_filter = ('funding_status','country','budget_check','funding_status')
@@ -193,7 +193,7 @@ admin.site.register(Office, OfficeAdmin)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
 admin.site.register(Village)
-admin.site.register(WorkflowLevel1, ProgramAdmin)
+admin.site.register(WorkflowLevel1, WorkflowLevel1Admin)
 admin.site.register(Sector)
 admin.site.register(ProjectAgreement, ProjectAgreementAdmin)
 admin.site.register(ProjectComplete, ProjectCompleteAdmin)

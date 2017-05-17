@@ -10,7 +10,7 @@ class TrainingAttendanceTestCase(TestCase):
         new_program = WorkflowLevel1.objects.create(name="testprogram")
         new_program.save()
         get_program = WorkflowLevel1.objects.get(name="testprogram")
-        new_training = TrainingAttendance.objects.create(training_name="testtraining", program=get_program,
+        new_training = TrainingAttendance.objects.create(training_name="testtraining", workflowlevel1=get_program,
                                                            implementer = "34",
                                                            reporting_period = "34",
                                                            total_participants = "34",
@@ -62,13 +62,13 @@ class DistributionTestCase(TestCase):
         get_community = SiteProfile.objects.get(name="testcommunity")
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
-        new_agreement = ProjectAgreement.objects.create(program=get_program, project_name="testproject", project_type=get_project_type,
+        new_agreement = ProjectAgreement.objects.create(workflowlevel1=get_program, project_name="testproject", project_type=get_project_type,
                                                         activity_code="111222", office=get_office,
                                                         sector=get_sector)
         new_agreement.save()
         new_agreement.site.add(get_community)
         get_agreement = ProjectAgreement.objects.get(project_name="testproject")
-        new_distribution = Distribution.objects.create(distribution_name="testdistribution", program=get_program,
+        new_distribution = Distribution.objects.create(distribution_name="testdistribution", workflowlevel1=get_program,
                                                             initiation=get_agreement,
                                                             office_code=get_office,
                                                             distribution_indicator = "34",
@@ -114,7 +114,7 @@ class BeneficiaryTestCase(TestCase):
         new_program = WorkflowLevel1.objects.create(name="testprogram")
         new_program.save()
         get_program = WorkflowLevel1.objects.get(name="testprogram")
-        new_training = TrainingAttendance.objects.create(training_name="testtraining", program=get_program)
+        new_training = TrainingAttendance.objects.create(training_name="testtraining", workflowlevel1=get_program)
         new_training.save()
         get_training = TrainingAttendance.objects.get(training_name="testtraining")
         new_benny = Beneficiary.objects.create(beneficiary_name="Joe Test", father_name="Mr Test", age="42", gender="male", signature=False,remarks="life")

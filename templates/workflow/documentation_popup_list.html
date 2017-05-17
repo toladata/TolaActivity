@@ -24,7 +24,7 @@
         <strong>{{ error|escape }}</strong>
     </div>
 
-    <h4 class="modal-title">{% block page_title %}Documentation List for {{ program }} {% endblock %}</h4>
+    <h4 class="modal-title">{% block page_title %}Documentation List for {{ workflowlevel1 }} {% endblock %}</h4>
     </div>
     <div class="modal-body">
         <div class="dropdown">
@@ -34,8 +34,8 @@
           </button>
           <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                 <li role="presentation"><a data-toggle="modal" data-target="#myModal" role="menuitem" tabindex="-1" href="/workflow/documentation_agreement_list/0/{{ project }}/">-- All --</a></li>
-            {% for program in getPrograms %}
-                <li role="presentation"><a data-toggle="modal" data-target="#myModal" role="menuitem" tabindex="-1" href="/workflow/documentation_agreement_list/{{ program.id }}/{{ project }}/">{{ program.gaitid}} - {{ program.name }}</a></li>
+            {% for workflowlevel1 in getPrograms %}
+                <li role="presentation"><a data-toggle="modal" data-target="#myModal" role="menuitem" tabindex="-1" href="/workflow/documentation_agreement_list/{{ program.id }}/{{ project }}/">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>
             {% endfor %}
           </ul>
         </div>
@@ -50,7 +50,7 @@
             {% for item in getDocumentation %}
             <tr>
                 <td>{{ item.name|truncatechars:90 }}</td>
-                <td>{{ item.program|truncatechars:90 }}</td>
+                <td>{{ item.workflowlevel1|truncatechars:90 }}</td>
                 <td><a class="documents" data-toggle="modal" data-target="#myModal" href="/workflow/documentation_update_project/{{ item.id }}/{{ project }}/" class="btn btn-xs btn-info">Add to Project</a></td>
             </tr>
             {% empty %}

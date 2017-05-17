@@ -693,7 +693,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
     actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
+    workflowlevel1 = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
 
     def __init__(self, *args, **kwargs):
         #get the user object from request to check permissions
@@ -751,7 +751,7 @@ class ProjectCompleteForm(forms.ModelForm):
     actual_cost_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
+    workflowlevel1 = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -1022,7 +1022,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
     actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
+    workflowlevel1 = forms.ModelChoiceField(queryset=WorkflowLevel1.objects.filter(funding_status="Funded"))
 
     approval = forms.ChoiceField(
         choices=APPROVALS,

@@ -38,7 +38,7 @@ class IndicatorTestCase(TestCase):
         new_indicator.save()
         new_indicator.disaggregation.add(get_disaggregation)
         new_indicator.indicator_type.add(get_indicator_type)
-        new_indicator.program.add(get_program)
+        new_indicator.workflowlevel1.add(get_program)
 
         get_indicator = Indicator.objects.get(name="testindicator")
         new_collected = CollectedData.objects.create(targeted="12",achieved="20", description="somevaluecollected", indicator=get_indicator)

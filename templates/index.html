@@ -300,9 +300,9 @@ $(function () {
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
-                                {%for program in programs%}
+                                {%for workflowlevel1 in programs%}
                                 <li class="list-group-item">
-                                    <a href="/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/">{{ program.name }}</a>
+                                    <a href="/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/">{{ workflowlevel1.name }}</a>
                                 </li>
                                 {%endfor%}
                             </ul>
