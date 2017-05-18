@@ -421,8 +421,9 @@ class CollectedDataCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
-        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(Q(disaggregation_type__indicator__id=self.request.POST['indicator']) | Q(disaggregation_type__standard=True))
+        disaggregation_labels = DisaggregationLabel.objects.filter(\
+                                    Q(disaggregation_type__indicator__id=self.request.POST['indicator']) | \
+                                    Q(disaggregation_type__standard=True))
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
@@ -441,16 +442,24 @@ class CollectedDataCreate(CreateView):
 
         new = form.save()
 
-        #save disagg
-        for label in getDisaggregationLabel:
-            for key, value in self.request.POST.iteritems():
-                if key == label.id:
-                    value_to_insert = value
-                else:
-                    value_to_insert = None
-            if value_to_insert:
-                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=new)
-                insert_disaggregationvalue.save()
+        process_disaggregation = False
+
+        for label in disaggregation_labels:
+            if process_disaggregation == True:
+                break
+            for k, v in self.request.POST.iteritems():
+                if k == str(label.id) and len(v) > 0:
+                    process_disaggregation = True
+                    break
+
+        if process_disaggregation == True:
+            for label in disaggregation_labels:
+                for k, v in self.request.POST.iteritems():
+                    if k == str(label.id):
+                        save = new.disaggregation_value.create(disaggregation_label=label, value=v)
+                        new.disaggregation_value.add(save.id)
+            process_disaggregation = False
+
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [new])
