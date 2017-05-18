@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load mathfilters %}
-{% block page_title %}WorkflowLevel1 Index{% endblock %}
+{% block page_title %}{{ WORKFLOWLEVEL1 }} Index{% endblock %}
 
 {% block content %}
 
 <div class="dropdown">
     {% include "workflow/filter.html" %}
-    <a href="/workflow/dashboard/project/0/" class="btn btn-sm btn-success">Create a Project</a>
+    <a href="/workflow/dashboard/project/0/" class="btn btn-sm btn-success">Create a {{ WORKFLOWLEVEL2 }}</a>
 </div>
 <br/>
 <div>
@@ -16,7 +16,7 @@
   {% endifnotequal %}
 
   {% if filtered_program %}
-    <p>Filtered by (WorkflowLevel1): {{filtered_program}}</p>
+    <p>Filtered by ({{ workflowlevel1 }}): {{filtered_program}}</p>
   {% endif %}
     {% for workflowlevel1 in getDashboard %}
         {% if workflowlevel1.agreement.all %}

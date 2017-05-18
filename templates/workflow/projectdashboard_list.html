@@ -2,23 +2,23 @@
 {% block bread_crumb %}
 <div>
 <ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">WorkflowLevel1 Index</a></li>
-  <li class="active">Project Dashboard</li>
+  <li><a href="/workflow/dashboard/0/">{{ WORKFLOWLEVEL1 }} Index</a></li>
+  <li class="active">{{ WORKFLOWLEVEL2 }} Dashboard</li>
 </ol>
 </div>
 {% endblock %}
 
-{% block page_title %}Project Dashboard{% endblock %}
+{% block page_title %}{{ WORKFLOWLEVEL2 }} Dashboard{% endblock %}
 
 {% block content %}
 {% if project_id == 0 %}
 
     <div class="jumbotron">
-        <p>Name your new Project and associate it with a WorkflowLevel1</p>
+        <p>Name your new {{ WORKFLOWLEVEL2 }} and associate it with a {{ WORKFLOWLEVEL1 }}</p>
         <form role="form" class="form-inline" action="/workflow/projectagreement_add/" method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="program">WorkflowLevel1:</label>
+                <label for="program">{{ WORKFLOWLEVEL1 }}:</label>
                 <select class="form-control" id="program" name="program" required="">
                     {% for item in getPrograms %}
                         <option value="{{ item.id }} ">{{ item.name|truncatechars:50 }}</option>
@@ -27,7 +27,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="project_name">Project Name:</label>
+                <label for="project_name">{{ WORKFLOWLEVEL2 }} Name:</label>
                 <input type="text" name="project_name" required="" id="id_project_name" class="textinput textInput form-control" maxlength="255">
             </div>
             <div class="form-group">

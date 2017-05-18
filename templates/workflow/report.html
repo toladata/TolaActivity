@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">WorkflowLevel1 Dashboards</a></li>
+  <li><a href="/workflow/dashboard/0/">{{ WORKFLOWLEVEL1 }} Dashboards</a></li>
   <li class="active">Reports</li>
 </ol>
 
 {% endblock bread_crumb %}
 {% load render_table from django_tables2 %}
 
-{% block page_title %}Project Report{% endblock %}
+{% block page_title %}{{ WORKFLOWLEVEL2 }} Report{% endblock %}
 
 {% block content %}
 

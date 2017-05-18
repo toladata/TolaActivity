@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block page_title %}WorkflowLevel1 Indicators{% endblock %}
+{% block page_title %}{{ workflowlevel1 }} Indicators{% endblock %}
 
 {% block content %}
 <script>
@@ -45,7 +45,7 @@ function loadIndicators(workflowlevel1,indicator,type){
             <div class='panel-heading'><h4>{{ workflowlevel1.name|truncatechars:85 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
             {% if not workflowlevel1.indicator_set.all %}
                 <div class='panel-body'>
-                    <h4>No Indicators have been entered for this workflowlevel1</h4>
+                    <h4>No Indicators have been entered for this {{ workflowlevel1 }}</h4>
                     <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
                 </div>
             {% else %}

@@ -144,6 +144,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.request',
     'tola.processor.report_server_check',
+    'tola.processor.org_levels',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
