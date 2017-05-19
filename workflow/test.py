@@ -1,5 +1,5 @@
 from django.test import TestCase
-from workflow.models import Organization, WorkflowLevel1, Country, Province, ProjectAgreement, Sector, ProjectComplete, ProjectType, SiteProfile, Office, Monitor, Benchmarks, Budget
+from workflow.models import Organization, WorkflowLevel1, Country, Province, ProjectAgreement, Sector, ProjectComplete, ProjectType, SiteProfile, Office, Benchmarks, Budget
 
 
 class SiteProfileTestCase(TestCase):
@@ -67,9 +67,6 @@ class AgreementTestCase(TestCase):
         new_budget = Budget.objects.create(contributor="testbudget", description_of_contribution="new_province", proposed_value="24", agreement=new_agreement)
         new_budget.save()
 
-        new_monitor = Monitor.objects.create(responsible_person="testmonitor", frequency="freq", type="24", agreement=new_agreement)
-        new_monitor.save()
-
     def test_agreement_exists(self):
         """Check for Agreement object"""
         get_agreement = ProjectAgreement.objects.get(project_name="testproject")
@@ -84,11 +81,6 @@ class AgreementTestCase(TestCase):
         """Check for Budget object"""
         get_budget = Budget.objects.get(contributor="testbudget")
         self.assertEqual(Budget.objects.filter(id=get_budget.id).count(), 1)
-
-    def test_monitor_exists(self):
-        """Check for Monitor object"""
-        get_monitor = Monitor.objects.get(responsible_person="testmonitor")
-        self.assertEqual(Monitor.objects.filter(id=get_monitor.id).count(), 1)
 
 
 class CompleteTestCase(TestCase):

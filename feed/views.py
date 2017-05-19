@@ -442,23 +442,19 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
     serializer_class = DisaggregationValueSerializer
     pagination_class = StandardResultsSetPagination
 
-#Returns a list of all project agreement and feed to TolaWork
+
 class ProjectAgreementViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for getting ProjectAgreement."""
+    """Returns a list of all project agreement and feed to TolaWork
+    API endpoint for getting ProjectAgreement."""
 
     queryset = ProjectAgreement.objects.order_by('create_date')
     serializer_class = AgreementSerializer
 
 
-class LoggedUserViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
-    """API endpoint for getting Logged Users."""
-
-    queryset = LoggedUser.objects.all()
-    serializer_class = LoggedUserSerializer
-
 class ChecklistViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
+
 
 class OrganizationViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     queryset = Organization.objects.all()

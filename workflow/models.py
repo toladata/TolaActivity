@@ -496,6 +496,7 @@ class VillageAdmin(admin.ModelAdmin):
     list_filter = ('district__province__country__country','district')
     display = 'Admin Boundary 4'
 
+
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
     code = models.CharField("Office Code", max_length=255, blank=True)
@@ -594,22 +595,6 @@ class SiteProfile(models.Model):
     info_source = models.CharField("Data Source",max_length=255, blank=True, null=True)
     total_num_households = models.IntegerField("Total # Households", help_text="", null=True, blank=True)
     avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, default=Decimal("0.00"))
-    male_0_5 = models.IntegerField("Male age 0-5", null=True, blank=True)
-    female_0_5 = models.IntegerField("Female age 0-5", null=True, blank=True)
-    male_6_9 = models.IntegerField("Male age 6-9 ", null=True, blank=True)
-    female_6_9 = models.IntegerField("Female age 6-9", null=True, blank=True)
-    male_10_14 = models.IntegerField("Male age 10-14", null=True, blank=True)
-    female_10_14 = models.IntegerField("Female age 10-14", null=True, blank=True)
-    male_15_19 = models.IntegerField("Male age 15-19", null=True, blank=True)
-    female_15_19 = models.IntegerField("Female age 15-19", null=True, blank=True)
-    male_20_24 = models.IntegerField("Male age 20-24", null=True, blank=True)
-    female_20_24 = models.IntegerField("Female age 20-24", null=True, blank=True)
-    male_25_34 = models.IntegerField("Male age 25-34", null=True, blank=True)
-    female_25_34 = models.IntegerField("Female age 25-34", null=True, blank=True)
-    male_35_49 = models.IntegerField("Male age 35-49", null=True, blank=True)
-    female_35_49 = models.IntegerField("Female age 35-49", null=True, blank=True)
-    male_over_50 = models.IntegerField("Male Over 50", null=True, blank=True)
-    female_over_50 = models.IntegerField("Female Over 50", null=True, blank=True)
     total_population = models.IntegerField(null=True, blank=True)
     total_male = models.IntegerField(null=True, blank=True)
     total_female = models.IntegerField(null=True, blank=True)
@@ -630,7 +615,7 @@ class SiteProfile(models.Model):
     province = models.ForeignKey(Province, verbose_name="Administrative Level 1", null=True, blank=True)
     district = models.ForeignKey(District, verbose_name="Administrative Level 2", null=True, blank=True)
     admin_level_three = models.ForeignKey(AdminLevelThree, verbose_name="Administrative Level 3", null=True, blank=True)
-    village = models.CharField("Administrative Level 4", help_text="", max_length=255, null=True, blank=True)
+    village = models.ForeignKey(Village, verbose_name="Administrative Level 4", null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     status = models.BooleanField("Site Active", default=True)
@@ -1216,37 +1201,6 @@ class BenchmarksAdmin(admin.ModelAdmin):
     display = 'Project Components'
 
 
-# TODO Delete not in use
-class Monitor(models.Model):
-    responsible_person = models.CharField("Person Responsible", max_length=25, blank=True, null=True)
-    frequency = models.CharField("Frequency", max_length=25, blank=True, null=True)
-    type = models.TextField("Type", null=True, blank=True)
-    agreement = models.ForeignKey(ProjectAgreement,blank=True, null=True, verbose_name="Project Initiation")
-    complete = models.ForeignKey(ProjectComplete,blank=True, null=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('type',)
-        verbose_name_plural = "Monitors"
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Monitor, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.responsible_person
-
-
-class MonitorAdmin(admin.ModelAdmin):
-    list_display = ('responsible_person', 'frequency', 'type', 'create_date', 'edit_date')
-    display = 'Monitor'
-
-
 class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True)
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
@@ -1331,71 +1285,6 @@ class ChecklistItemAdmin(admin.ModelAdmin):
     list_display = ('item','checklist','in_file')
     list_filter = ('checklist','global_item')
 
-
-#Logged users
-from django.contrib.auth.signals import user_logged_in, user_logged_out 
-from urllib2 import urlopen
-import json
-
-
-class LoggedUser(models.Model):
-
-    username = models.CharField(max_length=30, primary_key=True)
-    country = models.CharField(max_length=100, blank=False)
-    email = models.CharField(max_length=100, blank=False, default='user@mercycorps.com')
-    
-    def __unicode__(self):
-        return self.username
-
-    def login_user(sender, request, user, **kwargs):
-        country = get_user_country(request)
-        active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-        
-        user_id_list = []
-        logged_user_id = request.user.id
-
-        try:
-            for session in active_sessions:
-                data = session.get_decoded()
-
-                user_id_list.append(data.get('_auth_user_id', None))
-
-                if logged_user_id in user_id_list:
-                    LoggedUser(username=user.username, country=country, email=user.email).save()
-
-                if data.get('google-oauth2_state'):
-                    LoggedUser(username=user.username, country=country, email=user.email).save()
-
-        except Exception, e:
-            pass
-                
-    
-
-    def logout_user(sender, request, user, **kwargs):
-
-        try:
-            user = LoggedUser.objects.get(pk=user.username)
-            user.delete()
-
-        except LoggedUser.DoesNotExist:
-            pass
-        
-    user_logged_in.connect(login_user)
-    user_logged_out.connect(logout_user)
-
-
-def get_user_country(request):
-
-    # Automatically geolocate the connecting IP
-    ip = request.META.get('REMOTE_ADDR')
-    try:
-        response = urlopen('http://ipinfo.io/'+ip+'/json').read()
-        response = json.loads(response)
-        return response['country'].lower()
-
-    except Exception, e:
-        response = "undefined"
-        return response
 
 
 

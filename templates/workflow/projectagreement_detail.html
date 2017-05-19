@@ -191,21 +191,6 @@
         </tr>
         {% endfor %}
     </table>
-    <h4>Monitoring</h4>
-    <table class="table" border="1">
-        <tr>
-            <th>Type</th>
-            <th>Responsible Person</th>
-            <th>Frequency</th>
-        </tr>
-        {% for monitor in getMonitor %}
-        <tr>
-            <td>{{ monitor.type }}</td>
-            <td>{{ monitor.responsible_person }}</td>
-            <td>{{ monitor.frequency }}</td>
-        </tr>
-        {% endfor %}
-    </table>
     <h4>Evaluation</h4>
     <table class="table" border="1">
         <tr>
