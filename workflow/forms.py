@@ -5,8 +5,8 @@ from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProjectAgreement, ProjectComplete, WorkflowLevel1, SiteProfile, Documentation, Benchmarks, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
-from .models import ProjectAgreement, ProjectComplete, WorkflowLevel1, SiteProfile, Documentation, Benchmarks, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
+from .models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Documentation, Benchmarks, Budget, Capacity,\
+    Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -95,7 +95,7 @@ class BudgetForm(forms.ModelForm):
         
         countries = getCountry(self.request.user)
 
-        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
+        self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(program__country__in = countries)
 
     def save(self, *args, **kwargs):
         # Commit is already set to false
@@ -106,7 +106,7 @@ class BudgetForm(forms.ModelForm):
 class ProjectAgreementCreateForm(forms.ModelForm):
 
     class Meta:
-        model = ProjectAgreement
+        model = WorkflowLevel2
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
@@ -128,7 +128,7 @@ class ProjectAgreementCreateForm(forms.ModelForm):
 class ProjectAgreementForm(forms.ModelForm):
 
     class Meta:
-        model = ProjectAgreement
+        model = WorkflowLevel2
         fields = '__all__'
         exclude = ['create_date', 'edit_date', 'short']
 
@@ -442,7 +442,7 @@ class ProjectAgreementForm(forms.ModelForm):
 class ProjectAgreementSimpleForm(forms.ModelForm):
 
     class Meta:
-        model = ProjectAgreement
+        model = WorkflowLevel2
         fields = '__all__'
         exclude = ['create_date', 'edit_date','account_code','lin_code','mc_estimated_budget','local_total_estimated_budget','local_estimated_budget'
                    ,'approval_submitted_by','finance_reviewed_by','me_reviewed_by','exchange_rate','exchange_rate_date','estimation_date','other_budget','short']
@@ -683,7 +683,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
 class ProjectCompleteCreateForm(forms.ModelForm):
 
     class Meta:
-        model = ProjectComplete
+        model = WorkflowLevel2
         fields = '__all__'
 
     map = forms.CharField(widget=GoogleMapsWidget(
@@ -739,7 +739,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
 class ProjectCompleteForm(forms.ModelForm):
 
     class Meta:
-        model = ProjectComplete
+        model = WorkflowLevel2
         fields = '__all__'
 
     map = forms.CharField(widget=GoogleMapsWidget(
@@ -1007,7 +1007,7 @@ class ProjectCompleteForm(forms.ModelForm):
 class ProjectCompleteSimpleForm(forms.ModelForm):
 
     class Meta:
-        model = ProjectComplete
+        model = WorkflowLevel2
         fields = '__all__'
 
         exclude = ['create_date', 'edit_date','project_activity', 'account_code', 'lin_code', 'mc_estimated_budget',
@@ -1423,7 +1423,7 @@ class DocumentationForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['project'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
+        self.fields['project'].queryset = WorkflowLevel2.objects.filter(program__country__in=countries)
         self.fields['program'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
 
 
@@ -1456,7 +1456,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         countries = getCountry(self.request.user)
 
         self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
-        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
+        self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(program__country__in=countries)
 
 
 class BenchmarkForm(forms.ModelForm):
@@ -1609,5 +1609,5 @@ class FilterForm(forms.Form):
 class ProjectCompleteTable(forms.ModelForm):
 
     class Meta:
-        model = ProjectComplete
+        model = WorkflowLevel2
         fields = '__all__'

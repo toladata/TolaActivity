@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib import admin
 from datetime import datetime
-from workflow.models import WorkflowLevel1, SiteProfile, ProjectAgreement, Office, Province
+from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, Province
 
 try:
     from django.utils import timezone
@@ -13,7 +13,7 @@ except ImportError:
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
-    project_agreement = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
+    project_agreement = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
     implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
     total_participants = models.IntegerField(null=True, blank=True)
@@ -61,7 +61,7 @@ class TrainingAttendanceAdmin(admin.ModelAdmin):
 class Distribution(models.Model):
     distribution_name = models.CharField(max_length=255)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
-    initiation = models.ForeignKey(ProjectAgreement, null=True, blank=True, verbose_name="Project Initiation")
+    initiation = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
     office_code = models.ForeignKey(Office, null=True, blank=True)
     distribution_indicator = models.CharField(max_length=255)
     distribution_implementer = models.CharField(max_length=255, null=True, blank=True)

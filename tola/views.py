@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from workflow.models import ProjectAgreement, ProjectComplete, WorkflowLevel1, SiteProfile, Sector,Country, TolaUser,TolaSites, TolaBookmarks, FormGuidance
+from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Sector,Country, TolaUser,TolaSites, TolaBookmarks, FormGuidance
 from indicators.models import CollectedData, Indicator
 
 from tola.tables import IndicatorDataTable
@@ -55,52 +55,52 @@ def index(request, selected_countries=None, id=0, sector=0):
         if int(sector) > 0:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(Q(projectagreement__sector__in=sectors)), country__in=selected_countries).filter(status=1)
             getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__workflowlevel1__country__in=selected_countries)).filter(status=1)
-            agreement_total_count = ProjectAgreement.objects.all().filter(sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            complete_total_count = ProjectComplete.objects.all().filter(project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            complete_approved_count = ProjectComplete.objects.all().filter(approval='approved', project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            agreement_total_count = WorkflowLevel2.objects.all().filter(sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            complete_total_count = WorkflowLevel2.objects.all().filter(project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            agreement_approved_count = WorkflowLevel2.objects.all().filter(approval='approved', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            complete_approved_count = WorkflowLevel2.objects.all().filter(approval='approved', project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
 
-            agreement_awaiting_count = ProjectAgreement.objects.all().filter(approval='awaiting approval', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            agreement_awaiting_count = WorkflowLevel2.objects.all().filter(approval='awaiting approval', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
 
-            complete_awaiting_count = ProjectComplete.objects.all().filter(approval='awaiting approval', project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            complete_awaiting_count = WorkflowLevel2.objects.all().filter(approval='awaiting approval', project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
 
-            agreement_open_count = ProjectAgreement.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), sector__id__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            agreement_wait_count = ProjectAgreement.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            complete_wait_count = ProjectComplete.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            agreement_open_count = WorkflowLevel2.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), sector__id__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            complete_open_count = WorkflowLevel2.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)), project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            agreement_wait_count = WorkflowLevel2.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            complete_wait_count = WorkflowLevel2.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")), project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
             getQuantitativeDataSums = CollectedData.objects.all().filter(Q(agreement__sector__in=sectors), indicator__key_performance_indicator=True, targeted__isnull=False, indicator__workflowlevel1__country__in=selected_countries).exclude(targeted=None,workflowlevel1__funding_status="Archived").order_by('indicator__workflowlevel1','indicator__number').values('indicator__workflowlevel1__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=selected_countries).filter(status=1)
             getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__workflowlevel1__country__in=selected_countries)).filter(status=1)
-            agreement_total_count = ProjectAgreement.objects.all().filter(workflowlevel1__country__in=selected_countries).count()
-            complete_total_count = ProjectComplete.objects.all().filter(workflowlevel1__country__in=selected_countries).count()
-            agreement_approved_count = ProjectAgreement.objects.all().filter(approval='approved',workflowlevel1__country__in=selected_countries).count()
-            complete_approved_count = ProjectComplete.objects.all().filter(approval='approved',workflowlevel1__country__in=selected_countries).count()
+            agreement_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=selected_countries).count()
+            complete_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=selected_countries).count()
+            agreement_approved_count = WorkflowLevel2.objects.all().filter(approval='approved',workflowlevel1__country__in=selected_countries).count()
+            complete_approved_count = WorkflowLevel2.objects.all().filter(approval='approved',workflowlevel1__country__in=selected_countries).count()
 
-            agreement_awaiting_count = ProjectAgreement.objects.all().filter(approval='awaiting approval',workflowlevel1__country__in=selected_countries).count()
-            complete_awaiting_count = ProjectComplete.objects.all().filter(approval='awaiting approval',workflowlevel1__country__in=selected_countries).count()
+            agreement_awaiting_count = WorkflowLevel2.objects.all().filter(approval='awaiting approval',workflowlevel1__country__in=selected_countries).count()
+            complete_awaiting_count = WorkflowLevel2.objects.all().filter(approval='awaiting approval',workflowlevel1__country__in=selected_countries).count()
 
-            agreement_open_count = ProjectAgreement.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)),workflowlevel1__country__in=selected_countries).count()
-            complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)),workflowlevel1__country__in=selected_countries).count()
-            agreement_wait_count = ProjectAgreement.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")),workflowlevel1__country__in=selected_countries).count()
-            complete_wait_count = ProjectComplete.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")),workflowlevel1__country__in=selected_countries).count()
+            agreement_open_count = WorkflowLevel2.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)),workflowlevel1__country__in=selected_countries).count()
+            complete_open_count = WorkflowLevel2.objects.all().filter(Q(Q(approval='open') | Q(approval="") | Q(approval=None)),workflowlevel1__country__in=selected_countries).count()
+            agreement_wait_count = WorkflowLevel2.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")),workflowlevel1__country__in=selected_countries).count()
+            complete_wait_count = WorkflowLevel2.objects.all().filter(Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval="")),workflowlevel1__country__in=selected_countries).count()
             getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, achieved__isnull=False, targeted__isnull=False, indicator__workflowlevel1__country__in=selected_countries).exclude(achieved=None,targeted=None,workflowlevel1__funding_status="Archived").order_by('indicator__workflowlevel1','indicator__number').values('indicator__workflowlevel1__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
     else:
         getFilteredName=WorkflowLevel1.objects.get(id=workflowlevel1_id)
-        agreement_total_count = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
-        complete_total_count = ProjectComplete.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
-        agreement_approved_count = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved').count()
-        complete_approved_count = ProjectComplete.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved').count()
-        agreement_open_count = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='open').count()
-        complete_open_count = ProjectComplete.objects.all().filter(Q(Q(approval='open') | Q(approval="")),workflowlevel1__id=workflowlevel1_id).count()
-        agreement_wait_count = ProjectAgreement.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id), Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
-        complete_wait_count = ProjectComplete.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id), Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
+        agreement_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
+        complete_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
+        agreement_approved_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved').count()
+        complete_approved_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved').count()
+        agreement_open_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='open').count()
+        complete_open_count = WorkflowLevel2.objects.all().filter(Q(Q(approval='open') | Q(approval="")),workflowlevel1__id=workflowlevel1_id).count()
+        agreement_wait_count = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id), Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
+        complete_wait_count = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id), Q(approval='in progress') & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
         getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__workflowlevel1__id=workflowlevel1_id).filter(status=1)
         getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).filter(status=1)
         getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__key_performance_indicator=True, indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).exclude(achieved=None,targeted=None,workflowlevel1__funding_status="Archived").order_by('indicator__level1','indicator__number').values('indicator__workflowlevel1__name','indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
 
-        agreement_awaiting_count = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval').count()
-        complete_awaiting_count = ProjectComplete.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval').count()
+        agreement_awaiting_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval').count()
+        complete_awaiting_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval').count()
 
     #Evidence and Objectives are for the global leader dashboard items and are the same every time
     count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__workflowlevel1__country__country").annotate(evidence_count=Count('evidence', distinct=True) + Count('tola_table', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
@@ -111,9 +111,9 @@ def index(request, selected_countries=None, id=0, sector=0):
     count_workflowlevel1 = WorkflowLevel1.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
 
     approved_by = TolaUser.objects.get(user_id=request.user)
-    user_pending_approvals = ProjectAgreement.objects.all().filter(approved_by=approved_by).exclude(approval='approved').count()
+    user_pending_approvals = WorkflowLevel2.objects.all().filter(approved_by=approved_by).exclude(approval='approved').count()
 
-    count_workflowlevel1_agreement = ProjectAgreement.objects.all().filter(workflowlevel1__country__in=selected_countries,workflowlevel1__funding_status='Funded').values('workflowlevel1').distinct().count()
+    count_workflowlevel1_agreement = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=selected_countries,workflowlevel1__funding_status='Funded').values('workflowlevel1').distinct().count()
     count_indicator = Indicator.objects.all().filter(workflowlevel1__country__in=selected_countries,workflowlevel1__funding_status='Funded').values('workflowlevel1').distinct().count()
     count_evidence_adoption = CollectedData.objects.all().filter(indicator__isnull=False,indicator__workflowlevel1__country__in=selected_countries).values("indicator__workflowlevel1__country__country").annotate(evidence_count=Count('evidence', distinct=True) + Count('tola_table', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
     count_workflowlevel1 = int(count_workflowlevel1)

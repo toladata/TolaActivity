@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib import admin
-from workflow.models import WorkflowLevel1, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
+from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser
 from datetime import datetime
 import uuid
 from simple_history.models import HistoricalRecords
@@ -319,8 +319,8 @@ class CollectedData(models.Model):
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
-    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
+    agreement = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
+    complete = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="i_workflowlevel1")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)

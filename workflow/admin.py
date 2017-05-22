@@ -10,7 +10,7 @@ from admin_report.mixins import ChartReportAdmin
 class DocumentationResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
-    project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(ProjectAgreement, 'project_name'))
+    project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(WorkflowLevel2, 'project_name'))
 
     class Meta:
         model = Documentation
@@ -32,7 +32,7 @@ class DocumentationAdmin(ImportExportModelAdmin):
 class ProjectAgreementResource(resources.ModelResource):
 
     class Meta:
-        model = ProjectAgreement
+        model = WorkflowLevel2
         widgets = {
                 'create_date': {'format': '%d/%m/%Y'},
                 'edit_date': {'format': '%d/%m/%Y'},
@@ -65,7 +65,7 @@ class ProjectAgreementAdmin(ImportExportModelAdmin):
 class ProjectCompleteResource(resources.ModelResource):
 
     class Meta:
-        model = ProjectComplete
+        model = WorkflowLevel2
         widgets = {
                 'create_date': {'format': '%d/%m/%Y'},
                 'edit_date': {'format': '%d/%m/%Y'},
@@ -195,8 +195,8 @@ admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
 admin.site.register(Village)
 admin.site.register(WorkflowLevel1, WorkflowLevel1Admin)
 admin.site.register(Sector)
-admin.site.register(ProjectAgreement, ProjectAgreementAdmin)
-admin.site.register(ProjectComplete, ProjectCompleteAdmin)
+admin.site.register(WorkflowLevel2, ProjectAgreementAdmin)
+#admin.site.register(WorkflowLevel2, ProjectCompleteAdmin) # TODO Merge these two
 admin.site.register(Documentation,DocumentationAdmin)
 admin.site.register(Template)
 admin.site.register(SiteProfile, SiteProfileAdmin)

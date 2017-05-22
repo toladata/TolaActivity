@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
-    ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
-    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, Checklist, Organization
+from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, WorkflowLevel2,\
+    Stakeholder, Capacity, Evaluate, ProfileType, Province, District, AdminLevelThree, Village, StakeholderType,\
+    Contact, Documentation, Checklist, Organization
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
 from django.contrib.auth.models import User
@@ -52,14 +52,14 @@ class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
 class CompleteSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = ProjectComplete
+        model = WorkflowLevel2
         fields = '__all__'
 
 
 class AgreementSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = ProjectAgreement
+        model = WorkflowLevel2
         fields=(
                 'id',
                 'workflowlevel1',

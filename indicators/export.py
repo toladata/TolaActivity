@@ -1,6 +1,6 @@
 from import_export import resources
 from .models import Indicator, CollectedData, Country, WorkflowLevel1, Sector, DisaggregationValue, ReportingFrequency
-from workflow.models import ProjectAgreement, ProjectComplete, TolaUser
+from workflow.models import WorkflowLevel2, TolaUser
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export import fields
@@ -34,8 +34,8 @@ class CollectedDataResource(resources.ModelResource):
     indicator = fields.Field(column_name='indicator', attribute='indicator',  widget=ForeignKeyWidget(Indicator, 'name_clean'))
     indicator_number = fields.Field(column_name='indicator_number', attribute='indicator', widget=ForeignKeyWidget(Indicator, 'number'))
     indicator_level = fields.Field(column_name='indicator_level', attribute='indicator',widget=ForeignKeyWidget(Indicator, 'levels'))
-    agreement = fields.Field(column_name='agreement', attribute='agreement',  widget=ForeignKeyWidget(ProjectAgreement, 'project_name_clean'))
-    complete = fields.Field(column_name='complete', attribute='complete',  widget=ForeignKeyWidget(ProjectComplete, 'project_name_clean'))
+    agreement = fields.Field(column_name='agreement', attribute='agreement',  widget=ForeignKeyWidget(WorkflowLevel2, 'project_name_clean'))
+    complete = fields.Field(column_name='complete', attribute='complete',  widget=ForeignKeyWidget(WorkflowLevel2, 'project_name_clean'))
     workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
     disaggregations = fields.Field(column_name='dissaggregations', attribute='disaggregations')
 

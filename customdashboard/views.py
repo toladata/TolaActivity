@@ -2,7 +2,7 @@ from django.views.generic.list import ListView
 from django.http import HttpResponse
 
 from django.shortcuts import render
-from workflow.models import ProjectAgreement, ProjectComplete, WorkflowLevel1, SiteProfile,Country, TolaSites
+from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile,Country, TolaSites
 from customdashboard.models import JupyterNotebooks
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
 from indicators.models import CollectedData, Indicator, TolaTable
@@ -52,8 +52,8 @@ class ProgramList(ListView):
             workflowlevel1.indicator_percent = int(100 - getInidcatorDataPercent)
 
             # get the percentage of projects with completes (tracking)
-            getProjectAgreementCount = ProjectAgreement.objects.filter(workflowlevel1__id=workflowlevel1.id).count()
-            getProjectCompleteCount = ProjectComplete.objects.filter(workflowlevel1__id=workflowlevel1.id).count()
+            getProjectAgreementCount = WorkflowLevel2.objects.filter(workflowlevel1__id=workflowlevel1.id).count()
+            getProjectCompleteCount = WorkflowLevel2.objects.filter(workflowlevel1__id=workflowlevel1.id).count()
             if getProjectAgreementCount > 0 and getProjectCompleteCount > 0:
                 project_percent = 100 * float(getProjectCompleteCount) / float(getProjectAgreementCount)
             else:
@@ -88,34 +88,34 @@ def DefaultCustomDashboard(request,id=0,status=0):
 
     getFilteredName=WorkflowLevel1.objects.get(id=workflowlevel1_id)
     
-    getProjectsCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries).count()
-    getBudgetEstimated = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries).annotate(estimated=Sum('total_estimated_budget'))
-    getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval', workflowlevel1__country__in=countries).count()
-    getApprovedCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved', workflowlevel1__country__in=countries).count()
-    getRejectedCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='rejected', workflowlevel1__country__in=countries).count()
-    getInProgressCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id).filter(Q(Q(approval='in progress') | Q(approval=None)), workflowlevel1__country__in=countries).count()
-    nostatus_count = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id).filter(Q(Q(approval=None) | Q(approval=""))).count()
+    getProjectsCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries).count()
+    getBudgetEstimated = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries).annotate(estimated=Sum('total_estimated_budget'))
+    getAwaitingApprovalCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval', workflowlevel1__country__in=countries).count()
+    getApprovedCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved', workflowlevel1__country__in=countries).count()
+    getRejectedCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='rejected', workflowlevel1__country__in=countries).count()
+    getInProgressCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).filter(Q(Q(approval='in progress') | Q(approval=None)), workflowlevel1__country__in=countries).count()
+    nostatus_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).filter(Q(Q(approval=None) | Q(approval=""))).count()
 
     getSiteProfile = SiteProfile.objects.all().filter(Q(projectagreement__workflowlevel1__id=workflowlevel1_id) | Q(collecteddata__workflowlevel1__id=workflowlevel1_id))
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__workflowlevel1__id=workflowlevel1_id))
 
     if (status) =='Approved':
-       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='approved').prefetch_related('projectcomplete')
+       getProjects = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='approved').prefetch_related('projectcomplete')
     elif(status) =='Rejected':
-       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='rejected').prefetch_related('projectcomplete')
+       getProjects = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='rejected').prefetch_related('projectcomplete')
     elif(status) =='In Progress':
-       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='in progress').prefetch_related('projectcomplete')
+       getProjects = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='in progress').prefetch_related('projectcomplete')
     elif(status) =='Awaiting Approval':
-       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='awaiting approval').prefetch_related('projectcomplete')
+       getProjects = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries, approval='awaiting approval').prefetch_related('projectcomplete')
     else:
-       getProjects = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries)
+       getProjects = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries)
 
     get_project_completed = []
 
     totalBudgetted = 0.00
     totalActual = 0.00
 
-    getProjectsComplete = ProjectComplete.objects.all()
+    getProjectsComplete = WorkflowLevel2.objects.all()
     for project in getProjects:
         for complete in getProjectsComplete:
             if complete.actual_budget != None:
@@ -156,18 +156,18 @@ def PublicDashboard(request,id=0,public=0):
         getworkflowlevel1Narrative = workflowlevel1Narratives.objects.get(workflowlevel1_id=workflowlevel1_id)
     except workflowlevel1Narratives.DoesNotExist:
         getworkflowlevel1Narrative = None
-    getProjects = ProjectComplete.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
-    getAllProjects = ProjectAgreement.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
+    getProjects = WorkflowLevel2.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
+    getAllProjects = WorkflowLevel2.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
     getSiteProfile = SiteProfile.objects.all().filter(projectagreement__workflowlevel1__id=workflowlevel1_id)
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__workflowlevel1__id=workflowlevel1_id))
 
-    getProjectsCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
-    getAwaitingApprovalCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval').count()
-    getApprovedCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved').count()
-    getRejectedCount = ProjectAgreement.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='rejected').count()
-    getInProgressCount = ProjectAgreement.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
+    getProjectsCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
+    getAwaitingApprovalCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval').count()
+    getApprovedCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved').count()
+    getRejectedCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='rejected').count()
+    getInProgressCount = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
 
-    nostatus_count = ProjectAgreement.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(approval=None) | Q(approval=""))).count()
+    nostatus_count = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(approval=None) | Q(approval=""))).count()
 
     getNotebooks = JupyterNotebooks.objects.all().filter(workflowlevel1__id=workflowlevel1_id)
 
@@ -209,7 +209,7 @@ def PublicDashboard(request,id=0,public=0):
 
     get_project_completed = []
 
-    getProjectsComplete = ProjectComplete.objects.all()
+    getProjectsComplete = WorkflowLevel2.objects.all()
     for project in getProjects:
         for complete in getProjectsComplete:
             if complete.actual_budget != None:
@@ -443,7 +443,7 @@ def RRIMAPublicDashboard(request,id=0):
     countries = getCountry(request.user)
 
     #retrieve projects for a workflowlevel1
-    getProjects = ProjectAgreement.objects.all()##.filter(workflowlevel1__id=1, workflowlevel1__country__in=1)
+    getProjects = WorkflowLevel2.objects.all()##.filter(workflowlevel1__id=1, workflowlevel1__country__in=1)
 
     pageText = {}
     pageText['pageTitle'] = "Refugee Response and Migration News"

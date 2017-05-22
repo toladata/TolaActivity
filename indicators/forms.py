@@ -1,5 +1,5 @@
 from indicators.models import Indicator, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
-from workflow.models import WorkflowLevel1, SiteProfile, Documentation, ProjectAgreement, TolaUser
+from workflow.models import WorkflowLevel1, WorkflowLevel2, SiteProfile, Documentation, TolaUser
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -267,7 +267,7 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['evidence'].queryset = Documentation.objects.filter(workflowlevel1=self.workflowlevel1)
 
         #override the program queryset to use request.user for country
-        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(workflowlevel1=self.workflowlevel1)
+        self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(workflowlevel1=self.workflowlevel1)
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)

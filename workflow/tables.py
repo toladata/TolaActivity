@@ -1,5 +1,5 @@
 import django_tables2 as tables
-from models import ProjectAgreement
+from models import WorkflowLevel2
 
 TEMPLATE = '''
 <div class="btn-group btn-group-xs">
@@ -14,7 +14,7 @@ class ProjectAgreementTable(tables.Table):
     total_cost = tables.Column(accessor='projectcomplete.actual_budget',verbose_name="Total Cost")
 
     class Meta:
-        model = ProjectAgreement
+        model = WorkflowLevel2
         attrs = {"class": "paleblue"}
         fields = ('program', 'project_name','sites', 'activity_code', 'office', 'project_name', 'sector', 'project_activity',
                              'project_type', 'account_code', 'lin_code','estimated_by','total_estimated_budget','mc_estimated_budget','total_cost')

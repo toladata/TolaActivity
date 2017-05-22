@@ -1,10 +1,11 @@
 from .serializers import *
 
-from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
-    ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
-    Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, Checklist
+from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, WorkflowLevel2,\
+    Stakeholder, Capacity, Evaluate, ProfileType, Province, District, AdminLevelThree, Village, \
+    StakeholderType, Contact, Documentation, Checklist
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
+    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, \
+    DisaggregationLabel
 
 from django.contrib.auth.models import User
 from tola.util import getCountry
@@ -125,7 +126,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = ProjectAgreement.objects.all().filter(program__country__in=user_countries)
+        queryset = WorkflowLevel2.objects.all().filter(program__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -141,7 +142,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('workflowlevel1__country__country','workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    queryset = ProjectAgreement.objects.all()
+    queryset = WorkflowLevel2.objects.all()
     serializer_class = AgreementSerializer
     pagination_class = SmallResultsSetPagination
 
@@ -155,13 +156,13 @@ class CompleteViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = ProjectComplete.objects.all().filter(program__country__in=user_countries)
+        queryset = WorkflowLevel2.objects.all().filter(program__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     filter_fields = ('workflowlevel1_country__country','workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    queryset = ProjectComplete.objects.all()
+    queryset = WorkflowLevel2.objects.all()
     serializer_class = CompleteSerializer
     pagination_class = SmallResultsSetPagination
 
@@ -447,7 +448,7 @@ class ProjectAgreementViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     """Returns a list of all project agreement and feed to TolaWork
     API endpoint for getting ProjectAgreement."""
 
-    queryset = ProjectAgreement.objects.order_by('create_date')
+    queryset = WorkflowLevel2.objects.order_by('create_date')
     serializer_class = AgreementSerializer
 
 

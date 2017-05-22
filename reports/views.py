@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView, View
-from workflow.models import ProjectAgreement, ProjectComplete, WorkflowLevel1
+from workflow.models import WorkflowLevel2, WorkflowLevel1
 from indicators.models import CollectedData, Indicator
 from .forms import FilterForm
 
@@ -95,11 +95,11 @@ class ReportData(View, AjaxableResponseMixin):
         indicator_filter = filter['indicator']
 
         workflowlevel1 = WorkflowLevel1.objects.all().filter(**program_filter).values('gaitid', 'name', 'funding_status', 'cost_center', 'country__country', 'sector__sector')
-        approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='awaiting approval').count()
-        approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='approved').count()
-        rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='rejected').count()
-        inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='in progress').count()
-        nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
+        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(approval='awaiting approval').count()
+        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(approval='approved').count()
+        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(approval='rejected').count()
+        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(approval='in progress').count()
+        nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
 
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
@@ -138,12 +138,12 @@ class ProjectReportData(View, AjaxableResponseMixin):
 
         print project_filter
 
-        project = ProjectAgreement.objects.all().filter(**project_filter).values('workflowlevel1__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','approval')
-        approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
-        approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
-        rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
-        inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
-        nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
+        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','approval')
+        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
+        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
+        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
+        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
+        nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
 
@@ -161,7 +161,7 @@ class ProjectReportData(View, AjaxableResponseMixin):
         }
 
         if request.GET.get('export'):
-            project_export = ProjectAgreement.objects.all().filter(**project_filter)
+            project_export = WorkflowLevel2.objects.all().filter(**project_filter)
             dataset = ProjectAgreementResource().export(project_export)
             response = HttpResponse(dataset.csv, content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=project_data.csv'

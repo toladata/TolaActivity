@@ -4,7 +4,7 @@ from .models import TrainingAttendance, Beneficiary, Distribution
 from django.core.urlresolvers import reverse_lazy
 
 from .forms import TrainingAttendanceForm, BeneficiaryForm, DistributionForm
-from workflow.models import FormGuidance, WorkflowLevel1, ProjectAgreement
+from workflow.models import FormGuidance, WorkflowLevel1, WorkflowLevel2
 from django.utils.decorators import method_decorator
 from tola.util import getCountry, group_excluded
 
@@ -458,7 +458,7 @@ class GetAgreements(View, AjaxableResponseMixin):
         workflowlevel1_id = self.kwargs['workflowlevel1']
         countries = getCountry(request.user)
         if workflowlevel1_id != 0:
-            getAgreements = ProjectAgreement.objects.all().filter(workflowlevel1 = workflowlevel1_id).values('id', 'project_name')
+            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1 = workflowlevel1_id).values('id', 'project_name')
         else:
             pass
         

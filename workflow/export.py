@@ -1,8 +1,8 @@
 from import_export import resources
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export import fields
-from .models import ProjectAgreement, WorkflowLevel1, SiteProfile, Capacity, Evaluate, \
-    Stakeholder, Sector, ProjectType, Office, TolaUser, ProjectComplete, Country, Contact, StakeholderType, TolaUserProxy
+from .models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Capacity, Evaluate, \
+    Stakeholder, Sector, ProjectType, Office, TolaUser, Country, Contact, StakeholderType, TolaUserProxy
 
 
 class ProjectAgreementResource(resources.ModelResource):
@@ -18,7 +18,7 @@ class ProjectAgreementResource(resources.ModelResource):
     approved_by = fields.Field(column_name='approved_by', attribute='approved_by', widget=ForeignKeyWidget(TolaUser, 'name'))
 
     class Meta:
-        model = ProjectAgreement
+        model = WorkflowLevel2
 
 
 class ProjectCompleteResource(resources.ModelResource):
@@ -34,7 +34,7 @@ class ProjectCompleteResource(resources.ModelResource):
     approved_by = fields.Field(column_name='approved_by', attribute='approved_by', widget=ForeignKeyWidget(TolaUser, 'name'))
 
     class Meta:
-        model = ProjectComplete
+        model = WorkflowLevel2
 
 
 class ProgramResource(resources.ModelResource):
