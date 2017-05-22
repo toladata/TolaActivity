@@ -126,7 +126,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = WorkflowLevel2.objects.all().filter(program__country__in=user_countries)
+        queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -156,7 +156,7 @@ class CompleteViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = WorkflowLevel2.objects.all().filter(program__country__in=user_countries)
+        queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -460,3 +460,14 @@ class ChecklistViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
 class OrganizationViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
+
+
+class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
+    """
+    New viewset for WorkflowLevel2 models. replaces AgreementViewSet and CompleteViewSet 
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = WorkflowLevel2.objects.order_by('create_date')
+    serializer_class = WorkflowLevel2Serializer
+

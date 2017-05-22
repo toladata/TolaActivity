@@ -49,15 +49,25 @@ class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class CompleteSerializer(serializers.HyperlinkedModelSerializer):
+class WorkflowLevel2Serializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = WorkflowLevel2
         fields = '__all__'
 
 
-class AgreementSerializer(serializers.HyperlinkedModelSerializer):
+class CompleteSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Only for backwards compatibility
+    """
+    class Meta:
+        model = WorkflowLevel2
+        fields = '__all__'
 
+class AgreementSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Only for backwards compatibility
+    """
     class Meta:
         model = WorkflowLevel2
         fields=(

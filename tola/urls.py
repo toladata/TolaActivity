@@ -52,6 +52,8 @@ router.register(r'projectagreements', ProjectAgreementViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
 
+router.register(r'workflowlevel2', WorkflowLevel2ViewSet)
+
 
 urlpatterns = [ # rest framework
                 url(r'^api/', include(router.urls)),

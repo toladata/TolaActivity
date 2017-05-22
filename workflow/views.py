@@ -148,7 +148,7 @@ class ProjectAgreementList(ListView):
 
         if int(self.kwargs['pk']) != 0:
             getDashboard = WorkflowLevel2.objects.all().filter(workflowlevel1__id=self.kwargs['pk'])
-            getworkflowlevel1 =WorkflowLevel1.objects.get(id=self.kwargs['pk'])
+            getworkflowlevel1 = WorkflowLevel1.objects.get(id=self.kwargs['pk'])
             return render(request, self.template_name, {'form': FilterForm(),'getworkflowlevel1': getworkflowlevel1, 'getDashboard':getDashboard,'getworkflowlevel1s':getworkflowlevel1s,'APPROVALS': APPROVALS})
 
         elif self.kwargs['status'] != 'none':
