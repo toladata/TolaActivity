@@ -1509,6 +1509,7 @@ class ContactCreate(CreateView):
     Contact Form
     """
     model = Contact
+    stakeholder_id = None
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1521,6 +1522,7 @@ class ContactCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(ContactCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
+        context.update({'stakeholder_id': self.kwargs['stakeholder_id']})
         return context
 
     def get_initial(self):
@@ -1542,7 +1544,7 @@ class ContactCreate(CreateView):
         form.save()
         messages.success(self.request, 'Success, Contact Created!')
         latest = Contact.objects.latest('id')
-        redirect_url = '/workflow/contact_update/' + str(latest.id)
+        redirect_url = '/workflow/contact_update/' + self.kwargs['stakeholder_id'] + '/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = ContactForm
