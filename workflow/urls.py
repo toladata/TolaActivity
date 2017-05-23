@@ -25,16 +25,16 @@ urlpatterns = [
                        url(r'^projectcomplete_import', ProjectCompleteImport.as_view(), name='projectcomplete_import'),
                        url(r'^projectcomplete_detail/(?P<pk>\w+)/$', ProjectCompleteDetail.as_view(), name='projectcomplete_detail'),
 
-                       url(r'^siteprofile_list/(?P<program_id>\w+)/(?P<activity_id>\w+)/$', SiteProfileList.as_view(), name='siteprofile_list'),
+                       url(r'^siteprofile_list/(?P<workflowlevel1_id>\w+)/(?P<activity_id>\w+)/$', SiteProfileList.as_view(), name='siteprofile_list'),
                        url(r'^siteprofile_report/(?P<pk>\w+)/$', SiteProfileReport.as_view(), name='siteprofile_report'),
                        url(r'^siteprofile_add', SiteProfileCreate.as_view(), name='siteprofile_add'),
                        url(r'^siteprofile_update/(?P<pk>\w+)/$', SiteProfileUpdate.as_view(), name='siteprofile_update'),
                        url(r'^siteprofile_delete/(?P<pk>\w+)/$', SiteProfileDelete.as_view(), name='siteprofile_delete'),
 
-                       url(r'^documentation_list/(?P<program>\w+)/(?P<project>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
-                       url(r'^documentation_objects/(?P<program>\w+)/(?P<project>\w+)/$', DocumentationListObjects.as_view(), name='documentation_objects'),
+                       url(r'^documentation_list/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
+                       url(r'^documentation_objects/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationListObjects.as_view(), name='documentation_objects'),
                        url(r'^documentation_add', DocumentationCreate.as_view(), name='documentation_add'),
-                       url(r'^documentation_agreement_list/(?P<program>\w+)/(?P<project>\w+)/$', DocumentationAgreementList.as_view(), name='documentation_agreement_list'),
+                       url(r'^documentation_agreement_list/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationAgreementList.as_view(), name='documentation_agreement_list'),
                        url(r'^documentation_agreement_add/(?P<id>\w+)/$', DocumentationAgreementCreate.as_view(),name='documentation_agreement_add'),
                        url(r'^documentation_agreement_update/(?P<pk>\w+)/(?P<id>\w+)/$', DocumentationAgreementUpdate.as_view(), name='documentation_agreement_update'),
                        url(r'^documentation_agreement_delete/(?P<pk>\w+)/$', DocumentationAgreementDelete.as_view(), name='documentation_agreement_delete'),
@@ -54,14 +54,14 @@ urlpatterns = [
                        url(r'^benchmark_complete_update/(?P<pk>\w+)/$', BenchmarkUpdate.as_view(), name='benchmark_update'),
                        url(r'^benchmark_complete_delete/(?P<pk>\w+)/$', BenchmarkDelete.as_view(), name='benchmark_delete'),
 
-                       url(r'^stakeholder_list/(?P<program_id>\w+)/(?P<pk>\w+)/$', StakeholderList.as_view(), name='stakeholder_list'),
+                       url(r'^stakeholder_list/(?P<workflowlevel1_id>\w+)/(?P<pk>\w+)/$', StakeholderList.as_view(), name='stakeholder_list'),
 
-                       url(r'^stakeholder_table/(?P<program_id>\w+)/(?P<pk>\w+)/$', StakeholderObjects.as_view(), name='stakeholder_table'),
+                       url(r'^stakeholder_table/(?P<workflowlevel1_id>\w+)/(?P<pk>\w+)/$', StakeholderObjects.as_view(), name='stakeholder_table'),
 
                        url(r'^stakeholder_add/(?P<id>\w+)/$', StakeholderCreate.as_view(), name='stakeholder_add'),
                        url(r'^stakeholder_update/(?P<pk>\w+)/$', StakeholderUpdate.as_view(), name='stakeholder_update'),
                        url(r'^stakeholder_delete/(?P<pk>\w+)/$', StakeholderDelete.as_view(), name='stakeholder_delete'),
-                       url(r'^export_stakeholders_list/(?P<program_id>\w+)/$', 'workflow.views.export_stakeholders_list', name='export_stakeholders_list'),
+                       url(r'^export_stakeholders_list/(?P<workflowlevel1_id>\w+)/$', 'workflow.views.export_stakeholders_list', name='export_stakeholders_list'),
 
                        url(r'^contact_list/(?P<pk>\w+)/$', ContactList.as_view(), name='contact_list'),
                        url(r'^contact_add/(?P<id>\w+)/$', ContactCreate.as_view(), name='contact_add'),
