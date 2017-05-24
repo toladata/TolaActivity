@@ -25,6 +25,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
+from django.utils import timezone
 
 from workflow.mixins import AjaxableResponseMixin
 import json
@@ -306,14 +307,22 @@ class IndicatorUpdate(UpdateView):
             for pt in pt_json:
                 pk = int(pt.get('id'))
                 if pk == 0: pk = None
-                periotic_target,created = PeriodicTarget.objects.update_or_create(indicator=indicatr, id=pk, \
-                                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0) })
+                periodic_target,created = PeriodicTarget.objects.update_or_create(\
+                    indicator=indicatr, id=pk,\
+                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.now() })
                 #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
-        form.save()
+                if created:
+                    periodic_target.create_date = timezone.now()
+                    periodic_target.save()
+
+        self.object = form.save()
+        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('create_date')
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [self.object])
-            return HttpResponse(data)
+            pts = serializers.serialize('json', periodic_targets)
+            #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
+            return HttpResponse("[" + data + "," + pts + "]")
 
         messages.success(self.request, 'Success, Indicator Updated!')
         if self.request.POST.has_key('_addanother'):
