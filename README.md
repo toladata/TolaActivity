@@ -11,7 +11,7 @@ and exporting of project specific data from 3rd party data sources or excel
 files.
 
 ## Configuration
-Copy the tola/settings/local-sample.py to local.py and modify 
+Copy the tola/settings/local-sample.py to local.py and modify for your environment.
 
 ## To deploy changes in activity servers
 Once all your changes have been commited to the repo, and before pushing them, run: 
