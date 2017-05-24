@@ -1,5 +1,5 @@
 from django.test import TestCase
-from workflow.models import WorkflowLevel1, Country, Province,ProjectAgreement, Sector, ProjectType, SiteProfile, Office
+from workflow.models import WorkflowLevel1, Country, Province, WorkflowLevel2, Sector, ProjectType, SiteProfile, Office
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
 from datetime import datetime
 
@@ -53,7 +53,7 @@ class DistributionTestCase(TestCase):
         new_province = Province.objects.create(name="testprovince", country=get_country)
         new_province.save()
         get_province = Province.objects.get(name="testprovince")
-        new_office = Office.objects.create(name="testoffice",province=new_province)
+        new_office = Office.objects.create(name="testoffice", country=new_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
         #create project agreement -- and load from fixtures
@@ -62,12 +62,13 @@ class DistributionTestCase(TestCase):
         get_community = SiteProfile.objects.get(name="testcommunity")
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
-        new_agreement = ProjectAgreement.objects.create(workflowlevel1=get_program, project_name="testproject", project_type=get_project_type,
-                                                        activity_code="111222", office=get_office,
-                                                        sector=get_sector)
+        new_agreement = WorkflowLevel2.objects.create(workflowlevel1=get_program, project_name="testproject",
+                                                      project_type=get_project_type,
+                                                      activity_code="111222", office=get_office,
+                                                      sector=get_sector, on_time=True, community_handover=False)
         new_agreement.save()
         new_agreement.site.add(get_community)
-        get_agreement = ProjectAgreement.objects.get(project_name="testproject")
+        get_agreement = WorkflowLevel2.objects.get(project_name="testproject")
         new_distribution = Distribution.objects.create(distribution_name="testdistribution", workflowlevel1=get_program,
                                                             initiation=get_agreement,
                                                             office_code=get_office,
