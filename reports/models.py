@@ -17,7 +17,7 @@ class Report(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.program__name
+        return self.workflowlevel1.name
 
 
 class ReportAdmin(admin.ModelAdmin):

@@ -1,5 +1,6 @@
 from django.test import TestCase
-from workflow.models import Organization, WorkflowLevel1, Country, Province, ProjectAgreement, Sector, ProjectComplete, ProjectType, SiteProfile, Office, Benchmarks, Budget
+from workflow.models import Organization, WorkflowLevel1, Country, Province, WorkflowLevel2, Sector, ProjectType, \
+    SiteProfile, Office, Benchmarks, Budget
 
 
 class SiteProfileTestCase(TestCase):
@@ -16,7 +17,7 @@ class SiteProfileTestCase(TestCase):
         new_province = Province.objects.create(name="testprovince", country=get_country)
         new_province.save()
         get_province = Province.objects.get(name="testprovince")
-        new_office = Office.objects.create(name="testoffice",province=new_province)
+        new_office = Office.objects.create(name="testoffice", country=new_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
         new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
@@ -46,7 +47,7 @@ class AgreementTestCase(TestCase):
         new_province = Province.objects.create(name="testprovince", country=get_country)
         new_province.save()
         get_province = Province.objects.get(name="testprovince")
-        new_office = Office.objects.create(name="testoffice",province=new_province)
+        new_office = Office.objects.create(name="testoffice", country=get_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
         new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
@@ -55,22 +56,22 @@ class AgreementTestCase(TestCase):
         #load from fixtures
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
-        new_agreement = ProjectAgreement.objects.create(workflowlevel1=get_program, project_name="testproject", project_type=get_project_type,
+        new_agreement = WorkflowLevel2.objects.create(workflowlevel1=get_program, project_name="testproject", project_type=get_project_type,
                                                       activity_code="111222",office=get_office,
-                                                      sector=get_sector)
+                                                      sector=get_sector, on_time=True, community_handover=False)
         new_agreement.save()
         new_agreement.site.add(get_community)
 
-        new_benchmarks = Benchmarks.objects.create(percent_complete="1234", percent_cumulative="14",agreement=new_agreement)
+        new_benchmarks = Benchmarks.objects.create(percent_complete="1234", percent_cumulative="14",workflowlevel2=new_agreement)
         new_benchmarks.save()
 
-        new_budget = Budget.objects.create(contributor="testbudget", description_of_contribution="new_province", proposed_value="24", agreement=new_agreement)
+        new_budget = Budget.objects.create(contributor="testbudget", description_of_contribution="new_province", proposed_value="24", workflowlevel2=new_agreement)
         new_budget.save()
 
     def test_agreement_exists(self):
         """Check for Agreement object"""
-        get_agreement = ProjectAgreement.objects.get(project_name="testproject")
-        self.assertEqual(ProjectAgreement.objects.filter(id=get_agreement.id).count(), 1)
+        get_agreement = WorkflowLevel2.objects.get(project_name="testproject")
+        self.assertEqual(WorkflowLevel2.objects.filter(id=get_agreement.id).count(), 1)
 
     def test_benchmark_exists(self):
         """Check for Benchmark object"""
@@ -101,7 +102,7 @@ class CompleteTestCase(TestCase):
         new_province = Province.objects.create(name="testprovince", country=get_country)
         new_province.save()
         get_province = Province.objects.get(name="testprovince")
-        new_office = Office.objects.create(name="testoffice",province=new_province)
+        new_office = Office.objects.create(name="testoffice", country=get_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
         new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
@@ -110,19 +111,19 @@ class CompleteTestCase(TestCase):
         #load from fixtures
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
-        new_agreement = ProjectAgreement.objects.create(workflowlevel1=get_program, project_name="testproject", project_type=get_project_type,
+        new_agreement = WorkflowLevel2.objects.create(workflowlevel1=get_program, project_name="testproject", project_type=get_project_type,
                                                         activity_code="111222", office=get_office,
-                                                        sector=get_sector)
+                                                        sector=get_sector, on_time=True, community_handover=False)
         new_agreement.save()
         new_agreement.site.add(get_community)
-        get_agreement = ProjectAgreement.objects.get(project_name="testproject")
-        new_complete = ProjectComplete.objects.create(workflowlevel1=get_program, project_name="testproject",
+        get_agreement = WorkflowLevel2.objects.get(project_name="testproject")
+        new_complete = WorkflowLevel2.objects.create(workflowlevel1=get_program, project_name="testproject",
                                                       activity_code="111222",office=get_office,on_time=True,
-                                                       community_handover=1, project_agreement=get_agreement)
+                                                       community_handover=1)
         new_complete.save()
 
     def test_complete_exists(self):
         """Check for Complete object"""
-        get_complete = ProjectComplete.objects.get(project_name="testproject")
-        self.assertEqual(ProjectComplete.objects.filter(id=get_complete.id).count(), 1)
+        # get_complete = WorkflowLevel2.objects.get(project_name="testproject")
+        self.assertEqual(WorkflowLevel2.objects.count(), 2)
 
