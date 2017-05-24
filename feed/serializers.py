@@ -14,7 +14,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'username', 'email', 'is_staff')
 
 
-class ProgramSerializer(serializers.HyperlinkedModelSerializer):
+class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = WorkflowLevel1
@@ -63,6 +63,7 @@ class CompleteSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = WorkflowLevel2
         fields = '__all__'
+
 
 class AgreementSerializer(serializers.HyperlinkedModelSerializer):
     """

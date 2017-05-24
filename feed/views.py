@@ -43,11 +43,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-class ProgramViewSet(viewsets.ModelViewSet):
+
+class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
-    search by country name and program name
+    search by country name and workflowlevel1 name
     limit to users logged in country permissions
     """
     def list(self, request):
@@ -59,7 +60,7 @@ class ProgramViewSet(viewsets.ModelViewSet):
     filter_fields = ('country__country','name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel1.objects.all()
-    serializer_class = ProgramSerializer
+    serializer_class = WorkflowLevel1Serializer
 
 
 class SectorViewSet(viewsets.ModelViewSet):
