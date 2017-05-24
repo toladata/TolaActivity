@@ -938,7 +938,7 @@ class WorkflowLevel2(models.Model):
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
     capacity = models.ManyToManyField(Capacity, verbose_name="Sustainability Plan", blank=True)
     evaluate = models.ManyToManyField(Evaluate, blank=True)
-    approval = models.CharField("Approval Status", default="in progress", max_length=255, blank=True, null=True)
+    approval = models.CharField("Approval Status", default="in progress", max_length=255, blank=True, null=True) # Todo replace with status
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_agreement",
                                     verbose_name="Request approval")
     approved_by_date = models.DateTimeField("Date Approved", null=True, blank=True)
@@ -994,6 +994,22 @@ class WorkflowLevel2(models.Model):
     lessons_learned = models.TextField("Lessons learned", blank=True, null=True)
 
     # END of ProjectComplete Fields
+
+    STATUS_OPEN = "open"
+    STATUS_AWAITING_APPROVAL = "awaiting_approval"
+    STATUS_TRACKING = "tracking"
+    STATUS_AWAITING_VERIFICATION = "awaiting_verification"
+    STATUS_CLOSED = "closed"
+
+    STATUS_CHOICES = (
+        (STATUS_OPEN,"Open"),
+        (STATUS_AWAITING_APPROVAL,"Awaiting Approval"),
+        (STATUS_TRACKING,"Tracking"),
+        (STATUS_AWAITING_VERIFICATION,"Awaiting Verification"),
+        (STATUS_CLOSED,"Closed")
+    )
+
+    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="open")
 
     class Meta:
         ordering = ('project_name',)

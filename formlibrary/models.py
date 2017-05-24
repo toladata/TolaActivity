@@ -13,7 +13,7 @@ except ImportError:
 class TrainingAttendance(models.Model):
     training_name = models.CharField(max_length=255)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
-    project_agreement = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
     implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
     total_participants = models.IntegerField(null=True, blank=True)
@@ -53,7 +53,7 @@ class TrainingAttendance(models.Model):
 
 
 class TrainingAttendanceAdmin(admin.ModelAdmin):
-    list_display = ('training_name', 'workflowlevel1', 'project_agreement', 'create_date', 'edit_date')
+    list_display = ('training_name', 'workflowlevel1', 'workflowlevel2', 'create_date', 'edit_date')
     display = 'Training Attendance'
     list_filter = ('workflowlevel1__country','workflowlevel1')
 

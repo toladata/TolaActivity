@@ -79,12 +79,13 @@ class ProjectDash(ListView):
         else:
             getAgreement = WorkflowLevel2.objects.get(id=project_id)
             try:
-                getComplete = WorkflowLevel2.objects.get(project_agreement__id=self.kwargs['pk'])
+                #getComplete = WorkflowLevel2.objects.get(id=project_id)
+                getComplete = None
             except WorkflowLevel2.DoesNotExist:
                 getComplete = None
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
             getCommunityCount = SiteProfile.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).count()
-            getTrainingCount = TrainingAttendance.objects.all().filter(workflowlevel2_id=self.kwargs['pk']).count()
+            getTrainingCount = TrainingAttendance.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).count()
             getDistributionCount = Distribution.objects.all().filter(initiation_id=self.kwargs['pk']).count()
             getChecklistCount = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk']).count()
             getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
@@ -113,6 +114,7 @@ class Level1Dash(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
+
         getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         filtered_workflowlevel1 = None
         if int(self.kwargs['pk']) == 0:
