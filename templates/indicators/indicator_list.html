@@ -182,11 +182,23 @@ function loadIndicators(program,indicator,type){
                 createAlert("danger", data, true, "#modalmessages");
                 return;
             }
-            var json = $.parseJSON(jqXHR.responseText);
+            //var json = $.parseJSON(jqXHR.responseText);
             $("#modalmessages").html('');
             createAlert("success", "Success, form data saved.", true, "#modalmessages");
-            var item = $.parseJSON(data);
-            $("#id_achieved").val(item[0]['fields']['achieved']);
+            var jsondata = $.parseJSON(data);
+            //var item = data;
+            var indicator = jsondata[0][0];
+            var pts = jsondata[1];
+            console.log(pts);
+            $("#id_achieved").val(indicator['fields']['achieved']);
+            $("#periodid_targets_table").find("tr:gt(0)").remove();
+
+            $.each(pts, function(i, pt) {
+                console.log(i + " : " + pt.pk);
+                var markup = '<tr id=' + pt.pk + '"><td><input type="text" name="period-' + pt.pk + '" value="' + pt.fields.period +'" class="textinput textInput form-control"></td><td><input type="text" name="target-' + pt.pk + '" value="' + pt.fields.target +'" class="textinput textInput form-control"></td></tr>';
+
+                $("#periodid_targets_table tbody").append(markup);
+            });
         });
     }
 
