@@ -171,6 +171,9 @@ function loadIndicators(program,indicator,type){
                 values.push($(input).val());
             });
             if(values.length > 0) {
+                if ( !$.isNumeric(values[2]) || values[1] == '') {
+                    return;
+                }
                 periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
             }
         });
