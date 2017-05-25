@@ -78,11 +78,12 @@ class IndicatorForm(forms.ModelForm):
                                     Periodic Targets
                                     <a class="pull-right" href="#" onclick="addPeriodicTarget()";>Add new Periodic Target</a>
                                 </div>
-                                <table class="table" id="periodid_targets_table">
+                                <table class="table" id="periodic_targets_table">
                                     <thead>
                                         <tr>
                                             <th>Period</th>
                                             <th>Target</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -90,6 +91,9 @@ class IndicatorForm(forms.ModelForm):
                                             <tr id="{{item.id}}">
                                                 <td><input type="text" name="period-{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
                                                 <td><input type="text" name="target-{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
+                                                <td style="vertical-align:middle">
+                                                <a href="{% url 'pt_delete' item.id %}" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a>
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
