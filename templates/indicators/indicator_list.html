@@ -102,6 +102,19 @@ function loadIndicators(program,indicator,type){
     });
     */
 
+    $("#indicator_modal_body").on("click", ".detelebtn", function(e){
+        e.preventDefault();
+        var url = $(this).attr('href');
+        $.post(url)
+            .done(function(data, textStatus, jqXHR){
+                if (data.status == "success") {
+                    $(e.target).closest("tr").remove();
+                } else {
+                    createAlert("danger", data.msg, true, "#modalmessages");
+                    $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
+                }
+            });
+    });
 
     // Open the CollectDataUpdate form in a modal
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
@@ -143,7 +156,7 @@ function loadIndicators(program,indicator,type){
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
         var periodic_targets = [];
-        $('#periodid_targets_table tr').each(function () {
+        $('#periodic_targets_table tr').each(function () {
             var $this = $(this);
             var values = [];
             $this.find('input[type=text]').each(function (i, input) {
@@ -165,7 +178,7 @@ function loadIndicators(program,indicator,type){
     function addPeriodicTarget() {
         var markup = '<tr id="0"><td><input type="text" name="period-0" class="textinput textInput form-control"></td><td><input type="text" name="target-0" class="textinput textInput form-control"></td></tr>'
 
-        $("#periodid_targets_table tbody").append(markup);
+        $("#periodic_targets_table tbody").append(markup);
 
     }
     function submitForm(form_url, form_data) {
@@ -189,15 +202,15 @@ function loadIndicators(program,indicator,type){
             //var item = data;
             var indicator = jsondata[0][0];
             var pts = jsondata[1];
-            console.log(pts);
+
             $("#id_achieved").val(indicator['fields']['achieved']);
-            $("#periodid_targets_table").find("tr:gt(0)").remove();
+            $("#periodic_targets_table").find("tr:gt(0)").remove();
 
             $.each(pts, function(i, pt) {
                 console.log(i + " : " + pt.pk);
                 var markup = '<tr id=' + pt.pk + '"><td><input type="text" name="period-' + pt.pk + '" value="' + pt.fields.period +'" class="textinput textInput form-control"></td><td><input type="text" name="target-' + pt.pk + '" value="' + pt.fields.target +'" class="textinput textInput form-control"></td></tr>';
 
-                $("#periodid_targets_table tbody").append(markup);
+                $("#periodic_targets_table tbody").append(markup);
             });
         });
     }

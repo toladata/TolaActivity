@@ -361,6 +361,17 @@ class IndicatorDelete(DeleteView):
     form_class = IndicatorForm
 
 
+class PeriodicTargetDeleteView(DeleteView):
+    model = PeriodicTarget
+
+    def delete(self, request, *args, **kwargs):
+        collecteddata_count = self.get_object().collecteddata_set.count()
+        if collecteddata_count > 0:
+            return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
+        #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
+        self.get_object().delete()
+        return JsonResponse({"status": "success", "msg": "Periodic Target deleted successfully."})
+
 class CollectedDataCreate(CreateView):
     """
     CollectedData Form
