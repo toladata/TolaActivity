@@ -1638,7 +1638,7 @@ class StakeholderForm(forms.ModelForm):
             TabHolder(
                 Tab('Details',
                     Fieldset('Details',
-                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/0/').focus();">Add New Contact</a>"""), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
+                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % kwargs['instance'].pk ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
                     ),
                 ),
 
@@ -1649,7 +1649,6 @@ class StakeholderForm(forms.ModelForm):
                 ),
             ),
         )
-
         super(StakeholderForm, self).__init__(*args, **kwargs)
 
         countries = getCountry(self.request.user)
