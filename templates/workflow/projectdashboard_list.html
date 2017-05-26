@@ -20,7 +20,7 @@
             <div class="form-group">
                 <label for="program">{{ WORKFLOWLEVEL1 }}:</label>
                 <select class="form-control" id="program" name="program" required="">
-                    {% for item in getPrograms %}
+                    {% for item in getworkflowlevel1s %}
                         <option value="{{ item.id }} ">{{ item.name|truncatechars:50 }}</option>
                     {% endfor %}
 
@@ -45,7 +45,7 @@
 {% else %}
     <br/>
     <ul class="list-group">
-    <h3>{{ getProgram.name|truncatechars:70 }}<span style="float: right;"><a href="/workflow/projectagreement_detail/{{ getAgreement.id }}/" class="btn btn-sm btn-info">Print View</a></span></h3>
+    <h3>{{ getworkflowlevel1.name|truncatechars:70 }}<span style="float: right;"><a href="/workflow/projectagreement_detail/{{ getAgreement.id }}/" class="btn btn-sm btn-info">Print View</a></span></h3>
         {% if getAgreement %}
         <div class="jumbotron">
             <ul class="list-group">
@@ -133,7 +133,7 @@
         <button class="btn btn-primary" type="button" onclick="location.href='/formlibrary/training_list/{{ getAgreement.id }}'">
             Training <span class="badge">{{ getTrainingCount }}</span>
         </button>
-        <button class="btn btn-primary" type="button" onclick="location.href='/formlibrary/distribution_list/{{ getProgram.id }}'">
+        <button class="btn btn-primary" type="button" onclick="location.href='/formlibrary/distribution_list/{{ getworkflowlevel1.id }}'">
             Distributions <span class="badge">{{ getDistributionCount }}</span>
         </button>
         <button class="btn btn-primary" type="button" onclick="location.href='/workflow/checklistitem_list/{{ getAgreement.id }}'">
