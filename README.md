@@ -1,6 +1,6 @@
 Tola Activity [![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
 ====
-http://toladata.github.io/TolaActivity
+http://toladata.com/products/activity/
 
 TolaActivity extends the functionality of TolaData to include a set of forms and
 reports for managing project activities for a Program.  It includes workflow for approving
