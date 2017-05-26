@@ -24,8 +24,8 @@ build
 venv/
 venv-ta/
 
-conf
-conf/awstats.conf
+docs/api/conf/config.json
+docs/api/conf/config.json/awstats.conf
 
 #Misc.
 .idea/

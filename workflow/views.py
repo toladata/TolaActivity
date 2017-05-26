@@ -42,6 +42,7 @@ from tola.util import getCountry, emailGroup, group_excluded, group_required
 from mixins import AjaxableResponseMixin
 from export import ProjectAgreementResource, StakeholderResource
 
+# TODO Suggestion: move APPROVALS to choice in model
 APPROVALS = (
     ('in_progress',('in progress')),
     ('awaiting_approval', 'awaiting approval'),
@@ -79,8 +80,7 @@ class ProjectDash(ListView):
         else:
             getAgreement = WorkflowLevel2.objects.get(id=project_id)
             try:
-                #getComplete = WorkflowLevel2.objects.get(id=project_id)
-                getComplete = None
+                getComplete = WorkflowLevel2.objects.get(id=project_id)
             except WorkflowLevel2.DoesNotExist:
                 getComplete = None
             getDocumentCount = Documentation.objects.all().filter(project_id=self.kwargs['pk']).count()
@@ -118,7 +118,8 @@ class Level1Dash(ListView):
         getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         filtered_workflowlevel1 = None
         if int(self.kwargs['pk']) == 0:
-            getDashboard = WorkflowLevel1.objects.all().prefetch_related('workflowlevel2', 'workflowlevel2__projectcomplete', 'workflowlevel2__office').filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_workflowlevel2=Count('agreement'))
+            #getDashboard = WorkflowLevel1.objects.all().prefetch_related('workflowlevel2', 'workflowlevel2__projectcomplete', 'workflowlevel2__office').filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_workflowlevel2=Count('agreement'))
+            getDashboard = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_workflowlevel2=Count('agreement'))
         else:
             getDashboard = WorkflowLevel1.objects.all().prefetch_related('agreement', 'agreement__projectcomplete', 'agreement__office').filter(id=self.kwargs['pk'], funding_status="Funded", country__in=countries).order_by('name')
             filtered_workflowlevel1 = WorkflowLevel1.objects.only('name').get(pk=self.kwargs['pk']).name

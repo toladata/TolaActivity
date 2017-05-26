@@ -12,7 +12,7 @@ class TolaApiConnection:
 
     PROJECTAGREEMENTS = "api/projectagreements/"
 
-    def __init__(self, endpoint, token):
+    def __init__(self, endpoint, token, test_connection=True):
 
         if endpoint[-1] is not '/':
             endpoint = endpoint + '/'
@@ -24,16 +24,24 @@ class TolaApiConnection:
             'Authorization': 'Token ' + token
         }
         # test connection
-        try:
-            self.get("api")
-        except:
-            raise Exception("Connection failed")
+        if test_connection:
+            try:
+                self.get("api")
+            except:
+                raise Exception("Connection failed")
 
     def get(self, route):
         url = self.endpoint + route
-        return self.request_get(url)
+        return self.get_response(url)
 
-    def request_get(self, url):
+    def get_response(self, url, use_endpoint=True):
+        if use_endpoint:
+            url = self.endpoint + url
+        return requests.get(url, headers=self.headers)
+
+    def get_json(self, url, use_endpoint=True):
+        if use_endpoint:
+            url = self.endpoint + url
         response = requests.get(url, headers=self.headers)
         content = response.content.decode('utf-8')
 
