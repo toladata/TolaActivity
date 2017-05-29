@@ -355,15 +355,15 @@ class WorkflowLevel1(models.Model):
 
 class ApprovalAuthority(models.Model):
     approval_user = models.ForeignKey(TolaUser,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     budget_limit = models.IntegerField(null=True, blank=True)
-    fund = models.CharField("Fund",max_length=255,null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('approval_user',)
-        verbose_name_plural = "Tola Approval Authority"
+        verbose_name_plural = "Approval Authority"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -371,6 +371,10 @@ class ApprovalAuthority(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(ApprovalAuthority, self).save()
+
+    @property
+    def workflowlevel1s(self):
+        return ', '.join([x.workflowlevel1 for x in self.workflowlevel1.all()])
 
     # displayed in admin templates
     def __unicode__(self):

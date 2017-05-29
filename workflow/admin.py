@@ -141,9 +141,9 @@ class WorkflowLevel1Admin(admin.ModelAdmin):
 
 
 class ApprovalAuthorityAdmin(admin.ModelAdmin):
-    list_display = ('approval_user','budget_limit','fund','country')
+    list_display = ('approval_user','budget_limit','workflowlevel1s','country')
     display = 'Approval Authority'
-    search_fields = ('approval_user__user__first_name', 'approval_user__user__last_name', 'country__country')
+    search_fields = ('approval_user__user__first_name','workflowlevel1__name', 'approval_user__user__last_name', 'country__country')
     list_filter = ('create_date','country')
 
 
