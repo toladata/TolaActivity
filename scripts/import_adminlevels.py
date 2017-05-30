@@ -4,6 +4,7 @@ IMPORTANT!! you must turn off pagination for this to work from a URL and get all
 country records
 Install module django-extensions
 Runs twice via function calls at bottom once
+Syntax: sudo py manage.py runscript import_adminlevels
 """
 from django.db import connection
 
@@ -113,13 +114,14 @@ def getAllData(getCountry,file_name):
 
 # UNCOMMENT AND UPDATE TO IMPORT
 print "IMPORTING South Sudan !!!!!!"
-getCountry, created = Country.objects.get_or_create(country="South Sudan")
-file_name = "fixtures/Admin-SouthSudan.csv"
+getCountry, created = Country.objects.get_or_create(country="Liberia")
+file_name = "fixtures/Liberia_Admin.csv"
 getAllData(getCountry, file_name)
 
+"""
 print "IMPORTING Uganda !!!!!!"
 getCountry, created = Country.objects.get_or_create(country="Uganda")
 file_name = "fixtures/admin-uganda.csv"
 getAllData(getCountry, file_name)
 
-
+"""
