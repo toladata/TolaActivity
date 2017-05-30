@@ -166,6 +166,7 @@ class TolaBookmarks(models.Model):
     user = models.ForeignKey(TolaUser, related_name='tolabookmark')
     name = models.CharField(blank=True, null=True, max_length=255)
     bookmark_url = models.CharField(blank=True, null=True, max_length=255)
+    filter = models.CharField(blank=True, null=True, max_length=255)
     workflowlevel1 = models.ForeignKey("WorkflowLevel1", blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -317,23 +318,24 @@ class FundCodeAdmin(admin.ModelAdmin):
 
 
 class WorkflowLevel1(models.Model):
-    gaitid = models.CharField("ID", max_length=255, blank=True, unique=True)
+    workflow_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    unique_id = models.CharField("ID", max_length=255, blank=True, unique=True)
     name = models.CharField("Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
     fund_code = models.ManyToManyField(FundCode, blank=True)
     description = models.TextField("Description", max_length=765, null=True, blank=True)
     sector = models.ManyToManyField(Sector, blank=True)
+    sub_sector = models.ManyToManyField(Sector, blank=True, related_name="sub_sector")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    budget_check = models.BooleanField("Enable Approval Authority", default=False)
     country = models.ManyToManyField(Country)
     user_access = models.ManyToManyField(TolaUser, blank=True)
     public_dashboard = models.BooleanField("Enable Public Dashboard", default=False)
 
     class Meta:
         ordering = ('name',)
-        verbose_name_plural = "Level 1s"
+        verbose_name_plural = "WorkflowLevel1"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -353,8 +355,8 @@ class WorkflowLevel1(models.Model):
         return self.name
 
 
-class ApprovalAuthority(models.Model):
-    approval_user = models.ForeignKey(TolaUser,help_text='User with Approval Authority', blank=True, null=True, related_name="auth_approving")
+class WorkflowAccess(models.Model):
+    approval_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="auth_approving")
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     budget_limit = models.IntegerField(null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
@@ -363,14 +365,14 @@ class ApprovalAuthority(models.Model):
 
     class Meta:
         ordering = ('approval_user',)
-        verbose_name_plural = "Approval Authority"
+        verbose_name_plural = "WorkflowAccess"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(ApprovalAuthority, self).save()
+        super(WorkflowAccess, self).save()
 
     @property
     def workflowlevel1s(self):
