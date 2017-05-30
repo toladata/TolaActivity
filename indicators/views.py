@@ -660,6 +660,7 @@ def collected_data_json(AjaxableResponseMixin, indicator,workflowlevel1):
             if data.tola_table:
                 data.tola_table.detail_url = const_table_det_url(str(data.tola_table.url))
     except Exception, e:
+        # FIXME
         pass
 
     collected_sum = CollectedData.objects.filter(indicator=indicator).aggregate(Sum('targeted'),Sum('achieved'))

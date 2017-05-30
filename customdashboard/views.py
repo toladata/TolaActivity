@@ -257,7 +257,7 @@ def SurveyPublicDashboard(request,id=0):
     # get all countires
     countries = Country.objects.all()
 
-    filter_url = "http://tola-tables.mercycorps.org/api/silo/430/data/"
+    filter_url = "http://tola-tables.mercycorps.org/api/silo/430/data/" # FIXME hardcoded url
     token = TolaSites.objects.get(site_id=1)
     if token.tola_tables_token:
         headers = {'content-type': 'application/json',
@@ -266,7 +266,7 @@ def SurveyPublicDashboard(request,id=0):
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
-    response = requests.get(filter_url, headers=headers, verify=False)
+    response = requests.get(filter_url, headers=headers, verify=False) # FIXME no ssl
     get_json = json.loads(response.content)
     data = ast.literal_eval(get_json)
     meaning = []
@@ -347,12 +347,12 @@ def SurveyTalkPublicDashboard(request,id=0):
     # get all countires
     countries = Country.objects.all()
 
-    filter_url = "http://tables.toladata.io/api/silo/9/data/"
+    filter_url = "http://tables.toladata.io/api/silo/9/data/" # FIXME hardcoded url
 
     headers = {'content-type': 'application/json',
                'Authorization': 'Token bd43de0c16ac0400bc404c6598a6fe0e4ce73aa2'}
 
-    response = requests.get(filter_url, headers=headers, verify=False)
+    response = requests.get(filter_url, headers=headers, verify=False) # FIXME no ssl
     get_json = json.loads(json.dumps(response.content))
     data = ast.literal_eval(get_json)
     meaning = []

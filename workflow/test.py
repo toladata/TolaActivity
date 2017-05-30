@@ -1,6 +1,6 @@
 from django.test import TestCase
 from workflow.models import Organization, WorkflowLevel1, Country, Province, WorkflowLevel2, Sector, ProjectType, \
-    SiteProfile, Office, Benchmarks, Budget
+    SiteProfile, Office, WorkflowLevel3, Budget
 
 
 class SiteProfileTestCase(TestCase):
@@ -62,7 +62,7 @@ class AgreementTestCase(TestCase):
         new_agreement.save()
         new_agreement.site.add(get_community)
 
-        new_benchmarks = Benchmarks.objects.create(percent_complete="1234", percent_cumulative="14",workflowlevel2=new_agreement)
+        new_benchmarks = WorkflowLevel3.objects.create(percent_complete="1234", percent_cumulative="14",workflowlevel2=new_agreement)
         new_benchmarks.save()
 
         new_budget = Budget.objects.create(contributor="testbudget", description_of_contribution="new_province", proposed_value="24", workflowlevel2=new_agreement)
@@ -75,8 +75,8 @@ class AgreementTestCase(TestCase):
 
     def test_benchmark_exists(self):
         """Check for Benchmark object"""
-        get_benchmark = Benchmarks.objects.get(percent_complete="1234")
-        self.assertEqual(Benchmarks.objects.filter(id=get_benchmark.id).count(), 1)
+        get_benchmark = WorkflowLevel3.objects.get(percent_complete="1234")
+        self.assertEqual(WorkflowLevel3.objects.filter(id=get_benchmark.id).count(), 1)
 
     def test_budget_exists(self):
         """Check for Budget object"""
