@@ -22,8 +22,8 @@ urlpatterns = patterns('',
                       
                        url(r'^component/(?P<pk>[0-9]+)/$', DashboardComponentList.as_view(), name='dashboard_component_list'),
                        url(r'^component_add/(?P<id>[0-9]+)/$', DashboardComponentCreate.as_view(), name='custom_dashboard/component_add'),
-                       url(r'^component_update/(?P<pk>[0-9]+)/$', DashboardComponentUpdate.as_view(template_name="configurabledashboard/components/admin/update_form.html"), name='custom_dashboard/component_update'),
-                       url(r'^component_delete/(?P<pk>[0-9]+)/$', DashboardComponentDelete.as_view(), name='custom_dashboard/component_delete'),
+                       url(r'^component_update/(?P<dashboard_id>[0-9]+)/(?P<pk>[0-9]+)/$', DashboardComponentUpdate.as_view(template_name="configurabledashboard/components/admin/update_form.html"), name='custom_dashboard/component_update'),
+                       url(r'^component_delete/(?P<dashboard_id>[0-9]+)/(?P<pk>[0-9]+)/$', DashboardComponentDelete.as_view(), name='custom_dashboard/component_delete'),
 
                        url(r'^data/(?P<pk>[0-9]+)/$', ComponentDataSourceList.as_view(), name='component_data_source_list'),
                        url(r'^data_add/$', ComponentDataSourceCreate.as_view(), name='custom_dashboard/data_add'),

@@ -32,8 +32,10 @@
               NOT ASSIGNED
             {% endfor %}
       </td>    
-      <td><a data-toggle="modal" data-target="#myModal" href="/workflow/custom_dashboard/component_update/{{ component.id }}/" class="dashboards btn btn-xs btn-danger">Update</a></td>
-      <td> <a data-toggle="modal" data-target="#myModal" href="/workflow/custom_dashboard/component_delete/{{ component.id }}/" class="dashboards btn btn-xs btn-danger">Delete</a></td>
+      <td><a data-target="#dashboardComponentForm" href="/component_update/{{dashboard_id}}/{{ component.id }}/" data-toggle="modal"  data-dismiss="modal" class="dashboards btn btn-xs btn-danger">Update</a></td>
+
+
+      <td> <a data-toggle="modal" data-target="#componentDeleteForm" data-dismiss="modal" href="/component_delete/{{dashboard_id}}/{{ component.id }}/" class="dashboards btn btn-xs btn-danger">Delete</a></td>
     </tr>
     {% endfor %}
   </table>
@@ -41,3 +43,8 @@
 <div class="modal-footer">
    <button type="button" class="btn btn-default" data-dismiss="modal"> Close</button>
 </div> 
+
+
+<!--Modal for updating component-->
+
+<!--Modal for deleting component-->

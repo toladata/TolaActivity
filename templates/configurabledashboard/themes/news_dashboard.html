@@ -1,7 +1,7 @@
 <!-- import chart.js -->
 
 <!-- load basic layout -->
-{% extends "customdashboard/themes/custom_base_layout.html" %}
+{% extends "configurabledashboard/themes/custom_base_layout.html" %}
 {% load staticfiles %}
 
 <!-- humanize numbers -->
@@ -83,9 +83,8 @@
 				<div class='col-md-12'>
 					<div class='panel panel-info borderless soft-border-full'>
 					<div class='panel-heading borderless soft-border-top' style='background-color: #7B5213;'><span class='title-white'> LATEST EVENTS</span></div>
-						{% with pageText.timelineLinks as tolaTextData %}
+						{% with getComponentDataMaps.4.data_maps as tolaTextData %}
 							{% include 'customdashboard/components/narratives/sidebar_events.html' %}
-							<!-- {% include {{getLayoutComponents.3}} %} -->
 						{% endwith %}
 		            </div>
 				</div>
@@ -96,7 +95,6 @@
 							<!-- <span class='chart-title' style="overflow-y: scroll; ">NEWSFEED</span> -->
 							{% with pageNews as tolaTextData %}
 							    {% include 'customdashboard/components/narratives/sidebar_news.html' %}
-							    <!-- {% include {{getLayoutComponents.4}} %} -->
 							{% endwith %}
 						</div>
 					</div>
@@ -108,7 +106,6 @@
 							<!-- <span class='chart-title' style="overflow-y: scroll; ">NEWSFEED</span> -->
 							{% with pageNews as tolaTextData %}
 							    {% include 'customdashboard/components/narratives/sidebar_news.html' %}
-							    <!-- {% include {{getLayoutComponents.5}} %} -->
 							{% endwith %}
 						</div>
 					</div>

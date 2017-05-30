@@ -321,3 +321,9 @@ function confirmshort() {
 
       }
     }
+
+// Handle change to component map on Configureable Dashboard
+$("#component_selector").change(function(pk, location,type) {
+        var selected_component = $(this).val();
+        if(typeof component_selector_has_changed != 'undefined') custom_dashboard_update_components(pk,location,type);
+}

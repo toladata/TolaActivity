@@ -100,6 +100,7 @@ class CustomDashboardCreate(CreateView):
             for key in parsedLayout:
                 new_map[key] = "NONE"
             data.component_map = json.dumps(new_map)
+            data.program_id = self.kwargs['pk']
             data.save()
 
         #save formset from context
@@ -164,14 +165,20 @@ class CustomDashboardDetail(DetailView):
         # retrieve the data source mapping of data 
         try:
             getComponentDataMaps = {}
+
             for position, component_id in getComponentOrder.items():
-                #add an attribute to the getComponentDataMaps dictionary for all data from this component
-                selected_id = int(component_id)
-                selected_component = DashboardComponent.objects.get(id = selected_id)
-                getComponentDataMaps[position] = {}
-                getComponentDataMaps[position]['component_id'] = selected_id
-                getComponentDataMaps[position]['data_map'] = selected_component.data_map
-        except not getCustomDashboard.component_map:
+                #add an attribute to the getComponentDataMaps dictionary for all data from this component     
+                if component_id != "NONE":
+                    selected_id = component_id 
+                    selected_component = DashboardComponent.objects.get(id = selected_id)
+                    getComponentDataMaps[position] = {}
+                    getComponentDataMaps[position]['component_id'] = selected_id
+                    getComponentDataMaps[position]['data_map'] = selected_component.data_map
+                else:
+                    getComponentDataMaps[position] = {}
+                    getComponentDataMaps[position]['component_id'] = ""
+                    getComponentDataMaps[position]['data_map'] = ""
+        except getComponentOrder.DoesNotExist:
             getComponentDataMaps = None
         context.update({'getComponentDataMaps': getComponentDataMaps})
 
@@ -196,20 +203,15 @@ class CustomDashboardDetail(DetailView):
         return context
 
 #TODO: build out function for component mapping for dashboard wizard
-def custom_dashboard_update_components(AjaxableResponseMixin,pk,location,type): #component_map):
-# (?P<pk>[0-9]+)/(?P<location>[0-9]+)/(?P<type>[-\w]+)/$
-    # form_mapping = component_map
-    mapped = false
+def custom_dashboard_update_components(pk,location,mapped_component): 
     current_dashboard = CustomDashboard.objects.get(id=self.kwargs['pk'])
-    current_map = current_dashboard.component_map#.split("]","],")
-    # for mapped_object in current_map:
-    #     if mapping.0 == form_mapping.0
-    #         update = current_dashboard.update(component_map=form_mapping)
-    #         mapped = true
-    # if mapped == false:
-    #     update = current_dashboard.component_map.append(form_mapping)
-    #     current_dashboard.save()
-    return HttpResponse(component_map)
+    old_dashboard_map = current_dashboard.component_map
+    unpacked_map = json.loads(old_dashboard_map)
+    unpacked_map[{{location}}] = mapped_component
+    updated_map = json.dumps(unpacked)
+    current_dashboard.update(component_map=updated_map)
+    current_dashboard.save()
+    return HttpResponse(current_dashboard)
 
 
 class CustomDashboardUpdate(UpdateView):
@@ -256,10 +258,6 @@ class CustomDashboardUpdate(UpdateView):
         if check_path.startswith('/confirgureabledashboard/map'):
             location = self.kwargs['location']
             component_type = self.kwargs['type']
-        # TODO: If applicable, work through flow for remapping
-        # else if check_form_type.startswith('/confirgureabledashboard/remap'):
-        #     location = self.kwargs['location']
-        #     component_type = self.kwargs['type']
         else:
             location = None
             component_type = None
@@ -534,7 +532,7 @@ class DashboardComponentList(ListView):
         
         getDashboardListComponents = DashboardComponent.objects.all().filter(componentset=dashboard_id)
             
-        return render(request, self.template_name, {'getDashboardListComponents': getDashboardListComponents})
+        return render(request, self.template_name, {'getDashboardListComponents': getDashboardListComponents, 'dashboard_id':dashboard_id})
 
 
 class DashboardComponentCreate(CreateView):

@@ -165,7 +165,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                     <td> {{value}} </td>
                                                     <td> {{getCustomDashboard.componentset}} 
                                                         <div class="form-group"> 
-                                                            <select class="form-control" id="sel1">
+                                                            <select class="form-control" id="component_selector">
                                                             {% for component in getDashboardComponents %}
                                                                 {% if component.component_type == value %}
                                                                     <option value={{component.id}}> {{component.component_name}} </option>
@@ -246,20 +246,7 @@ class CustomDashboardForm(forms.ModelForm):
                                                             </div>
                                                         </td>
                                                         <td></td>
-                                                        <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data_add/'> New </a></td>
-                                                        {% for component in getCustomDashboard.components.all %}
-                                                            <td>{{component.component_name}}</td>
-                                                            <td>{{component.data_required}} </td>
-                                                            <td><a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/component/{{pk}}/'>View</a></td>
-                                                            <td>{% if component.data_sources %} Yes 
-                                                                {% else %} 
-                                                                No
-                                                                {% endif %}
-                                                            </td>  
-                                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data_add/'> New </a></td>
-
-                                                        {% endfor %}
-                                                        
+                                                            <td> <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data_add/'> New </a></td>                     
                                                     </tr>
                                                 {% endfor %}
                                             {% else %}
@@ -277,7 +264,7 @@ class CustomDashboardForm(forms.ModelForm):
                                         </table>
                                     <div>
                                     <div class="panel panel-footer">Don't see your data source or need to edit an existing data source?<br>
-                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='../../custom_dashboard/data/{{pk}}/'> View All Data Sources</a></td>
+                                        <a class="dashboards" data-toggle="modal" data-target="#myModal" href='configurabledashboard/data/{{pk}}/'> View All Data Sources</a></td>
                                     </div>
                                 </div>
                             </div>
@@ -303,22 +290,14 @@ class CustomDashboardForm(forms.ModelForm):
                                     {% for component in getDashboardComponents %}
                                     <tr>
                                         <td>{{component.component_name}}</td>
-                                        {% for map_entry in getAllComponentMaps.component %}
-                                        <tr>
-                                            <td>{{map_entry.name}}</td>
-                                            <td>{{map_entry.source}}</td>
-                                            <td>{% if map_entry.name == "title" %}
-                                                    <input type="text" name="title">
-                                                {% else %}
-                                                    <select>
-                                                    {% for data_filter in map_entry.source %}
-                                                        <option value={{data_filter}}>{{data_filter}}</option>
-                                                    {% endfor %}
-                                                    </select>
-                                                {% endif %}
-                                            </td>  
-                                        </tr>  
-                                        {% endfor %}               
+                                        <td> {% if component.data_map %}
+                                            Insert rows for each data map position
+                                            {% else %}
+                                            No Component Map
+                                            {% endif %}    
+                                        </td>
+                                        <td> Either (1) data source listed in the data_map or a list of {{component.data_sources}}  </td>
+                                        <td>  Either (1) data filter listed in the data_map or a list of data filteres </td>   
                                     </tr>
                                     {% endfor %}
                                 </table>
