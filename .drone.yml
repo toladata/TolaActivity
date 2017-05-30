@@ -10,7 +10,6 @@ pipeline:
   build-docker-image:
     image: plugins/docker
     event: [push, tag]
-    insecure: true
     registry: registry.tola.io
     repo: registry.tola.io/toladata/tolaactivity
     file: Dockerfile
