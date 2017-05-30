@@ -519,7 +519,7 @@ class ProjectCompleteCreate(CreateView):
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
         getProjectAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
-        pre_initial = {
+        initial = {
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'program': getProjectAgreement.program,
@@ -535,20 +535,21 @@ class ProjectCompleteCreate(CreateView):
         }
 
         try:
-            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
-            site = {'site': [o for o in getSites], }
-            initial = pre_initial.copy()
-            initial.update(site)
+            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id', flat=True)
+            site = {'site': [o for o in getSites] }
+            initial['site'] = getSites
+
         except SiteProfile.DoesNotExist:
             getSites = None
 
         try:
             getStakeholder = Stakeholder.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
             stakeholder = {'stakeholder': [o for o in getStakeholder], }
-            initial = pre_initial.copy()
-            initial.update(stakeholder)
+            initial['stakeholder'] = stakeholder
         except Stakeholder.DoesNotExist:
             getStakeholder = None
+
+        print(".............................%s............................" % initial )
 
         return initial
 
