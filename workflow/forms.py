@@ -1602,13 +1602,14 @@ class StakeholderForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.add_input(Submit('submit', 'Save'))
+        pkval = kwargs['instance'].pk if kwargs['instance'] else 0
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Details',
                     Fieldset('Details',
-                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % kwargs['instance'].pk ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
+                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % pkval ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
                     ),
                 ),
 
