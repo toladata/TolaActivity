@@ -14,6 +14,9 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from simple_history.models import HistoricalRecords
 from django.contrib.sessions.models import Session
+
+from django.db import migrations
+
 try:
     from django.utils import timezone
 except ImportError:
@@ -852,7 +855,6 @@ class ProjectAgreementManager(models.Manager):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
 
 # Project Initiation, admin is handled in the admin.py
-# TODO: Clean up unused fields and rename model with manual migration file
 
 class WorkflowLevel2(models.Model):
     """
@@ -1103,7 +1105,7 @@ class Documentation(models.Model):
 # TODO: Rename model with manual migration file
 """
 https://docs.djangoproject.com/en/dev/ref/migration-operations/#renamemodel
-
+"""
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -1111,10 +1113,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        operations.RenameModel("Benchmarks", "WorkflowLevelThree")
+        migrations.RenameModel("Benchmarks", "WorkflowLevel3")
     ]
-"""
-class Benchmarks(models.Model):
+
+
+class WorkflowLevel3(models.Model):
     percent_complete = models.IntegerField("% complete", blank=True, null=True)
     percent_cumulative = models.IntegerField("% cumulative completion", blank=True, null=True)
     est_start_date = models.DateTimeField(null=True, blank=True)
@@ -1138,7 +1141,7 @@ class Benchmarks(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Benchmarks, self).save()
+        super(WorkflowLevel3, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
