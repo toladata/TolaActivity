@@ -1,0 +1,12 @@
+---
+pipeline:
+  build:
+    image: python:${PYTHON_VERSION}
+    pull: true
+    commands:
+      - pip install -r requirements.txt
+      - python manage.py test
+
+matrix:
+  PYTHON_VERSION:
+    - 2.7
