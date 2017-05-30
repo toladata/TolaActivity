@@ -9,6 +9,7 @@ pipeline:
 
   build-docker-image:
     image: plugins/docker
+    event: [push, tag]
     insecure: true
     registry: registry.tola.io
     repo: registry.tola.io/toladata/tolaactivity
@@ -23,6 +24,7 @@ pipeline:
 
   trigger-deployment:
     image: quay.io/ukhomeofficedigital/drone-trigger:latest
+    event: [push, tag]
     verbose: true
     drone_server: http://drone.tola.io
     drone_token: $DRONE_TOKEN

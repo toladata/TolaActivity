@@ -5,7 +5,7 @@ from crispy_forms.layout import Layout, Submit, Reset, Field
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Documentation, Benchmarks, Budget, Capacity,\
+from .models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Documentation, WorkflowLevel3, Budget, Capacity,\
     Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -1462,7 +1462,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
 class BenchmarkForm(forms.ModelForm):
 
     class Meta:
-        model = Benchmarks
+        model = WorkflowLevel3
         exclude = ['create_date', 'edit_date']
 
     def __init__(self, *args, **kwargs):

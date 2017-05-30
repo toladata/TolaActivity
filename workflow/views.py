@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import WorkflowLevel1, Country, Province, AdminLevelThree, District, WorkflowLevel2, SiteProfile, \
-    Documentation, Benchmarks, Budget, ApprovalAuthority, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
+    Documentation, WorkflowLevel3, Budget, WorkflowAccess, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
     TolaBookmarks, TolaUser
 from formlibrary.models import TrainingAttendance, Distribution
 from indicators.models import CollectedData, ExternalService
@@ -143,7 +143,7 @@ class ProjectAgreementList(ListView):
     :param request:
     """
     model = WorkflowLevel2
-    template_name = 'workflow/projectagreement_list.html'
+    template_name = 'workflow/workflowlevel2_list.html'
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
@@ -169,7 +169,7 @@ class ProjectAgreementImport(ListView):
     Import a project agreement from TolaData or other third party service
     """
 
-    template_name = 'workflow/projectagreement_import.html'
+    template_name = 'workflow/workflowlevel2_import.html'
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
@@ -190,7 +190,7 @@ class ProjectAgreementCreate(CreateView):
     """
 
     model = WorkflowLevel2
-    template_name = 'workflow/projectagreement_form.html'
+    template_name = 'workflow/workflowlevel2_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -304,8 +304,8 @@ class ProjectAgreementUpdate(UpdateView):
         context.update({'getQuantitative': getQuantitative})
 
         try:
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('description')
-        except Benchmarks.DoesNotExist:
+            getBenchmark = WorkflowLevel3.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('description')
+        except WorkflowLevel3.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
 
@@ -353,8 +353,8 @@ class ProjectAgreementUpdate(UpdateView):
 
             if getworkflowlevel1.budget_check:
                 try:
-                    user_budget_approval = ApprovalAuthority.objects.get(approval_user__user=self.request.user)
-                except ApprovalAuthority.DoesNotExist:
+                    user_budget_approval = WorkflowAccess.objects.get(approval_user__user=self.request.user)
+                except WorkflowAccess.DoesNotExist:
                     user_budget_approval = None
 
                 if not user_budget_approval or int(budget) > int(user_budget_approval.budget_limit):
@@ -395,7 +395,7 @@ class ProjectAgreementUpdate(UpdateView):
 class ProjectAgreementDetail(DetailView):
 
     model = WorkflowLevel2
-    context_object_name = 'agreement'
+    context_object_name = 'workflowlevel2'
     queryset = WorkflowLevel2.objects.all()
 
     def get_context_data(self, **kwargs):
@@ -404,19 +404,19 @@ class ProjectAgreementDetail(DetailView):
         context.update({'id': self.kwargs['pk']})
 
         try:
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
-        except Benchmarks.DoesNotExist:
+            getBenchmark = WorkflowLevel3.objects.all().filter(workflowlevel2__id=self.kwargs['pk'])
+        except WorkflowLevel3.DoesNotExist:
             getBenchmark = None
-        context.update({'getBenchmarks': getBenchmark})
+        context.update({'getWorkflowLevel3': getBenchmark})
 
         try:
-            getBudget = Budget.objects.all().filter(agreement__id=self.kwargs['pk'])
+            getBudget = Budget.objects.all().filter(workflowlevel2__id=self.kwargs['pk'])
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
 
         try:
-            getDocuments = Documentation.objects.all().filter(project__id=self.kwargs['pk']).order_by('name')
+            getDocuments = Documentation.objects.all().filter(workflowlevel1__id=self.kwargs['pk']).order_by('name')
         except Documentation.DoesNotExist:
             getDocuments = None
         context.update({'getDocuments': getDocuments})
@@ -565,8 +565,8 @@ class ProjectCompleteCreate(CreateView):
         #update the other budget items
         Budget.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
 
-        #update the benchmarks
-        Benchmarks.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
+        #update the WorkflowLevel3
+        WorkflowLevel3.objects.filter(agreement__id=getComplete.project_agreement_id).update(complete=getComplete)
 
         #update main compelte fields
         WorkflowLevel2.objects.filter(id=getComplete.id).update(account_code=getAgreement.account_code, lin_code=getAgreement.lin_code)
@@ -628,8 +628,8 @@ class ProjectCompleteUpdate(UpdateView):
 
         # get benchmark or project components
         try:
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('description')
-        except Benchmarks.DoesNotExist:
+            getBenchmark = WorkflowLevel3.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('description')
+        except WorkflowLevel3.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
 
@@ -716,10 +716,10 @@ class ProjectCompleteDetail(DetailView):
         context.update({'id':self.kwargs['pk']})
 
         try:
-            getBenchmark = Benchmarks.objects.all().filter(complete__id=self.kwargs['pk'])
-        except Benchmarks.DoesNotExist:
+            getBenchmark = WorkflowLevel3.objects.all().filter(complete__id=self.kwargs['pk'])
+        except WorkflowLevel3.DoesNotExist:
             getBenchmark = None
-        context.update({'getBenchmarks': getBenchmark})
+        context.update({'getWorkflowLevel3': getBenchmark})
 
         return context
 
@@ -1231,7 +1231,7 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
     """
     Benchmark Form
     """
-    model = Benchmarks
+    model = WorkflowLevel3
 
     # add the request to the kwargs
     def get_form_kwargs(self):
@@ -1292,7 +1292,7 @@ class BenchmarkUpdate(AjaxableResponseMixin, UpdateView):
     """
     Benchmark Form
     """
-    model = Benchmarks
+    model = WorkflowLevel3
 
     def get_context_data(self, **kwargs):
         context = super(BenchmarkUpdate, self).get_context_data(**kwargs)
@@ -1302,7 +1302,7 @@ class BenchmarkUpdate(AjaxableResponseMixin, UpdateView):
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(BenchmarkUpdate, self).get_form_kwargs()
-        getBenchmark = Benchmarks.objects.all().get(id=self.kwargs['pk'])
+        getBenchmark = WorkflowLevel3.objects.all().get(id=self.kwargs['pk'])
 
         kwargs['request'] = self.request
         kwargs['agreement'] = getBenchmark.agreement.id
@@ -1330,7 +1330,7 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
     """
     Benchmark Form
     """
-    model = Benchmarks
+    model = WorkflowLevel3
     success_url = '/'
 
     def get_context_data(self, **kwargs):
@@ -1370,6 +1370,7 @@ class ContactList(ListView):
             getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
     
         except Exception, e:
+            # FIXME
             pass
 
         if int(self.kwargs['pk']) == 0:

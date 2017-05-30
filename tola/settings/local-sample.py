@@ -39,6 +39,7 @@ TEMPLATE_DEBUG = DEBUG
 #FOR DEV AND TEST
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/tmp/tola-messages' # change this to a proper location
+# FIXME Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
 ########## END EMAIL CONFIGURATION
 
 
