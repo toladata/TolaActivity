@@ -2,10 +2,40 @@
 pipeline:
   build:
     image: python:${PYTHON_VERSION}
-    pull: true
     commands:
       - pip install -r requirements.txt
       - python manage.py test
+    when:
+      event: [push, pull_request, tag]
+  build-docker-image:
+    image: plugins/docker
+    insecure: true
+    registry: registry.tola.io
+    repo: registry.tola.io/toladata/tolaactivity
+    file: Dockerfile
+    tags:
+      - latest
+      - ${DRONE_COMMIT_SHA}
+    secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
+    when:
+      event: [push, tag]
+      branches: [master, dev-v2]
+      status: [success]
+
+  trigger-deployment:
+    image: quay.io/ukhomeofficedigital/drone-trigger:latest
+    verbose: true
+    drone_server: http://drone.tola.io
+    drone_token: $DRONE_TOKEN
+    secrets: [DRONE_TOKEN]
+    repo: toladata/deployment
+    branch: master
+    deploy_to: marathon
+    params: "APP_ID=/tolaactivity,APP_GROUP=toladata,APP_NAME=TolaActivity,APP_BRANCH=${DRONE_COMMIT_BRANCH},APP_IMAGE=registry.tola.io/toladata/tolaactivity:${DRONE_COMMIT_SHA}"
+    when:
+      event: [push, tag]
+      branches: [master, dev-v2]
+      status: [success]
 
 matrix:
   PYTHON_VERSION:

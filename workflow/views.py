@@ -2,7 +2,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import WorkflowLevel1, Country, Province, AdminLevelThree, District, WorkflowLevel2, SiteProfile, \
-    Documentation, WorkflowLevel3, Budget, ApprovalAuthority, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
+    Documentation, WorkflowLevel3, Budget, WorkflowAccess, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
     TolaBookmarks, TolaUser
 from formlibrary.models import TrainingAttendance, Distribution
 from indicators.models import CollectedData, ExternalService
@@ -353,8 +353,8 @@ class ProjectAgreementUpdate(UpdateView):
 
             if getworkflowlevel1.budget_check:
                 try:
-                    user_budget_approval = ApprovalAuthority.objects.get(approval_user__user=self.request.user)
-                except ApprovalAuthority.DoesNotExist:
+                    user_budget_approval = WorkflowAccess.objects.get(approval_user__user=self.request.user)
+                except WorkflowAccess.DoesNotExist:
                     user_budget_approval = None
 
                 if not user_budget_approval or int(budget) > int(user_budget_approval.budget_limit):

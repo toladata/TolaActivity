@@ -134,16 +134,16 @@ class SiteProfileAdmin(ImportExportModelAdmin):
 
 
 class WorkflowLevel1Admin(admin.ModelAdmin):
-    list_display = ('countries','name','gaitid', 'description','budget_check','funding_status')
-    search_fields = ('name','gaitid')
-    list_filter = ('funding_status','country','budget_check','funding_status')
+    list_display = ('countries','name','unique_id', 'description','funding_status')
+    search_fields = ('name','unique_id')
+    list_filter = ('funding_status','country','funding_status')
     display = 'Program'
 
 
-class ApprovalAuthorityAdmin(admin.ModelAdmin):
-    list_display = ('approval_user','budget_limit','fund','country')
-    display = 'Approval Authority'
-    search_fields = ('approval_user__user__first_name', 'approval_user__user__last_name', 'country__country')
+class WorkflowAccessAdmin(admin.ModelAdmin):
+    list_display = ('approval_user','budget_limit','workflowlevel1s','country')
+    display = 'Workflow Access'
+    search_fields = ('approval_user__user__first_name','workflowlevel1__name', 'approval_user__user__last_name', 'country__country')
     list_filter = ('create_date','country')
 
 
@@ -206,7 +206,7 @@ admin.site.register(Evaluate)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
-admin.site.register(ApprovalAuthority, ApprovalAuthorityAdmin)
+admin.site.register(WorkflowAccess, WorkflowAccessAdmin)
 admin.site.register(ChecklistItem, ChecklistItemAdmin)
 admin.site.register(Checklist, ChecklistAdmin)
 admin.site.register(Stakeholder, StakeholderAdmin)
