@@ -38,4 +38,4 @@ error.log
 *.secret
 *.secret.yml
 assets/
-local.py
+local-dev.py
