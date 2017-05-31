@@ -394,10 +394,6 @@ class CollectedData(models.Model):
     def __unicode__(self):
         return self.description
 
-    def targeted_sum(self):
-        targets=CollectedData.targeted.filter(indicator__id=self).sum('targeted')
-        return targets
-
     def achieved_sum(self):
         achieved=CollectedData.targeted.filter(indicator__id=self).sum('achieved')
         return achieved
