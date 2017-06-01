@@ -281,7 +281,7 @@ class Indicator(SecurityModel):
     data_points = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Points")
     responsible_person = models.CharField(max_length=255, null=True, blank=True, verbose_name="Responsible Person(s) and Team")
     method_of_analysis = models.CharField(max_length=255, null=True, blank=True, verbose_name="Method of Analysis")
-    information_use = models.CharField(max_length=255, null=True, blank=True, verbose_name="Information User")
+    information_use = models.CharField(max_length=255, null=True, blank=True, verbose_name="Information Use")
     reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True, verbose_name="Frequency of Reporting")
     quality_assurance = models.TextField(max_length=500, null=True, blank=True, verbose_name="Quality Assurance Measures")
     data_issues = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Issues")
