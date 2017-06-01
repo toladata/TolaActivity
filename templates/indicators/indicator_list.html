@@ -46,14 +46,14 @@ function loadIndicators(workflowlevel1,indicator,type){
             {% if not workflowlevel1.indicator_set.all %}
                 <div class='panel-body'>
                     <h4>No Indicators have been entered for this {{ workflowlevel1 }}</h4>
-                    <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
+                    <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ workflowlevel1.id }}/">New Indicator</a>" button above.</p>
                 </div>
             {% else %}
                 <div class='panel-body'>
-                    <a onclick="loadIndicators({{ workflowlevel1.id }},{{indicator}},{{type}})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ workflowlevel1.indicator_count }} Indicators </a>
+                    <a onclick="loadIndicators({{ workflowlevel1.id }},{{indicator}},{{type}})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ workflowlevel1.id }}">{{ workflowlevel1.indicator_count }} Indicators </a>
                 </div>
-                <div id="hidden-{{ program.id }}" class="accordian-body collapse">
-                    {% include "indicators/program_indicators_table.html" %}
+                <div id="hidden-{{ workflowlevel1.id }}" class="accordian-body collapse">
+                    {% include "indicators/workflowlevel1_indicators_table.html" %}
                 </div>
             {% endif %}
         </div>
