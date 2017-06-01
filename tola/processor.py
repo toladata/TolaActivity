@@ -1,7 +1,7 @@
 #add global variable for report server or not to all templates so we can hide elements that aren't wanted on the report server
-from settings.dev import REPORT_SERVER
-from settings.dev import OFFLINE_MODE
-from settings.dev import NON_LDAP
+from settings.local import REPORT_SERVER
+from settings.local import OFFLINE_MODE
+from settings.local import NON_LDAP
 from workflow.models import Organization
 
 
