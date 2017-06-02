@@ -730,12 +730,18 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+        if kwargs['initial'].get('short'):
+            fieldset = Fieldset('Program', 'program2', 'program', 'project_agreement2', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'estimated_budget', 'site','stakeholder',
+                    )
+        else:
+            fieldset = Fieldset('program', 'program2', 'project_agreement', 'project_agreement2', 'activity_code','account_code','lin_code',\
+                             'office', 'sector','project_name', 'project_activity', 'site', 'stakeholder'
+                    )
         self.helper.layout = Layout(
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program2', 'program', 'project_agreement2', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'estimated_budget', 'site','stakeholder',
-                    ),
+                    fieldset,
                     Fieldset(
                         'Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',

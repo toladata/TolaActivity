@@ -532,6 +532,7 @@ class ProjectCompleteCreate(CreateView):
             'expected_end_date': getProjectAgreement.expected_end_date,
             'expected_duration': getProjectAgreement.expected_duration,
             'estimated_budget': getProjectAgreement.total_estimated_budget,
+            'short': getProjectAgreement.short,
         }
 
         try:
@@ -548,8 +549,6 @@ class ProjectCompleteCreate(CreateView):
             initial['stakeholder'] = stakeholder
         except Stakeholder.DoesNotExist:
             getStakeholder = None
-
-        print(".............................%s............................" % initial )
 
         return initial
 
