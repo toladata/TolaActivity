@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from urlparse import urlparse
 import re
-from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
+from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
 from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
@@ -25,6 +25,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
+from django.utils import timezone
 
 from workflow.mixins import AjaxableResponseMixin
 import json
@@ -275,6 +276,7 @@ class IndicatorUpdate(UpdateView):
 
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
+        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
 
         #get external service data if any
         try:
@@ -298,11 +300,29 @@ class IndicatorUpdate(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        form.save()
+        periodic_targets = self.request.POST.get('periodic_targets', None)
+        indicatr = Indicator.objects.get(pk=self.kwargs.get('pk'))
+        if periodic_targets:
+            pt_json = json.loads(periodic_targets)
+            for pt in pt_json:
+                pk = int(pt.get('id'))
+                if pk == 0: pk = None
+                periodic_target,created = PeriodicTarget.objects.update_or_create(\
+                    indicator=indicatr, id=pk,\
+                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.now() })
+                #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
+                if created:
+                    periodic_target.create_date = timezone.now()
+                    periodic_target.save()
+
+        self.object = form.save()
+        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('create_date')
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [self.object])
-            return HttpResponse(data)
+            pts = serializers.serialize('json', periodic_targets)
+            #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
+            return HttpResponse("[" + data + "," + pts + "]")
 
         messages.success(self.request, 'Success, Indicator Updated!')
         if self.request.POST.has_key('_addanother'):
@@ -342,6 +362,17 @@ class IndicatorDelete(DeleteView):
 
     form_class = IndicatorForm
 
+
+class PeriodicTargetDeleteView(DeleteView):
+    model = PeriodicTarget
+
+    def delete(self, request, *args, **kwargs):
+        collecteddata_count = self.get_object().collecteddata_set.count()
+        if collecteddata_count > 0:
+            return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
+        #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
+        self.get_object().delete()
+        return JsonResponse({"status": "success", "msg": "Periodic Target deleted successfully."})
 
 class CollectedDataCreate(CreateView):
     """
@@ -410,8 +441,9 @@ class CollectedDataCreate(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
-        getDisaggregationLabel = DisaggregationLabel.objects.all().filter(Q(disaggregation_type__indicator__id=self.request.POST['indicator']) | Q(disaggregation_type__standard=True))
+        disaggregation_labels = DisaggregationLabel.objects.filter(\
+                                    Q(disaggregation_type__indicator__id=self.request.POST['indicator']) | \
+                                    Q(disaggregation_type__standard=True))
 
         # update the count with the value of Table unique count
         if form.instance.update_count_tola_table and form.instance.tola_table:
@@ -430,16 +462,24 @@ class CollectedDataCreate(CreateView):
 
         new = form.save()
 
-        #save disagg
-        for label in getDisaggregationLabel:
-            for key, value in self.request.POST.iteritems():
-                if key == label.id:
-                    value_to_insert = value
-                else:
-                    value_to_insert = None
-            if value_to_insert:
-                insert_disaggregationvalue = DisaggregationValue(dissaggregation_label=label, value=value_to_insert,collecteddata=new)
-                insert_disaggregationvalue.save()
+        process_disaggregation = False
+
+        for label in disaggregation_labels:
+            if process_disaggregation == True:
+                break
+            for k, v in self.request.POST.iteritems():
+                if k == str(label.id) and len(v) > 0:
+                    process_disaggregation = True
+                    break
+
+        if process_disaggregation == True:
+            for label in disaggregation_labels:
+                for k, v in self.request.POST.iteritems():
+                    if k == str(label.id):
+                        save = new.disaggregation_value.create(disaggregation_label=label, value=v)
+                        new.disaggregation_value.add(save.id)
+            process_disaggregation = False
+
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [new])
@@ -696,7 +736,7 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
     except Exception, e:
         pass
 
-    collected_sum = CollectedData.objects.filter(indicator=indicator).aggregate(Sum('targeted'),Sum('achieved'))
+    collected_sum = CollectedData.objects.select_related('periodic_target').filter(indicator=indicator).aggregate(Sum('periodic_target__target'),Sum('achieved'))
     return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum,
                                               'indicator_id': indicator, 'program_id': program})
 
@@ -1051,7 +1091,7 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             }
             q.update(s)
 
-        getCollectedData = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+        getCollectedData = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
                                                                         'indicator__objectives',
                                                                         'indicator__strategic_objectives').filter(
             program__country__in=countries).filter(
@@ -1062,12 +1102,12 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
                                         'indicator__external_service_record__external_service__name', 'evidence',
-                                        'tola_table', 'targeted', 'achieved')
+                                        'tola_table', 'periodic_target', 'achieved')
 
         #getCollectedData = {x['id']:x for x in getCollectedData}.values()
 
-        collected_sum = CollectedData.objects.filter(program__country__in=countries).filter(**q).aggregate(
-            Sum('targeted'), Sum('achieved'))
+        collected_sum = CollectedData.objects.select_related('periodic_target').filter(program__country__in=countries).filter(**q).aggregate(
+            Sum('periodic_target__target'), Sum('achieved'))
 
         # datetime encoding breaks without using this
         from django.core.serializers.json import DjangoJSONEncoder
@@ -1235,7 +1275,7 @@ class CollectedDataList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'program',
+        indicators = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
                                                                   'indicator__objectives',
                                                                   'indicator__strategic_objectives').filter(
             program__country__in=countries).filter(
@@ -1246,7 +1286,7 @@ class CollectedDataList(ListView):
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
                                         'indicator__external_service_record__external_service__name', 'evidence',
-                                        'tola_table', 'targeted', 'achieved')
+                                        'tola_table', 'periodic_target', 'achieved')
 
         if self.request.GET.get('export'):
             dataset = CollectedDataResource().export(indicators)

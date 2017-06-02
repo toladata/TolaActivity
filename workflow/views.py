@@ -452,7 +452,7 @@ class ProjectAgreementDelete(DeleteView):
     Project Agreement Delete
     """
     model = ProjectAgreement
-    success_url = 'workflow/dashboard/0/'
+    success_url = '/workflow/dashboard/0/'
 
     @method_decorator(group_required('Country',url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -519,7 +519,7 @@ class ProjectCompleteCreate(CreateView):
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
         getProjectAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
-        pre_initial = {
+        initial = {
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'program': getProjectAgreement.program,
@@ -535,20 +535,21 @@ class ProjectCompleteCreate(CreateView):
         }
 
         try:
-            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
-            site = {'site': [o for o in getSites], }
-            initial = pre_initial.copy()
-            initial.update(site)
+            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id', flat=True)
+            site = {'site': [o for o in getSites] }
+            initial['site'] = getSites
+
         except SiteProfile.DoesNotExist:
             getSites = None
 
         try:
             getStakeholder = Stakeholder.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
             stakeholder = {'stakeholder': [o for o in getStakeholder], }
-            initial = pre_initial.copy()
-            initial.update(stakeholder)
+            initial['stakeholder'] = stakeholder
         except Stakeholder.DoesNotExist:
             getStakeholder = None
+
+        print(".............................%s............................" % initial )
 
         return initial
 
@@ -1509,6 +1510,7 @@ class ContactCreate(CreateView):
     Contact Form
     """
     model = Contact
+    stakeholder_id = None
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1521,6 +1523,7 @@ class ContactCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(ContactCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
+        context.update({'stakeholder_id': self.kwargs['stakeholder_id']})
         return context
 
     def get_initial(self):
@@ -1542,7 +1545,7 @@ class ContactCreate(CreateView):
         form.save()
         messages.success(self.request, 'Success, Contact Created!')
         latest = Contact.objects.latest('id')
-        redirect_url = '/workflow/contact_update/' + str(latest.id)
+        redirect_url = '/workflow/contact_update/' + self.kwargs['stakeholder_id'] + '/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = ContactForm
@@ -1565,6 +1568,7 @@ class ContactUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ContactUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+        context.update({'stakeholder_id': self.kwargs['stakeholder_id']})
         return context
 
     def form_invalid(self, form):

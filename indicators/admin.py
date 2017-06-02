@@ -20,8 +20,8 @@ class IndicatorResource(resources.ModelResource):
     class Meta:
         model = Indicator
         fields = ('id','indicator_type','level','objective','strategic_objective','name','number',\
-                  'source','definition','baseline','lop_target','means_of_verification','data_collection_method','responsible_person',\
-                  'method_of_analysis','information_use','reporting_frequency','comments','disaggregation','sector',\
+                  'source','definition', 'justification', 'unit_of_measure', 'baseline','lop_target', 'rationale_for_target', 'means_of_verification','data_collection_method', 'data_collection_frequency', 'data_points', 'responsible_person',\
+                  'method_of_analysis','information_use','reporting_frequency', 'quality_assurance', 'data_issues', 'indicator_changes', 'comments','disaggregation','sector',\
                   'program','key_performance_indicator')
         #import_id_fields = ['id']
 
@@ -85,3 +85,4 @@ admin.site.register(ExternalService, ExternalServiceAdmin)
 admin.site.register(ExternalServiceRecord, ExternalServiceRecordAdmin)
 admin.site.register(TolaTable, TolaTableAdmin)
 admin.site.register(DataCollectionFrequency)
+admin.site.register(PeriodicTarget, PeriodicTargetAdmin)

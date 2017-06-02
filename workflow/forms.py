@@ -734,7 +734,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program2', 'program', 'project_agreement2', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','site','stakeholder',
+                    Fieldset('Program', 'program2', 'program', 'project_agreement2', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'estimated_budget', 'site','stakeholder',
                     ),
                     Fieldset(
                         'Dates',
@@ -757,7 +757,9 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
         self.fields['program2'].initial = kwargs['initial'].get('program')
         self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].label = "Program"
         self.fields['project_agreement2'].initial = "%s - %s" % (kwargs['initial'].get('office'),  kwargs['initial'].get('project_name', 'No project name') )
+        self.fields['project_agreement2'].label = "Project Initiation"
         self.fields['project_agreement'].widget = forms.HiddenInput()
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
@@ -1630,13 +1632,14 @@ class StakeholderForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.add_input(Submit('submit', 'Save'))
+        pkval = kwargs['instance'].pk if kwargs['instance'] else 0
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Details',
                     Fieldset('Details',
-                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/0/').focus();">Add New Contact</a>"""), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
+                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % pkval ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
                     ),
                 ),
 
@@ -1647,7 +1650,6 @@ class StakeholderForm(forms.ModelForm):
                 ),
             ),
         )
-
         super(StakeholderForm, self).__init__(*args, **kwargs)
 
         countries = getCountry(self.request.user)

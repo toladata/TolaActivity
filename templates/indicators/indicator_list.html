@@ -100,6 +100,24 @@ function loadIndicators(program,indicator,type){
     });
     */
 
+    $("#indicator_modal_body").on("click", ".detelebtn", function(e){
+        e.preventDefault();
+        var url = $(this).attr('href');
+        if (url == "#") {
+            $(e.target).closest("tr").remove();
+            return;
+        }
+
+        $.post(url)
+            .done(function(data, textStatus, jqXHR){
+                if (data.status == "success") {
+                    $(e.target).closest("tr").remove();
+                } else {
+                    createAlert("danger", data.msg, true, "#modalmessages");
+                    $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
+                }
+            });
+    });
 
     // Open the CollectDataUpdate form in a modal
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
@@ -140,9 +158,42 @@ function loadIndicators(program,indicator,type){
         e.preventDefault();
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
+        var periodic_targets = [];
+        $('#periodic_targets_table tr').each(function () {
+            var $this = $(this);
+            var values = [];
+            $this.find('input[type=text]').each(function (i, input) {
+                if (i == 0) {
+                    values.push($(input).attr('name').split('-')[1]);
+                }
+                values.push($(input).val());
+            });
+            if(values.length > 0) {
+                if ( !$.isNumeric(values[2]) || values[1] == '') {
+                    return;
+                }
+                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
+            }
+        });
+        form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
+        //console.log(JSON.stringify(periodic_targets));
         submitForm(form_url, form_data);
+
     });
 
+    function addPeriodicTarget() {
+        var markup = `
+            <tr id="0">
+                <td><input type="text" name="period-0" class="textinput textInput form-control"></td>
+                <td><input type="text" name="target-0" class="textinput textInput form-control"></td>
+                <td style="vertical-align:middle">
+                    <a href="#" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a>
+                </td>
+            </tr>`;
+
+        $("#periodic_targets_table tbody").append(markup);
+
+    }
     function submitForm(form_url, form_data) {
         $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
         $.ajax({
@@ -157,11 +208,23 @@ function loadIndicators(program,indicator,type){
                 createAlert("danger", data, true, "#modalmessages");
                 return;
             }
-            var json = $.parseJSON(jqXHR.responseText);
+            //var json = $.parseJSON(jqXHR.responseText);
             $("#modalmessages").html('');
             createAlert("success", "Success, form data saved.", true, "#modalmessages");
-            var item = $.parseJSON(data);
-            $("#id_achieved").val(item[0]['fields']['achieved']);
+            var jsondata = $.parseJSON(data);
+            //var item = data;
+            var indicator = jsondata[0][0];
+            var pts = jsondata[1];
+
+            $("#id_achieved").val(indicator['fields']['achieved']);
+            $("#periodic_targets_table").find("tr:gt(0)").remove();
+
+            $.each(pts, function(i, pt) {
+
+                var markup = '<tr id=' + pt.pk + '"><td><input type="text" name="period-' + pt.pk + '" value="' + pt.fields.period +'" class="textinput textInput form-control"></td><td><input type="text" name="target-' + pt.pk + '" value="' + pt.fields.target +'" class="textinput textInput form-control"></td><td style="vertical-align:middle"> <a href="/indicators/periodic_target_delete/' + pt.pk + '/" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a></td></tr>';
+
+                $("#periodic_targets_table tbody").append(markup);
+            });
         });
     }
 

@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
-    IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData, IndicatorReport, IndicatorDataExport, TVAReport, DisaggregationReport
+    IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData, IndicatorReport, IndicatorDataExport, TVAReport, DisaggregationReport, PeriodicTargetDeleteView
 
 
 urlpatterns = [
@@ -16,6 +16,8 @@ urlpatterns = [
     url(r'^indicator_add/(?P<id>\w+)/$', IndicatorCreate.as_view(), name='indicator_add'),
     url(r'^indicator_update/(?P<pk>\w+)/$', IndicatorUpdate.as_view(), name='indicator_update'),
     url(r'^indicator_delete/(?P<pk>\w+)/$', IndicatorDelete.as_view(), name='indicator_delete'),
+
+    url(r'^periodic_target_delete/(?P<pk>\w+)/$', PeriodicTargetDeleteView.as_view(), name='pt_delete'),
 
     # Collected Data List
     url(r'^collecteddata/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),

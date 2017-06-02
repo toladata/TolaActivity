@@ -41,7 +41,7 @@ class IndicatorTestCase(TestCase):
         new_indicator.program.add(get_program)
 
         get_indicator = Indicator.objects.get(name="testindicator")
-        new_collected = CollectedData.objects.create(targeted="12",achieved="20", description="somevaluecollected", indicator=get_indicator)
+        new_collected = CollectedData.objects.create(achieved="20", description="somevaluecollected", indicator=get_indicator)
         new_collected.save()
 
     def test_indicator_exists(self):

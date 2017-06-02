@@ -99,6 +99,23 @@ function getCookie(name) {
 }
 
 
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+/*
+ * Set the csrf header before sending the actual ajax request
+ * while protecting csrf token from being sent to other domains
+ */
+$.ajaxSetup({
+    crossDomain: false, // obviates need for sameOrigin test
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    }
+});
 
 /*
 * Save the bookmark
@@ -122,7 +139,9 @@ function newBookmark(bookmark_url){
 
 
 $(document).ready(function() {
-
+    $(document).on('hidden.bs.modal', '.modal', function () {
+        $('.modal:visible').length && $(document.body).addClass('modal-open');
+    });
     /*
     *  Reload page if country dropdown changes on main dashboard
     */
@@ -135,7 +154,6 @@ $(document).ready(function() {
      */
     $("#services").change(function() {
         var selected_service = $(this).val();
-        console.log("Service:" + selected_service);
         if (selected_service == undefined || selected_service == -1 || selected_service == '') {
             $("#serivce").html("<option>--Service--</option>");
         } else {
