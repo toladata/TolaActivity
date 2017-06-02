@@ -132,7 +132,7 @@ def index(request, selected_countries=None, id=0, sector=0):
     count_program = Program.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
 
     approved_by = TolaUser.objects.get(user_id=request.user)
-    user_pending_approvals = ProjectAgreement.objects.all().filter(approved_by=approved_by).exclude(approval='approved').count()
+    user_pending_approvals = ProjectAgreement.objects.filter(approved_by=approved_by).exclude(approval='approved')
 
     count_program_agreement = ProjectAgreement.objects.all().filter(program__country__in=selected_countries,program__funding_status='Funded').values('program').distinct().count()
     count_indicator = Indicator.objects.all().filter(program__country__in=selected_countries,program__funding_status='Funded').values('program').distinct().count()
