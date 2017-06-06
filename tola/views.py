@@ -125,7 +125,18 @@ def index(request, selected_countries=None, id=0, sector=0):
 
     #Evidence and Objectives are for the global leader dashboard items and are the same every time
     count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__program__country__country").annotate(evidence_count=Count('evidence', distinct=True) + Count('tola_table', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
-    getObjectives = CollectedData.objects.all().filter(indicator__strategic_objectives__isnull=False, indicator__program__country__in=selected_countries).exclude(achieved=None,periodic_target=None).order_by('indicator__strategic_objectives__name').values('indicator__strategic_objectives__name').annotate(indicators=Count('pk', distinct=True),targets=Sum('periodic_target'), actuals=Sum('achieved'))
+    getObjectives = CollectedData.objects.filter(\
+                        indicator__strategic_objectives__isnull=False, \
+                        indicator__program__country__in=selected_countries)\
+                    .exclude(\
+                        achieved=None,\
+                        periodic_target=None)\
+                    .order_by('indicator__strategic_objectives__name')\
+                    .values('indicator__strategic_objectives__name')\
+                    .annotate(\
+                        indicators=Count('indicator__pk', distinct=True),\
+                        targets=Sum('periodic_target__target'), actuals=Sum('achieved'))
+    # print(".............................%s............................" % getObjectives.query )
     table = IndicatorDataTable(getQuantitativeDataSums)
     table.paginate(page=request.GET.get('page', 1), per_page=20)
 
