@@ -18,7 +18,7 @@ Once all your changes have been commited to the repo, and before pushing them, r
 `. travis.sh`
 
 ## To deploy locally via Docker
-Run the following commands from the root of this repository:
+Run the following command from the root of this repository:
   - `docker-compose build`
   - `docker-compose up`
 
