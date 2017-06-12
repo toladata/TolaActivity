@@ -1044,6 +1044,16 @@ class DocumentationDelete(DeleteView):
 
     form_class = DocumentationForm
 
+class IndicatorDataBySite(ListView):
+    template_name = 'workflow/site_indicatordata.html'
+    context_object_name = 'collecteddata'
+
+    def get_queryset(self):
+        #print(".............................%s............................" % self.kwargs )
+        q = CollectedData.objects.filter(site__id = 599).order_by('program', 'indicator')
+        return q
+
+
 
 class SiteProfileList(ListView):
     """
