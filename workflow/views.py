@@ -1044,6 +1044,19 @@ class IndicatorDataBySite(ListView):
         return q
 
 
+class ProjectCompleteBySite(ListView):
+    template_name = 'workflow/site_projectcomplete.html'
+    context_object_name = 'projects'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectCompleteBySite, self).get_context_data(**kwargs)
+        context['site'] = SiteProfile.objects.get(pk=self.kwargs.get('site_id'))
+        return context
+
+    def get_queryset(self):
+        q = ProjectComplete.objects.filter(site__id = self.kwargs.get('site_id')).order_by('program')
+        return q
+
 
 class SiteProfileList(ListView):
     """

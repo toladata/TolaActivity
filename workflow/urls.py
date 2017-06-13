@@ -37,6 +37,7 @@ urlpatterns = [
                        url(r'^documentation_objects/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationListObjects.as_view(), name='documentation_objects'),
 =======
                        url(r'^site_indicatordata/(?P<site_id>\w+)/$', IndicatorDataBySite.as_view(), name='site_indicatordata'),
+                       url(r'^site_projectscomplete/(?P<site_id>\w+)/$', ProjectCompleteBySite.as_view(), name='site_projectscomplete'),
                        #url(r'^site_projects/(?P<site_id\w+)/$', ProjectsBySite.as_view(), name='site_projects'),
 
                        url(r'^documentation_list/(?P<program>\w+)/(?P<project>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
