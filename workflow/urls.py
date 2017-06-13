@@ -32,6 +32,7 @@ urlpatterns = [
                        url(r'^siteprofile_delete/(?P<pk>\w+)/$', SiteProfileDelete.as_view(), name='siteprofile_delete'),
 
                        url(r'^site_indicatordata/(?P<site_id>\w+)/$', IndicatorDataBySite.as_view(), name='site_indicatordata'),
+                       url(r'^site_projectscomplete/(?P<site_id>\w+)/$', ProjectCompleteBySite.as_view(), name='site_projectscomplete'),
                        #url(r'^site_projects/(?P<site_id\w+)/$', ProjectsBySite.as_view(), name='site_projects'),
 
                        url(r'^documentation_list/(?P<program>\w+)/(?P<project>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
