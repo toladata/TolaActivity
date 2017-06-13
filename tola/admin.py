@@ -19,10 +19,10 @@ class UniqueEmailForm:
             return self.cleaned_data['email']
 
 class MyUserChangeForm(UniqueEmailForm, UserChangeForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=False)
 
 class MyUserCreationForm(UniqueEmailForm, UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=False)
 
 class MyUserAdmin(UserAdmin):
     # add the email field in to the initial add_user form
