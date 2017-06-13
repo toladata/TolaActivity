@@ -1,5 +1,6 @@
 from .views import *
-
+from workflow import views as workflowviews
+from indicators import views as indicatorviews
 from django.conf.urls import *
 
 # place app url patterns here
@@ -61,7 +62,7 @@ urlpatterns = [
                        url(r'^stakeholder_add/(?P<id>\w+)/$', StakeholderCreate.as_view(), name='stakeholder_add'),
                        url(r'^stakeholder_update/(?P<pk>\w+)/$', StakeholderUpdate.as_view(), name='stakeholder_update'),
                        url(r'^stakeholder_delete/(?P<pk>\w+)/$', StakeholderDelete.as_view(), name='stakeholder_delete'),
-                       url(r'^export_stakeholders_list/(?P<workflowlevel1_id>\w+)/$', 'workflow.views.export_stakeholders_list', name='export_stakeholders_list'),
+                       url(r'^export_stakeholders_list/(?P<workflowlevel1_id>\w+)/$', workflowviews.export_stakeholders_list, name='export_stakeholders_list'),
 
                        url(r'^contact_list/(?P<pk>\w+)/$', ContactList.as_view(), name='contact_list'),
                        url(r'^contact_add/(?P<id>\w+)/$', ContactCreate.as_view(), name='contact_add'),
@@ -71,7 +72,7 @@ urlpatterns = [
                        url(r'^checklistitem_list/(?P<pk>\w+)/$', ChecklistItemList.as_view(), name='checklistitem_list'),
                        url(r'^checklistitem_add/(?P<id>\w+)/$', ChecklistItemCreate.as_view(), name='checklistitem_add'),
                        url(r'^checklistitem_update/(?P<pk>\w+)/$', ChecklistItemUpdate.as_view(), name='checklistitem_update'),
-                       url(r'^checklist_update_link/(?P<pk>\w+)/(?P<type>\w+)/(?P<value>\w+)/$', 'workflow.views.checklist_update_link', name='checklist_update_link'),
+                       url(r'^checklist_update_link/(?P<pk>\w+)/(?P<type>\w+)/(?P<value>\w+)/$', workflowviews.checklist_update_link, name='checklist_update_link'),
                        url(r'^checklistitem_delete/(?P<pk>\w+)/$', ChecklistItemDelete.as_view(), name='checklistitem_delete'),
 
                        url(r'^budget_list/(?P<pk>\w+)/$', BudgetList.as_view(), name='budget_list'),
@@ -82,14 +83,14 @@ urlpatterns = [
                        url(r'^report/export/$', Report.as_view(), name='report'),
                        url(r'^report/(?P<pk>\w+)/(?P<status>[\w ]+)/$', Report.as_view(), name='report'),
                        url(r'^report_table/(?P<pk>\w+)/(?P<status>[\w ]+)/$', ReportData.as_view(), name='report_data'),
-                       url(r'^export_stakeholders_list/', 'workflow.views.export_stakeholders_list', name='export_stakeholders_list'),
+                       url(r'^export_stakeholders_list/', workflowviews.export_stakeholders_list, name='export_stakeholders_list'), # renamed because of TypeError: view must be a callable or a list/tuple in the case of include().
 
-                       url(r'^province/(?P<province>[-\w]+)/province_json/', 'workflow.views.province_json', name='province_json'),
-                       url(r'^country/(?P<country>[-\w]+)/country_json/', 'workflow.views.country_json', name='country_json'),
-                       url(r'^district/(?P<district>[-\w]+)/district_json/', 'workflow.views.district_json', name='district_json'),
+                       url(r'^province/(?P<province>[-\w]+)/province_json/', workflowviews.province_json, name='province_json'),
+                       url(r'^country/(?P<country>[-\w]+)/country_json/', workflowviews.country_json, name='country_json'),
+                       url(r'^district/(?P<district>[-\w]+)/district_json/', workflowviews.district_json, name='district_json'),
 
                        #ajax calls
-                       url(r'^service/(?P<service>[-\w]+)/service_json/', 'indicators.views.service_json', name='service_json'),
-                       url(r'^new_bookmark/$', 'workflow.views.save_bookmark',name='save_bookmark'),
+                       url(r'^service/(?P<service>[-\w]+)/service_json/', indicatorviews.service_json, name='service_json'),
+                       url(r'^new_bookmark/$', workflowviews.save_bookmark,name='save_bookmark'),
 
 ]

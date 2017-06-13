@@ -152,19 +152,19 @@ def index(request, selected_countries=None, id=0, sector=0):
     elif total_evidence_adoption_count <= total_indicator_data_count/4:
         evidence_adoption = red
 
-    return render(request, "index.html", {'agreement_total_count':agreement_total_count,\
-                                          'agreement_approved_count':agreement_approved_count,\
-                                          'agreement_open_count':agreement_open_count,\
-                                          'agreement_wait_count':agreement_wait_count,\
-                                          'agreement_awaiting_count':agreement_awaiting_count,\
-                                          'complete_open_count':complete_open_count,\
-                                          'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,\
-                                          'complete_wait_count':complete_wait_count,\
-                                          'complete_awaiting_count':complete_awaiting_count,\
-                                          'workflowlevel1s':getworkflowlevel1s,'getSiteProfile':getSiteProfile,\
-                                          'countries': user_countries,'selected_countries':selected_countries,\
-                                          'getFilteredName':getFilteredName,'getSectors':getSectors,\
-                                          'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums,\
+    return render(request, "index.html", {'agreement_total_count':agreement_total_count,
+                                          'agreement_approved_count':agreement_approved_count,
+                                          'agreement_open_count':agreement_open_count,
+                                          'agreement_wait_count':agreement_wait_count,
+                                          'agreement_awaiting_count':agreement_awaiting_count,
+                                          'complete_open_count':complete_open_count,
+                                          'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
+                                          'complete_wait_count':complete_wait_count,
+                                          'complete_awaiting_count':complete_awaiting_count,
+                                          'workflowlevel1s':getworkflowlevel1s,'getSiteProfile':getSiteProfile,
+                                          'countries': user_countries,'selected_countries':selected_countries,
+                                          'getFilteredName':getFilteredName,'getSectors':getSectors,
+                                          'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums,
                                           'count_evidence':count_evidence,
                                           'getObjectives':getObjectives,
                                           'selected_countries_list': selected_countries_list,

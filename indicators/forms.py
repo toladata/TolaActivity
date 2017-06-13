@@ -110,7 +110,7 @@ class IndicatorForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['disaggregation'].queryset = DisaggregationType.objects.filter(country__in=countries).filter(standard=False)
-        self.fields['objectives'].queryset = Objective.objects.all().filter(program__id__in=self.workflowlevel1)
+        self.fields['objectives'].queryset = Objective.objects.all().filter(workflowlevel1__id__in=self.workflowlevel1)
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()

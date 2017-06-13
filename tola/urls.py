@@ -7,6 +7,8 @@ from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken import views as auth_views
+from django.contrib.auth import views as authviews
+from django.contrib.auth import forms as authforms
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -68,7 +70,7 @@ urlpatterns = [ # rest framework
                 url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
 
                 # index
-                url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', 'tola.views.index', name='index'),
+                url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', views.index, name='index'),
 
                 # base template for layout
                 url(r'^$', TemplateView.as_view(template_name='base.html')),
@@ -92,9 +94,11 @@ urlpatterns = [ # rest framework
                 url(r'^formlibrary/', include('formlibrary.urls')),
 
                 # local login
-                url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
-                url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),
-                url(r'^accounts/logout/$', views.logout_view, name='logout'),
+                url(r'^login/$', authviews.login, name='login'),
+                url(r'^accounts/login/$', authviews.login, name='login'),
+                #url(r'^accounts/login/$', authviews.login, {'template_name': 'login.html'}, name="login") ,
+
+                url(r'^accounts/logout/$', authviews.LogoutView.as_view(), name='logout'),
 
                 # accounts
                 url(r'^accounts/profile/$', views.profile, name='profile'),
