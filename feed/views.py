@@ -177,7 +177,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = Indicator.objects.all().filter(program__country__in=user_countries)
+        queryset = Indicator.objects.all() # .filter(workflowlevel1__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -368,6 +368,8 @@ class VillageViewSet(viewsets.ModelViewSet):
     """
     queryset = Village.objects.all()
     serializer_class = VillageSerializer
+
+#class aclViewset(viewsets.ModelViewSet):
 
 
 class ContactViewSet(viewsets.ModelViewSet):

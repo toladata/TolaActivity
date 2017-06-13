@@ -226,13 +226,23 @@ class ExternalServiceRecordAdmin(admin.ModelAdmin):
     list_display = ('external_service','full_url','record_id','create_date','edit_date')
     display = 'Exeternal Indicator Data Service'
 
+"""
+class SecurityManager(models.Manager):
+    name = "SecurityManager"
+
+    def __init__(self, *args, **kwargs):
+        super(SecurityManager, self).__init__(*args, **kwargs)
+        print("SecurityManager instantiated")
+
+"""
+
 
 class IndicatorManager(models.Manager):
     def get_queryset(self):
         return super(IndicatorManager, self).get_queryset().prefetch_related('workflowlevel1').select_related('sector')
 
-
-class Indicator(models.Model):
+from tola.security import SecurityModel
+class Indicator(SecurityModel):
     indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
@@ -267,6 +277,9 @@ class Indicator(models.Model):
 
     class Meta:
         ordering = ('create_date',)
+        permissions = (
+            ('view_indicator', 'View Indicator Model'),
+        )
 
     def save(self, *args, **kwargs):
         #onsave add create date or update edit date

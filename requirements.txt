@@ -39,3 +39,5 @@ requests-oauthlib==0.6.1
 pytz==2016.4
 django_admin_report
 pyyaml
+psycopg2
+django-guardian
