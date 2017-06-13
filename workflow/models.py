@@ -973,7 +973,7 @@ class WorkflowLevel2(models.Model):
     actual_start_date = models.DateTimeField(help_text="Imported from Project Initiation", blank=True, null=True)
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
-    on_time = models.BooleanField(default=None)
+    on_time = models.BooleanField(default=True)
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
     estimated_budget = models.DecimalField("Estimated Budget", decimal_places=2, max_digits=12, help_text="",
                                            default=Decimal("0.00"), blank=True)
@@ -992,7 +992,7 @@ class WorkflowLevel2(models.Model):
     local_agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2, max_digits=12,
                                             help_text="In Local Currency", default=Decimal("0.00"), blank=True)
     community_handover = models.BooleanField("CommunityHandover/Sustainability Maintenance Plan",
-                                             help_text='Check box if it was completed', default=None)
+                                             help_text='Check box if it was completed', default=False)
     capacity_built = models.TextField("Describe how sustainability was ensured for this project?", max_length=755,
                                       blank=True, null=True)
     quality_assured = models.TextField("How was quality assured for this project", max_length=755, blank=True,

@@ -595,7 +595,7 @@ class ProjectCompleteUpdate(UpdateView):
     def get_form(self, form_class):
         check_form_type = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
 
-        if check_form_type.project_agreement.short == True:
+        if check_form_type.short == True:
             form = ProjectCompleteSimpleForm
         else:
             form = ProjectCompleteForm
@@ -605,41 +605,11 @@ class ProjectCompleteUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
         getComplete = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
-        id = getComplete.project_agreement_id
         context.update({'id': id})
         context.update({'p_name': getComplete.project_name})
         context.update({'p_complete_workflowlevel1': getComplete.workflowlevel1})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
-
-        # get budget data
-        try:
-            getBudget = Budget.objects.all().filter(agreement__id=getComplete.project_agreement_id)
-        except Budget.DoesNotExist:
-            getBudget = None
-        context.update({'getBudget': getBudget})
-
-        # get Quantitative data
-        try:
-            getQuantitative = CollectedData.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('indicator')
-        except CollectedData.DoesNotExist:
-            getQuantitative = None
-        context.update({'getQuantitative': getQuantitative})
-
-        # get benchmark or project components
-        try:
-            getBenchmark = WorkflowLevel3.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('description')
-        except WorkflowLevel3.DoesNotExist:
-            getBenchmark = None
-        context.update({'getBenchmark': getBenchmark})
-
-        # get documents from the original agreement (documents are not seperate in complete)
-        try:
-            getDocuments = Documentation.objects.all().filter(project__id=getComplete.project_agreement_id).order_by('name')
-        except Documentation.DoesNotExist:
-            getDocuments = None
-        context.update({'getDocuments': getDocuments})
-
 
         return context
 
@@ -658,11 +628,11 @@ class ProjectCompleteUpdate(UpdateView):
 
         #update budget with new agreement
         try:
-            getBudget = Budget.objects.all().filter(complete_id=self.kwargs['pk'])
+            getBudget = Budget.objects.all().filter(id=self.kwargs['pk'])
             #if there aren't any budget try importing from the agreement
             if not getBudget:
                 getComplete = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
-                Budget.objects.filter(agreement=getComplete.project_agreement_id).update(complete_id=self.kwargs['pk'])
+                Budget.objects.filter(workflowlevel2=getComplete.id).update(workflowlevel2_id=self.kwargs['pk'])
         except Budget.DoesNotExist:
             getBudget = None
 
