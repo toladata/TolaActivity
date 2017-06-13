@@ -6,7 +6,7 @@ TolaActivity extends the functionality of TolaData to include a set of forms and
 reports for managing project activities for a Program.  It includes workflow for approving
 and completing projects as well as sharing the output data.
 
-TolaActivity functionality http://www.github.com/toladata/TolaActivty is intended to allow importing
+TolaActivity functionality http://www.github.com/toladata/TolaActivity is intended to allow importing
 and exporting of project specific data from 3rd party data sources or excel
 files.
 
@@ -47,7 +47,10 @@ python manage.py migrate
 
 # Run App
 If your using more then one settings file change manage.py to point to local or dev file first
+
 python manage.py runserver 0.0.0.0:8000
+
 GOOGLE API
+
 sudo pip install --upgrade google-api-python-client
 * 0’s let it run on any local address i.e. localhost,127.0.0.1 etc.
