@@ -4,16 +4,26 @@ from base import *
 ########## IN-MEMORY TEST DATABASE
 import os
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.environ["TOLA_DB_ENGINE"],
-        'NAME': os.environ["TOLA_DB_NAME"],
-        'USER': os.environ["TOLA_DB_USER"],
-        'PASSWORD': os.environ["TOLA_DB_PASS"],
-        'HOST': os.environ["TOLA_DB_HOST"],
-        'PORT': os.environ["TOLA_DB_PORT"],
+try:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.environ["TOLA_DB_ENGINE"],
+            'NAME': os.environ["TOLA_DB_NAME"],
+            'USER': os.environ["TOLA_DB_USER"],
+            'PASSWORD': os.environ["TOLA_DB_PASS"],
+            'HOST': os.environ["TOLA_DB_HOST"],
+            'PORT': os.environ["TOLA_DB_PORT"],
+        }
     }
-}
+except KeyError:
+    # TODO log this
+    DATABASES = {
+        'default': {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }
+
 from os.path import join, normpath
 
 ########## MANAGER CONFIGURATION
