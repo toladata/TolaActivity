@@ -1,14 +1,11 @@
 {% extends "base.html" %}{% load i18n %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Sites</a></li>
-  {%  if project_agreement_id != 0 %}
-    <li><a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
-  {% endif %}
-  <li class="active">Site Profiles</li>
+  <li><a href="/workflow/siteprofile_list/0/0/">Sites</a></li>
+  <li class="active">Site Data</li>
 </ol>
 {% endblock %}
-{% block page_title %}Indicator Data by Site Profile{% endblock %}
+{% block page_title %}Indicator Data for <small>{{ site }}</small> {% endblock %}
 
 {% block content %}
 
