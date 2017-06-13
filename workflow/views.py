@@ -1034,9 +1034,13 @@ class IndicatorDataBySite(ListView):
     template_name = 'workflow/site_indicatordata.html'
     context_object_name = 'collecteddata'
 
+    def get_context_data(self, **kwargs):
+        context = super(IndicatorDataBySite, self).get_context_data(**kwargs)
+        context['site'] = SiteProfile.objects.get(pk=self.kwargs.get('site_id'))
+        return context
+
     def get_queryset(self):
-        #print(".............................%s............................" % self.kwargs )
-        q = CollectedData.objects.filter(site__id = 599).order_by('program', 'indicator')
+        q = CollectedData.objects.filter(site__id = self.kwargs.get('site_id')).order_by('program', 'indicator')
         return q
 
 
