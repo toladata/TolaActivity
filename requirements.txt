@@ -21,7 +21,7 @@ httplib2==0.9
 jdcal==1.2
 macholib==1.5.1
 oauth2client==1.5.1
-openpyxl==2.1.5
+openpyxl==2.4.8
 Pillow==2.5.1
 python-dateutil==1.5
 Twisted==13.2.0
