@@ -3,7 +3,7 @@ Django==1.11
 django-crispy-forms==1.6.1
 django-extensions==1.7.9
 django-geojson==2.10.0
-django-import-export==0.4.3
+django-import-export==0.5.1
 django-leaflet==0.13.4
 django-localflavor==1.0
 django-mathfilters==0.4.0
@@ -18,10 +18,10 @@ django-filter==1.0.4
 gdata==2.0.18
 google-api-python-client==1.2
 httplib2==0.9
-jdcal==1.2
+jdcal==1.3
 macholib==1.5.1
 oauth2client==1.5.1
-openpyxl==2.1.5
+openpyxl==2.4.8
 Pillow==2.5.1
 python-dateutil==1.5
 Twisted==13.2.0
@@ -38,6 +38,12 @@ django-simple-history==1.8.0
 requests-oauthlib==0.6.1
 pytz==2016.4
 django_admin_report
-pyyaml
+pyyaml==3.12
 psycopg2
 django-guardian
+et-xmlfile==1.0.1
+odfpy==1.3.5
+tablib==0.11.5
+unicodecsv==0.14.1
+xlrd==1.0.0
+xlwt==1.2.0

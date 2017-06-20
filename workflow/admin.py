@@ -217,3 +217,7 @@ admin.site.register(TolaSites,TolaSitesAdmin)
 admin.site.register(FormGuidance,FormGuidanceAdmin)
 admin.site.register(TolaUserProxy, ReportTolaUserProxyAdmin)
 admin.site.register(TolaBookmarks, TolaBookmarksAdmin)
+admin.site.register(Currency, CurrencyAdmin)
+admin.site.register(Approval, ApprovalAdmin)
+admin.site.register(ApprovalType, ApprovalTypeAdmin)
+

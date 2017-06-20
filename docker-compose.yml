@@ -1,34 +1,29 @@
-
-mysql:
-    image: mysql:latest
-    volumes_from:
-        - data
-    environment:
-        MYSQL_ROOT_PASSWORD: drummer01
-        MYSQL_DATABASE: tola_activity
-        MYSQL_USER: glind
-        MYSQL_PASSWORD: drummer01
+web:
   restart: always
+  build: .
+  expose:
+    - "8000"
+  links:
+    - postgres:postgres
+  volumes:
+    - /Users/glind/Projects/toladata/tolaactivity
+    - /Users/glind/Projects/toladata/tolaactivity/static
+
+
 nginx:
-   image: nginx
-   restart: always
-   volumes:
-      - .:/home/TolaActivity
-      - ./config/nginx.conf:/etc/nginx/conf.d/default.conf
-      - /etc/letsencrypt/live/activity.toladata.io/fullchain.pem:/etc/letsencrypt/live/activity.toladata.io/fullchain.pem
-      - /etc/letsencrypt/live/activity.toladata.io/privkey.pem:/etc/letsencrypt/live/activity.toladata.io/privkey.pem
-   ports:
-      - "80:80"
-      - "443:443"
-   links:
-      - tola
-tola:
-   build: .
-   restart: always
-#   command: bash -c 'python manage.py migrate && python manage.py runserver 0.0.0.0:8000'
-   command: bash -c 'python manage.py runscript workflow_migration  && python manage.py runserver 0.0.0.0:8000'
-   volumes:
-       - .:/code
-   expose:
-       - "8000"
-   links:
+  restart: always
+  image: nginx
+  ports:
+    - "80:80"
+  volumes_from:
+    - web
+  links:
+    - web:web
+
+postgres:
+  restart: always
+  image: postgres:latest
+  ports:
+    - "5432:5432"
+  volumes:
+    - pgdata:/var/lib/postgresql/data/

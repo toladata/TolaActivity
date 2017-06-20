@@ -18,8 +18,8 @@ def org_levels(request):
         workflowlevel2 = getOrg.level_2_label
         workflowlevel3 = getOrg.level_3_label
     except Exception, e:
-        workflowlevel1 = "ProgramZ"
-        workflowlevel2 = "ProjectsZ"
-        workflowlevel3 = "ActivityZ"
+        workflowlevel1 = "Program"
+        workflowlevel2 = "Projects"
+        workflowlevel3 = "Activity"
 
     return {'WORKFLOWLEVEL1': workflowlevel1, 'WORKFLOWLEVEL2': workflowlevel2, 'WORKFLOWLEVEL3': workflowlevel3}

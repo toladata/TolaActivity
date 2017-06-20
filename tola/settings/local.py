@@ -7,12 +7,12 @@ import os
 try:
     DATABASES = {
         'default': {
-            'ENGINE': os.environ["TOLA_DB_ENGINE"],
-            'NAME': os.environ["TOLA_DB_NAME"],
-            'USER': os.environ["TOLA_DB_USER"],
-            'PASSWORD': os.environ["TOLA_DB_PASS"],
-            'HOST': os.environ["TOLA_DB_HOST"],
-            'PORT': os.environ["TOLA_DB_PORT"],
+            'ENGINE': os.getenv('TOLA_DB_ENGINE'),
+            'NAME': os.getenv('TOLA_DB_NAME'),
+            'USER': os.getenv('TOLA_DB_USER'),
+            'PASSWORD': os.getenv('TOLA_DB_PASS'),
+            'HOST': os.getenv('TOLA_DB_HOST'),
+            'PORT': os.getenv('TOLA_DB_PORT'),
         }
     }
 except KeyError:
@@ -60,6 +60,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 GOOGLE_STEP2_URI = ''
 GOOGLE_CLIENT_ID = ''
 GOOGLE_CLIENT_SECRET = ''
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = os.getenv('SOCIAL_AUTH_LOGIN_REDIRECT_URL')
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
 
 ########## CACHE CONFIGURATION

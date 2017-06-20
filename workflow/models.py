@@ -294,7 +294,6 @@ class ContactAdmin(admin.ModelAdmin):
     search_fields = ('name','country','title','city')
 
 
-# For workflowlevel1 that have custom dashboards. The default dashboard for all other workflowlevel1 is 'workflowlevel1 Dashboard'
 class FundCode(models.Model):
     name = models.CharField("Fund Code", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -318,6 +317,98 @@ class FundCode(models.Model):
 class FundCodeAdmin(admin.ModelAdmin):
     list_display = ('name','workflowlevel1__name', 'create_date', 'edit_date')
     display = 'Fund Code'
+
+
+class Currency(models.Model):
+    source_currency = models.CharField("Source Currency Name", max_length=255, blank=True)
+    target_currency = models.CharField("Target Currency Name", max_length=255, blank=True)
+    current_rate = models.IntegerField("Conversion Rate", null=True, blank=True)
+    conversion_date = models.DateTimeField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('source_currency',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Currency, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.source_currency
+
+
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ('source_currency','target_currency', 'current_rate', 'conversion_date')
+    display = 'Currency Conversion'
+
+
+class ApprovalType(models.Model):
+    name = models.CharField("Name", max_length=255, blank=True)
+    organization = models.ForeignKey(Organization)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name','organization')
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ApprovalType, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class ApprovalTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    display = 'Approval Types'
+
+
+SECTIONS = (
+        ('workflowlevel1', 'Workflow Level 1'),
+        ('workflowlevel2', 'Workflow Level 2'),
+        ('workflowlevel3', 'Workflow Level 3'),
+        ('sites', 'Sites'),
+        ('stakeholders', 'Stakeholders'),
+        ('documents', 'Documents'),
+    )
+
+
+class Approval(models.Model):
+    approval_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="authuser")
+    approval_type = models.ForeignKey(ApprovalType, blank=True, null=True, related_name="type")
+    section = models.CharField(blank=True, null=True, max_length=3, choices=SECTIONS)
+    status = models.CharField("Status", max_length=255, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('approval_type','approval_user')
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Approval, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.approval_user
+
+
+class ApprovalAdmin(admin.ModelAdmin):
+    list_display = ('approval_user',)
+    display = 'Approval Process'
 
 
 class WorkflowLevel1(models.Model):
@@ -1081,6 +1172,7 @@ class WorkflowLevel2(models.Model):
         new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
         return new_name
 
+
 # Project Documents, admin is handled in the admin.py
 class Documentation(models.Model):
     name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
@@ -1111,7 +1203,7 @@ class Documentation(models.Model):
 # TODO: Rename model with manual migration file
 """
 https://docs.djangoproject.com/en/dev/ref/migration-operations/#renamemodel
-"""
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -1121,8 +1213,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RenameModel("Benchmarks", "WorkflowLevel3")
     ]
-
-
+"""
 class WorkflowLevel3(models.Model):
     percent_complete = models.IntegerField("% complete", blank=True, null=True)
     percent_cumulative = models.IntegerField("% cumulative completion", blank=True, null=True)
@@ -1161,9 +1252,15 @@ class BenchmarksAdmin(admin.ModelAdmin):
 
 class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True)
+    account_code = models.CharField("Accounting Code",max_length=135, blank=True, null=True)
+    cost_center = models.CharField("Cost Center",max_length=135, blank=True, null=True)
+    donor_code = models.CharField("Donor Code",max_length=135, blank=True, null=True)
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True)
-    proposed_value = models.IntegerField("Value",default=0, blank=True, null=True)
+    proposed_value = models.IntegerField("Budget",default=0, blank=True, null=True)
+    actual_value = models.IntegerField("Actual", default=0, blank=True, null=True)
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, on_delete=models.SET_NULL)
+    local_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="local")
+    donor_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="donor")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     history = HistoricalRecords()
