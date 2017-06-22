@@ -91,10 +91,12 @@ def create_relations():
 )"""
 
 # establish db connection
-driver = GraphDatabase.driver("bolt://127.0.0.1:7687", auth=basic_auth("neo4j", ""))
+driver = GraphDatabase.driver("bolt://neo4j-test.tola.io:7687", auth=basic_auth("neo4j", ""))
 session = driver.session()
 
-#create_countries()
-#create_indicators(100)
+create_countries()
+create_indicators(100)
+print("creating demo files")
 create_demo(1000)
+print("creating demo relations")
 create_relations()

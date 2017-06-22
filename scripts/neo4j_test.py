@@ -1,7 +1,7 @@
 from neo4j.v1 import GraphDatabase, basic_auth
 import time, sys
 
-driver = GraphDatabase.driver("bolt://127.0.0.1:7687", auth=basic_auth("neo4j", ""))
+driver = GraphDatabase.driver("bolt://neo4j-test.tola.io:7687", auth=basic_auth("neo4j", ""))
 session = driver.session()
 
 
@@ -22,8 +22,8 @@ size = 0
 t1 = time.time()
 
 for i in range(0,n):
-    result = simple_query()
-    #result = relation_query()
+    #result = simple_query()
+    result = relation_query()
     size = size + sys.getsizeof(result)
 
 t2 = time.time()
