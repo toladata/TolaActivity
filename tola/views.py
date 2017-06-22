@@ -8,7 +8,6 @@ from django.shortcuts import render
 from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Sector,Country, TolaUser,TolaSites, TolaBookmarks, FormGuidance
 from indicators.models import CollectedData, Indicator
 
-from tola.tables import IndicatorDataTable
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum, Q, Count
 from tola.util import getCountry
@@ -105,8 +104,6 @@ def index(request, selected_countries=None, id=0, sector=0):
     #Evidence and Objectives are for the global leader dashboard items and are the same every time
     count_evidence = CollectedData.objects.all().filter(indicator__isnull=False).values("indicator__workflowlevel1__country__country").annotate(evidence_count=Count('evidence', distinct=True) + Count('tola_table', distinct=True),indicator_count=Count('pk', distinct=True)).order_by('-evidence_count')
     getObjectives = CollectedData.objects.all().filter(indicator__strategic_objectives__isnull=False, indicator__workflowlevel1__country__in=selected_countries).exclude(achieved=None,targeted=None).order_by('indicator__strategic_objectives__name').values('indicator__strategic_objectives__name').annotate(indicators=Count('pk', distinct=True),targets=Sum('targeted'), actuals=Sum('achieved'))
-    table = IndicatorDataTable(getQuantitativeDataSums)
-    table.paginate(page=request.GET.get('page', 1), per_page=20)
 
     count_workflowlevel1 = WorkflowLevel1.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
 
@@ -164,7 +161,7 @@ def index(request, selected_countries=None, id=0, sector=0):
                                           'workflowlevel1s':getworkflowlevel1s,'getSiteProfile':getSiteProfile,
                                           'countries': user_countries,'selected_countries':selected_countries,
                                           'getFilteredName':getFilteredName,'getSectors':getSectors,
-                                          'sector': sector, 'table': table, 'getQuantitativeDataSums':getQuantitativeDataSums,
+                                          'sector': sector, 'getQuantitativeDataSums':getQuantitativeDataSums,
                                           'count_evidence':count_evidence,
                                           'getObjectives':getObjectives,
                                           'selected_countries_list': selected_countries_list,

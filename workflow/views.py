@@ -20,7 +20,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db.models import Q
-from tables import ProjectAgreementTable
 from filters import ProjectAgreementFilter
 import json
 import requests
@@ -295,7 +294,6 @@ class ProjectAgreementUpdate(UpdateView):
         getAgreement = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
         context.update({'p_agreement': getAgreement.project_name})
         context.update({'p_agreement_workflowlevel1': getAgreement.workflowlevel1})
-
 
         try:
             getQuantitative = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk']).order_by('indicator')

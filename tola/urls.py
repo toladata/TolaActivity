@@ -112,7 +112,7 @@ urlpatterns = [ # rest framework
 
                 # Auth backend URL's
                 url('', include('django.contrib.auth.urls', namespace='auth')),
-                url('', include('social.apps.django_app.urls', namespace='social')),
+                url('', include('social_django.urls', namespace='social')),
 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

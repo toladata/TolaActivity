@@ -451,18 +451,5 @@ $(function () {
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-20">
-            <div class="panel panel-info">
-                <div class="panel-heading">Indicators {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</div>
-                <div id="container_column" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-                <div class="panel-body">
-                {% load render_table from django_tables2 %}
-                {% render_table table %}
-                </div>
-            </div>
-        </div>
-    </div>
-
 
 {% endblock content %}
