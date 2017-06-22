@@ -447,6 +447,22 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
 
+class DisaggregationLabelViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+
+    def list(self, request):
+        queryset = DisaggregationLabel.objects.all()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    queryset = DisaggregationLabel.objects.all()
+    serializer_class = DisaggregationLabelSerializer
+    pagination_class = StandardResultsSetPagination
+
+
 class ProjectAgreementViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     """Returns a list of all project agreement and feed to TolaWork
     API endpoint for getting ProjectAgreement."""

@@ -4,7 +4,7 @@ from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SitePro
     Stakeholder, Capacity, Evaluate, ProfileType, Province, District, AdminLevelThree, Village, StakeholderType,\
     Contact, Documentation, Checklist, Organization
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
+    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
 from django.contrib.auth.models import User
 
 
@@ -301,6 +301,14 @@ class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = DisaggregationValue
+        fields = '__all__'
+
+
+class DisaggregationLabelSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = DisaggregationLabel
+        fields = '__all__'
 
 
 class ChecklistSerializer(serializers.HyperlinkedModelSerializer):
