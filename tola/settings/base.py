@@ -253,6 +253,7 @@ LOCAL_APPS = (
     'indicators',
     'customdashboard',
     'reports',
+    'gladmap',
 
 )
 
