@@ -8,8 +8,6 @@ from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaSi
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from tola.util import getCountry, get_table
-from tables import IndicatorDataTable
-from django_tables2 import RequestConfig
 from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
 
