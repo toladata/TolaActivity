@@ -9,11 +9,11 @@ import traceback
 
 
 def run():
-    n = 1
+    n = 1000
     try:
         for i in range(0,n):
             create_workflowmodels()
-            create_indicators()
+            #create_indicators()
     except Exception, e:
         print(e.message)
         print(traceback.format_exc())
