@@ -388,6 +388,7 @@ class CollectedDataCreate(CreateView):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['workflowlevel1'] = self.kwargs['workflowlevel1']
+        kwargs['indicator'] = self.kwargs['indicator']
         kwargs['tola_table'] = None
 
         return kwargs
@@ -511,7 +512,9 @@ class CollectedDataUpdate(UpdateView):
             except TolaTable.DoesNotExist:
                 getTable = None
             if getTable:
-                count = getTableCount(getTable.url,getTable.table_id)
+                # if there is a trailing slash, remove it since TT api does not like it.
+                url = getTable.url if getTable.url[-1:] != "/" else getTable.url[:-1]
+                count = getTableCount(url, getTable.table_id)
             else:
                 count = 0
             form.instance.achieved = count

@@ -129,15 +129,19 @@ class CollectedDataForm(forms.ModelForm):
     date_collected = forms.DateField(widget=DatePicker.DateInput(), required=True)
 
     def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', None)
         self.helper = FormHelper()
         self.request = kwargs.pop('request')
         self.workflowlevel1 = kwargs.pop('workflowlevel1')
+        self.indicator = kwargs.pop('indicator')
         self.tola_table = kwargs.pop('tola_table')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-6'
         self.helper.form_error_title = 'Form Errors'
+        self.helper.form_action = reverse_lazy('collecteddata_update' if instance else 'collecteddata_add', kwargs={'pk': instance.id} if instance else {'program': self.program, 'indicator': self.indicator})
+        self.helper.form_id = 'collecteddata_update_form'
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
