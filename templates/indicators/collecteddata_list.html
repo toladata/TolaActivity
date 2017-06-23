@@ -10,7 +10,6 @@
 
 {% include "indicators/filter.html"%}
 
-
     <div style="display: none;">
         <span class="filter" id="indicator_filter_value"></span>
         <span class="filter" id="program_filter_value"></span>
@@ -111,14 +110,11 @@
                         { "visible": false, "targets": 2 },
                     ],
                     columns: [
-<<<<<<< HEAD
+
                         { title: "WorkflowLevel1", data: "indicator__program__name"},
-=======
-                        { title: "PID", data: "indicator__program__id"},
                         { title: "IID", data: "indicator__id"},
                         { title: "ITID", data: "indicator__indicator_type__id"},
                         { title: "Program", data: "indicator__program__name"},
->>>>>>> ce649e1... #641 updated indicator collected data report filters section
                         { title: "Indicator", data: "name",
                                 "mRender": function (data, type, row) {
                                     return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ workflowlevel1 }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';

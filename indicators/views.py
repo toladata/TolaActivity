@@ -998,6 +998,7 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
                                                                         'indicator__strategic_objectives').filter(
             workflowlevel1__country__in=countries).filter(
             **q).order_by(
+
             'indicator__workflowlevel1__name',
             'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__workflowlevel1__name',
                                         'indicator__indicator_type__indicator_type', 'indicator__level__name',
