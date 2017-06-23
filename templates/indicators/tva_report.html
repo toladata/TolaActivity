@@ -6,7 +6,6 @@
 {% endblock %}
     {% block page_title %}TVA Report{% endblock %}
 {% block content %}
-<<<<<<< HEAD
     {% include "indicators/filter.html"%}
 
     <div style="display: none;">
@@ -105,37 +104,6 @@
         }
 
     </script>
-=======
 
-
-            <div id="tva_table_div" class="table-responsive">
-                <table id="tva_table" class="table table-hover table-striped table-bordered">
-                    <thead>
-                        <th>No</th>
-                        <th>Indicator</th>
-                        <th>Actuals</th>
-                    </thead>
-                    {% for row in data %}
-                        <tr>
-                            <td>{{row.id}}</td>
-                            <td>{{row.name}}</td>
-                            <td>{{row.actuals}}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#tva_table").DataTable({
-            dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-            buttons: [
-                { extend: 'csv', text: 'Export to CSV' }
-            ]
-        });
-    });
-</script>
->>>>>>> 7d8455c... #629 progress made towards creating a simple tva report
 
 {% endblock content %}
