@@ -182,6 +182,8 @@ MIDDLEWARE= (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'simple_history.middleware.HistoryRequestMiddleware',
     'tola.middleware.TolaSecurityMiddleware'
+    'simple_history.middleware.HistoryRequestMiddleware',
+
 )
 ########## END MIDDLEWARE CONFIGURATION
 
