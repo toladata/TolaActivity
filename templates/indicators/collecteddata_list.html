@@ -10,22 +10,52 @@
 
 {% include "indicators/filter.html"%}
 
-<p>
-{% if indicator_name %}
-    <span class="filter">Filtered by Indicator: {{ indicator_name }}</span>
-{% endif %}
-{% if program_name %}
-    <span class="filter">Filtered by {{ workflowlevel1 }} : {{ program_name }}</span>
-{% endif %}
-{% if type_name %}
-    <span class="filter">Filtered by Indicator Type : {{ type_name }}</span>
-{% endif %}
-</p>
+
+    <div style="display: none;">
+        <span class="filter" id="indicator_filter_value"></span>
+        <span class="filter" id="program_filter_value"></span>
+        <span class="filter" id="type_filter_value"></span>
+    </div>
+
     <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
     <script type="text/javascript">
+        var table;
         $(document).ready(function() {
+
+            $.fn.dataTable.ext.search.push(
+                function( settings, data, dataIndex ) {
+                    var programId = $("#program_filter_value").data('programid');
+                    var programIdInTable = parseInt(data[0]) || 0;
+
+                    var indicatorId = $("#indicator_filter_value").data('indicatorid');
+                    var indicatorIdInTable = parseInt(data[1]) || 0;
+
+                    var typeId = $("#type_filter_value").data('typeid');
+                    var typeIdInTable = parseInt(data[2]) || 0;
+
+                    if (programId == 0) programId = undefined;
+                    if (indicatorId == 0) indicatorId = undefined;
+                    if (typeId == 0) typeId = undefined;
+
+                    if (
+                        ( isNaN(programId) && isNaN(indicatorId) && isNaN(typeId) ) ||
+                        ( isNaN(programId) && isNaN(indicatorId) && typeId == typeIdInTable) ||
+                        ( isNaN(programId) && indicatorId == indicatorIdInTable && isNaN(typeId)) ||
+                        ( isNaN(programId) && indicatorId == indicatorIdInTable && typeId == typeIdInTable) ||
+                        ( programId == programIdInTable && isNaN(indicatorId) && isNaN(typeId)) ||
+                        ( programId == programIdInTable && isNaN(indicatorId) && typeId == typeIdInTable) ||
+                        ( programId == programIdInTable && indicatorId == indicatorIdInTable && isNaN(typeId) ) ||
+                        ( programId == programIdInTable && indicatorId == indicatorIdInTable && typeId == typeIdInTable)
+                        )
+                    {
+                        return true; //
+                    }
+                    //if ((indicatorIdInTable == indicatorId)|| (indicatorId == undefined)) return true;
+                    return false;
+                }
+            );
 
             // Build a filter for start and end date from Column 8 or date collected
             $.fn.dataTableExt.afnFiltering.push(
@@ -75,8 +105,20 @@
                 table = $('#data_table').DataTable( {
                     retrieve: true,
                     data: indicator_records,
+                    "columnDefs": [
+                        { "visible": false, "targets": 0 },
+                        { "visible": false, "targets": 1 },
+                        { "visible": false, "targets": 2 },
+                    ],
                     columns: [
+<<<<<<< HEAD
                         { title: "WorkflowLevel1", data: "indicator__program__name"},
+=======
+                        { title: "PID", data: "indicator__program__id"},
+                        { title: "IID", data: "indicator__id"},
+                        { title: "ITID", data: "indicator__indicator_type__id"},
+                        { title: "Program", data: "indicator__program__name"},
+>>>>>>> ce649e1... #641 updated indicator collected data report filters section
                         { title: "Indicator", data: "name",
                                 "mRender": function (data, type, row) {
                                     return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ workflowlevel1 }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
@@ -127,7 +169,7 @@
                 //console.log(type_id);
 
                 $.getJSON("/indicators/collecteddata_report_data/" + program_id + "/"  + indicator_id + "/" + type_id + "/", function(data) {
-                    console.log(data['collected']);
+                    //console.log(data['collected']);
                     show_indicator_table(data['collected']);
                     // If the indicator id is passed then sum up for the indicator
                     if (indicator_id > 0){
@@ -155,6 +197,21 @@
             indicator_report();
 
         });
+
+        function program_filter(program_id) {
+            $("#program_filter_value").data('programid', program_id);
+            table.draw();
+        }
+
+        function indicator_filter(indicator) {
+            $("#indicator_filter_value").data("indicatorid", indicator);
+            table.draw();
+        }
+
+        function indicator_type_filter(type) {
+            $("#type_filter_value").data('typeid', type);
+            table.draw();
+        }
     </script>
     <div id="sum1" style="display: none; float: right;">
         <p>
@@ -188,23 +245,5 @@
     <br/>
     <button type="button" class="btn btn-success" id="export">Export All</button>
     <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
-
-<script type="text/javascript">
-    function program_filter(program_id) {
-      window.location.href = '/indicators/collecteddata/'+program_id+'/0/0/';
-      }
-
-    function indicator_filter(indicator) {
-      window.location.href = '/indicators/collecteddata/0/'+indicator+'/0';  
-        }
-
-    function indicator_type_filter(type) {
-      program_id = document.URL.split('/')[5];
-      indicator_id = document.URL.split('/')[6];
-      type_id = document.URL.split('/')[7];
-      window.location.href = '/indicators/collecteddata/'+program_id+'/'+indicator_id+'/'+type;      
-      }
-
- </script>
 
 {% endblock content %}
