@@ -197,7 +197,7 @@ class TolaBookmarksAdmin(admin.ModelAdmin):
 
 
 class TolaUserProxy(TolaUser):
-    
+
     class Meta:
         verbose_name, verbose_name_plural = u"Report Tola User", u"Report Tola Users"
         proxy = True
@@ -284,7 +284,7 @@ class Contact(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name + " " + self.title 
+        return self.name + ", " + self.title
 
 
 class ContactAdmin(admin.ModelAdmin):
@@ -1338,7 +1338,5 @@ class ChecklistItem(models.Model):
 class ChecklistItemAdmin(admin.ModelAdmin):
     list_display = ('item','checklist','in_file')
     list_filter = ('checklist','global_item')
-
-
 
 
