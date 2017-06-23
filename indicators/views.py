@@ -1027,10 +1027,28 @@ class TVAReport(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TVAReport, self).get_context_data(**kwargs)
-        indicators = Indicator.objects.filter(program=223)\
-            .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))\
-            #.values('actuals', 'number', 'name', 'indicator_type__indicator_type')
+        countries = getCountry(self.request.user)
+        filters = {'program__country__in': countries}
+        program = Program.objects.filter(id=kwargs.get('program', None)).first()
+        indicator_type = IndicatorType.objects.filter(id=kwargs.get('type', None)).first()
+        indicator = Indicator.objects.filter(id=kwargs.get('indicator', None)).first()
+
+        if program:
+            filters['program'] = program.pk
+        if indicator_type:
+            filters['indicator__indicator_type__id'] = indicator_type.pk
+        if indicator:
+            filters['indicator'] = indicator.pk
+
+        indicators = Indicator.objects\
+            .select_related('sector')\
+            .prefetch_related('indicator_type', 'level', 'program')\
+            .filter(**filters)\
+            .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))
         context['data'] = indicators
+        context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
+        context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        context['getIndicatorTypes'] = IndicatorType.objects.all()
         return context
 
 
