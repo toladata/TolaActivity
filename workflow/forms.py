@@ -92,7 +92,7 @@ class BudgetForm(forms.ModelForm):
 
 
         super(BudgetForm, self).__init__(*args, **kwargs)
-        
+
         countries = getCountry(self.request.user)
 
         self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(program__country__in = countries)
