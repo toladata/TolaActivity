@@ -16,6 +16,7 @@ from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View
+from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
@@ -1049,6 +1050,11 @@ class TVAReport(TemplateView):
         context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
         context['getIndicatorTypes'] = IndicatorType.objects.all()
+
+        indicators = Indicator.objects.filter(program=223)\
+            .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))\
+            .values('actuals', 'name', 'id')
+        context['data'] = indicators
         return context
 
 

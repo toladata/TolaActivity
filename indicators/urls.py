@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 
 from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
-    IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData, IndicatorReport, IndicatorDataExport
+    IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData, IndicatorReport, IndicatorDataExport, TVAReport
 
 from indicators import views as indicatorviews
 
@@ -27,10 +27,11 @@ urlpatterns = [
     url(r'^collecteddata_export/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
 
     # Indicator Report
-    url(r'^report/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', indicatorviews.indicator_report, name='indicator_report'),
-    url(r'^report_table/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorReport.as_view(), name='indicator_table'),
-    url(r'^program_report/(?P<workflowlevel1>\w+)/$', indicatorviews.WorkflowLevel1IndicatorReport,name='programIndicatorReport'),
-    url(r'^tvareport/$', TVAReport.as_view(), name='tvareport'),
+    url(r'^report/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', 'indicators.views.indicator_report', name='indicator_report'),
+    url(r'^tvareport/(?P<program>\w+)/$', TVAReport.as_view(), name='tvareport'),
+    url(r'^report_table/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorReport.as_view(), name='indicator_table'),
+    url(r'^program_report/(?P<program>\w+)/$', 'indicators.views.programIndicatorReport',name='programIndicatorReport'),
+
 
     # Indicator Data Report
     url(r'^data/(?P<id>\w+)/(?P<workflowlevel1>\w+)/(?P<type>\w+)/$', indicatorviews.indicator_data_report, name='indicator_data_report'),
