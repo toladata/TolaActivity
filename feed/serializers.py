@@ -294,8 +294,9 @@ class TolaTableSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TolaTable
-        fields = '__all__'
-
+        # HyperlinkedModelSerializer does not include id field by default so manually setting it
+        fields = ('id', 'name', 'table_id', 'owner', 'remote_owner', 'country', 'url', 'unique_count', 'create_date', 'edit_date')
+        #fields = '__all__'
 
 class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
 

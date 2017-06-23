@@ -20,8 +20,21 @@
             $("#id_tola_table").select2();
             $("#id_evidence").select2();
             $("#id_agreement").select2();
-        });
 
+            $('#myModal').on('hidden.bs.modal', function (e) {
+                var sel = $("#service_table option:selected");
+                $.get('/api/tolatable/?table_id=' + sel.val() , function(data){
+                    if (data.length == 1) {
+                        $("#id_tola_table").append($("<option></option>")
+                            .attr("value", data[0].id)
+                            .text(sel.text()));
+                    } else {
+                        console.log('something wrong');
+                    }
+
+                });
+            })
+        });
     </script>
 
     {% if form.errors %}

@@ -50,6 +50,7 @@ router.register(r'collecteddata', CollectedDataViewSet)
 router.register(r'tolatable', TolaTableViewSet)
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
 router.register(r'dissagregationlabel', DisaggregationLabelViewSet)
+router.register(r'tolatable', TolaTableViewSet, base_name='tolatable')
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
 
 

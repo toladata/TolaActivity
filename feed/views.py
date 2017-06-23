@@ -416,14 +416,22 @@ class TolaTableViewSet(viewsets.ModelViewSet):
     """
 
     def list(self, request):
-        user_countries = getCountry(request.user)
-        queryset = TolaTable.objects.all().filter(country__in=user_countries)
+        #user_countries = getCountry(request.user)
+        #queryset = TolaTable.objects.all().filter(country__in=user_countries)
+        queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'collecteddata__indicator__workflowlevel1__name')
+    def get_queryset(self):
+        user_countries = getCountry(self.request.user)
+        queryset = TolaTable.objects.filter(country__in=user_countries)
+        table_id = self.request.query_params.get('table_id', None)
+        if table_id is not None:
+            queryset = queryset.filter(table_id=table_id)
+        return queryset
+
+    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__program__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    queryset = TolaTable.objects.all()
     serializer_class = TolaTableSerializer
     pagination_class = StandardResultsSetPagination
 
