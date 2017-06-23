@@ -183,7 +183,6 @@ MIDDLEWARE= (
     #'simple_history.middleware.HistoryRequestMiddleware',
     'tola.middleware.TolaSecurityMiddleware'
     'simple_history.middleware.HistoryRequestMiddleware',
-
 )
 ########## END MIDDLEWARE CONFIGURATION
 

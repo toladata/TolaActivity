@@ -127,6 +127,10 @@ class Level1Dash(ListView):
             status = self.kwargs['status']
             if status == "in progress":
                 getDashboard.filter(Q(agreement__approval=self.kwargs['status']) | Q(agreement__approval=None))
+
+            elif status == "new":
+                getDashboard.filter(Q(agreement__approval="") | Q(agreement__approval=None))
+
             else:
                 getDashboard.filter(agreement__approval=self.kwargs['status'])
         else:
