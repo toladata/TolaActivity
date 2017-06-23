@@ -157,15 +157,9 @@ class ProjectAgreementList(ListView):
             return render(request, self.template_name, {'form': FilterForm(),'getworkflowlevel1': getworkflowlevel1, 'getDashboard':getDashboard,'getworkflowlevel1s':getworkflowlevel1s,'APPROVALS': APPROVALS})
 
         elif self.kwargs['status'] != 'none':
-<<<<<<< HEAD
             getDashboard = WorkflowLevel2.objects.all().filter(approval=self.kwargs['status'])
             return render(request, self.template_name, {'form': FilterForm(), 'getDashboard':getDashboard,'getworkflowlevel1s':getworkflowlevel1s,'APPROVALS': APPROVALS})
- 
-=======
-            getDashboard = ProjectAgreement.objects.all().filter(approval=self.kwargs['status'])
-            return render(request, self.template_name, {'form': FilterForm(), 'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
 
->>>>>>> 2681474... #641 updated the project report filter to be consistent
         else:
             getDashboard = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=countries)
 
@@ -691,10 +685,16 @@ class ProjectCompleteDetail(DetailView):
         context.update({'jsonData': jsonData})
         """
         context.update({'id':self.kwargs['pk']})
+        getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
 
         try:
+<<<<<<< HEAD
             getBenchmark = WorkflowLevel3.objects.all().filter(complete__id=self.kwargs['pk'])
         except WorkflowLevel3.DoesNotExist:
+=======
+            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
+        except Benchmarks.DoesNotExist:
+>>>>>>> c64b14e... #620: display project components
             getBenchmark = None
         context.update({'getWorkflowLevel3': getBenchmark})
 
