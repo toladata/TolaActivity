@@ -125,11 +125,11 @@
                     { "visible": false, "targets": 2 },
                 ],
                 columns: [
-                    { title: "WorkflowLevel1", data: "program__name"},
-                    { title: "PID", data: "program__id"},
-                    { title: "IID", data: "id"},
-                    { title: "ITID", data: "indicator_type__id"},
 
+                    { title: "PID", class: "noExport", data: "program__id"},
+                    { title: "IID", class: "noExport", data: "id"},
+                    { title: "ITID", class: "noExport", data: "indicator_type__id"},
+                    { title: "Program", data: "program__name"},
                     { title: "Indicator", data: "name",
                             "mRender": function (data, type, row) {
                                 return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
@@ -149,7 +149,15 @@
                         },
                     { title: "KPI",data: "key_performance_indicator",
                     "defaultContent": "<i>Not set</i>"}
-                    ]
+                ],
+                dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                buttons: [
+                    {
+                        extend: 'csv',
+                        text: 'Export to CSV',
+                        exportOptions: { columns: "thead th:not(.noExport)" }
+                    }
+                ]
             } );
 
             // provide export button url for indicator
@@ -217,7 +225,9 @@
                         </table>
                     </div>
                     <br/>
+                    <!--
                     <button type="button" class="btn btn-success" id="export">Export All</button>
+                    -->
                     <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
                 </div>
             </div>
