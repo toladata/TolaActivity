@@ -1055,6 +1055,9 @@ class TVAReport(TemplateView):
             .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))\
             #.values('actuals', 'number', 'name', 'indicator_type__indicator_type')
         context['data'] = indicators
+        context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
+        context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        context['getIndicatorTypes'] = IndicatorType.objects.all()
         return context
 
 
