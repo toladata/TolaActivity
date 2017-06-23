@@ -7,6 +7,7 @@ from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, \
     DisaggregationLabel
 
+from django.db.models import Count
 from django.contrib.auth.models import User
 from tola.util import getCountry
 from django.shortcuts import get_object_or_404
@@ -34,6 +35,17 @@ class SmallResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 50
 
+
+class PogramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ProgramIndicatorSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        queryset = Program.objects.prefetch_related('indicator_set', \
+            'indicator_set__indicator_type',\
+            'indicator_set__sector', 'indicator_set__level', \
+            'indicator_set__collecteddata_set').all()
+        return queryset
 
 # API Classes
 class UserViewSet(viewsets.ModelViewSet):

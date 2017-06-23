@@ -66,17 +66,25 @@ function loadIndicators(workflowlevel1,indicator,type){
     var program_id = document.URL.split('/')[5];
     var indicator_id = document.URL.split('/')[6];
     var type_id = document.URL.split('/')[7];
-
+    $(document).ready(function() {
+        if (typeof program_id !== 'undefined' && program_id > 0) {
+            console.log("coolapseing");
+            var a = $('#hidden-68').collapse('hide');
+            loadIndicators(program_id, 0, 0);
+            a.collapse('show');
+            console.log(a);
+        }
+    });
     function program_filter(program_id) {
-      window.location.href = '/indicators/home/'+program_id+'/0/0/';      
+      window.location.href = '/indicators/home/'+program_id+'/0/0/';
       }
 
     function indicator_filter(indicator) {
-      window.location.href = '/indicators/home/'+program_id+'/'+indicator+'/0';  
+      window.location.href = '/indicators/home/'+program_id+'/'+indicator+'/0';
         }
 
     function indicator_type_filter(type) {
-      window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;      
+      window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;
       }
 
  </script>

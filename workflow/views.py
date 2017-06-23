@@ -688,13 +688,8 @@ class ProjectCompleteDetail(DetailView):
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
 
         try:
-<<<<<<< HEAD
             getBenchmark = WorkflowLevel3.objects.all().filter(complete__id=self.kwargs['pk'])
         except WorkflowLevel3.DoesNotExist:
-=======
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=self.kwargs['pk'])
-        except Benchmarks.DoesNotExist:
->>>>>>> c64b14e... #620: display project components
             getBenchmark = None
         context.update({'getWorkflowLevel3': getBenchmark})
 
@@ -2083,7 +2078,6 @@ class ReportData(View, AjaxableResponseMixin):
         countries=getCountry(request.user)
         filters = {}
         if int(self.kwargs['pk']) != 0:
-<<<<<<< HEAD
             getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1__id=self.kwargs['pk']).values('id', 'workflowlevel1__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
                              'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
 
@@ -2093,13 +2087,6 @@ class ReportData(View, AjaxableResponseMixin):
         else:
             getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries).values('id', 'workflowlevel1__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
                              'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
-=======
-            filters['program__id'] = self.kwargs['pk']
-        elif self.kwargs['status'] != 'none':
-            filters['approval'] = self.kwargs['status']
-        else:
-            filters['program__country__in'] = countries
->>>>>>> 2681474... #641 updated the project report filter to be consistent
 
         getAgreements = ProjectAgreement.objects.select_related('program', 'project_type', 'office', 'estimated_by', 'sector').filter(**filters).values('id', 'program__id', 'approval', \
                 'program__name', 'project_name','site', 'activity_code', 'office__name', \
