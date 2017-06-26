@@ -6,7 +6,7 @@ from django.forms import HiddenInput
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import WorkflowLevel1, WorkflowLevel2, WorkflowLevel3, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact, Sector
+from .models import WorkflowLevel1, WorkflowLevel2, WorkflowLevel3, SiteProfile, Documentation, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact, Sector
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -758,7 +758,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
 
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
         self.fields['program2'].initial = kwargs['initial'].get('program')

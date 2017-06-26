@@ -31,18 +31,12 @@ urlpatterns = [
                        url(r'^siteprofile_add', SiteProfileCreate.as_view(), name='siteprofile_add'),
                        url(r'^siteprofile_update/(?P<pk>\w+)/$', SiteProfileUpdate.as_view(), name='siteprofile_update'),
                        url(r'^siteprofile_delete/(?P<pk>\w+)/$', SiteProfileDelete.as_view(), name='siteprofile_delete'),
-
-<<<<<<< HEAD
-                       url(r'^documentation_list/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
-                       url(r'^documentation_objects/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationListObjects.as_view(), name='documentation_objects'),
-=======
                        url(r'^site_indicatordata/(?P<site_id>\w+)/$', IndicatorDataBySite.as_view(), name='site_indicatordata'),
                        url(r'^site_projectscomplete/(?P<site_id>\w+)/$', ProjectCompleteBySite.as_view(), name='site_projectscomplete'),
                        #url(r'^site_projects/(?P<site_id\w+)/$', ProjectsBySite.as_view(), name='site_projects'),
 
                        url(r'^documentation_list/(?P<program>\w+)/(?P<project>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
                        url(r'^documentation_objects/(?P<program>\w+)/(?P<project>\w+)/$', DocumentationListObjects.as_view(), name='documentation_objects'),
->>>>>>> 6570555... #191 show collected data by site
                        url(r'^documentation_add', DocumentationCreate.as_view(), name='documentation_add'),
                        url(r'^documentation_agreement_list/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationAgreementList.as_view(), name='documentation_agreement_list'),
                        url(r'^documentation_agreement_add/(?P<id>\w+)/$', DocumentationAgreementCreate.as_view(),name='documentation_agreement_add'),

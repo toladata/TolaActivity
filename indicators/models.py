@@ -1,13 +1,8 @@
 from django.db import models
 from django.contrib import admin
-<<<<<<< HEAD
 from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser
-from datetime import datetime
-=======
-from workflow.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
 from datetime import datetime, timedelta
 from django.utils import timezone
->>>>>>> a58f5be... #630 highlight indicators created in the last 5 minutes
 import uuid
 from simple_history.models import HistoricalRecords
 from decimal import Decimal

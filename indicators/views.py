@@ -799,20 +799,20 @@ def indicator_report(request, workflowlevel1=0, indicator=0, type=0):
 
     filters = {}
     if int(workflowlevel1) != 0:
-        filters['program__id'] = workflowlevel1
+        filters['workflowlevel1__id'] = workflowlevel1
     if int(type) != 0:
         filters['indicator_type'] = type
     if int(indicator) != 0:
         filters['id'] = indicator
     if workflowlevel1 == 0 and type == 0:
-        filters['program__country__in'] = countries
+        filters['workflowlevel1__country__in'] = countries
 
     indicator_data = Indicator.objects.filter(**filters)\
             .prefetch_related('sector')\
-            .select_related('program', 'external_service_record','indicator_type',\
+            .select_related('workflowlevel1', 'external_service_record','indicator_type',\
                 'disaggregation', 'reporting_frequency')\
-            .values('id','program__name','baseline','level__name','lop_target',\
-                   'program__id','external_service_record__external_service__name',\
+            .values('id','workflowlevel1__name','baseline','level__name','lop_target',\
+                   'workflowlevel1__id','external_service_record__external_service__name',\
                    'key_performance_indicator','name','indicator_type__id', 'indicator_type__indicator_type',\
                    'sector__sector','disaggregation__disaggregation_type',\
                    'means_of_verification','data_collection_method',\
@@ -857,8 +857,8 @@ class IndicatorReport(View, AjaxableResponseMixin):
             .prefetch_related('sector')\
             .select_related('workflowlevel1', 'external_service_record','indicator_type',\
                 'disaggregation', 'reporting_frequency')\
-            .values('id','program__name','baseline','level__name','lop_target',\
-                   'program__id','external_service_record__external_service__name',\
+            .values('id','workflowlevel1__name','baseline','level__name','lop_target',\
+                   'workflowlevel1__id','external_service_record__external_service__name',\
                    'key_performance_indicator','name','indicator_type__indicator_type',\
                    'sector__sector','disaggregation__disaggregation_type',\
                    'means_of_verification','data_collection_method',\
@@ -1084,7 +1084,7 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             q.update(s)
 
 
-        getCollectedData = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
+        getCollectedData = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'workflowlevel1',
                                                                         'indicator__objectives',
                                                                         'indicator__strategic_objectives').filter(
             workflowlevel1__country__in=countries).filter(
@@ -1131,10 +1131,10 @@ class DisaggregationReport(TemplateView):
         context = super(DisaggregationReport, self).get_context_data(**kwargs)
 
         countries = getCountry(self.request.user)
-        programs = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
-        indicators = Indicator.objects.filter(program__country__in=countries)
+        programs = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        indicators = Indicator.objects.filter(workflowlevel1__country__in=countries)
 
-        program_selected = Program.objects.filter(id=kwargs.get('program', None)).first()
+        program_selected = WorkflowLevel1.objects.filter(id=kwargs.get('workflowlevel1', None)).first()
         if not program_selected:
             program_selected = programs.first()
 
@@ -1147,8 +1147,8 @@ class DisaggregationReport(TemplateView):
                 "FROM indicators_collecteddata_disaggregation_value AS cdv "\
                 "INNER JOIN indicators_collecteddata AS c ON c.id = cdv.collecteddata_id "\
                 "INNER JOIN indicators_indicator AS i ON i.id = c.indicator_id "\
-                "INNER JOIN indicators_indicator_program AS ip ON ip.indicator_id = i.id "\
-                "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
+                "INNER JOIN indicators_indicator_workflowlevel1 AS ip ON ip.indicator_id = i.id "\
+                "INNER JOIN workflow_workflowlevel1 AS p ON p.id = ip.workflowlevel1_id "\
                 "INNER JOIN indicators_disaggregationvalue AS dv ON dv.id = cdv.disaggregationvalue_id "\
                 "INNER JOIN indicators_disaggregationlabel AS l ON l.id = dv.disaggregation_label_id "\
                 "INNER JOIN indicators_disaggregationtype AS dt ON dt.id = l.disaggregation_type_id "\
@@ -1163,8 +1163,8 @@ class DisaggregationReport(TemplateView):
         indicator_query = "SELECT DISTINCT p.id as PID, i.id AS IndicatorID, i.number AS INumber, i.name AS Indicator, "\
             "i.lop_target AS LOP_Target, SUM(cd.achieved) AS Overall "\
             "FROM indicators_indicator AS i "\
-            "INNER JOIN indicators_indicator_program AS ip ON ip.indicator_id = i.id "\
-            "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
+            "INNER JOIN indicators_indicator_workflowlevel1 AS ip ON ip.indicator_id = i.id "\
+            "INNER JOIN workflow_workflowlevel1 AS p ON p.id = ip.workflowlevel1_id "\
             "LEFT OUTER JOIN indicators_collecteddata AS cd ON i.id = cd.indicator_id "\
             "WHERE p.id = %s "\
             "GROUP BY PID, IndicatorID "\
@@ -1191,13 +1191,13 @@ class TVAReport(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TVAReport, self).get_context_data(**kwargs)
         countries = getCountry(self.request.user)
-        filters = {'program__country__in': countries}
-        program = Program.objects.filter(id=kwargs.get('program', None)).first()
+        filters = {'workflowlevel1__country__in': countries}
+        workflowlevel1 = WorkflowLevel1.objects.filter(id=kwargs.get('workflowlevel1', None)).first()
         indicator_type = IndicatorType.objects.filter(id=kwargs.get('type', None)).first()
         indicator = Indicator.objects.filter(id=kwargs.get('indicator', None)).first()
 
-        if program:
-            filters['program'] = program.pk
+        if workflowlevel1:
+            filters['workflowlevel1'] = workflowlevel1.pk
         if indicator_type:
             filters['indicator__indicator_type__id'] = indicator_type.pk
         if indicator:
@@ -1205,21 +1205,21 @@ class TVAReport(TemplateView):
 
         indicators = Indicator.objects\
             .select_related('sector')\
-            .prefetch_related('indicator_type', 'level', 'program')\
+            .prefetch_related('indicator_type', 'level', 'workflowlevel1')\
             .filter(**filters)\
             .annotate(actuals=Sum('collecteddata__achieved'))
             #.annotate(actuals=Sum('collecteddata__disaggregation_value__value'))
         context['data'] = indicators
-        context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
-        context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        context['getIndicators'] = Indicator.objects.filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True)
+        context['getPrograms'] = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
         context['getIndicatorTypes'] = IndicatorType.objects.all()
 
-        indicators = Indicator.objects.filter(program=223)\
+        indicators = Indicator.objects.filter(workflowlevel1=223)\
             .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))\
             #.values('actuals', 'number', 'name', 'indicator_type__indicator_type')
         context['data'] = indicators
-        context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
-        context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        context['getIndicators'] = Indicator.objects.filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True)
+        context['getPrograms'] = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
         context['getIndicatorTypes'] = IndicatorType.objects.all()
         return context
 

@@ -157,6 +157,7 @@ class IndicatorLevelLightSerializer(serializers.ModelSerializer):
         model = Level
         fields = ('id', 'name')
 
+
 class IndicatorLightSerializer(serializers.ModelSerializer):
     sector = serializers.SerializerMethodField()
     indicator_type = IndicatorTypeLightSerializer(many=True, read_only=True)
@@ -176,6 +177,7 @@ class IndicatorLightSerializer(serializers.ModelSerializer):
         model = Indicator
         fields = ('name', 'number', 'lop_target', 'indicator_type', 'level', 'sector', 'datacount')
 
+
 class ProgramIndicatorSerializer(serializers.ModelSerializer):
     indicator_set = IndicatorLightSerializer(many=True, read_only=True)
     indicators_count = serializers.SerializerMethodField()
@@ -184,7 +186,7 @@ class ProgramIndicatorSerializer(serializers.ModelSerializer):
         return obj.indicator_set.count()
 
     class Meta:
-        model =  Program
+        model = WorkflowLevel1
         fields = ('id', 'name', 'indicators_count', 'indicator_set')
 
 

@@ -180,9 +180,8 @@ MIDDLEWARE= (
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tola.middleware.TolaSecurityMiddleware',
     #'simple_history.middleware.HistoryRequestMiddleware',
-    'tola.middleware.TolaSecurityMiddleware'
-    'simple_history.middleware.HistoryRequestMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 

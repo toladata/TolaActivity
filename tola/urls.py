@@ -47,21 +47,13 @@ router.register(r'profiletype', ProfileTypeViewSet)
 router.register(r'contact', ContactViewSet)
 router.register(r'documentation', DocumentationViewSet)
 router.register(r'collecteddata', CollectedDataViewSet)
-router.register(r'tolatable', TolaTableViewSet)
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
 router.register(r'dissagregationlabel', DisaggregationLabelViewSet)
-router.register(r'tolatable', TolaTableViewSet, base_name='tolatable')
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
-<<<<<<< HEAD
-
-
-=======
 router.register(r'projectagreements', ProjectAgreementViewSet)
-router.register(r'loggedusers', LoggedUserViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
 router.register(r'pindicators', PogramIndicatorReadOnlyViewSet, base_name='pindicators')
->>>>>>> acffc0b... #623 program indicators breadcrumb navigation progress
 
 
 urlpatterns = [ # rest framework

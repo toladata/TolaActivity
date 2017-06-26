@@ -325,7 +325,7 @@ class CollectedDataForm(forms.ModelForm):
         #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
         try:
             int(self.program)
-            self.program = Program.objects.get(id=self.program)
+            self.program = WorkflowLevel1.objects.get(id=self.program)
         except TypeError:
             pass
 

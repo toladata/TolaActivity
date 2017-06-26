@@ -41,7 +41,7 @@ class PogramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        queryset = Program.objects.prefetch_related('indicator_set', \
+        queryset = WorkflowLevel1.objects.prefetch_related('indicator_set', \
             'indicator_set__indicator_type',\
             'indicator_set__sector', 'indicator_set__level', \
             'indicator_set__collecteddata_set').all()
