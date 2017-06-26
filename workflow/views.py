@@ -506,8 +506,9 @@ class ProjectCompleteCreate(CreateView):
 
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
+
         getProjectAgreement = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
-        pre_initial = {
+        initial = {
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'workflowlevel1': getProjectAgreement.workflowlevel1,
@@ -523,20 +524,21 @@ class ProjectCompleteCreate(CreateView):
         }
         initial = None
         try:
-            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
-            site = {'site': [o for o in getSites], }
-            initial = pre_initial.copy()
-            initial.update(site)
+            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id', flat=True)
+            site = {'site': [o for o in getSites] }
+            initial['site'] = getSites
+
         except SiteProfile.DoesNotExist:
             getSites = None
 
         try:
             getStakeholder = Stakeholder.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
             stakeholder = {'stakeholder': [o for o in getStakeholder], }
-            initial = pre_initial.copy()
-            initial.update(stakeholder)
+            initial['stakeholder'] = stakeholder
         except Stakeholder.DoesNotExist:
             getStakeholder = None
+
+        print(".............................%s............................" % initial )
 
         return initial
 
@@ -608,7 +610,7 @@ class ProjectCompleteUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
-        getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
+        getComplete = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
         #id = getComplete.project_agreement_id
 
         context.update({'id': getComplete.pk})
@@ -634,8 +636,8 @@ class ProjectCompleteUpdate(UpdateView):
 
         # get benchmark or project components
         try:
-            getBenchmark = Benchmarks.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk)).order_by('description')
-        except Benchmarks.DoesNotExist:
+            getBenchmark = WorkflowLevel3.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk)).order_by('description')
+        except WorkflowLevel3.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
 
@@ -1670,13 +1672,13 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
         getProgram = None
 
         if self.request.GET.get('is_it_project_complete_form', None):
-            getProgram = Program.objects.get(complete__id = self.kwargs['id'])
+            getProgram = WorkflowLevel1.objects.get(complete__id = self.kwargs['id'])
             initial = {
                         'complete': self.kwargs['id'],
                         'program': getProgram.id,
                       }
         else:
-            getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
+            getProgram = WorkflowLevel1.objects.get(agreement__id = self.kwargs['id'])
             initial = {
                         'agreement': self.kwargs['id'],
                         'program': getProgram.id,
@@ -2254,7 +2256,7 @@ class StakeholderObjects(View, AjaxableResponseMixin):
 
         countries = getCountry(request.user)
 
-        if program_id != 0:
+        if workflowlevel1_id != 0:
             getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
         elif int(self.kwargs['pk']) != 0:
