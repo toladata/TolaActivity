@@ -2234,10 +2234,15 @@ def export_stakeholders_list(request, **kwargs):
     workflowlevel1_id = int(kwargs['workflowlevel1_id'])
     countries = getCountry(request.user)
 
+<<<<<<< HEAD
     if workflowlevel1_id != 0:
         getStakeholders = Stakeholder.objects.all().filter(workflowlevel2__workflowlevel1__id=workflowlevel1_id).distinct()
+=======
+    if program_id != 0:
+        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(projectagreement__program__id=program_id).distinct()
+>>>>>>> 36c9682... #671 export sector names instead of ids in the csv export functionality
     else:
-        getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
+        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(country__in=countries)
 
     dataset = StakeholderResource().export(getStakeholders)
     response = HttpResponse(dataset.csv, content_type='application/ms-excel')
