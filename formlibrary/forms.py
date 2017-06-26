@@ -2,7 +2,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
 from .models import TrainingAttendance, Distribution, Beneficiary
-from workflow.models import WorkflowLevel1, WorkflowLevel2, Office, Province
+
+from workflow.models import WorkflowLevel1, WorkflowLevel2, Office, Province, SiteProfile
 from functools import partial
 from tola.util import getCountry
 
@@ -97,3 +98,5 @@ class BeneficiaryForm(forms.ModelForm):
         self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
         self.fields['training'].queryset = TrainingAttendance.objects.filter(program__country__in=countries)
         self.fields['distribution'].queryset = Distribution.objects.filter(program__country__in=countries)
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
+
