@@ -41,7 +41,7 @@ class ProgramList(ListView):
         workflowlevel1_list = []
         for workflowlevel1 in getworkflowlevel1:
             # get the percentage of indicators with data
-            getInidcatorDataCount = Indicator.objects.filter(workflowlevel1__id=workflowlevel1.id).exclude(collecteddata__targeted=None).count()
+            getInidcatorDataCount = Indicator.objects.filter(workflowlevel1__id=workflowlevel1.id).exclude(collecteddata__periodic_target=None).count()
             getInidcatorCount = Indicator.objects.filter(workflowlevel1__id=workflowlevel1.id).count()
             if getInidcatorCount > 0 and getInidcatorDataCount > 0:
                 getInidcatorDataPercent = 100 * float(getInidcatorDataCount) / float(getInidcatorCount)
@@ -81,7 +81,7 @@ def DefaultCustomDashboard(request,id=0,status=0):
     #transform to list if a submitted country
     selected_countries_list = Country.objects.all().filter(workflowlevel1__id=workflowlevel1_id)
 
-    getQuantitativeDataSums = CollectedData.objects.filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False, indicator__key_performance_indicator=True).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved')).exclude(achieved=None,targeted=None)
+    getQuantitativeDataSums = CollectedData.objects.filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False, indicator__key_performance_indicator=True).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved')).exclude(achieved=None)
     
     totalTargets = getQuantitativeDataSums.aggregate(Sum('targets'))
     totalActuals = getQuantitativeDataSums.aggregate(Sum('actuals'))
@@ -143,7 +143,7 @@ def PublicDashboard(request,id=0,public=0):
     """
     workflowlevel1_id = id
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
-    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('targeted'), actuals=Sum('achieved'))
+    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('periodic_target__target'), actuals=Sum('achieved'))
     getIndicatorCount = Indicator.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
 
     getIndicatorData = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).order_by('date_collected')
@@ -153,8 +153,8 @@ def PublicDashboard(request,id=0,public=0):
     getIndicatorCountKPI = Indicator.objects.all().filter(workflowlevel1__id=workflowlevel1_id,key_performance_indicator=1).count()
     getworkflowlevel1 = WorkflowLevel1.objects.all().get(id=workflowlevel1_id)
     try:
-        getworkflowlevel1Narrative = workflowlevel1Narratives.objects.get(workflowlevel1_id=workflowlevel1_id)
-    except workflowlevel1Narratives.DoesNotExist:
+        getworkflowlevel1Narrative = WorkflowLevel1.objects.get(workflowlevel1_id=workflowlevel1_id)
+    except WorkflowLevel1.DoesNotExist:
         getworkflowlevel1Narrative = None
     getProjects = WorkflowLevel2.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
     getAllProjects = WorkflowLevel2.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
@@ -187,11 +187,11 @@ def PublicDashboard(request,id=0,public=0):
         for table in getEvidence:
 
             table.table_data = get_table(table.url)
-            
+
             print table.table_data
 
             evidence_tables.append(table)
-            
+
     except Exception, e:
         pass
 
@@ -463,7 +463,7 @@ def RRIMAPublicDashboard(request,id=0):
 
     getNotebooks = JupyterNotebooks.objects.all().filter(very_custom_dashboard="RRIMA")
 
-    return render(request, 'customdashboard/rrima_dashboard.html', 
+    return render(request, 'customdashboard/rrima_dashboard.html',
         {'pageText': pageText, 'pageMap': pageMap, 'countries': countries, 'getNotebooks':getNotebooks})
 
 #RRIMA Custom Dashboard Report Page (in use 12/16)
@@ -490,6 +490,6 @@ def RRIMAJupyterView1(request,id=0):
 
     ## retrieve the coutries the user has data access for
     countries = getCountry(request.user)
-    with open('static/rrima.html') as myfile: data = "\n".join(line for line in myfile) 
-    
+    with open('static/rrima.html') as myfile: data = "\n".join(line for line in myfile)
+
     return HttpResponse(data)
