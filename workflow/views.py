@@ -605,12 +605,42 @@ class ProjectCompleteUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
-        getComplete = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
+        getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
+        id = getComplete.project_agreement_id
+        print(".............................%s............................" % id)
         context.update({'id': id})
         context.update({'p_name': getComplete.project_name})
         context.update({'p_complete_workflowlevel1': getComplete.workflowlevel1})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
+
+        # get budget data
+        try:
+            getBudget = Budget.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk) )
+        except Budget.DoesNotExist:
+            getBudget = None
+        context.update({'getBudget': getBudget})
+
+        # get Quantitative data
+        try:
+            getQuantitative = CollectedData.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('indicator')
+        except CollectedData.DoesNotExist:
+            getQuantitative = None
+        context.update({'getQuantitative': getQuantitative})
+
+        # get benchmark or project components
+        try:
+            getBenchmark = Benchmarks.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('description')
+        except Benchmarks.DoesNotExist:
+            getBenchmark = None
+        context.update({'getBenchmark': getBenchmark})
+
+        # get documents from the original agreement (documents are not seperate in complete)
+        try:
+            getDocuments = Documentation.objects.all().filter(project__id=getComplete.project_agreement_id).order_by('name')
+        except Documentation.DoesNotExist:
+            getDocuments = None
+        context.update({'getDocuments': getDocuments})
 
         return context
 
@@ -2219,21 +2249,11 @@ class StakeholderObjects(View, AjaxableResponseMixin):
 
         countries = getCountry(request.user)
 
-<<<<<<< HEAD
-        if workflowlevel1_id != 0:
-            getStakeholders = Stakeholder.objects.all().filter(workflowlevel2__workflowlevel1__id=workflowlevel1_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
-
-        elif int(self.kwargs['pk']) != 0:
-            getStakeholders = Stakeholder.objects.all().filter(workflowlevel2=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
-=======
         if program_id != 0:
             getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
         elif int(self.kwargs['pk']) != 0:
             getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
->>>>>>> 7cb0615... #644 allow users on the stakeholder_update form to select multiple sectors
-
-
         else:
             getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 

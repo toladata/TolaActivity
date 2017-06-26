@@ -86,13 +86,14 @@ class BudgetForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = False
-        #self.helper.layout = Layout(
-        #    Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement',
-        #)
+        self.helper.layout = Layout(
+            Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement', 'complete',
+        )
 
 
         super(BudgetForm, self).__init__(*args, **kwargs)
-
+        self.fields['agreement'].widget = forms.HiddenInput()#TextInput()
+        self.fields['complete'].widget = forms.HiddenInput()#TextInput()
         #countries = getCountry(self.request.user)
 
         #self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
