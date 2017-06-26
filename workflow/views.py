@@ -1263,7 +1263,7 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
         return context
 
     def get_initial(self):
-        
+
         if self.request.GET.get('is_it_project_complete_form', None):
             initial = { 'complete': self.kwargs['id'] }
         else:
@@ -1664,15 +1664,21 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
         return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
+<<<<<<< HEAD
 
         getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
+=======
+        getProgram = None
+>>>>>>> 62365d0... #619 and #664 resolving an issue with adding indicator outform showing the wront set of indicators
 
         if self.request.GET.get('is_it_project_complete_form', None):
+            getProgram = Program.objects.get(complete__id = self.kwargs['id'])
             initial = {
                         'complete': self.kwargs['id'],
                         'program': getProgram.id,
                       }
         else:
+            getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
             initial = {
                         'agreement': self.kwargs['id'],
                         'program': getProgram.id,
