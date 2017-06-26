@@ -703,6 +703,7 @@ class ProjectCompleteDetail(DetailView):
 
         context = super(ProjectCompleteDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
+<<<<<<< HEAD
         try:
             data = WorkflowLevel2.objects.all().filter(project_agreement__id=self.kwargs['pk'])
         except WorkflowLevel2.DoesNotExist:
@@ -722,6 +723,20 @@ class ProjectCompleteDetail(DetailView):
         except WorkflowLevel3.DoesNotExist:
             getBenchmark = None
         context.update({'getWorkflowLevel3': getBenchmark})
+=======
+
+        context.update({'id':self.kwargs['pk']})
+
+        try:
+            getBenchmark = Benchmarks.objects.filter(Q(agreement__id=self.kwargs['pk']) | Q(complete__id=self.get_object().pk))
+        except Benchmarks.DoesNotExist:
+            getBenchmark = None
+
+        budgetContribs = getBudget = Budget.objects.filter(Q(agreement__id=self.kwargs['pk']) | Q(complete__id=self.get_object().pk))
+
+        context['budgetContribs'] = budgetContribs
+        context['getBenchmarks'] =  getBenchmark
+>>>>>>> e57b6b1... #619 changes in the PT form were not showing in the detail view the print view
 
         return context
 
