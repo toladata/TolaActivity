@@ -440,7 +440,7 @@ class ProjectAgreementDelete(DeleteView):
     Project Agreement Delete
     """
     model = WorkflowLevel2
-    success_url = 'workflow/dashboard/0/'
+    success_url = '/workflow/dashboard/0/'
 
     @method_decorator(group_required('Country',url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -706,36 +706,13 @@ class ProjectCompleteDetail(DetailView):
 
         context = super(ProjectCompleteDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
-<<<<<<< HEAD
-        try:
-            data = WorkflowLevel2.objects.all().filter(project_agreement__id=self.kwargs['pk'])
-        except WorkflowLevel2.DoesNotExist:
-            data = None
-        """
-        getData = serializers.serialize('python', data)
-        #return just the fields and skip the object name
-        justFields = [d['fields'] for d in getData]
-        #temp name fiels
-        jsonData =json.dumps(justFields, default=date_handler)
-        context.update({'jsonData': jsonData})
-        """
         context.update({'id':self.kwargs['pk']})
-
-        try:
-            getBenchmark = WorkflowLevel3.objects.all().filter(complete__id=self.kwargs['pk'])
-        except WorkflowLevel3.DoesNotExist:
-            getBenchmark = None
-        context.update({'getWorkflowLevel3': getBenchmark})
-=======
-
-        context.update({'id':self.kwargs['pk']})
-
         try:
             q_list = [Q(agreement__id=self.kwargs['pk'])]
             if self.get_object():
                 q_list.append(Q(complete__id=self.get_object().pk))
-            getBenchmark = Benchmarks.objects.filter(reduce(operator.or_, q_list))
-        except Benchmarks.DoesNotExist:
+            getBenchmark = WorkflowLevel3.objects.filter(reduce(operator.or_, q_list))
+        except WorkflowLevel3.DoesNotExist:
             getBenchmark = None
 
         q_list = [Q(agreement__id=self.kwargs['pk']) ]
@@ -745,7 +722,6 @@ class ProjectCompleteDetail(DetailView):
 
         context['budgetContribs'] = budgetContribs
         context['getBenchmarks'] =  getBenchmark
->>>>>>> e57b6b1... #619 changes in the PT form were not showing in the detail view the print view
 
         return context
 
@@ -1688,12 +1664,7 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
         return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-<<<<<<< HEAD
-
-        getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
-=======
         getProgram = None
->>>>>>> 62365d0... #619 and #664 resolving an issue with adding indicator outform showing the wront set of indicators
 
         if self.request.GET.get('is_it_project_complete_form', None):
             getProgram = Program.objects.get(complete__id = self.kwargs['id'])
@@ -2234,13 +2205,8 @@ def export_stakeholders_list(request, **kwargs):
     workflowlevel1_id = int(kwargs['workflowlevel1_id'])
     countries = getCountry(request.user)
 
-<<<<<<< HEAD
     if workflowlevel1_id != 0:
-        getStakeholders = Stakeholder.objects.all().filter(workflowlevel2__workflowlevel1__id=workflowlevel1_id).distinct()
-=======
-    if program_id != 0:
-        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(projectagreement__program__id=program_id).distinct()
->>>>>>> 36c9682... #671 export sector names instead of ids in the csv export functionality
+        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(projectagreement__program__id=workflowlevel1_id).distinct()
     else:
         getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(country__in=countries)
 
