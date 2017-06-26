@@ -30,6 +30,9 @@ except KeyError:
 if os.getenv('TOLA_HOSTNAME') is not None:
     ALLOWED_HOSTS = [os.getenv('TOLA_HOSTNAME')]
 
+USE_X_FORWARDED_HOST = True if os.getenv('TOLA_USE_X_FORWARDED_HOST') == 'True' else False
+
+
 from os.path import join, normpath
 
 ########## MANAGER CONFIGURATION
