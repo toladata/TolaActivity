@@ -4,8 +4,13 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from urlparse import urlparse
 import re
+<<<<<<< HEAD
 from .models import Indicator, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
 from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
+=======
+from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
+from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
+>>>>>>> 66ae29c... #189 Added fields to the Target tab of the indicator form to list periodic targets
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
@@ -273,6 +278,7 @@ class IndicatorUpdate(UpdateView):
 
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
+        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
 
         #get external service data if any
         try:
@@ -939,11 +945,6 @@ def indicator_data_report(request, id=0, workflowlevel1=0, type=0):
 
         queryset = CollectedData.objects.all().filter(**q).select_related()
 
-    # pass query to table and configure
-    table = IndicatorDataTable(queryset)
-    table.paginate(page=request.GET.get('page', 1), per_page=20)
-
-    RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/data_report.html",
@@ -1048,11 +1049,8 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             }
             q.update(s)
 
-<<<<<<< HEAD
-        getCollectedData = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'workflowlevel1',
-=======
+
         getCollectedData = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
->>>>>>> 2f79733... #189 updated views to use periodid_target
                                                                         'indicator__objectives',
                                                                         'indicator__strategic_objectives').filter(
             workflowlevel1__country__in=countries).filter(
@@ -1068,13 +1066,9 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
 
         #getCollectedData = {x['id']:x for x in getCollectedData}.values()
 
-<<<<<<< HEAD
-        collected_sum = CollectedData.objects.filter(workflowlevel1__country__in=countries).filter(**q).aggregate(
-            Sum('targeted'), Sum('achieved'))
-=======
-        collected_sum = CollectedData.objects.select_related('periodic_target').filter(program__country__in=countries).filter(**q).aggregate(
+
+        collected_sum = CollectedData.objects.select_related('periodic_target').filter(workflowlevel1__country__in=countries).filter(**q).aggregate(
             Sum('periodic_target__target'), Sum('achieved'))
->>>>>>> 2f79733... #189 updated views to use periodid_target
 
         # datetime encoding breaks without using this
         from django.core.serializers.json import DjangoJSONEncoder
@@ -1250,11 +1244,7 @@ class CollectedDataList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-<<<<<<< HEAD
-        indicators = CollectedData.objects.all().prefetch_related('evidence', 'indicator', 'workflowlevel1',
-=======
-        indicators = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
->>>>>>> 2f79733... #189 updated views to use periodid_target
+        indicators = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'workflowlevel1',
                                                                   'indicator__objectives',
                                                                   'indicator__strategic_objectives').filter(
             level1__country__in=countries).filter(
