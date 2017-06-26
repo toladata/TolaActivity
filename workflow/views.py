@@ -2210,15 +2210,23 @@ class StakeholderObjects(View, AjaxableResponseMixin):
 
         countries = getCountry(request.user)
 
+<<<<<<< HEAD
         if workflowlevel1_id != 0:
             getStakeholders = Stakeholder.objects.all().filter(workflowlevel2__workflowlevel1__id=workflowlevel1_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
 
         elif int(self.kwargs['pk']) != 0:
             getStakeholders = Stakeholder.objects.all().filter(workflowlevel2=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+=======
+        if program_id != 0:
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
+
+        elif int(self.kwargs['pk']) != 0:
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
+>>>>>>> 7cb0615... #644 allow users on the stakeholder_update form to select multiple sectors
 
 
         else:
-            getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+            getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
 
         getStakeholders = json.dumps(list(getStakeholders), cls=DjangoJSONEncoder)
