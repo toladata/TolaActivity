@@ -4,155 +4,150 @@
   <li><a href="/indicators/home/0/0/0/">Indicators</a></li>
   <li class="active">Reports</li>
 </ol>
-{% include "indicators/filter.html"%}
 
 {% endblock bread_crumb %}
 
 {% block page_title %}Indicator Report{% endblock %}
 
 {% block content %}
+    {% include "indicators/filter.html"%}
 
-<div class="row" id="search-form">
-  <form class="col-md-3">
-    {% load crispy_forms_tags %}
-    {% crispy form form.helper %}
-  </form>
-</div>
-<br/>
-<script type="text/javascript">
-  $(document).ready(function(){
-     function show_indicator_table(indicator_data) {
-
-            indicator_records = JSON.parse(indicator_data);
-            //First destroy any old version of the table to refresh anew
-            if ( $.fn.dataTable.isDataTable( '#data_table' ) ) {
-                table.destroy();
-                $('#data_table').empty();
-            };
-
-            table = $('#data_table').DataTable( {
-                retrieve: true,
-                data: indicator_records,
-                'columnDefs': [{
-                   'targets': 0,
-                   'searchable':false,
-                   'orderable':false,
-                   'className': 'dt-body-center',
-                   'render': function (data, type, row){
-                       return '<div class="btn-group btn-group-xs"><a type="button" class="btn btn-warning" href="/indicators/indicator_update/'+row.id+'">Edit</a><br><a type="button" class="btn btn-default" href="/indicators/data/'+row.id+'">View</a></div>';
-                   }
-                }],
-                columns: [
-                    { title: "Edit"},
-                    { title: "WorkflowLevel1", data: "program__name",
-                      "defaultContent": "<i>Not set</i>"},
-                    { title: "Indicator", data: "name",
-                      "defaultContent": "<i>Not set</i>",
-                            "mRender": function (data, type, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
-                            }
-                        },
-                    { title: "Level", data: "level__name",
-                    "defaultContent": "<i>Not set</i>"
-                },
-                    { title: "Type", data: "indicator_type__indicator_type",
-                      "defaultContent": "<i>Not set</i>"},
-                    { title: "Sector", data: "sector__sector",
-                      "defaultContent": "<i>Not set</i>"},
-                    { title: "Disaggregation", data: "disaggregation__disaggregation_type",
-                      "defaultContent": "<i>Not set</i>"},
-                    { title: "Method of Analysis", data: "method_of_analysis",
-                      "defaultContent": "<i>Not set</i>"},
-                    { title: "source", data: "source",
-                      "defaultContent": "<i>Not set</i>"},
-                    { title: "Reporting Frequency", data: "reporting_frequency__frequency",
-                      "defaultContent": "<i>Not set</i>"},
-                    { title: "Baseline", data: "baseline",
-                        "defaultContent": "<i>Not set</i>"},
-                    { title: "LOP Target", data: "lop_target",
-                        "defaultContent": "<i>Not set</i>"},
-                    { title: "External", data: "external_service_record__external_service__name",
-                    "defaultContent": "<i>Not set</i>"},
-                    { title: "Supporting Data", data: "collecteddata",
-                              "mRender": function (data, type, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/indicators/collecteddata/0/' + row.id + '/0/">Collected Data</a>';
-                              }
-                        },
-                    { title: "Key Performance Indicators",data: "key_performance_indicator",
-                    "defaultContent": "<i>Not set</i>"},
-                    { title: "Means of Verification",data: "means_of_verification",
-                    "defaultContent": "<i>Not set</i>"},
-                    { title: "Create Date",data: "create_date",
-                    "defaultContent": "<i>Not set</i>"},
-                    { title: "Edit Date",data: "edit_date",
-                    "defaultContent": "<i>Not set</i>"}
-                    ]
-            } );
-
-        }
-
-        // INDICATOR REPORT
-        function indicator_report() {
-            // get the workflowlevel1 and indicator id from the url
-            // get the workflowlevel1 and indicator id from the url
-            program_id = document.URL.split('/')[5];
-            indicator_id = document.URL.split('/')[6];
-            type_id = document.URL.split('/')[7];
-              $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id, function(data) {
-                show_indicator_table(data);
-              });
-        }
-
-
-        $('#search-form').on('submit', function(event){
-          event.preventDefault();
-          program_id = document.URL.split('/')[5];
-          indicator_id = document.URL.split('/')[6];
-          type_id = document.URL.split('/')[7];
-
-          search = $('#id_search').val();
-          $.getJSON("/indicators/report_table/"+program_id+"/"+indicator_id+"/"+type_id+'/?search='+search, function(data) {
-                show_indicator_table(data);
-            });
-
-        });
-
-        indicator_report();
-  })
-</script>
-<div class="row">
-        <div class="row table-responsive">
-            <div id="program_table_div">
-                <table class="table table-bordered" id="data_table">
-                </table>
-            </div>
-            <br/>
-            <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
-        </div>
-        <div class"row">
-          <button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/indicators/export/0/{{ program }}/0/'">Export All</button>
-        </div>
+    <div style="display: none;">
+        <span class="filter" id="indicator_filter_value"></span>
+        <span class="filter" id="program_filter_value"></span>
+        <span class="filter" id="type_filter_value"></span>
     </div>
 
-<br/>
+    <script type="text/javascript">
+        var table;
+        $(document).ready(function(){
+            $.fn.dataTable.ext.search.push(
+                function( settings, data, dataIndex ) {
+                    var programId = $("#program_filter_value").data('programid');
+                    var programIdInTable = parseInt(data[1]) || 0;
 
+                    var indicatorId = $("#indicator_filter_value").data('indicatorid');
+                    var indicatorIdInTable = parseInt(data[2]) || 0;
 
-<script type="text/javascript">
-    function program_filter(program_id) {
-      window.location.href = '/indicators/report/'+program_id+'/0/0/';
-      }
+                    var typeId = $("#type_filter_value").data('typeid');
+                    var typeIdInTable = parseInt(data[3]) || 0;
 
-    function indicator_filter(indicator) {
-      window.location.href = '/indicators/report/0/'+indicator+'/0';
+                    if (programId == 0) programId = undefined;
+                    if (indicatorId == 0) indicatorId = undefined;
+                    if (typeId == 0) typeId = undefined;
+
+                    if (
+                        ( isNaN(programId) && isNaN(indicatorId) && isNaN(typeId) ) ||
+                        ( isNaN(programId) && isNaN(indicatorId) && typeId == typeIdInTable) ||
+                        ( isNaN(programId) && indicatorId == indicatorIdInTable && isNaN(typeId)) ||
+                        ( isNaN(programId) && indicatorId == indicatorIdInTable && typeId == typeIdInTable) ||
+                        ( programId == programIdInTable && isNaN(indicatorId) && isNaN(typeId)) ||
+                        ( programId == programIdInTable && isNaN(indicatorId) && typeId == typeIdInTable) ||
+                        ( programId == programIdInTable && indicatorId == indicatorIdInTable && isNaN(typeId) ) ||
+                        ( programId == programIdInTable && indicatorId == indicatorIdInTable && typeId == typeIdInTable)
+                        )
+                    {
+                        return true; //
+                    }
+                    //if ((indicatorIdInTable == indicatorId)|| (indicatorId == undefined)) return true;
+                    return false;
+                }
+            );
+            var indicator_records = {{ data | safe}};
+            table = $('#data_table').DataTable({
+                dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                buttons: [
+                    {
+                        extend: 'csv',
+                        text: 'Export to CSV',
+                        exportOptions: { columns: "thead th:not(.noExport)" }
+                    }
+                ],
+                retrieve: true,
+                data: indicator_records,
+                'columnDefs': [
+                    {
+                        'targets': 0,
+                        'searchable':false,
+                        'orderable':false,
+                        'className': 'dt-body-center noExport',
+                        'render': function (data, type, row){
+                            return '<div class="btn-group btn-group-xs"><a type="button" class="btn btn-warning" href="/indicators/indicator_update/'+row.id+'">Edit</a><br><a type="button" class="btn btn-default" href="/indicators/data/'+row.id+'">View</a></div>';
+                        }
+                    },
+                    {
+                        "targets": [1],
+                        "visible": false,
+                        'className': 'noExport',
+                    },
+                    {
+                        "targets": [2],
+                        "visible": false,
+                        'className': 'noExport',
+                    },{
+                        "targets": [3],
+                        "visible": false,
+                        'className': 'noExport',
+                    }
+                ],
+                columns: [
+                    { title: "Edit"},
+                    { title: "PID", data: "program__id"},
+                    { title: "IID", data: "id"},
+                    { title: "ITID", data: "indicator_type__id"},
+                    { title: "Program", data: "program__name", "defaultContent": "<i>Not set</i>"},
+                    { title: "Indicator", data: "name", "defaultContent": "<i>Not set</i>",
+                        "mRender": function (data, type, row) {
+                            return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
+                        }
+                    },
+                    { title: "Level", data: "level__name", "defaultContent": "<i>Not set</i>" },
+                    { title: "Type", data: "indicator_type__indicator_type", "defaultContent": "<i>Not set</i>"},
+                    { title: "Sector", data: "sector__sector", "defaultContent": "<i>Not set</i>"},
+                    { title: "Disaggregation", data: "disaggregation__disaggregation_type", "defaultContent": "<i>Not set</i>"},
+                    { title: "Method of Analysis", data: "method_of_analysis", "defaultContent": "<i>Not set</i>"},
+                    { title: "source", data: "source", "defaultContent": "<i>Not set</i>"},
+                    { title: "Reporting Frequency", data: "reporting_frequency__frequency", "defaultContent": "<i>Not set</i>"},
+                    { title: "Baseline", data: "baseline", "defaultContent": "<i>Not set</i>"},
+                    { title: "LOP Target", data: "lop_target", "defaultContent": "<i>Not set</i>"},
+                    { title: "External", data: "external_service_record__external_service__name", "defaultContent": "<i>Not set</i>"},
+                    { title: "Supporting Data", data: "collecteddata",
+                        "mRender": function (data, type, row) {
+                            return '<a class="collecteddata" name=' + row.id + ' href="/indicators/collecteddata/0/' + row.id + '/0/">Collected Data</a>';
+                        }
+                    },
+                    { title: "Key Performance Indicators",data: "key_performance_indicator", "defaultContent": "<i>Not set</i>"},
+                    { title: "Means of Verification",data: "means_of_verification", "defaultContent": "<i>Not set</i>"},
+                    { title: "Create Date",data: "create_date", "defaultContent": "<i>Not set</i>"},
+                    { title: "Edit Date",data: "edit_date", "defaultContent": "<i>Not set</i>"}
+                ]
+            });
+        });
+        function program_filter(program_id) {
+            $("#program_filter_value").data('programid', program_id);
+            table.draw();
         }
 
-    function indicator_type_filter(type) {
-      program_id = document.URL.split('/')[5];
-      indicator_id = document.URL.split('/')[6];
-      type_id = document.URL.split('/')[7];
-      window.location.href = '/indicators/report/'+program_id+'/'+indicator_id+'/'+type;
-      }
+        function indicator_filter(indicator) {
+            $("#indicator_filter_value").data("indicatorid", indicator);
+            table.draw();
+        }
 
- </script>
+        function indicator_type_filter(type) {
+            $("#type_filter_value").data('typeid', type);
+            table.draw();
+        }
+    </script>
+
+    <div class="table-responsive">
+        <div id="program_table_div">
+            <table class="table table-bordered" id="data_table">
+            </table>
+        </div>
+
+        <br/>
+
+        <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
+    </div>
 
 {% endblock content %}
