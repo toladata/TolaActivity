@@ -9,7 +9,7 @@
         <th>&nbsp;</th>
     </tr>
     {% for indicator in indicators|dictsort:"levels" %}
-    <tr>
+    <tr {% if indicator.just_created %} style="background-color: lightyellow;" {% endif %} >
         <td>{{ indicator.indicator_types}}</td>
         <td>{{ indicator.levels }}</td>
         <td>

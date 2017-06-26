@@ -1,7 +1,13 @@
 from django.db import models
 from django.contrib import admin
+<<<<<<< HEAD
 from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser
 from datetime import datetime
+=======
+from workflow.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
+from datetime import datetime, timedelta
+from django.utils import timezone
+>>>>>>> a58f5be... #630 highlight indicators created in the last 5 minutes
 import uuid
 from simple_history.models import HistoricalRecords
 from decimal import Decimal
@@ -288,6 +294,12 @@ class Indicator(SecurityModel):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Indicator, self).save(*args, **kwargs)
+
+    @property
+    def just_created(self):
+        if self.create_date >= timezone.now() - timedelta(minutes=5):
+            return True
+        return False
 
     @property
     def name_clean(self):
