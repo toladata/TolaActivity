@@ -270,7 +270,7 @@ $(function () {
     {% for approval in user_pending_approvals %}
         <div class="alert alert-success fade in">
                 <a class="close" data-dismiss="alert" href="#">&times;</a>
-                <p>You have {{user_pending_approvals|length}} {{ WORKFLOWLEVEL2 }}  to <a href="/workflow/projectagreement_update/{{approval.id}}/#approval">approve</a></p>
+                <p>Project Initiation, <span class="label label-success">{{approval}}</span>, is awaiting your <a href="/workflow/projectagreement_update/{{approval.id}}/#approval">approval</a></p>
         </div>
     {% endfor %}
         <br />
