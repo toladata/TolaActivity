@@ -7,15 +7,17 @@ import os
 try:
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv('TOLA_DB_ENGINE'),
-            'NAME': os.getenv('TOLA_DB_NAME'),
-            'USER': os.getenv('TOLA_DB_USER'),
-            'PASSWORD': os.getenv('TOLA_DB_PASS'),
-            'HOST': os.getenv('TOLA_DB_HOST'),
-            'PORT': os.getenv('TOLA_DB_PORT'),
+            'ENGINE': os.environ["TOLA_DB_ENGINE"],
+            'NAME': os.environ["TOLA_DB_NAME"],
+            'USER': os.environ["TOLA_DB_USER"],
+            'PASSWORD': os.environ["TOLA_DB_PASS"],
+            'HOST': os.environ["TOLA_DB_HOST"],
+            'PORT': os.environ["TOLA_DB_PORT"],
         }
     }
 except KeyError:
+    # Fallback for tests without environment variables configured
+    # Depends on os.environ for correct functionality
     # TODO log this
     DATABASES = {
         'default': {
@@ -23,6 +25,10 @@ except KeyError:
             "NAME": ":memory:",
         }
     }
+
+# Hosts/domain names that are valid for this site
+if os.getenv('TOLA_HOSTNAME') is not None:
+    ALLOWED_HOSTS = [os.getenv('TOLA_HOSTNAME')]
 
 from os.path import join, normpath
 
@@ -39,7 +45,7 @@ MANAGERS = ADMINS
 
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = True
+DEBUG = True if os.getenv('TOLA_DEBUG') == 'True' else False
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
 #TEMPLATE_DEBUG = DEBUG
