@@ -18,7 +18,13 @@
         //Searchable select option for service indicator
         $(document).ready(function() {
             /* add select2 js library to the indicator select box */
+<<<<<<< HEAD
             $("#id_workflowlevel1").select2().attr('disabled','disabled');;
+=======
+            $("#id_program").select2().on("select2:selecting select2:unselecting", function(e) {
+                e.preventDefault();
+            });
+>>>>>>> fed68a2... #624 making program multi-select disabled was causing form validation error
             $("#id_strategic_objectives").select2();
         });
     </script>
