@@ -1,6 +1,14 @@
 {% block content %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link href="{{ STATIC_URL }}css/app.css" rel="stylesheet" type="text/css">
+
+    <!-- App specific Javascript -->
+    <script type="text/javascript" src="{{ STATIC_URL }}js/app.js"></script>
+
+
     <script type="text/javascript">
         //Searchable select option for service indicator
         $(document).ready(function() {

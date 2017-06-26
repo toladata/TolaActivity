@@ -13,19 +13,17 @@ function loadCollected(indicator,workflowlevel1){
     $.get('/indicators/collected_data_table/' + indicator + '/' + workflowlevel1 + '/', function(data){
         $('#hidden-' + indicator).html(data);
     });
-    $('.ajaxLoader').hide();
 };
 
 /*
 *  Load the collected data for an indicator on the results page
 */
-function loadIndicators(workflowlevel1,indicator,type){
+
+function loadIndicators(program,indicator,type){
     var workflowlevel1;
-    $('.ajaxLoader').show();
     $.get('/indicators/program_indicators/' + workflowlevel1 + '/' + indicator + '/' + type + '/', function(data){
-        $('#hidden-' + workflowlevel1).html(data);
+        $('#hidden-' + program).html(data);
       });
-    $('.ajaxLoader').hide();
     $('#hidden-' + workflowlevel1).on('shown', function () {
        $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
     });
@@ -148,6 +146,7 @@ function loadIndicators(workflowlevel1,indicator,type){
     });
 
     function submitForm(form_url, form_data) {
+        $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
         $.ajax({
             method: 'POST',
             url: form_url,
@@ -161,10 +160,10 @@ function loadIndicators(workflowlevel1,indicator,type){
                 return;
             }
             var json = $.parseJSON(jqXHR.responseText);
+            $("#modalmessages").html('');
             createAlert("success", "Success, form data saved.", true, "#modalmessages");
             var item = $.parseJSON(data);
             $("#id_achieved").val(item[0]['fields']['achieved']);
-            //console.log(item[0]);
         });
     }
 
