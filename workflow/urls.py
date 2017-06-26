@@ -66,7 +66,7 @@ urlpatterns = [
 
                        url(r'^contact_list/(?P<pk>\w+)/$', ContactList.as_view(), name='contact_list'),
                        url(r'^contact_add/(?P<id>\w+)/$', ContactCreate.as_view(), name='contact_add'),
-                       url(r'^contact_update/(?P<pk>\w+)/$', ContactUpdate.as_view(), name='contact_update'),
+                       url(r'^contact_update/(?P<stakeholder_id>\w+)/(?P<pk>\w+)/$', ContactUpdate.as_view(), name='contact_update'),
                        url(r'^contact_delete/(?P<pk>\w+)/$', ContactDelete.as_view(), name='contact_delete'),
 
                        url(r'^checklistitem_list/(?P<pk>\w+)/$', ChecklistItemList.as_view(), name='checklistitem_list'),

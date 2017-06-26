@@ -1441,6 +1441,7 @@ class ContactUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ContactUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+        context.update({'stakeholder_id': self.kwargs['stakeholder_id']})
         return context
 
     def form_invalid(self, form):
