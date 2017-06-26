@@ -1774,11 +1774,12 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
         return super(BudgetCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        initial = {
-            'agreement': self.kwargs['id'],
-            }
-
+        if self.request.GET.get('is_it_project_complete_form', None):
+            initial = {'complete': self.kwargs['id']}
+        else:
+            initial = {'agreement': self.kwargs['id']}
         return initial
+
     def get_form_kwargs(self):
         kwargs = super(BudgetCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
