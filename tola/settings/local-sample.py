@@ -90,6 +90,13 @@ DEV_APPS = (
 
 INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
 
+
+DEV_MIDDLEWARE = (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+)
+
+MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + DEV_MIDDLEWARE
+
 ######## If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = False
 OFFLINE_MODE = True
