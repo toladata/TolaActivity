@@ -135,6 +135,8 @@ class CollectedDataForm(forms.ModelForm):
         model = CollectedData
         exclude = ['create_date', 'edit_date']
 
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Program'}) )
+    indicator2 = forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Indicator'}) )
     date_collected = forms.DateField(widget=DatePicker.DateInput(), required=True)
 
     def __init__(self, *args, **kwargs):
@@ -160,7 +162,7 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'targeted', 'achieved', 'date_collected','indicator', 'workflowlevel1','description','site',
+                'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'targeted', 'achieved', 'description',
 
             ),
 
@@ -288,10 +290,15 @@ class CollectedDataForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
-
+        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        self.fields['program2'].initial = self.program
+        self.fields['program2'].label = "Program"
+        self.fields['indicator2'].initial = self.indicator
+        self.fields['indicator2'].label = "Indicator"
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['indicator'].widget = forms.HiddenInput()
         #override the program queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
-        self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False,workflowlevel1__country__in=countries)
+        #self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
         self.fields['tola_table'].queryset = TolaTable.objects.filter(Q(owner=self.request.user) | Q(id=self.tola_table))

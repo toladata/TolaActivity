@@ -505,6 +505,7 @@ class CollectedDataUpdate(UpdateView):
         kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
         kwargs['workflowlevel1'] = get_data.workflowlevel1
+        kwargs['indicator'] = get_data.indicator
         if get_data.tola_table:
             kwargs['tola_table'] = get_data.tola_table.id
         else:
@@ -751,25 +752,18 @@ def indicator_report(request, workflowlevel1=0, indicator=0, type=0):
     :return:
     """
     countries = getCountry(request.user)
-<<<<<<< HEAD
+
     getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-
-    getIndicators = []
-
-    if workflowlevel1 != 0:
-        getIndicators = Indicator.objects.filter(workflowlevel1__id= workflowlevel1)
-=======
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicatorTypes = IndicatorType.objects.all()
 
     filters = {}
-    if int(program) != 0:
-        filters['program__id'] = program
+    if int(workflowlevel1) != 0:
+        filters['program__id'] = workflowlevel1
     if int(type) != 0:
         filters['indicator_type'] = type
     if int(indicator) != 0:
         filters['id'] = indicator
-    if program == 0 and type == 0:
+    if workflowlevel1 == 0 and type == 0:
         filters['program__country__in'] = countries
 
     indicator_data = Indicator.objects.filter(**filters)\
@@ -783,23 +777,17 @@ def indicator_report(request, workflowlevel1=0, indicator=0, type=0):
                    'means_of_verification','data_collection_method',\
                    'reporting_frequency__frequency','create_date','edit_date',\
                    'source','method_of_analysis')
->>>>>>> 9e4c07c... #641 make reports look n feel more consistent
 
     data = json.dumps(list(indicator_data), cls=DjangoJSONEncoder)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-<<<<<<< HEAD
-    return render(request, "indicators/report.html",
-                  {'workflowlevel1': workflowlevel1, 'getPrograms': getPrograms, 'form': FilterForm(), 'helper': FilterForm.helper,
-                   'getIndicatorTypes': getIndicatorTypes, 'getIndicators': getIndicators})
-=======
+
     return render(request, "indicators/report.html", {
-                  'program': program,
+                  'workflowlevel1': workflowlevel1,
                   'getPrograms': getPrograms,
                   'getIndicatorTypes': getIndicatorTypes,
                   'getIndicators': indicator_data,
                   'data': data})
->>>>>>> 9e4c07c... #641 make reports look n feel more consistent
 
 
 class IndicatorReport(View, AjaxableResponseMixin):
@@ -824,20 +812,12 @@ class IndicatorReport(View, AjaxableResponseMixin):
         if workflowlevel1 == 0 and type == 0:
             filters['workflowlevel1__country__in'] = countries
 
-<<<<<<< HEAD
-        getIndicators = Indicator.objects.filter(**filters).select_related(\
-            'workflowlevel1', 'external_service_record','indicator_type', 'sector', \
-            'disaggregation', 'reporting_frequency').\
-            values('id','workflowlevel1__name','baseline','level__name','lop_target',\
-                   'workflowlevel1__id','external_service_record__external_service__name',\
-=======
         getIndicators = Indicator.objects.filter(**filters)\
             .prefetch_related('sector')\
-            .select_related('program', 'external_service_record','indicator_type',\
+            .select_related('workflowlevel1', 'external_service_record','indicator_type',\
                 'disaggregation', 'reporting_frequency')\
             .values('id','program__name','baseline','level__name','lop_target',\
                    'program__id','external_service_record__external_service__name',\
->>>>>>> 9e4c07c... #641 make reports look n feel more consistent
                    'key_performance_indicator','name','indicator_type__indicator_type',\
                    'sector__sector','disaggregation__disaggregation_type',\
                    'means_of_verification','data_collection_method',\
