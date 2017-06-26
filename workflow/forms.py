@@ -6,7 +6,7 @@ from django.forms import HiddenInput
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact, Sector
+from .models import WorkflowLevel1, WorkflowLevel2, WorkflowLevel3, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact, Sector
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -158,6 +158,8 @@ class ProjectAgreementForm(forms.ModelForm):
     documentation_government_approval = forms.CharField(help_text="Check the box if there IS documentation to show government request for or approval of the project. This should be attached to the proposal, and also kept in the program file.", widget=forms.Textarea, required=False)
     description_of_community_involvement = forms.CharField(help_text="How the community is involved in the planning, approval, or implementation of this project should be described. Indicate their approval (copy of a signed MOU, or their signed Project Prioritization request, etc.). But also describe how they will be involved in the implementation - supplying laborers, getting training, etc.", widget=forms.Textarea, required=False)
 
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+
     approval = forms.ChoiceField(
         choices=APPROVALS,
         initial='in progress',
@@ -184,7 +186,7 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details', 'activity_code','account_code','lin_code','office', 'sector','program', 'project_name', 'project_activity',
+                    Fieldset('Project Details', 'program', 'program2', 'activity_code','account_code','lin_code','office', 'sector', 'project_name', 'project_activity',
                              'project_type', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date',
                         ),
                     ),
@@ -414,7 +416,12 @@ class ProjectAgreementForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].initial = self.instance.program
+        self.fields['program2'].label = "Program"
+
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
@@ -476,6 +483,8 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
     documentation_government_approval = forms.CharField(help_text="Check the box if there IS documentation to show government request for or approval of the project. This should be attached to the proposal, and also kept in the program file.", widget=forms.Textarea, required=False)
     description_of_community_involvement = forms.CharField(help_text="How the community is involved in the planning, approval, or implementation of this project should be described. Indicate their approval (copy of a signed MOU, or their signed Project Prioritization request, etc.). But also describe how they will be involved in the implementation - supplying laborers, getting training, etc.", widget=forms.Textarea, required=False)
 
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+
     approval = forms.ChoiceField(
         choices=APPROVALS,
         initial='in progress',
@@ -502,7 +511,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details', 'activity_code','office', 'sector','program', 'project_name',
+                    Fieldset('Project Details', 'program', 'program2', 'activity_code','office', 'sector', 'project_name',
                              'site','stakeholder','expected_start_date','expected_end_date',
                         ),
 
@@ -660,7 +669,10 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].initial = self.instance.program
+        self.fields['program2'].label = "Program"
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
@@ -1467,7 +1479,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         countries = getCountry(self.request.user)
 
         self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
-        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
+        self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(program__country__in=countries)
         #self.fields['program'].widget.attrs['disabled'] = "disabled"
         self.fields['program'].widget = HiddenInput()
         self.fields['agreement'].widget = HiddenInput()
