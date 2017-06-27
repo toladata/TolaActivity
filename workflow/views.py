@@ -1,3 +1,6 @@
+import operator
+import unicodedata
+
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -30,7 +33,6 @@ from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.generic.detail import View
-
 
 from django.contrib.sites.shortcuts import get_current_site
 
@@ -125,8 +127,12 @@ class ProgramDash(ListView):
         if self.kwargs.get('status', None):
 
             status = self.kwargs['status']
-            if status == "in progress":
+            if status == "in_progress":
                 getDashboard.filter(Q(agreement__approval=self.kwargs['status']) | Q(agreement__approval=None))
+
+            elif status == "new":
+                getDashboard.filter(Q(Q(agreement__approval=None) | Q(agreement__approval="")))
+
             else:
                 getDashboard.filter(agreement__approval=self.kwargs['status'])
         else:
@@ -155,7 +161,7 @@ class ProjectAgreementList(ListView):
         elif self.kwargs['status'] != 'none':
             getDashboard = ProjectAgreement.objects.all().filter(approval=self.kwargs['status'])
             return render(request, self.template_name, {'form': FilterForm(), 'getDashboard':getDashboard,'getPrograms':getPrograms,'APPROVALS': APPROVALS})
- 
+
         else:
             getDashboard = ProjectAgreement.objects.all().filter(program__country__in=countries)
 
@@ -348,7 +354,7 @@ class ProjectAgreementUpdate(UpdateView):
         country = getProgram.country
 
         #convert form field unicode project name to ascii safe string for email content
-        import unicodedata
+
         project_name = unicodedata.normalize('NFKD', form.instance.project_name).encode('ascii','ignore')
         #check to see if the approval status has changed
         if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
@@ -433,7 +439,7 @@ class ProjectAgreementDetail(DetailView):
 
         try:
             getQuantitativeOutputs = CollectedData.objects.all().filter(agreement__id=self.kwargs['pk'])
-            
+
         except CollectedData.DoesNotExist:
             getQuantitativeOutputs = None
         context.update({'getQuantitativeOutputs': getQuantitativeOutputs})
@@ -446,7 +452,7 @@ class ProjectAgreementDelete(DeleteView):
     Project Agreement Delete
     """
     model = ProjectAgreement
-    success_url = 'workflow/dashboard/0/'
+    success_url = '/workflow/dashboard/0/'
 
     @method_decorator(group_required('Country',url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -513,7 +519,7 @@ class ProjectCompleteCreate(CreateView):
     #get shared data from project agreement and pre-populate form with it
     def get_initial(self):
         getProjectAgreement = ProjectAgreement.objects.get(id=self.kwargs['pk'])
-        pre_initial = {
+        initial = {
             'approved_by': self.request.user,
             'approval_submitted_by': self.request.user,
             'program': getProjectAgreement.program,
@@ -526,21 +532,21 @@ class ProjectCompleteCreate(CreateView):
             'expected_end_date': getProjectAgreement.expected_end_date,
             'expected_duration': getProjectAgreement.expected_duration,
             'estimated_budget': getProjectAgreement.total_estimated_budget,
+            'short': getProjectAgreement.short,
         }
 
         try:
-            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
-            site = {'site': [o for o in getSites], }
-            initial = pre_initial.copy()
-            initial.update(site)
+            getSites = SiteProfile.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id', flat=True)
+            site = {'site': [o for o in getSites] }
+            initial['site'] = getSites
+
         except SiteProfile.DoesNotExist:
             getSites = None
 
         try:
             getStakeholder = Stakeholder.objects.filter(projectagreement__id=getProjectAgreement.id).values_list('id',flat=True)
             stakeholder = {'stakeholder': [o for o in getStakeholder], }
-            initial = pre_initial.copy()
-            initial.update(stakeholder)
+            initial['stakeholder'] = stakeholder
         except Stakeholder.DoesNotExist:
             getStakeholder = None
 
@@ -615,30 +621,32 @@ class ProjectCompleteUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
         getComplete = ProjectComplete.objects.get(id=self.kwargs['pk'])
-        id = getComplete.project_agreement_id
-        context.update({'id': id})
+        #id = getComplete.project_agreement_id
+
+        context.update({'id': getComplete.pk})
         context.update({'p_name': getComplete.project_name})
         context.update({'p_complete_program': getComplete.program})
         pk = self.kwargs['pk']
         context.update({'pk': pk})
+        context.update({'project_id':getComplete.project_agreement_id})
 
         # get budget data
         try:
-            getBudget = Budget.objects.all().filter(agreement__id=getComplete.project_agreement_id)
+            getBudget = Budget.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk))
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
 
         # get Quantitative data
         try:
-            getQuantitative = CollectedData.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('indicator')
+            getQuantitative = CollectedData.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk)).order_by('indicator')
         except CollectedData.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
 
         # get benchmark or project components
         try:
-            getBenchmark = Benchmarks.objects.all().filter(agreement__id=getComplete.project_agreement_id).order_by('description')
+            getBenchmark = Benchmarks.objects.all().filter(Q(agreement__id=getComplete.project_agreement_id) | Q(complete__id=getComplete.pk)).order_by('description')
         except Benchmarks.DoesNotExist:
             getBenchmark = None
         context.update({'getBenchmark': getBenchmark})
@@ -711,25 +719,24 @@ class ProjectCompleteDetail(DetailView):
 
         context = super(ProjectCompleteDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
-        try:
-            data = ProjectComplete.objects.all().filter(project_agreement__id=self.kwargs['pk'])
-        except ProjectComplete.DoesNotExist:
-            data = None
-        """
-        getData = serializers.serialize('python', data)
-        #return just the fields and skip the object name
-        justFields = [d['fields'] for d in getData]
-        #temp name fiels
-        jsonData =json.dumps(justFields, default=date_handler)
-        context.update({'jsonData': jsonData})
-        """
+
         context.update({'id':self.kwargs['pk']})
 
         try:
-            getBenchmark = Benchmarks.objects.all().filter(complete__id=self.kwargs['pk'])
+            q_list = [Q(agreement__id=self.kwargs['pk'])]
+            if self.get_object():
+                q_list.append(Q(complete__id=self.get_object().pk))
+            getBenchmark = Benchmarks.objects.filter(reduce(operator.or_, q_list))
         except Benchmarks.DoesNotExist:
             getBenchmark = None
-        context.update({'getBenchmarks': getBenchmark})
+
+        q_list = [Q(agreement__id=self.kwargs['pk']) ]
+        if self.get_object():
+            q_list.append( Q(complete__id=self.get_object().pk))
+        budgetContribs = Budget.objects.filter(reduce(operator.or_, q_list))
+
+        context['budgetContribs'] = budgetContribs
+        context['getBenchmarks'] =  getBenchmark
 
         return context
 
@@ -1036,6 +1043,33 @@ class DocumentationDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DocumentationForm
+
+class IndicatorDataBySite(ListView):
+    template_name = 'workflow/site_indicatordata.html'
+    context_object_name = 'collecteddata'
+
+    def get_context_data(self, **kwargs):
+        context = super(IndicatorDataBySite, self).get_context_data(**kwargs)
+        context['site'] = SiteProfile.objects.get(pk=self.kwargs.get('site_id'))
+        return context
+
+    def get_queryset(self):
+        q = CollectedData.objects.filter(site__id = self.kwargs.get('site_id')).order_by('program', 'indicator')
+        return q
+
+
+class ProjectCompleteBySite(ListView):
+    template_name = 'workflow/site_projectcomplete.html'
+    context_object_name = 'projects'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectCompleteBySite, self).get_context_data(**kwargs)
+        context['site'] = SiteProfile.objects.get(pk=self.kwargs.get('site_id'))
+        return context
+
+    def get_queryset(self):
+        q = ProjectComplete.objects.filter(site__id = self.kwargs.get('site_id')).order_by('program')
+        return q
 
 
 class SiteProfileList(ListView):
@@ -1380,16 +1414,11 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
         return context
 
     def get_initial(self):
-        try:
-            getComplete = ProjectComplete.objects.get(project_agreement__id=self.kwargs['id'])
-            initial = {
-                'agreement': self.kwargs['id'],
-                'complete': getComplete.id,
-                }
-        except ProjectComplete.DoesNotExist:
-            initial = {
-                'agreement': self.kwargs['id'],
-                }
+
+        if self.request.GET.get('is_it_project_complete_form', None):
+            initial = { 'complete': self.kwargs['id'] }
+        else:
+            initial = { 'agreement': self.kwargs['id'] }
 
         return initial
 
@@ -1487,14 +1516,14 @@ class ContactList(ListView):
 
         try:
             getStakeholder = Stakeholder.objects.get(id=stakeholder_id)
-    
+
         except Exception, e:
             pass
 
         if int(self.kwargs['pk']) == 0:
             countries=getCountry(request.user)
             getContacts = Contact.objects.all().filter(country__in=countries)
-            
+
         else:
             #getContacts = Contact.objects.all().filter(stakeholder__projectagreement=project_agreement_id)
             getContacts = Stakeholder.contact.through.objects.filter(stakeholder_id = stakeholder_id)
@@ -1507,6 +1536,7 @@ class ContactCreate(CreateView):
     Contact Form
     """
     model = Contact
+    stakeholder_id = None
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1519,6 +1549,7 @@ class ContactCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super(ContactCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
+        context.update({'stakeholder_id': self.kwargs['stakeholder_id']})
         return context
 
     def get_initial(self):
@@ -1540,7 +1571,7 @@ class ContactCreate(CreateView):
         form.save()
         messages.success(self.request, 'Success, Contact Created!')
         latest = Contact.objects.latest('id')
-        redirect_url = '/workflow/contact_update/' + str(latest.id)
+        redirect_url = '/workflow/contact_update/' + self.kwargs['stakeholder_id'] + '/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = ContactForm
@@ -1563,6 +1594,7 @@ class ContactUpdate(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ContactUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+        context.update({'stakeholder_id': self.kwargs['stakeholder_id']})
         return context
 
     def form_invalid(self, form):
@@ -1786,12 +1818,20 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
         return super(QuantitativeOutputsCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
-        initial = {
-            'agreement': self.kwargs['id'],
-            'program': getProgram.id,
-            }
+        getProgram = None
 
+        if self.request.GET.get('is_it_project_complete_form', None):
+            getProgram = Program.objects.get(complete__id = self.kwargs['id'])
+            initial = {
+                        'complete': self.kwargs['id'],
+                        'program': getProgram.id,
+                      }
+        else:
+            getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
+            initial = {
+                        'agreement': self.kwargs['id'],
+                        'program': getProgram.id,
+                      }
         return initial
 
     def form_invalid(self, form):
@@ -1920,11 +1960,12 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
         return super(BudgetCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        initial = {
-            'agreement': self.kwargs['id'],
-            }
-
+        if self.request.GET.get('is_it_project_complete_form', None):
+            initial = {'complete': self.kwargs['id']}
+        else:
+            initial = {'agreement': self.kwargs['id']}
         return initial
+
     def get_form_kwargs(self):
         kwargs = super(BudgetCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
@@ -1937,7 +1978,11 @@ class BudgetCreate(AjaxableResponseMixin, CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        form.save()
+        obj = form.save()
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [obj])
+            return HttpResponse(data)
+
         messages.success(self.request, 'Success, Budget Created!')
         form = ""
         return self.render_to_response(self.get_context_data(form=form))
@@ -1964,7 +2009,7 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
         return self.render_to_response(self.get_context_data(form=form))
-        
+
     # add the request to the kwargs
     def get_form_kwargs(self):
         kwargs = super(BudgetUpdate, self).get_form_kwargs()
@@ -1972,7 +2017,11 @@ class BudgetUpdate(AjaxableResponseMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        form.save()
+        obj = form.save()
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [obj])
+            return HttpResponse(data)
+
         messages.success(self.request, 'Success, Budget Output Updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -2222,19 +2271,19 @@ class ReportData(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         countries=getCountry(request.user)
-
+        filters = {}
         if int(self.kwargs['pk']) != 0:
-            getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk']).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
-
+            filters['program__id'] = self.kwargs['pk']
         elif self.kwargs['status'] != 'none':
-            getAgreements = ProjectAgreement.objects.all().filter(approval=self.kwargs['status']).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
+            filters['approval'] = self.kwargs['status']
         else:
-            getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries).values('id', 'program__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
+            filters['program__country__in'] = countries
 
-        from django.core.serializers.json import DjangoJSONEncoder
+        getAgreements = ProjectAgreement.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
+                'program__name', 'project_name','site', 'activity_code', 'office__name', \
+                'project_name', 'sector__sector', 'project_activity', 'project_type__name', \
+                'account_code', 'lin_code','estimated_by__name','total_estimated_budget',\
+                'mc_estimated_budget','total_estimated_budget')
 
         getAgreements = json.dumps(list(getAgreements), cls=DjangoJSONEncoder)
 
@@ -2307,9 +2356,9 @@ def export_stakeholders_list(request, **kwargs):
     countries = getCountry(request.user)
 
     if program_id != 0:
-        getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct()
+        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(projectagreement__program__id=program_id).distinct()
     else:
-        getStakeholders = Stakeholder.objects.all().filter(country__in=countries)
+        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(country__in=countries)
 
     dataset = StakeholderResource().export(getStakeholders)
     response = HttpResponse(dataset.csv, content_type='application/ms-excel')
@@ -2353,14 +2402,14 @@ class StakeholderObjects(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
 
         if program_id != 0:
-            getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement__program__id=program_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
         elif int(self.kwargs['pk']) != 0:
-            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
 
         else:
-            getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sector__sector')
+            getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
 
         getStakeholders = json.dumps(list(getStakeholders), cls=DjangoJSONEncoder)

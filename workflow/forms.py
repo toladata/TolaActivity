@@ -2,10 +2,11 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Field
+from django.forms import HiddenInput
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact
+from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact, Sector
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -86,15 +87,16 @@ class BudgetForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement',
+            Field('contributor', required=False), Field('description_of_contribution', required=False), PrependedAppendedText('proposed_value','$', '.00'), 'agreement', 'complete',
         )
 
 
         super(BudgetForm, self).__init__(*args, **kwargs)
-        
-        countries = getCountry(self.request.user)
+        self.fields['agreement'].widget = forms.HiddenInput()#TextInput()
+        self.fields['complete'].widget = forms.HiddenInput()#TextInput()
+        #countries = getCountry(self.request.user)
 
-        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
+        #self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
 
     def save(self, *args, **kwargs):
         # Commit is already set to false
@@ -156,6 +158,8 @@ class ProjectAgreementForm(forms.ModelForm):
     documentation_government_approval = forms.CharField(help_text="Check the box if there IS documentation to show government request for or approval of the project. This should be attached to the proposal, and also kept in the program file.", widget=forms.Textarea, required=False)
     description_of_community_involvement = forms.CharField(help_text="How the community is involved in the planning, approval, or implementation of this project should be described. Indicate their approval (copy of a signed MOU, or their signed Project Prioritization request, etc.). But also describe how they will be involved in the implementation - supplying laborers, getting training, etc.", widget=forms.Textarea, required=False)
 
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+
     approval = forms.ChoiceField(
         choices=APPROVALS,
         initial='in progress',
@@ -182,7 +186,7 @@ class ProjectAgreementForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details', 'activity_code','account_code','lin_code','office', 'sector','program', 'project_name', 'project_activity',
+                    Fieldset('Project Details', 'program', 'program2', 'activity_code','account_code','lin_code','office', 'sector', 'project_name', 'project_activity',
                              'project_type', 'site','stakeholder','mc_staff_responsible','expected_start_date','expected_end_date',
                         ),
                     ),
@@ -238,9 +242,10 @@ class ProjectAgreementForm(forms.ModelForm):
                                 <div class='panel panel-default'>
                                   <!-- Default panel contents -->
                                   <div class='panel-heading'>Budget Contributions</div>
+                                  <!-- Table -->
+                                  <table class="table" id="budget_contributions_table">
+                                  <tbody>
                                   {% if getBudget %}
-                                      <!-- Table -->
-                                      <table class="table">
                                         <tr>
                                         <th>Contributor</th>
                                         <th>Description</th>
@@ -255,8 +260,10 @@ class ProjectAgreementForm(forms.ModelForm):
                                             <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
                                         </tr>
                                         {% endfor %}
-                                      </table>
+
                                   {% endif %}
+                                  </tbody>
+                                  </table>
                                   <div class="panel-footer">
                                     <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ pk }}">Add Budget Contribution</a>
                                   </div>
@@ -409,7 +416,12 @@ class ProjectAgreementForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].initial = self.instance.program
+        self.fields['program2'].label = "Program"
+
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
@@ -471,6 +483,8 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
     documentation_government_approval = forms.CharField(help_text="Check the box if there IS documentation to show government request for or approval of the project. This should be attached to the proposal, and also kept in the program file.", widget=forms.Textarea, required=False)
     description_of_community_involvement = forms.CharField(help_text="How the community is involved in the planning, approval, or implementation of this project should be described. Indicate their approval (copy of a signed MOU, or their signed Project Prioritization request, etc.). But also describe how they will be involved in the implementation - supplying laborers, getting training, etc.", widget=forms.Textarea, required=False)
 
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+
     approval = forms.ChoiceField(
         choices=APPROVALS,
         initial='in progress',
@@ -497,7 +511,7 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Project Details', 'activity_code','office', 'sector','program', 'project_name',
+                    Fieldset('Project Details', 'program', 'program2', 'activity_code','office', 'sector', 'project_name',
                              'site','stakeholder','expected_start_date','expected_end_date',
                         ),
 
@@ -554,25 +568,27 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
                                 <div class='panel panel-default'>
                                   <!-- Default panel contents -->
                                   <div class='panel-heading'>Budget Contributions</div>
-                                  {% if getBudget %}
-                                      <!-- Table -->
-                                      <table class="table">
-                                        <tr>
-                                        <th>Contributor</th>
-                                        <th>Description</th>
-                                        <th>Value</th>
-                                        <th>View</th>
-                                        </tr>
-                                        {% for item in getBudget %}
-                                        <tr>
-                                            <td>{{ item.contributor}}</td>
-                                            <td>{{ item.description_of_contribution}}</td>
-                                            <td>{{ item.proposed_value}}</td>
-                                            <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
-                                        </tr>
-                                        {% endfor %}
-                                      </table>
-                                  {% endif %}
+                                  <!-- Table -->
+                                  <table class="table" id="budget_contributions_table">
+                                    <tbody>
+                                        {% if getBudget %}
+                                            <tr>
+                                            <th>Contributor</th>
+                                            <th>Description</th>
+                                            <th>Value</th>
+                                            <th>View</th>
+                                            </tr>
+                                            {% for item in getBudget %}
+                                            <tr>
+                                                <td>{{ item.contributor}}</td>
+                                                <td>{{ item.description_of_contribution}}</td>
+                                                <td>{{ item.proposed_value}}</td>
+                                                <td><a class="output" href='/workflow/budget_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/'>Delete</a>
+                                            </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                  </table>
                                   <div class="panel-footer">
                                     <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ pk }}">Add Budget Contribution</a>
                                   </div>
@@ -653,7 +669,11 @@ class ProjectAgreementSimpleForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].initial = self.instance.program
+        self.fields['program2'].label = "Program"
+
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['reviewed_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['estimated_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
@@ -685,6 +705,9 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         model = ProjectComplete
         fields = '__all__'
 
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+    project_agreement2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
 
@@ -707,12 +730,18 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+        if kwargs['initial'].get('short'):
+            fieldset = Fieldset('Program', 'program2', 'program', 'project_agreement2', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'estimated_budget', 'site','stakeholder',
+                    )
+        else:
+            fieldset = Fieldset('program', 'program2', 'project_agreement', 'project_agreement2', 'activity_code','account_code','lin_code',\
+                             'office', 'sector','project_name', 'project_activity', 'site', 'stakeholder'
+                    )
         self.helper.layout = Layout(
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('Program', 'program', 'project_proposal', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name','site','stakeholder',
-                    ),
+                    fieldset,
                     Fieldset(
                         'Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
@@ -730,7 +759,14 @@ class ProjectCompleteCreateForm(forms.ModelForm):
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
-
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
+        self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
+        self.fields['program2'].initial = kwargs['initial'].get('program')
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].label = "Program"
+        self.fields['project_agreement2'].initial = "%s - %s" % (kwargs['initial'].get('office'),  kwargs['initial'].get('project_name', 'No project name') )
+        self.fields['project_agreement2'].label = "Project Initiation"
+        self.fields['project_agreement'].widget = forms.HiddenInput()
         #override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
 
@@ -751,7 +787,8 @@ class ProjectCompleteForm(forms.ModelForm):
     actual_cost_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     exchange_rate_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+    project_agreement2 = forms.CharField( widget=forms.TextInput(attrs={'readonly': 'readonly'}))
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -782,7 +819,7 @@ class ProjectCompleteForm(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_proposal', 'project_agreement', 'activity_code','account_code','lin_code',\
+                    Fieldset('', 'program', 'program2', 'project_agreement', 'project_agreement2', 'activity_code','account_code','lin_code',\
                              'office', 'sector','project_name', 'project_activity', 'site', 'stakeholder',
                         ),
                     Fieldset(
@@ -829,7 +866,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/">Add Component</a>
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/?is_it_project_complete_form=true">Add Component</a>
                               </div>
                             </div>
 
@@ -854,9 +891,10 @@ class ProjectCompleteForm(forms.ModelForm):
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
                                       <div class='panel-heading'>Budget Contributions</div>
+                                      <!-- Table -->
+                                      <table class="table" id="budget_contributions_table">
+                                      <tbody>
                                       {% if getBudget %}
-                                          <!-- Table -->
-                                          <table class="table">
                                             <tr>
                                             <th>Contributor</th>
                                             <th>Description</th>
@@ -871,10 +909,11 @@ class ProjectCompleteForm(forms.ModelForm):
                                                 <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/budget_update/{{ item.id }}/'>View</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
                                             </tr>
                                             {% endfor %}
-                                          </table>
                                       {% endif %}
+                                      </tbody>
+                                      </table>
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ id }}">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ id }}/?is_it_project_complete_form=true">Add Budget Contribution</a>
                                       </div>
                                     </div>
                                 """),
@@ -911,14 +950,14 @@ class ProjectCompleteForm(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}/?is_it_project_complete_form=true">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                              """),
                         ),
                     ),
                     Fieldset(
-                        '',AppendedText('progress_against_targets','%'),'actual_contribution','beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
+                        '',AppendedText('progress_against_targets','%'),'beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
                     ),
                 ),
 
@@ -972,13 +1011,21 @@ class ProjectCompleteForm(forms.ModelForm):
                          """),
                 ),
             ),
-
         )
         super(ProjectCompleteForm, self).__init__(*args, **kwargs)
 
         # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].initial = self.instance.program
+        self.fields['program2'].label = "Program"
+
+        #self.fields['project_agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
+        self.fields['project_agreement'].widget = forms.HiddenInput() #TextInput()
+        self.fields['project_agreement2'].initial = self.instance.project_agreement
+        self.fields['project_agreement2'].label = "Project Initiation"
+
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
         # override the office queryset to use request.user for country
@@ -1022,7 +1069,8 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
     actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program = forms.ModelChoiceField(queryset=Program.objects.filter(funding_status="Funded"))
+    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+    project_agreement2 = forms.CharField( widget=forms.TextInput(attrs={'readonly': 'readonly'}))
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -1049,203 +1097,188 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.layout = Layout(
-
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'project_agreement', 'activity_code',
-                             'office', 'sector','project_name','site','stakeholder',
-                        ),
-                    Fieldset(
-                        'Dates',
+                    Fieldset('Program',
+                        'program', 'program2', 'project_agreement', 'project_agreement2', 'activity_code', 'office', 'sector','project_name','site','stakeholder'
+                    ),
+                    Fieldset('Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
                         PrependedText('on_time', ''), 'no_explanation',
-
-                        ),
                     ),
+                ),
                 Tab('Components',
                     Fieldset("Project Components",
                         HTML("""
                             <div class='panel panel-default'>
-                              <!-- Default panel contents -->
-                              <div class='panel-heading'>Components</div>
-                              {% if getBenchmark %}
-                                  <!-- Table -->
-                                  <table class="table">
-                                    <tr>
-                                    <th>Description</th>
-                                    <th>Site</th>
-                                    <th>Est. Start Date</th>
-                                    <th>Est. End Date</th>
-                                    <th>Actual Start Date</th>
-                                    <th>Actual End Date</th>
-                                    <th>Budget</th>
-                                    <th>Actual Cost</th>
-                                    <th>View</th>
-                                    </tr>
-                                    {% for item in getBenchmark %}
-                                    <tr>
-                                        <td>{{ item.description}}</td>
-                                        <td>{{ item.site }}</td>
-                                        <td>{{ item.est_start_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.est_end_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.actual_start_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.actual_end_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.budget}}</td>
-                                        <td>{{ item.cost}}</td>
-                                        <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/workflow/benchmark_complete_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/workflow/benchmark_complete_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
-                                    </tr>
-                                    {% endfor %}
-                                  </table>
-                              {% endif %}
-                              <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/" id="btn_bench">Add Component</a>
-                              </div>
+                                <!-- Default panel contents -->
+                                <div class='panel-heading'>Components</div>
+                                {% if getBenchmark %}
+                                    <table class="table">
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Site</th>
+                                            <th>Est. Start Date</th>
+                                            <th>Est. End Date</th>
+                                            <th>Actual Start Date</th>
+                                            <th>Actual End Date</th>
+                                            <th>Budget</th>
+                                            <th>Actual Cost</th>
+                                            <th>View</th>
+                                        </tr>
+                                        {% for item in getBenchmark %}
+                                            <tr>
+                                                <td>{{ item.description}}</td>
+                                                <td>{{ item.site }}</td>
+                                                <td>{{ item.est_start_date|date:"m-d-Y"}}</td>
+                                                <td>{{ item.est_end_date|date:"m-d-Y"}}</td>
+                                                <td>{{ item.actual_start_date|date:"m-d-Y"}}</td>
+                                                <td>{{ item.actual_end_date|date:"m-d-Y"}}</td>
+                                                <td>{{ item.budget}}</td>
+                                                <td>{{ item.cost}}</td>
+                                                <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/workflow/benchmark_complete_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/workflow/benchmark_complete_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                {% endif %}
+                                <div class="panel-footer">
+                                    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/?is_it_project_complete_form=true" id="btn_bench">Add Component</a>
+                                </div>
                             </div>
-
-                            """),
-                        ),
+                        """),
                     ),
+                ),
                 Tab('Budget',
-                    Fieldset(
-                        '',
+                    Fieldset('',
                         PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00')
                     ),
                     Fieldset("Other Budget Contributions:",
                          Div(
-                             "",
-                             HTML("""
-
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Budget Contributions</div>
-                                      {% if getBudget %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Contributor</th>
-                                            <th>Description</th>
-                                            <th>Value</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getBudget %}
-                                            <tr>
-                                                <td>{{ item.contributor}}</td>
-                                                <td>{{ item.contributor_description}}</td>
-                                                <td>{{ item.proposed_value}}</td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/budget_update/{{ item.id }}/'>View</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ id }}">Add Budget Contribution</a>
-                                      </div>
+                            HTML("""
+                                <div class='panel panel-default'>
+                                    <div class='panel-heading'>Budget Contributions</div>
+                                    <table class="table" id="budget_contributions_table">
+                                        <tbody>
+                                            {% if getBudget %}
+                                                <tr>
+                                                    <th>Contributor</th>
+                                                    <th>Description</th>
+                                                    <th>Value</th>
+                                                    <th>View</th>
+                                                </tr>
+                                                {% for item in getBudget %}
+                                                    <tr>
+                                                        <td>{{ item.contributor}}</td>
+                                                        <td>{{ item.contributor_description}}</td>
+                                                        <td>{{ item.proposed_value}}</td>
+                                                        <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/budget_update/{{ item.id }}/'>View</a> | <a class="output" href='/workflow/budget_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal" >Delete</a>
+                                                    </tr>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                    <div class="panel-footer">
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ pk }}/?is_it_project_complete_form=true">Add Budget Contribution</a>
                                     </div>
+                                </div>
                             """),
-                            ),
                         ),
-                    ),
-
-                Tab('Impact',
-                    Fieldset(
-                        '',
-                        Div(
-                            '',
-                             HTML("""
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator</div>
-                                      {% if getQuantitative %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Targeted</th>
-                                            <th>Achieved</th>
-                                            <th>Indicator</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getQuantitative %}
-                                            <tr>
-                                                <td>{{ item.targeted}}</td>
-                                                <td>{{ item.achieved}}</td>
-                                                <td>{{ item.description}}</td>
-                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}">Add Indicators</a>
-                                      </div>
-                                    </div>
-                             """),
-                        ),
-                    ),
-                    Fieldset(
-                        '',AppendedText('progress_against_targets','%'),'actual_contribution','beneficiary_type', 'capacity_built', 'quality_assured','issues_and_challenges', 'lessons_learned',
                     ),
                 ),
-
+                Tab('Impact',
+                    Fieldset('',
+                        Div(
+                             HTML("""
+                                <div class='panel panel-default'>
+                                    <div class='panel-heading'>Indicator</div>
+                                    {% if getQuantitative %}
+                                        <table class="table">
+                                            <tr>
+                                                <th>Targeted</th>
+                                                <th>Achieved</th>
+                                                <th>Indicator</th>
+                                                <th>View</th>
+                                            </tr>
+                                            {% for item in getQuantitative %}
+                                                <tr>
+                                                    <td>{{ item.targeted}}</td>
+                                                    <td>{{ item.achieved}}</td>
+                                                    <td>{{ item.description}}</td>
+                                                    <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
+                                                    <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    {% endif %}
+                                    <div class="panel-footer">
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}/?is_it_project_complete_form=true">Add Indicators</a>
+                                    </div>
+                                </div>
+                            """),
+                        ),
+                    ),
+                    Fieldset('',
+                        AppendedText('progress_against_targets','%'), 'beneficiary_type', 'capacity_built', 'quality_assured','issues_and_challenges', 'lessons_learned'
+                    ),
+                ),
                 Tab('Approval',
                     Fieldset('Approval',
-                             'approval', 'approved_by',
-                             Field('approval_remarks', rows="3", css_class='input-xlarge')
+                        'approval', 'approved_by', Field('approval_remarks', rows="3", css_class='input-xlarge')
                     ),
                 ),
             ),
-
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
                 Reset('reset', 'Reset', css_class='btn-warning')
             ),
-
             HTML("""<br/>"""),
-
-            Fieldset(
-                'Project Files',
+            Fieldset('Project Files',
                 Div(
-                    '',
                     HTML("""
-
                         <div class='panel panel-default'>
-                          <!-- Default panel contents -->
-                          <div class='panel-heading'>Documentation</div>
-                          {% if getDocuments %}
-                              <!-- Table -->
-                              <table class="table">
-                                <tr>
-                                <th>Name</th>
-                                <th>Link(URL)</th>
-                                <th>Description</th>
-                                <th>&nbsp;</th>
-                                </tr>
-                                {% for item in getDocuments %}
-                                <tr>
-                                    <td>{{ item.name}}</td>
-                                    <td><a href="{{ item.url}}" target="_new">{{ item.url}}</a></td>
-                                    <td>{{ item.description}}</td>
-                                    <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/workflow/documentation_agreement_update/{{ item.id }}/{{ pk }}/'>Edit</a> | <a class="monitoring" href='/workflow/documentation_agreement_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
-                                </tr>
-                                {% endfor %}
-                              </table>
-                          {% endif %}
-                          <div class="panel-footer">
-                            <a onclick="newPopup('/workflow/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
-                          </div>
+                            <div class='panel-heading'>Documentation</div>
+                            {% if getDocuments %}
+                                <table class="table">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Link(URL)</th>
+                                        <th>Description</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                    {% for item in getDocuments %}
+                                        <tr>
+                                            <td>{{ item.name}}</td>
+                                            <td><a href="{{ item.url}}" target="_new">{{ item.url}}</a></td>
+                                            <td>{{ item.description}}</td>
+                                            <td><a class="monitoring" data-toggle="modal" data-target="#myModal" href='/workflow/documentation_agreement_update/{{ item.id }}/{{ pk }}/'>Edit</a> | <a class="monitoring" href='/workflow/documentation_agreement_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            {% endif %}
+                            <div class="panel-footer">
+                                <a onclick="newPopup('/workflow/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
+                            </div>
                         </div>
-                         """),
+                    """),
                 ),
             ),
-
         )
         super(ProjectCompleteSimpleForm, self).__init__(*args, **kwargs)
 
         # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+
+        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
+        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['program2'].initial = self.instance.program
+        self.fields['program2'].label = "Program"
+
         #self.fields['project_agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
+        self.fields['project_agreement'].widget = forms.HiddenInput() #TextInput()
+        self.fields['project_agreement2'].initial = self.instance.project_agreement
+        self.fields['project_agreement2'].label = "Project Initiation"
+
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
 
         # override the office queryset to use request.user for country
@@ -1267,7 +1300,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
             self.fields['approved_by'].widget.attrs['disabled'] = "disabled"
             self.fields['approval_remarks'].widget.attrs['disabled'] = "disabled"
             self.fields['approval'].help_text = "Approval level permissions required"
-            self.fields['project_agreement'].widget.attrs['disabled'] = "disabled"
+            self.fields['project_agreement'].widget.attrs['readonly'] = "readonly"
 
 
 class SiteProfileForm(forms.ModelForm):
@@ -1446,7 +1479,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted','achieved','indicator','agreement','program'
+                'targeted','achieved','indicator','agreement','complete','program'
 
         )
 
@@ -1456,6 +1489,11 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
         self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
+        #self.fields['program'].widget.attrs['disabled'] = "disabled"
+        self.fields['program'].widget = HiddenInput()
+        self.fields['agreement'].widget = HiddenInput()
+        self.fields['complete'].widget = HiddenInput()
+
 
 
 class BenchmarkForm(forms.ModelForm):
@@ -1491,8 +1529,12 @@ class BenchmarkForm(forms.ModelForm):
             )
         super(BenchmarkForm, self).__init__(*args, **kwargs)
 
+        countries = getCountry(self.request.user)
         # override the site queryset to use request.user for country
-        self.fields['site'].queryset = SiteProfile.objects.all().filter(projectagreement__id=self.agreement)
+        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
+
+        self.fields['agreement'].widget = HiddenInput()
+        self.fields['complete'].widget = HiddenInput()
 
 
 class MonitorForm(forms.ModelForm):
@@ -1575,6 +1617,7 @@ class StakeholderForm(forms.ModelForm):
 
     class Meta:
         model = Stakeholder
+        #fields = ['contact', 'country', 'approved_by', 'filled_by', 'sectors', 'formal_relationship_document', 'vetting_document', ]
         exclude = ['create_date', 'edit_date']
 
     approval = forms.ChoiceField(
@@ -1595,13 +1638,14 @@ class StakeholderForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.add_input(Submit('submit', 'Save'))
+        pkval = kwargs['instance'].pk if kwargs['instance'] else 0
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Details',
                     Fieldset('Details',
-                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/0/').focus();">Add New Contact</a>"""), 'country', 'sector', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document',
+                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % pkval ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
                     ),
                 ),
 
@@ -1612,12 +1656,12 @@ class StakeholderForm(forms.ModelForm):
                 ),
             ),
         )
-
         super(StakeholderForm, self).__init__(*args, **kwargs)
 
         countries = getCountry(self.request.user)
         users = TolaUser.objects.filter(country__in=countries)
         self.fields['contact'].queryset = Contact.objects.filter(country__in=countries)
+        self.fields['sectors'].queryset = Sector.objects.all()
         self.fields['country'].queryset = countries
         self.fields['approved_by'].queryset = users
         self.fields['filled_by'].queryset = users

@@ -4,13 +4,13 @@ from django_tables2.utils import A
 
 class IndicatorDataTable(tables.Table):
 
-    indicator__name = tables.LinkColumn('indicator_data_report', args=[A('indicator__id')])
+    indicator__name = tables.LinkColumn('indicator_data_report', args=[A('indicator__id'), A('indicator__program__id'), 0])
 
     class Meta:
         model = CollectedData
         attrs = {"class": "paleblue"}
-        fields = ('targets', 'actuals','indicator__program__name', 'indicator__number', 'indicator__name')
-        sequence = ('targets', 'actuals', 'indicator__program__name','indicator__number', 'indicator__name')
+        fields = ('indicator__lop_target', 'actuals','indicator__program__name', 'indicator__number', 'indicator__name')
+        sequence = ('indicator__lop_target', 'actuals', 'indicator__program__name','indicator__number', 'indicator__name')
 
 
 class CollectedDataTable(tables.Table):

@@ -21,7 +21,7 @@
         <!-- JQuery UI CSS -->
         <link href="{{ STATIC_URL }}css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
 
-        <!--- Dynatable --->
+        <!-- Dynatable -->
         <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
 
         <!-- Custom CSS -->
@@ -30,7 +30,7 @@
         <!--- Django Tables2 css -->
         <link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
 
-        <!--- Hosted Leaflet CSS --->
+        <!-- Hosted Leaflet CSS -->
         <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
 
         {% block extra_js_in_header %}
@@ -54,7 +54,7 @@
                     <a class="navbar-brand" href="{% url 'index' %}">
                         <img style="margin-top: -3px; max-width: 140px;" src="{{ STATIC_URL }}img/tola-activity-primary-mark-white.png" />
                     </a>
-                    <!-- hamburger nav --->
+                    <!-- hamburger nav -->
                      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
@@ -115,6 +115,9 @@
                                     <li><a href="/indicators/collecteddata/0/0/0/"><span class="glyphicon glyphicon-list-alt"></span> Indicator Data Report</a></li>
                                     <li><a href="/indicators/data/0/0/0/"><span class="glyphicon glyphicon-list-alt"></span> Indicator Visual Report</a></li>
                                     <li><a href="/indicators/report/0/0/0/"><span class="glyphicon glyphicon-list-alt"></span> Indicator Library</a></li>
+                                    <li><a href="/indicators/tvareport/"><span class="glyphicon glyphicon-list-alt"></span> Target vs Actual Report</a></li>
+                                    <li><a href="/indicators/disrep/0"><span class="glyphicon glyphicon-list-alt"></span> Indicator Disaggregation Report</a></li>
+                                </ul>
                                 </ul>
                             </li>
                         {% endif %}
@@ -141,7 +144,7 @@
                                 <li><a href="{% url 'profile' %}"><span>{{ user.tola_user.countries_list }}</span></a></li>
                             </ul>
                         </li><!-- .dropdown collapse -->
-                        <!--- bookmarks --->
+                        <!-- bookmarks -->
                         <li class="dropdown-submenu">
                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                  <span class="glyphicon glyphicon-bookmark"></span> Bookmarks<b class="caret"></b>
@@ -200,7 +203,7 @@
             </div><!-- .container collapse -->
         </nav><!-- .navbar collapse -->
         <br/>
-        <div class="container">
+        <div class="container" style="margin-top:5px;">
             <br/>
             <div>{% block bread_crumb %}{% endblock %}</div>
             <div id = "alerts">
@@ -226,7 +229,7 @@
 
         </div><!-- .container collapse -->
 
-        <div id = "loading" class="modal"> </div>
+        <div id = "ajaxloading" class="modal ajax_loading"></div>
         <div id="footer">
             <!-- Sticky Footer -->
             <div class="container">
@@ -248,7 +251,7 @@
         <!-- Bootstrap compiled javascript plugins -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
         {% if offline_mode %}
-            <!--- offline mode so don't try andload the external fonts --->
+            <!--- offline mode so don't try andload the external fonts -->
         {% else %}
             <!-- Typekit (Fonts) -->
             <script src="https://use.typekit.net/shi4wqr.js"></script>

@@ -9,11 +9,9 @@
 */
 function loadCollected(indicator,program){
     var indicator;
-    $('.ajaxLoader').show();
     $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
         $('#hidden-' + indicator).html(data);
     });
-    $('.ajaxLoader').hide();
 };
 
 /*
@@ -21,11 +19,9 @@ function loadCollected(indicator,program){
 */
 function loadIndicators(program,indicator,type){
     var program;
-    $('.ajaxLoader').show();
     $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
         $('#hidden-' + program).html(data);
       });
-    $('.ajaxLoader').hide();
     $('#hidden-' + program).on('shown', function () {
        $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
     });
@@ -38,6 +34,7 @@ function loadIndicators(program,indicator,type){
 
 {% include "indicators/filter.html"%}
 
+<div id="toplevel_div">
 <!-- Default panel contents -->
 {% if getProgramsIndicator %}
     {% for program in getProgramsIndicator %}
@@ -62,22 +59,186 @@ function loadIndicators(program,indicator,type){
 {% else %}
     <p>No Programs</p>
 {% endif %}
+</div>
+
+<!--
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#indicator_modal_div">Large modal</button>
+-->
+
+
+<div id="indicator_modal_div" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" id="indicator_modal_body">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <span id = "modalmessages"></span>
+                <div id="indicator_modal_content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="tolatablemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div> <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
+
 <script type="text/javascript">
+    /*
     var program_id = document.URL.split('/')[5];
     var indicator_id = document.URL.split('/')[6];
     var type_id = document.URL.split('/')[7];
+    $(document).ready(function() {
+        if (typeof program_id !== 'undefined' && program_id > 0) {
+            var a = $('#hidden-' + program_id).collapse('hide');
+            loadIndicators(program_id, 0, 0);
+            a.collapse('show');
+        }
+    });
+    */
 
-    function program_filter(program_id) {
-      window.location.href = '/indicators/home/'+program_id+'/0/0/';      
-      }
-
-    function indicator_filter(indicator) {
-      window.location.href = '/indicators/home/'+program_id+'/'+indicator+'/0';  
+    $("#indicator_modal_body").on("click", ".detelebtn", function(e){
+        e.preventDefault();
+        var url = $(this).attr('href');
+        if (url == "#") {
+            $(e.target).closest("tr").remove();
+            return;
         }
 
+        $.post(url)
+            .done(function(data, textStatus, jqXHR){
+                if (data.status == "success") {
+                    $(e.target).closest("tr").remove();
+                } else {
+                    createAlert("danger", data.msg, true, "#modalmessages");
+                    $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
+                }
+            });
+    });
+
+    // Open the CollectDataUpdate form in a modal
+    $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
+        e.preventDefault();
+        var url = $(this).attr("href");
+        $("#indicator_modal_content").empty();
+        $("#modalmessages").empty();
+
+        $("#indicator_modal_content").load(url+"/?modal=1");
+        $("#indicator_modal_div").modal('show');
+
+    });
+
+    // Intercept CollectedDataUpdate form submission and then use ajax to submit it.
+    $("#indicator_modal_body").on("submit", "#collecteddata_update_form", function(e){
+        e.preventDefault();
+        var form_url = $(this).attr('action');
+        var form_data = $(this).serialize();
+        submitForm(form_url, form_data);
+        $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
+    });
+
+
+    // Open the IndicatorUpdate Form in a modal
+    $("#toplevel_div").on("click", ".indicator-link", function(e) {
+        e.preventDefault();
+        var url = $(this).attr("href");
+        $("#indicator_modal_content").empty();
+        $("#modalmessages").empty();
+
+        $("#indicator_modal_content").load(url+"/?modal=1");
+        $("#indicator_modal_div").modal('show');
+
+    });
+
+    // Intercept IndicatorUpdate form submission and then use ajax to submit it.
+    $("#indicator_modal_body").on("submit", "#indicator_update_form", function(e){
+        e.preventDefault();
+        var form_url = $(this).attr('action');
+        var form_data = $(this).serialize();
+        var periodic_targets = [];
+        $('#periodic_targets_table tr').each(function () {
+            var $this = $(this);
+            var values = [];
+            $this.find('input[type=text]').each(function (i, input) {
+                if (i == 0) {
+                    values.push($(input).attr('name').split('-')[1]);
+                }
+                values.push($(input).val());
+            });
+            if(values.length > 0) {
+                if ( !$.isNumeric(values[2]) || values[1] == '') {
+                    return;
+                }
+                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
+            }
+        });
+        form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
+        //console.log(JSON.stringify(periodic_targets));
+        submitForm(form_url, form_data);
+
+    });
+
+    function addPeriodicTarget() {
+        var markup = `
+            <tr id="0">
+                <td><input type="text" name="period-0" class="textinput textInput form-control"></td>
+                <td><input type="text" name="target-0" class="textinput textInput form-control"></td>
+                <td style="vertical-align:middle">
+                    <a href="#" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a>
+                </td>
+            </tr>`;
+
+        $("#periodic_targets_table tbody").append(markup);
+
+    }
+    function submitForm(form_url, form_data) {
+        $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
+        $.ajax({
+            method: 'POST',
+            url: form_url,
+            data: form_data,
+            global: false, }
+        ).done(function(data, textStatus, jqXHR) {
+            // if there are any erros show them and then STOP
+            if (jqXHR.getResponseHeader('error') == "True") {
+                //$("#modalerrors").html(data);
+                createAlert("danger", data, true, "#modalmessages");
+                return;
+            }
+            //var json = $.parseJSON(jqXHR.responseText);
+            $("#modalmessages").html('');
+            createAlert("success", "Success, form data saved.", true, "#modalmessages");
+            var jsondata = $.parseJSON(data);
+            //var item = data;
+            var indicator = jsondata[0][0];
+            var pts = jsondata[1];
+
+            $("#id_achieved").val(indicator['fields']['achieved']);
+            $("#periodic_targets_table").find("tr:gt(0)").remove();
+
+            $.each(pts, function(i, pt) {
+
+                var markup = '<tr id=' + pt.pk + '"><td><input type="text" name="period-' + pt.pk + '" value="' + pt.fields.period +'" class="textinput textInput form-control"></td><td><input type="text" name="target-' + pt.pk + '" value="' + pt.fields.target +'" class="textinput textInput form-control"></td><td style="vertical-align:middle"> <a href="/indicators/periodic_target_delete/' + pt.pk + '/" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a></td></tr>';
+
+                $("#periodic_targets_table tbody").append(markup);
+            });
+        });
+    }
+
+    function program_filter(program_id) {
+        window.location.href = '/indicators/home/'+program_id+'/0/0/';
+    }
+
+    function indicator_filter(indicator) {
+        window.location.href = '/indicators/home/'+program_id+'/'+indicator+'/0';
+    }
+
     function indicator_type_filter(type) {
-      window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;      
-      }
+        window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;
+    }
 
  </script>
 {% endblock content %}

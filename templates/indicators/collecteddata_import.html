@@ -23,8 +23,10 @@
             type: frm.attr('method'),
             url: frm.attr('action'),
             data: frm.serialize(),
-            success: function (data) {
-                $("#alert-error").html("Success! ");
+            success: function (response) {
+                //update the selected option value with the record id that was just created.
+                $("#service_table option:selected").val(response);
+                $("#tolatablemodal").modal('toggle');
             },
             error: function(data) {
                 $("#alert-error").html("Something went wrong!");
@@ -84,10 +86,11 @@
     </div>
 
     </div>
+    <!--
     <div class="modal-footer">
-       <button type="button" class="btn btn-default" data-dismiss="modal" onclick="window.location.reload();parent.location.reload();">Close</button>
+       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
     </div>
-
+    -->
 </body>
 </html>
 

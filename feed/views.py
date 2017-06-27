@@ -6,6 +6,7 @@ from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, C
 from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
 
+from django.db.models import Count
 from django.contrib.auth.models import User
 from tola.util import getCountry
 from django.shortcuts import get_object_or_404
@@ -33,6 +34,17 @@ class SmallResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 50
 
+
+class PogramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ProgramIndicatorSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        queryset = Program.objects.prefetch_related('indicator_set', \
+            'indicator_set__indicator_type',\
+            'indicator_set__sector', 'indicator_set__level', \
+            'indicator_set__collecteddata_set').all()
+        return queryset
 
 # API Classes
 class UserViewSet(viewsets.ModelViewSet):
@@ -412,14 +424,22 @@ class TolaTableViewSet(viewsets.ModelViewSet):
     """
 
     def list(self, request):
-        user_countries = getCountry(request.user)
-        queryset = TolaTable.objects.all().filter(country__in=user_countries)
+        #user_countries = getCountry(request.user)
+        #queryset = TolaTable.objects.all().filter(country__in=user_countries)
+        queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'collecteddata__indicator__program__name')
+    def get_queryset(self):
+        user_countries = getCountry(self.request.user)
+        queryset = TolaTable.objects.filter(country__in=user_countries)
+        table_id = self.request.query_params.get('table_id', None)
+        if table_id is not None:
+            queryset = queryset.filter(table_id=table_id)
+        return queryset
+
+    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__program__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    queryset = TolaTable.objects.all()
     serializer_class = TolaTableSerializer
     pagination_class = StandardResultsSetPagination
 

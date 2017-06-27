@@ -135,10 +135,13 @@ $(function () {
             $td.highcharts('SparkLine', {
                 series: [{
                     data: data,
-                    pointStart: 1
+                    pointStart: 0
                 }],
+                xAxis: {
+                    categories: ['Target', 'Actual']
+                },
                 tooltip: {
-                    headerFormat: '<span style="font-size: 10px">' + "Target" + ':</span><br/>',
+                    headerFormat: '<span style="font-size: 10px"> {point.key} :</span><br/>',
                     pointFormat: '<b>{point.y}</b>'
                 },
                 chart: chart

@@ -7,6 +7,8 @@ from indicators.models import Indicator, ReportingFrequency, TolaUser, Indicator
 from django.contrib.auth.models import User
 
 
+
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -125,6 +127,47 @@ class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Indicator
         fields = '__all__'
+
+class IndicatorTypeLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IndicatorType
+        fields = ('id', 'indicator_type')
+
+
+class IndicatorLevelLightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Level
+        fields = ('id', 'name')
+
+class IndicatorLightSerializer(serializers.ModelSerializer):
+    sector = serializers.SerializerMethodField()
+    indicator_type = IndicatorTypeLightSerializer(many=True, read_only=True)
+    level = IndicatorLevelLightSerializer(many=True, read_only=True)
+    datacount = serializers.SerializerMethodField()
+
+    def get_datacount(self, obj):
+        # Returns the number of collecteddata points by an indicator
+        return obj.collecteddata_set.count()
+
+    def get_sector(self, obj):
+        if obj.sector is None:
+            return ''
+        return {"id": obj.sector.id, "name": obj.sector.sector}
+
+    class Meta:
+        model = Indicator
+        fields = ('name', 'number', 'lop_target', 'indicator_type', 'level', 'sector', 'datacount')
+
+class ProgramIndicatorSerializer(serializers.ModelSerializer):
+    indicator_set = IndicatorLightSerializer(many=True, read_only=True)
+    indicators_count = serializers.SerializerMethodField()
+
+    def get_indicators_count(self, obj):
+        return obj.indicator_set.count()
+
+    class Meta:
+        model =  Program
+        fields = ('id', 'name', 'indicators_count', 'indicator_set')
 
 
 class ReportingFrequencySerializer(serializers.HyperlinkedModelSerializer):
@@ -276,8 +319,9 @@ class TolaTableSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = TolaTable
-        fields = '__all__'
-
+        # HyperlinkedModelSerializer does not include id field by default so manually setting it
+        fields = ('id', 'name', 'table_id', 'owner', 'remote_owner', 'country', 'url', 'unique_count', 'create_date', 'edit_date')
+        #fields = '__all__'
 
 class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
 

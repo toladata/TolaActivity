@@ -1,0 +1,49 @@
+{% block content %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+    <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
+
+
+    <script type="text/javascript">
+        //Searchable select option for service indicator
+        $(document).ready(function() {
+            $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
+
+            /* add select2 js library to the indicator select box */
+            $("#id_site").select2();
+            $("#id_tola_table").select2();
+            $("#id_evidence").select2();
+            $("#id_agreement").select2();
+
+            $('#tolatablemodal').on('hidden.bs.modal', function (e) {
+                var sel = $("#service_table option:selected");
+                $("#id_tola_table").append($("<option></option>")
+                            .attr("value", sel.val())
+                            .text(sel.text()));
+            });
+        });
+
+        $(document).on('hidden.bs.modal', '.modal', function () {
+            $('.modal:visible').length && $(document.body).addClass('modal-open');
+        });
+    </script>
+
+    {% if form.errors %}
+        <div class="help-block">
+        {% for field in form %}
+            {% for error in field.errors %}
+                    <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
+            {% endfor %}
+        {% endfor %}
+        </div>
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-error">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% csrf_token %}
+    {% load crispy_forms_tags %}
+    {% crispy form %}
+
+
+{% endblock content %}

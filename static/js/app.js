@@ -1,5 +1,18 @@
 //Bootstrap remember tab
 // Javascript to enable link to tab
+
+/*
+ * A global ajaxComplete method that shows you any messages that are set in Django's view
+ */
+$( document )
+    .ajaxStart( function() {
+        $('#ajaxloading').show();
+    })
+    .ajaxStop( function() {
+         $('#ajaxloading').hide();
+    });
+
+
 $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
@@ -29,6 +42,27 @@ $(document).ready(function() {
     $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
 });
 
+
+/*
+ * Create and show a Bootstrap alert.
+ */
+function createAlert (type, message, fade, whereToAppend) {
+    if (whereToAppend == undefined ){
+        whereToAppend = "#messages";
+    }
+    $(whereToAppend).append(
+        $(
+            "<div class='alert alert-" + type + " dynamic-alert alert-dismissable' style='margin-top:0;'>" +
+            "<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>" +
+            "<p>" + message + "</p>" +
+            "</div>"
+        )
+    );
+    if (fade == true) {
+        // Remove the alert after 5 seconds if the user does not close it.
+        $(".dynamic-alert").delay(5000).fadeOut("slow", function () { $(this).remove(); });
+    }
+}
 
 /*
 * Save the task checkbox state
@@ -65,6 +99,23 @@ function getCookie(name) {
 }
 
 
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+/*
+ * Set the csrf header before sending the actual ajax request
+ * while protecting csrf token from being sent to other domains
+ */
+$.ajaxSetup({
+    crossDomain: false, // obviates need for sameOrigin test
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    }
+});
 
 /*
 * Save the bookmark
@@ -88,7 +139,9 @@ function newBookmark(bookmark_url){
 
 
 $(document).ready(function() {
-
+    $(document).on('hidden.bs.modal', '.modal', function () {
+        $('.modal:visible').length && $(document.body).addClass('modal-open');
+    });
     /*
     *  Reload page if country dropdown changes on main dashboard
     */
@@ -101,7 +154,6 @@ $(document).ready(function() {
      */
     $("#services").change(function() {
         var selected_service = $(this).val();
-        console.log("Service:" + selected_service);
         if (selected_service == undefined || selected_service == -1 || selected_service == '') {
             $("#serivce").html("<option>--Service--</option>");
         } else {

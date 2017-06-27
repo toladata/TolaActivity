@@ -18,6 +18,7 @@ try:
     from django.utils import timezone
 except ImportError:
     from datetime import datetime as timezone
+from django.db.models import Q
 
 
 # New user created generate a token
@@ -193,7 +194,7 @@ class TolaBookmarksAdmin(admin.ModelAdmin):
 
 
 class TolaUserProxy(TolaUser):
-    
+
     class Meta:
         verbose_name, verbose_name_plural = u"Report Tola User", u"Report Tola Users"
         proxy = True
@@ -280,7 +281,7 @@ class Contact(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name + " " + self.title 
+        return self.name + ", " + self.title
 
 
 class ContactAdmin(admin.ModelAdmin):
@@ -804,7 +805,7 @@ class TemplateAdmin(admin.ModelAdmin):
 
 class StakeholderManager(models.Manager):
     def get_queryset(self):
-        return super(StakeholderManager, self).get_queryset().prefetch_related('contact').select_related('country','sector','type','formal_relationship_document','vetting_document')
+        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related('country','type','formal_relationship_document','vetting_document')
 
 
 class Stakeholder(models.Model):
@@ -812,13 +813,15 @@ class Stakeholder(models.Model):
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
-    sector = models.ForeignKey(Sector, blank=True, null=True)
+    #sector = models.ForeignKey(Sector, blank=True, null=True, related_name='sects')
+    sectors = models.ManyToManyField(Sector, blank=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?")
     formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
     vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, blank=True, related_name="vetting_document")
     approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
     approved_by = models.ForeignKey(TolaUser, help_text='', blank=True, null=True, related_name="stake_approving")
     filled_by = models.ForeignKey(TolaUser, help_text='', blank=True, null=True, related_name="stake_filled")
+    notes = models.TextField(max_length=765, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     #optimize query
@@ -861,6 +864,8 @@ class ProjectAgreementManager(models.Manager):
 
     def get_rejected(self):
         return self.filter(approval="rejected")
+    def get_new(self):
+        return self.filter(Q(approval=None) | Q(approval=""))
 
     def get_queryset(self):
         return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
@@ -1159,6 +1164,10 @@ class Documentation(models.Model):
     def __unicode__(self):
         return self.name
 
+    @property
+    def name_n_url(self):
+        return "%s %s" % (self.name, self.url)
+
     class Meta:
         ordering = ('name',)
         verbose_name_plural = "Documentation"
@@ -1332,7 +1341,7 @@ class ChecklistItemAdmin(admin.ModelAdmin):
 
 
 #Logged users
-from django.contrib.auth.signals import user_logged_in, user_logged_out 
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 from urllib2 import urlopen
 import json
 
@@ -1342,14 +1351,14 @@ class LoggedUser(models.Model):
     username = models.CharField(max_length=30, primary_key=True)
     country = models.CharField(max_length=100, blank=False)
     email = models.CharField(max_length=100, blank=False, default='user@mercycorps.com')
-    
+
     def __unicode__(self):
         return self.username
 
     def login_user(sender, request, user, **kwargs):
         country = get_user_country(request)
         active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-        
+
         user_id_list = []
         logged_user_id = request.user.id
 
@@ -1367,8 +1376,8 @@ class LoggedUser(models.Model):
 
         except Exception, e:
             pass
-                
-    
+
+
 
     def logout_user(sender, request, user, **kwargs):
 
@@ -1378,7 +1387,7 @@ class LoggedUser(models.Model):
 
         except LoggedUser.DoesNotExist:
             pass
-        
+
     user_logged_in.connect(login_user)
     user_logged_out.connect(logout_user)
 
