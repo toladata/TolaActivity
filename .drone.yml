@@ -14,7 +14,6 @@ pipeline:
     repo: registry.tola.io/toladata/tolaactivity
     file: Dockerfile
     tags:
-      - latest
       - ${DRONE_COMMIT_SHA}
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
     when:
@@ -36,6 +35,16 @@ pipeline:
       event: [push, tag]
       branches: [master, dev-v2]
       status: [success]
+
+  notify:
+    image: plugins/slack
+    channel: drone-ci
+    username: Drone-CI
+    secrets: [SLACK_WEBHOOK]
+    when:
+      status: [failure]
+      event: [push, tag]
+      branches: [master, dev-v2]
 
 matrix:
   PYTHON_VERSION:
