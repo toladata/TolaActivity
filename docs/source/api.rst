@@ -37,6 +37,9 @@ Endpoints
  * "tolatable": "http://activity.toladata.io/api/tolatable/",
  * "disaggregationvalue": "http://activity.toladata.io/api/disaggregationvalue/",
  * "projectagreements": "http://activity.toladata.io/api/projectagreements/",
+ * "loggedusers": "http://activity.toladata.io/api/loggedusers/",
+ * "checklist": "http://activity.toladata.io/api/checklist/",
+ * "organization": "http://activity.toladata.io/api/organization/",
 
 
 Example
