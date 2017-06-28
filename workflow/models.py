@@ -899,7 +899,6 @@ class Stakeholder(models.Model):
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
-    #sector = models.ForeignKey(Sector, blank=True, null=True, related_name='sects')
     sectors = models.ManyToManyField(Sector, blank=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?")
     formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
@@ -969,7 +968,7 @@ class WorkflowLevel2(models.Model):
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     # Rename to more generic "nonproject" names
     project_name = models.CharField("Project Name",
-                                    help_text='Please be specific in your name.  Consider that your Project Name includes WHO, WHAT, WHERE, HOW',
+                                    help_text='Please be specific in your name.  Consider that the name includes WHO, WHAT, WHERE, HOW',
                                     max_length=255)
     project_type = models.ForeignKey(ProjectType, verbose_name="Project Type", help_text='', max_length=255, blank=True,
                                      null=True)
@@ -1055,7 +1054,7 @@ class WorkflowLevel2(models.Model):
     description_of_project_activities = models.TextField(blank=True, null=True)
     description_of_government_involvement = models.TextField(blank=True, null=True)
     description_of_community_involvement = models.TextField(blank=True, null=True)
-    community_project_description = models.TextField("Describe the project you would like the program to consider",
+    community_project_description = models.TextField("Describe the project you would like to be considered",
                                                      blank=True, null=True,
                                                      help_text="Description must describe how the Community Proposal meets the project criteria")
     create_date = models.DateTimeField("Date Created", null=True, blank=True)

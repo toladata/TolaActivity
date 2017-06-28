@@ -1016,12 +1016,10 @@ class ProjectCompleteForm(forms.ModelForm):
 
         # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['program'].widget = forms.HiddenInput()
         self.fields['program2'].initial = self.instance.program
         self.fields['program2'].label = "Program"
 
-        #self.fields['project_agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
         self.fields['project_agreement'].widget = forms.HiddenInput() #TextInput()
         self.fields['project_agreement2'].initial = self.instance.project_agreement
         self.fields['project_agreement2'].label = "Project Initiation"
@@ -1069,7 +1067,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
     actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
+    program2 = forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly'}) )
     project_agreement2 = forms.CharField( widget=forms.TextInput(attrs={'readonly': 'readonly'}))
 
     approval = forms.ChoiceField(
@@ -1454,8 +1452,8 @@ class DocumentationForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['project'].queryset = WorkflowLevel2.objects.filter(program__country__in=countries)
-        self.fields['program'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
+        self.fields['project'].queryset = WorkflowLevel2.objects.filter(workflowlevel1__country__in=countries)
+        self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
 
 
 class QuantitativeOutputsForm(forms.ModelForm):
@@ -1486,8 +1484,8 @@ class QuantitativeOutputsForm(forms.ModelForm):
 
         countries = getCountry(self.request.user)
 
-        self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
-        self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(program__country__in=countries)
+        self.fields['indicator'].queryset = Indicator.objects.filter(workflowlevel1__id=kwargs['initial']['program'])
+        self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(workflowlevel1__country__in=countries)
         #self.fields['program'].widget.attrs['disabled'] = "disabled"
         self.fields['program'].widget = HiddenInput()
         self.fields['agreement'].widget = HiddenInput()
