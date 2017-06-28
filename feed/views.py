@@ -19,10 +19,12 @@ import django_filters
 
 from workflow.mixins import APIDefaultsMixin
 
+
 class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
     page_size_query_param = 'page_size'
     max_page_size = 10000
+
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 100
@@ -36,7 +38,7 @@ class SmallResultsSetPagination(PageNumberPagination):
     max_page_size = 50
 
 
-class PogramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+class ProgramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProgramIndicatorSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -46,6 +48,7 @@ class PogramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
             'indicator_set__sector', 'indicator_set__level', \
             'indicator_set__collecteddata_set').all()
         return queryset
+
 
 # API Classes
 class UserViewSet(viewsets.ModelViewSet):

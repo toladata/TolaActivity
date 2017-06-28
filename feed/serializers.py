@@ -8,8 +8,6 @@ from indicators.models import Indicator, ReportingFrequency, TolaUser, Indicator
 from django.contrib.auth.models import User
 
 
-
-
 class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -63,7 +61,6 @@ class CompleteSerializer(serializers.HyperlinkedModelSerializer):
     """
     Only for backwards compatibility
     """
-    #program = ProgramSerializer(many=False, read_only=True, source='workflowlevel1') # manually include program to provide backwards compatibility
 
     class Meta:
         model = WorkflowLevel2
@@ -74,13 +71,11 @@ class AgreementSerializer(serializers.HyperlinkedModelSerializer):
     """
     Only for backwards compatibility
     """
-    #program = ProgramSerializer(many=False, read_only=True, source='workflowlevel1') # manually include program to provide backwards compatibility
 
     class Meta:
         model = WorkflowLevel2
-        fields=(
+        fields = (
             'id',
-            'program',
             'workflowlevel1',
             'date_of_request',
             'project_name',

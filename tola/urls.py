@@ -53,7 +53,7 @@ router.register(r'disaggregationvalue', DisaggregationValueViewSet)
 router.register(r'projectagreements', ProjectAgreementViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
-router.register(r'pindicators', PogramIndicatorReadOnlyViewSet, base_name='pindicators')
+router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 
 
 urlpatterns = [ # rest framework
