@@ -189,7 +189,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = Indicator.objects.all() # .filter(workflowlevel1__country__in=user_countries)
+        queryset = Indicator.objects.all().filter(workflowlevel1__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -410,7 +410,7 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = CollectedData.objects.all().filter(program__country__in=user_countries)
+        queryset = CollectedData.objects.all().filter(workflowlevel1__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -442,7 +442,7 @@ class TolaTableViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(table_id=table_id)
         return queryset
 
-    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__program__name')
+    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = TolaTableSerializer
     pagination_class = StandardResultsSetPagination
