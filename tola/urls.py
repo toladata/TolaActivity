@@ -57,6 +57,7 @@ router.register(r'pindicators', PogramIndicatorReadOnlyViewSet, base_name='pindi
 
 
 urlpatterns = [ # rest framework
+                url(r'^check', views.check_view),
                 url(r'^api/', include(router.urls)),
                 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
                 url(r'^api-token-auth/', auth_views.obtain_auth_token),

@@ -15,7 +15,7 @@ from django.contrib.auth.models import Group
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
+from django.http import HttpResponse
 
 @login_required(login_url='/accounts/login/')
 def index(request, selected_countries=None, id=0, sector=0):
@@ -392,3 +392,6 @@ def logout_view(request):
     # Redirect to a success page.
     return HttpResponseRedirect("/")
 
+
+def check_view(request):
+    return HttpResponse("Hostname "+request.get_host())
