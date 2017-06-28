@@ -459,11 +459,11 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = DisaggregationValue.objects.all().filter(country__in=user_countries)
+        queryset = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'indicator__workflowlevel1__name')
+    filter_fields = ('disaggregation_label__disaggregation_type__country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = DisaggregationValue.objects.all()
     serializer_class = DisaggregationValueSerializer
