@@ -486,7 +486,7 @@ class DisaggregationLabelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
 
-class ProjectAgreementViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+class ProjectAgreementViewSet(viewsets.ModelViewSet):
     """Returns a list of all project agreement and feed to TolaWork
     API endpoint for getting ProjectAgreement."""
 
@@ -494,12 +494,12 @@ class ProjectAgreementViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
     serializer_class = AgreementSerializer
 
 
-class ChecklistViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+class ChecklistViewSet(viewsets.ModelViewSet):
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
 
 
-class OrganizationViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+class OrganizationViewSet(viewsets.ModelViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
