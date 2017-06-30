@@ -367,7 +367,7 @@ class PeriodicTargetAdmin(admin.ModelAdmin):
 
 class CollectedDataManager(models.Manager):
     def get_queryset(self):
-        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('workflowlevel1','indicator','agreement','complete','evidence','tola_table')
+        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('workflowlevel1','indicator','workflowlevel2','evidence','tola_table')
 
 
 class CollectedData(models.Model):
@@ -378,8 +378,7 @@ class CollectedData(models.Model):
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)
-    agreement = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
-    complete = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="i_workflowlevel2", verbose_name="Project Initiation")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="i_workflowlevel1")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
@@ -394,7 +393,7 @@ class CollectedData(models.Model):
     objects = CollectedDataManager()
 
     class Meta:
-        ordering = ('agreement','indicator','date_collected','create_date')
+        ordering = ('workflowlevel2','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
 
     #onsave add create date or update edit date
@@ -417,7 +416,4 @@ class CollectedData(models.Model):
         return ', '.join([y.disaggregation_label.label + ': ' + y.value for y in self.disaggregation_value.all()])
 
 
-class CollectedDataAdmin(admin.ModelAdmin):
-    list_display = ('indicator','date_collected', 'create_date', 'edit_date')
-    list_filter = ['indicator__workflowlevel1__country__country']
-    display = 'Indicator Output/Outcome Collected Data'
+

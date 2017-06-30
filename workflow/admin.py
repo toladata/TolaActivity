@@ -10,7 +10,7 @@ from admin_report.mixins import ChartReportAdmin
 class DocumentationResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
-    project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(WorkflowLevel2, 'project_name'))
+    workflowlevel2 = fields.Field(column_name='workflowlevel2', attribute='workflowlevel2', widget=ForeignKeyWidget(WorkflowLevel2, 'project_name'))
 
     class Meta:
         model = Documentation
@@ -23,46 +23,14 @@ class DocumentationResource(resources.ModelResource):
 
 class DocumentationAdmin(ImportExportModelAdmin):
     resource_class = DocumentationResource
-    list_display = ('workflowlevel1','project')
+    list_display = ('workflowlevel1','workflowlevel2')
     list_filter = ('workflowlevel1__country',)
     pass
 
 
-# Resource for CSV export
-class ProjectAgreementResource(resources.ModelResource):
-
-    class Meta:
-        model = WorkflowLevel2
-        widgets = {
-                'create_date': {'format': '%d/%m/%Y'},
-                'edit_date': {'format': '%d/%m/%Y'},
-                'expected_start_date': {'format': '%d/%m/%Y'},
-                'expected_end_date': {'format': '%d/%m/%Y'},
-                }
-
-
-class ProjectAgreementAdmin(ImportExportModelAdmin):
-    resource_class = ProjectAgreementResource
-    list_display = ('workflowlevel1','project_name','short','create_date')
-    list_filter = ('workflowlevel1__country','short')
-    filter_horizontal = ('capacity','evaluate','site','stakeholder')
-
-    def queryset(self, request, queryset):
-        """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
-        `self.value()`.
-        """
-        # Filter by logged in users allowable countries
-        user_countries = getCountry(request.user)
-        #if not request.user.user.is_superuser:
-        return queryset.filter(country__in=user_countries)
-
-    pass
-
 
 # Resource for CSV export
-class ProjectCompleteResource(resources.ModelResource):
+class WorkflowLevel2Resource(resources.ModelResource):
 
     class Meta:
         model = WorkflowLevel2
@@ -76,8 +44,8 @@ class ProjectCompleteResource(resources.ModelResource):
                 }
 
 
-class ProjectCompleteAdmin(ImportExportModelAdmin):
-    resource_class = ProjectCompleteResource
+class WorkflowLevel2Admin(ImportExportModelAdmin):
+    resource_class = WorkflowLevel2Resource
     list_display = ('workflowlevel1', 'project_name', 'activity_code','short','create_date')
     list_filter = ('workflowlevel1__country', 'office', 'short')
     display = 'project_name'
@@ -195,7 +163,7 @@ admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
 admin.site.register(Village)
 admin.site.register(WorkflowLevel1, WorkflowLevel1Admin)
 admin.site.register(Sector)
-admin.site.register(WorkflowLevel2, ProjectAgreementAdmin)
+admin.site.register(WorkflowLevel2, WorkflowLevel2Admin)
 #admin.site.register(WorkflowLevel2, ProjectCompleteAdmin) # TODO Merge these two
 admin.site.register(Documentation,DocumentationAdmin)
 admin.site.register(Template)
@@ -218,6 +186,6 @@ admin.site.register(FormGuidance,FormGuidanceAdmin)
 admin.site.register(TolaUserProxy, ReportTolaUserProxyAdmin)
 admin.site.register(TolaBookmarks, TolaBookmarksAdmin)
 admin.site.register(Currency, CurrencyAdmin)
-admin.site.register(Approval, ApprovalAdmin)
+admin.site.register(ApprovalWorkflow, ApprovalWorkflowAdmin)
 admin.site.register(ApprovalType, ApprovalTypeAdmin)
 

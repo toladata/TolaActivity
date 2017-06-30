@@ -60,8 +60,8 @@ class CollectedDataResource(resources.ModelResource):
 
 class CollectedDataAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
     resource_class = CollectedDataResource
-    list_display = ('indicator','workflowlevel1','agreement')
-    search_fields = ('indicator','agreement','workflowlevel1','owner__username')
+    list_display = ('indicator','workflowlevel1','workflowlevel2')
+    search_fields = ('indicator','workflowlevel1','owner__username')
     list_filter = ('indicator__workflowlevel1__country__country','workflowlevel1','approved_by')
     display = 'Collected Data on Indicators'
     pass

@@ -61,7 +61,7 @@ class TrainingAttendanceAdmin(admin.ModelAdmin):
 class Distribution(models.Model):
     distribution_name = models.CharField(max_length=255)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
-    initiation = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
     office_code = models.ForeignKey(Office, null=True, blank=True)
     distribution_indicator = models.CharField(max_length=255)
     distribution_implementer = models.CharField(max_length=255, null=True, blank=True)
@@ -109,7 +109,7 @@ class Distribution(models.Model):
 
 
 class DistributionAdmin(admin.ModelAdmin):
-    list_display = ('distribution_name', 'workflowlevel1', 'initiation', 'create_date', 'edit_date')
+    list_display = ('distribution_name', 'workflowlevel1', 'workflowlevel2', 'create_date', 'edit_date')
     display = 'Program Dashboard'
 
 

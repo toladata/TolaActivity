@@ -374,7 +374,62 @@ class ApprovalTypeAdmin(admin.ModelAdmin):
     display = 'Approval Types'
 
 
-SECTIONS = (
+class Notes(models.Model):
+    name = models.CharField("Name", max_length=255, blank=True)
+    note_content = models.TextField("Name", blank=True)
+    organization = models.ForeignKey(Organization)
+    note_to = models.ForeignKey(TolaUser, null=False, related_name="notes_to")
+    note_from = models.ForeignKey(TolaUser, null=False, related_name="notes_from")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name','organization')
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Notes, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class NotesAdmin(admin.ModelAdmin):
+    list_display = ('name','organization')
+    display = 'Notes'
+
+
+class ApprovalWorkflow(models.Model):
+    note = models.ForeignKey(Notes, null=False, related_name="approval_notes")
+    approval_type = models.ForeignKey(ApprovalType, null=False, related_name="approval_type")
+    assigned_to = models.ForeignKey(TolaUser, null=False, related_name="to_approval")
+    assigned_from = models.ForeignKey(TolaUser, null=False, related_name="from_approval")
+    date_assigned = models.DateTimeField(null=True, blank=True)
+    date_approved = models.DateTimeField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    STATUS_OPEN = "open"
+    STATUS_AWAITING_APPROVAL = "awaiting_approval"
+    STATUS_TRACKING = "tracking"
+    STATUS_AWAITING_VERIFICATION = "awaiting_verification"
+    STATUS_CLOSED = "closed"
+
+    STATUS_CHOICES = (
+        (STATUS_OPEN, "Open"),
+        (STATUS_AWAITING_APPROVAL, "Awaiting Approval"),
+        (STATUS_TRACKING, "Tracking"),
+        (STATUS_AWAITING_VERIFICATION, "Awaiting Verification"),
+        (STATUS_CLOSED, "Closed")
+    )
+
+    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="open")
+
+    SECTIONS = (
         ('workflowlevel1', 'Workflow Level 1'),
         ('workflowlevel2', 'Workflow Level 2'),
         ('workflowlevel3', 'Workflow Level 3'),
@@ -383,33 +438,26 @@ SECTIONS = (
         ('documents', 'Documents'),
     )
 
-
-class Approval(models.Model):
-    approval_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="authuser")
-    approval_type = models.ForeignKey(ApprovalType, blank=True, null=True, related_name="type")
-    section = models.CharField(blank=True, null=True, max_length=3, choices=SECTIONS)
-    status = models.CharField("Status", max_length=255, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    section = models.CharField(choices=SECTIONS, max_length=50, default="workflowlevel1")
 
     class Meta:
-        ordering = ('approval_type','approval_user')
+        ordering = ('approval_type',)
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Approval, self).save()
+        super(ApprovalWorkflow, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.approval_user
+        return unicode(self.workflowlevel2)
 
 
-class ApprovalAdmin(admin.ModelAdmin):
-    list_display = ('approval_user',)
-    display = 'Approval Process'
+class ApprovalWorkflowAdmin(admin.ModelAdmin):
+    list_display = ('approval_type','section')
+    display = 'Approval Workflow'
 
 
 class WorkflowLevel1(models.Model):
@@ -949,6 +997,7 @@ class ProjectAgreementManager(models.Manager):
 
     def get_rejected(self):
         return self.filter(approval="rejected")
+
     def get_new(self):
         return self.filter(Q(approval=None) | Q(approval=""))
 
@@ -964,7 +1013,7 @@ class WorkflowLevel2(models.Model):
     # START of PorjectAgreement Fields
     agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
     short = models.BooleanField(default=True, verbose_name="Short Form (recommended)")
-    workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="agreement")
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     # Rename to more generic "nonproject" names
     project_name = models.CharField("Project Name",
@@ -1064,8 +1113,8 @@ class WorkflowLevel2(models.Model):
     objects = ProjectAgreementManager()
     # END of PorjectAgreement Fields
 
-    # START of ProjectComplete specififc Fields
-    actual_start_date = models.DateTimeField(help_text="Imported from Project Initiation", blank=True, null=True)
+    # START of ProjectComplete specific Fields
+    actual_start_date = models.DateTimeField(blank=True, null=True)
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=True)
@@ -1184,7 +1233,7 @@ class Documentation(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
-    project = models.ForeignKey(WorkflowLevel2, blank=True, null=True)
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="doc_workflowlevel2")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1208,20 +1257,6 @@ class Documentation(models.Model):
         verbose_name_plural = "Documentation"
 
 
-# TODO: Rename model with manual migration file
-"""
-https://docs.djangoproject.com/en/dev/ref/migration-operations/#renamemodel
-
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ('workflow', '0001_initial'),
-    ]
-
-    operations = [
-        migrations.RenameModel("Benchmarks", "WorkflowLevel3")
-    ]
-"""
 class WorkflowLevel3(models.Model):
     percent_complete = models.IntegerField("% complete", blank=True, null=True)
     percent_cumulative = models.IntegerField("% cumulative completion", blank=True, null=True)
@@ -1253,8 +1288,8 @@ class WorkflowLevel3(models.Model):
         return self.description
 
 
-class BenchmarksAdmin(admin.ModelAdmin):
-    list_display = ('description', 'agreement__name', 'create_date', 'edit_date')
+class WorkflowLevel3Admin(admin.ModelAdmin):
+    list_display = ('description', 'workflowlevel2__name', 'create_date', 'edit_date')
     display = 'Project Components'
 
 
@@ -1293,13 +1328,13 @@ class BudgetAdmin(admin.ModelAdmin):
 
 class Checklist(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True,default="Checklist")
-    agreement = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
     country = models.ForeignKey(Country,null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('agreement',)
+        ordering = ('workflowlevel2',)
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1310,12 +1345,12 @@ class Checklist(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return unicode(self.agreement)
+        return unicode(self.workflowlevel2)
 
 
 class ChecklistAdmin(admin.ModelAdmin):
     list_display = ('name','country')
-    list_filter = ('country','agreement')
+    list_filter = ('country','workflowlevel2')
 
 
 class ChecklistItem(models.Model):
@@ -1346,5 +1381,41 @@ class ChecklistItem(models.Model):
 class ChecklistItemAdmin(admin.ModelAdmin):
     list_display = ('item','checklist','in_file')
     list_filter = ('checklist','global_item')
+
+
+class WorkflowModules(models.Model):
+    workflowlevel2 = models.ForeignKey("WorkflowLevel2",max_length=255)
+
+    MODULES = (
+        ('approval', 'Approval'),
+        ('budget', 'Budget'),
+        ('stakeholders', 'Stakeholders'),
+        ('documents', 'Documents'),
+    )
+
+    modules = models.CharField(choices=MODULES, max_length=50, default="open")
+
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('modules',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(WorkflowModules, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.item)
+
+
+class WorkflowModulesAdmin(admin.ModelAdmin):
+    list_display = ('workflowlevel2__name',)
+    list_filter = ('workflowlevel2__name',)
+
 
 

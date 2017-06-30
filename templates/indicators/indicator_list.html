@@ -19,10 +19,10 @@ function loadCollected(indicator,workflowlevel1){
 *  Load the collected data for an indicator on the results page
 */
 
-function loadIndicators(program,indicator,type){
+function loadIndicators(workflowlevel1,indicator,type){
     var workflowlevel1;
     $.get('/indicators/program_indicators/' + workflowlevel1 + '/' + indicator + '/' + type + '/', function(data){
-        $('#hidden-' + program).html(data);
+        $('#hidden-' + workflowlevel1).html(data);
       });
     $('#hidden-' + workflowlevel1).on('shown', function () {
        $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
@@ -91,6 +91,7 @@ function loadIndicators(program,indicator,type){
 <script type="text/javascript">
     /*
     var program_id = document.URL.split('/')[5];
+    console.log(document.URL.split('/')[5]);
     var indicator_id = document.URL.split('/')[6];
     var type_id = document.URL.split('/')[7];
     $(document).ready(function() {

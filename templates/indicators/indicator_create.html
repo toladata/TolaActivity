@@ -48,6 +48,7 @@
         <div class="panel-body">
             <form class="form-horizontal" method="post" enctype="multipart/form-data" name="most" action="/indicators/indicator_create/{{ workflowlevel1_id }}/" role="form">
               {% csrf_token %}
+              {% if getServices %}
               <div class="form-group">
                   <label for="services">Indicator Service Templates (leave blank for custom indicators)</label>
                   <select name="services" id="services" class="form-control">
@@ -66,6 +67,7 @@
                   </select>
                   <span id="helpBlock" class="help-block">Type the name of the Indicator in the box above to search, starting with type then level then title.</span>
               </div>
+              {% endif %}
               <div class="form-group">
                   <div class="input-group">
                   <label for="country">Country</label>
@@ -78,7 +80,7 @@
                   </div>
               </div>
               <div class="form-group">
-              <label for="workflowlevel1">{{ workflowlevel1 }}</label>
+              <label for="workflowlevel1">{{ WORKFLOWLEVEL1 }}</label>
               <select name="workflowlevel1" id="workflowlevel1" class="form-control">
                   <option value="0"> -- select -- </option>
                   {% for item in getPrograms %}

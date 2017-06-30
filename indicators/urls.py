@@ -46,7 +46,7 @@ urlpatterns = [
 
     # ajax calls
     url(r'^service/(?P<service>[-\w]+)/service_json/', indicatorviews.service_json, name='service_json'),
-    url(r'^collected_data_table/(?P<indicator>[-\w]+)/(?P<program>[-\w]+)/', indicatorviews.collected_data_json, name='collected_data_json'),
+    url(r'^collected_data_table/(?P<indicator>[-\w]+)/(?P<workflowlevel1>[-\w]+)/', indicatorviews.collected_data_json, name='collected_data_json'),
     url(r'^program_indicators/(?P<workflowlevel1>[-\w]+)/(?P<indicator>[-\w]+)/(?P<type>[-\w]+)', indicatorviews.workflowlevel1_indicators_json, name='workflowlevel1_indicators_json'),
     url(r'^report_data/(?P<id>\w+)/(?P<workflowlevel1>\w+)/(?P<type>\w+)/$', IndicatorReportData.as_view(), name='indicator_report_data'),
     url(r'^report_data/(?P<id>\w+)/(?P<workflowlevel1>\w+)/(?P<indicator_type>\w+)/export/$', IndicatorExport.as_view(), name='indicator_export'),

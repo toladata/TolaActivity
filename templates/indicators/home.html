@@ -28,7 +28,7 @@
         {% for item in programs_by_gaitid %}
         <div class="jumbotron dashboard">
             <h4>{{ item.workflowlevel1.gaitid }} - {{ item.workflowlevel1.name }}</h4>
-            {% if item.programs.agreement.indicator.all %}
+            {% if item.workflowlevel1.workflowlevel2.indicator.all %}
                 <!-- Table -->
                 <table class="table">
                     <tr>
@@ -39,7 +39,7 @@
                         <th>Source</th>
                         <th>Definition</th>
                     </tr>
-                    {% for indicator in item.programs.agreement.indicator.all %}
+                    {% for indicator in item.workflowlevel1.workflowlevel2.indicator.all %}
                     <tr>
                         <td><a href="/indicators/editIndicator/{{ indicator.id }}">{{ indicator.create_date}}</a></td>
                         <td>{{ indicator.indicator_type}}</td>
