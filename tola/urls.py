@@ -51,9 +51,12 @@ router.register(r'collecteddata', CollectedDataViewSet)
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
 router.register(r'dissagregationlabel', DisaggregationLabelViewSet)
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
-router.register(r'projectagreements', ProjectAgreementViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
+router.register(r'currency', CurrencyViewSet)
+router.register(r'approvaltype', ApprovalTypeViewSet)
+router.register(r'approvalworkflow', ApprovalWorkflowViewSet)
+router.register(r'notes', NotesViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 
 

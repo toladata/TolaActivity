@@ -1,10 +1,7 @@
 from rest_framework import serializers
 
-from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, WorkflowLevel2,\
-    Stakeholder, Capacity, Evaluate, ProfileType, Province, District, AdminLevelThree, Village, StakeholderType,\
-    Contact, Documentation, Checklist, Organization
-from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
+from workflow.models import *
+from indicators.models import *
 from django.contrib.auth.models import User
 
 
@@ -363,4 +360,34 @@ class ChecklistSerializer(serializers.HyperlinkedModelSerializer):
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Organization
+        fields = '__all__'
+
+
+class WorkflowModulesSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = WorkflowModules
+        fields = '__all__'
+
+
+class CurrencySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Currency
+        fields = '__all__'
+
+
+class ApprovalTypeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ApprovalType
+        fields = '__all__'
+
+
+class ApprovalWorkflowSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ApprovalWorkflow
+        fields = '__all__'
+
+
+class NotesSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Notes
         fields = '__all__'

@@ -1,11 +1,6 @@
 from .serializers import *
-
-from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, WorkflowLevel2,\
-    Stakeholder, Capacity, Evaluate, ProfileType, Province, District, AdminLevelThree, Village, \
-    StakeholderType, Contact, Documentation, Checklist
-from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, \
-    DisaggregationLabel
+from workflow.models import *
+from indicators.models import *
 
 from django.db.models import Count
 from django.contrib.auth.models import User
@@ -513,3 +508,27 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
     queryset = WorkflowLevel2.objects.order_by('create_date')
     serializer_class = WorkflowLevel2Serializer
 
+
+class WorkflowModulesViewSet(viewsets.ModelViewSet):
+    queryset = WorkflowModules.objects.all()
+    serializer_class = WorkflowModulesSerializer
+
+
+class CurrencyViewSet(viewsets.ModelViewSet):
+    queryset = Currency.objects.all()
+    serializer_class = CurrencySerializer
+
+
+class ApprovalTypeViewSet(viewsets.ModelViewSet):
+    queryset = ApprovalType.objects.all()
+    serializer_class = ApprovalTypeSerializer
+
+
+class ApprovalWorkflowViewSet(viewsets.ModelViewSet):
+    queryset = ApprovalWorkflow.objects.all()
+    serializer_class = ApprovalWorkflowSerializer
+
+
+class NotesViewSet(viewsets.ModelViewSet):
+    queryset = ApprovalWorkflow.objects.all()
+    serializer_class = NotesSerializer
