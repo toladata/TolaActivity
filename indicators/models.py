@@ -346,7 +346,6 @@ class Indicator(SecurityModel):
         return self.name
 
 
-
 class PeriodicTarget(models.Model):
     indicator = models.ForeignKey(Indicator, null=False, blank=False)
     period = models.CharField(max_length=255, null=True, blank=True)

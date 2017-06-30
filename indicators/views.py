@@ -149,11 +149,13 @@ def indicator_create(request, id=0):
             service = request.POST['services']
         else:
             service = None
+
         if 'service_indicator' in request.POST:
             node_id = request.POST['service_indicator']
         else:
             node_id = None
         level = Level.objects.all()[0]
+        node_id = request.POST['service_indicator']
         sector = None
         # add a temp name for custom indicators
         name = "Temporary"
@@ -279,7 +281,7 @@ class IndicatorUpdate(UpdateView):
         getIndicator = Indicator.objects.get(id=self.kwargs['pk'])
 
         context.update({'i_name': getIndicator.name})
-        context['programId'] = getIndicator.workflowlevel1.all()[0].id
+        context['programId'] = getIndicator.program.all()[0].id
         context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
 
         #get external service data if any
