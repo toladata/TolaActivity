@@ -1,5 +1,4 @@
 import unicodedata
-import urllib2
 import json
 import sys
 import requests
@@ -76,7 +75,7 @@ def get_table(url,data=None):
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
-    response = requests.get(url,headers=headers, verify=False)
+    response = requests.get(url,headers=headers, verify=True)
     if data:
         data = json.loads(response.content['data'])
     else:

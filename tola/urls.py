@@ -7,6 +7,9 @@ from rest_framework import routers
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken import views as auth_views
+from django.contrib.auth import views as authviews
+
+from tola import views as tolaviews
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -68,7 +71,7 @@ urlpatterns = [ # rest framework
                 url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
 
                 # index
-                url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', 'tola.views.index', name='index'),
+                url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', tolaviews.index, name='index'),
 
                 # base template for layout
                 url(r'^$', TemplateView.as_view(template_name='base.html')),
@@ -95,8 +98,8 @@ urlpatterns = [ # rest framework
                 url(r'^configurabledashboard/', include('configurabledashboard.urls')),
 
                 # local login
-                url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
-                url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),
+                url(r'^login/$', authviews.login, name='login'),
+                url(r'^accounts/login/$', authviews.login, name='login'),
                 url(r'^accounts/logout/$', views.logout_view, name='logout'),
 
                 # accounts
@@ -111,7 +114,9 @@ urlpatterns = [ # rest framework
 
                 # Auth backend URL's
                 url('', include('django.contrib.auth.urls', namespace='auth')),
-                url('', include('social.apps.django_app.urls', namespace='social')),
+                #url('', include('social.apps.django_app.urls', namespace='social')),
+                url('', include('social_django.urls', namespace='social'))
+                #url(r'^oauth/', include('social_django.urls', namespace='social')),
 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
