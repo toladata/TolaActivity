@@ -475,12 +475,12 @@ class DocumentationList(ListView):
         getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries)
 
         if int(self.kwargs['workflowlevel1']) != 0 & int(self.kwargs['project']) == 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','project').filter(workflowlevel1__id=self.kwargs['workflowlevel1'])
+            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project'])
         elif int(self.kwargs['project']) != 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','project').filter(project__id=self.kwargs['project'])
+            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project'])
         else:
             countries = getCountry(request.user)
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','project','project__office').filter(workflowlevel1__country__in=countries)
+            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office').filter(workflowlevel1__country__in=countries)
 
         return render(request, self.template_name, {'getworkflowlevel1s': getworkflowlevel1s, 'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
 
@@ -951,7 +951,7 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super(BenchmarkCreate, self).get_form_kwargs()
         try:
-            getComplete = WorkflowLevel2.objects.get(project_agreement__id=self.kwargs['id'])
+            getComplete = WorkflowLevel2.objects.get(doc_workflowlevel2__id=self.kwargs['id'])
             kwargs['workflowlevel2'] = getComplete.id
         except WorkflowLevel2.DoesNotExist:
             kwargs['workflowlevel2'] = None

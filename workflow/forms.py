@@ -73,7 +73,6 @@ class BudgetForm(forms.ModelForm):
         model = Budget
         exclude = ['create_date', 'edit_date']
 
-
     def __init__(self, *args, **kwargs):
 
         self.request = kwargs.pop('request')
@@ -92,7 +91,6 @@ class BudgetForm(forms.ModelForm):
 
 
         super(BudgetForm, self).__init__(*args, **kwargs)
-        self.fields['agreement'].widget = forms.HiddenInput()#TextInput()
         self.fields['workflowlevel2'].widget = forms.HiddenInput()#TextInput()
         #countries = getCountry(self.request.user)
 
@@ -1405,7 +1403,7 @@ class DocumentationForm(forms.ModelForm):
             HTML("""<br/>"""),
 
                 'name',FieldWithButtons('url', StrictButton("gdrive", onclick="onApiLoad();")), Field('description', rows="3", css_class='input-xlarge'),
-                'project','program',
+                'workflowlevel2','workflowlevel1',
 
             FormActions(
                 Submit('submit', 'Save', css_class='btn-default'),
@@ -1417,7 +1415,7 @@ class DocumentationForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
-        self.fields['project'].queryset = WorkflowLevel2.objects.filter(workflowlevel1__country__in=countries)
+        self.fields['workflowlevel2'].queryset = WorkflowLevel2.objects.filter(workflowlevel1__country__in=countries)
         self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
 
 
@@ -1483,11 +1481,11 @@ class BenchmarkForm(forms.ModelForm):
             self.helper.layout = Layout(
                 Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date',
                 Field('actual_start_date', css_class="act_datepicker", id="actual_start_date_id"),
-                 Field('actual_end_date', css_class="act_datepicker", id="actual_end_date_id"),'budget','cost','agreement','workflowlevel2',
+                 Field('actual_end_date', css_class="act_datepicker", id="actual_end_date_id"),'budget','cost','workflowlevel2',
             )
         else:
             self.helper.layout = Layout(
-                Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date','budget','agreement',
+                Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date','budget','workflowlevel2',
             )
         super(BenchmarkForm, self).__init__(*args, **kwargs)
 
@@ -1495,7 +1493,6 @@ class BenchmarkForm(forms.ModelForm):
         # override the site queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
-        self.fields['agreement'].widget = HiddenInput()
         self.fields['workflowlevel2'].widget = HiddenInput()
 
 
