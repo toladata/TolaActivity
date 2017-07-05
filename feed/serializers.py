@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from workflow.models import *
 from indicators.models import *
+from formlibrary.models import *
 from django.contrib.auth.models import User
 
 
@@ -390,4 +391,10 @@ class ApprovalWorkflowSerializer(serializers.HyperlinkedModelSerializer):
 class NotesSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Notes
+        fields = '__all__'
+
+
+class BeneficiarySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Beneficiary
         fields = '__all__'

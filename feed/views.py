@@ -1,6 +1,7 @@
 from .serializers import *
 from workflow.models import *
 from indicators.models import *
+from formlibrary.models import *
 
 from django.db.models import Count
 from django.contrib.auth.models import User
@@ -532,3 +533,8 @@ class ApprovalWorkflowViewSet(viewsets.ModelViewSet):
 class NotesViewSet(viewsets.ModelViewSet):
     queryset = ApprovalWorkflow.objects.all()
     serializer_class = NotesSerializer
+
+
+class BeneficiaryViewSet(viewsets.ModelViewSet):
+    queryset = Beneficiary.objects.all()
+    serializer_class = BeneficiarySerializer

@@ -166,6 +166,46 @@ class TolaUser(models.Model):
         super(TolaUser, self).save()
 
 
+class Award(models.Model):
+    donors = models.ManyToManyField("Stakeholder", blank=True)
+    name = models.CharField("Award Name/Title", blank=True, null=True, max_length=100)
+    organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
+    countries = models.ManyToManyField(Country, verbose_name="Countries", related_name='countries_award', blank=True)
+    amount = models.IntegerField("Amount", blank=True, default=0)
+
+    STATUS_OPEN = "open"
+    STATUS_FUNDED = "funded"
+    STATUS_AWAITING = "awaiting"
+    STATUS_CLOSED = "closed"
+    AWARD_STATUS_CHOICES = (
+        (STATUS_OPEN,"Open"),
+        (STATUS_FUNDED,"Funded"),
+        (STATUS_AWAITING, "Awaiting Funding"),
+        (STATUS_CLOSED,"Closed")
+    )
+
+    status = models.CharField(choices=AWARD_STATUS_CHOICES, max_length=50, default="Open")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __unicode__(self):
+        return self.name
+
+    @property
+    def countries_list(self):
+        return ', '.join([x.code for x in self.countries.all()])
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Award, self).save()
+
+
 class TolaBookmarks(models.Model):
     user = models.ForeignKey(TolaUser, related_name='tolabookmark')
     name = models.CharField(blank=True, null=True, max_length=255)
@@ -1391,6 +1431,9 @@ class WorkflowModules(models.Model):
         ('budget', 'Budget'),
         ('stakeholders', 'Stakeholders'),
         ('documents', 'Documents'),
+        ('risk_issues', 'Risks and Issues'),
+        ('case_management', 'Case Management'),
+        ('procurement_plan', 'Procurement Plan'),
     )
 
     modules = models.CharField(choices=MODULES, max_length=50, default="open")

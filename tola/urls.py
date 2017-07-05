@@ -57,6 +57,7 @@ router.register(r'currency', CurrencyViewSet)
 router.register(r'approvaltype', ApprovalTypeViewSet)
 router.register(r'approvalworkflow', ApprovalWorkflowViewSet)
 router.register(r'notes', NotesViewSet)
+router.register(r'beneficiary', BeneficiaryViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 
 
