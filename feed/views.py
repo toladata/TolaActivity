@@ -531,7 +531,7 @@ class ApprovalWorkflowViewSet(viewsets.ModelViewSet):
 
 
 class NotesViewSet(viewsets.ModelViewSet):
-    queryset = ApprovalWorkflow.objects.all()
+    queryset = Notes.objects.all()
     serializer_class = NotesSerializer
 
 
