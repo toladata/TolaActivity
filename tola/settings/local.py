@@ -19,10 +19,15 @@ except KeyError:
     # Fallback for tests without environment variables configured
     # Depends on os.environ for correct functionality
     # TODO log this
+    print("Writing to LOCAL")
     DATABASES = {
         'default': {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": ":memory:",
+            'ENGINE': "django.db.backends.postgresql",
+            'NAME': "tola_activity_local",
+            'USER': "postgres",
+            'PASSWORD': "SWTBQ",
+            'HOST': "localhost",
+            'PORT': "",
         }
     }
 
