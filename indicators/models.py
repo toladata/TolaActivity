@@ -22,6 +22,13 @@ class TolaTable(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(TolaTable, self).save(*args, **kwargs)
+
 
 class TolaTableAdmin(admin.ModelAdmin):
     list_display = ('name','country','owner','url','create_date','edit_date')
@@ -38,6 +45,13 @@ class IndicatorType(models.Model):
 
     def __unicode__(self):
         return self.indicator_type
+
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(IndicatorType, self).save(*args, **kwargs)
 
 
 class IndicatorTypeAdmin(admin.ModelAdmin):
@@ -58,10 +72,12 @@ class StrategicObjective(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(StrategicObjective, self).save()
+        self.edit_date = datetime.now()
+        super(StrategicObjective, self).save(*args, **kwargs)
 
 
 class StrategicObjectiveAdmin(admin.ModelAdmin):
@@ -84,10 +100,12 @@ class Objective(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(Objective, self).save()
+        self.edit_date = datetime.now()
+        super(Objective, self).save(*args, **kwargs)
 
 
 class ObjectiveAdmin(admin.ModelAdmin):
@@ -106,10 +124,12 @@ class Level(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(Level, self).save()
+        self.edit_date = datetime.now()
+        super(Level, self).save(*args, **kwargs)
 
 
 class LevelAdmin(admin.ModelAdmin):
@@ -128,6 +148,12 @@ class DisaggregationType(models.Model):
     def __unicode__(self):
         return self.disaggregation_type
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationType, self).save(*args, **kwargs)
 
 class DisaggregationTypeAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_type','country','standard','description')
@@ -145,6 +171,13 @@ class DisaggregationLabel(models.Model):
     def __unicode__(self):
         return self.label
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationLabel, self).save(*args, **kwargs)
+
 
 class DisaggregationLabelAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_type', 'customsort', 'label',)
@@ -161,6 +194,13 @@ class DisaggregationValue(models.Model):
     def __unicode__(self):
         return self.value
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationValue, self).save(*args, **kwargs)
+
 
 class DisaggregationValueAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_label','value','create_date','edit_date')
@@ -176,6 +216,13 @@ class ReportingFrequency(models.Model):
 
     def __unicode__(self):
         return self.frequency
+
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ReportingFrequency, self).save(*args, **kwargs)
 
 
 class DataCollectionFrequency(models.Model):
@@ -201,6 +248,13 @@ class ReportingPeriod(models.Model):
     def __unicode__(self):
         return self.frequency
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ReportingPeriod, self).save(*args, **kwargs)
+
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
     list_display = ('frequency','create_date','edit_date')
@@ -216,6 +270,13 @@ class ExternalService(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        #onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ExternalService, self).save(*args, **kwargs)
 
 
 class ExternalServiceAdmin(admin.ModelAdmin):
@@ -233,20 +294,17 @@ class ExternalServiceRecord(models.Model):
     def __unicode__(self):
         return self.full_url
 
+    def save(self, *args, **kwargs):
+        #onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ExternalServiceRecord, self).save(*args, **kwargs)
+
 
 class ExternalServiceRecordAdmin(admin.ModelAdmin):
     list_display = ('external_service','full_url','record_id','create_date','edit_date')
     display = 'Exeternal Indicator Data Service'
-
-"""
-class SecurityManager(models.Manager):
-    name = "SecurityManager"
-
-    def __init__(self, *args, **kwargs):
-        super(SecurityManager, self).__init__(*args, **kwargs)
-        print("SecurityManager instantiated")
-
-"""
 
 
 class IndicatorManager(models.Manager):
@@ -255,7 +313,7 @@ class IndicatorManager(models.Manager):
 
 from tola.security import SecurityModel
 class Indicator(SecurityModel):
-    indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
     objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Objective", related_name="obj_indicator")
@@ -370,7 +428,7 @@ class CollectedDataManager(models.Manager):
 
 
 class CollectedData(models.Model):
-    data_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    data_uuid = models.CharField(max_length=255,verbose_name='Data UUID', default=uuid.uuid4)
     periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True)
     #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, default=Decimal('0.00'))

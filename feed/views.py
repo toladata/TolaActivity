@@ -129,7 +129,7 @@ class CountryViewSet(viewsets.ModelViewSet):
     serializer_class = CountrySerializer
 
 
-class AgreementViewSet(viewsets.ModelViewSet):
+class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
@@ -155,7 +155,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
     filter_fields = ('workflowlevel1__country__country','workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel2.objects.all()
-    serializer_class = AgreementSerializer
+    serializer_class = WorkflowLevel2Serializer
     pagination_class = SmallResultsSetPagination
 
 
@@ -482,14 +482,6 @@ class DisaggregationLabelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
 
-class ProjectAgreementViewSet(viewsets.ModelViewSet):
-    """Returns a list of all project agreement and feed to TolaWork
-    API endpoint for getting ProjectAgreement."""
-
-    queryset = WorkflowLevel2.objects.order_by('create_date')
-    serializer_class = AgreementSerializer
-
-
 class ChecklistViewSet(viewsets.ModelViewSet):
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
@@ -538,3 +530,8 @@ class NotesViewSet(viewsets.ModelViewSet):
 class BeneficiaryViewSet(viewsets.ModelViewSet):
     queryset = Beneficiary.objects.all()
     serializer_class = BeneficiarySerializer
+
+
+class DistributionViewSet(viewsets.ModelViewSet):
+    queryset = Distribution.objects.all()
+    serializer_class = DistributionSerializer

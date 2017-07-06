@@ -19,7 +19,7 @@ class IndicatorResource(resources.ModelResource):
 
     class Meta:
         model = Indicator
-        fields = ('id','indicator_type','level','objective','strategic_objective','name','number',\
+        fields = ('id','indicator_key','indicator_type','level','objective','strategic_objective','name','number',\
                   'source','definition', 'justification', 'unit_of_measure', 'baseline','lop_target', 'rationale_for_target', 'means_of_verification','data_collection_method', 'data_collection_frequency', 'data_points', 'responsible_person',\
                   'method_of_analysis','information_use','reporting_frequency', 'quality_assurance', 'data_issues', 'indicator_changes', 'comments','disaggregation','sector',\
                   'workflowlevel1','key_performance_indicator')

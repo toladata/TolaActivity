@@ -501,7 +501,7 @@ class ApprovalWorkflowAdmin(admin.ModelAdmin):
 
 
 class WorkflowLevel1(models.Model):
-    workflow_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    level1_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel1 UUID', default=uuid.uuid4)
     unique_id = models.CharField("ID", max_length=255, blank=True, unique=True)
     name = models.CharField("Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
@@ -773,7 +773,7 @@ class SiteProfileManager(models.Manager):
 
 
 class SiteProfile(models.Model):
-    profile_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    site_uuid = models.CharField(max_length=255, verbose_name='Site UUID', default=uuid.uuid4)
     name = models.CharField("Site Name", max_length=255, blank=False)
     type = models.ForeignKey(ProfileType, blank=True, null=True)
     office = models.ForeignKey(Office, blank=True, null=True)
@@ -983,6 +983,7 @@ class StakeholderManager(models.Manager):
 
 
 class Stakeholder(models.Model):
+    stakeholder_uuid = models.CharField(max_length=255, verbose_name='Stakeholder UUID', default=uuid.uuid4)
     name = models.CharField("Stakeholder/Organization Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
@@ -1048,10 +1049,11 @@ class ProjectAgreementManager(models.Manager):
 
 class WorkflowLevel2(models.Model):
     """
-
+        Releated to workflowlevel1 this is the activity piece multiple workflows2 can be created and related
+        to a workflowlevel1 and configured with components
     """
-    # START of PorjectAgreement Fields
-    agreement_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    # START of Project Definition Fields
+    level2_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel2 UUID', default=uuid.uuid4)
     short = models.BooleanField(default=True, verbose_name="Short Form (recommended)")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
@@ -1268,6 +1270,7 @@ class WorkflowLevel2(models.Model):
 
 # Project Documents, admin is handled in the admin.py
 class Documentation(models.Model):
+    document_uuid = models.CharField(max_length=255, verbose_name='Document UUID', default=uuid.uuid4)
     name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
     url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=135)
     description = models.CharField(max_length=255, blank=True, null=True)
@@ -1298,6 +1301,7 @@ class Documentation(models.Model):
 
 
 class WorkflowLevel3(models.Model):
+    level3_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel3 UUID', default=uuid.uuid4)
     percent_complete = models.IntegerField("% complete", blank=True, null=True)
     percent_cumulative = models.IntegerField("% cumulative completion", blank=True, null=True)
     est_start_date = models.DateTimeField(null=True, blank=True)
