@@ -313,7 +313,7 @@ class IndicatorManager(models.Manager):
 
 from tola.security import SecurityModel
 class Indicator(SecurityModel):
-    indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4)
+    indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
     objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Objective", related_name="obj_indicator")
@@ -428,7 +428,7 @@ class CollectedDataManager(models.Manager):
 
 
 class CollectedData(models.Model):
-    data_uuid = models.CharField(max_length=255,verbose_name='Data UUID', default=uuid.uuid4)
+    data_uuid = models.CharField(max_length=255,verbose_name='Data UUID', default=uuid.uuid4, unique=True)
     periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True)
     #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, default=Decimal('0.00'))
