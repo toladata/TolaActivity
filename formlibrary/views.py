@@ -470,3 +470,49 @@ class GetAgreements(View, AjaxableResponseMixin):
             final_dict = {'getAgreements': getAgreements}
 
         return JsonResponse(final_dict, safe=False)
+
+
+from models import BinaryField
+from serializers import BinaryFieldSerializer, BinaryFieldImageSerializer
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import api_view
+import base64
+
+
+class BinaryFieldViewSet(viewsets.ModelViewSet):
+    """
+    A ViewSet for listing or retrieving users.
+    """
+    queryset = BinaryField.objects.all()
+    serializer_class = BinaryFieldSerializer
+
+    def retrieve(self, request, pk=None):
+        queryset = BinaryField.objects.all()
+        field = get_object_or_404(queryset, pk=pk)
+        serializer = BinaryFieldImageSerializer(instance=field, context={'request': request})
+        return Response(serializer.data)
+
+    def create(self, request):
+        """
+        Override create method for POST requests to save binary files to database
+        :param request:
+        :return: 
+        """
+        d = base64.b64decode(request.data["data"])
+        b = BinaryField(name=request.data["name"], data=d)
+        b.save()
+        #headers = self.get_success_headers(serializer.data)
+        b.data = None
+        return Response(self.get_serializer(b).data, status=status.HTTP_201_CREATED) #, headers=headers
+
+
+from django.http import HttpResponse
+@api_view(['GET', 'PUT', 'DELETE', 'POST'])
+def binary_test(request, id):
+
+    if request.method == 'GET':
+        bfield = BinaryField.objects.get(id=id)
+        return HttpResponse(bfield.data, content_type="image/png")
