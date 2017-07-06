@@ -1,16 +1,7 @@
 <tr>
     <td>{{ item.create_date|date:"d-m-Y" }}</td>
     <td> {{ item.project_name }} <br/>
-        {% if item.approval == "approved" %}
-          <a class="btn btn-xs btn-default"><span class="glyphicon glyphicon-lock"></span>Initiation Form</a>
-        {% else %}
-          <a class="btn btn-xs btn-default" href="/workflow/projectagreement_update/{{ item.id }}">Initiation Form</a>
-        {% endif%}
-        {% if item.projectcomplete %}
-          <a class="btn btn-xs btn-default" href="/workflow/projectcomplete_update/{{ item.projectcomplete.id }}">Tracking Form</a>
-        {% else %}
-          <a class="btn btn-xs btn-default"><span class="glyphicon glyphicon-lock"></span>Tracking Form</a>
-        {% endif%}
+        <a class="btn btn-xs btn-default" href="/workflow/projectagreement_update/{{ item.id }}">{{ WORKFLOWLEVEL2 }} Form</a>
         <a href="/workflow/projectagreement_detail/{{ item.id }}" class="btn btn-xs btn-default">Print View</a>
     </td>
     <td>{{ item.activity_code }}</td>

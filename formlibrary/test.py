@@ -70,7 +70,7 @@ class DistributionTestCase(TestCase):
         new_agreement.site.add(get_community)
         get_agreement = WorkflowLevel2.objects.get(project_name="testproject")
         new_distribution = Distribution.objects.create(distribution_name="testdistribution", workflowlevel1=get_program,
-                                                            initiation=get_agreement,
+                                                            workflowlevel2=get_agreement,
                                                             office_code=get_office,
                                                             distribution_indicator = "34",
                                                             distribution_implementer = "34",

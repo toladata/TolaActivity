@@ -19,7 +19,7 @@ class IndicatorResource(resources.ModelResource):
 
     class Meta:
         model = Indicator
-        fields = ('id','indicator_type','level','objective','strategic_objective','name','number',\
+        fields = ('id','indicator_key','indicator_type','level','objective','strategic_objective','name','number',\
                   'source','definition', 'justification', 'unit_of_measure', 'baseline','lop_target', 'rationale_for_target', 'means_of_verification','data_collection_method', 'data_collection_frequency', 'data_points', 'responsible_person',\
                   'method_of_analysis','information_use','reporting_frequency', 'quality_assurance', 'data_issues', 'indicator_changes', 'comments','disaggregation','sector',\
                   'workflowlevel1','key_performance_indicator')
@@ -60,8 +60,8 @@ class CollectedDataResource(resources.ModelResource):
 
 class CollectedDataAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
     resource_class = CollectedDataResource
-    list_display = ('indicator','workflowlevel1','agreement')
-    search_fields = ('indicator','agreement','workflowlevel1','owner__username')
+    list_display = ('indicator','workflowlevel1','workflowlevel2')
+    search_fields = ('indicator','workflowlevel1','owner__username')
     list_filter = ('indicator__workflowlevel1__country__country','workflowlevel1','approved_by')
     display = 'Collected Data on Indicators'
     pass

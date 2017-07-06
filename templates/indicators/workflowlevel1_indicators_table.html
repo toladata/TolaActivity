@@ -27,7 +27,7 @@
 
             <a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info indicator-link">Edit</a>
 
-            <a onclick="loadCollected({{ indicator.id }}, {{ program_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ indicator.id }}">Data {{ indicator.data_count }} </a>
+            <a onclick="loadCollected({{ indicator.id }}, {{ workflowlevel1_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ indicator.id }}">Data {{ indicator.data_count }} </a>
 
             <a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a></span></td>
     </tr>

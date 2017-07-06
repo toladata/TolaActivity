@@ -50,7 +50,7 @@
         <div class="jumbotron">
             <ul class="list-group">
                 <li class="list-group-item list-group-item-info">
-                    <h4>Project Initiation</h4>
+                    <h4>{{ WORKFLOWLEVEL2}}</h4>
                     <span></span>
                 </li>
 
@@ -60,19 +60,8 @@
                 </li>
                 <li class="list-group-item">
                     <div class="btn-group" role="group" aria-label="...">
-                        {% if getAgreement.approval == "approved" %}
-                            <button data-toggle="tooltip" data-placement="top" title="Initiation has been approved and can no longer be edited." type="button" class="btn btn-sm btn-frozen" onclick="location.href='/workflow/projectagreement_detail/{{ getAgreement.id }}'">View Initiation</button>
-                            <button data-toggle="tooltip" data-placement="top" title="Initiation has been approved and can no longer be deleted." type="button" class="btn btn-sm btn-frozen">Delete Initiation</button>
-                            {% if getComplete%}
-                                <button data-toggle="tooltip" data-placement="top" title="A completion form has already been created for the project" type="button" class="btn btn-sm btn-frozen">Project Initiation</button>
-                            {% else %}
-                                <button type="button" class="btn btn-sm btn-info" onclick="location.href='/workflow/projectcomplete_add/{{ getAgreement.id }}'">Start tracking your project</button>
-                            {% endif %}
-                        {% else %}
-                            <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/workflow/projectagreement_update/{{ getAgreement.id }}'">Update Initiation</button>
-                            <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/workflow/projectagreement_delete/{{ getAgreement.id }}'">Delete Initiation</button>
-                            <button data-toggle="tooltip" data-placement="top" title="Once Approved you will be able to click here and start tracking the project" type="button" class="btn btn-sm btn-frozen">Start tracking your project</button>
-                        {% endif %}
+                        <button data-toggle="tooltip" data-placement="top"  type="button" class="btn btn-sm btn-info" onclick="location.href='/workflow/projectagreement_detail/{{ getAgreement.id }}'">View {{ WORKFLOWLEVEL2 }}</button>
+                        <button data-toggle="tooltip" data-placement="top"  type="button" class="btn btn-sm btn-warning">Delete {{ WORKFLOWLEVEL2 }}</button>
                     </div>
                 </li>
                 <li class="list-group-item">
@@ -87,38 +76,6 @@
                         {% else %}
                             Open
                         {% endif %}
-                        </button>
-                    {% endif %}
-                 </li>
-            </ul>
-        {% endif %}
-        {% if getComplete %}
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-info">
-                    <h4>Project Tracking</h4>
-                </li>
-                <li class="list-group-item"><b>Name: </b>{{ getComplete.project_name }}<br/>
-                    <b>Project Code: </b>{{ getComplete.activity_code }}<br/>
-                    <b>Created:</b> <span class="date-badge">{{ getComplete.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ getComplete.edit_date|date }}</span>
-                </li>
-                <li class="list-group-item">
-                    <div class="btn-group" role="group" aria-label="...">
-                        <button type="button" class="btn btn-sm btn-warning" onclick="location.href='/workflow/projectcomplete_update/{{ getComplete.id }}'">Update Tracking</button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="location.href='/workflow/projectcomplete_delete/{{ getComplete.id }}'">Delete Tracking</button>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    {% if getComplete.approval == "approved" %}
-                        <button class="btn btn-success" type="button">
-                          Approved
-                        </button>
-                    {% else %}
-                        <button class="btn btn-primary" type="button" onclick="location.href='/workflow/projectcomplete_update/{{ getComplete.id }}'">
-                          {% if getComplete.approval %}
-                            {{ getComplete.approval|title }}
-                          {% else %}
-                            Open
-                          {% endif %}
                         </button>
                     {% endif %}
                  </li>

@@ -41,7 +41,7 @@ def index(request, selected_countries=None, id=0, sector=0):
 
     #limit the workflowlevel1s by the selected sector
     if int(sector) == 0:
-        getworkflowlevel1s = WorkflowLevel1.objects.all().prefetch_related('agreement', 'agreement__office').filter(funding_status="Funded", country__in=selected_countries).exclude(agreement__isnull=True)
+        getworkflowlevel1s = WorkflowLevel1.objects.all().prefetch_related('workflowlevel2', 'workflowlevel2__office').filter(funding_status="Funded", country__in=selected_countries).exclude(workflowlevel2__isnull=True)
         sectors = Sector.objects.all()
     else:
         getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=selected_countries, sector=sector).exclude(agreement__isnull=True)

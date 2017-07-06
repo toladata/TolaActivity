@@ -26,7 +26,6 @@ class IndicatorForm(forms.ModelForm):
         model = Indicator
         exclude = ['create_date','edit_date']
         widgets = {
-            #{'program': forms.Select()}
             'definition': forms.Textarea(attrs={'rows':4}),
             'justification': forms.Textarea(attrs={'rows':4}),
             'quality_assurance': forms.Textarea(attrs={'rows':4}),
@@ -151,7 +150,7 @@ class IndicatorForm(forms.ModelForm):
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
 
-        #override the program queryset to use request.user for country
+        #override the country queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['disaggregation'].queryset = DisaggregationType.objects.filter(country__in=countries).filter(standard=False)
@@ -159,7 +158,7 @@ class IndicatorForm(forms.ModelForm):
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
-        self.fields['program'].widget.attrs['readonly'] = "readonly"
+        self.fields['workflowlevel1'].widget.attrs['readonly'] = "readonly"
 
 class CollectedDataForm(forms.ModelForm):
 
@@ -167,7 +166,6 @@ class CollectedDataForm(forms.ModelForm):
         model = CollectedData
         exclude = ['create_date', 'edit_date']
 
-    program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Program'}) )
     indicator2 = forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Indicator'}) )
     date_collected = forms.DateField(widget=DatePicker.DateInput(), required=True)
 
@@ -183,7 +181,7 @@ class CollectedDataForm(forms.ModelForm):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-6'
         self.helper.form_error_title = 'Form Errors'
-        self.helper.form_action = reverse_lazy('collecteddata_update' if instance else 'collecteddata_add', kwargs={'pk': instance.id} if instance else {'program': self.program, 'indicator': self.indicator})
+        self.helper.form_action = reverse_lazy('collecteddata_update' if instance else 'collecteddata_add', kwargs={'pk': instance.id} if instance else {'workflowlevel1': self.workflowlevel1, 'indicator': self.indicator})
         self.helper.form_id = 'collecteddata_update_form'
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
@@ -194,14 +192,14 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Collected Data',
-                'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
+                'workflowlevel1', 'indicator', 'indicator2', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
 
             ),
 
             HTML("""<br/>"""),
 
             Fieldset('Evidence',
-                'agreement','method','evidence','tola_table','update_count_tola_table',
+                'workflowlevel2','method','evidence','tola_table','update_count_tola_table',
                 HTML("""<a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>"""),
 
             ),
@@ -314,25 +312,21 @@ class CollectedDataForm(forms.ModelForm):
 
         super(CollectedDataForm, self).__init__(*args, **kwargs)
 
-        #override the program queryset to use request.user for country
+        #override the evidence queryset to use request.user for country
         self.fields['evidence'].queryset = Documentation.objects.filter(workflowlevel1=self.workflowlevel1)
 
-        #override the program queryset to use request.user for country
-        self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(workflowlevel1=self.workflowlevel1)
+        #override the level2 queryset to use request.user for country
+        self.fields['workflowlevel2'].queryset = WorkflowLevel2.objects.filter(workflowlevel1=self.workflowlevel1)
 
-        #override the program queryset to use request.user for country
+        #override the country queryset to use request.user for country
         countries = getCountry(self.request.user)
-        #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
         try:
-            int(self.program)
-            self.program = WorkflowLevel1.objects.get(id=self.program)
+            int(self.workflowlevel1)
+            self.workflowlevel1 = WorkflowLevel1.objects.get(id=self.workflowlevel1)
         except TypeError:
             pass
 
         self.fields['periodic_target'].queryset = PeriodicTarget.objects.filter(indicator=self.indicator)
-
-        self.fields['program2'].initial = self.program
-        self.fields['program2'].label = "Program"
 
         try:
             int(self.indicator)
@@ -342,10 +336,9 @@ class CollectedDataForm(forms.ModelForm):
 
         self.fields['indicator2'].initial = self.indicator
         self.fields['indicator2'].label = "Indicator"
-        self.fields['program'].widget = forms.HiddenInput()
+        self.fields['workflowlevel1'].widget = forms.HiddenInput()
         self.fields['indicator'].widget = forms.HiddenInput()
-        #override the program queryset to use request.user for country
+        #override the site queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
-        #self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
         self.fields['tola_table'].queryset = TolaTable.objects.filter(Q(owner=self.request.user) | Q(id=self.tola_table))

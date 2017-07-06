@@ -142,10 +142,18 @@ def indicator_create(request, id=0):
     if request.method == 'POST':
         #set vars from form and get values from user
 
-        type = IndicatorType.objects.get(indicator_type="custom")
+        type = IndicatorType.objects.get(indicator_type="Custom")
         country = Country.objects.get(id=request.POST['country'])
         workflowlevel1 = WorkflowLevel1.objects.get(id=request.POST['workflowlevel1'])
-        service = request.POST['services']
+        if 'services' in request.POST:
+            service = request.POST['services']
+        else:
+            service = None
+
+        if 'service_indicator' in request.POST:
+            node_id = request.POST['service_indicator']
+        else:
+            node_id = None
         level = Level.objects.all()[0]
         node_id = request.POST['service_indicator']
         sector = None
@@ -971,7 +979,7 @@ def indicator_data_report(request, id=0, workflowlevel1=0, type=0):
 
     if request.method == "GET" and "search" in request.GET:
         queryset = CollectedData.objects.filter(**q).filter(
-            Q(agreement__project_name__contains=request.GET["search"]) |
+            Q(workflowlevel2__project_name__contains=request.GET["search"]) |
             Q(description__icontains=request.GET["search"]) |
             Q(indicator__name__contains=request.GET["search"])
         ).select_related()

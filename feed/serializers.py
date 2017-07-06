@@ -1,10 +1,8 @@
 from rest_framework import serializers
 
-from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, WorkflowLevel2,\
-    Stakeholder, Capacity, Evaluate, ProfileType, Province, District, AdminLevelThree, Village, StakeholderType,\
-    Contact, Documentation, Checklist, Organization
-from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel
+from workflow.models import *
+from indicators.models import *
+from formlibrary.models import *
 from django.contrib.auth.models import User
 
 
@@ -16,6 +14,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
+    workflow_key = serializers.UUIDField(read_only=True)
 
     class Meta:
         model = WorkflowLevel1
@@ -44,6 +43,7 @@ class OfficeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
+    site_key = serializers.UUIDField(read_only=True)
 
     class Meta:
         model = SiteProfile
@@ -51,6 +51,7 @@ class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class WorkflowLevel2Serializer(serializers.HyperlinkedModelSerializer):
+    agreement_key = serializers.UUIDField(read_only=True)
 
     class Meta:
         model = WorkflowLevel2
@@ -67,67 +68,6 @@ class CompleteSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class AgreementSerializer(serializers.HyperlinkedModelSerializer):
-    """
-    Only for backwards compatibility
-    """
-
-    class Meta:
-        model = WorkflowLevel2
-        fields = (
-            'id',
-            'workflowlevel1',
-            'date_of_request',
-            'project_name',
-            'project_type',
-            'project_activity',
-            'project_description',
-            'site',
-            'activity_code',
-            'office',
-            'sector',
-            'project_design',
-            'account_code',
-            'lin_code',
-            'stakeholder',
-            'effect_or_impact',
-            'expected_start_date',
-            'expected_end_date',
-            'expected_duration',
-            'total_estimated_budget',
-            'mc_estimated_budget',
-            'local_total_estimated_budget',
-            'local_mc_estimated_budget',
-            'exchange_rate',
-            'exchange_rate_date',
-            'estimation_date',
-            'estimated_by',
-            'estimated_by_date',
-            'checked_by',
-            'checked_by_date',
-            'reviewed_by',
-            'reviewed_by_date',
-            'finance_reviewed_by',
-            'finance_reviewed_by_date',
-            'me_reviewed_by',
-            'me_reviewed_by_date',
-            'capacity',
-            'evaluate',
-            'approval',
-            'approved_by',
-            'approved_by_date',
-            'approval_submitted_by',
-            'approval_remarks',
-            'justification_background',
-            'risks_assumptions',
-            'justification_description_community_selection',
-            'description_of_project_activities',
-            'description_of_government_involvement',
-            'description_of_community_involvement',
-            'community_project_description'
-                )
-
-
 class CountrySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -136,6 +76,7 @@ class CountrySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
+    indicator_key = serializers.UUIDField(read_only=True)
 
     class Meta:
         model = Indicator
@@ -198,6 +139,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
         model = TolaUser
         fields = '__all__'
 
+
 class IndicatorTypeSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -252,6 +194,7 @@ class StrategicObjectiveSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = StrategicObjective
         fields = '__all__'
+
 
 class StakeholderTypeSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -324,6 +267,7 @@ class DocumentationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CollectedDataSerializer(serializers.HyperlinkedModelSerializer):
+    data_key = serializers.UUIDField(read_only=True)
 
     class Meta:
         model = CollectedData
@@ -337,6 +281,7 @@ class TolaTableSerializer(serializers.HyperlinkedModelSerializer):
         # HyperlinkedModelSerializer does not include id field by default so manually setting it
         fields = ('id', 'name', 'table_id', 'owner', 'remote_owner', 'country', 'url', 'unique_count', 'create_date', 'edit_date')
         #fields = '__all__'
+
 
 class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -361,4 +306,46 @@ class ChecklistSerializer(serializers.HyperlinkedModelSerializer):
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Organization
+        fields = '__all__'
+
+
+class WorkflowModulesSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = WorkflowModules
+        fields = '__all__'
+
+
+class CurrencySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Currency
+        fields = '__all__'
+
+
+class ApprovalTypeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ApprovalType
+        fields = '__all__'
+
+
+class ApprovalWorkflowSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ApprovalWorkflow
+        fields = '__all__'
+
+
+class NotesSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Notes
+        fields = '__all__'
+
+
+class BeneficiarySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Beneficiary
+        fields = '__all__'
+
+
+class DistributionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Distribution
         fields = '__all__'

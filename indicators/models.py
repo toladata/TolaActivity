@@ -22,6 +22,13 @@ class TolaTable(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(TolaTable, self).save(*args, **kwargs)
+
 
 class TolaTableAdmin(admin.ModelAdmin):
     list_display = ('name','country','owner','url','create_date','edit_date')
@@ -38,6 +45,13 @@ class IndicatorType(models.Model):
 
     def __unicode__(self):
         return self.indicator_type
+
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(IndicatorType, self).save(*args, **kwargs)
 
 
 class IndicatorTypeAdmin(admin.ModelAdmin):
@@ -58,10 +72,12 @@ class StrategicObjective(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(StrategicObjective, self).save()
+        self.edit_date = datetime.now()
+        super(StrategicObjective, self).save(*args, **kwargs)
 
 
 class StrategicObjectiveAdmin(admin.ModelAdmin):
@@ -84,10 +100,12 @@ class Objective(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(Objective, self).save()
+        self.edit_date = datetime.now()
+        super(Objective, self).save(*args, **kwargs)
 
 
 class ObjectiveAdmin(admin.ModelAdmin):
@@ -106,10 +124,12 @@ class Level(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(Level, self).save()
+        self.edit_date = datetime.now()
+        super(Level, self).save(*args, **kwargs)
 
 
 class LevelAdmin(admin.ModelAdmin):
@@ -128,6 +148,12 @@ class DisaggregationType(models.Model):
     def __unicode__(self):
         return self.disaggregation_type
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationType, self).save(*args, **kwargs)
 
 class DisaggregationTypeAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_type','country','standard','description')
@@ -145,6 +171,13 @@ class DisaggregationLabel(models.Model):
     def __unicode__(self):
         return self.label
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationLabel, self).save(*args, **kwargs)
+
 
 class DisaggregationLabelAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_type', 'customsort', 'label',)
@@ -161,6 +194,13 @@ class DisaggregationValue(models.Model):
     def __unicode__(self):
         return self.value
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationValue, self).save(*args, **kwargs)
+
 
 class DisaggregationValueAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_label','value','create_date','edit_date')
@@ -176,6 +216,13 @@ class ReportingFrequency(models.Model):
 
     def __unicode__(self):
         return self.frequency
+
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ReportingFrequency, self).save(*args, **kwargs)
 
 
 class DataCollectionFrequency(models.Model):
@@ -201,6 +248,13 @@ class ReportingPeriod(models.Model):
     def __unicode__(self):
         return self.frequency
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ReportingPeriod, self).save(*args, **kwargs)
+
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
     list_display = ('frequency','create_date','edit_date')
@@ -209,7 +263,7 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 class ExternalService(models.Model):
     name = models.CharField(max_length=255, blank=True)
-    url = models.CharField(max_length=765, blank=True)
+    service_url = models.CharField(max_length=765, blank=True)
     feed_url = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -217,9 +271,16 @@ class ExternalService(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        #onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ExternalService, self).save(*args, **kwargs)
+
 
 class ExternalServiceAdmin(admin.ModelAdmin):
-    list_display = ('name','url','feed_url','create_date','edit_date')
+    list_display = ('name','service_url','feed_url','create_date','edit_date')
     display = 'External Indicator Data Service'
 
 
@@ -233,20 +294,17 @@ class ExternalServiceRecord(models.Model):
     def __unicode__(self):
         return self.full_url
 
+    def save(self, *args, **kwargs):
+        #onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ExternalServiceRecord, self).save(*args, **kwargs)
+
 
 class ExternalServiceRecordAdmin(admin.ModelAdmin):
     list_display = ('external_service','full_url','record_id','create_date','edit_date')
     display = 'Exeternal Indicator Data Service'
-
-"""
-class SecurityManager(models.Manager):
-    name = "SecurityManager"
-
-    def __init__(self, *args, **kwargs):
-        super(SecurityManager, self).__init__(*args, **kwargs)
-        print("SecurityManager instantiated")
-
-"""
 
 
 class IndicatorManager(models.Manager):
@@ -255,7 +313,7 @@ class IndicatorManager(models.Manager):
 
 from tola.security import SecurityModel
 class Indicator(SecurityModel):
-    indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
     objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Objective", related_name="obj_indicator")
@@ -346,7 +404,6 @@ class Indicator(SecurityModel):
         return self.name
 
 
-
 class PeriodicTarget(models.Model):
     indicator = models.ForeignKey(Indicator, null=False, blank=False)
     period = models.CharField(max_length=255, null=True, blank=True)
@@ -367,19 +424,18 @@ class PeriodicTargetAdmin(admin.ModelAdmin):
 
 class CollectedDataManager(models.Manager):
     def get_queryset(self):
-        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('workflowlevel1','indicator','agreement','complete','evidence','tola_table')
+        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('workflowlevel1','indicator','workflowlevel2','evidence','tola_table')
 
 
 class CollectedData(models.Model):
-    data_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    data_uuid = models.CharField(max_length=255,verbose_name='Data UUID', default=uuid.uuid4, unique=True)
     periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True)
     #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)
-    agreement = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
-    complete = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="i_workflowlevel2", verbose_name="Project Initiation")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="i_workflowlevel1")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
@@ -394,7 +450,7 @@ class CollectedData(models.Model):
     objects = CollectedDataManager()
 
     class Meta:
-        ordering = ('agreement','indicator','date_collected','create_date')
+        ordering = ('workflowlevel2','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
 
     #onsave add create date or update edit date
@@ -417,7 +473,4 @@ class CollectedData(models.Model):
         return ', '.join([y.disaggregation_label.label + ': ' + y.value for y in self.disaggregation_value.all()])
 
 
-class CollectedDataAdmin(admin.ModelAdmin):
-    list_display = ('indicator','date_collected', 'create_date', 'edit_date')
-    list_filter = ['indicator__workflowlevel1__country__country']
-    display = 'Indicator Output/Outcome Collected Data'
+

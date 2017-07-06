@@ -1,11 +1,7 @@
 from .serializers import *
-
-from workflow.models import WorkflowLevel1, Sector, ProjectType, Office, SiteProfile, Country, WorkflowLevel2,\
-    Stakeholder, Capacity, Evaluate, ProfileType, Province, District, AdminLevelThree, Village, \
-    StakeholderType, Contact, Documentation, Checklist
-from indicators.models import Indicator, Objective, ReportingFrequency, TolaUser, IndicatorType, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue, \
-    DisaggregationLabel
+from workflow.models import *
+from indicators.models import *
+from formlibrary.models import *
 
 from django.db.models import Count
 from django.contrib.auth.models import User
@@ -133,7 +129,7 @@ class CountryViewSet(viewsets.ModelViewSet):
     serializer_class = CountrySerializer
 
 
-class AgreementViewSet(viewsets.ModelViewSet):
+class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
@@ -159,7 +155,7 @@ class AgreementViewSet(viewsets.ModelViewSet):
     filter_fields = ('workflowlevel1__country__country','workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel2.objects.all()
-    serializer_class = AgreementSerializer
+    serializer_class = WorkflowLevel2Serializer
     pagination_class = SmallResultsSetPagination
 
 
@@ -459,11 +455,11 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = DisaggregationValue.objects.all().filter(country__in=user_countries)
+        queryset = DisaggregationValue.objects.all().filter(disaggregation_label__disaggregation_type__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'indicator__workflowlevel1__name')
+    filter_fields = ('disaggregation_label__disaggregation_type__country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = DisaggregationValue.objects.all()
     serializer_class = DisaggregationValueSerializer
@@ -486,20 +482,12 @@ class DisaggregationLabelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
 
-class ProjectAgreementViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
-    """Returns a list of all project agreement and feed to TolaWork
-    API endpoint for getting ProjectAgreement."""
-
-    queryset = WorkflowLevel2.objects.order_by('create_date')
-    serializer_class = AgreementSerializer
-
-
-class ChecklistViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+class ChecklistViewSet(viewsets.ModelViewSet):
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
 
 
-class OrganizationViewSet(APIDefaultsMixin, viewsets.ModelViewSet):
+class OrganizationViewSet(viewsets.ModelViewSet):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
@@ -513,3 +501,37 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
     queryset = WorkflowLevel2.objects.order_by('create_date')
     serializer_class = WorkflowLevel2Serializer
 
+
+class WorkflowModulesViewSet(viewsets.ModelViewSet):
+    queryset = WorkflowModules.objects.all()
+    serializer_class = WorkflowModulesSerializer
+
+
+class CurrencyViewSet(viewsets.ModelViewSet):
+    queryset = Currency.objects.all()
+    serializer_class = CurrencySerializer
+
+
+class ApprovalTypeViewSet(viewsets.ModelViewSet):
+    queryset = ApprovalType.objects.all()
+    serializer_class = ApprovalTypeSerializer
+
+
+class ApprovalWorkflowViewSet(viewsets.ModelViewSet):
+    queryset = ApprovalWorkflow.objects.all()
+    serializer_class = ApprovalWorkflowSerializer
+
+
+class NotesViewSet(viewsets.ModelViewSet):
+    queryset = Notes.objects.all()
+    serializer_class = NotesSerializer
+
+
+class BeneficiaryViewSet(viewsets.ModelViewSet):
+    queryset = Beneficiary.objects.all()
+    serializer_class = BeneficiarySerializer
+
+
+class DistributionViewSet(viewsets.ModelViewSet):
+    queryset = Distribution.objects.all()
+    serializer_class = DistributionSerializer
