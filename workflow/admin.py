@@ -116,7 +116,7 @@ class WorkflowAccessAdmin(admin.ModelAdmin):
 
 
 class StakeholderAdmin(ImportExportModelAdmin):
-    list_display = ('name', 'type', 'country', 'approval', 'approved_by', 'filled_by', 'create_date')
+    list_display = ('name', 'type', 'country', 'create_date')
     display = 'Stakeholder List'
     list_filter = ('country', 'type')
 
@@ -169,7 +169,7 @@ admin.site.register(Documentation,DocumentationAdmin)
 admin.site.register(Template)
 admin.site.register(SiteProfile, SiteProfileAdmin)
 admin.site.register(Capacity)
-admin.site.register(WorkflowLevel3)
+admin.site.register(WorkflowLevel3, WorkflowLevel3Admin)
 admin.site.register(Evaluate)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(Budget)

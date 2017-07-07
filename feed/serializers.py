@@ -58,16 +58,6 @@ class WorkflowLevel2Serializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class CompleteSerializer(serializers.HyperlinkedModelSerializer):
-    """
-    Only for backwards compatibility
-    """
-
-    class Meta:
-        model = WorkflowLevel2
-        fields = '__all__'
-
-
 class CountrySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -81,6 +71,7 @@ class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Indicator
         fields = '__all__'
+
 
 class IndicatorTypeLightSerializer(serializers.ModelSerializer):
     class Meta:
@@ -330,12 +321,6 @@ class ApprovalTypeSerializer(serializers.HyperlinkedModelSerializer):
 class ApprovalWorkflowSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ApprovalWorkflow
-        fields = '__all__'
-
-
-class NotesSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Notes
         fields = '__all__'
 
 

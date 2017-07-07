@@ -46,7 +46,6 @@ class ProgramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
 
-# API Classes
 class UserViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for listing or retrieving users.
@@ -156,26 +155,6 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel2.objects.all()
     serializer_class = WorkflowLevel2Serializer
-    pagination_class = SmallResultsSetPagination
-
-
-class CompleteViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    Search by country name and program name
-    limit to users logged in country permissions
-    """
-    def list(self, request):
-        user_countries = getCountry(request.user)
-        queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=user_countries)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    filter_fields = ('workflowlevel1_country__country','workflowlevel1__name')
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    queryset = WorkflowLevel2.objects.all()
-    serializer_class = CompleteSerializer
     pagination_class = SmallResultsSetPagination
 
 
@@ -380,6 +359,7 @@ class VillageViewSet(viewsets.ModelViewSet):
     queryset = Village.objects.all()
     serializer_class = VillageSerializer
 
+
 #class aclViewset(viewsets.ModelViewSet):
 
 
@@ -520,11 +500,6 @@ class ApprovalTypeViewSet(viewsets.ModelViewSet):
 class ApprovalWorkflowViewSet(viewsets.ModelViewSet):
     queryset = ApprovalWorkflow.objects.all()
     serializer_class = ApprovalWorkflowSerializer
-
-
-class NotesViewSet(viewsets.ModelViewSet):
-    queryset = Notes.objects.all()
-    serializer_class = NotesSerializer
 
 
 class BeneficiaryViewSet(viewsets.ModelViewSet):

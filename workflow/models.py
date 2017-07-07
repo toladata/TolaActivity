@@ -414,40 +414,11 @@ class ApprovalTypeAdmin(admin.ModelAdmin):
     display = 'Approval Types'
 
 
-class Notes(models.Model):
-    name = models.CharField("Name", max_length=255, blank=True)
-    note_content = models.TextField("Name", blank=True)
-    organization = models.ForeignKey(Organization)
-    note_to = models.ForeignKey(TolaUser, null=False, related_name="notes_to")
-    note_from = models.ForeignKey(TolaUser, null=False, related_name="notes_from")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name','organization')
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Notes, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.name
-
-
-class NotesAdmin(admin.ModelAdmin):
-    list_display = ('name','organization')
-    display = 'Notes'
-
-
 class ApprovalWorkflow(models.Model):
-    note = models.ForeignKey(Notes, null=False, related_name="approval_notes")
+    note = models.TextField(null=True, blank=True)
     approval_type = models.ForeignKey(ApprovalType, null=False, related_name="approval_type")
     assigned_to = models.ForeignKey(TolaUser, null=False, related_name="to_approval")
-    assigned_from = models.ForeignKey(TolaUser, null=False, related_name="from_approval")
+    requested_from = models.ForeignKey(TolaUser, null=False, related_name="from_approval")
     date_assigned = models.DateTimeField(null=True, blank=True)
     date_approved = models.DateTimeField(null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -492,7 +463,7 @@ class ApprovalWorkflow(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return unicode(self.workflowlevel2)
+        return unicode(self.approval_type)
 
 
 class ApprovalWorkflowAdmin(admin.ModelAdmin):
@@ -741,7 +712,6 @@ class ProfileTypeAdmin(admin.ModelAdmin):
     display = 'ProfileType'
 
 
-# Add land classification - 'Rural', 'Urban', 'Peri-Urban', tola-help issue #162
 class LandType(models.Model):
     classify_land = models.CharField("Land Classification", help_text="Rural, Urban, Peri-Urban", max_length=100, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -808,10 +778,7 @@ class SiteProfile(models.Model):
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     status = models.BooleanField("Site Active", default=True)
-    approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
-    approved_by = models.ForeignKey(TolaUser,help_text='This is the Provincial Line Manager', blank=True, null=True, related_name="comm_approving")
-    filled_by = models.ForeignKey(TolaUser, help_text='This is the originator', blank=True, null=True, related_name="comm_estimate")
-    location_verified_by = models.ForeignKey(TolaUser, help_text='This should be GIS Manager', blank=True, null=True, related_name="comm_gis")
+    approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     history = HistoricalRecords()
@@ -992,10 +959,7 @@ class Stakeholder(models.Model):
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?")
     formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
     vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, blank=True, related_name="vetting_document")
-    approval = models.CharField("Approval", default="in progress", max_length=255, blank=True, null=True)
-    approved_by = models.ForeignKey(TolaUser, help_text='', blank=True, null=True, related_name="stake_approving")
-    filled_by = models.ForeignKey(TolaUser, help_text='', blank=True, null=True, related_name="stake_filled")
-    notes = models.TextField(max_length=765, blank=True, null=True)
+    approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     #optimize query
@@ -1017,13 +981,7 @@ class Stakeholder(models.Model):
         return unicode(self.name)
 
 
-class StakeholderAdmin(admin.ModelAdmin):
-    list_display = ('name', 'type', 'country', 'create_date')
-    display = 'Stakeholders'
-    list_filter = ('country','type','sector')
-
-
-class ProjectAgreementManager(models.Manager):
+class WorkflowLevel2Manager(models.Manager):
     def get_approved(self):
         return self.filter(approval="approved")
 
@@ -1043,9 +1001,8 @@ class ProjectAgreementManager(models.Manager):
         return self.filter(Q(approval=None) | Q(approval=""))
 
     def get_queryset(self):
-        return super(ProjectAgreementManager, self).get_queryset().select_related('office','approved_by','approval_submitted_by')
+        return super(WorkflowLevel2Manager, self).get_queryset().select_related('office')
 
-# Project Initiation, admin is handled in the admin.py
 
 class WorkflowLevel2(models.Model):
     """
@@ -1132,12 +1089,7 @@ class WorkflowLevel2(models.Model):
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
     capacity = models.ManyToManyField(Capacity, verbose_name="Sustainability Plan", blank=True)
     evaluate = models.ManyToManyField(Evaluate, blank=True)
-    approval = models.CharField("Approval Status", default="in progress", max_length=255, blank=True, null=True) # Todo replace with status
-    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_agreement",
-                                    verbose_name="Request approval")
-    approved_by_date = models.DateTimeField("Date Approved", null=True, blank=True)
-    approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="submitted_by_agreement")
-    approval_remarks = models.CharField("Approval Remarks", max_length=255, blank=True, null=True)
+    approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     justification_background = models.TextField("General Background and Problem Statement", blank=True, null=True)
     risks_assumptions = models.TextField("Risks and Assumptions", blank=True, null=True)
     justification_description_community_selection = models.TextField("Description of Stakeholder Selection Criteria",
@@ -1152,7 +1104,7 @@ class WorkflowLevel2(models.Model):
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
     history = HistoricalRecords()
     # optimize base query for all classbasedviews
-    objects = ProjectAgreementManager()
+    objects = WorkflowLevel2Manager()
     # END of PorjectAgreement Fields
 
     # START of ProjectComplete specific Fields
@@ -1268,7 +1220,6 @@ class WorkflowLevel2(models.Model):
         return new_name
 
 
-# Project Documents, admin is handled in the admin.py
 class Documentation(models.Model):
     document_uuid = models.CharField(max_length=255, verbose_name='Document UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
@@ -1333,7 +1284,7 @@ class WorkflowLevel3(models.Model):
 
 
 class WorkflowLevel3Admin(admin.ModelAdmin):
-    list_display = ('description', 'workflowlevel2__name', 'create_date', 'edit_date')
+    list_display = ('description', 'create_date', 'edit_date')
     display = 'Project Components'
 
 

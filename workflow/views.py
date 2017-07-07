@@ -6,15 +6,15 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import WorkflowLevel1, Country, Province, AdminLevelThree, District, WorkflowLevel2, SiteProfile, \
     Documentation, WorkflowLevel3, Budget, WorkflowAccess, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
-    TolaBookmarks, TolaUser
+    TolaBookmarks, TolaUser, ApprovalWorkflow
 from formlibrary.models import TrainingAttendance, Distribution
 from indicators.models import CollectedData, ExternalService
 from django.utils import timezone
 
 
-from .forms import ProjectAgreementForm, ProjectAgreementSimpleForm, ProjectAgreementCreateForm, ProjectCompleteForm, ProjectCompleteSimpleForm, ProjectCompleteCreateForm, DocumentationForm, \
+from .forms import WorkflowLevel2CreateForm, WorkflowLevel2Form, WorkflowLevel2SimpleForm, DocumentationForm, \
     SiteProfileForm, BenchmarkForm, BudgetForm, FilterForm, \
-    QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm
+    QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm, ApprovalForm
 
 import pytz
 
@@ -214,11 +214,7 @@ class ProjectAgreementCreate(CreateView):
     def get_initial(self):
 
         initial = {
-            'approved_by': self.request.user,
-            'estimated_by': self.request.user,
-            'checked_by': self.request.user,
-            'reviewed_by': self.request.user,
-            'approval_submitted_by': self.request.user,
+
             }
 
         return initial
@@ -260,7 +256,7 @@ class ProjectAgreementCreate(CreateView):
         redirect_url = '/workflow/dashboard/project/' + str(latest.id)
         return HttpResponseRedirect(redirect_url)
 
-    form_class = ProjectAgreementCreateForm
+    form_class = WorkflowLevel2CreateForm
 
 
 class ProjectAgreementUpdate(UpdateView):
@@ -270,7 +266,7 @@ class ProjectAgreementUpdate(UpdateView):
     :param id: project_agreement_id
     """
     model = WorkflowLevel2
-    form_class = ProjectAgreementForm
+    form_class = WorkflowLevel2Form
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -285,9 +281,9 @@ class ProjectAgreementUpdate(UpdateView):
         check_form_type = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
 
         if check_form_type.short == True:
-            form = ProjectAgreementSimpleForm
+            form = WorkflowLevel2SimpleForm
         else:
-            form = ProjectAgreementForm
+            form = WorkflowLevel2Form
 
         return form(**self.get_form_kwargs())
 
@@ -317,6 +313,13 @@ class ProjectAgreementUpdate(UpdateView):
         except Budget.DoesNotExist:
             getBudget = None
         context.update({'getBudget': getBudget})
+
+        try:
+            getApproval = ApprovalWorkflow.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).order_by('approval_type')
+            print getApproval
+        except ApprovalWorkflow.DoesNotExist:
+            getApproval = None
+        context.update({'getApproval': getApproval})
 
         try:
             getDocuments = Documentation.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).order_by('name')
@@ -457,8 +460,7 @@ class ProjectAgreementDelete(DeleteView):
 
         return HttpResponseRedirect('/workflow/success')
 
-    form_class = ProjectAgreementForm
-
+    form_class = WorkflowLevel2Form
 
 
 class DocumentationList(ListView):
@@ -727,6 +729,7 @@ class DocumentationDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DocumentationForm
+
 
 class IndicatorDataBySite(ListView):
     template_name = 'workflow/site_indicatordata.html'
@@ -1613,6 +1616,128 @@ class BudgetDelete(AjaxableResponseMixin, DeleteView):
     form_class = BudgetForm
 
 
+class ApprovalCreate(AjaxableResponseMixin, CreateView):
+    """
+    Approval Form
+    """
+    model = ApprovalWorkflow
+    template_name = 'workflow/approval_form.html'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(ApprovalCreate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['id']})
+        context.update({'section': self.kwargs['section']})
+        return context
+
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(ApprovalCreate, self).dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(ApprovalCreate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        kwargs['section'] = self.kwargs['section']
+        kwargs['id'] = self.kwargs['id']
+        return kwargs
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+
+        level2 = WorkflowLevel2.objects.get(id=form.id)
+        obj.workflowlevel2 = level2
+
+        obj.save()
+        form.save_m2m()
+
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [obj])
+            return HttpResponse(data)
+
+        messages.success(self.request, 'Success, Approval Created!')
+        form = ""
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+    form_class = ApprovalForm
+
+
+class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
+    """
+    Budget Form
+    """
+    model = Budget
+
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(BudgetUpdate, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(BudgetUpdate, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+        return self.render_to_response(self.get_context_data(form=form))
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(BudgetUpdate, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_valid(self, form):
+        obj = form.save()
+        if self.request.is_ajax():
+            data = serializers.serialize('json', [obj])
+            return HttpResponse(data)
+
+        messages.success(self.request, 'Success, Budget Output Updated!')
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = BudgetForm
+
+
+class ApprovalDelete(AjaxableResponseMixin, DeleteView):
+    """
+    Budget Delete
+    """
+    model = Budget
+    success_url = '/'
+
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(BudgetDelete, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(BudgetDelete, self).get_context_data(**kwargs)
+        context.update({'id': self.kwargs['pk']})
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        messages.success(self.request, 'Success, Budget Deleted!')
+        return self.render_to_response(self.get_context_data(form=form))
+
+    form_class = BudgetForm
+
+
 class ChecklistItemList(ListView):
     """
     Checklist List
@@ -1939,7 +2064,7 @@ def save_bookmark(request):
 #Ajax views for single page filtering
 class StakeholderObjects(View, AjaxableResponseMixin):
     """
-    Render Agreements json object response to the report ajax call
+    Render Stakeholders json object response to the report ajax call
     """
 
     def get(self, request, *args, **kwargs):

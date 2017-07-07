@@ -74,6 +74,10 @@ urlpatterns = [
                        url(r'^budget_update/(?P<pk>\w+)/$', BudgetUpdate.as_view(), name='budget_update'),
                        url(r'^budget_delete/(?P<pk>\w+)/$', BudgetDelete.as_view(), name='budget_delete'),
 
+                       url(r'^approval_add/(?P<id>\w+)/(?P<section>[\w ]+)/$', ApprovalCreate.as_view(), name='approval_add'),
+                       url(r'^approval_update/(?P<pk>\w+)/$', ApprovalUpdate.as_view(), name='approval_update'),
+                       url(r'^approval_delete/(?P<pk>\w+)/$', ApprovalDelete.as_view(), name='approval_delete'),
+
                        url(r'^report/export/$', Report.as_view(), name='report'),
                        url(r'^report/(?P<pk>\w+)/(?P<status>[\w ]+)/$', Report.as_view(), name='report'),
                        url(r'^report_table/(?P<pk>\w+)/(?P<status>[\w ]+)/$', ReportData.as_view(), name='report_data'),
