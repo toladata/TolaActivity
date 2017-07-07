@@ -146,3 +146,9 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('site','beneficiary_name',)
     display = 'Beneficiary'
     list_filter = ('site','beneficiary_name')
+
+
+class BinaryField(models.Model):
+    # the field where data is stored
+    name = models.CharField(max_length=255)
+    data = models.BinaryField()

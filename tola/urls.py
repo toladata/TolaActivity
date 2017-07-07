@@ -58,11 +58,14 @@ router.register(r'approvaltype', ApprovalTypeViewSet)
 router.register(r'approvalworkflow', ApprovalWorkflowViewSet)
 router.register(r'beneficiary', BeneficiaryViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
+from formlibrary.views import BinaryFieldViewSet, binary_test
+router.register(r'binary', BinaryFieldViewSet, base_name='binary')
 
 
 urlpatterns = [ # rest framework
                 url(r'^check', views.check_view),
                 url(r'^api/', include(router.urls)),
+                url(r'^binarytest/(?P<id>\w+)', binary_test),
                 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
                 url(r'^api-token-auth/', auth_views.obtain_auth_token),
 
