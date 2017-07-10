@@ -766,7 +766,7 @@ class SiteProfileForm(forms.ModelForm):
             TabHolder(
                 Tab('Profile',
                     Fieldset('Description',
-                        'name', 'type', 'office','status',
+                        'site_uuid', 'name', 'type', 'office','status',
                     ),
                     Fieldset('Contact Info',
                         'contact_leader', 'date_of_firstcontact', 'contact_number', 'num_members',
@@ -781,10 +781,6 @@ class SiteProfileForm(forms.ModelForm):
                     ),
                 ),
                 Tab('Demographic Information',
-                    Fieldset('Households',
-                        'total_num_households','avg_household_size', 'male_0_5', 'female_0_5', 'male_6_9', 'female_6_9',
-                        'male_10_14', 'female_10_14','male_15_19', 'female_15_19', 'male_20_24', 'female_20_24', 'male_25_34', 'female_25_34', 'male_35_49', 'female_35_49', 'male_over_50', 'female_over_50', 'total_population',
-                    ),
                     Fieldset('Land',
                         'classify_land','total_land','total_agricultural_land','total_rainfed_land','total_horticultural_land',
                         'populations_owning_land', 'avg_landholding_size', 'households_owning_livestock','animal_type'
@@ -838,10 +834,9 @@ class SiteProfileForm(forms.ModelForm):
         #override the office queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['date_of_firstcontact'].label = "Date of First Contact"
-        self.fields['office'].queryset = Office.objects.filter(province__country__in=countries)
+        self.fields['office'].queryset = Office.objects.filter(country__in=countries)
         self.fields['province'].queryset = Province.objects.filter(country__in=countries)
-        self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
-        self.fields['filled_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
+        self.fields['site_uuid'].widget = forms.HiddenInput()
 
 
 class DocumentationForm(forms.ModelForm):
@@ -917,6 +912,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.fields['program'].widget = HiddenInput()
         self.fields['agreement'].widget = HiddenInput()
         self.fields['workflowlevel2'].widget = HiddenInput()
+        self.fields['workflowlevel2__uuid'].widget = HiddenInput()
 
 
 class BenchmarkForm(forms.ModelForm):

@@ -753,7 +753,7 @@ class SiteProfile(models.Model):
     num_members = models.CharField("Number of Members", max_length=255, blank=True, null=True)
     info_source = models.CharField("Data Source",max_length=255, blank=True, null=True)
     total_num_households = models.IntegerField("Total # Households", help_text="", null=True, blank=True)
-    avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, default=Decimal("0.00"))
+    avg_household_size = models.DecimalField("Average Household Size", decimal_places=14,max_digits=25, default=Decimal("0.00"), null=True, blank=True)
     total_population = models.IntegerField(null=True, blank=True)
     total_male = models.IntegerField(null=True, blank=True)
     total_female = models.IntegerField(null=True, blank=True)

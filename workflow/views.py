@@ -772,9 +772,9 @@ class SiteProfileList(ListView):
 
         #Filter SiteProfile list and map by activity or workflowlevel1
         if activity_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=activity_id).distinct()
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(workflowlevel2__id=activity_id).distinct()
         elif workflowlevel1_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(projectagreement__workflowlevel1__id=workflowlevel1_id) | Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).distinct()
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(workflowlevel2__workflowlevel1__id=workflowlevel1_id) | Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).distinct()
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
         if request.method == "GET" and "search" in request.GET:
