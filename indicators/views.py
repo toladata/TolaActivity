@@ -309,7 +309,7 @@ class IndicatorUpdate(UpdateView):
                 if pk == 0: pk = None
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
-                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.now() })
+                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.utcnow() })
                 #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
                     periodic_target.create_date = timezone.now()
@@ -625,7 +625,7 @@ def getTableCount(url,table_id):
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
-    response = requests.get(url,headers=headers, verify=False)
+    response = requests.get(url,headers=headers, verify=True)
     data = json.loads(response.content)
     count = None
     try:

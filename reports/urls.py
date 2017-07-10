@@ -4,7 +4,7 @@ from django.conf.urls import *
 
 # place app url patterns here
 
-urlpatterns = patterns('',
+urlpatterns = [
 
                        # display reports
                        url(r'^report/$', ReportHome.as_view(), name='report_home'),
@@ -13,4 +13,4 @@ urlpatterns = patterns('',
                        url(r'^report_data/collecteddata/$', CollectedDataReportData.as_view(), name='collecteddata_report_data'),
                        url(r'^report_data/$', ReportData.as_view(), name='report_data'),
 
-                       )
+                       ]

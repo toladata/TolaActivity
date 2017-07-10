@@ -201,13 +201,12 @@ class CollectedDataForm(forms.ModelForm):
             HTML("""<br/>"""),
 
             Fieldset('Evidence',
-                'agreement','method','evidence','tola_table','update_count_tola_table',
+                'agreement', 'evidence','tola_table','update_count_tola_table',
                 HTML("""<a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>"""),
 
             ),
 
                 Div(
-                        "",
                         HTML("""<br/>
                                 {% if getDisaggregationLabelStandard and not getDisaggregationValueStandard %}
                                     <div class='panel panel-default'>
