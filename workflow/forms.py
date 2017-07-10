@@ -1006,7 +1006,6 @@ class StakeholderForm(forms.ModelForm):
 
     class Meta:
         model = Stakeholder
-        #fields = ['contact', 'country', 'approved_by', 'filled_by', 'sectors', 'formal_relationship_document', 'vetting_document', ]
         exclude = ['create_date', 'edit_date']
 
     approval = forms.ChoiceField(
@@ -1034,7 +1033,7 @@ class StakeholderForm(forms.ModelForm):
             TabHolder(
                 Tab('Details',
                     Fieldset('Details',
-                        'name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % pkval ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
+                        'stakeholder_uuid','name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % pkval ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
                     ),
                 ),
 
@@ -1090,10 +1089,9 @@ class StakeholderForm(forms.ModelForm):
         self.fields['contact'].queryset = Contact.objects.filter(country__in=countries)
         self.fields['sectors'].queryset = Sector.objects.all()
         self.fields['country'].queryset = countries
-        self.fields['approved_by'].queryset = users
-        self.fields['filled_by'].queryset = users
-        self.fields['formal_relationship_document'].queryset = Documentation.objects.filter(program__country__in=countries)
-        self.fields['vetting_document'].queryset = Documentation.objects.filter(program__country__in=countries)
+        self.fields['formal_relationship_document'].queryset = Documentation.objects.filter(workflowlevel1__country__in=countries)
+        self.fields['vetting_document'].queryset = Documentation.objects.filter(workflowlevel1__country__in=countries)
+        self.fields['stakeholder_uuid'].widget = forms.HiddenInput()
 
 
 class FilterForm(forms.Form):
