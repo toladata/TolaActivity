@@ -172,6 +172,7 @@ TEMPLATES = [
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE= (
     # Default Django middleware.
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -241,6 +242,7 @@ THIRD_PARTY_APPS = (
     'simple_history',
     'guardian',
     'social_django',
+    'corsheaders',
 )
 
 # Apps specific for this project go here.
@@ -351,3 +353,10 @@ CKEDITOR_CONFIGS = {
 }
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+CORS_ORIGIN_WHITELIST = (
+    'tola.io',
+    'localhost:8000',
+    '127.0.0.1:4000',
+)
+
