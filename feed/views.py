@@ -517,7 +517,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
 
 
 class CustomFormFieldViewSet(viewsets.ModelViewSet):
-    queryset = CustomFormFields.objects.all()
+    queryset = CustomFormField.objects.all()
     serializer_class = CustomFormFieldSerializer
 
 

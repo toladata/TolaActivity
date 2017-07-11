@@ -174,10 +174,10 @@ class FieldTypeAdmin(admin.ModelAdmin):
     list_filter = ('name',)
 
 
-class CustomFormFields(models.Model):
+class CustomFormField(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     type = models.ForeignKey(FieldType)
-    public = models.BooleanField(default=0)
+    required = models.BooleanField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -189,22 +189,22 @@ class CustomFormFields(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(CustomFormFields, self).save()
+        super(CustomFormField, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
         return unicode(self.name)
 
 
-class CustomFormFieldsAdmin(admin.ModelAdmin):
-    list_display = ('name','type__name')
+class CustomFormFieldAdmin(admin.ModelAdmin):
+    list_display = ('name',)
     display = 'Custom Form Fields'
-    list_filter = ('name','type__name')
+    list_filter = ('name',)
 
 
 class CustomForm(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
-    fields = models.ManyToManyField(CustomFormFields, blank=True)
+    fields = models.ManyToManyField(CustomFormField, blank=True)
     organization = models.ForeignKey(Organization, default=1)
     public = models.BooleanField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)

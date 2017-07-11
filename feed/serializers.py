@@ -344,7 +344,7 @@ class CustomFormSerializer(serializers.HyperlinkedModelSerializer):
 
 class CustomFormFieldSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = CustomFormFields
+        model = CustomFormField
         fields = '__all__'
 
 
