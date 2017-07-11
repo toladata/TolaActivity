@@ -66,9 +66,8 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         queryset = WorkflowLevel1.objects.all().filter(country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
+    ordering_fields = ('country__country', 'name')
     filter_fields = ('country__country','name')
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel1.objects.all()
     serializer_class = WorkflowLevel1Serializer
 
@@ -510,3 +509,18 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
 class DistributionViewSet(viewsets.ModelViewSet):
     queryset = Distribution.objects.all()
     serializer_class = DistributionSerializer
+
+
+class CustomFormViewSet(viewsets.ModelViewSet):
+    queryset = CustomForm.objects.all()
+    serializer_class = CustomFormSerializer
+
+
+class CustomFormFieldViewSet(viewsets.ModelViewSet):
+    queryset = CustomFormFields.objects.all()
+    serializer_class = CustomFormFieldSerializer
+
+
+class FieldTypeViewSet(viewsets.ModelViewSet):
+    queryset = FieldType.objects.all()
+    serializer_class = FieldTypeSerializer

@@ -1013,25 +1013,29 @@ class WorkflowLevel2(models.Model):
     level2_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel2 UUID', default=uuid.uuid4, unique=True)
     short = models.BooleanField(default=True, verbose_name="Short Form (recommended)")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
+    parent_workflowlevel2 = models.IntegerField("Parent", default=0)
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     # Rename to more generic "nonproject" names
     project_name = models.CharField("Project Name",
                                     help_text='Please be specific in your name.  Consider that the name includes WHO, WHAT, WHERE, HOW',
                                     max_length=255)
-    project_type = models.ForeignKey(ProjectType, verbose_name="Project Type", help_text='', max_length=255, blank=True,
-                                     null=True)
-    project_activity = models.CharField("Project Activity",
-                                        help_text='This should come directly from the activities listed in the Logframe',
-                                        max_length=255, blank=True, null=True)
+    # This should be subsector
+    # project_type = models.ForeignKey(ProjectType, verbose_name="Project Type", help_text='', max_length=255, blank=True,
+    #                                 null=True)
+    #  This is relationship to the activity indicator and not needed
+    # project_activity = models.CharField("Project Activity",
+    #                                    help_text='This should come directly from the activities listed in the Logframe',
+    #                                    max_length=255, blank=True, null=True)
     project_description = models.TextField("Project Description", help_text='', blank=True, null=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
     has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy',
                                          default=False)
+    # this needs to be a smart acronym generated based on the program name and project names initials
     activity_code = models.CharField("Project Code", help_text='', max_length=255, blank=True, null=True)
     office = models.ForeignKey(Office, verbose_name="Office", null=True, blank=True)
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True, null=True)
-    project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
+    #project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
     account_code = models.CharField("Fund Code", help_text='', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Code", help_text='', max_length=255, blank=True, null=True)
     staff_responsible = models.CharField("Staff Responsible", max_length=255, blank=True, null=True)

@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib import admin
 from datetime import datetime
-from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, Province
+from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, Province, Organization
 
 try:
     from django.utils import timezone
@@ -146,6 +146,89 @@ class BeneficiaryAdmin(admin.ModelAdmin):
     list_display = ('site','beneficiary_name',)
     display = 'Beneficiary'
     list_filter = ('site','beneficiary_name')
+
+
+class FieldType(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(FieldType, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class FieldTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    display = 'Field Type'
+    list_filter = ('name',)
+
+
+class CustomFormFields(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    type = models.ForeignKey(FieldType)
+    public = models.BooleanField(default=0)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(CustomFormFields, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class CustomFormFieldsAdmin(admin.ModelAdmin):
+    list_display = ('name','type__name')
+    display = 'Custom Form Fields'
+    list_filter = ('name','type__name')
+
+
+class CustomForm(models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    fields = models.ManyToManyField(CustomFormFields, blank=True)
+    organization = models.ForeignKey(Organization, default=1)
+    public = models.BooleanField(default=0)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(CustomForm, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class CustomFormAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    display = 'Custom Forms'
+    list_filter = ('name',)
 
 
 class BinaryField(models.Model):

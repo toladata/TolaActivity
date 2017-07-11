@@ -334,3 +334,21 @@ class DistributionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Distribution
         fields = '__all__'
+
+
+class CustomFormSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = CustomForm
+        fields = '__all__'
+
+
+class CustomFormFieldSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = CustomFormFields
+        fields = '__all__'
+
+
+class FieldTypeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = FieldType
+        fields = '__all__'
