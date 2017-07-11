@@ -60,10 +60,8 @@ class DistributionTestCase(TestCase):
         new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
         new_community.save()
         get_community = SiteProfile.objects.get(name="testcommunity")
-        get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
         new_agreement = WorkflowLevel2.objects.create(workflowlevel1=get_program, project_name="testproject",
-                                                      project_type=get_project_type,
                                                       activity_code="111222", office=get_office,
                                                       sector=get_sector, on_time=True, community_handover=False)
         new_agreement.save()
