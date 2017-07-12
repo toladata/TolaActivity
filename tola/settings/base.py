@@ -223,6 +223,7 @@ DJANGO_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'social_django',
+    #'social.apps.django_app.default'
 )
 
 THIRD_PARTY_APPS = (
