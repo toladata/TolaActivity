@@ -202,6 +202,15 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
     serializer_class = ObjectiveSerializer
 
 
+class FundCodeViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = FundCode.objects.all()
+    serializer_class = FundCodeSerializer
+
+
 class DisaggregationTypeViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,

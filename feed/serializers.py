@@ -145,6 +145,14 @@ class ObjectiveSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class FundCodeSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = FundCode
+        fields = '__all__'
+
+
+
 class DisaggregationTypeSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
