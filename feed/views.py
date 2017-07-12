@@ -127,36 +127,6 @@ class CountryViewSet(viewsets.ModelViewSet):
     serializer_class = CountrySerializer
 
 
-class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    Search by country name and program name
-    limit to users logged in country permissions
-    """
-    def list(self, request):
-        user_countries = getCountry(request.user)
-        queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=user_countries)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    """
-    def post(self,request):
-
-        for each agreement
-            insert int and string fields direct
-            if FK field
-
-        return blank
-    """
-
-    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name')
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    queryset = WorkflowLevel2.objects.all()
-    serializer_class = WorkflowLevel2Serializer
-    pagination_class = SmallResultsSetPagination
-
-
 class IndicatorViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -473,20 +443,32 @@ class OrganizationViewSet(viewsets.ModelViewSet):
 
 class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
     """
-    New viewset for WorkflowLevel2 models. replaces AgreementViewSet and CompleteViewSet 
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
+    Search by country name and program name
+    limit to users logged in country permissions
     """
-
     def list(self, request):
         user_countries = getCountry(request.user)
         queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-    ordering_fields = ('workflowlevel1__country__country', 'name')
-    filter_fields = ('workflowlevel1__country__country','name','level2_uuid')
+
+    """
+    def post(self,request):
+
+        for each agreement
+            insert int and string fields direct
+            if FK field
+
+        return blank
+    """
+
+    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name','level2_uuid')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel2.objects.all()
     serializer_class = WorkflowLevel2Serializer
+    pagination_class = SmallResultsSetPagination
 
 
 class WorkflowModulesViewSet(viewsets.ModelViewSet):
