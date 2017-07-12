@@ -449,7 +449,7 @@ class WorkflowLevel2Form(forms.ModelForm):
         self.fields['workflowlevel1'].widget = forms.HiddenInput()
 
         # override the office queryset to use request.user for country
-        self.fields['office'].queryset = Office.objects.filter(country__country__in=countries)
+        self.fields['office'].queryset = Office.objects.filter(country__in=countries)
 
         # override the community queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)

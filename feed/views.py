@@ -67,7 +67,7 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     ordering_fields = ('country__country', 'name')
-    filter_fields = ('country__country','name')
+    filter_fields = ('country__country','name','level1_uuid')
     queryset = WorkflowLevel1.objects.all()
     serializer_class = WorkflowLevel1Serializer
 
@@ -170,7 +170,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name')
+    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name','indicator_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
@@ -477,7 +477,15 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = WorkflowLevel2.objects.order_by('create_date')
+
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    ordering_fields = ('workflowlevel1__country__country', 'name')
+    filter_fields = ('workflowlevel1__country__country','name','level2_uuid')
+    queryset = WorkflowLevel2.objects.all()
     serializer_class = WorkflowLevel2Serializer
 
 
