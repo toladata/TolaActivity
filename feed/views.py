@@ -12,6 +12,9 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 import django_filters
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 
 from workflow.mixins import APIDefaultsMixin
 
@@ -61,6 +64,12 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     search by country name and workflowlevel1 name
     limit to users logged in country permissions
     """
+
+    # Remove CSRF request verification for posts to this API
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(WorkflowLevel1ViewSet, self).dispatch(*args, **kwargs)
+
     def list(self, request):
         user_countries = getCountry(request.user)
         queryset = WorkflowLevel1.objects.all().filter(country__in=user_countries)
@@ -448,6 +457,11 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
     Search by country name and program name
     limit to users logged in country permissions
     """
+    # Remove CSRF request verification for posts to this API
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(WorkflowLevel2ViewSet, self).dispatch(*args, **kwargs)
+
     def list(self, request):
         user_countries = getCountry(request.user)
         queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=user_countries)

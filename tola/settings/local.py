@@ -67,7 +67,6 @@ DEBUG = True if os.getenv('TOLA_DEBUG') == 'True' else False
 ########## EMAIL SETTINGS
 
 ########## END EMAIL SETTINGS
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 ########## GOOGLE CLIENT CONFIG ###########
