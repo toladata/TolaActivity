@@ -469,7 +469,7 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         return blank
     """
 
-    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name','level2_uuid')
+    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name','level2_uuid','workflowlevel1__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel2.objects.all()
     serializer_class = WorkflowLevel2Serializer
