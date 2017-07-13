@@ -202,20 +202,6 @@ class StakeholderTypeSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class CapacitySerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Capacity
-        fields = '__all__'
-
-
-class EvaluateSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Evaluate
-        fields = '__all__'
-
-
 class ProfileTypeSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:

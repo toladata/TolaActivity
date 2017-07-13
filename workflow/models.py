@@ -356,7 +356,7 @@ class FundCode(models.Model):
 
 
 class FundCodeAdmin(admin.ModelAdmin):
-    list_display = ('name','workflowlevel1__name', 'create_date', 'edit_date')
+    list_display = ('name', 'create_date', 'edit_date')
     display = 'Fund Code'
 
 
@@ -812,32 +812,6 @@ class SiteProfileAdmin(admin.ModelAdmin):
     display = 'SiteProfile'
 
 
-class Capacity(models.Model):
-    capacity = models.CharField("Capacity", max_length=255, blank=True, null=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('capacity',)
-        verbose_name_plural = "Capacity"
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Capacity, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.capacity
-
-
-class CapacityAdmin(admin.ModelAdmin):
-    list_display = ('capacity', 'create_date', 'edit_date')
-    display = 'Capacity'
-
-
 class StakeholderType(models.Model):
     name = models.CharField("Stakeholder Type", max_length=255, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -864,32 +838,6 @@ class StakeholderTypeAdmin(admin.ModelAdmin):
     display = 'Stakeholder Types'
     list_filter = ('create_date')
     search_fields = ('name')
-
-
-class Evaluate(models.Model):
-    evaluate = models.CharField("How will you evaluate the outcome or impact of the project?", max_length=255, blank=True, null=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('evaluate',)
-        verbose_name_plural = "Evaluate"
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Evaluate, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.evaluate
-
-
-class EvaluateAdmin(admin.ModelAdmin):
-    list_display = ('evaluate', 'create_date', 'edit_date')
-    display = 'Evaluate'
 
 
 class ProjectType(models.Model):
@@ -1091,8 +1039,6 @@ class WorkflowLevel2(models.Model):
     me_reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="M&E Reviewed by",
                                        related_name="reviewing_me")
     me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
-    capacity = models.ManyToManyField(Capacity, verbose_name="Sustainability Plan", blank=True)
-    evaluate = models.ManyToManyField(Evaluate, blank=True)
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     justification_background = models.TextField("General Background and Problem Statement", blank=True, null=True)
     risks_assumptions = models.TextField("Risks and Assumptions", blank=True, null=True)
@@ -1209,14 +1155,6 @@ class WorkflowLevel2(models.Model):
     @property
     def stakeholders(self):
         return ', '.join([x.name for x in self.stakeholder.all()])
-
-    @property
-    def capacities(self):
-        return ', '.join([x.capacity for x in self.capacity.all()])
-
-    @property
-    def evaluations(self):
-        return ', '.join([x.evaluate for x in self.evaluate.all()])
 
     # displayed in admin templates
     def __unicode__(self):

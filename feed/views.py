@@ -284,24 +284,6 @@ class StakeholderTypeViewSet(viewsets.ModelViewSet):
     serializer_class = StakeholderTypeSerializer
 
 
-class CapacityViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    """
-    queryset = Capacity.objects.all()
-    serializer_class = CapacitySerializer
-
-
-class EvaluateViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-    """
-    queryset = Evaluate.objects.all()
-    serializer_class = EvaluateSerializer
-
-
 class ProfileTypeViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
