@@ -277,6 +277,31 @@ class FormGuidanceAdmin(admin.ModelAdmin):
     display = 'Form Guidance'
 
 
+class ProjectType(models.Model):
+    name = models.CharField("Type of Activity", max_length=135)
+    description = models.CharField(max_length=765)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ProjectType, self).save()
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('name',)
+
+
+class ProjectTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'create_date', 'edit_date')
+    display = 'Project Type'
+
+
 class Sector(models.Model):
     sector = models.CharField("Sector Name", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -512,15 +537,16 @@ class WorkflowLevel1(models.Model):
 
 
 class WorkflowAccess(models.Model):
-    approval_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="auth_approving")
+    workflow_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="auth_approving")
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
+    role=models.TextField(null=True, blank=True)
     budget_limit = models.IntegerField(null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('approval_user',)
+        ordering = ('workflow_user',)
         verbose_name_plural = "WorkflowAccess"
 
     # on save add create date or update edit date
@@ -536,7 +562,7 @@ class WorkflowAccess(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.approval_user.user.first_name + " " + self.approval_user.user.last_name
+        return self.workflow_user.user.first_name + " " + self.workflow_user.user.last_name
 
 
 class Province(models.Model):
@@ -969,13 +995,11 @@ class WorkflowLevel2(models.Model):
     project_name = models.CharField("Project Name",
                                     help_text='Please be specific in your name.  Consider that the name includes WHO, WHAT, WHERE, HOW',
                                     max_length=255)
-    # This should be subsector
-    # project_type = models.ForeignKey(ProjectType, verbose_name="Project Type", help_text='', max_length=255, blank=True,
-    #                                 null=True)
-    #  This is relationship to the activity indicator and not needed
-    # project_activity = models.CharField("Project Activity",
-    #                                    help_text='This should come directly from the activities listed in the Logframe',
-    #                                    max_length=255, blank=True, null=True)
+    project_type = models.ForeignKey(ProjectType, verbose_name="Project Type", help_text='', max_length=255, blank=True,
+                                     null=True)
+    project_activity = models.CharField("Project Activity",
+                                        help_text='This should come directly from the activities listed in the Logframe',
+                                        max_length=255, blank=True, null=True)
     project_description = models.TextField("Project Description", help_text='', blank=True, null=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
     has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy',
@@ -1213,7 +1237,7 @@ class WorkflowLevel3(models.Model):
 
     class Meta:
         ordering = ('description',)
-        verbose_name_plural = "Level 3s"
+        verbose_name_plural = "WorkflowLevel3"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1229,7 +1253,7 @@ class WorkflowLevel3(models.Model):
 
 class WorkflowLevel3Admin(admin.ModelAdmin):
     list_display = ('description', 'create_date', 'edit_date')
-    display = 'Project Components'
+    display = 'Workflow Level 3'
 
 
 class Budget(models.Model):

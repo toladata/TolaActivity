@@ -4,6 +4,7 @@ from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
 from django.contrib.auth.models import User
+from rest_framework.serializers import ReadOnlyField
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -150,7 +151,6 @@ class FundCodeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FundCode
         fields = '__all__'
-
 
 
 class DisaggregationTypeSerializer(serializers.HyperlinkedModelSerializer):
