@@ -512,7 +512,7 @@ class WorkflowLevel1(models.Model):
     country = models.ManyToManyField(Country)
     user_access = models.ManyToManyField(TolaUser, blank=True)
     public_dashboard = models.BooleanField("Enable Public Dashboard", default=False)
-    project_sort = JSONField(blank=True, null=True)  # sort array for activities related to a project
+    sort = models.IntegerField(default=0)  #sort array for activities related to a project
 
     class Meta:
         ordering = ('name',)
@@ -1114,7 +1114,7 @@ class WorkflowLevel2(models.Model):
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)",
                                              blank=True, null=True)
     lessons_learned = models.TextField("Lessons learned", blank=True, null=True)
-    activity_sort = JSONField(blank=True, null=True)  # sort array for activities related to a project
+    sort = models.IntegerField(default=0)  # sort array for activities related to a project
     # END of ProjectComplete Fields
 
     STATUS_OPEN = "open"
