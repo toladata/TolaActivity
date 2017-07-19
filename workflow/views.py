@@ -280,15 +280,15 @@ class ProjectAgreementUpdate(UpdateView):
             self.guidance = None
         return super(ProjectAgreementUpdate, self).dispatch(request, *args, **kwargs)
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
         check_form_type = ProjectAgreement.objects.get(id=self.kwargs['pk'])
 
         if check_form_type.short == True:
-            form = ProjectAgreementSimpleForm
+            form_class = ProjectAgreementSimpleForm
         else:
-            form = ProjectAgreementForm
+            form_class = ProjectAgreementForm
 
-        return form(**self.get_form_kwargs())
+        return form_class(**self.get_form_kwargs())
 
 
     def get_context_data(self, **kwargs):
@@ -608,15 +608,15 @@ class ProjectCompleteUpdate(UpdateView):
             self.guidance = None
         return super(ProjectCompleteUpdate, self).dispatch(request, *args, **kwargs)
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
         check_form_type = ProjectComplete.objects.get(id=self.kwargs['pk'])
 
         if check_form_type.project_agreement.short == True:
-            form = ProjectCompleteSimpleForm
+            form_class = ProjectCompleteSimpleForm
         else:
-            form = ProjectCompleteForm
+            form_class = ProjectCompleteForm
 
-        return form(**self.get_form_kwargs())
+        return form_class(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(ProjectCompleteUpdate, self).get_context_data(**kwargs)
