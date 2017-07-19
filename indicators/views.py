@@ -281,7 +281,7 @@ class IndicatorUpdate(UpdateView):
         getIndicator = Indicator.objects.get(id=self.kwargs['pk'])
 
         context.update({'i_name': getIndicator.name})
-        context['programId'] = getIndicator.program.all()[0].id
+        context['programId'] = getIndicator.workflowlevel1.all()[0].id
         context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
 
         #get external service data if any
@@ -1148,7 +1148,7 @@ class DisaggregationReport(TemplateView):
 
         if program_selected:
             if program_selected.indicator_set.count() > 0:
-                indicators = indicators.filter(program=program_selected.id)
+                indicators = indicators.filter(workflowlevel1=program_selected.id)
 
         disagg_query = "SELECT i.id AS IndicatorID, dt.disaggregation_type AS DType, "\
             "l.customsort AS customsort, l.label AS Disaggregation, SUM(dv.value) AS Actuals "\
@@ -1163,9 +1163,13 @@ class DisaggregationReport(TemplateView):
                 "WHERE p.id = %s "\
                 "GROUP BY IndicatorID, DType, customsort, Disaggregation "\
                 "ORDER BY IndicatorID, DType, customsort, Disaggregation;"  % program_selected.id
-        cursor = connection.cursor()
-        cursor.execute(disagg_query)
-        disdata = dictfetchall(cursor)
+        # we need to limit this catch exception but we should fix the manual sql query first
+        try:
+            cursor = connection.cursor()
+            cursor.execute(disagg_query)
+            disdata = dictfetchall(cursor)
+        except:
+            disdata = {}
 
 
         indicator_query = "SELECT DISTINCT p.id as PID, i.id AS IndicatorID, i.number AS INumber, i.name AS Indicator, "\
@@ -1222,9 +1226,12 @@ class TVAReport(TemplateView):
         context['getPrograms'] = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
         context['getIndicatorTypes'] = IndicatorType.objects.all()
 
+        """
+        WHY IS THIS REPEASE AND WITH A HARDCODED WORKFLOW NAME?  SHOULD BE REMOVED GWL
         indicators = Indicator.objects.filter(workflowlevel1=223)\
             .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))\
             #.values('actuals', 'number', 'name', 'indicator_type__indicator_type')
+        """
         context['data'] = indicators
         context['getIndicators'] = Indicator.objects.filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True)
         context['getPrograms'] = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
@@ -1250,7 +1257,7 @@ class CollectedDataList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(level1__country__in=countries).exclude(
+        getIndicators = Indicator.objects.all().filter(workflowlevel1__country__in=countries).exclude(
             collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
         workflowlevel1 = self.kwargs['workflowlevel1']
@@ -1289,7 +1296,7 @@ class CollectedDataList(ListView):
         indicators = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'workflowlevel1',
                                                                   'indicator__objectives',
                                                                   'indicator__strategic_objectives').filter(
-            level1__country__in=countries).filter(
+            workflowlevel1__country__in=countries).filter(
             **q).order_by(
             'indicator__workflowlevel1__name',
             'indicator__number').values('indicator__id', 'indicator__name', 'indicator__workflowlevel1__name',

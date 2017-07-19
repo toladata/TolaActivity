@@ -1914,8 +1914,6 @@ class Report(View, AjaxableResponseMixin):
         getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
 
         filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
-        table = ProjectAgreementTable(filtered.queryset)
-        table.paginate(page=request.GET.get('page', 1), per_page=20)
 
         if request.method == "GET" and "search" in request.GET:
             #list1 = list()
