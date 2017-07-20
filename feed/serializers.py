@@ -16,6 +16,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
     workflow_key = serializers.UUIDField(read_only=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = WorkflowLevel1
@@ -23,6 +24,7 @@ class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
 
 
 class SectorSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Sector
@@ -30,6 +32,7 @@ class SectorSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ProjectTypeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = ProjectType
@@ -37,6 +40,7 @@ class ProjectTypeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class OfficeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Office
@@ -45,6 +49,7 @@ class OfficeSerializer(serializers.HyperlinkedModelSerializer):
 
 class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
     site_key = serializers.UUIDField(read_only=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = SiteProfile
@@ -53,6 +58,7 @@ class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 class WorkflowLevel2Serializer(serializers.HyperlinkedModelSerializer):
     agreement_key = serializers.UUIDField(read_only=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = WorkflowLevel2
@@ -60,6 +66,7 @@ class WorkflowLevel2Serializer(serializers.HyperlinkedModelSerializer):
 
 
 class CountrySerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Country
@@ -68,6 +75,7 @@ class CountrySerializer(serializers.HyperlinkedModelSerializer):
 
 class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
     indicator_key = serializers.UUIDField(read_only=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Indicator
@@ -119,6 +127,7 @@ class ProgramIndicatorSerializer(serializers.ModelSerializer):
 
 
 class ReportingFrequencySerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = ReportingFrequency
@@ -126,6 +135,7 @@ class ReportingFrequencySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = TolaUser
@@ -133,6 +143,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IndicatorTypeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = IndicatorType
@@ -140,6 +151,7 @@ class IndicatorTypeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ObjectiveSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Objective
@@ -147,6 +159,7 @@ class ObjectiveSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FundCodeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = FundCode
@@ -154,6 +167,7 @@ class FundCodeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DisaggregationTypeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = DisaggregationType
@@ -161,6 +175,7 @@ class DisaggregationTypeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class LevelSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Level
@@ -168,6 +183,7 @@ class LevelSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Stakeholder
@@ -175,6 +191,7 @@ class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ExternalServiceSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = ExternalService
@@ -182,6 +199,7 @@ class ExternalServiceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ExternalServiceRecordSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = ExternalServiceRecord
@@ -189,6 +207,7 @@ class ExternalServiceRecordSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StrategicObjectiveSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = StrategicObjective
@@ -196,6 +215,7 @@ class StrategicObjectiveSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StakeholderTypeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = StakeholderType
@@ -203,6 +223,7 @@ class StakeholderTypeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ProfileTypeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = ProfileType
@@ -210,6 +231,7 @@ class ProfileTypeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ProvinceSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Province
@@ -217,6 +239,7 @@ class ProvinceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DistrictSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = District
@@ -224,6 +247,7 @@ class DistrictSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AdminLevelThreeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = AdminLevelThree
@@ -231,6 +255,7 @@ class AdminLevelThreeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class VillageSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Village
@@ -238,6 +263,7 @@ class VillageSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ContactSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Contact
@@ -245,6 +271,7 @@ class ContactSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DocumentationSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Documentation
@@ -253,6 +280,7 @@ class DocumentationSerializer(serializers.HyperlinkedModelSerializer):
 
 class CollectedDataSerializer(serializers.HyperlinkedModelSerializer):
     data_key = serializers.UUIDField(read_only=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = CollectedData
@@ -269,6 +297,7 @@ class TolaTableSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = DisaggregationValue
@@ -276,6 +305,7 @@ class DisaggregationValueSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DisaggregationLabelSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = DisaggregationLabel
@@ -283,66 +313,88 @@ class DisaggregationLabelSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ChecklistSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Checklist
         fields = '__all__'
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Organization
         fields = '__all__'
 
 
 class WorkflowModulesSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = WorkflowModules
         fields = '__all__'
 
 
 class CurrencySerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Currency
         fields = '__all__'
 
 
 class ApprovalTypeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = ApprovalType
         fields = '__all__'
 
 
 class ApprovalWorkflowSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = ApprovalWorkflow
         fields = '__all__'
 
 
 class BeneficiarySerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Beneficiary
         fields = '__all__'
 
 
 class DistributionSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = Distribution
         fields = '__all__'
 
 
 class CustomFormSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = CustomForm
         fields = '__all__'
 
 
 class CustomFormFieldSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = CustomFormField
         fields = '__all__'
 
 
 class FieldTypeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
     class Meta:
         model = FieldType
         fields = '__all__'
