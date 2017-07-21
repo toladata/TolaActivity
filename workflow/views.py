@@ -128,13 +128,13 @@ class Level1Dash(ListView):
 
             status = self.kwargs['status']
             if status == "in_progress":
-                getDashboard.filter(Q(workflowlevel2__approval=self.kwargs['status']) | Q(workflowlevel2__approval=None))
+                getDashboard.filter(Q(workflowlevel2__status=self.kwargs['status']) | Q(workflowlevel2__status=None))
 
             elif status == "new":
-                getDashboard.filter(Q(Q(workflowlevel2__approval=None) | Q(workflowlevel2__approval="")))
+                getDashboard.filter(Q(Q(workflowlevel2__status=None) | Q(workflowlevel2__status="")))
 
             else:
-                getDashboard.filter(workflowlevel2__approval=self.kwargs['status'])
+                getDashboard.filter(workflowlevel2__status=self.kwargs['status'])
         else:
             status = None
 

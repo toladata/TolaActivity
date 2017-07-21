@@ -60,19 +60,19 @@
                 </li>
                 <li class="list-group-item">
                     <div class="btn-group" role="group" aria-label="...">
-                        <button data-toggle="tooltip" data-placement="top"  type="button" class="btn btn-sm btn-info" onclick="location.href='/workflow/projectagreement_detail/{{ getAgreement.id }}'">View {{ WORKFLOWLEVEL2 }}</button>
+                        <button data-toggle="tooltip" data-placement="top"  type="button" class="btn btn-sm btn-info" onclick="location.href='/workflow/projectagreement_update/{{ getAgreement.id }}'">View {{ WORKFLOWLEVEL2 }}</button>
                         <button data-toggle="tooltip" data-placement="top"  type="button" class="btn btn-sm btn-warning">Delete {{ WORKFLOWLEVEL2 }}</button>
                     </div>
                 </li>
                 <li class="list-group-item">
-                    {% if getAgreement.approval == "approved" %}
+                    {% if getAgreement.status == "approved" %}
                         <button class="btn btn-success" type="button">
-                          Approved
+                          {{ getAgreement.status|title }}
                         </button>
                     {% else %}
                         <button class="btn btn-primary" type="button" onclick="location.href='/workflow/projectagreement_update/{{ getAgreement.id }}'">
-                        {% if getAgreement.approval %}
-                            {{ getAgreement.approval|title }}
+                        {% if getAgreement.status %}
+                            {{ getAgreement.status|title }}
                         {% else %}
                             Open
                         {% endif %}
