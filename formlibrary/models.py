@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib import admin
 from datetime import datetime
 from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, Province, Organization
+from django.contrib.postgres.fields import JSONField
+
 
 try:
     from django.utils import timezone
@@ -207,7 +209,7 @@ class CustomFormFieldAdmin(admin.ModelAdmin):
 class CustomForm(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    fields = models.ManyToManyField(CustomFormField, blank=True)
+    fields = JSONField(null=True)
     organization = models.ForeignKey(Organization, default=1)
     public = models.BooleanField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)

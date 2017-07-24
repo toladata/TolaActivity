@@ -390,15 +390,15 @@ class TrainingListObjects(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         workflowlevel1_id = int(self.kwargs['workflowlevel1'])
-        project_id = int(self.kwargs['project'])
+        project_id = int(self.kwargs['workflowlevel2'])
         print project_id
         countries = getCountry(request.user)
         if int(self.kwargs['workflowlevel1']) == 0:
-            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1__country__in=countries).values('id', 'create_date', 'training_name', 'project_agreement__project_name')
+            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1__country__in=countries).values('id', 'create_date', 'training_name', 'workflowlevel2__project_name')
         elif workflowlevel1_id != 0 and project_id == 0:
-            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1=workflowlevel1_id).values('id','create_date', 'training_name', 'project_agreement__project_name')
+            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1=workflowlevel1_id).values('id','create_date', 'training_name', 'workflowlevel2__project_name')
         else:
-            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1_id=workflowlevel1_id, project_agreement_id=project_id).values('id','create_date', 'training_name', 'project_agreement__project_name')
+            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1_id=workflowlevel1_id, project_agreement_id=project_id).values('id','create_date', 'training_name', 'workflowlevel2__project_name')
 
         getTraining = json.dumps(list(getTraining), cls=DjangoJSONEncoder)
 
@@ -412,7 +412,7 @@ class BeneficiaryListObjects(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         workflowlevel1_id = int(self.kwargs['workflowlevel1'])
-        project_id = int(self.kwargs['project'])
+        project_id = int(self.kwargs['workflowlevel2'])
         countries = getCountry(request.user)
 
         if workflowlevel1_id == 0:
@@ -433,7 +433,7 @@ class DistributionListObjects(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         workflowlevel1_id = int(self.kwargs['workflowlevel1'])
-        project_id = int(self.kwargs['project'])
+        project_id = int(self.kwargs['workflowlevel2'])
         countries = getCountry(request.user)
         if workflowlevel1_id == 0:
             getDistribution = Distribution.objects.all().filter(workflowlevel1__country__in=countries).values('id', 'distribution_name', 'create_date', 'workflowlevel1')
@@ -458,7 +458,7 @@ class GetAgreements(View, AjaxableResponseMixin):
         workflowlevel1_id = self.kwargs['workflowlevel1']
         countries = getCountry(request.user)
         if workflowlevel1_id != 0:
-            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1 = workflowlevel1_id).values('id', 'project_name')
+            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1=workflowlevel1_id).values('id', 'project_name')
         else:
             pass
         

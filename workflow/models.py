@@ -868,58 +868,6 @@ class StakeholderTypeAdmin(admin.ModelAdmin):
     search_fields = ('name')
 
 
-class ProjectType(models.Model):
-    name = models.CharField("Type of Activity", max_length=135)
-    description = models.CharField(max_length=765)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(ProjectType, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ('name',)
-
-
-class ProjectTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'create_date', 'edit_date')
-    display = 'Project Type'
-
-
-class Template(models.Model):
-    name = models.CharField("Name of Document", max_length=135)
-    documentation_type = models.CharField("Type (File or URL)", max_length=135)
-    description = models.CharField(max_length=765)
-    file_field = models.FileField(upload_to="uploads", blank=True, null=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Template, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-    class Meta:
-        ordering = ('name',)
-
-
-class TemplateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'documentation_type', 'file_field', 'create_date', 'edit_date')
-    display = 'Template'
-
-
 class StakeholderManager(models.Manager):
     def get_queryset(self):
         return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related('country','type','formal_relationship_document','vetting_document')
@@ -1191,7 +1139,6 @@ class Documentation(models.Model):
     name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
     url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=135)
     description = models.CharField(max_length=255, blank=True, null=True)
-    template = models.ForeignKey(Template, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="doc_workflowlevel2")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1)
