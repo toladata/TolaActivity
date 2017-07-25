@@ -524,3 +524,8 @@ class CustomFormFieldViewSet(viewsets.ModelViewSet):
 class FieldTypeViewSet(viewsets.ModelViewSet):
     queryset = FieldType.objects.all()
     serializer_class = FieldTypeSerializer
+
+
+class BudgetViewSet(viewsets.ModelViewSet):
+    queryset = Budget.objects.all()
+    serializer_class = BudgetSerializer

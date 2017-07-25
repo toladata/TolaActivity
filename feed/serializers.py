@@ -47,6 +47,14 @@ class OfficeSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class BudgetSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Budget
+        fields = '__all__'
+
+
 class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
     site_key = serializers.UUIDField(read_only=True)
     id = serializers.ReadOnlyField()
@@ -72,6 +80,7 @@ class WorkflowLevel2FullSerializer(serializers.HyperlinkedModelSerializer):
     project_type = ProjectTypeSerializer(read_only=True)
     office = OfficeSerializer(read_only=True)
     sector = SectorSerializer(read_only=True)
+    budget = BudgetSerializer(read_only=True)
 
     class Meta:
         model = WorkflowLevel2
@@ -411,3 +420,4 @@ class FieldTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FieldType
         fields = '__all__'
+
