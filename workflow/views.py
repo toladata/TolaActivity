@@ -2107,7 +2107,7 @@ class DocumentationListObjects(View, AjaxableResponseMixin):
             getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project']).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
         else:
             countries = getCountry(request.user)
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','project','project__office').filter(workflowlevel1__country__in=countries).values('id', 'name', 'project__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office').filter(workflowlevel1__country__in=countries).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
 
         getDocumentation = json.dumps(list(getDocumentation), cls=DjangoJSONEncoder)
         final_dict  = {'getDocumentation': getDocumentation}
