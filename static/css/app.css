@@ -43,17 +43,16 @@ button:focus,
 }
 
 .breadcrumb {
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .navbar-tola {
   /* TolaActivity Brand Color: */
-  background-color: rgb(232, 148, 36);
-  border: none;
+  background-color: #f5f5f5;
 }
 
 .navbar-tola .navbar-nav > li > a {
-  color: #fff;
+  color: #DD6E42;
 }
 
 .navbar-tola .navbar-nav > li > a:hover,
@@ -62,7 +61,7 @@ button:focus,
 .navbar-tola .navbar-nav > li.active > a:hover,
 .navbar-tola .navbar-nav > li.active > a:focus,
 .navbar-tola .navbar-nav .dropdown.open a.dropdown-toggle {
-  color: #fff;
+  color: #DD6E42;
   background-color: rgba(0, 0, 0, .15);
 }
 

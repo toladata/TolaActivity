@@ -548,7 +548,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
                                     </table>
                                 {% endif %}
                                 <div class="panel-footer">
-                                    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/?is_it_project_complete_form=true" id="btn_bench">Add Component</a>
+                                    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ pk }}/?is_it_project_complete_form=true" id="btn_bench">Add Component</a>
                                 </div>
                             </div>
                         """),
