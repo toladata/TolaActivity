@@ -2102,9 +2102,9 @@ class DocumentationListObjects(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
 
         if int(self.kwargs['workflowlevel1']) != 0 & int(self.kwargs['project']) == 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','project').filter(workflowlevel1__id=self.kwargs['workflowlevel1']).values('id', 'name', 'project__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel1__id=self.kwargs['workflowlevel1']).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
         elif int(self.kwargs['project']) != 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','project').filter(project__id=self.kwargs['project']).values('id', 'name', 'project__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project']).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
         else:
             countries = getCountry(request.user)
             getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','project','project__office').filter(workflowlevel1__country__in=countries).values('id', 'name', 'project__project_name', 'create_date')
