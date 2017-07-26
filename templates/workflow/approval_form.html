@@ -8,31 +8,7 @@
             url: frm.attr('action'),
             data: frm.serialize(),
             success: function (data) {
-                var jdata = jQuery.parseJSON(data);
-                var pk = jdata[0]['pk'];
-                var contributor = jdata[0]['fields']['contributor'];
-                var description = jdata[0]['fields']['description_of_contribution'];
-                var value = jdata[0]['fields']['proposed_value'];
-
-                //$("#alert-error").html("Success! ");
-                createAlert("success", "Approval information saved successfully.", true, "#alert-error");
-                var markup = "<td>" + contributor + "</td><td>" + description + "</td><td>"+ value+"</td><td><a class='output' href='/workflow/approval_update/" + pk + "/'>Edit</a> | <a class='output' href='/workflow/approval_delete/" + pk + "/'>Delete</a></td>";
-
-                $("#approval_contributions_table tbody tr").each(function (i, row){
-                    if (i == 0 ) { return true; }
-                    var $edit = $(row).find('td:nth-child(4)');
-                    var hrefval = $edit.find('a').attr('href').split("/");
-                    hrefval = hrefval[hrefval.length -2];
-                    var existing_pk = $.trim(hrefval);
-                    if (existing_pk == pk) {
-                        $(row).html(markup);
-                        pk = 0;
-                        return false;
-                    }
-                });
-                if (pk > 0) {
-                    $("#approval_contributions_table tbody").append("<tr>" + markup + "</tr>");
-                }
+                $("#alert-error").html("Success! ");
             },
             error: function(data) {
                 $("#alert-error").html("Something went wrong!");

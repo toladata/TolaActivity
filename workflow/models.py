@@ -934,10 +934,10 @@ class WorkflowLevel2(models.Model):
         to a workflowlevel1 and configured with components
     """
     # START of Project Definition Fields
-    level2_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel2 UUID', default=uuid.uuid4, unique=True)
+    level2_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel2 UUID', default=uuid.uuid4, unique=True, blank=True)
     short = models.BooleanField(default=True, verbose_name="Short Form (recommended)")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
-    parent_workflowlevel2 = models.IntegerField("Parent", default=0)
+    parent_workflowlevel2 = models.IntegerField("Parent", default=0, blank=True)
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     # Rename to more generic "nonproject" names
     project_name = models.CharField("Project Name",
@@ -1062,7 +1062,7 @@ class WorkflowLevel2(models.Model):
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)",
                                              blank=True, null=True)
     lessons_learned = models.TextField("Lessons learned", blank=True, null=True)
-    sort = models.IntegerField(default=0)  # sort array for activities related to a project
+    sort = models.IntegerField(default=0, blank=True)  # sort array for activities related to a project
     # END of ProjectComplete Fields
 
     STATUS_OPEN = "open"
@@ -1077,7 +1077,7 @@ class WorkflowLevel2(models.Model):
         (STATUS_CLOSED,"Closed")
     )
 
-    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="open")
+    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="open", blank=True)
 
     class Meta:
         ordering = ('project_name',)

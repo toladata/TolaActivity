@@ -242,7 +242,7 @@ class ProjectAgreementCreate(CreateView):
         #create a new dashbaord entry for the project
         getworkflowlevel1 = WorkflowLevel1.objects.get(id=latest.workflowlevel1_id)
 
-        create_checklist = Checklist(agreement=getAgreement)
+        create_checklist = Checklist(workflowlevel2=getAgreement)
         create_checklist.save()
 
         get_checklist = Checklist.objects.get(id=create_checklist.id)

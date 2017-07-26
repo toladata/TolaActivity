@@ -212,8 +212,8 @@ class WorkflowLevel2Form(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'program', 'program2', 'project_agreement', 'project_agreement2', 'activity_code','account_code','lin_code',\
-                             'office', 'sector','project_name', 'project_activity', 'site', 'stakeholder',
+                    Fieldset('', 'workflowlevel1', 'project_agreement', 'activity_code','account_code','lin_code',\
+                             'office', 'sector','project_name', 'site', 'stakeholder',
                         ),
                     Fieldset(
                         'Dates',
@@ -476,8 +476,6 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
     actual_start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
     actual_end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
 
-    program2 = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}) )
-    project_agreement2 = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
 
     approval = forms.ChoiceField(
         choices=APPROVALS,
@@ -711,7 +709,6 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
         )
         super(WorkflowLevel2SimpleForm, self).__init__(*args, **kwargs)
 
-        # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
 
         #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
@@ -818,7 +815,7 @@ class SiteProfileForm(forms.ModelForm):
                     {% for item in getProjects %}
                        <tr>
                         <td>{{ item.project_name }}</td>
-                        <td>{{ item.program.name }}</td>
+                        <td>{{ item.workflowlevel1.name }}</td>
                         <td>{{ item.activity_code }}</td>
                         <td><a target="_new" href='/workflow/projectagreement_detail/{{ item.id }}/'>View</a>
                        </tr>
