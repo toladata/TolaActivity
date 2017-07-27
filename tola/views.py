@@ -64,54 +64,28 @@ def index(request, selected_countries=None, id=0, sector=0):
             filterForQuantitativeDataSums['agreement__sector__in'] = sectors
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(Q(projectagreement__sector__in=sectors)), country__in=selected_countries).filter(status=1)
             getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__workflowlevel1__country__in=selected_countries)).filter(status=1)
-            agreement_total_count = WorkflowLevel2.objects.all().filter(sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            complete_total_count = WorkflowLevel2.objects.all().filter(project_agreement__sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            agreement_approved_count = WorkflowLevel2.objects.all().filter(status='tracking', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-            complete_approved_count = WorkflowLevel2.objects.all().filter(status='tracking', project_agreement__sector__in=sectors, workflowlevel1__country__in=selected_countries).count()
-
-            agreement_awaiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
-
-            complete_awaiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', project_agreement__sector__in=sectors, workflowlevel1__country__in=selected_countries).count()
-
-            agreement_open_count = WorkflowLevel2.objects.all().filter(Q(Q(status='open') | Q(status="") | Q(status=None)), sector__id__in=sectors, workflowlevel1__country__in=selected_countries).count()
-            complete_open_count = WorkflowLevel2.objects.all().filter(Q(Q(status='open') | Q(status="") | Q(status=None)), project_agreement__sector__in=sectors, workflowlevel1__country__in=selected_countries).count()
-            agreement_wait_count = WorkflowLevel2.objects.all().filter(Q(status='tracking') & Q(Q(status='tracking') | Q(status=None) | Q(status="")), sector__in=sectors, workflowlevel1__country__in=selected_countries).count()
-            complete_wait_count = WorkflowLevel2.objects.all().filter(Q(status='tracking') & Q(Q(status='tracking') | Q(status=None) | Q(status="")), project_agreement__sector__in=sectors, workflowlevel1__country__in=selected_countries).count()
-
+            project_total_count = WorkflowLevel2.objects.all().filter(sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            project_approved_count = WorkflowLevel2.objects.all().filter(status='tracking', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            project_waiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            project_open_count = WorkflowLevel2.objects.all().filter(status='open', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
         else:
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=selected_countries).filter(status=1)
             getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__workflowlevel1__country__in=selected_countries)).filter(status=1)
-            agreement_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=selected_countries).count()
-            complete_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=selected_countries).count()
-            agreement_approved_count = WorkflowLevel2.objects.all().filter(status='tracking', workflowlevel1__country__in=selected_countries).count()
-            complete_approved_count = WorkflowLevel2.objects.all().filter(status='tracking', workflowlevel1__country__in=selected_countries).count()
-
-            agreement_awaiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', workflowlevel1__country__in=selected_countries).count()
-            complete_awaiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', workflowlevel1__country__in=selected_countries).count()
-
-            agreement_open_count = WorkflowLevel2.objects.all().filter(Q(Q(status='open') | Q(status="") | Q(status=None)), workflowlevel1__country__in=selected_countries).count()
-            complete_open_count = WorkflowLevel2.objects.all().filter(Q(Q(status='open') | Q(status="") | Q(status=None)), workflowlevel1__country__in=selected_countries).count()
-            agreement_wait_count = WorkflowLevel2.objects.all().filter(Q(status='tracking') & Q(Q(status='tracking') | Q(status=None) | Q(status="")), workflowlevel1__country__in=selected_countries).count()
-            complete_wait_count = WorkflowLevel2.objects.all().filter(Q(status='tracking') & Q(Q(status='tracking') | Q(status=None) | Q(status="")), workflowlevel1__country__in=selected_countries).count()
+            project_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=selected_countries).count()
+            project_approved_count = WorkflowLevel2.objects.all().filter(status='tracking', workflowlevel1__country__in=selected_countries).count()
+            project_waiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
+            project_open_count = WorkflowLevel2.objects.all().filter(status='open', sector__in=sectors,workflowlevel1__country__in=selected_countries).count()
 
     else:
         filterForQuantitativeDataSums['indicator__workflowlevel1__id'] = workflowlevel1_id
 
         getFilteredName=WorkflowLevel1.objects.get(id=workflowlevel1_id)
-        agreement_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
-        complete_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
-        agreement_approved_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='tracking').count()
-        complete_approved_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='tracking').count()
-        agreement_open_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='open').count()
-        complete_open_count = WorkflowLevel2.objects.all().filter(Q(Q(status='open') | Q(status="")), workflowlevel1__id=workflowlevel1_id).count()
-        agreement_wait_count = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id), Q(status='tracking') & Q(Q(status='tracking') | Q(status=None) | Q(status=""))).count()
-        complete_wait_count = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id), Q(status='tracking') & Q(Q(status='tracking') | Q(status=None) | Q(status=""))).count()
-        getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__workflowlevel1__id=workflowlevel1_id).filter(status=1)
-        getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).filter(status=1)
-
-
-        agreement_awaiting_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='awaiting_approval').count()
-        complete_awaiting_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='awaiting_approval').count()
+        project_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
+        project_approved_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='tracking').count()
+        project_waiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', sector__in=sectors,
+                                                                     workflowlevel1__country__in=selected_countries).count()
+        project_open_count = WorkflowLevel2.objects.all().filter(status='open', sector__in=sectors,
+                                                                     workflowlevel1__country__in=selected_countries).count()
 
     getQuantitativeDataSums = CollectedData.objects.all()\
               .filter(**filterForQuantitativeDataSums)\
@@ -183,15 +157,10 @@ def index(request, selected_countries=None, id=0, sector=0):
     elif total_evidence_adoption_count <= total_indicator_data_count/4:
         evidence_adoption = red
 
-    return render(request, "index.html", {'agreement_total_count':agreement_total_count,
-                                          'agreement_approved_count':agreement_approved_count,
-                                          'agreement_open_count':agreement_open_count,
-                                          'agreement_wait_count':agreement_wait_count,
-                                          'agreement_awaiting_count':agreement_awaiting_count,
-                                          'complete_open_count':complete_open_count,
-                                          'complete_approved_count':complete_approved_count,'complete_total_count':complete_total_count,
-                                          'complete_wait_count':complete_wait_count,
-                                          'complete_awaiting_count':complete_awaiting_count,
+    return render(request, "index.html", {'project_total_count':project_total_count,
+                                          'project_approved_count':project_approved_count,
+                                          'project_waiting_count': project_waiting_count,
+                                          'project_open_count': project_open_count,
                                           'workflowlevel1s':getworkflowlevel1s,'getSiteProfile':getSiteProfile,
                                           'countries': user_countries,'selected_countries':selected_countries,
                                           'getFilteredName':getFilteredName,'getSectors':getSectors,

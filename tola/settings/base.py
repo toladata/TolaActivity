@@ -137,7 +137,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            normpath(join(SITE_ROOT, 'customdashboard', 'templates')),
             normpath(join(SITE_ROOT, 'templates')),
         ],
         #'APP_DIRS': True,
@@ -225,7 +224,6 @@ DJANGO_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     #'social.apps.django_app.default',
-    'django_filters'
 )
 
 THIRD_PARTY_APPS = (
@@ -243,6 +241,8 @@ THIRD_PARTY_APPS = (
     'guardian',
     'social_django',
     'corsheaders',
+    # required by restframework
+    'django_filters',
 )
 
 # Apps specific for this project go here.
