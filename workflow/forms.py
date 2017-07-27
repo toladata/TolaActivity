@@ -356,7 +356,7 @@ class WorkflowLevel2Form(forms.ModelForm):
 
                 Tab('Approval',
                     Fieldset(
-                        '',
+                        '','status',
                         Div(
                             '',
                              HTML("""
@@ -629,7 +629,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
                 ),
                 Tab('Approval',
                     Fieldset(
-                        '',
+                        '','status',
                         Div(
                             '',
                             HTML("""

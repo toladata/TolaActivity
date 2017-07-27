@@ -1623,7 +1623,6 @@ class ApprovalCreate(AjaxableResponseMixin, CreateView):
     model = ApprovalWorkflow
     template_name = 'workflow/approval_form.html'
 
-
     def get_context_data(self, **kwargs):
         context = super(ApprovalCreate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['id']})
@@ -1649,12 +1648,10 @@ class ApprovalCreate(AjaxableResponseMixin, CreateView):
 
     def form_valid(self, form):
         obj = form.save(commit=False)
-
+        # update workflowlevel2 with approval
         level2 = WorkflowLevel2.objects.get(id=form.id)
-        obj.workflowlevel2 = level2
-
+        level2.approval.create(obj)
         obj.save()
-        form.save_m2m()
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [obj])
