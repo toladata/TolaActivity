@@ -306,7 +306,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                                       </tbody>
                                       </table>
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ id }}/?is_it_project_complete_form=true">Add Budget Contribution</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/budget_add/{{ pk }}/?is_it_project_complete_form=true">Add Budget Contribution</a>
                                       </div>
                                     </div>
                                 """),
