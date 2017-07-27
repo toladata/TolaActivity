@@ -895,7 +895,7 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
 
-                'targeted','achieved','indicator','agreement','workflowlevel2','program'
+                'targeted','achieved','indicator','workflowlevel2','workflowlevel1'
 
         )
 
@@ -904,12 +904,10 @@ class QuantitativeOutputsForm(forms.ModelForm):
         countries = getCountry(self.request.user)
 
         self.fields['indicator'].queryset = Indicator.objects.filter(workflowlevel1__id=kwargs['initial']['program'])
-        self.fields['agreement'].queryset = WorkflowLevel2.objects.filter(workflowlevel1__country__in=countries)
+        self.fields['workflowlevel2'].queryset = WorkflowLevel2.objects.filter(id=kwargs['initial']['agreement'])
         #self.fields['program'].widget.attrs['disabled'] = "disabled"
-        self.fields['program'].widget = HiddenInput()
-        self.fields['agreement'].widget = HiddenInput()
+        self.fields['workflowlevel1'].widget = HiddenInput()
         self.fields['workflowlevel2'].widget = HiddenInput()
-        self.fields['workflowlevel2__uuid'].widget = HiddenInput()
 
 
 class BenchmarkForm(forms.ModelForm):
