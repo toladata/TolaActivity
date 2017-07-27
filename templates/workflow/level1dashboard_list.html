@@ -42,46 +42,33 @@
                         <th>&nbsp;</th>
                     </tr>
 
-                    {% if status == "in_progress" %}
+                    {% if status == "open" %}
 
                       {% for item in workflowlevel1.workflowlevel2.get_inprogress %}
                           {% include "workflow/program_projects_table.html" %}
                       {% empty %}
-                          <li class="list-group-item">No in progress projects.</li>
+                          <li class="list-group-item">No {{ WORKFLOWLEVEL2}} in open.</li>
                       {% endfor %}
                     {% elif status == "approved" %}
 
                       {% for item in workflowlevel1.workflowlevel2.get_approved %}
                         {% include "workflow/program_projects_table.html" %}
                       {% empty %}
-                          <li class="list-group-item">No approved projects yet.</li>
+                          <li class="list-group-item">No approved {{ WORKFLOWLEVEL2}} yet.</li>
                       {% endfor %}
-                    {% elif status == "awaiting_approval" %}
+                    {% elif status == "awaitingapproval" %}
 
                       {% for item in workflowlevel1.workflowlevel2.get_awaiting_approval %}
                         {% include "workflow/program_projects_table.html" %}
                       {% empty %}
-                          <li class="list-group-item">No projects awaiting approval.</li>
-                      {% endfor %}
-                    {% elif status == "rejected" %}
-
-                      {% for item in workflowlevel1.workflowlevel2.get_rejected %}
-                        {% include "workflow/program_projects_table.html" %}
-                      {% empty %}
-                          <li class="list-group-item">No rejected projects.</li>
-                      {% endfor %}
-                    {% elif status == "new" %}
-                      {% for item in workflowlevel1.workflowlevel2.get_new %}
-                        {% include "workflow/program_projects_table.html" %}
-                      {% empty %}
-                          <li class="list-group-item">No New projects.</li>
+                          <li class="list-group-item">No {{ WORKFLOWLEVEL2}} awaiting approval.</li>
                       {% endfor %}
                     {% else %}
 
                       {% for item in workflowlevel1.workflowlevel2.all %}
                         {% include "workflow/program_projects_table.html" %}
                       {% empty %}
-                          <li class="list-group-item">No projects yet.</li>
+                          <li class="list-group-item">No {{ WORKFLOWLEVEL2 }} yet.</li>
                       {% endfor %}
                     {% endif %}
 

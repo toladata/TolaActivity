@@ -1066,7 +1066,7 @@ class WorkflowLevel2(models.Model):
     # END of ProjectComplete Fields
 
     STATUS_OPEN = "open"
-    STATUS_AWAITING_APPROVAL = "awaiting_approval"
+    STATUS_AWAITING_APPROVAL = "awaitingapproval"
     STATUS_TRACKING = "tracking"
     STATUS_CLOSED = "closed"
 

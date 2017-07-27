@@ -44,11 +44,12 @@ from mixins import AjaxableResponseMixin
 from export import ProjectAgreementResource, StakeholderResource
 
 # TODO Suggestion: move APPROVALS to choice in model
+
 APPROVALS = (
-    ('in_progress',('in progress')),
-    ('awaiting_approval', 'awaiting approval'),
-    ('approved', 'approved'),
-    ('rejected', 'rejected'),
+    ('open',('open')),
+    ('awaitingapproval', 'awaiting approval'),
+    ('tracking', 'tracking'),
+    ('closed', 'closed'),
 )
 
 from datetime import datetime
@@ -127,16 +128,10 @@ class Level1Dash(ListView):
         if self.kwargs.get('status', None):
 
             status = self.kwargs['status']
-            if status == "in_progress":
-                getDashboard.filter(Q(workflowlevel2__status=self.kwargs['status']) | Q(workflowlevel2__status=None))
-
-            elif status == "new":
-                getDashboard.filter(Q(Q(workflowlevel2__status=None) | Q(workflowlevel2__status="")))
-
-            else:
-                getDashboard.filter(workflowlevel2__status=self.kwargs['status'])
+            getDashboard.filter(workflowlevel2__status=self.kwargs['status'])
         else:
             status = None
+
 
         return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
 

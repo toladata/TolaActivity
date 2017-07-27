@@ -6,7 +6,7 @@
         </button>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
         {% for workflowlevel1 in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{workflowlevel1.id}})">{{ workflowlevel1.name }}</a></li>
         {% endfor %}
         </ul>
     </div>
@@ -28,7 +28,7 @@
                     </button>
                     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownProgram">
                         {% for program in getPrograms %}
-                            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -67,3 +67,4 @@
         </div>
     </div>
 </div>
+<br/>
