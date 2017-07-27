@@ -13,7 +13,7 @@ django-registration==1.0
 django-report-utils==0.3.1
 django-rest-swagger==2.1.0
 djangorestframework==3.6.3
-django-filters
+django-filter==1.0.4
 gdata==2.0.18
 google-api-python-client==1.5.1
 httplib2==0.9
