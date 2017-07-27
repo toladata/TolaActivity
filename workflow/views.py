@@ -138,7 +138,7 @@ class Level1Dash(ListView):
         else:
             status = None
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getworkflowlevel1s': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
 
 
 class ProjectAgreementList(ListView):
