@@ -7,7 +7,7 @@
     <td>{{ item.activity_code }}</td>
     <td>{{ item.office }} </td>
     <td>{% if item.short %} Short {% else %} Long {% endif %}</td>
-    <td>{{ item.status|capfirst }}</td>
+    <td>{{ item.get_status_display  }}</td>
     <td>
         <a href="/workflow/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
     </td>
