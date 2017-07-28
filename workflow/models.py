@@ -689,7 +689,7 @@ class VillageAdmin(admin.ModelAdmin):
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
     code = models.CharField("Office Code", max_length=255, blank=True)
-    country = models.ForeignKey(Country,verbose_name="Admin Level 1")
+    country = models.ForeignKey(Country, verbose_name="Country")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
