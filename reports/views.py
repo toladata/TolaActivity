@@ -94,12 +94,12 @@ class ReportData(View, AjaxableResponseMixin):
         project_filter = filter['project']
         indicator_filter = filter['indicator']
 
-        workflowlevel1 = WorkflowLevel1.objects.all().filter(**program_filter).values('gaitid', 'name', 'funding_status', 'cost_center', 'country__country', 'sector__sector')
-        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(approval='awaiting approval').count()
-        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(approval='approved').count()
-        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(approval='rejected').count()
-        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(approval='in progress').count()
-        nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
+        workflowlevel1 = WorkflowLevel1.objects.all().filter(**program_filter).values('unique_id', 'name', 'funding_status', 'cost_center', 'country__country', 'sector__sector')
+        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='awaitingapproval').count()
+        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='tracking').count()
+        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='open').count()
+        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='closed').count()
+        nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(status=None) | Q(status=""))).count()
 
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()

@@ -147,7 +147,7 @@ class WorkflowLevel2CreateForm(forms.ModelForm):
 
     class Meta:
         model = WorkflowLevel2
-        fields = '__all__'
+        fields = ("workflowlevel1","sector","project_name")
 
     def __init__(self, *args, **kwargs):
 
@@ -212,7 +212,7 @@ class WorkflowLevel2Form(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'workflowlevel1', 'project_agreement', 'activity_code','account_code','lin_code',\
+                    Fieldset('', 'workflowlevel1', 'activity_code','account_code',\
                              'office', 'sector','project_name', 'site', 'stakeholder',
                         ),
                     Fieldset(
@@ -259,7 +259,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                                   </table>
                               {% endif %}
                               <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ id }}/?is_it_project_complete_form=true">Add Component</a>
+                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ pk }}/?is_it_project_complete_form=true">Add Component</a>
                               </div>
                             </div>
 
@@ -343,7 +343,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}/?is_it_project_complete_form=true">Add Quantitative Outputs</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ pk }}/?is_it_project_complete_form=true">Add Quantitative Outputs</a>
                                       </div>
                                     </div>
                              """),
@@ -362,7 +362,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                              HTML("""
                                     <div class='panel panel-default'>
                                       <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator</div>
+                                      <div class='panel-heading'>Approvals</div>
                                       {% if getApproval %}
                                           <!-- Table -->
                                           <table class="table">
@@ -390,7 +390,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/approval_request/{{ id }}/?is_it_project_complete_form=true">Request Approval</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/approval_request/{{ pk }}/?is_it_project_complete_form=true">Request Approval</a>
                                       </div>
                                     </div>
                              """),
@@ -435,7 +435,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                               </table>
                           {% endif %}
                           <div class="panel-footer">
-                            <a onclick="newPopup('/workflow/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
+                            <a onclick="newPopup('/workflow/documentation_list/0/{{ pk }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
                           </div>
                         </div>
                          """),
@@ -700,7 +700,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
                                 </table>
                             {% endif %}
                             <div class="panel-footer">
-                                <a onclick="newPopup('/workflow/documentation_list/0/{{ id }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
+                                <a onclick="newPopup('/workflow/documentation_list/0/{{ pk }}','Add New Documentation'); return false;" href="#" class="btn btn-sm btn-info">Add New Documentation</a>
                             </div>
                         </div>
                     """),
