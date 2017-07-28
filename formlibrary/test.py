@@ -20,16 +20,6 @@ class TrainingAttendanceTestCase(TestCase):
                                                            start_date = "34",
                                                            end_date = "34",
                                                            trainer_name = "34",
-                                                           trainer_contact_num = "34",
-                                                           form_filled_by = "34",
-                                                           form_filled_by_contact_num = "34",
-                                                           total_male = "34",
-                                                           total_female = "34",
-                                                           total_age_0_14_male = "34",
-                                                           total_age_0_14_female = "34",
-                                                           total_age_15_24_male = "34",
-                                                           total_age_15_24_female = "34",
-                                                           total_age_25_59_male = "34"
                                                          )
         new_training.save()
 
@@ -79,25 +69,6 @@ class DistributionTestCase(TestCase):
                                                             input_type_distributed = "testinputtype",
                                                             distributor_name_and_affiliation = "testdistributorperson",
                                                             distributor_contact_number = "1-dis-tri-bute",
-                                                            start_date = datetime(2015, 8, 4, 12, 30, 45),
-                                                            end_date = datetime(2015, 9, 5, 12, 30, 45),
-                                                            form_filled_by = "test_form_filler",
-                                                            form_filled_by_position = "testdistributionmanager",
-                                                            form_filled_by_contact_num = "1-888-dst-rbut",
-                                                            form_filled_date = datetime(2016, 6, 1, 12, 30, 45),
-                                                            form_verified_by = "test_form_verifier",
-                                                            form_verified_by_position = "testdistributionmanager",
-                                                            form_verified_by_contact_num = "1-888-dst-rbut",
-                                                            form_verified_date = datetime(2016, 6, 2, 12, 30, 45),
-                                                            total_received_input = "34",
-                                                            total_male = "34",
-                                                            total_female = "34",
-                                                            total_age_0_14_male = "34",
-                                                            total_age_0_14_female = "34",
-                                                            total_age_15_24_male = "34",
-                                                            total_age_15_24_female = "34",
-                                                            total_age_25_59_male = "34",
-                                                            total_age_25_59_female = "34"
                                                          )
         new_distribution.save()
 
