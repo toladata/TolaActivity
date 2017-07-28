@@ -60,7 +60,6 @@ class DistributionTestCase(TestCase):
         new_distribution = Distribution.objects.create(distribution_name="testdistribution", workflowlevel1=get_program,
                                                             workflowlevel2=get_agreement,
                                                             office_code=get_office,
-                                                            distribution_indicator = "34",
                                                             distribution_implementer = "34",
                                                             reporting_period = "34",
                                                             province=get_province,
