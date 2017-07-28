@@ -45,13 +45,11 @@ button:focus,
 .breadcrumb {
   margin-top: 20px;
 }
-.navbar-nav{
-  padding-left: 25px;
-}
 .navbar-brand{
 }
 .navbar-brand img{
-  height: 52px;
+  height: 50px;
+  width: 50px;
 }
 .navbar-tola {
   /* TolaActivity Brand Color: */
@@ -328,4 +326,12 @@ select.listoption_filters
   border-radius: 0;
   padding-left: 5px;
   -moz-appearance: none;
+}
+
+/* Css Fixes */
+.panel-body .form-horizontal .form-group{
+  margin: 0 0 10px 0;
+}
+.panel-body .form-horizontal .form-group:last-child{
+  margin-bottom: 0;
 }
