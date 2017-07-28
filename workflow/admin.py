@@ -185,4 +185,5 @@ admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(ApprovalWorkflow, ApprovalWorkflowAdmin)
 admin.site.register(ApprovalType, ApprovalTypeAdmin)
 admin.site.register(FundCode, FundCodeAdmin)
+admin.site.register(WorkflowModules, WorkflowModulesAdmin)
 
