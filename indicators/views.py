@@ -155,7 +155,6 @@ def indicator_create(request, id=0):
         else:
             node_id = None
         level = Level.objects.all()[0]
-        node_id = request.POST['service_indicator']
         sector = None
         # add a temp name for custom indicators
         name = "Temporary"

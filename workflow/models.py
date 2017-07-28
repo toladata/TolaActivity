@@ -959,7 +959,7 @@ class WorkflowLevel2(models.Model):
     cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
     sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True, null=True)
     #project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
-    account_code = models.CharField("Fund Code", help_text='', max_length=255, blank=True, null=True)
+    account_code = models.CharField("Account Code", help_text='', max_length=255, blank=True, null=True)
     lin_code = models.CharField("LIN Code", help_text='', max_length=255, blank=True, null=True)
     staff_responsible = models.CharField("Staff Responsible", max_length=255, blank=True, null=True)
 
