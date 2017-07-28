@@ -1327,8 +1327,8 @@ class WorkflowModules(models.Model):
 
 
 class WorkflowModulesAdmin(admin.ModelAdmin):
-    list_display = ('workflowlevel2__name',)
-    list_filter = ('workflowlevel2__name',)
+    list_display = ('workflowlevel2',)
+    list_filter = ('workflowlevel2',)
 
 
 
