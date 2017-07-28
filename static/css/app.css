@@ -49,11 +49,9 @@ button:focus,
   padding-left: 25px;
 }
 .navbar-brand{
-  height: 57px;
 }
 .navbar-brand img{
-  width: 57px;
-  height: 57px;
+  height: 50px;
 }
 .navbar-tola {
   /* TolaActivity Brand Color: */
