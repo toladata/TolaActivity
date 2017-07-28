@@ -315,42 +315,8 @@ class WorkflowLevel2Form(forms.ModelForm):
 
                 ),
                 Tab('Impact',
-                    Fieldset(
-                        '',
-                        Div(
-                            '',
-                             HTML("""
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator</div>
-                                      {% if getQuantitative %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Targeted</th>
-                                            <th>Achieved</th>
-                                            <th>Indicator</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getQuantitative %}
-                                            <tr>
-                                                <td>{{ item.targeted}}</td>
-                                                <td>{{ item.achieved}}</td>
-                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ pk }}/?is_it_project_complete_form=true">Add Quantitative Outputs</a>
-                                      </div>
-                                    </div>
-                             """),
-                        ),
-                    ),
-                    Fieldset(
-                        '',AppendedText('progress_against_targets','%'),'beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
+                    Fieldset('',
+                        'indicators', AppendedText('progress_against_targets','%'),'beneficiary_type', 'direct_beneficiaries', 'average_household_size', 'indirect_beneficiaries', 'capacity_built','quality_assured','issues_and_challenges', 'lessons_learned',
                     ),
                 ),
 
@@ -456,6 +422,7 @@ class WorkflowLevel2Form(forms.ModelForm):
 
         # override the stakeholder queryset to use request.user for country
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
+        self.fields['indicators'].queryset = Indicator.objects.filter(workflowlevel1__country__in=countries)
 
 
 class WorkflowLevel2SimpleForm(forms.ModelForm):
@@ -593,38 +560,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
                 ),
                 Tab('Impact',
                     Fieldset('',
-                        Div(
-                             HTML("""
-                                <div class='panel panel-default'>
-                                    <div class='panel-heading'>Indicator</div>
-                                    {% if getQuantitative %}
-                                        <table class="table">
-                                            <tr>
-                                                <th>Targeted</th>
-                                                <th>Achieved</th>
-                                                <th>Indicator</th>
-                                                <th>View</th>
-                                            </tr>
-                                            {% for item in getQuantitative %}
-                                                <tr>
-                                                    <td>{{ item.targeted}}</td>
-                                                    <td>{{ item.achieved}}</td>
-                                                    <td>{{ item.description}}</td>
-                                                    <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                    <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
-                                                </tr>
-                                            {% endfor %}
-                                        </table>
-                                    {% endif %}
-                                    <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ pk }}/?is_it_project_complete_form=true">Add Indicators</a>
-                                    </div>
-                                </div>
-                            """),
-                        ),
-                    ),
-                    Fieldset('',
-                        AppendedText('progress_against_targets','%'), 'beneficiary_type', 'capacity_built', 'quality_assured','issues_and_challenges', 'lessons_learned'
+                        'indicators',AppendedText('progress_against_targets','%'), 'beneficiary_type', 'capacity_built', 'quality_assured','issues_and_challenges', 'lessons_learned'
                     ),
                 ),
                 Tab('Approval',
@@ -722,6 +658,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
 
         # override the stakeholder queryset to use request.user for country
         self.fields['stakeholder'].queryset = Stakeholder.objects.filter(country__in=countries)
+        self.fields['indicators'].queryset = Indicator.objects.filter(workflowlevel1__country__in=countries)
 
 
 class SiteProfileForm(forms.ModelForm):

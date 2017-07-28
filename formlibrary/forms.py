@@ -240,7 +240,34 @@ class BeneficiaryForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
-        self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.layout = Layout(
+
+            HTML("""<br/>"""),
+            TabHolder(
+                Tab('Personal Information',
+                    Fieldset('',
+                             'beneficiary_name',
+                             'father_name',
+                             'age',
+                             'gender',
+                             'site',
+                             'remarks',
+                             ),
+                    ),
+                Tab('Benefits',
+                    Fieldset('',
+                         'workflowlevel1',
+                         'training',
+                         'distirbution',
+                         ),
+                    ),
+            ),
+            HTML("""<br/>"""),
+            FormActions(
+                Submit('submit', 'Save', css_class='btn-default'),
+                Reset('reset', 'Reset', css_class='btn-warning')
+            ),
+        )
 
         super(BeneficiaryForm, self).__init__(*args, **kwargs)
 

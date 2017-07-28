@@ -18,6 +18,7 @@ from django.contrib.sessions.models import Session
 
 from django.db import migrations
 
+
 try:
     from django.utils import timezone
 except ImportError:
@@ -1062,6 +1063,7 @@ class WorkflowLevel2(models.Model):
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)",
                                              blank=True, null=True)
     lessons_learned = models.TextField("Lessons learned", blank=True, null=True)
+    indicators = models.ManyToManyField("indicators.Indicator", blank=True)
     sort = models.IntegerField(default=0, blank=True)  # sort array for activities related to a project
     # END of ProjectComplete Fields
 
