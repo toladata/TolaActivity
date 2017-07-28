@@ -1294,7 +1294,7 @@ class ChecklistItemAdmin(admin.ModelAdmin):
 
 
 class WorkflowModules(models.Model):
-    workflowlevel2 = models.ForeignKey("WorkflowLevel2",max_length=255)
+    workflowlevel2 = models.ForeignKey("WorkflowLevel2")
 
     MODULES = (
         ('approval', 'Approval'),
@@ -1323,7 +1323,7 @@ class WorkflowModules(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return unicode(self.item)
+        return unicode(self.workflowlevel2)
 
 
 class WorkflowModulesAdmin(admin.ModelAdmin):
