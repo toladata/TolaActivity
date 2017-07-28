@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib import admin
 from datetime import datetime
 from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, Province, Organization
+from indicators.models import DisaggregationValue, Indicator
 from django.contrib.postgres.fields import JSONField
 
 
@@ -28,14 +29,7 @@ class TrainingAttendance(models.Model):
     trainer_contact_num = models.CharField(max_length=255, null=True, blank=True)
     form_filled_by = models.CharField(max_length=255, null=True, blank=True)
     form_filled_by_contact_num = models.CharField(max_length=255, null=True, blank=True)
-    total_male = models.IntegerField(null=True, blank=True)
-    total_female = models.IntegerField(null=True, blank=True)
-    total_age_0_14_male = models.IntegerField(null=True, blank=True)
-    total_age_0_14_female = models.IntegerField(null=True, blank=True)
-    total_age_15_24_male = models.IntegerField(null=True, blank=True)
-    total_age_15_24_female = models.IntegerField(null=True, blank=True)
-    total_age_25_59_male = models.IntegerField(null=True, blank=True)
-    total_age_25_59_female = models.IntegerField(null=True, blank=True)
+    disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -65,7 +59,7 @@ class Distribution(models.Model):
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
     office_code = models.ForeignKey(Office, null=True, blank=True)
-    distribution_indicator = models.CharField(max_length=255)
+    distribution_indicator = models.ForeignKey(Indicator,blank=True)
     distribution_implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
     province = models.ForeignKey(Province, null=True, blank=True)
@@ -84,15 +78,7 @@ class Distribution(models.Model):
     form_verified_by_position = models.CharField(max_length=255, null=True, blank=True)
     form_verified_by_contact_num = models.CharField(max_length=255, null=True, blank=True)
     form_verified_date = models.CharField(max_length=255, null=True, blank=True)
-    total_received_input = models.CharField(max_length=255, null=True, blank=True)
-    total_male = models.IntegerField(null=True, blank=True)
-    total_female = models.IntegerField(null=True, blank=True)
-    total_age_0_14_male = models.IntegerField(null=True, blank=True)
-    total_age_0_14_female = models.IntegerField(null=True, blank=True)
-    total_age_15_24_male = models.IntegerField(null=True, blank=True)
-    total_age_15_24_female = models.IntegerField(null=True, blank=True)
-    total_age_25_59_male = models.IntegerField(null=True, blank=True)
-    total_age_25_59_female = models.IntegerField(null=True, blank=True)
+    disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
