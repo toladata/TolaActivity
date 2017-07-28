@@ -30,9 +30,9 @@ urlpatterns = [
     # Indicator Report
     url(r'^report/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', indicatorviews.indicator_report, name='indicator_report'),
     url(r'^tvareport/$', TVAReport.as_view(), name='tvareport'),
-    url(r'^disrep/(?P<program>\w+)/$', DisaggregationReport.as_view(), name='disrep'),
-    url(r'^report_table/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorReport.as_view(), name='indicator_table'),
-    url(r'^program_report/(?P<program>\w+)/$', indicatorviews.WorkflowLevel1IndicatorReport,name='programIndicatorReport'),
+    url(r'^disrep/(?P<workflowlevel1>\w+)/$', DisaggregationReport.as_view(), name='disrep'),
+    url(r'^report_table/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorReport.as_view(), name='indicator_table'),
+    url(r'^program_report/(?P<workflowlevel1>\w+)/$', indicatorviews.WorkflowLevel1IndicatorReport,name='programIndicatorReport'),
 
 
     # Indicator Data Report

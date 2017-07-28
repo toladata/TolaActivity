@@ -41,7 +41,7 @@ function loadIndicators(workflowlevel1,indicator,type){
 {% if getProgramsIndicator %}
     {% for workflowlevel1 in getProgramsIndicator %}
         <div class='panel panel-default'>
-            <div class='panel-heading'><h4>{{ workflowlevel1.name|truncatechars:85 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
+            <div class='panel-heading'><h4>{{ workflowlevel1.name|truncatechars:85 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ workflowlevel1.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ workflowlevel1.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
             {% if not workflowlevel1.indicator_set.all %}
                 <div class='panel-body'>
                     <h4>No Indicators have been entered for this {{ workflowlevel1 }}</h4>
