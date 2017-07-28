@@ -168,7 +168,7 @@ input[type="search"]::-webkit-search-decoration {
 fieldset {
   padding: .35em .625em .75em;
   margin: 0 2px;
-  border: 2px solid #c0c0c0;
+  border: 1px solid #c0c0c0;
 }
 legend {
   padding: 0;
@@ -215,7 +215,7 @@ th {
   }
   pre,
   blockquote {
-    border: 2px solid #999;
+    border: 1px solid #999;
 
     page-break-inside: avoid;
   }
@@ -247,7 +247,7 @@ th {
     border-top-color: #000 !important;
   }
   .label {
-    border: 2px solid #000;
+    border: 1px solid #000;
   }
   .table {
     border-collapse: collapse !important;
@@ -258,7 +258,7 @@ th {
   }
   .table-bordered th,
   .table-bordered td {
-    border: 2px solid #ddd !important;
+    border: 1px solid #ddd !important;
   }
 }
 @font-face {
@@ -1568,7 +1568,7 @@ pre {
   word-break: break-all;
   word-wrap: break-word;
   background-color: #f5f5f5;
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
   border-radius: 0;
 }
 pre code {
@@ -2317,7 +2317,7 @@ th {
 }
 .table-bordered > thead > tr > th,
 .table-bordered > thead > tr > td {
-  border-bottom-width: 2px;
+  border-bottom-width: 1px;
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #f9f9f9;
@@ -2559,7 +2559,7 @@ output {
   color: #696969;
   background-color: #fff;
   background-image: none;
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
   border-radius: 0;
   -webkit-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .075);
           box-shadow: inset 0 2px 2px rgba(0, 0, 0, .075);
@@ -3908,7 +3908,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   color: #696969;
   text-align: center;
   background-color: #e8e8e8;
-  border: 2px solid #ccc;
+  border: 1px solid #ccc;
   border-radius: 0;
 }
 .input-group-addon.input-sm {
@@ -4172,7 +4172,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   position: relative;
   border: 1px solid transparent;
   margin-bottom: 20px;
-  height: 52px;
+  height: 50px;
 }
 @media (min-width: 768px) {
   .navbar {
@@ -5827,7 +5827,7 @@ button.list-group-item-danger.active:focus {
   padding: 19px;
   margin-bottom: 20px;
   background-color: #f5f5f5;
-  border: 2px solid #e3e3e3;
+  border: 1px solid #e3e3e3;
   border-radius: 0;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
           box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
@@ -5913,8 +5913,8 @@ button.close {
   background-color: #fff;
   -webkit-background-clip: padding-box;
           background-clip: padding-box;
-  border: 2px solid #999;
-  border: 2px solid rgba(0, 0, 0, .2);
+  border: 1px solid #999;
+  border: 1px solid rgba(0, 0, 0, .2);
   border-radius: 0;
   outline: 0;
   -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
@@ -6133,8 +6133,8 @@ button.close {
   background-color: #fff;
   -webkit-background-clip: padding-box;
           background-clip: padding-box;
-  border: 2px solid #ccc;
-  border: 2px solid rgba(0, 0, 0, .2);
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, .2);
   border-radius: 0;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
           box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
@@ -6413,7 +6413,7 @@ button.close {
   cursor: pointer;
   background-color: #000 \9;
   background-color: rgba(0, 0, 0, 0);
-  border: 2px solid #fff;
+  border: 1px solid #fff;
   border-radius: 10px;
 }
 .carousel-indicators .active {
