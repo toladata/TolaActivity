@@ -84,10 +84,10 @@ def index(request, selected_countries=None, id=0, sector=0):
 
         getFilteredName=WorkflowLevel1.objects.get(id=workflowlevel1_id)
         project_total_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
-        project_approved_count = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='tracking').count()
-        project_waiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', workflowlevel1__country__in=selected_countries).count()
-        project_open_count = WorkflowLevel2.objects.all().filter(status='open').count()
-        project_closed_count = WorkflowLevel2.objects.all().filter(status='closed', workflowlevel1__country__in=selected_countries).count()
+        project_approved_count = WorkflowLevel2.objects.all().filter(status='tracking', workflowlevel1__id=workflowlevel1_id).count()
+        project_waiting_count = WorkflowLevel2.objects.all().filter(status='awaiting_approval', workflowlevel1__id=workflowlevel1_id).count()
+        project_open_count = WorkflowLevel2.objects.all().filter(status='open',workflowlevel1__id=workflowlevel1_id).count()
+        project_closed_count = WorkflowLevel2.objects.all().filter(status='closed', workflowlevel1__id=workflowlevel1_id).count()
 
     getQuantitativeDataSums = CollectedData.objects.all()\
               .filter(**filterForQuantitativeDataSums)\

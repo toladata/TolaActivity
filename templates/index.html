@@ -203,7 +203,7 @@ var myChart = new Chart(ctx, {
         labels: ["Total", "Tracking", "Waiting for Approval", "Open", "Closed"],
         datasets: [{
             label: '# of {{ WORKFLOWLEVEL2}}s',
-            data: [{{ project_total_count }}, {{ project_tracking_count }}, {{ project_waiting_count}} , {{ project_open_count}}, {{ project_closed_count}} ],
+            data: [{{ project_total_count }}, {{ project_approved_count }}, {{ project_waiting_count}} , {{ project_open_count}}, {{ project_closed_count}} ],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
