@@ -143,7 +143,7 @@ def PublicDashboard(request,id=0,public=0):
     """
     workflowlevel1_id = id
     getQuantitativeDataSums_2 = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).order_by('indicator__source').values('indicator__number','indicator__source','indicator__id')
-    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).exclude(achieved=None,targeted=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('periodic_target__target'), actuals=Sum('achieved'))
+    getQuantitativeDataSums = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).exclude(achieved=None,periodic_target=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('periodic_target__target'), actuals=Sum('achieved'))
     getIndicatorCount = Indicator.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
 
     getIndicatorData = CollectedData.objects.all().filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False).order_by('date_collected')
@@ -153,21 +153,21 @@ def PublicDashboard(request,id=0,public=0):
     getIndicatorCountKPI = Indicator.objects.all().filter(workflowlevel1__id=workflowlevel1_id,key_performance_indicator=1).count()
     getworkflowlevel1 = WorkflowLevel1.objects.all().get(id=workflowlevel1_id)
     try:
-        getworkflowlevel1Narrative = WorkflowLevel1.objects.get(workflowlevel1_id=workflowlevel1_id)
+        getworkflowlevel1Narrative = WorkflowLevel1.objects.get(id=workflowlevel1_id)
     except WorkflowLevel1.DoesNotExist:
         getworkflowlevel1Narrative = None
     getProjects = WorkflowLevel2.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
     getAllProjects = WorkflowLevel2.objects.all().filter(workflowlevel1_id=workflowlevel1_id)
-    getSiteProfile = SiteProfile.objects.all().filter(projectagreement__workflowlevel1__id=workflowlevel1_id)
+    getSiteProfile = SiteProfile.objects.all().filter(workflowlevel2__workflowlevel1__id=workflowlevel1_id)
     getSiteProfileIndicator = SiteProfile.objects.all().filter(Q(collecteddata__workflowlevel1__id=workflowlevel1_id))
 
     getProjectsCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id).count()
-    getAwaitingApprovalCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='awaiting approval').count()
-    getApprovedCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='approved').count()
-    getRejectedCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, approval='rejected').count()
-    getInProgressCount = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(approval='in progress') | Q(approval=None) | Q(approval=""))).count()
+    getAwaitingApprovalCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='awaitingapproval').count()
+    getApprovedCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='tracking').count()
+    getRejectedCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='closed').count()
+    getInProgressCount = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(status='open') | Q(status=None) | Q(status=""))).count()
 
-    nostatus_count = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(approval=None) | Q(approval=""))).count()
+    nostatus_count = WorkflowLevel2.objects.all().filter(Q(workflowlevel1__id=workflowlevel1_id) & Q(Q(status=None) | Q(status=""))).count()
 
     getNotebooks = JupyterNotebooks.objects.all().filter(workflowlevel1__id=workflowlevel1_id)
 
@@ -198,9 +198,9 @@ def PublicDashboard(request,id=0,public=0):
     for p in getProjects:
         agreement_id_list.append(p.id)
 
-    getTrainings = TrainingAttendance.objects.all().filter(project_agreement_id__in=agreement_id_list)
+    getTrainings = TrainingAttendance.objects.all().filter(workflowlevel2__id__in=agreement_id_list)
 
-    getDistributions = Distribution.objects.all().filter(initiation_id__in=agreement_id_list)
+    getDistributions = Distribution.objects.all().filter(workflowlevel2__id__in=agreement_id_list)
 
     for t in getTrainings:
         training_id_list.append(t.id)
@@ -213,7 +213,7 @@ def PublicDashboard(request,id=0,public=0):
     for project in getProjects:
         for complete in getProjectsComplete:
             if complete.actual_budget != None:
-                if project.id == complete.project_agreement_id:
+                if project.id == complete.id:
                     get_project_completed.append(project)
 
     # public dashboards have a different template display

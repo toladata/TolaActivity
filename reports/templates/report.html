@@ -149,39 +149,25 @@
             //render project_status in a doughnut chart
             var status_options = {
                 // single tooltip
-                tooltipTemplate: "<%=label + ' Projects' %>",
-                percentageInnerCutout : 60,
-                tooltipFontSize: 10,
+                cutoutPercentage : 60,
             };
-            var status_data = [
-                {
-                value: approved_count,
-                color:"#637b85",
-                label: "Approved " + approved_count
-                },
-                {
-                value : approval_count,
-                color : "#2c9c69",
-                label: "Waiting " + approval_count
-                },
-                {
-                value : rejected_count,
-                color : "#dbba34",
-                label: "Rejected " + rejected_count
-                },
-                {
-                value : inprogress_count,
-                color : "#c62f29",
-                label: "In Progress " + inprogress_count
-                },
-                {
-                value : nostatus_count,
-                color : "#ccffcc",
-                label: "New " + nostatus_count
-                }
-            ];
+            var status_data = {
+                datasets: [{
+                    data: [approved_count, approval_count, rejected_count, inprogress_count,nostatus_count]
+                }],
+
+                // These labels appear in the legend and in the tooltips when hovering different arcs
+                labels: [
+                    "Waiting " + approval_count,
+                    'Waiting " + approval_count,
+                    "Rejected " + rejected_count,
+                    "In Progress " + inprogress_count,
+                    "New " + nostatus_count,
+                ]
+            };
             var ctx = document.getElementById("doughnut1").getContext("2d");
-            var statusChart = new Chart(ctx).Doughnut(status_data,status_options);
+            var statusChart = new Chart(ctx, {type: 'doughnut',data: status_data,options: status_options});
+
             document.getElementById('doughnut1-legend').innerHTML = statusChart.generateLegend();
 
             $("#doughnut1").click(
@@ -207,9 +193,7 @@
             //render indicator data in a doughnut chart
             var indicator_options = {
                 // single tooltip
-                tooltipTemplate: "<%=label%>",
-                percentageInnerCutout : 60,
-                tooltipFontSize: 10,
+                cutoutPercentage : 60,
             };
 
             var indicator_data = [
@@ -225,7 +209,7 @@
                 },
             ];
             var ctx = document.getElementById("doughnut2").getContext("2d");
-            var indicatorChart = new Chart(ctx).Doughnut(indicator_data,indicator_options);
+            var indicatorChart = new Chart(ctx, {type: 'doughnut',data: indicator_data,options: indicator_options});
             document.getElementById('doughnut2-legend').innerHTML = indicatorChart.generateLegend();
 
             $("#doughnut2").click(

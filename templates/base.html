@@ -247,13 +247,6 @@
 
         <!-- Bootstrap compiled javascript plugins -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-        {% if offline_mode %}
-            <!--- offline mode so don't try andload the external fonts -->
-        {% else %}
-            <!-- Typekit (Fonts) -->
-            <script src="https://use.typekit.net/shi4wqr.js"></script>
-            <script>try{Typekit.load({ async: true });}catch(e){}</script>
-        {% endif %}
 
         {% block extra_js_in_body %}
         <script>
