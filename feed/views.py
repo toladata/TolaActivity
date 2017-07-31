@@ -145,9 +145,12 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = Indicator.objects.all().filter(workflowlevel1__country__in=user_countries)
+        queryset = Indicator.objects.all().filter(workflowlevel1__country__in=user_countries).annotate(actuals=Sum('collecteddata__achieved'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def get_queryset(self):
+        return Indicator.objects.annotate(actuals=Sum('collecteddata__achieved'))
 
     filter_fields = ('workflowlevel1__country__country','workflowlevel1__name','indicator_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)

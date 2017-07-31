@@ -5,6 +5,7 @@ from indicators.models import *
 from formlibrary.models import *
 from django.contrib.auth.models import User
 from rest_framework.serializers import ReadOnlyField
+from django.db.models import Count, Sum
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -98,6 +99,7 @@ class CountrySerializer(serializers.HyperlinkedModelSerializer):
 class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
     indicator_key = serializers.UUIDField(read_only=True)
     id = serializers.ReadOnlyField()
+    actuals = serializers.ReadOnlyField()
 
     class Meta:
         model = Indicator
