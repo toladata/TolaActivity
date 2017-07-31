@@ -362,7 +362,7 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name')
+    filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name','indicator')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CollectedData.objects.all()
     serializer_class = CollectedDataSerializer
