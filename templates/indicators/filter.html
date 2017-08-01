@@ -16,23 +16,13 @@
         <span class="caret"></span>
         </button>
 
-            <div class="btn-group" role="group">
-                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownIndicator" data-toggle="dropdown" aria-expanded="true">
-                    Indicators
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownIndicator">
-                    <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter(0)"> -- All -- </a></li>
-                    {% for item in getIndicators %}
-                        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{item.id}})">{{ item.number}} - {{ item.name }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-
-
-        <br/>
-        <br/>
+        <div class="btn-group" role="group">
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownIndicator">
+                <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter(0)"> -- All -- </a></li>
+                {% for item in getIndicators %}
+                    <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{item.id}})">{{ item.number}} - {{ item.name }}</a></li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>
