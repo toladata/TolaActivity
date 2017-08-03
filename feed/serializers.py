@@ -302,6 +302,14 @@ class DocumentationSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class PeriodicTargetSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = PeriodicTarget
+        fields = '__all__'
+
+
 class CollectedDataSerializer(serializers.HyperlinkedModelSerializer):
     data_key = serializers.UUIDField(read_only=True)
     id = serializers.ReadOnlyField()
