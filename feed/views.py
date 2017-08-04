@@ -3,7 +3,7 @@ from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
 
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.contrib.auth.models import User
 from tola.util import getCountry
 from django.shortcuts import get_object_or_404
@@ -353,6 +353,15 @@ class DocumentationViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentationSerializer
 
 
+class PeriodicTargetViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+    """
+    queryset = PeriodicTarget.objects.all()
+    serializer_class = PeriodicTargetSerializer
+
+
 class CollectedDataViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
@@ -397,6 +406,8 @@ class TolaTableViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = TolaTableSerializer
     pagination_class = StandardResultsSetPagination
+    queryset = TolaTable.objects.all()
+
 
 
 class DisaggregationValueViewSet(viewsets.ModelViewSet):
