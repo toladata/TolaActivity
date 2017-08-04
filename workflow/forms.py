@@ -413,6 +413,7 @@ class WorkflowLevel2Form(forms.ModelForm):
         # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
         self.fields['workflowlevel1'].widget = forms.HiddenInput()
+        self.fields['short'].widget = forms.HiddenInput()
 
         # override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(country__in=countries)
@@ -649,6 +650,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
 
         #self.fields['program'].queryset = Program.objects.filter(funding_status="Funded", country__in=countries)
         self.fields['workflowlevel1'].widget = forms.HiddenInput()
+        self.fields['short'].widget = forms.HiddenInput()
 
         # override the office queryset to use request.user for country
         self.fields['office'].queryset = Office.objects.filter(country__in=countries)
