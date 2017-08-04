@@ -431,3 +431,11 @@ class FieldTypeSerializer(serializers.HyperlinkedModelSerializer):
         model = FieldType
         fields = '__all__'
 
+
+class LandTypeSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = LandType
+        fields = '__all__'
+

@@ -22,23 +22,23 @@ def make_filter(my_request):
     """
     query_attrs = {}
     query_attrs['workflowlevel1'] = {}
-    query_attrs['project'] = {}
+    query_attrs['workflowlevel2'] = {}
     query_attrs['indicator'] = {}
     query_attrs['collecteddata'] = {}
     for param, val in my_request.iteritems():
         if param == 'workflowlevel1':
             query_attrs['workflowlevel1']['id__in'] = val.split(',')
-            query_attrs['project']['workflowlevel1__id__in'] = val.split(',')
+            query_attrs['workflowlevel2']['workflowlevel1__id__in'] = val.split(',')
             query_attrs['indicator']['workflowlevel1__id__in'] = val.split(',')
             query_attrs['collecteddata']['indicator__workflowlevel1__id__in'] = val.split(',')
         elif param == 'sector':
             query_attrs['workflowlevel1']['sector__in'] = val.split(',')
-            query_attrs['project']['sector__in'] = val.split(',')
+            query_attrs['workflowlevel2']['sector__in'] = val.split(',')
             query_attrs['indicator']['sector__in'] = val.split(',')
             query_attrs['collecteddata']['indicator__sector__in'] = val.split(',')
         elif param == 'country':
             query_attrs['workflowlevel1']['country__id__in'] = val.split(',')
-            query_attrs['project']['workflowlevel1__country__id__in'] = val.split(',')
+            query_attrs['workflowlevel2']['workflowlevel1__country__id__in'] = val.split(',')
             query_attrs['indicator']['workflowlevel1__country__in'] = val.split(',')
             query_attrs['collecteddata']['workflowlevel1__country__in'] = val.split(',')
         elif param == 'indicator__id':
@@ -46,9 +46,9 @@ def make_filter(my_request):
             query_attrs['collecteddata']['indicator__id'] = val
         elif param == 'approval':
             if val == "new":
-                query_attrs['project']['approval'] = ""
+                query_attrs['workflowlevel2']['status'] = ""
             else:
-                query_attrs['project']['approval'] = val
+                query_attrs['workflowlevel2']['status'] = val
         elif param == 'collecteddata__isnull':
             if val == "True":
                 query_attrs['indicator']['collecteddata__isnull'] = True
@@ -60,7 +60,7 @@ def make_filter(my_request):
             """
         else:
             query_attrs['workflowlevel1'][param] = val
-            query_attrs['project'][param] = val
+            query_attrs['workflowlevel2'][param] = val
             query_attrs['indicator'][param] = val
             query_attrs['collecteddata'][param] = val
 
@@ -91,7 +91,7 @@ class ReportData(View, AjaxableResponseMixin):
 
         filter = make_filter(self.request.GET)
         program_filter = filter['workflowlevel1']
-        project_filter = filter['project']
+        project_filter = filter['workflowlevel2']
         indicator_filter = filter['indicator']
 
         workflowlevel1 = WorkflowLevel1.objects.all().filter(**program_filter).values('unique_id', 'name', 'funding_status', 'cost_center', 'country__country', 'sector__sector')
@@ -131,7 +131,7 @@ class ProjectReportData(View, AjaxableResponseMixin):
     """
     def get(self, request, *args, **kwargs):
         filter = make_filter(self.request.GET)
-        project_filter = filter['project']
+        project_filter = filter['workflowlevel2']
         indicator_filter = filter['indicator']
 
         print project_filter

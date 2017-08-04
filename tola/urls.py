@@ -63,6 +63,7 @@ router.register(r'beneficiary', BeneficiaryViewSet)
 router.register(r'fieldtype', FieldTypeViewSet)
 router.register(r'customformfield', CustomFormFieldViewSet)
 router.register(r'customform', CustomFormViewSet)
+router.register(r'landtype', LandTypeViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 from formlibrary.views import BinaryFieldViewSet, binary_test
 router.register(r'binary', BinaryFieldViewSet, base_name='binary')
