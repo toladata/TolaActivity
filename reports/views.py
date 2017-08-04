@@ -97,7 +97,6 @@ class ReportData(View, AjaxableResponseMixin):
         workflowlevel1 = WorkflowLevel1.objects.all().filter(**program_filter).values('unique_id', 'name', 'funding_status', 'cost_center', 'country__country', 'sector__sector')
         approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='awaitingapproval').count()
         approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='tracking').count()
-        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='open').count()
         inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='closed').count()
         nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(status=None) | Q(status=""))).count()
 
@@ -110,7 +109,6 @@ class ReportData(View, AjaxableResponseMixin):
             'criteria': program_filter, 'workflowlevel1': program_serialized,
             'approval_count': approval_count,
             'approved_count': approved_count,
-            'rejected_count': rejected_count,
             'inprogress_count': inprogress_count,
             'nostatus_count': nostatus_count,
             'indicator_count': indicator_count,
@@ -138,11 +136,11 @@ class ProjectReportData(View, AjaxableResponseMixin):
 
         print project_filter
 
-        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','approval')
-        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
-        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
-        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
-        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
+        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','status')
+        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='awaiting approval').count()
+        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='approved').count()
+        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='rejected').count()
+        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='in progress').count()
         nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
