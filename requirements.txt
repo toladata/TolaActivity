@@ -46,3 +46,4 @@ unicodecsv==0.14.1
 xlrd==1.0.0
 xlwt==1.2.0
 django-cors-headers==2.1.0
+elasticsearch
