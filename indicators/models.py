@@ -326,7 +326,7 @@ class Indicator(SecurityModel):
     unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of Measure")
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
-    lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)
+    lop_target = models.IntegerField("LOP Target",default=0, blank=True)
     rationale_for_target = models.TextField(max_length=255, null=True, blank=True)
     means_of_verification = models.CharField(max_length=255, null=True, blank=True, verbose_name="Means of Verification / Data Source")
     data_collection_method = models.CharField(max_length=255, null=True, blank=True, verbose_name="Data Collection Method")
