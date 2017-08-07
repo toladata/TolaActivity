@@ -1302,7 +1302,7 @@ class WorkflowModules(models.Model):
         ('stakeholders', 'Stakeholders'),
         ('documents', 'Documents'),
         ('risk_issues', 'Risks and Issues'),
-        ('case_management', 'Case Management'),
+        ('sites', 'Sites'),
         ('procurement_plan', 'Procurement Plan'),
     )
 

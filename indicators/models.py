@@ -44,7 +44,7 @@ class IndicatorType(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.indicator_type if self.indicator_type else '-'
+        return self.indicator_type
 
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
@@ -70,7 +70,7 @@ class StrategicObjective(models.Model):
         ordering = ('country','name')
 
     def __unicode__(self):
-        return self.name if self.name else '-'
+        return self.name
 
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
@@ -98,7 +98,7 @@ class Objective(models.Model):
         ordering = ('workflowlevel1','name')
 
     def __unicode__(self):
-        return self.name if self.name else '-'
+        return self.name
 
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
@@ -122,7 +122,7 @@ class Level(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.name if self.name else '-'
+        return self.name
 
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
@@ -146,7 +146,7 @@ class DisaggregationType(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.disaggregation_type if self.disaggregation_type else '-'
+        return self.disaggregation_type
 
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
@@ -215,7 +215,7 @@ class ReportingFrequency(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.frequency if self.frequency else '-'
+        return self.frequency
 
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
@@ -233,8 +233,7 @@ class DataCollectionFrequency(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.frequency if self.frequency else '-'
-
+        return self.frequency
 
 class DataCollectionFrequencyAdmin(admin.ModelAdmin):
     list_display = ('frequency', 'description', 'create_date', 'edit_date')
@@ -327,7 +326,7 @@ class Indicator(SecurityModel):
     unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of Measure")
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
-    lop_target = models.FloatField("LOP Target", blank=True, default=0)
+    lop_target = models.IntegerField("LOP Target",default=0, blank=True)
     rationale_for_target = models.TextField(max_length=255, null=True, blank=True)
     means_of_verification = models.CharField(max_length=255, null=True, blank=True, verbose_name="Means of Verification / Data Source")
     data_collection_method = models.CharField(max_length=255, null=True, blank=True, verbose_name="Data Collection Method")

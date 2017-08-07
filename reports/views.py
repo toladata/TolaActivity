@@ -22,23 +22,23 @@ def make_filter(my_request):
     """
     query_attrs = {}
     query_attrs['workflowlevel1'] = {}
-    query_attrs['project'] = {}
+    query_attrs['workflowlevel2'] = {}
     query_attrs['indicator'] = {}
     query_attrs['collecteddata'] = {}
     for param, val in my_request.iteritems():
         if param == 'workflowlevel1':
             query_attrs['workflowlevel1']['id__in'] = val.split(',')
-            query_attrs['project']['workflowlevel1__id__in'] = val.split(',')
+            query_attrs['workflowlevel2']['workflowlevel1__id__in'] = val.split(',')
             query_attrs['indicator']['workflowlevel1__id__in'] = val.split(',')
             query_attrs['collecteddata']['indicator__workflowlevel1__id__in'] = val.split(',')
         elif param == 'sector':
             query_attrs['workflowlevel1']['sector__in'] = val.split(',')
-            query_attrs['project']['sector__in'] = val.split(',')
+            query_attrs['workflowlevel2']['sector__in'] = val.split(',')
             query_attrs['indicator']['sector__in'] = val.split(',')
             query_attrs['collecteddata']['indicator__sector__in'] = val.split(',')
         elif param == 'country':
             query_attrs['workflowlevel1']['country__id__in'] = val.split(',')
-            query_attrs['project']['workflowlevel1__country__id__in'] = val.split(',')
+            query_attrs['workflowlevel2']['workflowlevel1__country__id__in'] = val.split(',')
             query_attrs['indicator']['workflowlevel1__country__in'] = val.split(',')
             query_attrs['collecteddata']['workflowlevel1__country__in'] = val.split(',')
         elif param == 'indicator__id':
@@ -46,9 +46,9 @@ def make_filter(my_request):
             query_attrs['collecteddata']['indicator__id'] = val
         elif param == 'approval':
             if val == "new":
-                query_attrs['project']['approval'] = ""
+                query_attrs['workflowlevel2']['status'] = ""
             else:
-                query_attrs['project']['approval'] = val
+                query_attrs['workflowlevel2']['status'] = val
         elif param == 'collecteddata__isnull':
             if val == "True":
                 query_attrs['indicator']['collecteddata__isnull'] = True
@@ -60,7 +60,7 @@ def make_filter(my_request):
             """
         else:
             query_attrs['workflowlevel1'][param] = val
-            query_attrs['project'][param] = val
+            query_attrs['workflowlevel2'][param] = val
             query_attrs['indicator'][param] = val
             query_attrs['collecteddata'][param] = val
 
@@ -91,13 +91,12 @@ class ReportData(View, AjaxableResponseMixin):
 
         filter = make_filter(self.request.GET)
         program_filter = filter['workflowlevel1']
-        project_filter = filter['project']
+        project_filter = filter['workflowlevel2']
         indicator_filter = filter['indicator']
 
         workflowlevel1 = WorkflowLevel1.objects.all().filter(**program_filter).values('unique_id', 'name', 'funding_status', 'cost_center', 'country__country', 'sector__sector')
         approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='awaitingapproval').count()
         approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='tracking').count()
-        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='open').count()
         inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='closed').count()
         nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(status=None) | Q(status=""))).count()
 
@@ -110,7 +109,6 @@ class ReportData(View, AjaxableResponseMixin):
             'criteria': program_filter, 'workflowlevel1': program_serialized,
             'approval_count': approval_count,
             'approved_count': approved_count,
-            'rejected_count': rejected_count,
             'inprogress_count': inprogress_count,
             'nostatus_count': nostatus_count,
             'indicator_count': indicator_count,
@@ -133,16 +131,16 @@ class ProjectReportData(View, AjaxableResponseMixin):
     """
     def get(self, request, *args, **kwargs):
         filter = make_filter(self.request.GET)
-        project_filter = filter['project']
+        project_filter = filter['workflowlevel2']
         indicator_filter = filter['indicator']
 
         print project_filter
 
-        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','approval')
-        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
-        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
-        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
-        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
+        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','status')
+        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='awaiting approval').count()
+        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='approved').count()
+        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='rejected').count()
+        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='in progress').count()
         nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()

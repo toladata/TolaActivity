@@ -543,3 +543,8 @@ class FieldTypeViewSet(viewsets.ModelViewSet):
 class BudgetViewSet(viewsets.ModelViewSet):
     queryset = Budget.objects.all()
     serializer_class = BudgetSerializer
+
+
+class LandTypeViewSet(viewsets.ModelViewSet):
+    queryset = LandType.objects.all()
+    serializer_class = LandTypeSerializer
