@@ -255,6 +255,7 @@ LOCAL_APPS = (
     'customdashboard',
     'reports',
     'gladmap',
+    'search',
 
 )
 
