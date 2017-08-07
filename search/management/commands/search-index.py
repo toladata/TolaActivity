@@ -1,16 +1,9 @@
 from django.core.management.base import BaseCommand
-import random
-
-from model_mommy import mommy
-from model_mommy.recipe import Recipe, foreign_key
 
 from indicators.models import Indicator, IndicatorType, CollectedData
 from workflow.models import WorkflowLevel1, WorkflowLevel2
 from workflow.models import *
-import traceback
-from django.db.models import Count, Sum
 from django.db.models.fields.related import ManyToManyField, RelatedField, ManyToManyRel, ManyToOneRel, ForeignKey
-from django.db.models.fields import TextField, BooleanField, IntegerField
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError
