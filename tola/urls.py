@@ -123,6 +123,9 @@ urlpatterns = [ # rest framework
                 url(r'^bookmark_update/(?P<pk>\w+)/$', BookmarkUpdate.as_view(), name='bookmark_update'),
                 url(r'^bookmark_delete/(?P<pk>\w+)/$', BookmarkDelete.as_view(), name='bookmark_delete'),
 
+                # Search app URL's
+                url(r'^search/', include('search.urls')),
+
                 # Auth backend URL's
                 url('', include('django.contrib.auth.urls', namespace='auth')),
                 url('', include('social_django.urls', namespace='social')),
