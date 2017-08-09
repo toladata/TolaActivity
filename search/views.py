@@ -8,5 +8,5 @@ from django.shortcuts import render
 
 @login_required(login_url='/accounts/login/')
 def search_index(request):
-    call_command('search-index', 'all')
+    call_command('search-index', '_all')
     return HttpResponse("Index process done.")
