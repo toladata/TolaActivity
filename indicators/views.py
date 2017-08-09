@@ -59,7 +59,7 @@ class IndicatorList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True)
+        getIndicators = Indicator.objects.all().filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True).order_by("-number")
         getIndicatorTypes = IndicatorType.objects.all()
         workflowlevel1 = self.kwargs['workflowlevel1']
         indicator = self.kwargs['indicator']

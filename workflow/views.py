@@ -778,7 +778,7 @@ class SiteProfileList(ListView):
             """
             getSiteProfile = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
                                                             Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
-                                                             Q(projectagreement__project_name__contains=request.GET["search"]) | Q(projectcomplete__project_name__contains=request.GET['search'])).select_related().distinct()
+                                                             Q(workflowlevel2__project_name__contains=request.GET["search"]) | Q(workflowlevel2__project_name__contains=request.GET['search'])).select_related().distinct()
         #paginate site profile list
 
         default_list = 10 # default number of site profiles per page
@@ -816,7 +816,7 @@ class SiteProfileReport(ListView):
             getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).filter(status=1)
             getSiteProfileIndicator = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(collecteddata__workflowlevel1__country__in=countries)).filter(status=1)
         else:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(projectagreement__id=self.kwargs['pk']).filter(status=1)
+            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(workflowlevel2__id=self.kwargs['pk']).filter(status=1)
             getSiteProfileIndicator = None
 
         id=self.kwargs['pk']
@@ -1114,7 +1114,7 @@ class ContactCreate(CreateView):
     def get_initial(self):
         country = getCountry(self.request.user)[0]
         initial = {
-            'agreement': self.kwargs['id'],
+            'workflowlevel2': self.kwargs['id'],
             'country': country,
             }
 
@@ -1264,7 +1264,7 @@ class StakeholderCreate(CreateView):
         country = getCountry(self.request.user)[0]
 
         initial = {
-            'agreement': self.kwargs['id'],
+            'workflowlevel2': self.kwargs['id'],
             'country': country,
             }
 
@@ -1379,8 +1379,8 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
     def get_initial(self):
         getProgram = WorkflowLevel1.objects.get(workflowlevel2__id = self.kwargs['id'])
         initial = {
-                    'agreement': self.kwargs['id'],
-                    'program': getProgram.id,
+                    'workflowlevel2': self.kwargs['id'],
+                    'workflowlevel1': getProgram.id,
                   }
         return initial
 
@@ -1739,12 +1739,10 @@ class ChecklistItemList(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        project_agreement_id = self.kwargs['pk']
-
         if int(self.kwargs['pk']) == 0:
             getChecklist = ChecklistItem.objects.all()
         else:
-            getChecklist = ChecklistItem.objects.all().filter(checklist__agreement_id=self.kwargs['pk'])
+            getChecklist = ChecklistItem.objects.all().filter(checklist__workflowlevel2_id=self.kwargs['pk'])
 
         return render(request, self.template_name, {'getChecklist': getChecklist, 'project_agreement_id': self.kwargs['pk']})
 
@@ -1779,7 +1777,7 @@ class ChecklistItemCreate(CreateView):
         return super(ChecklistItemCreate, self).dispatch(request, *args, **kwargs)
 
     def get_initial(self):
-        checklist = Checklist.objects.get(agreement=self.kwargs['id'])
+        checklist = Checklist.objects.get(workflowlevel2=self.kwargs['id'])
         initial = {
             'checklist': checklist,
             }
@@ -2027,7 +2025,7 @@ def export_stakeholders_list(request, **kwargs):
     countries = getCountry(request.user)
 
     if workflowlevel1_id != 0:
-        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(projectagreement__program__id=workflowlevel1_id).distinct()
+        getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(workflowlevel2__workflowlevel1__id=workflowlevel1_id).distinct()
     else:
         getStakeholders = Stakeholder.objects.prefetch_related('sector').filter(country__in=countries)
 
@@ -2073,10 +2071,10 @@ class StakeholderObjects(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
 
         if workflowlevel1_id != 0:
-            getStakeholders = Stakeholder.objects.all().filter(projectagreement__workflowlevel1__id=workflowlevel1_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
+            getStakeholders = Stakeholder.objects.all().filter(workflowlevel2__workflowlevel1__id=workflowlevel1_id).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
         elif int(self.kwargs['pk']) != 0:
-            getStakeholders = Stakeholder.objects.all().filter(projectagreement=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
+            getStakeholders = Stakeholder.objects.all().filter(workflowlevel2=self.kwargs['pk']).distinct().values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
         else:
             getStakeholders = Stakeholder.objects.all().filter(country__in=countries).values('id', 'create_date', 'type__name', 'name', 'sectors__sector')
 
