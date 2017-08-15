@@ -550,6 +550,16 @@ class RiskRegisterViewSet(viewsets.ModelViewSet):
     serializer_class = RiskRegisterSerializer
 
 
+class CodedFieldViewSet(viewsets.ModelViewSet):
+    queryset = CodedField.objects.all()
+    serializer_class =  CodedFieldSerializer
+
+
+class CodedFieldValueViewSet(viewsets.ModelViewSet):
+    queryset = CodedFieldValue.objects.all()
+    serializer_class = CodedFieldValueSerializer
+
+
 class IssueRegisterViewSet(viewsets.ModelViewSet):
     queryset = IssueRegister.objects.all()
     serializer_class = IssueRegisterSerializer

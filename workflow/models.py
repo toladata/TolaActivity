@@ -1134,10 +1134,10 @@ class WorkflowLevel2Sort(models.Model):
         return unicode(self.workflowlevel1)
 
 
-class CodedFieldValues(models.Model):
+class CodedFieldValue(models.Model):
     value = models.CharField("Value", null=True, blank=True, max_length=255)
     coded_field = models.ForeignKey(CodedField)
-    workflowlevel2= models.ForeignKey(WorkflowLevel2, null=True, blank=True)
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

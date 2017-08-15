@@ -440,6 +440,22 @@ class CustomFormFieldSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class CodedFieldSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = CodedField
+        fields = '__all__'
+
+
+class CodedFieldValueSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = CodedFieldValue
+        fields = '__all__'
+
+
 class FieldTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
