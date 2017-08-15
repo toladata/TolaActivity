@@ -46,7 +46,7 @@
                         }else{
                             data = JSON.parse(models['getAgreements']);
                             for (var i = 0; i < data.length; i++) {
-                                options += '<option value="' + data[i]['id'] + '">' + data[i]['project_name'] + '</option>';
+                                options += '<option value="' + data[i]['id'] + '">' + data[i]['name'] + '</option>';
                             }
 
                             $("select#project").html(options);

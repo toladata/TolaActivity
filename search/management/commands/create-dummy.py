@@ -144,9 +144,8 @@ class Command(BaseCommand):
                                  )"""
 
         wf2 = mommy.make(WorkflowLevel2,
-                         project_name=self.random_name(),
-                         project_activity=self.random_name(),
-                         project_description=self.random_name(20),
+                         name=self.random_name(),
+                         description=self.random_name(20),
                          make_m2m=True,
                          _quantity=1,
                          _fill_optional=True,

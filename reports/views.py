@@ -136,7 +136,7 @@ class ProjectReportData(View, AjaxableResponseMixin):
 
         print project_filter
 
-        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','status')
+        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','name','type__name','sector__sector','total_estimated_budget','status')
         approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='awaiting approval').count()
         approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='approved').count()
         rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='rejected').count()

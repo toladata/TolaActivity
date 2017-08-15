@@ -10,7 +10,7 @@ from admin_report.mixins import ChartReportAdmin
 class DocumentationResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
-    workflowlevel2 = fields.Field(column_name='workflowlevel2', attribute='workflowlevel2', widget=ForeignKeyWidget(WorkflowLevel2, 'project_name'))
+    workflowlevel2 = fields.Field(column_name='workflowlevel2', attribute='workflowlevel2', widget=ForeignKeyWidget(WorkflowLevel2, 'name'))
 
     class Meta:
         model = Documentation
@@ -46,9 +46,9 @@ class WorkflowLevel2Resource(resources.ModelResource):
 
 class WorkflowLevel2Admin(ImportExportModelAdmin):
     resource_class = WorkflowLevel2Resource
-    list_display = ('workflowlevel1', 'project_name', 'activity_code','short','create_date')
+    list_display = ('workflowlevel1', 'name', 'short', 'create_date')
     list_filter = ('workflowlevel1__country', 'office', 'short')
-    display = 'project_name'
+    display = 'name'
 
     def queryset(self, request, queryset):
         """
@@ -121,6 +121,18 @@ class StakeholderAdmin(ImportExportModelAdmin):
     list_filter = ('country', 'type')
 
 
+class RiskRegisterAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'type', 'workflowlevel2')
+    display = 'Risk Register'
+    list_filter = ('workflowlevel2', 'type')
+
+
+class IssueRegisterAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'type', 'workflowlevel2')
+    display = 'Issue Register'
+    list_filter = ('workflowlevel2', 'type')
+
+
 class TolaUserProxyResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     user = fields.Field(column_name='user', attribute='user', widget=ForeignKeyWidget(User, 'username'))
@@ -185,5 +197,7 @@ admin.site.register(Currency, CurrencyAdmin)
 admin.site.register(ApprovalWorkflow, ApprovalWorkflowAdmin)
 admin.site.register(ApprovalType, ApprovalTypeAdmin)
 admin.site.register(FundCode, FundCodeAdmin)
+admin.site.register(RiskRegister, RiskRegisterAdmin)
+admin.site.register(IssueRegister, IssueRegisterAdmin)
 admin.site.register(WorkflowModules, WorkflowModulesAdmin)
 

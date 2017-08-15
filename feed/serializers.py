@@ -408,6 +408,22 @@ class DistributionSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class RiskRegisterSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = RiskRegister
+        fields = '__all__'
+
+
+class IssueRegisterSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = IssueRegister
+        fields = '__all__'
+
+
 class CustomFormSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 

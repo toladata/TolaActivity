@@ -67,15 +67,13 @@
                                 <div class="panel-body">
                                     <table class="table table-striped">
                                           <tr>
-                                              <th>Activity Code</th>
                                               <th>Title</th>
                                               <th>Status</th>
                                               <th>EXp. Start Date</th>
                                           </tr>
                                           {% for project in getProjects|slice:"10" %}
                                           <tr>
-                                              <td>{{ project.activity_code }}</td>
-                                              <td>{{ project.project_name }}</td>
+                                              <td>{{ project.name }}</td>
                                               <td>{{ project.approval }}</td>
                                               <td>{{ project.expected_start_date }}</td>
                                           </tr>

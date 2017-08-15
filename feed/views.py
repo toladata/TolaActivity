@@ -545,6 +545,16 @@ class BudgetViewSet(viewsets.ModelViewSet):
     serializer_class = BudgetSerializer
 
 
+class RiskRegisterViewSet(viewsets.ModelViewSet):
+    queryset = RiskRegister.objects.all()
+    serializer_class = RiskRegisterSerializer
+
+
+class IssueRegisterViewSet(viewsets.ModelViewSet):
+    queryset = IssueRegister.objects.all()
+    serializer_class = IssueRegisterSerializer
+
+
 class LandTypeViewSet(viewsets.ModelViewSet):
     queryset = LandType.objects.all()
     serializer_class = LandTypeSerializer

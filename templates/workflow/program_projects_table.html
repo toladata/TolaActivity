@@ -1,10 +1,9 @@
 <tr>
     <td>{{ item.create_date|date:"d-m-Y" }}</td>
-    <td> {{ item.project_name }} <br/>
+    <td> {{ item.name }} <br/>
         <a class="btn btn-xs btn-default" href="/workflow/projectagreement_update/{{ item.id }}">{{ WORKFLOWLEVEL2 }} Form</a>
         <a href="/workflow/projectagreement_detail/{{ item.id }}" class="btn btn-xs btn-default">Print View</a>
     </td>
-    <td>{{ item.activity_code }}</td>
     <td>{{ item.office }} </td>
     <td>{% if item.short %} Short {% else %} Long {% endif %}</td>
     <td>{{ item.get_status_display  }}</td>

@@ -288,7 +288,7 @@ class ProjectAgreementUpdate(UpdateView):
         context.update({'pk': pk})
         context.update({'workflowlevel1': pk})
         getAgreement = WorkflowLevel2.objects.get(id=self.kwargs['pk'])
-        context.update({'p_agreement': getAgreement.project_name})
+        context.update({'p_agreement': getAgreement.name})
         context.update({'p_agreement_workflowlevel1': getAgreement.workflowlevel1})
 
         try:
@@ -346,7 +346,7 @@ class ProjectAgreementUpdate(UpdateView):
 
         #convert form field unicode project name to ascii safe string for email content
 
-        project_name = unicodedata.normalize('NFKD', form.instance.project_name).encode('ascii','ignore')
+        name = unicodedata.normalize('NFKD', form.instance.name).encode('ascii','ignore')
         #check to see if the approval status has changed
         if str(is_approved) == "approved" and check_agreement_status.approval != "approved":
             budget = form.instance.total_estimated_budget
@@ -371,15 +371,15 @@ class ProjectAgreementUpdate(UpdateView):
         if form.instance.approval == 'approved':
             #email the approver group so they know this was approved
             link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_detail/" + str(self.kwargs['pk']) + "/"
-            subject = "Project Initiation Approved: " + project_name
-            message = "A new initiation was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
+            subject = "Approved: " + name
+            message = "A new project was approved by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
             getSubmiter = User.objects.get(username=self.request.user)
             emailGroup(submiter=getSubmiter.email, country=country,group=form.instance.approved_by,link=link,subject=subject,message=message)
         elif str(is_approved) == "awaiting approval" and check_agreement_status.approval != "awaiting approval":
-            messages.success(self.request, 'Success, Initiation has been saved and is now Awaiting Approval (Notifications have been Sent)')
+            messages.success(self.request, 'Success, Project has been saved and is now awaiting Approval (Notifications have been Sent)')
             #email the approver group so they know this was approved
             link = "Link: " + "https://" + get_current_site(self.request).name + "/workflow/projectagreement_detail/" + str(self.kwargs['pk']) + "/"
-            subject = "Project Initiation Waiting for Approval: " + project_name
+            subject = "Project Initiation Waiting for Approval: " + name
             message = "A new initiation was submitted for approval by " + str(self.request.user) + "\n" + "Budget Amount: " + str(form.instance.total_estimated_budget) + "\n"
             emailGroup(country=country,group=form.instance.approved_by,link=link,subject=subject,message=message)
         else:
@@ -966,7 +966,7 @@ class BenchmarkCreate(AjaxableResponseMixin, CreateView):
         context.update({'id': self.kwargs['id']})
         try:
             getComplete = WorkflowLevel2.objects.get(id=self.kwargs['id'])
-            context.update({'p_name': getComplete.project_name})
+            context.update({'p_name': getComplete.name})
         except WorkflowLevel2.DoesNotExist:
             # do nothing
             context = context
@@ -1938,20 +1938,20 @@ class ReportData(View, AjaxableResponseMixin):
         countries=getCountry(request.user)
         filters = {}
         if int(self.kwargs['pk']) != 0:
-            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1__id=self.kwargs['pk']).values('id', 'workflowlevel1__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1__id=self.kwargs['pk']).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
+                             'type__name', 'estimated_by__name','total_estimated_budget','org_estimated_budget','total_estimated_budget')
 
         elif self.kwargs['status'] != 'none':
-            getAgreements = WorkflowLevel2.objects.all().filter(approval=self.kwargs['status']).values('id', 'workflowlevel1__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.all().filter(approval=self.kwargs['status']).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
+                             'type__name','estimated_by__name','total_estimated_budget','org_estimated_budget','total_estimated_budget')
         else:
-            getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries).values('id', 'workflowlevel1__name', 'project_name','site', 'activity_code', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'project_type__name', 'account_code', 'lin_code','estimated_by__name','total_estimated_budget','mc_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
+                             'type__name', 'estimated_by__name','total_estimated_budget','org_estimated_budget','total_estimated_budget')
 
         getAgreements = ProjectAgreement.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
-                'program__name', 'project_name','site', 'activity_code', 'office__name', \
-                'project_name', 'sector__sector', 'project_activity', 'project_type__name', \
-                'account_code', 'lin_code','estimated_by__name','total_estimated_budget',\
+                'program__name', 'name','site', 'office__name', \
+                'project_name', 'sector__sector', 'type__name', \
+                'estimated_by__name','total_estimated_budget',\
                 'mc_estimated_budget','total_estimated_budget')
 
         getAgreements = json.dumps(list(getAgreements), cls=DjangoJSONEncoder)

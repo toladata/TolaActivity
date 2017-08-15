@@ -23,8 +23,7 @@
 <table class="table">
     <tr>
         <th>Date Created</th>
-        <th>Project Name</th>
-        <th>Activity Code</th>
+        <th>{{ WORKFLOWLEVEL2 }} Name</th>
         <th>Approval Status</th>
         <th>In Dashboard</th>
         <th>&nbsp;</th>
@@ -32,17 +31,16 @@
     {% for item in getDashboard %}
     <tr>
         <td>{% if item.status %}{{ item.create_date}}{% else %}<a href="/workflow/projectagreement_update/{{ item.id }}">{{ item.create_date}}</a>{% endif %}</td>
-        <td>{% if item.status %} {{ item.project_name}}{% else %}<a href="/workflow/projectagreement_update/{{ item.id }}">{{ item.project_name}}</a>{% endif %}</td>
-        <td>{{ item.activity_code}}</td>
+        <td>{% if item.status %} {{ item.name}}{% else %}<a href="/workflow/projectagreement_update/{{ item.id }}">{{ item.name}}</a>{% endif %}</td>
         <td>{{ item.status }}</td>
         <td>{{ item.dashboard_name }}</td>
         <td>
-            <a href="/workflow/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">Project Dashboard</a>
+            <a href="/workflow/dashboard/project/{{ item.id }}" class="btn btn-xs btn-success">{{ WORKFLOWLEVEL2 }} Dashboard</a>
             <a href="/workflow/projectagreement_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Initiation</a>
         </td>
     </tr>
     {% empty %}
-        <li class="list-group-item">No {{ workflowlevel2 }}s yet.</li>
+        <li class="list-group-item">No {{ WORKFLOWLEVEL2 }}s yet.</li>
     {% endfor %}
 </table>
 
