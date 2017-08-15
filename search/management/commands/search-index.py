@@ -1,10 +1,11 @@
 from django.core.management.base import BaseCommand
 
 from indicators.models import Indicator, IndicatorType, CollectedData
-from workflow.models import WorkflowLevel1, WorkflowLevel2
 from workflow.models import *
+from search.models import *
 from django.db.models.fields.related import ManyToManyField, RelatedField, ManyToManyRel, ManyToOneRel, ForeignKey
 
+from datetime import datetime
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError
 import os
@@ -28,24 +29,34 @@ class Command(BaseCommand):
         # TODO add actual index process
         index = options['index']
 
+        update_count = 0
         if index == '_all':
-            self.index_indicators()
-            self.index_collected_data()
-            self.index_workflows()
+            update_count += self.index_indicators()
+            update_count += self.index_collected_data()
+            update_count += self.index_workflows()
         elif index == 'workflows':
-            self.index_workflows()
+            update_count += self.index_workflows()
         elif index == 'indicators':
-            self.index_indicators()
+            update_count += self.index_indicators()
         elif index == 'collected_data':
-            self.index_collected_data()
+            update_count += self.index_collected_data()
+
+        s = SearchIndexLog()
+        s.document_count = update_count
+        s.save()
 
         print("Index process done.")
 
     def index_workflows(self):
         print("Updating workflowlevel1 model index")
 
+        latest_update = SearchIndexLog.objects.latest("create_date").create_date
+
+        wf1objects = WorkflowLevel1.objects.all().filter(
+                create_date__gte=latest_update,
+                create_date__lte=datetime.now())
         # index workflowlevel1 objects
-        for wf1 in WorkflowLevel1.objects.all():
+        for wf1 in wf1objects:
             # get model field data
             data = self.get_field_data(wf1)
 
@@ -61,8 +72,11 @@ class Command(BaseCommand):
 
         print("Updating workflowlevel2 model index")
 
+        wf2objects = WorkflowLevel2.objects.all().filter(
+                create_date__gte=latest_update,
+                create_date__lte=datetime.now())
         # index workflowlevel2 objects
-        for wf2 in WorkflowLevel2.objects.all():
+        for wf2 in wf2objects:
             # get model field data
             data = self.get_field_data(wf2)
 
@@ -81,10 +95,15 @@ class Command(BaseCommand):
             except RequestError:
                 print(wf2, "Error")
 
+        return len(wf1objects) + len(wf2objects)
+
     def index_collected_data(self):
         print("Updating collected data index")
 
-        collected_data = CollectedData.objects.all()
+        latest_update = SearchIndexLog.objects.latest("create_date").create_date
+        collected_data = CollectedData.objects.all().filter(
+                create_date__gte=latest_update,
+                create_date__lte=datetime.now())
 
         for d in collected_data:
             # get model field data
@@ -99,11 +118,18 @@ class Command(BaseCommand):
                 es.index(index="collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
             except RequestError:
                 print(d, "Error")
+        return len(collected_data)
 
     def index_indicators(self):
         print("Updating indicator index")
-        indicators = Indicator.objects.all() \
+
+        latest_update = SearchIndexLog.objects.latest("create_date").create_date
+
+        indicators = Indicator.objects.all().filter(
+                create_date__gte=latest_update,
+                create_date__lte=datetime.now())\
             .prefetch_related('workflowlevel1')
+
 
         for i in indicators:
             # get model field data
@@ -117,6 +143,8 @@ class Command(BaseCommand):
                 es.index(index="indicators", id=data['id'], doc_type='indicator', body=data)
             except RequestError:
                 print(i, "Error")
+
+        return len(indicators)
 
     def get_field_data(self, obj):
         """
