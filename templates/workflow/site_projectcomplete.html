@@ -29,7 +29,7 @@
         {% endifchanged %}
         <tr>
             <td>{{ item.create_date|date:"d-m-Y" }}</td>
-            <td> {{ item.project_name }}</td>
+            <td> {{ item.name }}</td>
             <td>{{ item.activity_code }}</td>
             <td>{{ item.office }}</td>
             <td>{% if item.short %} Short {% else %} Long {% endif %}</td>

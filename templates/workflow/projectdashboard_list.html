@@ -27,8 +27,8 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="project_name">{{ WORKFLOWLEVEL2 }} Name:</label>
-                <input type="text" name="project_name" required="" id="id_project_name" class="textinput textInput form-control" maxlength="255">
+                <label for="name">{{ WORKFLOWLEVEL2 }} Name:</label>
+                <input type="text" name="name" required="" id="id_name" class="textinput textInput form-control" maxlength="255">
             </div>
             <div class="form-group">
                 <label for="detailed">Short Form (recommended):</label>
@@ -57,8 +57,7 @@
                     <span></span>
                 </li>
 
-                <li class="list-group-item"><b>Name: </b>{{ getAgreement.project_name }}<br/>
-                    <b>Project Code: </b>{{ getAgreement.activity_code }}<br/>
+                <li class="list-group-item"><b>Name: </b>{{ getAgreement.name }}<br/>
                     <b>Created:</b> <span class="date-badge">{{ getAgreement.create_date|date }}</span> <b>Edited:</b> <span class="date-badge">{{ getAgreement.edit_date|date }}</span>
                 </li>
                 <li class="list-group-item">

@@ -458,7 +458,7 @@ class GetAgreements(View, AjaxableResponseMixin):
         workflowlevel1_id = self.kwargs['workflowlevel1']
         countries = getCountry(request.user)
         if workflowlevel1_id != 0:
-            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1=workflowlevel1_id).values('id', 'project_name')
+            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1=workflowlevel1_id).values('id', 'name')
         else:
             pass
         

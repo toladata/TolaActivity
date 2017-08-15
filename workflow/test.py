@@ -56,8 +56,8 @@ class AgreementTestCase(TestCase):
         #load from fixtures
         get_project_type = ProjectType.objects.get(id='1')
         get_sector = Sector.objects.get(id='2')
-        new_agreement = WorkflowLevel2.objects.create(workflowlevel1=get_program, project_name="testproject",
-                                                      activity_code="111222",office=get_office,
+        new_agreement = WorkflowLevel2.objects.create(workflowlevel1=get_program, name="testproject",
+                                                      office=get_office,
                                                       sector=get_sector, on_time=True, community_handover=False)
         new_agreement.save()
         new_agreement.site.add(get_community)
@@ -70,7 +70,7 @@ class AgreementTestCase(TestCase):
 
     def test_agreement_exists(self):
         """Check for Agreement object"""
-        get_agreement = WorkflowLevel2.objects.get(project_name="testproject")
+        get_agreement = WorkflowLevel2.objects.get(name="testproject")
         self.assertEqual(WorkflowLevel2.objects.filter(id=get_agreement.id).count(), 1)
 
     def test_benchmark_exists(self):

@@ -51,12 +51,12 @@ class DistributionTestCase(TestCase):
         new_community.save()
         get_community = SiteProfile.objects.get(name="testcommunity")
         get_sector = Sector.objects.get(id='2')
-        new_agreement = WorkflowLevel2.objects.create(workflowlevel1=get_program, project_name="testproject",
-                                                      activity_code="111222", office=get_office,
+        new_agreement = WorkflowLevel2.objects.create(workflowlevel1=get_program, name="testproject",
+                                                      office=get_office,
                                                       sector=get_sector, on_time=True, community_handover=False)
         new_agreement.save()
         new_agreement.site.add(get_community)
-        get_agreement = WorkflowLevel2.objects.get(project_name="testproject")
+        get_agreement = WorkflowLevel2.objects.get(name="testproject")
         new_distribution = Distribution.objects.create(distribution_name="testdistribution", workflowlevel1=get_program,
                                                             workflowlevel2=get_agreement,
                                                             office_code=get_office,

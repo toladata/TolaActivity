@@ -747,6 +747,32 @@ class ProfileTypeAdmin(admin.ModelAdmin):
     display = 'ProfileType'
 
 
+class CodedField(models.Model):
+    name = models.CharField("Field Name", max_length=255, blank=True, null=True)
+    type = models.CharField("Field Type", max_length=255, blank=True, null=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    default_value = models.CharField("Field Default Value", max_length=255, blank=True, null=True)
+    api_url = models.CharField("Associated API URL", max_length=255, blank=True, null=True)
+    api_token = models.CharField("Associated API Token", max_length=255, blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name','type')
+        verbose_name_plural = "CodedFields"
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(CodedField, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class LandType(models.Model):
     classify_land = models.CharField("Land Classification", help_text="Rural, Urban, Peri-Urban", max_length=100, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -912,21 +938,45 @@ class Stakeholder(models.Model):
         return unicode(self.name)
 
 
+class Partner(models.Model):
+    partners_uuid = models.CharField(max_length=255, verbose_name='Partner UUID', default=uuid.uuid4, unique=True)
+    name = models.CharField("Partner/Organization Name", max_length=255, blank=True, null=True)
+    type = models.ForeignKey(StakeholderType, blank=True, null=True, related_name="stakeholder_partner")
+    contact = models.ManyToManyField(Contact, max_length=255, blank=True)
+    country = models.ForeignKey(Country)
+    sectors = models.ManyToManyField(Sector, blank=True)
+    approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('country','name','type')
+        verbose_name_plural = "Partners"
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Partner, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class WorkflowLevel2Manager(models.Manager):
     def get_approved(self):
-        return self.filter(approval="approved")
+        return self.filter(status="approved")
 
     def get_open(self):
-        return self.filter(approval="")
+        return self.filter(status="")
 
     def get_inprogress(self):
-        return self.filter(approval="in progress")
+        return self.filter(status="in progress")
 
     def get_awaiting_approval(self):
-        return self.filter(approval="awaiting approval")
-
-    def get_rejected(self):
-        return self.filter(approval="rejected")
+        return self.filter(status="awaiting approval")
 
     def get_new(self):
         return self.filter(Q(approval=None) | Q(approval=""))
@@ -946,107 +996,38 @@ class WorkflowLevel2(models.Model):
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
     parent_workflowlevel2 = models.IntegerField("Parent", default=0, blank=True)
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
-    # Rename to more generic "nonproject" names
-    project_name = models.CharField("Project Name",
-                                    help_text='Please be specific in your name.  Consider that the name includes WHO, WHAT, WHERE, HOW',
-                                    max_length=255)
-    project_type = models.ForeignKey(ProjectType, verbose_name="Project Type", help_text='', max_length=255, blank=True,
-                                     null=True)
-    project_activity = models.CharField("Project Activity",
-                                        help_text='This should come directly from the activities listed in the Logframe',
-                                        max_length=255, blank=True, null=True)
-    project_description = models.TextField("Project Description", help_text='', blank=True, null=True)
+    coded_fields = models.ManyToManyField(CodedField, blank=True)
+    name = models.CharField("Project Name",max_length=255)
+    sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True, null=True, related_name="workflow2_sector")
+    sub_sector = models.ManyToManyField("Sector", verbose_name="Sub-Sector", blank=True, related_name="workflowlevel2_sub_sector")
+    description = models.TextField("Project Description", help_text='', blank=True, null=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
-    has_rej_letter = models.BooleanField("If Rejected: Rejection Letter Sent?", help_text='If yes attach copy',
-                                         default=False)
     # this needs to be a smart acronym generated based on the program name and project names initials
-    activity_code = models.CharField("Project Code", help_text='', max_length=255, blank=True, null=True)
+    short_name = models.CharField("Project Code", help_text='', max_length=20, blank=True, null=True)
     office = models.ForeignKey(Office, verbose_name="Office", null=True, blank=True)
-    cod_num = models.CharField("Project COD #", max_length=255, blank=True, null=True)
-    sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True, null=True)
-    #project_design = models.CharField("Activity design for", max_length=255, blank=True, null=True)
-    account_code = models.CharField("Account Code", help_text='', max_length=255, blank=True, null=True)
-    lin_code = models.CharField("LIN Code", help_text='', max_length=255, blank=True, null=True)
     staff_responsible = models.CharField("Staff Responsible", max_length=255, blank=True, null=True)
-
-    # TODO: It looks like Partners could be considered a separate model, here could be appended a list of partners
-    partners = models.BooleanField("Are there partners involved?", default=0)
-    name_of_partners = models.CharField("Name of Partners", max_length=255, blank=True, null=True)
-
+    partners = models.ForeignKey(Partner, blank=True, null=True, verbose_name="Partners")
     stakeholder = models.ManyToManyField(Stakeholder, verbose_name="Stakeholders", blank=True)
     effect_or_impact = models.TextField("What is the anticipated Outcome or Goal?", blank=True, null=True)
     expected_start_date = models.DateTimeField("Expected starting date", blank=True, null=True)
     expected_end_date = models.DateTimeField("Expected ending date", blank=True, null=True)
-    expected_duration = models.CharField("Expected duration", help_text="[MONTHS]/[DAYS]", blank=True, null=True,
-                                         max_length=255)
-    beneficiary_type = models.CharField("Type of direct beneficiaries",
-                                        help_text="i.e. Farmer, Association, Student, Govt, etc.", max_length=255,
-                                        blank=True, null=True)
-    estimated_num_direct_beneficiaries = models.CharField("Estimated number of direct beneficiaries",
-                                                          help_text="Please provide achievable estimates as we will use these as our 'Targets'",
-                                                          max_length=255, blank=True, null=True)
-    # average household size is optional and could be considered additional data
-    average_household_size = models.CharField("Average Household Size",
-                                              help_text="Refer to Form 01 - Community Profile", max_length=255,
-                                              blank=True, null=True)
-    estimated_num_indirect_beneficiaries = models.CharField("Estimated Number of indirect beneficiaries",
-                                                            help_text="This is a calculation - multiply direct beneficiaries by average household size",
-                                                            max_length=255, blank=True, null=True)
     total_estimated_budget = models.DecimalField("Total Project Budget", decimal_places=2, max_digits=12,
                                                  help_text="In USD", default=Decimal("0.00"), blank=True)
-    mc_estimated_budget = models.DecimalField("Organizations portion of Project Budget", decimal_places=2,
-                                              max_digits=12, help_text="In USD", default=Decimal("0.00"), blank=True)
-    local_total_estimated_budget = models.DecimalField("Estimated Total in Local Currency", decimal_places=2,
-                                                       max_digits=12, help_text="In Local Currency",
-                                                       default=Decimal("0.00"), blank=True)
-    local_mc_estimated_budget = models.DecimalField("Estimated Organization Total in Local Currency", decimal_places=2,
-                                                    max_digits=12,
-                                                    help_text="Total portion of estimate for your agency",
-                                                    default=Decimal("0.00"), blank=True)
-    exchange_rate = models.CharField(help_text="Local Currency exchange rate to USD", max_length=255, blank=True,
-                                     null=True)
-    exchange_rate_date = models.DateField(help_text="Date of exchange rate", blank=True, null=True)
-    estimation_date = models.DateTimeField(blank=True, null=True)
-    estimated_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By",
-                                     related_name="estimating")
-    estimated_by_date = models.DateTimeField("Date Originated", null=True, blank=True)
-    checked_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="checking")
-    checked_by_date = models.DateTimeField("Date Checked", null=True, blank=True)
-    reviewed_by = models.ForeignKey(TolaUser, verbose_name="Request review", blank=True, null=True,
-                                    related_name="reviewing")
-    reviewed_by_date = models.DateTimeField("Date Verified", null=True, blank=True)
-    finance_reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="finance_reviewing")
-    finance_reviewed_by_date = models.DateTimeField("Date Reviewed by Finance", null=True, blank=True)
-    me_reviewed_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="M&E Reviewed by",
-                                       related_name="reviewing_me")
-    me_reviewed_by_date = models.DateTimeField("Date Reviewed by M&E", null=True, blank=True)
+    org_estimated_budget = models.DecimalField("Organizations portion of Project Budget", decimal_places=2,
+                                               max_digits=12, help_text="In USD", default=Decimal("0.00"), blank=True)
+    local_currency = models.ForeignKey(Currency, null=True, blank=True, related_name="local_project")
+    donor_currency = models.ForeignKey(Currency, null=True, blank=True, related_name="donor_project")
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     justification_background = models.TextField("General Background and Problem Statement", blank=True, null=True)
     risks_assumptions = models.TextField("Risks and Assumptions", blank=True, null=True)
-    justification_description_community_selection = models.TextField("Description of Stakeholder Selection Criteria",
-                                                                     blank=True, null=True)
-    description_of_project_activities = models.TextField(blank=True, null=True)
     description_of_government_involvement = models.TextField(blank=True, null=True)
     description_of_community_involvement = models.TextField(blank=True, null=True)
-    community_project_description = models.TextField("Describe the project you would like to be considered",
-                                                     blank=True, null=True,
-                                                     help_text="Description must describe how the Community Proposal meets the project criteria")
-    create_date = models.DateTimeField("Date Created", null=True, blank=True)
-    edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
-    history = HistoricalRecords()
-    # optimize base query for all classbasedviews
-    objects = WorkflowLevel2Manager()
-    # END of PorjectAgreement Fields
-
-    # START of ProjectComplete specific Fields
     actual_start_date = models.DateTimeField(blank=True, null=True)
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=True)
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
-    estimated_budget = models.DecimalField("Estimated Budget", decimal_places=2, max_digits=12, help_text="",
-                                           default=Decimal("0.00"), blank=True)
-    actual_budget = models.DecimalField("Actual Cost", decimal_places=2, max_digits=20, default=Decimal("0.00"),
+    actual_cost = models.DecimalField("Actual Cost", decimal_places=2, max_digits=20, default=Decimal("0.00"),
                                         blank=True,
                                         help_text="What was the actual final cost?  This should match any financial documentation you have in the file.   It should be completely documented and verifiable by finance and any potential audit")
     actual_cost_date = models.DateTimeField(blank=True, null=True)
@@ -1056,10 +1037,6 @@ class WorkflowLevel2(models.Model):
                                      help_text="In USD", default=Decimal("0.00"), blank=True)
     agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2, max_digits=12,
                                       help_text="In USD", default=Decimal("0.00"), blank=True)
-    local_total_cost = models.DecimalField("Actual Cost", decimal_places=2, max_digits=12,
-                                           help_text="In Local Currency", default=Decimal("0.00"), blank=True)
-    local_agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2, max_digits=12,
-                                            help_text="In Local Currency", default=Decimal("0.00"), blank=True)
     community_handover = models.BooleanField("CommunityHandover/Sustainability Maintenance Plan",
                                              help_text='Check box if it was completed', default=False)
     capacity_built = models.TextField("Describe how sustainability was ensured for this project?", max_length=755,
@@ -1071,7 +1048,11 @@ class WorkflowLevel2(models.Model):
     lessons_learned = models.TextField("Lessons learned", blank=True, null=True)
     indicators = models.ManyToManyField("indicators.Indicator", blank=True)
     sort = models.IntegerField(default=0, blank=True)  # sort array for activities related to a project
-    # END of ProjectComplete Fields
+    create_date = models.DateTimeField("Date Created", null=True, blank=True)
+    edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
+    history = HistoricalRecords()
+    # optimize base query for all classbasedviews
+    objects = WorkflowLevel2Manager()
 
     STATUS_OPEN = "open"
     STATUS_AWAITING_APPROVAL = "awaitingapproval"
@@ -1088,7 +1069,7 @@ class WorkflowLevel2(models.Model):
     status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="open", blank=True)
 
     class Meta:
-        ordering = ('project_name',)
+        ordering = ('name',)
         verbose_name_plural = "WorkflowLevel2"
         permissions = (
             ("can_approve", "Can approve initiation"),
@@ -1103,30 +1084,18 @@ class WorkflowLevel2(models.Model):
         # defaults don't work if they aren't in the form so preset these to 0
         if self.total_estimated_budget == None:
             self.total_estimated_budget = Decimal("0.00")
-        if self.mc_estimated_budget == None:
-            self.mc_estimated_budget = Decimal("0.00")
-        if self.local_total_estimated_budget == None:
-            self.local_total_estimated_budget = Decimal("0.00")
-        if self.local_mc_estimated_budget == None:
-            self.local_mc_estimated_budget = Decimal("0.00")
-        if self.estimated_budget == None:
-            self.estimated_budget = Decimal("0.00")
-        if self.actual_budget == None:
-            self.actual_budget = Decimal("0.00")
+        if self.org_estimated_budget == None:
+            self.org_estimated_budget = Decimal("0.00")
         if self.total_cost == None:
             self.total_cost = Decimal("0.00")
         if self.agency_cost == None:
             self.agency_cost = Decimal("0.00")
-        if self.local_total_cost == None:
-            self.local_total_cost = Decimal("0.00")
-        if self.local_agency_cost == None:
-            self.local_agency_cost = Decimal("0.00")
 
         super(WorkflowLevel2, self).save()
 
     @property
     def project_name_clean(self):
-        return self.project_name.encode('ascii', 'ignore')
+        return self.name.encode('ascii', 'ignore')
 
     @property
     def sites(self):
@@ -1138,8 +1107,54 @@ class WorkflowLevel2(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        new_name = unicode(self.office) + unicode(" - ") + unicode(self.project_name)
+        new_name = unicode(self.office) + unicode(" - ") + unicode(self.name)
         return new_name
+
+
+class WorkflowLevel2Sort(models.Model):
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    workflowlevel2_id = models.IntegerField("ID to be Sorted", default=0)
+    sort_order = models.IntegerField("Sort", default=0)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('workflowlevel1','sort_order','workflowlevel2_id')
+        verbose_name_plural = "WorkflowLevel Sort"
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(WorkflowLevel2Sort, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.workflowlevel1)
+
+
+class CodedFieldValue(models.Model):
+    value = models.CharField("Value", null=True, blank=True, max_length=255)
+    coded_field = models.ForeignKey(CodedField)
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('value','coded_field','workflowlevel2__name')
+        verbose_name_plural = "CodedFields"
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(CodedFieldValues, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.value)
 
 
 class Documentation(models.Model):
@@ -1240,6 +1255,67 @@ class Budget(models.Model):
 class BudgetAdmin(admin.ModelAdmin):
     list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
     display = 'Budget'
+
+
+class RiskRegister(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=135, blank=True, null=True)
+    impact = models.CharField(max_length=255, blank=True, null=True)
+    likelihood = models.CharField(max_length=255, blank=True, null=True)
+    rating = models.CharField(max_length=255, blank=True, null=True)
+    status = models.IntegerField(default=0, blank=True, null=True)
+    category = models.CharField(max_length=255, blank=True, null=True)
+    contingency_plan = models.CharField(max_length=255, blank=True, null=True)
+    mitigation_plan = models.CharField(max_length=255, blank=True, null=True)
+    post_mitigation_status = models.CharField(max_length=255, blank=True, null=True)
+    action_by = models.DateTimeField(null=True, blank=True)
+    action_when = models.DateTimeField(null=True, blank=True)
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2,null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+    history = HistoricalRecords()
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(RiskRegister, self).save()
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('type','name')
+
+
+class IssueRegister(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=135, blank=True, null=True)
+    impact = models.CharField(max_length=255, blank=True, null=True)
+    rating = models.CharField(max_length=255, blank=True, null=True)
+    status = models.IntegerField(default=0, blank=True, null=True)
+    cause = models.CharField(max_length=255, blank=True, null=True)
+    assigned = models.ForeignKey(TolaUser, blank=True, null=True)
+    date_opened = models.DateTimeField(null=True, blank=True)
+    date_resolved = models.DateTimeField(null=True, blank=True)
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+    history = HistoricalRecords()
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(IssueRegister, self).save()
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ('type','name')
 
 
 class Checklist(models.Model):

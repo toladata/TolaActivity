@@ -147,7 +147,7 @@ class WorkflowLevel2CreateForm(forms.ModelForm):
 
     class Meta:
         model = WorkflowLevel2
-        fields = ("workflowlevel1","sector","project_name")
+        fields = ("workflowlevel1","sector","name")
 
     def __init__(self, *args, **kwargs):
 
@@ -212,8 +212,8 @@ class WorkflowLevel2Form(forms.ModelForm):
             HTML("""<br/>"""),
             TabHolder(
                 Tab('Executive Summary',
-                    Fieldset('', 'workflowlevel1', 'activity_code','account_code',\
-                             'office', 'sector','project_name', 'site', 'stakeholder',
+                    Fieldset('', 'workflowlevel1',\
+                             'office', 'sector','name', 'site', 'stakeholder',
                         ),
                     Fieldset(
                         'Dates',
@@ -432,9 +432,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
         model = WorkflowLevel2
         fields = '__all__'
 
-        exclude = ['create_date', 'edit_date','project_activity', 'account_code', 'lin_code', 'mc_estimated_budget',
-               'local_total_estimated_budget', 'local_estimated_budget', 'exchange_rate', 'exchange_rate_date',
-               'estimation_date', 'other_budget']
+        exclude = ['create_date', 'edit_date',]
 
     map = forms.CharField(widget=GoogleMapsWidget(
         attrs={'width': 700, 'height': 400, 'longitude': 'longitude', 'latitude': 'latitude'}), required=False)
@@ -474,7 +472,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
             TabHolder(
                 Tab('Executive Summary',
                     Fieldset('Details',
-                        'workflowlevel1', 'activity_code', 'office', 'sector','project_name','site','stakeholder'
+                        'workflowlevel1', 'activity_code', 'office', 'sector','name','site','stakeholder'
                     ),
                     Fieldset('Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
@@ -753,7 +751,7 @@ class SiteProfileForm(forms.ModelForm):
 
                     {% for item in getProjects %}
                        <tr>
-                        <td>{{ item.project_name }}</td>
+                        <td>{{ item.name }}</td>
                         <td>{{ item.workflowlevel1.name }}</td>
                         <td>{{ item.activity_code }}</td>
                         <td><a target="_new" href='/workflow/projectagreement_detail/{{ item.id }}/'>View</a>
