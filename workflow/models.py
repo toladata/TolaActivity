@@ -140,6 +140,8 @@ class TolaUser(models.Model):
     title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
+    position_description = models.CharField(blank=True, null=True, max_length=255)
+    contact_info = models.CharField(blank=True, null=True, max_length=255)
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
     organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
     country = models.ForeignKey(Country, blank=True, null=True)
@@ -540,7 +542,7 @@ class WorkflowLevel1(models.Model):
 class WorkflowAccess(models.Model):
     workflow_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="auth_approving")
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
-    role=models.TextField(null=True, blank=True)
+    role = models.TextField(null=True, blank=True)
     budget_limit = models.IntegerField(null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)

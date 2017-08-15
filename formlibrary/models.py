@@ -198,7 +198,7 @@ class CustomForm(models.Model):
     description = models.TextField(null=True, blank=True)
     fields = JSONField(null=True)
     organization = models.ForeignKey(Organization, default=1)
-    public = models.BooleanField(default=0)
+    is_public = models.BooleanField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
