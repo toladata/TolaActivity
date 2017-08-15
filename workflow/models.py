@@ -941,15 +941,13 @@ class Stakeholder(models.Model):
 class Partner(models.Model):
     partners_uuid = models.CharField(max_length=255, verbose_name='Partner UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Partner/Organization Name", max_length=255, blank=True, null=True)
-    type = models.ForeignKey(StakeholderType, blank=True, null=True)
+    type = models.ForeignKey(StakeholderType, blank=True, null=True, related_name="stakeholder_partner")
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
     sectors = models.ManyToManyField(Sector, blank=True)
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    #optimize query
-    objects = StakeholderManager()
 
     class Meta:
         ordering = ('country','name','type')
@@ -960,7 +958,7 @@ class Partner(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Partners, self).save()
+        super(Partner, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
@@ -1088,10 +1086,6 @@ class WorkflowLevel2(models.Model):
             self.total_estimated_budget = Decimal("0.00")
         if self.org_estimated_budget == None:
             self.org_estimated_budget = Decimal("0.00")
-        if self.estimated_budget == None:
-            self.estimated_budget = Decimal("0.00")
-        if self.actual_budget == None:
-            self.actual_budget = Decimal("0.00")
         if self.total_cost == None:
             self.total_cost = Decimal("0.00")
         if self.agency_cost == None:

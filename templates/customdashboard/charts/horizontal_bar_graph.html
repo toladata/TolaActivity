@@ -14,7 +14,7 @@ var options = {
     };
 
 var barChartData = {
-	labels : [{% for project in get_project_completed|slice:"10" %}'{{ project.activity_code }}',{%endfor%}'','',"Total B & A"],
+	labels : [{% for project in get_project_completed|slice:"10" %}'{{ project.id }}',{%endfor%}'','',"Total B & A"],
 	datasets : [
 		{
 			label:"Budgeted",

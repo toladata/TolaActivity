@@ -39,6 +39,7 @@ class ProgramResource(resources.ModelResource):
     class Meta:
         model = WorkflowLevel1
 
+
 class StakeholderResource(resources.ModelResource):
     type = fields.Field(column_name='type', attribute='type', widget=ForeignKeyWidget(StakeholderType, 'name'))
     contact = fields.Field(column_name='contact', attribute='contact', widget=ManyToManyWidget(Contact, field='name'))
