@@ -16,7 +16,7 @@
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/0/0/0/"> -- All --</a></li>
     {% for workflowlevel1 in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ program.id }}/0/0/">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/indicators/home/{{ workflowlevel1.id }}/0/0/">{% if workflowlevel1.unique_id %}{{ workflowlevel1.unique_id }} - {% endif %}{{ workflowlevel1.name }}</a></li>
     {% endfor %}
     </ul>
     <a href="/indicators/indicator" class="btn btn-large btn-success">New Indicator</a>

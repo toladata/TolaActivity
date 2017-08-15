@@ -10,12 +10,12 @@
 {% block content %}
 
     {% for d in collecteddata %}
-        {% ifchanged d.program %}
+        {% ifchanged d.workflowlevel1 %}
             {% if not forloop.first %}
                 </div></div>
             {% endif %}
             <div class="panel panel-default">
-                <div class="panel-heading">{{ d.program }}</div>
+                <div class="panel-heading">{{ d.workflowlevel1 }}</div>
                     <div class="panel-body">
 
         {% endifchanged %}

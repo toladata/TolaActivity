@@ -42,13 +42,13 @@
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
                                 {%for workflowlevel1 in programs%}
                                 <li class="list-group-item">
-                                    <a href="/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/">{{ workflowlevel1.name }}</a>
+                                    <a href="/dashboard/{{ workflowlevel1.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/">{{ workflowlevel1.name }}</a>
                                 </li>
                                 {%endfor%}
                             </ul>
                         </div>
                         {% if report_server == False%}
-                          <a href="/workflow/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a Project</a>
+                          <a href="/workflow/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a {{ WORKFLOWLEVEL2 }}</a>
                         {% endif %}
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                         </tr>
                     {%for value in count_evidence  %}
                         <tr>
-                           <td>{{value.indicator__program__country__country}}</td>
+                           <td>{{value.indicator__workflowlevel1__country__country}}</td>
                            <td>{{value.indicator_count}}</td>
                            <td>{{value.evidence_count}}</td>
                         </tr>

@@ -10,18 +10,18 @@
 {% block content %}
 
     {% for item in projects %}
-        {% ifchanged item.program %}
+        {% ifchanged item.workflowlevel1 %}
             {% if not forloop.first %}
                 </table></div></div>
             {% endif %}
             <div class="panel panel-default">
-                <div class="panel-heading">{{ item.program }}</div>
+                <div class="panel-heading">{{ item.workflowlevel1 }}</div>
                 <div class="panel-body">
                     <table class="table table-striped table-bordered">
                         <tr>
                             <th>Date Created</th>
-                            <th>Prjoect Name</th>
-                            <th>Project Code</th>
+                            <th>{{ WORKFLOWLEVEL1 }} Name</th>
+                            <th>{{ WORKFLOWLEVEL2 }} Code</th>
                             <th>Office Code</th>
                             <th>Form Version</th>
                             <th>Approval Status</th>
