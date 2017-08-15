@@ -92,6 +92,16 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='workflowlevel2',
+            old_name='project_name',
+            new_name='name',
+        ),
+        migrations.RenameField(
+            model_name='historicalworkflowlevel2',
+            old_name='project_name',
+            new_name='name',
+        ),
+        migrations.RenameField(
+            model_name='workflowlevel2',
             old_name='mc_estimated_budget',
             new_name='org_estimated_budget',
         ),
@@ -387,12 +397,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='historicalworkflowlevel2',
-            name='name',
-            field=models.CharField(default='Temporary', max_length=255, verbose_name='Project Name'),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='historicalworkflowlevel2',
             name='short_name',
             field=models.CharField(blank=True, max_length=20, null=True, verbose_name='Project Code'),
         ),
@@ -405,12 +409,6 @@ class Migration(migrations.Migration):
             model_name='workflowlevel2',
             name='local_currency',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='local_project', to='workflow.Currency'),
-        ),
-        migrations.AddField(
-            model_name='workflowlevel2',
-            name='name',
-            field=models.CharField(default='Temporary', max_length=255, verbose_name='Project Name'),
-            preserve_default=False,
         ),
         migrations.AddField(
             model_name='workflowlevel2',
