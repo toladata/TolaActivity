@@ -28,7 +28,6 @@ class DocumentationAdmin(ImportExportModelAdmin):
     pass
 
 
-
 # Resource for CSV export
 class WorkflowLevel2Resource(resources.ModelResource):
 
@@ -171,6 +170,147 @@ class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin )
             if data.user == a_user:
                 email = a_user.email
         return email
+
+
+class TolaSitesAdmin(admin.ModelAdmin):
+    list_display = ('name', 'agency_name')
+    display = 'Tola Site'
+    list_filter = ('name',)
+    search_fields = ('name','agency_name')
+
+
+class OrganizationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Organization'
+
+
+class TolaBookmarksAdmin(admin.ModelAdmin):
+
+    list_display = ('user', 'name')
+    display = 'Tola User Bookmarks'
+    list_filter = ('user__name',)
+    search_fields = ('name','user')
+
+
+class TolaUserAdmin(admin.ModelAdmin):
+
+    list_display = ('name', 'country')
+    display = 'Tola User'
+    list_filter = ('country', 'user__is_staff',)
+    search_fields = ('name','country__country','title')
+
+
+class FormGuidanceAdmin(admin.ModelAdmin):
+    list_display = ( 'form', 'guidance', 'guidance_link', 'create_date',)
+    display = 'Form Guidance'
+
+
+class ProjectTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'create_date', 'edit_date')
+    display = 'Project Type'
+
+
+class SectorAdmin(admin.ModelAdmin):
+    list_display = ('sector', 'create_date', 'edit_date')
+    display = 'Sector'
+
+
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'create_date', 'edit_date')
+    display = 'Contact'
+    list_filter = ('create_date','country')
+    search_fields = ('name','country','title','city')
+
+
+class FundCodeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Fund Code'
+
+
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ('source_currency','target_currency', 'current_rate', 'conversion_date')
+    display = 'Currency Conversion'
+
+
+class ApprovalTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    display = 'Approval Types'
+
+
+class ApprovalWorkflowAdmin(admin.ModelAdmin):
+    list_display = ('approval_type','section')
+    display = 'Approval Workflow'
+
+
+class ProvinceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'create_date')
+    search_fields = ('name','country__country')
+    list_filter = ('create_date','country')
+    display = 'Admin Boundary 1'
+
+
+class DistrictAdmin(admin.ModelAdmin):
+    list_display = ('name', 'province', 'create_date')
+    search_fields = ('create_date','province')
+    list_filter = ('province__country__country','province')
+    display = 'Admin Boundary 2'
+
+
+class AdminLevelThreeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'district', 'create_date')
+    search_fields = ('name','district__name')
+    list_filter = ('district__province__country__country','district')
+    display = 'Admin Boundary 3'
+
+
+class OfficeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'country', 'create_date', 'edit_date')
+    search_fields = ('name','country__country','code')
+    list_filter = ('create_date','country__country')
+    display = 'Office'
+
+
+class ProfileTypeAdmin(admin.ModelAdmin):
+    list_display = ('profile', 'create_date', 'edit_date')
+    display = 'ProfileType'
+
+
+class LandTypeAdmin(admin.ModelAdmin):
+    list_display = ('classify_land', 'create_date', 'edit_date')
+    display = 'Land Type'
+
+
+class WorkflowLevel3Admin(admin.ModelAdmin):
+    list_display = ('description', 'create_date', 'edit_date')
+    display = 'Workflow Level 3'
+
+
+class BudgetAdmin(admin.ModelAdmin):
+    list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
+    display = 'Budget'
+
+
+class ChecklistAdmin(admin.ModelAdmin):
+    list_display = ('name','country')
+    list_filter = ('country','workflowlevel2')
+
+
+class ChecklistItemAdmin(admin.ModelAdmin):
+    list_display = ('item','checklist','in_file')
+    list_filter = ('checklist','global_item')
+
+
+class WorkflowModulesAdmin(admin.ModelAdmin):
+    list_display = ('workflowlevel2',)
+    list_filter = ('workflowlevel2',)
+
+
+class StakeholderTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Stakeholder Types'
+    list_filter = ('create_date')
+    search_fields = ('name')
+
 
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Country, CountryAdmin)

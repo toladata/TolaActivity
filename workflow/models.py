@@ -61,13 +61,6 @@ class TolaSites(models.Model):
         return super(TolaSites, self).save(*args, **kwargs)
 
 
-class TolaSitesAdmin(admin.ModelAdmin):
-    list_display = ('name', 'agency_name')
-    display = 'Tola Site'
-    list_filter = ('name',)
-    search_fields = ('name','agency_name')
-
-
 class Organization(models.Model):
     name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
     description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
@@ -94,11 +87,6 @@ class Organization(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.name
-
-
-class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'create_date', 'edit_date')
-    display = 'Organization'
 
 
 class Country(models.Model):
@@ -233,27 +221,11 @@ class TolaBookmarks(models.Model):
         super(TolaBookmarks, self).save()
 
 
-class TolaBookmarksAdmin(admin.ModelAdmin):
-
-    list_display = ('user', 'name')
-    display = 'Tola User Bookmarks'
-    list_filter = ('user__name',)
-    search_fields = ('name','user')
-
-
 class TolaUserProxy(TolaUser):
 
     class Meta:
         verbose_name, verbose_name_plural = u"Report Tola User", u"Report Tola Users"
         proxy = True
-
-
-class TolaUserAdmin(admin.ModelAdmin):
-
-    list_display = ('name', 'country')
-    display = 'Tola User'
-    list_filter = ('country', 'user__is_staff',)
-    search_fields = ('name','country__country','title')
 
 
 # Form Guidance
@@ -273,11 +245,6 @@ class FormGuidance(models.Model):
 
     def __unicode__(self):
         return unicode(self.form)
-
-
-class FormGuidanceAdmin(admin.ModelAdmin):
-    list_display = ( 'form', 'guidance', 'guidance_link', 'create_date',)
-    display = 'Form Guidance'
 
 
 class ProjectType(models.Model):
@@ -300,11 +267,6 @@ class ProjectType(models.Model):
         ordering = ('name',)
 
 
-class ProjectTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'create_date', 'edit_date')
-    display = 'Project Type'
-
-
 class Sector(models.Model):
     sector = models.CharField("Sector Name", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -323,11 +285,6 @@ class Sector(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.sector
-
-
-class SectorAdmin(admin.ModelAdmin):
-    list_display = ('sector', 'create_date', 'edit_date')
-    display = 'Sector'
 
 
 class Contact(models.Model):
@@ -357,13 +314,6 @@ class Contact(models.Model):
         return self.name + ", " + self.title
 
 
-class ContactAdmin(admin.ModelAdmin):
-    list_display = ('name', 'country', 'create_date', 'edit_date')
-    display = 'Contact'
-    list_filter = ('create_date','country')
-    search_fields = ('name','country','title','city')
-
-
 class FundCode(models.Model):
     name = models.CharField("Fund Code", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -382,11 +332,6 @@ class FundCode(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.name
-
-
-class FundCodeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'create_date', 'edit_date')
-    display = 'Fund Code'
 
 
 class Currency(models.Model):
@@ -412,11 +357,6 @@ class Currency(models.Model):
         return self.source_currency
 
 
-class CurrencyAdmin(admin.ModelAdmin):
-    list_display = ('source_currency','target_currency', 'current_rate', 'conversion_date')
-    display = 'Currency Conversion'
-
-
 class ApprovalType(models.Model):
     name = models.CharField("Name", max_length=255, blank=True)
     organization = models.ForeignKey(Organization)
@@ -436,11 +376,6 @@ class ApprovalType(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.name
-
-
-class ApprovalTypeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    display = 'Approval Types'
 
 
 class ApprovalWorkflow(models.Model):
@@ -493,11 +428,6 @@ class ApprovalWorkflow(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return unicode(self.approval_type)
-
-
-class ApprovalWorkflowAdmin(admin.ModelAdmin):
-    list_display = ('approval_type','section')
-    display = 'Approval Workflow'
 
 
 class WorkflowLevel1(models.Model):
@@ -595,13 +525,6 @@ class Province(models.Model):
         return self.name
 
 
-class ProvinceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'country', 'create_date')
-    search_fields = ('name','country__country')
-    list_filter = ('create_date','country')
-    display = 'Admin Boundary 1'
-
-
 class District(models.Model):
     name = models.CharField("Admin Boundary 2", max_length=255, blank=True)
     province = models.ForeignKey(Province,verbose_name="Admin Level 1")
@@ -625,13 +548,6 @@ class District(models.Model):
         return self.name
 
 
-class DistrictAdmin(admin.ModelAdmin):
-    list_display = ('name', 'province', 'create_date')
-    search_fields = ('create_date','province')
-    list_filter = ('province__country__country','province')
-    display = 'Admin Boundary 2'
-
-
 class AdminLevelThree(models.Model):
     name = models.CharField("Admin Boundary 3", max_length=255, blank=True)
     district = models.ForeignKey(District,verbose_name="Admin Level 2")
@@ -653,13 +569,6 @@ class AdminLevelThree(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.name
-
-
-class AdminLevelThreeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'district', 'create_date')
-    search_fields = ('name','district__name')
-    list_filter = ('district__province__country__country','district')
-    display = 'Admin Boundary 3'
 
 
 class Village(models.Model):
@@ -686,12 +595,6 @@ class Village(models.Model):
         return self.name
 
 
-class VillageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'district', 'create_date', 'edit_date')
-    list_filter = ('district__province__country__country','district')
-    display = 'Admin Boundary 4'
-
-
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
     code = models.CharField("Office Code", max_length=255, blank=True)
@@ -715,13 +618,6 @@ class Office(models.Model):
         return new_name
 
 
-class OfficeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'country', 'create_date', 'edit_date')
-    search_fields = ('name','country__country','code')
-    list_filter = ('create_date','country__country')
-    display = 'Office'
-
-
 class ProfileType(models.Model):
     profile = models.CharField("Profile Type", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -742,11 +638,6 @@ class ProfileType(models.Model):
         return self.profile
 
 
-class ProfileTypeAdmin(admin.ModelAdmin):
-    list_display = ('profile', 'create_date', 'edit_date')
-    display = 'ProfileType'
-
-
 class LandType(models.Model):
     classify_land = models.CharField("Land Classification", help_text="Rural, Urban, Peri-Urban", max_length=100, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -765,11 +656,6 @@ class LandType(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.classify_land
-
-
-class LandTypeAdmin(admin.ModelAdmin):
-    list_display = ('classify_land', 'create_date', 'edit_date')
-    display = 'Land Type'
 
 
 class SiteProfileManager(models.Manager):
@@ -840,13 +726,6 @@ class SiteProfile(models.Model):
         return new_name
 
 
-class SiteProfileAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code','office', 'country', 'district', 'province', 'village', 'cluster', 'longitude', 'latitude', 'create_date', 'edit_date')
-    list_filter = ('country__country')
-    search_fields = ('code','office__code','country__country')
-    display = 'SiteProfile'
-
-
 class StakeholderType(models.Model):
     name = models.CharField("Stakeholder Type", max_length=255, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -866,13 +745,6 @@ class StakeholderType(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.name
-
-
-class StakeholderTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'create_date', 'edit_date')
-    display = 'Stakeholder Types'
-    list_filter = ('create_date')
-    search_fields = ('name')
 
 
 class StakeholderManager(models.Manager):
@@ -1223,11 +1095,6 @@ class WorkflowLevel3(models.Model):
         return self.description
 
 
-class WorkflowLevel3Admin(admin.ModelAdmin):
-    list_display = ('description', 'create_date', 'edit_date')
-    display = 'Workflow Level 3'
-
-
 class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True)
     account_code = models.CharField("Accounting Code",max_length=135, blank=True, null=True)
@@ -1254,11 +1121,6 @@ class Budget(models.Model):
 
     class Meta:
         ordering = ('contributor',)
-
-
-class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
-    display = 'Budget'
 
 
 class RiskRegister(models.Model):
@@ -1344,11 +1206,6 @@ class Checklist(models.Model):
         return unicode(self.workflowlevel2)
 
 
-class ChecklistAdmin(admin.ModelAdmin):
-    list_display = ('name','country')
-    list_filter = ('country','workflowlevel2')
-
-
 class ChecklistItem(models.Model):
     item = models.CharField(max_length=255)
     checklist = models.ForeignKey(Checklist)
@@ -1372,11 +1229,6 @@ class ChecklistItem(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return unicode(self.item)
-
-
-class ChecklistItemAdmin(admin.ModelAdmin):
-    list_display = ('item','checklist','in_file')
-    list_filter = ('checklist','global_item')
 
 
 class WorkflowModules(models.Model):
@@ -1410,11 +1262,6 @@ class WorkflowModules(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return unicode(self.workflowlevel2)
-
-
-class WorkflowModulesAdmin(admin.ModelAdmin):
-    list_display = ('workflowlevel2',)
-    list_filter = ('workflowlevel2',)
 
 
 

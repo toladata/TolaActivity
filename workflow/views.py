@@ -317,7 +317,7 @@ class ProjectAgreementUpdate(UpdateView):
         context.update({'getApproval': getApproval})
 
         try:
-            getCodedField = CodedField.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).order_by('type')
+            getCodedField = CodedField.objects.all().filter(Q(workflowlevel2__id=self.kwargs['pk']) | Q(is_universal=1)).order_by('type')
             print getApproval
         except CodedField.DoesNotExist:
             getCodedField = None
