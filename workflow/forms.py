@@ -221,7 +221,24 @@ class WorkflowLevel2Form(forms.ModelForm):
                         PrependedText('on_time', ''), 'no_explanation',
 
                         ),
+
+                    Fieldset("Codes",
+                         HTML("""
+                                <fieldset>
+                                  {% if getCodedField %}
+                                        {% for item in getCodedField %}
+                                        <div id='div_id_name' class="form-group">
+                                            <label for="{{ getCodedFields.label }}" class="control-label col-sm-2">{{ getCodedFields.label }}</label>
+                                            <input type="text" value="{{ getCodedFields.value }}" name="{{ getCodedFields.label }}">
+                                        {% endfor %}
+                                      </table>
+                                  {% endif %}
+                                </fieldset>
+                        """),
                     ),
+                ),
+
+
                 Tab('Components',
                     Fieldset("Project Components",
                         HTML("""

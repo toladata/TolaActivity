@@ -13,10 +13,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='CodedFieldValues',
-            new_name='CodedFieldValue',
-        ),
         migrations.AlterField(
             model_name='partner',
             name='type',

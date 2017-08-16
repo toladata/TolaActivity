@@ -6,7 +6,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import WorkflowLevel1, Country, Province, AdminLevelThree, District, WorkflowLevel2, SiteProfile, \
     Documentation, WorkflowLevel3, Budget, WorkflowAccess, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
-    TolaBookmarks, TolaUser, ApprovalWorkflow
+    TolaBookmarks, TolaUser, ApprovalWorkflow, CodedField
 from formlibrary.models import TrainingAttendance, Distribution
 from indicators.models import CollectedData, ExternalService
 from django.utils import timezone
@@ -315,6 +315,13 @@ class ProjectAgreementUpdate(UpdateView):
         except ApprovalWorkflow.DoesNotExist:
             getApproval = None
         context.update({'getApproval': getApproval})
+
+        try:
+            getCodedField = CodedField.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).order_by('type')
+            print getApproval
+        except CodedField.DoesNotExist:
+            getCodedField = None
+        context.update({'getCodedField': getCodedField})
 
         try:
             getDocuments = Documentation.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).order_by('name')

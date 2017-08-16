@@ -747,32 +747,6 @@ class ProfileTypeAdmin(admin.ModelAdmin):
     display = 'ProfileType'
 
 
-class CodedField(models.Model):
-    name = models.CharField("Field Name", max_length=255, blank=True, null=True)
-    type = models.CharField("Field Type", max_length=255, blank=True, null=True)
-    organization = models.ForeignKey(Organization, blank=True, null=True)
-    default_value = models.CharField("Field Default Value", max_length=255, blank=True, null=True)
-    api_url = models.CharField("Associated API URL", max_length=255, blank=True, null=True)
-    api_token = models.CharField("Associated API Token", max_length=255, blank=True, null=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name','type')
-        verbose_name_plural = "CodedFields"
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(CodedField, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return unicode(self.name)
-
-
 class LandType(models.Model):
     classify_land = models.CharField("Land Classification", help_text="Rural, Urban, Peri-Urban", max_length=100, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -996,7 +970,6 @@ class WorkflowLevel2(models.Model):
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
     parent_workflowlevel2 = models.IntegerField("Parent", default=0, blank=True)
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
-    coded_fields = models.ManyToManyField(CodedField, blank=True)
     name = models.CharField("Project Name",max_length=255)
     sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True, null=True, related_name="workflow2_sector")
     sub_sector = models.ManyToManyField("Sector", verbose_name="Sub-Sector", blank=True, related_name="workflowlevel2_sub_sector")
@@ -1134,7 +1107,38 @@ class WorkflowLevel2Sort(models.Model):
         return unicode(self.workflowlevel1)
 
 
-class CodedFieldValue(models.Model):
+class CodedField(models.Model):
+    name = models.CharField("Field Name", max_length=255, blank=True, null=True)
+    label = models.CharField("Field Label", max_length=255, blank=True, null=True)
+    is_required = models.BooleanField("Required Field?", default=0)
+    is_universal = models.BooleanField("Available in Every Level 2 Form?", default=0)
+    type = models.CharField("Field Type", max_length=255, blank=True, null=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    default_value = models.CharField("Field Default Value", max_length=255, blank=True, null=True)
+    api_url = models.CharField("Associated API URL", max_length=255, blank=True, null=True)
+    api_token = models.CharField("Associated API Token", max_length=255, blank=True, null=True)
+    workflowlevel2 = models.ManyToManyField(WorkflowLevel2, blank=True)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name','type')
+        verbose_name_plural = "CodedFields"
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(CodedField, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class CodedFieldValues(models.Model):
     value = models.CharField("Value", null=True, blank=True, max_length=255)
     coded_field = models.ForeignKey(CodedField)
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True)

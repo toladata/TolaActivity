@@ -448,11 +448,11 @@ class CodedFieldSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class CodedFieldValueSerializer(serializers.HyperlinkedModelSerializer):
+class CodedFieldValuesSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = CodedFieldValue
+        model = CodedFieldValues
         fields = '__all__'
 
 

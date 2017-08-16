@@ -66,7 +66,7 @@ router.register(r'fieldtype', FieldTypeViewSet)
 router.register(r'customformfield', CustomFormFieldViewSet)
 router.register(r'customform', CustomFormViewSet)
 router.register(r'codedfield', CodedFieldViewSet)
-router.register(r'codedfieldvalue', CodedFieldValueViewSet)
+router.register(r'codedfieldvalues', CodedFieldValuesViewSet)
 router.register(r'landtype', LandTypeViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 from formlibrary.views import BinaryFieldViewSet, binary_test

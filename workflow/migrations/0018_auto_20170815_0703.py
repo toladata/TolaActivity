@@ -65,46 +65,7 @@ class Migration(migrations.Migration):
             name='workflowlevel2',
             options={'ordering': ('name',), 'permissions': (('can_approve', 'Can approve initiation'),), 'verbose_name_plural': 'WorkflowLevel2'},
         ),
-        migrations.RenameField(
-            model_name='historicalworkflowlevel2',
-            old_name='actual_budget',
-            new_name='actual_cost',
-        ),
-        migrations.RenameField(
-            model_name='historicalworkflowlevel2',
-            old_name='project_description',
-            new_name='description',
-        ),
-        migrations.RenameField(
-            model_name='historicalworkflowlevel2',
-            old_name='mc_estimated_budget',
-            new_name='org_estimated_budget',
-        ),
-        migrations.RenameField(
-            model_name='workflowlevel2',
-            old_name='actual_budget',
-            new_name='actual_cost',
-        ),
-        migrations.RenameField(
-            model_name='workflowlevel2',
-            old_name='project_description',
-            new_name='description',
-        ),
-        migrations.RenameField(
-            model_name='workflowlevel2',
-            old_name='project_name',
-            new_name='name',
-        ),
-        migrations.RenameField(
-            model_name='historicalworkflowlevel2',
-            old_name='project_name',
-            new_name='name',
-        ),
-        migrations.RenameField(
-            model_name='workflowlevel2',
-            old_name='mc_estimated_budget',
-            new_name='org_estimated_budget',
-        ),
+
         migrations.RemoveField(
             model_name='historicalworkflowlevel2',
             name='account_code',

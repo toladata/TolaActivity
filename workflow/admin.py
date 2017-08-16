@@ -133,6 +133,12 @@ class IssueRegisterAdmin(ImportExportModelAdmin):
     list_filter = ('workflowlevel2', 'type')
 
 
+class CodedFieldAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'type','is_universal')
+    display = 'Coded Fields'
+    list_filter = ('type', 'is_universal')
+
+
 class TolaUserProxyResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     user = fields.Field(column_name='user', attribute='user', widget=ForeignKeyWidget(User, 'username'))
@@ -199,5 +205,6 @@ admin.site.register(ApprovalType, ApprovalTypeAdmin)
 admin.site.register(FundCode, FundCodeAdmin)
 admin.site.register(RiskRegister, RiskRegisterAdmin)
 admin.site.register(IssueRegister, IssueRegisterAdmin)
+admin.site.register(CodedField, CodedFieldAdmin)
 admin.site.register(WorkflowModules, WorkflowModulesAdmin)
 

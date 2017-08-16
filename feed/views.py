@@ -555,9 +555,9 @@ class CodedFieldViewSet(viewsets.ModelViewSet):
     serializer_class =  CodedFieldSerializer
 
 
-class CodedFieldValueViewSet(viewsets.ModelViewSet):
-    queryset = CodedFieldValue.objects.all()
-    serializer_class = CodedFieldValueSerializer
+class CodedFieldValuesViewSet(viewsets.ModelViewSet):
+    queryset = CodedFieldValues.objects.all()
+    serializer_class = CodedFieldValuesSerializer
 
 
 class IssueRegisterViewSet(viewsets.ModelViewSet):
