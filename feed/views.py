@@ -242,6 +242,11 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     def list(self, request):
         user_countries = getCountry(request.user)
         queryset = Stakeholder.objects.all().filter(country__in=user_countries)
+
+        nested = request.GET.get('nested_models')
+        if nested is not None and (nested.lower() == 'true' or nested == '1'):
+            self.serializer_class = StakeholderFullSerializer
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 

@@ -214,6 +214,7 @@ class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+
 class ExternalServiceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
@@ -471,3 +472,14 @@ class LandTypeSerializer(serializers.HyperlinkedModelSerializer):
         model = LandType
         fields = '__all__'
 
+
+class StakeholderFullSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+    country = CountrySerializer(read_only=True)
+    contact = ContactSerializer(read_only=True, many=True)
+    sectors = SectorSerializer(read_only=True, many=True)
+    approval = ApprovalTypeSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Stakeholder
+        fields = '__all__'
