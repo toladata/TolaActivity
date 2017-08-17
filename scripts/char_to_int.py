@@ -20,7 +20,7 @@ import re
 def run():
     print "Running Script..."
 
-    trim_list = ['estimated_budget', 'actual_budget','total_cost','agency_cost','local_total_cost','local_agency_cost']
+    trim_list = ['estimated_budget', 'actual_cost','total_cost','agency_cost','local_total_cost','local_agency_cost']
 
     #get all the projects and loop over them
     getProjects = ProjectComplete.objects.all()

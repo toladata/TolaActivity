@@ -118,10 +118,10 @@ def DefaultCustomDashboard(request,id=0,status=0):
     getProjectsComplete = WorkflowLevel2.objects.all()
     for project in getProjects:
         for complete in getProjectsComplete:
-            if complete.actual_budget != None:
+            if complete.actual_cost != None:
                 if project.id == complete.id:
                     totalBudgetted = float(totalBudgetted) + float(project.total_estimated_budget)
-                    totalActual = float(totalActual) + float(complete.actual_budget)
+                    totalActual = float(totalActual) + float(complete.actual_cost)
 
                     get_project_completed.append(project)
 
@@ -212,7 +212,7 @@ def PublicDashboard(request,id=0,public=0):
     getProjectsComplete = WorkflowLevel2.objects.all()
     for project in getProjects:
         for complete in getProjectsComplete:
-            if complete.actual_budget != None:
+            if complete.actual_cost != None:
                 if project.id == complete.id:
                     get_project_completed.append(project)
 
