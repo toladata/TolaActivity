@@ -118,6 +118,7 @@ class ObjectiveAdmin(admin.ModelAdmin):
 class Level(models.Model):
     name = models.CharField(max_length=135, blank=True)
     description = models.TextField(max_length=765, blank=True)
+    color = models.CharField(max_length=135, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -154,6 +155,7 @@ class DisaggregationType(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(DisaggregationType, self).save(*args, **kwargs)
+
 
 class DisaggregationTypeAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_type','country','standard','description')

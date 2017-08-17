@@ -136,11 +136,11 @@ class ProjectReportData(View, AjaxableResponseMixin):
 
         print project_filter
 
-        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','name','type__name','sector__sector','total_estimated_budget','status')
-        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='awaiting approval').count()
-        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='approved').count()
-        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='rejected').count()
-        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(program__funding_status="Funded", status='in progress').count()
+        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','name','sub_sector__sector','sector__sector','total_estimated_budget','status')
+        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(workflowlevel1__funding_status="Funded", status='awaiting approval').count()
+        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(workflowlevel1__funding_status="Funded", status='approved').count()
+        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(workflowlevel1__funding_status="Funded", status='rejected').count()
+        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(workflowlevel1__funding_status="Funded", status='in progress').count()
         nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()

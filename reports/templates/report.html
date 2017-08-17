@@ -170,15 +170,16 @@
 
             $("#doughnut1").click(
                 function(evt){
-                    var activePoints = statusChart.getSegmentsAtEvent(evt);
+                    var activePoints = statusChart.getElementsAtEvent(evt);
+                    console.log(activePoints);
                     // add evidence filter if they clicked on that
-                    if (activePoints[0].label.indexOf("Approved") > -1){
+                    if (activePoints[0]._model.label.indexOf("Approved") > -1){
                         filters.approval = "approved"
-                    } else if (activePoints[0].label.indexOf("In Progress") > -1){
+                    } else if (activePoints[0]._model.label.indexOf("In Progress") > -1){
                         filters.approval = "in progress"
-                    } else if (activePoints[0].label.indexOf("Waiting ") > -1){
+                    } else if (activePoints[0]._model.label.indexOf("Waiting ") > -1){
                         filters.approval = "awaiting approval"
-                    } else if (activePoints[0].label.indexOf("New ") > -1){
+                    } else if (activePoints[0]._model.label.indexOf("New ") > -1){
                         filters.approval = "new"
                     }
                     project_report(filters);
@@ -213,11 +214,11 @@
 
             $("#doughnut2").click(
                 function(evt){
-                    var activePoints = indicatorChart.getSegmentsAtEvent(evt);
+                    var activePoints = indicatorChart.getElementsAtEvent(evt);
                     // add evidence filter if they clicked on that
-                    if (activePoints[0].label.indexOf("With Supporting Data") > -1){
+                    if (activePoints[0]._model.label.indexOf("With Supporting Data") > -1){
                         filters.collecteddata__isnull="False";
-                    } else if (activePoints[0].label.indexOf("Indicators") > -1){
+                    } else if (activePoints[0]._model.label.indexOf("Indicators") > -1){
                         filters.collecteddata__isnull="True";
                     }
                     //console.log("filters:" + JSON.stringify(filters));
