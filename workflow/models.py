@@ -432,7 +432,7 @@ class ApprovalWorkflow(models.Model):
 
 class WorkflowLevel1(models.Model):
     level1_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel1 UUID', default=uuid.uuid4, unique=True)
-    unique_id = models.CharField("ID", max_length=255, blank=True, null=True, unique=True)
+    unique_id = models.CharField("ID", max_length=255, blank=True, null=True)
     name = models.CharField("Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
