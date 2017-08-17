@@ -286,7 +286,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                 Tab('Budget',
                     Fieldset(
                         '',
-                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00'),'actual_cost_date', 'budget_variance', 'explanation_of_variance',
+                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_cost','$', '.00'),'actual_cost_date', 'budget_variance', 'explanation_of_variance',
                         PrependedAppendedText('total_cost','$', '.00'), PrependedAppendedText('agency_cost','$', '.00'),
                         AppendedText('local_total_cost', '.00'), AppendedText('local_agency_cost', '.00'),'exchange_rate','exchange_rate_date',
                     ),
@@ -539,7 +539,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
                 ),
                 Tab('Budget',
                     Fieldset('',
-                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_budget','$', '.00')
+                        PrependedAppendedText('estimated_budget','$', '.00'), PrependedAppendedText('actual_cost','$', '.00')
                     ),
                     Fieldset("Other Budget Contributions:",
                          Div(

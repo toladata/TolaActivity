@@ -4,6 +4,7 @@ from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportModelAdmin, ExportMixin
 from tola.util import getCountry
 from admin_report.mixins import ChartReportAdmin
+from simple_history.admin import SimpleHistoryAdmin
 
 
 # Resource for CSV export
@@ -319,11 +320,11 @@ admin.site.register(Office, OfficeAdmin)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
 admin.site.register(Village)
-admin.site.register(WorkflowLevel1, WorkflowLevel1Admin)
+admin.site.register(WorkflowLevel1, SimpleHistoryAdmin)
 admin.site.register(Sector)
-admin.site.register(WorkflowLevel2, WorkflowLevel2Admin)
+admin.site.register(WorkflowLevel2, SimpleHistoryAdmin)
 admin.site.register(Documentation,DocumentationAdmin)
-admin.site.register(SiteProfile, SiteProfileAdmin)
+admin.site.register(SiteProfile, SimpleHistoryAdmin)
 admin.site.register(WorkflowLevel3, WorkflowLevel3Admin)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(Budget)

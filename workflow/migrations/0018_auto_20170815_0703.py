@@ -192,14 +192,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicalworkflowlevel2',
-            name='project_name',
-        ),
-        migrations.RemoveField(
-            model_name='historicalworkflowlevel2',
-            name='project_type',
-        ),
-        migrations.RemoveField(
-            model_name='historicalworkflowlevel2',
             name='reviewed_by',
         ),
         migrations.RemoveField(
@@ -329,10 +321,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='workflowlevel2',
             name='project_activity',
-        ),
-        migrations.RemoveField(
-            model_name='workflowlevel2',
-            name='project_name',
         ),
         migrations.RemoveField(
             model_name='workflowlevel2',

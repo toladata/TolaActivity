@@ -14,23 +14,13 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RenameField(
             model_name='historicalworkflowlevel2',
-            old_name='actual_budget',
-            new_name='actual_cost',
+            old_name='mc_estimated_budget',
+            new_name='org_estimated_budget',
         ),
         migrations.RenameField(
             model_name='historicalworkflowlevel2',
             old_name='project_description',
             new_name='description',
-        ),
-        migrations.RenameField(
-            model_name='historicalworkflowlevel2',
-            old_name='mc_estimated_budget',
-            new_name='org_estimated_budget',
-        ),
-        migrations.RenameField(
-            model_name='workflowlevel2',
-            old_name='actual_budget',
-            new_name='actual_cost',
         ),
         migrations.RenameField(
             model_name='workflowlevel2',
@@ -39,8 +29,13 @@ class Migration(migrations.Migration):
         ),
         migrations.RenameField(
             model_name='workflowlevel2',
-            old_name='mc_estimated_budget',
-            new_name='org_estimated_budget',
+            old_name='project_name',
+            new_name='name',
+        ),
+        migrations.RenameField(
+            model_name='historicalworkflowlevel2',
+            old_name='project_name',
+            new_name='name',
         ),
         migrations.RemoveField(
             model_name='workflowlevel2',
@@ -70,17 +65,5 @@ class Migration(migrations.Migration):
             model_name='codedfield',
             name='workflowlevel2',
             field=models.ManyToManyField(blank=True, to='workflow.WorkflowLevel2'),
-        ),
-        migrations.AddField(
-            model_name='historicalworkflowlevel2',
-            name='name',
-            field=models.CharField(default='Temporary', max_length=255, verbose_name='Project Name'),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='workflowlevel2',
-            name='name',
-            field=models.CharField(default='Temporary', max_length=255, verbose_name='Project Name'),
-            preserve_default=False,
         ),
     ]
