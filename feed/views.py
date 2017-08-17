@@ -250,6 +250,16 @@ class StakeholderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        nested = request.GET.get('nested_models')
+        if nested is not None and (nested.lower() == 'true' or nested == '1'):
+            self.serializer_class = StakeholderFullSerializer
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
     filter_fields = ('country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Stakeholder.objects.all()
@@ -481,6 +491,16 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
             self.serializer_class = WorkflowLevel2FullSerializer
 
         serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        nested = request.GET.get('nested_models')
+        if nested is not None and (nested.lower() == 'true' or nested == '1'):
+            self.serializer_class = WorkflowLevel2FullSerializer
+
+        serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
     """

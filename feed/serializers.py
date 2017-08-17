@@ -74,20 +74,6 @@ class WorkflowLevel2Serializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class WorkflowLevel2FullSerializer(serializers.HyperlinkedModelSerializer):
-    agreement_key = serializers.UUIDField(read_only=True)
-    id = serializers.ReadOnlyField()
-    workflowlevel1 = WorkflowLevel1Serializer(read_only=True)
-    project_type = ProjectTypeSerializer(read_only=True)
-    office = OfficeSerializer(read_only=True)
-    sector = SectorSerializer(read_only=True)
-    budget = BudgetSerializer(read_only=True)
-
-    class Meta:
-        model = WorkflowLevel2
-        fields = '__all__'
-
-
 class CountrySerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
@@ -482,4 +468,19 @@ class StakeholderFullSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Stakeholder
+        fields = '__all__'
+
+
+class WorkflowLevel2FullSerializer(serializers.HyperlinkedModelSerializer):
+    agreement_key = serializers.UUIDField(read_only=True)
+    id = serializers.ReadOnlyField()
+    workflowlevel1 = WorkflowLevel1Serializer(read_only=True)
+    project_type = ProjectTypeSerializer(read_only=True)
+    office = OfficeSerializer(read_only=True)
+    sector = SectorSerializer(read_only=True)
+    budget = BudgetSerializer(read_only=True)
+    #stakeholder = StakeholderSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = WorkflowLevel2
         fields = '__all__'
