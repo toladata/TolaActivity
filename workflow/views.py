@@ -1946,20 +1946,20 @@ class ReportData(View, AjaxableResponseMixin):
         filters = {}
         if int(self.kwargs['pk']) != 0:
             getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1__id=self.kwargs['pk']).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name', 'estimated_by__name','total_estimated_budget','org_estimated_budget','total_estimated_budget')
+                             'type__name', 'estimated_by__name','total_estimated_budget','total_estimated_budget')
 
         elif self.kwargs['status'] != 'none':
             getAgreements = WorkflowLevel2.objects.all().filter(approval=self.kwargs['status']).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name','estimated_by__name','total_estimated_budget','org_estimated_budget','total_estimated_budget')
+                             'type__name','estimated_by__name','total_estimated_budget','total_estimated_budget')
         else:
             getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name', 'estimated_by__name','total_estimated_budget','org_estimated_budget','total_estimated_budget')
+                             'type__name', 'estimated_by__name','total_estimated_budget','total_estimated_budget')
 
         getAgreements = ProjectAgreement.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
                 'program__name', 'name','site', 'office__name', \
                 'project_name', 'sector__sector', 'type__name', \
                 'estimated_by__name','total_estimated_budget',\
-                'mc_estimated_budget','total_estimated_budget')
+                'total_estimated_budget')
 
         getAgreements = json.dumps(list(getAgreements), cls=DjangoJSONEncoder)
 

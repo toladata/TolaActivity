@@ -859,8 +859,6 @@ class WorkflowLevel2(models.Model):
     expected_end_date = models.DateTimeField("Expected ending date", blank=True, null=True)
     total_estimated_budget = models.DecimalField("Total Project Budget", decimal_places=2, max_digits=12,
                                                  help_text="In USD", default=Decimal("0.00"), blank=True)
-    org_estimated_budget = models.DecimalField("Organizations portion of Project Budget", decimal_places=2,
-                                               max_digits=12, help_text="In USD", default=Decimal("0.00"), blank=True)
     local_currency = models.ForeignKey(Currency, null=True, blank=True, related_name="local_project")
     donor_currency = models.ForeignKey(Currency, null=True, blank=True, related_name="donor_project")
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
@@ -930,8 +928,6 @@ class WorkflowLevel2(models.Model):
         # defaults don't work if they aren't in the form so preset these to 0
         if self.total_estimated_budget == None:
             self.total_estimated_budget = Decimal("0.00")
-        if self.org_estimated_budget == None:
-            self.org_estimated_budget = Decimal("0.00")
         if self.total_cost == None:
             self.total_cost = Decimal("0.00")
         if self.agency_cost == None:
