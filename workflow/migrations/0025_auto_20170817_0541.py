@@ -12,21 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='historicalworkflowlevel2',
-            old_name='actual_budget',
-            new_name='actual_cost',
-        ),
-        migrations.RenameField(
-            model_name='workflowlevel2',
-            old_name='actual_budget',
-            new_name='actual_cost',
-        ),
-        migrations.RenameField(
-            model_name='workflowlevel2',
-            old_name='mc_estimated_budget',
-            new_name='org_estimated_budget',
-        ),
         migrations.RemoveField(
             model_name='historicalworkflowlevel2',
             name='project_type',
