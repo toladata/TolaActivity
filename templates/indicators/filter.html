@@ -1,4 +1,4 @@
-<div class="dropdown">
+<div class="panel">
     {% if getPrograms %}
         <div class="btn-group" role="group">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownProgram" data-toggle="dropdown" aria-expanded="true">
@@ -41,6 +41,7 @@
             </ul>
         </div>
     {% endif %}
-    <br/>
-    <br/>
+    {% if export_to_pdf_url %}
+        <button type="button" class="btn btn-default pull-right">Export to PDF</button>
+    {% endif %}
 </div>

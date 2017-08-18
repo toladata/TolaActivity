@@ -32,6 +32,11 @@ import json
 
 import requests
 from export import IndicatorResource, CollectedDataResource
+from reportlab.pdfgen import canvas
+from weasyprint import HTML, CSS
+from django.template.loader import get_template
+from django.http import HttpResponse
+
 
 
 def group_excluded(*group_names, **url):
@@ -1190,6 +1195,52 @@ class DisaggregationReport(TemplateView):
         context['program_selected'] = program_selected
         return context
 
+from django.template.loader import render_to_string
+import tempfile
+
+class TVAPrint(TemplateView):
+    template_name = 'indicators/tva_print.html'
+
+    def get(self, request, *args, **kwargs):
+        program = Program.objects.filter(id=kwargs.get('program', None)).first()
+        indicators = Indicator.objects\
+            .select_related('sector')\
+            .prefetch_related('indicator_type', 'level', 'program')\
+            .filter(program=program)\
+            .annotate(actuals=Sum('collecteddata__achieved'))
+
+        #hmtl_string = render_to_string('indicators/tva_print.html', {'data': context['data'], 'program': context['program']})
+        hmtl_string = render(request, 'indicators/tva_print.html', {'data': indicators, 'program': program})
+        pdffile = HTML(string=hmtl_string.content)
+        # stylesheets=[CSS(string='@page { size: letter; margin: 1cm}')]
+        result = pdffile.write_pdf(stylesheets=[CSS(
+            string='@page {\
+                size: letter; margin: 1cm;\
+                @bottom-right{\
+                    content: "Page " counter(page) " of " counter(pages);\
+                };\
+            }'\
+        )])
+        res = HttpResponse(result, content_type='application/pdf')
+        #res['Content-Disposition'] = 'attachment; filename="ztvareport.pdf"'
+        res['Content-Disposition'] = 'inline; filename=tva.pdf'
+        res['Content-Transfer-Encoding'] = 'binary'
+        """
+        with tempfile.NamedTemporaryFile(delete=True) as output:
+            output.write(result)
+            output.flush()
+            output = open(output.name, 'r')
+            res.write(output.read())
+        """
+        """
+        # Create the PDF object, using the response object as its "file."
+        p = canvas.Canvas(res)
+        p.drawString(100, 100, 'hello world!')
+        p.showPage()
+        p.save()
+        """
+        return res
+
 class TVAReport(TemplateView):
     template_name = 'indicators/tva_report.html'
 
@@ -1218,7 +1269,10 @@ class TVAReport(TemplateView):
         context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
         context['getIndicatorTypes'] = IndicatorType.objects.all()
+        context['program'] = program
+        context['export_to_pdf_url'] = True
         return context
+
 
 
 class CollectedDataList(ListView):
