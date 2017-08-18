@@ -84,18 +84,12 @@
         <tr>
 
             <th>Total Estimated Budget, in USD</th>
-            <th>Agency Estimated Budget, in USD</th>
-            <th>Total Estimated Budget, in Local Currency</th>
-            <th>Agency Estimated Budget, in Local Currency</th>
             <th>Exchange Rate</th>
             <th>Exchange Rate Date</th>
             <th>Estimation Date</th>
         </tr>
         <tr>
             <td>{{ agreement.total_estimated_budget }}</td>
-            <td>{{ agreement.mc_estimated_budget }}</td>
-            <td>{{ agreement.local_total_estimated_budget }}</td>
-            <td>{{ agreement.local_mc_estimated_budget }}</td>
             <td>{{ agreement.exchange_rate }}</td>
             <td>{{ agreement.exchange_rate_date|date:"M d, Y"  }}</td>
             <td>{{ agreement.estimation_date|date:"M d, Y"  }}</td>
