@@ -593,3 +593,8 @@ class IssueRegisterViewSet(viewsets.ModelViewSet):
 class LandTypeViewSet(viewsets.ModelViewSet):
     queryset = LandType.objects.all()
     serializer_class = LandTypeSerializer
+
+
+class InternationalizationViewSet(viewsets.ModelViewSet):
+    queryset = Internationalization.objects.all()
+    serializer_class = InternationalizationSerializer

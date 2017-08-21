@@ -459,6 +459,14 @@ class LandTypeSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class InternationalizationSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Internationalization
+        fields = '__all__'
+
+
 class StakeholderFullSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
     country = CountrySerializer(read_only=True)

@@ -198,6 +198,26 @@ class Award(models.Model):
         super(Award, self).save()
 
 
+class Internationalization(models.Model):
+    language = models.CharField("Language", blank=True, null=True, max_length=100)
+    language_file = JSONField()
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('language',)
+
+    def __unicode__(self):
+        return self.language
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Internationalization, self).save()
+
+
 class TolaBookmarks(models.Model):
     user = models.ForeignKey(TolaUser, related_name='tolabookmark')
     name = models.CharField(blank=True, null=True, max_length=255)
