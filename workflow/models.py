@@ -975,6 +975,7 @@ class WorkflowLevel2(models.Model):
 
 class WorkflowLevel2Sort(models.Model):
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    workflowlevel2_parent_id = models.ForeignKey(WorkflowLevel2, null=True, blank=True)
     workflowlevel2_id = models.IntegerField("ID to be Sorted", default=0)
     sort_order = models.IntegerField("Sort", default=0)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -1256,9 +1257,12 @@ class WorkflowModules(models.Model):
         ('budget', 'Budget'),
         ('stakeholders', 'Stakeholders'),
         ('documents', 'Documents'),
-        ('risk_issues', 'Risks and Issues'),
+        # in-activte for 2.0 GWL
+        #('risk_issues', 'Risks and Issues'),
         ('sites', 'Sites'),
-        ('procurement_plan', 'Procurement Plan'),
+        ('indicators', 'Indicators'),
+        # in-activte for 2.0 GWL
+        #('procurement_plan', 'Procurement Plan'),
     )
 
     modules = models.CharField(choices=MODULES, max_length=50, default="open")
