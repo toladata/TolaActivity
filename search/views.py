@@ -18,8 +18,10 @@ from elasticsearch.exceptions import RequestError
 import os
 import json
 
-es = Elasticsearch([os.getenv('ELASTICSEARCH_URL')])
-
+if os.getenv('ELASTICSEARCH_URL') is not None:
+    es = Elasticsearch([os.getenv('ELASTICSEARCH_URL')])
+else:
+    es = None
 
 @login_required(login_url='/accounts/login/')
 def search_index(request):
@@ -29,9 +31,7 @@ def search_index(request):
 
 @api_view(['GET'])
 def search(request, index, term):
-    print(index, term)
-
-    if request.method == 'GET':
+    if request.method == 'GET' and es is not None:
         if index == 'all':
             index = 'workflows,indicators'
 
