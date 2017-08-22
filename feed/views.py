@@ -603,3 +603,8 @@ class LandTypeViewSet(viewsets.ModelViewSet):
 class InternationalizationViewSet(viewsets.ModelViewSet):
     queryset = Internationalization.objects.all()
     serializer_class = InternationalizationSerializer
+
+
+class TolaUserFilterViewSet(viewsets.ModelViewSet):
+    queryset = TolaUserFilter.objects.all()
+    serializer_class = TolaUserFilterSerializer

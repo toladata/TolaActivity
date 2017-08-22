@@ -19,6 +19,7 @@ admin.site.site_header = 'Tola Activity administration'
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'tolauser', TolaUserViewSet)
+router.register(r'tolauserfilter', TolaUserFilterViewSet)
 router.register(r'organization', OrganizationViewSet)
 router.register(r'country', CountryViewSet)
 router.register(r'workflowlevel1', WorkflowLevel1ViewSet)

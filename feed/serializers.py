@@ -467,6 +467,14 @@ class InternationalizationSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class TolaUserFilterSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = TolaUserFilter
+        fields = '__all__'
+
+
 class StakeholderFullSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
     country = CountrySerializer(read_only=True)

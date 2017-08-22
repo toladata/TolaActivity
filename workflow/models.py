@@ -241,6 +241,31 @@ class TolaBookmarks(models.Model):
         super(TolaBookmarks, self).save()
 
 
+class TolaUserFilter(models.Model):
+    user = models.ForeignKey(TolaUser, related_name="filter_user")
+    country_filter = models.ManyToManyField(Country, blank=True, related_name="filter_country")
+    workflowlevel1_filter = models.ManyToManyField("WorkflowLevel1", blank=True, related_name="filter_level1")
+    workflowlevel2_filter = models.ManyToManyField("WorkflowLevel2", blank=True, related_name="filter_level2")
+    sector_filter = models.ManyToManyField("Sector", blank=True, related_name="filter_sector")
+    start_date_filter = models.DateField(blank=True, null=True)
+    end_date_filter = models.DateField(blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('user',)
+
+    def __unicode__(self):
+        return self.user
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(TolaUserFilter, self).save()
+
+
 class TolaUserProxy(TolaUser):
 
     class Meta:
@@ -918,19 +943,33 @@ class WorkflowLevel2(models.Model):
     # optimize base query for all classbasedviews
     objects = WorkflowLevel2Manager()
 
-    STATUS_OPEN = "open"
-    STATUS_AWAITING_APPROVAL = "awaitingapproval"
-    STATUS_TRACKING = "tracking"
-    STATUS_CLOSED = "closed"
+    STATUS_GREEN = "green"
+    STATUS_YELLOW = "yellow"
+    STATUS_ORANGE = "orange"
+    STATUS_RED = "red"
 
     STATUS_CHOICES = (
-        (STATUS_OPEN,"Open"),
-        (STATUS_AWAITING_APPROVAL,"Awaiting Approval"),
-        (STATUS_TRACKING,"Tracking"),
-        (STATUS_CLOSED,"Closed")
+        (STATUS_GREEN,"Green"),
+        (STATUS_YELLOW,"Yellow"),
+        (STATUS_ORANGE,"Orange"),
+        (STATUS_RED,"REd")
     )
 
-    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="open", blank=True)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="green", blank=True)
+
+    PROGRESS_OPEN = "open"
+    PROGRESS_AWAITING_APPROVAL = "awaitingapproval"
+    PROGRESS_TRACKING = "tracking"
+    PROGRESS_CLOSED = "closed"
+
+    PROGRESS_CHOICES = (
+        (PROGRESS_OPEN,"Open"),
+        (PROGRESS_AWAITING_APPROVAL,"Awaiting Approval"),
+        (PROGRESS_TRACKING,"Tracking"),
+        (PROGRESS_CLOSED,"Closed")
+    )
+
+    progress = models.CharField(choices=PROGRESS_CHOICES, max_length=50, default="open", blank=True)
 
     class Meta:
         ordering = ('name',)
