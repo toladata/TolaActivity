@@ -11,7 +11,6 @@ from rest_framework.decorators import api_view
 
 from rest_framework.pagination import PageNumberPagination
 from .models import SearchIndexLog
-from .serializers import *
 from django.http import HttpResponse
 
 from elasticsearch import Elasticsearch
