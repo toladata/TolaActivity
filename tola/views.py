@@ -118,7 +118,7 @@ def index(request, selected_countries=None, id=0, sector=0):
     count_workflowlevel1 = WorkflowLevel1.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
 
     assigned = TolaUser.objects.get(user_id=request.user)
-    user_pending_approvals = ApprovalWorkflow.objects.all().filter(assigned_to=assigned).exclude(progress='tracking')
+    user_pending_approvals = ApprovalWorkflow.objects.all().filter(assigned_to=assigned).exclude(workflowlevel2__progress='tracking')
 
     count_workflowlevel1_agreement = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=selected_countries,workflowlevel1__funding_status='Funded').values('workflowlevel1').distinct().count()
     count_indicator = Indicator.objects.all().filter(workflowlevel1__country__in=selected_countries,workflowlevel1__funding_status='Funded').values('workflowlevel1').distinct().count()
