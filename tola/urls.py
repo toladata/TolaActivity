@@ -1,6 +1,7 @@
 from tola import views
 from tola.views import *
 from feed.views import *
+from search.views import *
 from django.conf.urls import include, url
 from django.views.generic import TemplateView
 from rest_framework import routers
@@ -70,6 +71,8 @@ router.register(r'codedfieldvalues', CodedFieldValuesViewSet)
 router.register(r'landtype', LandTypeViewSet)
 router.register(r'internationalization', InternationalizationViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
+#router.register(r'search', SearchView, base_name='search')
+
 from formlibrary.views import BinaryFieldViewSet, binary_test
 router.register(r'binary', BinaryFieldViewSet, base_name='binary')
 
