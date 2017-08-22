@@ -525,6 +525,11 @@ class WorkflowModulesViewSet(viewsets.ModelViewSet):
     serializer_class = WorkflowModulesSerializer
 
 
+class WorkflowLevel2SortViewSet(viewsets.ModelViewSet):
+    queryset = WorkflowLevel2Sort.objects.all()
+    serializer_class = WorkflowLevel2SortSerializer
+
+
 class CurrencyViewSet(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
