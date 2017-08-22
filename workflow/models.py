@@ -1257,9 +1257,12 @@ class WorkflowModules(models.Model):
         ('budget', 'Budget'),
         ('stakeholders', 'Stakeholders'),
         ('documents', 'Documents'),
-        ('risk_issues', 'Risks and Issues'),
+        # in-activte for 2.0 GWL
+        #('risk_issues', 'Risks and Issues'),
         ('sites', 'Sites'),
-        ('procurement_plan', 'Procurement Plan'),
+        ('indicators', 'Indicators'),
+        # in-activte for 2.0 GWL
+        #('procurement_plan', 'Procurement Plan'),
     )
 
     modules = models.CharField(choices=MODULES, max_length=50, default="open")
