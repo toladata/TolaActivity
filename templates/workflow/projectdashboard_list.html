@@ -67,14 +67,14 @@
                     </div>
                 </li>
                 <li class="list-group-item">
-                    {% if getAgreement.status == "approved" %}
+                    {% if getAgreement.progress == "approved" %}
                         <button class="btn btn-success" type="button">
-                          {{ getAgreement.get_status_display }}
+                          {{ getAgreement.get_progress_display }}
                         </button>
                     {% else %}
                         <button class="btn btn-primary" type="button" onclick="location.href='/workflow/projectagreement_update/{{ getAgreement.id }}'">
-                        {% if getAgreement.status %}
-                            {{ getAgreement.get_status_display }}
+                        {% if getAgreement.progress %}
+                            {{ getAgreement.get_progress_display }}
                         {% else %}
                             Open
                         {% endif %}

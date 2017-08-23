@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib import admin
-from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser
+from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser,\
+    Organization
 from datetime import datetime, timedelta
 from django.utils import timezone
 import uuid
@@ -40,6 +41,8 @@ class TolaTableAdmin(admin.ModelAdmin):
 class IndicatorType(models.Model):
     indicator_type = models.CharField(max_length=135, blank=True)
     description = models.TextField(max_length=765, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -117,6 +120,8 @@ class ObjectiveAdmin(admin.ModelAdmin):
 
 class Level(models.Model):
     name = models.CharField(max_length=135, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    global_default = models.BooleanField(default=0)
     description = models.TextField(max_length=765, blank=True)
     color = models.CharField(max_length=135, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -133,16 +138,11 @@ class Level(models.Model):
         super(Level, self).save(*args, **kwargs)
 
 
-class LevelAdmin(admin.ModelAdmin):
-    list_display = ('name')
-    display = 'Levels'
-
-
 class DisaggregationType(models.Model):
     disaggregation_type = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
     country = models.ForeignKey(Country, null=True, blank=True)
-    standard = models.BooleanField(default=False, verbose_name="Standard (TolaData Admins Only)")
+    standard = models.BooleanField(default=False, verbose_name="Standard")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -179,12 +179,6 @@ class DisaggregationLabel(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(DisaggregationLabel, self).save(*args, **kwargs)
-
-
-class DisaggregationLabelAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type', 'customsort', 'label',)
-    display = 'Disaggregation Label'
-    list_filter = ('disaggregation_type__disaggregation_type',)
 
 
 class DisaggregationValue(models.Model):
@@ -231,19 +225,17 @@ class DataCollectionFrequency(models.Model):
     frequency = models.CharField(max_length=135, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     numdays = models.PositiveIntegerField(default=0, verbose_name="Frequency in number of days")
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.frequency
 
-class DataCollectionFrequencyAdmin(admin.ModelAdmin):
-    list_display = ('frequency', 'description', 'create_date', 'edit_date')
-    display = 'Data Collection Frequency'
-
 
 class ReportingPeriod(models.Model):
     frequency = models.ForeignKey(ReportingFrequency)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -267,6 +259,8 @@ class ExternalService(models.Model):
     name = models.CharField(max_length=255, blank=True)
     service_url = models.CharField(max_length=765, blank=True)
     feed_url = models.CharField(max_length=765, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

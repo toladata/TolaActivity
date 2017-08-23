@@ -158,12 +158,37 @@ class TolaUser(models.Model):
         super(TolaUser, self).save()
 
 
+class Currency(models.Model):
+    source_currency = models.CharField("Source Currency Name", max_length=255, blank=True)
+    target_currency = models.CharField("Target Currency Name", max_length=255, blank=True)
+    current_rate = models.IntegerField("Conversion Rate", null=True, blank=True)
+    conversion_date = models.DateTimeField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('source_currency',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Currency, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.source_currency
+
+
 class Award(models.Model):
     donors = models.ManyToManyField("Stakeholder", blank=True)
     name = models.CharField("Award Name/Title", blank=True, null=True, max_length=100)
-    organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
+    organization = models.ForeignKey(Organization, default=1)
     countries = models.ManyToManyField(Country, verbose_name="Countries", related_name='countries_award', blank=True)
     amount = models.IntegerField("Amount", blank=True, default=0)
+    currency = models.ForeignKey(Currency,blank=True, null=True)
+    award_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="award_currency")
 
     STATUS_OPEN = "open"
     STATUS_FUNDED = "funded"
@@ -278,6 +303,8 @@ class FormGuidance(models.Model):
     form = models.CharField(max_length=135,null=True, blank=True)
     guidance_link = models.URLField(max_length=200, null=True, blank=True)
     guidance = models.TextField(null=True, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -295,6 +322,8 @@ class FormGuidance(models.Model):
 class ProjectType(models.Model):
     name = models.CharField("Type of Activity", max_length=135)
     description = models.CharField(max_length=765)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -314,6 +343,8 @@ class ProjectType(models.Model):
 
 class Sector(models.Model):
     sector = models.CharField("Sector Name", max_length=255, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -361,6 +392,8 @@ class Contact(models.Model):
 
 class FundCode(models.Model):
     name = models.CharField("Fund Code", max_length=255, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -379,32 +412,10 @@ class FundCode(models.Model):
         return self.name
 
 
-class Currency(models.Model):
-    source_currency = models.CharField("Source Currency Name", max_length=255, blank=True)
-    target_currency = models.CharField("Target Currency Name", max_length=255, blank=True)
-    current_rate = models.IntegerField("Conversion Rate", null=True, blank=True)
-    conversion_date = models.DateTimeField(null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('source_currency',)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Currency, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.source_currency
-
-
 class ApprovalType(models.Model):
     name = models.CharField("Name", max_length=255, blank=True)
-    organization = models.ForeignKey(Organization)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -475,6 +486,28 @@ class ApprovalWorkflow(models.Model):
         return unicode(self.approval_type)
 
 
+class Phase(models.Model):
+    name = models.CharField("Name", max_length=255, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Phase, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
 class WorkflowLevel1(models.Model):
     level1_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel1 UUID', default=uuid.uuid4, unique=True)
     unique_id = models.CharField("ID", max_length=255, blank=True, null=True)
@@ -486,12 +519,13 @@ class WorkflowLevel1(models.Model):
     description = models.TextField("Description", max_length=765, null=True, blank=True)
     sector = models.ManyToManyField(Sector, blank=True)
     sub_sector = models.ManyToManyField(Sector, blank=True, related_name="sub_sector")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
     country = models.ManyToManyField(Country)
+    phase = models.ForeignKey(Phase, null=True, blank=True)
     user_access = models.ManyToManyField(TolaUser, blank=True)
     public_dashboard = models.BooleanField("Enable Public Dashboard", default=False)
-    sort = models.IntegerField(default=0)  #sort array for activities related to a project
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+    sort = models.IntegerField(default=0)  #sort array
 
     class Meta:
         ordering = ('name',)
@@ -666,6 +700,8 @@ class Office(models.Model):
 
 class ProfileType(models.Model):
     profile = models.CharField("Profile Type", max_length=255, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -686,6 +722,8 @@ class ProfileType(models.Model):
 
 class LandType(models.Model):
     classify_land = models.CharField("Land Classification", help_text="Rural, Urban, Peri-Urban", max_length=100, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -774,6 +812,8 @@ class SiteProfile(models.Model):
 
 class StakeholderType(models.Model):
     name = models.CharField("Stakeholder Type", max_length=255, blank=True, null=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1042,7 +1082,7 @@ class CodedField(models.Model):
     is_required = models.BooleanField("Required Field?", default=0)
     is_universal = models.BooleanField("Available in Every Level 2 Form?", default=0)
     type = models.CharField("Field Type", max_length=255, blank=True, null=True)
-    organization = models.ForeignKey(Organization, blank=True, null=True)
+    organization = models.ForeignKey(Organization, default=1)
     default_value = models.CharField("Field Default Value", max_length=255, blank=True, null=True)
     api_url = models.CharField("Associated API URL", max_length=255, blank=True, null=True)
     api_token = models.CharField("Associated API Token", max_length=255, blank=True, null=True)
@@ -1244,6 +1284,7 @@ class IssueRegister(models.Model):
 class Checklist(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True,default="Checklist")
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
+    owner = models.ForeignKey(TolaUser, null=True, blank=True)
     country = models.ForeignKey(Country,null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1305,7 +1346,6 @@ class WorkflowModules(models.Model):
     )
 
     modules = models.CharField(choices=MODULES, max_length=50, default="open")
-
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 

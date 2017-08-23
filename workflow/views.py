@@ -14,7 +14,7 @@ from django.utils import timezone
 
 from .forms import WorkflowLevel2CreateForm, WorkflowLevel2Form, WorkflowLevel2SimpleForm, DocumentationForm, \
     SiteProfileForm, BenchmarkForm, BudgetForm, FilterForm, \
-    QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm, ApprovalForm
+    QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm, ApprovalForm, WorkflowLevel1Form
 
 import pytz
 
@@ -177,6 +177,145 @@ class ProjectAgreementImport(ListView):
         getCountries = Country.objects.all().filter(country__in=countries)
 
         return render(request, self.template_name, {'getworkflowlevel1s': getworkflowlevel1s, 'getServices': getServices , 'getCountries': getCountries})
+
+
+class WorkflowLevel1List(ListView):
+    """
+    Workflowlevel1 (Program) List
+    :param request:
+    """
+    model = WorkflowLevel2
+    template_name = 'workflow/workflowlevel1_list.html'
+
+    def get(self, request, *args, **kwargs):
+        countries = getCountry(request.user)
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
+
+        return render(request, self.template_name, {'form': FilterForm(),'getworkflowlevel1s':getworkflowlevel1s, 'countires': countries})
+
+
+class WorkflowLevel1Create(CreateView):
+    """
+    Workflowlevel 1 Form
+    :param request:
+    :param id:
+    Create a new Level1 (Program)
+    """
+
+    model = WorkflowLevel1
+    template_name = 'workflow/workflowlevel1_form.html'
+
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.guidance = FormGuidance.objects.get(form="Program")
+        except FormGuidance.DoesNotExist:
+            self.guidance = None
+        return super(WorkflowLevel1Create, self).dispatch(request, *args, **kwargs)
+
+     # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(WorkflowLevel1Create, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    #get shared data from project agreement and pre-populate form with it
+    def get_initial(self):
+
+        initial = {
+            'country': getCountry(self.request.user),
+            }
+
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super(WorkflowLevel1Create, self).get_context_data(**kwargs)
+        return context
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        #save formset from context
+        context = self.get_context_data()
+
+        latest = WorkflowLevel1.objects.latest('id')
+
+
+        messages.success(self.request, 'Success, Created!')
+
+        redirect_url = '/workflow/dashboard/' + str(latest.id) + '/'
+        return HttpResponseRedirect(redirect_url)
+
+    form_class = WorkflowLevel1Form
+
+
+class WorkflowLevel1Update(UpdateView):
+    """
+    Workflowlevel1 (Program) Form
+    :param request:
+    :param id: project_agreement_id
+    """
+    model = WorkflowLevel1
+    form_class = WorkflowLevel1Form
+
+    @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.guidance = FormGuidance.objects.get(form="Program")
+        except FormGuidance.DoesNotExist:
+            self.guidance = None
+        return super(WorkflowLevel1Update, self).dispatch(request, *args, **kwargs)
+
+    # add the request to the kwargs
+    def get_form_kwargs(self):
+        kwargs = super(WorkflowLevel1Update, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class WorkflowLevel1Delete(DeleteView):
+    """
+    Project Agreement Delete
+    """
+    model = WorkflowLevel1
+    success_url = '/workflow/dashboard/0/'
+
+    @method_decorator(group_required('Country',url='workflow/permission'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(WorkflowLevel1Delete, self).dispatch(request, *args, **kwargs)
+
+    def form_invalid(self, form):
+
+        messages.error(self.request, 'Invalid Form', fail_silently=False)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def form_valid(self, form):
+
+        form.save()
+
+        return HttpResponseRedirect('/workflow/success')
+
+    form_class = WorkflowLevel1Form
 
 
 class ProjectAgreementCreate(CreateView):
@@ -1955,7 +2094,7 @@ class ReportData(View, AjaxableResponseMixin):
             getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
                              'type__name', 'estimated_by__name','total_estimated_budget','total_estimated_budget')
 
-        getAgreements = ProjectAgreement.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
+        getAgreements = WorkflowLevel2.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
                 'program__name', 'name','site', 'office__name', \
                 'project_name', 'sector__sector', 'type__name', \
                 'estimated_by__name','total_estimated_budget',\

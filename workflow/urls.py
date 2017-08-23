@@ -12,6 +12,12 @@ urlpatterns = [
                        url(r'^dashboard/(?P<pk>\w+)/(?P<status>[\w ]+)/$', Level1Dash.as_view(), name='dashboard'),
                        url(r'^dashboard/(?P<pk>\w+)/$', Level1Dash.as_view(), name='dashboard'),
 
+                       url(r'^workflowlevel1_list/(?P<pk>\w+)/$', WorkflowLevel1List.as_view(),name='workflowlevel1_list'),
+                       url(r'^workflowlevel1_add/$', WorkflowLevel1Create.as_view(), name='workflowlevel1_add'),
+                       url(r'^workflowlevel1_update/(?P<pk>\w+)/$', WorkflowLevel1Update.as_view(), name='workflowlevel1_update'),
+                       url(r'^workflowlevel1_delete/(?P<pk>\w+)/$', WorkflowLevel1Delete.as_view(), name='workflowlevel1_delete'),
+
+
                        url(r'^projectagreement_list/(?P<pk>\w+)/(?P<status>[\w ]+)/$', ProjectAgreementList.as_view(), name='projectagreement_list'),
                        url(r'^projectagreement_add/$', ProjectAgreementCreate.as_view(), name='projectagreement_add'),
                        url(r'^projectagreement_update/(?P<pk>\w+)/$', ProjectAgreementUpdate.as_view(), name='projectagreement_update'),

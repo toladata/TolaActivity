@@ -51,8 +51,8 @@ class TolaTableAdmin(ImportExportModelAdmin):
     display = 'Tola Table'
     pass
 
-class CollectedDataResource(resources.ModelResource):
 
+class CollectedDataResource(resources.ModelResource):
     class Meta:
         model = CollectedData
         #import_id_fields = ['id']
@@ -70,6 +70,22 @@ class CollectedDataAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
 class ReportingFrequencyAdmin(admin.ModelAdmin):
     list_display = ('frequency','description','create_date','edit_date')
     display = 'Reporting Frequency'
+
+
+class LevelAdmin(admin.ModelAdmin):
+    list_display = ('name')
+    display = 'Levels'
+
+
+class DisaggregationLabelAdmin(admin.ModelAdmin):
+    list_display = ('disaggregation_type', 'customsort', 'label',)
+    display = 'Disaggregation Label'
+    list_filter = ('disaggregation_type__disaggregation_type',)
+
+
+class DataCollectionFrequencyAdmin(admin.ModelAdmin):
+    list_display = ('frequency', 'description', 'create_date', 'edit_date')
+    display = 'Data Collection Frequency'
 
 
 admin.site.register(IndicatorType)

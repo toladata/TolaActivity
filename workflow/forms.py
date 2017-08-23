@@ -143,6 +143,34 @@ class ApprovalForm(forms.ModelForm):
         return obj
 
 
+class WorkflowLevel1Form(forms.ModelForm):
+    class Meta:
+        model = WorkflowLevel1
+        exclude = ['create_date','edit_date','unique_id','level1_uuid']
+
+    start_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+    end_date = forms.DateField(widget=DatePicker.DateInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-6'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+
+        super(WorkflowLevel1Form, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Commit is already set to false
+        obj = super(WorkflowLevel1Form, self).save(*args, **kwargs)
+        return obj
+
+
 class WorkflowLevel2CreateForm(forms.ModelForm):
 
     class Meta:
