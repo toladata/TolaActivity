@@ -1136,6 +1136,7 @@ class Documentation(models.Model):
     url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=135)
     description = models.CharField(max_length=255, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
+    file_type = models.CharField(max_length=255, blank=True, null=True)
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="doc_workflowlevel2")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1)
     create_date = models.DateTimeField(null=True, blank=True)
