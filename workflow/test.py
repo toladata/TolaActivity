@@ -31,7 +31,7 @@ class SiteProfileTestCase(TestCase):
 
 class AgreementTestCase(TestCase):
 
-    fixtures = ['fixtures/projecttype.json','fixtures/sectors.json']
+    fixtures = ['fixtures/organization.json','fixtures/projecttype.json','fixtures/sectors.json']
 
     def setUp(self):
         new_organization = Organization.objects.create(name="tola")

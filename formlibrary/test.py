@@ -31,7 +31,7 @@ class TrainingAttendanceTestCase(TestCase):
 
 class DistributionTestCase(TestCase):
 
-    fixtures = ['fixtures/projecttype.json','fixtures/sectors.json']
+    fixtures = ['fixtures/organization.json','fixtures/projecttype.json','fixtures/sectors.json']
 
     def setUp(self):
         new_program = WorkflowLevel1.objects.create(name="testprogram")
