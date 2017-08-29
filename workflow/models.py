@@ -1133,7 +1133,7 @@ class CodedFieldValues(models.Model):
 class Documentation(models.Model):
     document_uuid = models.CharField(max_length=255, verbose_name='Document UUID', default=uuid.uuid4, unique=True, blank=True)
     name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
-    url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=135)
+    url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=255)
     description = models.CharField(max_length=255, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
     file_type = models.CharField(max_length=255, blank=True, null=True)
