@@ -34,3 +34,4 @@ pytz==2017.2
 social-auth-app-django==1.2.0
 PyYAML==3.12
 reportlab==3.4.0
+WeasyPrint==0.39

@@ -112,6 +112,16 @@
             tva_table.draw();
         }
 
+
+        function export_to_pdf() {
+            var programId = $("#program_filter_value").data('programid');
+            if (programId != undefined && programId > 0) {
+                window.location.href = "/indicators/tvaprint/" + programId + "/";
+            } else {
+                alert("Select a program before exporting it to PDF");
+            }
+        }
+
     </script>
 
 {% endblock content %}

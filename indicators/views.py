@@ -26,6 +26,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
 from django.utils import timezone
+from django.urls import reverse, reverse_lazy
 
 from workflow.mixins import AjaxableResponseMixin
 import json
@@ -1222,8 +1223,8 @@ class TVAPrint(TemplateView):
             }'\
         )])
         res = HttpResponse(result, content_type='application/pdf')
-        #res['Content-Disposition'] = 'attachment; filename="ztvareport.pdf"'
-        res['Content-Disposition'] = 'inline; filename=tva.pdf'
+        #res['Content-Disposition'] = 'inline; filename="ztvareport.pdf"'
+        res['Content-Disposition'] = 'attachment; filename=tva.pdf'
         res['Content-Transfer-Encoding'] = 'binary'
         """
         with tempfile.NamedTemporaryFile(delete=True) as output:
