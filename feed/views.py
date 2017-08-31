@@ -11,7 +11,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
 import django_filters
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
@@ -77,6 +79,8 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     ordering_fields = ('country__country', 'name')
     filter_fields = ('country__country','name','level1_uuid')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
     queryset = WorkflowLevel1.objects.all()
     serializer_class = WorkflowLevel1Serializer
 
@@ -86,6 +90,9 @@ class SectorViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
     queryset = Sector.objects.all()
     serializer_class = SectorSerializer
 
@@ -95,6 +102,9 @@ class ProjectTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
     queryset = ProjectType.objects.all()
     serializer_class = ProjectTypeSerializer
 
@@ -104,6 +114,8 @@ class OfficeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('country__country','country__organization__id')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Office.objects.all()
     serializer_class = OfficeSerializer
 
@@ -132,6 +144,8 @@ class CountryViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
 
@@ -163,6 +177,7 @@ class ReportingFrequencyViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
     queryset = ReportingFrequency.objects.all()
     serializer_class = ReportingFrequencySerializer
 
@@ -183,6 +198,8 @@ class TolaUserViewSet(viewsets.ModelViewSet):
         serializer = TolaUserSerializer(instance=user, context={'request': request})
         return Response(serializer.data)
 
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = TolaUser.objects.all()
     serializer_class = TolaUserSerializer
 
@@ -192,6 +209,9 @@ class IndicatorTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
     queryset = IndicatorType.objects.all()
     serializer_class = IndicatorTypeSerializer
 
@@ -201,6 +221,9 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('workflowlevel1__country__organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
     queryset = Objective.objects.all()
     serializer_class = ObjectiveSerializer
 
@@ -210,6 +233,9 @@ class FundCodeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
     queryset = FundCode.objects.all()
     serializer_class = FundCodeSerializer
 
@@ -219,6 +245,9 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('country__organization__id','country__country')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+
     queryset = DisaggregationType.objects.all()
     serializer_class = DisaggregationTypeSerializer
 
@@ -228,6 +257,8 @@ class LevelViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id','country__country','workflowlevel1__name')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
 
@@ -271,6 +302,8 @@ class ExternalServiceViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ExternalService.objects.all()
     serializer_class = ExternalServiceSerializer
 
@@ -280,6 +313,8 @@ class ExternalServiceRecordViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ExternalServiceRecord.objects.all()
     serializer_class = ExternalServiceRecordSerializer
 
@@ -289,6 +324,8 @@ class StrategicObjectiveViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('country__organization__id','country__country')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = StrategicObjective.objects.all()
     serializer_class = StrategicObjectiveSerializer
 
@@ -298,6 +335,8 @@ class StakeholderTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = StakeholderType.objects.all()
     serializer_class = StakeholderTypeSerializer
 
@@ -307,6 +346,8 @@ class ProfileTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ProfileType.objects.all()
     serializer_class = ProfileTypeSerializer
 
@@ -347,14 +388,13 @@ class VillageViewSet(viewsets.ModelViewSet):
     serializer_class = VillageSerializer
 
 
-#class aclViewset(viewsets.ModelViewSet):
-
-
 class ContactViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('name','stakeholder__country__organization__id','stakeholder')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
 
@@ -364,6 +404,8 @@ class DocumentationViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    filter_fields = ('workflowlevel1__country__country','workflowlevel2__workflowlevel1__country__country','workflowlevel2__workflowlevel1__country__organization__id')
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Documentation.objects.all()
     serializer_class = DocumentationSerializer
 
@@ -373,6 +415,7 @@ class PeriodicTargetViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
     queryset = PeriodicTarget.objects.all()
     serializer_class = PeriodicTargetSerializer
 
@@ -389,7 +432,7 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name','indicator')
+    filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name','indicator','indicator__workflowlevel1__country__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CollectedData.objects.all()
     serializer_class = CollectedDataSerializer
@@ -417,12 +460,11 @@ class TolaTableViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(table_id=table_id)
         return queryset
 
-    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__workflowlevel1__name')
+    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__workflowlevel1__name','country__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = TolaTableSerializer
     pagination_class = StandardResultsSetPagination
     queryset = TolaTable.objects.all()
-
 
 
 class DisaggregationValueViewSet(viewsets.ModelViewSet):
@@ -461,11 +503,15 @@ class DisaggregationLabelViewSet(viewsets.ModelViewSet):
 
 
 class ChecklistViewSet(viewsets.ModelViewSet):
+    filter_fields = ('workflowlevel2__name','workflowlevel1__country__organization__id','workflowlevel1__country__country',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
+    filter_fields = ('id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
@@ -521,6 +567,8 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
 
 
 class WorkflowModulesViewSet(viewsets.ModelViewSet):
+    filter_fields = ('workflowlevel2__workflowlevel1__country__organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowModules.objects.all()
     serializer_class = WorkflowModulesSerializer
 
@@ -536,6 +584,8 @@ class CurrencyViewSet(viewsets.ModelViewSet):
 
 
 class ApprovalTypeViewSet(viewsets.ModelViewSet):
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ApprovalType.objects.all()
     serializer_class = ApprovalTypeSerializer
 
@@ -546,16 +596,22 @@ class ApprovalWorkflowViewSet(viewsets.ModelViewSet):
 
 
 class BeneficiaryViewSet(viewsets.ModelViewSet):
+    filter_fields = ('workflowlevel1__country__organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Beneficiary.objects.all()
     serializer_class = BeneficiarySerializer
 
 
 class DistributionViewSet(viewsets.ModelViewSet):
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Distribution.objects.all()
     serializer_class = DistributionSerializer
 
 
 class CustomFormViewSet(viewsets.ModelViewSet):
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CustomForm.objects.all()
     serializer_class = CustomFormSerializer
 
@@ -571,6 +627,8 @@ class FieldTypeViewSet(viewsets.ModelViewSet):
 
 
 class BudgetViewSet(viewsets.ModelViewSet):
+    filter_fields = ('workflowlevel2__workflowlevel1__country__organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Budget.objects.all()
     serializer_class = BudgetSerializer
 
@@ -581,8 +639,10 @@ class RiskRegisterViewSet(viewsets.ModelViewSet):
 
 
 class CodedFieldViewSet(viewsets.ModelViewSet):
+    filter_fields = ('workflowlevel2__workflowlevel1__country__organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CodedField.objects.all()
-    serializer_class =  CodedFieldSerializer
+    serializer_class = CodedFieldSerializer
 
 
 class CodedFieldValuesViewSet(viewsets.ModelViewSet):
@@ -591,16 +651,21 @@ class CodedFieldValuesViewSet(viewsets.ModelViewSet):
 
 
 class IssueRegisterViewSet(viewsets.ModelViewSet):
+    filter_fields = ('workflowlevel2__workflowlevel1__country__organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = IssueRegister.objects.all()
     serializer_class = IssueRegisterSerializer
 
 
 class LandTypeViewSet(viewsets.ModelViewSet):
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = LandType.objects.all()
     serializer_class = LandTypeSerializer
 
 
 class InternationalizationViewSet(viewsets.ModelViewSet):
+
     queryset = Internationalization.objects.all()
     serializer_class = InternationalizationSerializer
 
