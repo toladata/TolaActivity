@@ -121,6 +121,9 @@ class ObjectiveAdmin(admin.ModelAdmin):
 class Level(models.Model):
     name = models.CharField(max_length=135, blank=True)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True)
+    parent_id = models.IntegerField(default=0)
     global_default = models.BooleanField(default=0)
     description = models.TextField(max_length=765, blank=True)
     color = models.CharField(max_length=135, blank=True)
