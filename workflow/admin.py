@@ -185,6 +185,11 @@ class OrganizationAdmin(admin.ModelAdmin):
     display = 'Organization'
 
 
+class MilestoneAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Milestone'
+
+
 class TolaBookmarksAdmin(admin.ModelAdmin):
 
     list_display = ('user', 'name')
@@ -348,4 +353,5 @@ admin.site.register(RiskRegister, RiskRegisterAdmin)
 admin.site.register(IssueRegister, IssueRegisterAdmin)
 admin.site.register(CodedField, CodedFieldAdmin)
 admin.site.register(WorkflowModules, WorkflowModulesAdmin)
+admin.site.register(Milestone, MilestoneAdmin)
 

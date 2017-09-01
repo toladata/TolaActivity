@@ -673,3 +673,8 @@ class InternationalizationViewSet(viewsets.ModelViewSet):
 class TolaUserFilterViewSet(viewsets.ModelViewSet):
     queryset = TolaUserFilter.objects.all()
     serializer_class = TolaUserFilterSerializer
+
+
+class AwardViewSet(viewsets.ModelViewSet):
+    queryset = Award.objects.all()
+    serializer_class = AwardSerializer

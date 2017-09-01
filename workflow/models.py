@@ -927,6 +927,7 @@ class WorkflowLevel2(models.Model):
     short = models.BooleanField(default=True, verbose_name="Short Form (recommended)")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
     parent_workflowlevel2 = models.IntegerField("Parent", default=0, blank=True)
+    milestone = models.ForeignKey("Milestone", null=True, blank=True)
     date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
     name = models.CharField("Name",max_length=255)
     sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True, null=True, related_name="workflow2_sector")
@@ -1363,6 +1364,31 @@ class WorkflowModules(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return unicode(self.workflowlevel2)
+
+
+class Milestone(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1)
+    milestone_date = models.DateTimeField(null=True, blank=True)
+    is_global = models.BooleanField(default=0)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Milestone, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 
