@@ -74,7 +74,10 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = WorkflowLevel1.objects.all().filter(country__in=user_countries)
+        if request.user.is_superuser:
+            queryset = WorkflowLevel1.objects.all()
+        else:
+            queryset = WorkflowLevel1.objects.all().filter(country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     ordering_fields = ('country__country', 'name')
@@ -90,6 +93,16 @@ class SectorViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def __get__(self, instance, owner):
+        if self.request.user.is_superuser:
+            queryset = Sector.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=self.request.user).organization
+            queryset = Sector.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
@@ -102,6 +115,16 @@ class ProjectTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = ProjectType.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = ProjectType.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
@@ -114,6 +137,15 @@ class OfficeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+    def list(self, request):
+        user_countries = getCountry(request.user)
+        if request.user.is_superuser:
+            queryset = Office.objects.all()
+        else:
+            queryset = Office.objects.all().filter(country__in=user_countries)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('country__country','country__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Office.objects.all()
@@ -129,7 +161,10 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         user_countries = getCountry(request.user)
-        queryset = SiteProfile.objects.all().filter(country__in=user_countries)
+        if request.user.is_superuser:
+            queryset = SiteProfile.objects.all()
+        else:
+            queryset = SiteProfile.objects.all().filter(country__in=user_countries)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -144,6 +179,16 @@ class CountryViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = Country.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = Country.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Country.objects.all()
@@ -158,8 +203,11 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     limit to users logged in country permissions
     """
     def list(self, request):
-        user_countries = getCountry(request.user)
-        queryset = Indicator.objects.all().filter(workflowlevel1__country__in=user_countries).annotate(actuals=Sum('collecteddata__achieved'))
+        if request.user.is_superuser:
+            queryset = Indicator.objects.all()
+        else:
+            user_countries = getCountry(request.user)
+            queryset = Indicator.objects.all().filter(workflowlevel1__country__in=user_countries).annotate(actuals=Sum('collecteddata__achieved'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -209,6 +257,16 @@ class IndicatorTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = IndicatorType.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = IndicatorType.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
@@ -221,6 +279,16 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = Objective.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = Objective.objects.all().filter(workflowlevel1__country__organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('workflowlevel1__country__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
@@ -233,6 +301,16 @@ class FundCodeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = FundCode.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = FundCode.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
@@ -245,6 +323,16 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = DisaggregationType.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = DisaggregationType.objects.all().filter(country__organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('country__organization__id','country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
@@ -257,6 +345,16 @@ class LevelViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = Level.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = Level.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('organization__id','country__country','workflowlevel1__name')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Level.objects.all()
@@ -302,6 +400,16 @@ class ExternalServiceViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = ExternalService.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = ExternalService.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ExternalService.objects.all()
@@ -324,6 +432,16 @@ class StrategicObjectiveViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = StrategicObjective.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = StrategicObjective.objects.all().filter(country__organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('country__organization__id','country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = StrategicObjective.objects.all()
@@ -335,6 +453,16 @@ class StakeholderTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = StakeholderType.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = StakeholderType.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = StakeholderType.objects.all()
@@ -346,6 +474,17 @@ class ProfileTypeViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = ProfileType.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = ProfileType.objects.all().filter(organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = ProfileType.objects.all()
@@ -393,6 +532,16 @@ class ContactViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = Contact.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = Contact.objects.all().filter(stakeholder__country__organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('name','stakeholder__country__organization__id','stakeholder')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Contact.objects.all()
@@ -404,6 +553,16 @@ class DocumentationViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        if request.user.is_superuser:
+            queryset = Documentation.objects.all()
+        else:
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = Documentation.objects.all().filter(workflowlevel2__workflowlevel1__country__organization=user_org)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     filter_fields = ('workflowlevel1__country__country','workflowlevel2__workflowlevel1__country__country','workflowlevel2__workflowlevel1__country__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Documentation.objects.all()

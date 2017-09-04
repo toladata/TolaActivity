@@ -341,6 +341,7 @@ class Indicator(SecurityModel):
     comments = models.TextField(max_length=255, null=True, blank=True)
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1)
     sector = models.ForeignKey(Sector, null=True, blank=True)
+    sub_sector = models.ManyToManyField(Sector, blank=True, related_name="indicator_sub_sector")
     key_performance_indicator = models.BooleanField("Key Performance Indicator?",default=False)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
     approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="indicator_submitted_by")

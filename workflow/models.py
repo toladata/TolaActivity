@@ -486,10 +486,12 @@ class ApprovalWorkflow(models.Model):
         return unicode(self.approval_type)
 
 
-class Phase(models.Model):
-    name = models.CharField("Name", max_length=255, blank=True)
-    default_global = models.BooleanField(default=0)
-    organization = models.ForeignKey(Organization, default=1)
+class Milestone(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    milestone_date = models.DateTimeField(null=True, blank=True)
+    is_global = models.BooleanField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -501,11 +503,11 @@ class Phase(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Phase, self).save()
+        super(Milestone, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
 class WorkflowLevel1(models.Model):
@@ -520,7 +522,7 @@ class WorkflowLevel1(models.Model):
     sector = models.ManyToManyField(Sector, blank=True)
     sub_sector = models.ManyToManyField(Sector, blank=True, related_name="sub_sector")
     country = models.ManyToManyField(Country)
-    phase = models.ForeignKey(Phase, null=True, blank=True)
+    milestone = models.ManyToManyField(Milestone, blank=True)
     user_access = models.ManyToManyField(TolaUser, blank=True)
     public_dashboard = models.BooleanField("Enable Public Dashboard", default=False)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -1364,31 +1366,6 @@ class WorkflowModules(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return unicode(self.workflowlevel2)
-
-
-class Milestone(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-    organization = models.ForeignKey(Organization, blank=True, null=True)
-    workflowlevel1 = models.ForeignKey(WorkflowLevel1)
-    milestone_date = models.DateTimeField(null=True, blank=True)
-    is_global = models.BooleanField(default=0)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name',)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Milestone, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return unicode(self.name)
 
 
 

@@ -200,7 +200,6 @@ class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-
 class ExternalServiceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
