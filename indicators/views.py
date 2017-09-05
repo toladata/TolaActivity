@@ -33,7 +33,7 @@ import json
 
 import requests
 from export import IndicatorResource, CollectedDataResource
-from reportlab.pdfgen import canvas
+# from reportlab.pdfgen import canvas
 from weasyprint import HTML, CSS
 from django.template.loader import get_template
 from django.http import HttpResponse
@@ -1227,7 +1227,7 @@ class DisaggregationPrint(DisaggregationReportMixin, TemplateView):
         return res
 
 from django.template.loader import render_to_string
-import tempfile
+#import tempfile
 
 class TVAPrint(TemplateView):
     template_name = 'indicators/tva_print.html'
