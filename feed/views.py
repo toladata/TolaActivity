@@ -837,3 +837,8 @@ class TolaUserFilterViewSet(viewsets.ModelViewSet):
 class AwardViewSet(viewsets.ModelViewSet):
     queryset = Award.objects.all()
     serializer_class = AwardSerializer
+
+
+class WorkflowTeamViewSet(viewsets.ModelViewSet):
+    queryset = WorkflowTeam.objects.all()
+    serializer_class = WorkflowTeamSerializer

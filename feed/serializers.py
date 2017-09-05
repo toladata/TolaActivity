@@ -510,9 +510,16 @@ class WorkflowLevel2SortSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AwardSerializer(serializers.HyperlinkedModelSerializer):
-
     id = serializers.ReadOnlyField()
 
     class Meta:
         model = Award
+        fields = '__all__'
+
+
+class WorkflowTeamSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = WorkflowTeam
         fields = '__all__'
