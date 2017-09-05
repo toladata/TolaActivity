@@ -31,7 +31,6 @@ class DocumentationAdmin(ImportExportModelAdmin):
 
 # Resource for CSV export
 class WorkflowLevel2Resource(resources.ModelResource):
-
     class Meta:
         model = WorkflowLevel2
         widgets = {
@@ -108,9 +107,9 @@ class WorkflowLevel1Admin(admin.ModelAdmin):
     display = 'Program'
 
 
-class WorkflowAccessAdmin(admin.ModelAdmin):
+class WorkflowTeamAdmin(admin.ModelAdmin):
     list_display = ('workflow_user','budget_limit','workflowlevel1s','country')
-    display = 'Workflow Access'
+    display = 'Workflow Team'
     search_fields = ('workflow_user__user__username','workflowlevel1__name', 'workflow_user__user__last_name', 'country__country')
     list_filter = ('create_date','country')
 
@@ -191,7 +190,6 @@ class MilestoneAdmin(admin.ModelAdmin):
 
 
 class TolaBookmarksAdmin(admin.ModelAdmin):
-
     list_display = ('user', 'name')
     display = 'Tola User Bookmarks'
     list_filter = ('user__name',)
@@ -199,7 +197,6 @@ class TolaBookmarksAdmin(admin.ModelAdmin):
 
 
 class TolaUserAdmin(admin.ModelAdmin):
-
     list_display = ('name', 'country')
     display = 'Tola User'
     list_filter = ('country', 'user__is_staff',)
@@ -334,7 +331,7 @@ admin.site.register(WorkflowLevel3, WorkflowLevel3Admin)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
-admin.site.register(WorkflowAccess, WorkflowAccessAdmin)
+admin.site.register(WorkflowTeam, WorkflowTeamAdmin)
 admin.site.register(ChecklistItem, ChecklistItemAdmin)
 admin.site.register(Checklist, ChecklistAdmin)
 admin.site.register(Stakeholder, StakeholderAdmin)

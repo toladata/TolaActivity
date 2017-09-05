@@ -551,7 +551,7 @@ class WorkflowLevel1(models.Model):
         return self.name
 
 
-class WorkflowAccess(models.Model):
+class WorkflowTeam(models.Model):
     workflow_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="auth_approving")
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     salary = models.CharField(max_length=255,null=True,blank=True)
@@ -561,19 +561,20 @@ class WorkflowAccess(models.Model):
     role = models.TextField(null=True, blank=True)
     budget_limit = models.IntegerField(null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
+    partner_org = models.ForeignKey(Organization, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ('workflow_user',)
-        verbose_name_plural = "WorkflowAccess"
+        verbose_name_plural = "WorkflowTeam"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(WorkflowAccess, self).save()
+        super(WorkflowTeam, self).save()
 
     @property
     def workflowlevel1s(self):
