@@ -1135,11 +1135,9 @@ def dictfetchall(cursor):
     ]
 
 
-class DisaggregationReport(TemplateView):
-    template_name = 'indicators/disaggregation_report.html'
-
+class DisaggregationReportMixin(object):
     def get_context_data(self, **kwargs):
-        context = super(DisaggregationReport, self).get_context_data(**kwargs)
+        context = super(DisaggregationReportMixin, self).get_context_data(**kwargs)
 
         countries = getCountry(self.request.user)
         programs = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
@@ -1195,6 +1193,38 @@ class DisaggregationReport(TemplateView):
         context['getIndicators'] = indicators
         context['program_selected'] = program_selected
         return context
+
+class DisaggregationReport(DisaggregationReportMixin, TemplateView):
+    template_name = 'indicators/disaggregation_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DisaggregationReport, self).get_context_data(**kwargs)
+        context['disaggregationprint_button'] = True
+        return context
+
+
+class DisaggregationPrint(DisaggregationReportMixin, TemplateView):
+    template_name = 'indicators/disaggregation_print.html'
+
+
+    def get(self, request, *args, **kwargs):
+        context = super(DisaggregationPrint, self).get_context_data(**kwargs)
+        hmtl_string = render(request, self.template_name, {'data': context['data'], 'program_selected': context['program_selected']})
+        pdffile = HTML(string=hmtl_string.content)
+
+        result = pdffile.write_pdf(stylesheets=[CSS(
+            string='@page {\
+                size: letter; margin: 1cm;\
+                @bottom-right{\
+                    content: "Page " counter(page) " of " counter(pages);\
+                };\
+            }'\
+        )])
+        res = HttpResponse(result, content_type='application/pdf')
+        res['Content-Disposition'] = 'attachment; filename=indicators_disaggregation_report.pdf'
+        res['Content-Transfer-Encoding'] = 'binary'
+        #return super(DisaggregationReport, self).get(request, *args, **kwargs)
+        return res
 
 from django.template.loader import render_to_string
 import tempfile

@@ -6,7 +6,7 @@ from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, 
     IndicatorReport, IndicatorDataExport, TVAReport, DisaggregationReport, \
     PeriodicTargetDeleteView, indicator_create, collecteddata_import, indicator_report, \
     programIndicatorReport, indicator_data_report, service_json, collected_data_json,\
-    program_indicators_json, TVAPrint
+    program_indicators_json, TVAPrint, DisaggregationPrint
 
 
 urlpatterns = [
@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^tvareport/$', TVAReport.as_view(), name='tvareport'),
     url(r'^tvaprint/(?P<program>\w+)/$', TVAPrint.as_view(), name='tvaprint'),
     url(r'^disrep/(?P<program>\w+)/$', DisaggregationReport.as_view(), name='disrep'),
+    url(r'^disrepprint/(?P<program>\w+)/$', DisaggregationPrint.as_view(), name='disrepprint'),
     url(r'^report_table/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorReport.as_view(), name='indicator_table'),
     url(r'^program_report/(?P<program>\w+)/$', programIndicatorReport, name='programIndicatorReport'),
 
