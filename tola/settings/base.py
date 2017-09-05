@@ -154,6 +154,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
+                'tola.processor.google_analytics',
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
@@ -376,3 +377,8 @@ CKEDITOR_CONFIGS = {
 }
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+GOOGLE_ANALYTICS_PROPERTY_ID = None # replaced in private settings file
+GOOGLE_ANALYTICS_DOMAIN = 'example.org' # replaced in private settings file
+
+
