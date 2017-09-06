@@ -1,4 +1,4 @@
-<div class="dropdown">
+<div class="panel">
     {% if getPrograms %}
         <div class="btn-group" role="group">
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownProgram" data-toggle="dropdown" aria-expanded="true">
@@ -41,6 +41,11 @@
             </ul>
         </div>
     {% endif %}
-    <br/>
-    <br/>
+    {% if export_to_pdf_url %}
+        <button id="export_to_pdf_button" class="btn btn-default pull-right" onclick="export_to_pdf()">Export to PDF</button>
+    {% endif %}
+
+    {% if disaggregationprint_button %}
+        <button id="export_to_pdf_button" class="btn btn-default pull-right" onclick="export_to_pdf()">Export to PDF</button>
+    {% endif %}
 </div>

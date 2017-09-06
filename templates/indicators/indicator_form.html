@@ -41,7 +41,11 @@
     {% endif %}
 
 	{% csrf_token %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
+    <div id="indicator_form">
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    </div>
+
+ {% include 'indicators/indicator_form_common_js.html' %}
 
 {% endblock content %}

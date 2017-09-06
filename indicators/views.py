@@ -26,12 +26,18 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
 from django.utils import timezone
+from django.urls import reverse, reverse_lazy
 
 from workflow.mixins import AjaxableResponseMixin
 import json
 
 import requests
 from export import IndicatorResource, CollectedDataResource
+# from reportlab.pdfgen import canvas
+from weasyprint import HTML, CSS
+from django.template.loader import get_template
+from django.http import HttpResponse
+
 
 
 def group_excluded(*group_names, **url):
@@ -309,7 +315,7 @@ class IndicatorUpdate(UpdateView):
                 if pk == 0: pk = None
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
-                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.utcnow() })
+                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.now() })
                 #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
                     periodic_target.create_date = timezone.now()
@@ -1129,11 +1135,9 @@ def dictfetchall(cursor):
     ]
 
 
-class DisaggregationReport(TemplateView):
-    template_name = 'indicators/disaggregation_report.html'
-
+class DisaggregationReportMixin(object):
     def get_context_data(self, **kwargs):
-        context = super(DisaggregationReport, self).get_context_data(**kwargs)
+        context = super(DisaggregationReportMixin, self).get_context_data(**kwargs)
 
         countries = getCountry(self.request.user)
         programs = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
@@ -1190,6 +1194,84 @@ class DisaggregationReport(TemplateView):
         context['program_selected'] = program_selected
         return context
 
+class DisaggregationReport(DisaggregationReportMixin, TemplateView):
+    template_name = 'indicators/disaggregation_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DisaggregationReport, self).get_context_data(**kwargs)
+        context['disaggregationprint_button'] = True
+        return context
+
+
+class DisaggregationPrint(DisaggregationReportMixin, TemplateView):
+    template_name = 'indicators/disaggregation_print.html'
+
+
+    def get(self, request, *args, **kwargs):
+        context = super(DisaggregationPrint, self).get_context_data(**kwargs)
+        hmtl_string = render(request, self.template_name, {'data': context['data'], 'program_selected': context['program_selected']})
+        pdffile = HTML(string=hmtl_string.content)
+
+        result = pdffile.write_pdf(stylesheets=[CSS(
+            string='@page {\
+                size: letter; margin: 1cm;\
+                @bottom-right{\
+                    content: "Page " counter(page) " of " counter(pages);\
+                };\
+            }'\
+        )])
+        res = HttpResponse(result, content_type='application/pdf')
+        res['Content-Disposition'] = 'attachment; filename=indicators_disaggregation_report.pdf'
+        res['Content-Transfer-Encoding'] = 'binary'
+        #return super(DisaggregationReport, self).get(request, *args, **kwargs)
+        return res
+
+from django.template.loader import render_to_string
+#import tempfile
+
+class TVAPrint(TemplateView):
+    template_name = 'indicators/tva_print.html'
+
+    def get(self, request, *args, **kwargs):
+        program = Program.objects.filter(id=kwargs.get('program', None)).first()
+        indicators = Indicator.objects\
+            .select_related('sector')\
+            .prefetch_related('indicator_type', 'level', 'program')\
+            .filter(program=program)\
+            .annotate(actuals=Sum('collecteddata__achieved'))
+
+        #hmtl_string = render_to_string('indicators/tva_print.html', {'data': context['data'], 'program': context['program']})
+        hmtl_string = render(request, 'indicators/tva_print.html', {'data': indicators, 'program': program})
+        pdffile = HTML(string=hmtl_string.content)
+        # stylesheets=[CSS(string='@page { size: letter; margin: 1cm}')]
+        result = pdffile.write_pdf(stylesheets=[CSS(
+            string='@page {\
+                size: letter; margin: 1cm;\
+                @bottom-right{\
+                    content: "Page " counter(page) " of " counter(pages);\
+                };\
+            }'\
+        )])
+        res = HttpResponse(result, content_type='application/pdf')
+        #res['Content-Disposition'] = 'inline; filename="ztvareport.pdf"'
+        res['Content-Disposition'] = 'attachment; filename=tva.pdf'
+        res['Content-Transfer-Encoding'] = 'binary'
+        """
+        with tempfile.NamedTemporaryFile(delete=True) as output:
+            output.write(result)
+            output.flush()
+            output = open(output.name, 'r')
+            res.write(output.read())
+        """
+        """
+        # Create the PDF object, using the response object as its "file."
+        p = canvas.Canvas(res)
+        p.drawString(100, 100, 'hello world!')
+        p.showPage()
+        p.save()
+        """
+        return res
+
 class TVAReport(TemplateView):
     template_name = 'indicators/tva_report.html'
 
@@ -1218,7 +1300,10 @@ class TVAReport(TemplateView):
         context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
         context['getIndicatorTypes'] = IndicatorType.objects.all()
+        context['program'] = program
+        context['export_to_pdf_url'] = True
         return context
+
 
 
 class CollectedDataList(ListView):
