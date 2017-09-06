@@ -204,7 +204,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         if request.user.is_superuser:
-            queryset = Indicator.objects.all()
+            queryset = Indicator.objects.all().annotate(actuals=Sum('collecteddata__achieved'))
         else:
             user_countries = getCountry(request.user)
             queryset = Indicator.objects.all().filter(workflowlevel1__country__in=user_countries).annotate(actuals=Sum('collecteddata__achieved'))
