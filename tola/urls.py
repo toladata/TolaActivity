@@ -143,6 +143,8 @@ urlpatterns = [ # rest framework
                 url('', include('django.contrib.auth.urls', namespace='auth')),
                 url('', include('social_django.urls', namespace='social')),
 
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()

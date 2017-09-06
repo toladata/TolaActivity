@@ -243,6 +243,7 @@ THIRD_PARTY_APPS = (
     'corsheaders',
     # required by restframework
     'django_filters',
+    'oauth2_provider',
 )
 
 # Apps specific for this project go here.
