@@ -42,6 +42,10 @@ button:focus,
   outline: none;
 }
 
+.breadcrumb {
+  margin-top: 10px;
+}
+
 .navbar-tola {
   /* TolaActivity Brand Color: */
   background-color: rgb(232, 148, 36);

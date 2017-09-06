@@ -91,7 +91,12 @@
         <td><a href="/workflow/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
         <td>{{ item.province }}</td>
         <td>{{ item.district }}</td>
-        <td><a href="/workflow/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a></td>
+        <td>
+            <a href="/workflow/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a>
+            <a href="/workflow/site_indicatordata/{{item.id}}/" class="btn btn-xs btn-default">Indicator Data</a>
+            <a href="/workflow/site_projectscomplete/{{item.id}}/" class="btn btn-xs btn-default">Projects</a>
+        </td>
+
     </tr>
 
 
