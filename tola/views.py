@@ -368,3 +368,25 @@ def logout_view(request):
 
 def check_view(request):
     return HttpResponse("Hostname "+request.get_host())
+
+from oauth2_provider.views.generic import ProtectedResourceView
+
+def oauth_user_view(request):
+    return HttpResponse("Hostname "+request.get_host())
+
+import json
+
+class OAuth_User_Endpoint(ProtectedResourceView):
+    def get(self, request, *args, **kwargs):
+        print(request.user)
+
+        body = {
+            'username': request.user.username,
+            'email': request.user.email,
+            'id': request.user.id,
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+
+        }
+
+        return HttpResponse(json.dumps(body))

@@ -144,6 +144,7 @@ urlpatterns = [ # rest framework
                 url('', include('social_django.urls', namespace='social')),
 
                 url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+                url(r'^oauthuser', OAuth_User_Endpoint.as_view()),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
