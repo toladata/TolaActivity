@@ -76,7 +76,7 @@ router.register(r'internationalization', InternationalizationViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 router.register(r'award', AwardViewSet)
 router.register(r'workflowteam', WorkflowTeamViewSet)
-router.register(r'search', SearchView, base_name='search')
+#router.register(r'search', SearchView, base_name='search')
 
 from formlibrary.views import BinaryFieldViewSet, binary_test
 router.register(r'binary', BinaryFieldViewSet, base_name='binary')
