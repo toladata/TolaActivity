@@ -523,3 +523,11 @@ class WorkflowTeamSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = WorkflowTeam
         fields = '__all__'
+
+
+class MilestoneSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Milestone
+        fields = '__all__'

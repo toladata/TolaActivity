@@ -835,10 +835,21 @@ class TolaUserFilterViewSet(viewsets.ModelViewSet):
 
 
 class AwardViewSet(viewsets.ModelViewSet):
+    filter_fields = ('organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Award.objects.all()
     serializer_class = AwardSerializer
 
 
 class WorkflowTeamViewSet(viewsets.ModelViewSet):
+    filter_fields = ('workflowlevel1__country__organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowTeam.objects.all()
     serializer_class = WorkflowTeamSerializer
+
+
+class MilestoneViewSet(viewsets.ModelViewSet):
+    filter_fields = ('workflowlevel1__country__organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    queryset = Milestone.objects.all()
+    serializer_class = MilestoneSerializer
