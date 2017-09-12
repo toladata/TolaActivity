@@ -97,7 +97,7 @@ LOCAL_API_TOKEN = "ABC"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [normpath(join(SITE_ROOT, os.getenv('TOLA_TEMPLATE_DIR'))),],
+        'DIRS': [normpath(join(SITE_ROOT, 'templates')),],
         #'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
