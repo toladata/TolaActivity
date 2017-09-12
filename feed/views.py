@@ -662,7 +662,7 @@ class DisaggregationLabelViewSet(viewsets.ModelViewSet):
 
 
 class ChecklistViewSet(viewsets.ModelViewSet):
-    filter_fields = ('workflowlevel2__name','workflowlevel1__country__organization__id','workflowlevel1__country__country',)
+    filter_fields = ('workflowlevel2__name','workflowlevel2__workflowlevel1__country__organization__id','workflowlevel2__workflowlevel1__country__country','owner')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
