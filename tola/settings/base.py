@@ -181,6 +181,8 @@ MIDDLEWARE= (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     #'simple_history.middleware.HistoryRequestMiddleware',
     'tola.middleware.TolaSecurityMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 
@@ -243,6 +245,7 @@ THIRD_PARTY_APPS = (
     'corsheaders',
     # required by restframework
     'django_filters',
+    'oauth2_provider',
 )
 
 # Apps specific for this project go here.
@@ -269,6 +272,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
+    'oauth2_provider.backends.OAuth2Backend',
 )
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',

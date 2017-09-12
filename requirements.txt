@@ -24,7 +24,7 @@ openpyxl==2.4.8
 Pillow==2.5.1
 python-dateutil==1.5
 Twisted==13.2.0
-requests==2.7.0
+requests==2.13.0
 django-ckeditor==5.0.2
 django-wysiwyg==0.7.1
 social-auth-app-django==1.2.0
@@ -48,3 +48,4 @@ xlwt==1.2.0
 django-cors-headers==2.1.0
 elasticsearch
 gunicorn
+django-oauth-toolkit
