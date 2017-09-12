@@ -137,6 +137,7 @@ class TolaUser(models.Model):
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
     activity_api_token = models.CharField(blank=True, null=True, max_length=255)
     privacy_disclaimer_accepted = models.BooleanField(default=False)
+    filter = JSONField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -1138,7 +1139,7 @@ class CodedFieldValues(models.Model):
 
 class Documentation(models.Model):
     document_uuid = models.CharField(max_length=255, verbose_name='Document UUID', default=uuid.uuid4, unique=True, blank=True)
-    name = models.CharField("Name of Document", max_length=135, blank=True, null=True)
+    name = models.CharField("Name of Document", max_length=255, blank=True, null=True)
     url = models.CharField("URL (Link to document or document repository)", blank=True, null=True, max_length=255)
     description = models.CharField(max_length=255, blank=True, null=True)
     file_field = models.FileField(upload_to="uploads", blank=True, null=True)
