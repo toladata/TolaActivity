@@ -311,7 +311,7 @@ class IndicatorManager(models.Manager):
         return super(IndicatorManager, self).get_queryset().prefetch_related('workflowlevel1').select_related('sector')
 
 from tola.security import SecurityModel
-class Indicator(SecurityModel):
+class Indicator(models.Model): # TODO change back to SecurityModel
     indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
