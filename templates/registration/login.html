@@ -8,6 +8,7 @@
   <form action="" method="post">
       {% csrf_token %}
       {{ form.as_p }}
+      <input type="hidden" name="next" value="{{ next }}" />
       <input type="submit" value="login">
       {% if non_ldap %}
         <div class="social-buttons">
