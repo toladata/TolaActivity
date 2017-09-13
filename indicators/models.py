@@ -1,4 +1,3 @@
-from Cython.Plex.Regexps import RE
 from django.db import models
 from django.contrib import admin
 from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser,\
