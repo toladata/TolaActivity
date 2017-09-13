@@ -166,6 +166,7 @@ class FieldTypeAdmin(admin.ModelAdmin):
 class CustomFormField(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     label = models.CharField(max_length=255, null=True, blank=True)
+    validations = models.CharField(max_length=500, null=True, blank=True)
     order = models.IntegerField(default=0)
     type = models.ForeignKey(FieldType)
     required = models.BooleanField(default=0)
@@ -196,6 +197,7 @@ class CustomFormFieldAdmin(admin.ModelAdmin):
 class CustomForm(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    validations = models.CharField(max_length=500, null=True, blank=True)
     fields = JSONField(null=True)
     is_public = models.BooleanField(default=0)
     default_global = models.BooleanField(default=0)
