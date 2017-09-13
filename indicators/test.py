@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test import RequestFactory
 from django.test import Client
-from indicators.models import Indicator, IndicatorType, DisaggregationType, ReportingFrequency, CollectedData
+from indicators.models import Indicator, IndicatorType, DisaggregationType, Frequency, CollectedData
 from workflow.models import WorkflowLevel1, Country, Organization
 from django.contrib.auth.models import User
 
@@ -27,9 +27,9 @@ class IndicatorTestCase(TestCase):
         new_disaggregation = DisaggregationType.objects.create(disaggregation_type="disagg")
         new_disaggregation.save()
         get_disaggregation = DisaggregationType.objects.get(disaggregation_type="disagg")
-        new_frequency = ReportingFrequency.objects.create(frequency="newfreq")
+        new_frequency = Frequency.objects.create(frequency="newfreq")
         new_frequency.save()
-        get_frequency = ReportingFrequency.objects.get(frequency="newfreq")
+        get_frequency = Frequency.objects.get(frequency="newfreq")
         user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
         user.save()
         get_user = User.objects.get(username='john')
