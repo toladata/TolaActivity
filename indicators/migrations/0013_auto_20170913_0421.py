@@ -9,8 +9,8 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workflow', '0039_auto_20170913_0421'),
-        ('indicators', '0011_indicator_sub_sector'),
+        ('workflow', '0039_auto_20170912_0702'),
+        ('indicators', '0012_level_sort'),
     ]
 
     operations = [
