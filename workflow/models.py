@@ -542,25 +542,6 @@ class WorkflowLevel1(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-
-        # update TolaTables with program data
-        tables = TolaSites.objects.get(site_id=1)
-        if tables.tola_tables_token:
-            headers = {'content-type': 'application/json', 'Authorization': 'Token ' + tables.tola_tables_token}
-        else:
-            headers = {'content-type': 'application/json'}
-
-        org = Organization.objects.get(country__country=self.countries)
-
-        post_url = tables.tola_tables_url + "api/workflowlevel1/" + str(self.id)
-        org_url = tables.tola_tables_url + "api/organization/" + str(org.id)
-        payload = {'level1_uuid': self.level1_uuid, 'name': self.name, 'organization': org_url}
-        resp2 = requests.post(post_url, json=payload, headers=headers, verify=False)
-
-        if resp2.status_code == "405":
-            post_url = tables.tola_tables_url + "api/workflowlevel1/"
-            resp = requests.post(post_url, json=payload, headers=headers, verify=False)
-
         super(WorkflowLevel1, self).save()
 
     @property
