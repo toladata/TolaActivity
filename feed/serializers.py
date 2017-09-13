@@ -136,11 +136,11 @@ class ProgramIndicatorSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'indicators_count', 'indicator_set')
 
 
-class ReportingFrequencySerializer(serializers.HyperlinkedModelSerializer):
+class FrequencySerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = ReportingFrequency
+        model = Frequency
         fields = '__all__'
 
 

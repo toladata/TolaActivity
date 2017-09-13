@@ -13,7 +13,7 @@ class IndicatorResource(resources.ModelResource):
     objective = ManyToManyWidget(Objective, separator=" | ", field="objective"),
     strategic_objective = ManyToManyWidget(StrategicObjective, separator=" | ", field="strategic_objective")
     level = ManyToManyWidget(Level, separator=" | ", field="level")
-    reporting_frequency = fields.Field(column_name='reporting_frequency', attribute='reporting_frequency', widget=ForeignKeyWidget(ReportingFrequency, 'frequency'))
+    reporting_frequency = fields.Field(column_name='reporting_frequency', attribute='reporting_frequency', widget=ForeignKeyWidget(Frequency, 'frequency'))
     sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
     workflowlevel1 = ManyToManyWidget(WorkflowLevel1, separator=" | ", field="name")
 
@@ -67,7 +67,7 @@ class CollectedDataAdmin(ImportExportModelAdmin,SimpleHistoryAdmin):
     pass
 
 
-class ReportingFrequencyAdmin(admin.ModelAdmin):
+class FrequencyAdmin(admin.ModelAdmin):
     list_display = ('frequency','description','create_date','edit_date')
     display = 'Reporting Frequency'
 
@@ -83,14 +83,9 @@ class DisaggregationLabelAdmin(admin.ModelAdmin):
     list_filter = ('disaggregation_type__disaggregation_type',)
 
 
-class DataCollectionFrequencyAdmin(admin.ModelAdmin):
-    list_display = ('frequency', 'description', 'create_date', 'edit_date')
-    display = 'Data Collection Frequency'
-
-
 admin.site.register(IndicatorType)
 admin.site.register(Indicator,IndicatorAdmin)
-admin.site.register(ReportingFrequency)
+admin.site.register(Frequency)
 admin.site.register(DisaggregationType, DisaggregationTypeAdmin)
 admin.site.register(DisaggregationLabel, DisaggregationLabelAdmin)
 admin.site.register(CollectedData, CollectedDataAdmin)
@@ -100,5 +95,4 @@ admin.site.register(Level)
 admin.site.register(ExternalService, ExternalServiceAdmin)
 admin.site.register(ExternalServiceRecord, ExternalServiceRecordAdmin)
 admin.site.register(TolaTable, TolaTableAdmin)
-admin.site.register(DataCollectionFrequency)
 admin.site.register(PeriodicTarget, PeriodicTargetAdmin)

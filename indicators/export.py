@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import Indicator, CollectedData, Country, WorkflowLevel1, Sector, DisaggregationValue, ReportingFrequency
+from .models import Indicator, CollectedData, Country, WorkflowLevel1, Sector, DisaggregationValue, Frequency
 from workflow.models import WorkflowLevel2, TolaUser
 from import_export.admin import ImportExportModelAdmin
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
@@ -14,7 +14,7 @@ class IndicatorResource(resources.ModelResource):
     strategic_objectives = fields.Field(column_name='strategic objectives', attribute='strategicobjectives_list')
     workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1')
     sector = fields.Field(column_name='sector', attribute='sector', widget=ForeignKeyWidget(Sector, 'sector'))
-    reporting_frequency = fields.Field(column_name='reporting_frequency', attribute='reporting_frequency', widget=ForeignKeyWidget(ReportingFrequency, 'frequency'))
+    reporting_frequency = fields.Field(column_name='reporting_frequency', attribute='reporting_frequency', widget=ForeignKeyWidget(Frequency, 'frequency'))
     level = fields.Field(column_name='levels', attribute='levels')
     disaggregation = fields.Field(column_name='disaggregation', attribute='disaggregations')
     approval_submitted_by = fields.Field(column_name='approval submitted by', attribute='approval_submitted_by', widget=ForeignKeyWidget(TolaUser, 'name'))

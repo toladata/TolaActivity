@@ -1,3 +1,4 @@
+from Cython.Plex.Regexps import RE
 from django.db import models
 from django.contrib import admin
 from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser,\
@@ -207,11 +208,13 @@ class DisaggregationValueAdmin(admin.ModelAdmin):
     display = 'Disaggregation Value'
 
 
-class ReportingFrequency(models.Model):
+class Frequency(models.Model):
     frequency = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    numdays = models.PositiveIntegerField(default=0, verbose_name="Frequency in number of days")
+    organization = models.ForeignKey(Organization, default=1)
 
     def __unicode__(self):
         return self.frequency
@@ -221,23 +224,11 @@ class ReportingFrequency(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(ReportingFrequency, self).save(*args, **kwargs)
-
-
-class DataCollectionFrequency(models.Model):
-    frequency = models.CharField(max_length=135, blank=True, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    numdays = models.PositiveIntegerField(default=0, verbose_name="Frequency in number of days")
-    organization = models.ForeignKey(Organization, default=1)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    def __unicode__(self):
-        return self.frequency
+        super(Frequency, self).save(*args, **kwargs)
 
 
 class ReportingPeriod(models.Model):
-    frequency = models.ForeignKey(ReportingFrequency)
+    frequency = models.ForeignKey(Frequency)
     organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -329,12 +320,12 @@ class Indicator(models.Model): # TODO change back to SecurityModel
     rationale_for_target = models.TextField(max_length=255, null=True, blank=True)
     means_of_verification = models.CharField(max_length=255, null=True, blank=True, verbose_name="Means of Verification / Data Source")
     data_collection_method = models.CharField(max_length=255, null=True, blank=True, verbose_name="Data Collection Method")
-    data_collection_frequency = models.ForeignKey(DataCollectionFrequency, null=True, blank=True, verbose_name="Frequency of Data Collection")
+    data_collection_frequency = models.ForeignKey(Frequency, related_name="data_collection_frequency",null=True, blank=True, verbose_name="Frequency of Data Collection")
     data_points = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Points")
     responsible_person = models.CharField(max_length=255, null=True, blank=True, verbose_name="Responsible Person(s) and Team")
     method_of_analysis = models.CharField(max_length=255, null=True, blank=True, verbose_name="Method of Analysis")
     information_use = models.CharField(max_length=255, null=True, blank=True, verbose_name="Information Use")
-    reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True, verbose_name="Frequency of Reporting")
+    reporting_frequency = models.ForeignKey(Frequency, null=True, blank=True, verbose_name="Frequency of Reporting")
     quality_assurance = models.TextField(max_length=500, null=True, blank=True, verbose_name="Quality Assurance Measures")
     data_issues = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Issues")
     indicator_changes = models.TextField(max_length=500, null=True, blank=True, verbose_name="Changes to Indicator")

@@ -220,14 +220,14 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     serializer_class = IndicatorSerializer
 
 
-class ReportingFrequencyViewSet(viewsets.ModelViewSet):
+class FrequencyViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
 
-    queryset = ReportingFrequency.objects.all()
-    serializer_class = ReportingFrequencySerializer
+    queryset = Frequency.objects.all()
+    serializer_class = FrequencySerializer
 
 
 class TolaUserViewSet(viewsets.ModelViewSet):
