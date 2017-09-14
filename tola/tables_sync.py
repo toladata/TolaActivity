@@ -130,12 +130,12 @@ def update_level2():
 
     # each level1 send to tables
     for item in Level2:
-        print item.countries
+        print item.workflowlevel1.countries
         # check to see if the organization exists on tables first if not it check_org will create it
-        get_org = Organization.objects.all().get(country__country=item.countries)
-        org_url = check_org(get_org.name)
+        get_org = Organization.objects.all().get(country__country=item.workflowlevel1.countries)
+        org_id = check_org(get_org.name)
         # set payload and deliver to tables
-        payload = {'level2_uuid': item.level2_uuid, 'name': item.name, 'organization': org_url}
+        payload = {'level2_uuid': item.level2_uuid, 'name': item.name, 'organization': org_id}
         send = send_to_tables(section="workflowlevel2", payload=payload, id=item.id)
 
         print send
