@@ -17,7 +17,8 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.sessions.models import Session
 
 from django.db import migrations
-
+import requests
+import json
 
 try:
     from django.utils import timezone
