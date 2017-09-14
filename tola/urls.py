@@ -83,7 +83,6 @@ router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pind
 from formlibrary.views import BinaryFieldViewSet, binary_test
 router.register(r'binary', BinaryFieldViewSet, base_name='binary')
 
-
 urlpatterns = [ # rest framework
                 url(r'^check', views.check_view),
                 url(r'^dev_loader', views.dev_view),

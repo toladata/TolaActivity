@@ -109,7 +109,7 @@ def update_level1():
     for item in Level1:
         print item.countries
         # check to see if the organization exists on tables first if not it check_org will create it
-        get_org = Organization.objects.all().get(country__country=item.countries)
+        get_org = Organization.objects.all().get(workflowlevel1__country__country=item.countries)
         org_id = check_org(get_org.name)
         # set payload and deliver
         print org_id
