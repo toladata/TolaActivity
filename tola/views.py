@@ -117,7 +117,10 @@ def index(request, selected_countries=None, id=0, sector=0):
 
     count_workflowlevel1 = WorkflowLevel1.objects.all().filter(country__in=selected_countries, funding_status='Funded').count()
 
-    assigned = TolaUser.objects.get(user_id=request.user)
+    try:
+        assigned = TolaUser.objects.get(user_id=request.user)
+    except TolaUser.DoesNotExist:
+        assigned = None
     user_pending_approvals = ApprovalWorkflow.objects.all().filter(assigned_to=assigned).exclude(workflowlevel2__progress='tracking')
 
     count_workflowlevel1_agreement = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=selected_countries,workflowlevel1__funding_status='Funded').values('workflowlevel1').distinct().count()
@@ -368,6 +371,45 @@ def logout_view(request):
 
 def check_view(request):
     return HttpResponse("Hostname "+request.get_host())
+
+
+def dev_view(request):
+    """
+    For DEV only update Tables with Activity data
+    URL /dev_loader
+    :param request:
+    :return:
+    """
+    if request.user.is_authenticated() and request.user.username == "tola" and request.user.is_staff:
+        from tola.tables_sync import update_level1, update_level2
+        # update TolaTables with WorkflowLevel1 and WorkflowLevel2 data
+        message = {"attempt": "Running Tables Loader"}
+
+        print "Running Script..."
+
+        try:
+            update_level1()
+            message['level1'] = "Level1 Success"
+        except Exception as e:
+            print '%s (%s)' % (e.message, type(e))
+            message['level1'] = '%s (%s)' % (e.message, type(e))
+
+        try:
+            update_level2()
+            message['level2'] = "Level2 Success"
+        except Exception as e:
+            print '%s (%s)' % (e.message, type(e))
+            message['level2'] = '%s (%s)' % (e.message, type(e))
+
+        return render(request, "dev.html", {'message': message})
+    else:
+        # log person
+        print request.user.is_authenticated()
+        print request.user.username
+        print request.user.is_staff
+        redirect_url = '/'
+        return HttpResponseRedirect(redirect_url)
+
 
 from oauth2_provider.views.generic import ProtectedResourceView
 
