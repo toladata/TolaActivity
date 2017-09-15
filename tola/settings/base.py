@@ -316,7 +316,7 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': 'error.log',
+            'filename': '/dev/log',
         },
         'console': {
             'class': 'logging.StreamHandler',

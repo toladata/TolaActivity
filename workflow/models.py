@@ -549,7 +549,7 @@ class WorkflowLevel1(models.Model):
     description = models.TextField("Description", max_length=765, null=True, blank=True)
     sector = models.ManyToManyField(Sector, blank=True)
     sub_sector = models.ManyToManyField(Sector, blank=True, related_name="sub_sector")
-    country = models.ManyToManyField(Country)
+    country = models.ManyToManyField(Country, blank=True)
     milestone = models.ManyToManyField(Milestone, blank=True)
     user_access = models.ManyToManyField(TolaUser, blank=True)
     public_dashboard = models.BooleanField("Enable Public Dashboard", default=False)
