@@ -6,7 +6,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Sector,Country, TolaUser,TolaSites, \
-    TolaBookmarks, FormGuidance, ApprovalWorkflow
+    TolaBookmarks, FormGuidance, ApprovalWorkflow, Organization
 from indicators.models import CollectedData, Indicator
 
 from django.shortcuts import get_object_or_404
@@ -17,6 +17,8 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
+import json
+from feed.serializers import TolaUserSerializer, OrganizationSerializer
 
 @login_required(login_url='/accounts/login/')
 def index(request, selected_countries=None, id=0, sector=0):
@@ -416,19 +418,22 @@ from oauth2_provider.views.generic import ProtectedResourceView
 def oauth_user_view(request):
     return HttpResponse("Hostname "+request.get_host())
 
-import json
 
 class OAuth_User_Endpoint(ProtectedResourceView):
     def get(self, request, *args, **kwargs):
-        print(request.user)
 
+        user = request.user
         body = {
-            'username': request.user.username,
-            'email': request.user.email,
-            'id': request.user.id,
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
+            'username': user.username,
+            'email': user.email,
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
 
         }
+        tola_user = TolaUser.objects.all().filter(user=user)
+        if len(tola_user) == 1:
+            body["tola_user"] = TolaUserSerializer(instance=tola_user[0], context={'request': request}).data
+            body["organization"] = OrganizationSerializer(instance=tola_user[0].organization, context={'request': request}).data
 
         return HttpResponse(json.dumps(body))
