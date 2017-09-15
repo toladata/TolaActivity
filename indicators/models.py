@@ -385,7 +385,10 @@ class Indicator(models.Model): # TODO change back to SecurityModel
 
     @property
     def levels(self):
-        return ', '.join([x.name for x in self.level.all()])
+        #return ', '.join([x.name for x in self.level.all()])
+        if self.level:
+            return self.level.name
+        return None
 
     @property
     def disaggregations(self):
