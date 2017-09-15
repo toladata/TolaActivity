@@ -488,6 +488,30 @@ class ApprovalWorkflow(models.Model):
         return unicode(self.approval_type)
 
 
+class Portfolio(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    milestone_date = models.DateTimeField(null=True, blank=True)
+    is_global = models.BooleanField(default=0)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Portfolio, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class Milestone(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
@@ -519,6 +543,8 @@ class WorkflowLevel1(models.Model):
     funding_status = models.CharField("Funding Status", max_length=255, blank=True)
     cost_center = models.CharField("Fund Code", max_length=255, blank=True, null=True)
     fund_code = models.ManyToManyField(FundCode, blank=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    portfolio = models.ForeignKey(Portfolio, blank=True, null=True)
     award = models.ManyToManyField(Award, blank=True)
     description = models.TextField("Description", max_length=765, null=True, blank=True)
     sector = models.ManyToManyField(Sector, blank=True)
