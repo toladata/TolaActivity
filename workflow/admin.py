@@ -311,8 +311,15 @@ class WorkflowModulesAdmin(admin.ModelAdmin):
 class StakeholderTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'create_date', 'edit_date')
     display = 'Stakeholder Types'
-    list_filter = ('create_date')
-    search_fields = ('name')
+    list_filter = ('create_date',)
+    search_fields = ('name',)
+
+
+class PortfolioAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Portfolio'
+    list_filter = ('create_date',)
+    search_fields = ('name',)
 
 
 admin.site.register(Organization, OrganizationAdmin)
@@ -351,4 +358,5 @@ admin.site.register(IssueRegister, IssueRegisterAdmin)
 admin.site.register(CodedField, CodedFieldAdmin)
 admin.site.register(WorkflowModules, WorkflowModulesAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
+admin.site.register(Portfolio, PortfolioAdmin)
 
