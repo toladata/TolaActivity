@@ -5,7 +5,7 @@ from formlibrary.models import *
 
 from django.db.models import Count, Sum
 from django.contrib.auth.models import User
-from tola.util import getCountry
+from tola.util import getCountry, getLevel1
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets
@@ -73,11 +73,11 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         return super(WorkflowLevel1ViewSet, self).dispatch(*args, **kwargs)
 
     def list(self, request):
-        user_countries = getCountry(request.user)
         if request.user.is_superuser:
             queryset = WorkflowLevel1.objects.all()
         else:
-            queryset = WorkflowLevel1.objects.all().filter(country__in=user_countries)
+            user_level1 = getLevel1(request.user)
+            queryset = WorkflowLevel1.objects.all().filter(workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     ordering_fields = ('country__country', 'name')
@@ -206,8 +206,8 @@ class IndicatorViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = Indicator.objects.all().annotate(actuals=Sum('collecteddata__achieved'))
         else:
-            user_countries = getCountry(request.user)
-            queryset = Indicator.objects.all().filter(workflowlevel1__country__in=user_countries).annotate(actuals=Sum('collecteddata__achieved'))
+            user_level1 = getLevel1(request.user)
+            queryset = Indicator.objects.all().filter(workflowlevel1__in=user_level1).annotate(actuals=Sum('collecteddata__achieved'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -355,7 +355,7 @@ class LevelViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('organization__id','country__country','workflowlevel1__name')
+    filter_fields = ('organization__id','country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
@@ -688,8 +688,11 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         return super(WorkflowLevel2ViewSet, self).dispatch(*args, **kwargs)
 
     def list(self, request):
-        user_countries = getCountry(request.user)
-        queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__country__in=user_countries)
+        if request.user.is_superuser:
+            queryset = WorkflowLevel2.objects.all()
+        else:
+            user_level1 = getLevel1(request.user)
+            queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__in=user_level1)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):

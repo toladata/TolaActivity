@@ -4,7 +4,7 @@ import json
 import sys
 import requests
 
-from workflow.models import Country, TolaUser, TolaSites
+from workflow.models import Country, TolaUser, TolaSites, WorkflowTeam, WorkflowLevel1
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
 from django.core.exceptions import PermissionDenied
@@ -36,6 +36,18 @@ def getCountry(user):
         get_countries = Country.objects.all().filter(id__in=user_countries)
 
         return get_countries
+
+
+def getLevel1(user):
+    """
+    Returns the object the view is displaying.
+    """
+    # get users country from django cosign module
+    user_team = WorkflowTeam.objects.all().filter(workflow_user__id=user.id).values('workflowlevel1')
+
+    get_level1 = WorkflowLevel1.objects.all().filter(id__in=user_team)
+
+    return get_level1
 
 
 def emailGroup(country,group,link,subject,message,submiter=None):
