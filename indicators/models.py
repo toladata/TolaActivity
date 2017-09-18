@@ -305,7 +305,7 @@ from tola.security import SecurityModel
 class Indicator(models.Model): # TODO change back to SecurityModel
     indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
-    level = models.ForeignKey(Level, null=True, blank=True)
+    level = models.ForeignKey(Level, null=True, blank=True, on_delete=models.SET_NULL)
     objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Objective", related_name="obj_indicator")
     strategic_objectives = models.ManyToManyField(StrategicObjective, verbose_name="Country Strategic Objective", blank=True, related_name="strat_indicator")
     name = models.CharField(max_length=255, null=False)
