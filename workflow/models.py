@@ -492,7 +492,7 @@ class Portfolio(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     organization = models.ForeignKey(Organization, blank=True, null=True)
-    milestone_date = models.DateTimeField(null=True, blank=True)
+    country = models.ManyToManyField(Country, null=True, blank=True)
     is_global = models.BooleanField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
