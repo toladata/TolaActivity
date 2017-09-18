@@ -990,9 +990,9 @@ class WorkflowLevel2(models.Model):
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=True)
     no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
-    #actual_cost = models.DecimalField("Actual Cost", decimal_places=2, max_digits=20, default=Decimal("0.00"),
-    #                                    blank=True,
-    #                                    help_text="What was the actual final cost?  This should match any financial documentation you have in the file.   It should be completely documented and verifiable by finance and any potential audit")
+    actual_cost = models.DecimalField("Actual Cost", decimal_places=2, max_digits=20, default=Decimal("0.00"),
+                                        blank=True,
+                                        help_text="What was the actual final cost?  This should match any financial documentation you have in the file.   It should be completely documented and verifiable by finance and any potential audit")
     actual_cost_date = models.DateTimeField(blank=True, null=True)
     budget_variance = models.CharField("Budget versus Actual variance", blank=True, null=True, max_length=255)
     explanation_of_variance = models.CharField("Explanation of variance", blank=True, null=True, max_length=255)
