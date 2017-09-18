@@ -688,8 +688,11 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         return super(WorkflowLevel2ViewSet, self).dispatch(*args, **kwargs)
 
     def list(self, request):
-        user_level1 = getLevel1(request.user)
-        queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__in=user_level1)
+        if request.user.is_superuser:
+            queryset = WorkflowLevel2.objects.all()
+        else:
+            user_level1 = getLevel1(request.user)
+            queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__in=user_level1)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
