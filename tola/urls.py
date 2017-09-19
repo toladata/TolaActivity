@@ -96,7 +96,7 @@ urlpatterns = [ # rest framework
                 # enable the admin:
                 url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
                 url(r'^admin/', include(admin.site.urls)),
-                url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
+                #url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
 
                 # index
                 url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', views.index, name='index'),
