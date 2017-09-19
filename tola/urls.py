@@ -15,7 +15,7 @@ from django.contrib.auth import forms as authforms
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
-admin.site.site_header = 'Tola Activity administration'
+admin.site.site_header = 'TolaActivity administration'
 
 #REST FRAMEWORK
 router = routers.DefaultRouter()
@@ -30,6 +30,8 @@ router.register(r'workflowlevel2', WorkflowLevel2ViewSet)
 router.register(r'workflowlevel2sort', WorkflowLevel2SortViewSet)
 router.register(r'workflowmodules', WorkflowModulesViewSet)
 router.register(r'workflowteam', WorkflowTeamViewSet)
+router.register(r'approvaltype', ApprovalTypeViewSet)
+router.register(r'approvalworkflow', ApprovalWorkflowViewSet)
 router.register(r'milestone', MilestoneViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'sector', SectorViewSet)
@@ -64,8 +66,6 @@ router.register(r'disaggregationvalue', DisaggregationValueViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
 router.register(r'currency', CurrencyViewSet)
-router.register(r'approvaltype', ApprovalTypeViewSet)
-router.register(r'approvalworkflow', ApprovalWorkflowViewSet)
 router.register(r'beneficiary', BeneficiaryViewSet)
 router.register(r'riskregister', RiskRegisterViewSet)
 router.register(r'issueregister', IssueRegisterViewSet)
@@ -76,6 +76,7 @@ router.register(r'codedfield', CodedFieldViewSet)
 router.register(r'codedfieldvalues', CodedFieldValuesViewSet)
 router.register(r'landtype', LandTypeViewSet)
 router.register(r'internationalization', InternationalizationViewSet)
+router.register(r'portfolio', PortfolioViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 
 #router.register(r'search', SearchView, base_name='search')

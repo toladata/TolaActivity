@@ -531,3 +531,11 @@ class MilestoneSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Milestone
         fields = '__all__'
+
+
+class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Portfolio
+        fields = '__all__'

@@ -877,6 +877,8 @@ class Stakeholder(models.Model):
     contribution = models.CharField("Contribution", max_length=255, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
+    organization = models.ForeignKey(Organization, default=1)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     sectors = models.ManyToManyField(Sector, blank=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?", default=0)
     formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
