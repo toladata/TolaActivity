@@ -38,6 +38,12 @@ def getCountry(user):
         return get_countries
 
 
+
+def getOrganization(user):
+
+    org = TolaUser.objects.get(user__id=user.id).organization
+    return org
+
 def getLevel1(user):
     """
     Returns the object the view is displaying.
