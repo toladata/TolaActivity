@@ -62,10 +62,69 @@ class TolaSites(models.Model):
         return super(TolaSites, self).save(*args, **kwargs)
 
 
+class Industry(models.Model):
+    name = models.CharField("Industry Name", max_length=255, blank=True, default="TolaData")
+    description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name_plural = "Organizations"
+        app_label = 'workflow'
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Industry, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class Sector(models.Model):
+    sector = models.CharField("Sector Name", max_length=255, blank=True)
+    default_global = models.BooleanField(default=0)
+    sector_nearest = models.ManyToManyField('self', symmetrical=False, through='SectorRelated', related_name="nearest")
+    organization = models.ForeignKey("Organization", default=1, related_name="org_specific_sector")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('sector',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Sector, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.sector
+
+
+class SectorRelated(models.Model):
+    sector = models.ForeignKey(Sector)
+    sector_related = models.ForeignKey(Sector, related_name='sector_related')
+    organization = models.ForeignKey("Organization", default=1)
+    order = models.PositiveIntegerField(default=0)
+    org_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ('order',)
+
+
 class Organization(models.Model):
     name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
     description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
     organization_url = models.CharField(blank=True, null=True, max_length=255)
+    industry = models.ManyToManyField(Industry, blank=True)
+    sector = models.ManyToManyField(Sector, blank=True, related_name="org_sector")
     level_1_label = models.CharField("Project/Program Organization Level 1 label", default="Program", max_length=255, blank=True)
     level_2_label = models.CharField("Project/Program Organization Level 2 label", default="Project", max_length=255, blank=True)
     level_3_label = models.CharField("Project/Program Organization Level 3 label", default="Component", max_length=255, blank=True)
@@ -341,28 +400,6 @@ class ProjectType(models.Model):
 
     class Meta:
         ordering = ('name',)
-
-
-class Sector(models.Model):
-    sector = models.CharField("Sector Name", max_length=255, blank=True)
-    default_global = models.BooleanField(default=0)
-    organization = models.ForeignKey(Organization, default=1)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('sector',)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Sector, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.sector
 
 
 class Contact(models.Model):

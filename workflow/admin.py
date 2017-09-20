@@ -322,6 +322,13 @@ class PortfolioAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+class SectorRelatedAdmin(admin.ModelAdmin):
+    list_display = ('sector', 'sector_related')
+    display = 'Sector Related'
+    list_filter = ('sector',)
+    search_fields = ('sector',)
+
+
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Province, ProvinceAdmin)
@@ -359,4 +366,5 @@ admin.site.register(CodedField, CodedFieldAdmin)
 admin.site.register(WorkflowModules, WorkflowModulesAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(Portfolio, PortfolioAdmin)
+admin.site.register(SectorRelated, SectorRelatedAdmin)
 

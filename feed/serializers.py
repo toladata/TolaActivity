@@ -539,3 +539,11 @@ class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Portfolio
         fields = '__all__'
+
+
+class SectorRelatedSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = SectorRelated
+        fields = '__all__'

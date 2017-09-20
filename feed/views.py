@@ -1024,3 +1024,11 @@ class PortfolioViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
+
+
+class SectorRelatedViewSet(viewsets.ModelViewSet):
+
+    filter_fields = ('sector','organization__id',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    queryset = SectorRelated.objects.all()
+    serializer_class = SectorRelatedSerializer
