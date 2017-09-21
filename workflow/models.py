@@ -120,7 +120,7 @@ class SectorRelated(models.Model):
 
 
 class Organization(models.Model):
-    organization_uuid = models.CharField(max_length=255, verbose_name='Organization UUID', default='', unique=False)
+    organization_uuid = models.CharField(max_length=255, verbose_name='Organization UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
     description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
     organization_url = models.CharField(blank=True, null=True, max_length=255)
@@ -186,7 +186,7 @@ TITLE_CHOICES = (
 
 
 class TolaUser(models.Model):
-    tola_user_uuid = models.CharField(max_length=255, verbose_name='TolaUser UUID', default='', unique=False)
+    tola_user_uuid = models.CharField(max_length=255, verbose_name='TolaUser UUID', default=uuid.uuid4, unique=True)
     title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
