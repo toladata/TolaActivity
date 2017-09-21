@@ -49,6 +49,7 @@ def getAllData(file_name):
     with open(file_name, 'rb') as csvfile2:
         sector2 = csv.reader(csvfile2, delimiter=',', quotechar='"')
         #check for distrcit and add new one
+        delete = Sector.objects.all().delete()
         delete = SectorRelated.objects.all().delete()
 
         for row in sector2:

@@ -547,3 +547,11 @@ class SectorRelatedSerializer(serializers.ModelSerializer):
     class Meta:
         model = SectorRelated
         fields = '__all__'
+
+
+class WorkflowLevel1SectorSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = WorkflowLevel1Sector
+        fields = '__all__'

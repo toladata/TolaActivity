@@ -1032,3 +1032,11 @@ class SectorRelatedViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = SectorRelated.objects.all()
     serializer_class = SectorRelatedSerializer
+
+
+class WorkflowLevel1SectorViewSet(viewsets.ModelViewSet):
+
+    queryset = WorkflowLevel1Sector.objects.all()
+    filter_fields = ('sector','workflowlevel1',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = WorkflowLevel1SectorSerializer

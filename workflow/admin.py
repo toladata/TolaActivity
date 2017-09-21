@@ -329,6 +329,13 @@ class SectorRelatedAdmin(admin.ModelAdmin):
     search_fields = ('sector',)
 
 
+class WorkflowLevel1SectorAdmin(admin.ModelAdmin):
+    list_display = ('sector','workflowlevel1')
+    display = 'WorkflowLevel1 Sectors'
+    list_filter = ('workflowlevel1',)
+    search_fields = ('sector', 'workflowlevel1')
+
+
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Country, CountryAdmin)
 admin.site.register(Province, ProvinceAdmin)
@@ -367,4 +374,5 @@ admin.site.register(WorkflowModules, WorkflowModulesAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(Portfolio, PortfolioAdmin)
 admin.site.register(SectorRelated, SectorRelatedAdmin)
+admin.site.register(WorkflowLevel1Sector, WorkflowLevel1SectorAdmin)
 

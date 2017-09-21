@@ -616,6 +616,36 @@ class WorkflowLevel1(models.Model):
         return self.name
 
 
+class WorkflowLevel1Sector(models.Model):
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="level1_sectors")
+    sector = models.ForeignKey(Sector, blank=True, null=True, related_name="level1_primary_sector")
+    sub_sector = models.ManyToManyField(Sector, blank=True, related_name="level1_sub_sector")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+    sort = models.IntegerField(default=0)  #sort array
+
+    class Meta:
+        ordering = ('create_date',)
+        verbose_name_plural = "WorkflowLevel1 Sectors"
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if not 'force_insert' in kwargs:
+            kwargs['force_insert'] = False
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(WorkflowLevel1Sector, self).save()
+
+    @property
+    def sub_sectors(self):
+        return ', '.join([x.sub_sector for x in self.sub_sector.all()])
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.workflowlevel1.name
+
+
 class WorkflowTeam(models.Model):
     workflow_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="auth_approving")
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
