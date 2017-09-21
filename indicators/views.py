@@ -192,7 +192,7 @@ def indicator_create(request, id=0):
         new_indicator.save()
         new_indicator.workflowlevel1.add(workflowlevel1)
         new_indicator.indicator_type.add(type)
-        new_indicator.level.add(level)
+        new_indicator.level = level
 
         latest = new_indicator.id
 

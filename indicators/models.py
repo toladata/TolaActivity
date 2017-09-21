@@ -15,6 +15,8 @@ class TolaTable(models.Model):
     owner = models.ForeignKey('auth.User')
     remote_owner = models.CharField(max_length=255, blank=True)
     country = models.ManyToManyField(Country, blank=True)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
+    organization = models.ForeignKey(Organization, default=1)
     url = models.CharField(max_length=255, blank=True)
     unique_count = models.IntegerField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -145,8 +147,9 @@ class Level(models.Model):
 class DisaggregationType(models.Model):
     disaggregation_type = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
-    country = models.ForeignKey(Country, null=True, blank=True)
+    organization = models.ForeignKey(Organization, default=0)
     standard = models.BooleanField(default=False, verbose_name="Standard")
+    default_global = models.BooleanField(default=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -162,8 +165,8 @@ class DisaggregationType(models.Model):
 
 
 class DisaggregationTypeAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type','country','standard','description')
-    list_filter = ('country','standard','disaggregation_type')
+    list_display = ('disaggregation_type','organization','standard','description')
+    list_filter = ('organization','standard','disaggregation_type')
     display = 'Disaggregation Type'
 
 

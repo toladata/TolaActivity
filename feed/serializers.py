@@ -531,3 +531,27 @@ class MilestoneSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Milestone
         fields = '__all__'
+
+
+class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Portfolio
+        fields = '__all__'
+
+
+class SectorRelatedSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = SectorRelated
+        fields = '__all__'
+
+
+class WorkflowLevel1SectorSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = WorkflowLevel1Sector
+        fields = '__all__'

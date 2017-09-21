@@ -82,7 +82,6 @@ class Command(BaseCommand):
 
             # aggregate related models
             data['sector'] = wf2.sector.sector if wf2.sector is not None else None
-            data['project_type'] = wf2.project_type.name if wf2.project_type is not None else None
 
             data['workflowlevel1'] = self.get_field_data(wf2.workflowlevel1)
             data['indicators'] = list(map(lambda i: self.get_field_data(i), wf2.indicators.all()))
@@ -99,6 +98,7 @@ class Command(BaseCommand):
 
     def index_collected_data(self):
         print("Updating collected data index")
+        print(os.getenv('ELASTICSEARCH_URL'))
 
         latest_update = SearchIndexLog.objects.latest("create_date").create_date
         collected_data = CollectedData.objects.all().filter(

@@ -62,11 +62,70 @@ class TolaSites(models.Model):
         return super(TolaSites, self).save(*args, **kwargs)
 
 
+class Industry(models.Model):
+    name = models.CharField("Industry Name", max_length=255, blank=True, default="TolaData")
+    description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name_plural = "Organizations"
+        app_label = 'workflow'
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Industry, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.name
+
+
+class Sector(models.Model):
+    sector = models.CharField("Sector Name", max_length=255, blank=True)
+    default_global = models.BooleanField(default=0)
+    sector_nearest = models.ManyToManyField('self', symmetrical=False, through='SectorRelated', related_name="nearest")
+    organization = models.ForeignKey("Organization", default=1, related_name="org_specific_sector")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('sector',)
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Sector, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.sector
+
+
+class SectorRelated(models.Model):
+    sector = models.ForeignKey(Sector)
+    sector_related = models.ForeignKey(Sector, related_name='sector_related')
+    organization = models.ForeignKey("Organization", default=1)
+    order = models.PositiveIntegerField(default=0)
+    org_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ('order',)
+
+
 class Organization(models.Model):
     organization_uuid = models.CharField(max_length=255, verbose_name='Organization UUID', default='', unique=False)
     name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
     description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
     organization_url = models.CharField(blank=True, null=True, max_length=255)
+    industry = models.ManyToManyField(Industry, blank=True)
+    sector = models.ManyToManyField(Sector, blank=True, related_name="org_sector")
     level_1_label = models.CharField("Project/Program Organization Level 1 label", default="Program", max_length=255, blank=True)
     level_2_label = models.CharField("Project/Program Organization Level 2 label", default="Project", max_length=255, blank=True)
     level_3_label = models.CharField("Project/Program Organization Level 3 label", default="Component", max_length=255, blank=True)
@@ -345,28 +404,6 @@ class ProjectType(models.Model):
         ordering = ('name',)
 
 
-class Sector(models.Model):
-    sector = models.CharField("Sector Name", max_length=255, blank=True)
-    default_global = models.BooleanField(default=0)
-    organization = models.ForeignKey(Organization, default=1)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('sector',)
-
-    # on save add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Sector, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.sector
-
-
 class Contact(models.Model):
     name = models.CharField("Name", max_length=255, blank=True, null=True)
     title = models.CharField("Title", max_length=255, blank=True, null=True)
@@ -579,6 +616,36 @@ class WorkflowLevel1(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.name
+
+
+class WorkflowLevel1Sector(models.Model):
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="level1_sectors")
+    sector = models.ForeignKey(Sector, blank=True, null=True, related_name="level1_primary_sector")
+    sub_sector = models.ManyToManyField(Sector, blank=True, related_name="level1_sub_sector")
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+    sort = models.IntegerField(default=0)  #sort array
+
+    class Meta:
+        ordering = ('create_date',)
+        verbose_name_plural = "WorkflowLevel1 Sectors"
+
+    # on save add create date or update edit date
+    def save(self, *args, **kwargs):
+        if not 'force_insert' in kwargs:
+            kwargs['force_insert'] = False
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(WorkflowLevel1Sector, self).save()
+
+    @property
+    def sub_sectors(self):
+        return ', '.join([x.sub_sector for x in self.sub_sector.all()])
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.workflowlevel1.name
 
 
 class WorkflowTeam(models.Model):
@@ -879,6 +946,8 @@ class Stakeholder(models.Model):
     contribution = models.CharField("Contribution", max_length=255, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country)
+    organization = models.ForeignKey(Organization, default=1)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     sectors = models.ManyToManyField(Sector, blank=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?", default=0)
     formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
