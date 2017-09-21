@@ -63,6 +63,7 @@ class TolaSites(models.Model):
 
 
 class Organization(models.Model):
+    organization_uuid = models.CharField(max_length=255, verbose_name='Organization UUID', default='', unique=False)
     name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
     description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
     organization_url = models.CharField(blank=True, null=True, max_length=255)
@@ -126,6 +127,7 @@ TITLE_CHOICES = (
 
 
 class TolaUser(models.Model):
+    tola_user_uuid = models.CharField(max_length=255, verbose_name='TolaUser UUID', default='', unique=False)
     title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
     employee_number = models.IntegerField("Employee Number", blank=True, null=True)
@@ -146,7 +148,7 @@ class TolaUser(models.Model):
         ordering = ('name',)
 
     def __unicode__(self):
-        return self.name
+        return self.name if self.name is not None else '-'
 
     @property
     def countries_list(self):
