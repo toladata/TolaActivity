@@ -590,6 +590,8 @@ class WorkflowLevel1(models.Model):
     milestone = models.ManyToManyField(Milestone, blank=True)
     user_access = models.ManyToManyField(TolaUser, blank=True)
     public_dashboard = models.BooleanField("Enable Public Dashboard", default=False)
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     sort = models.IntegerField(default=0)  #sort array
