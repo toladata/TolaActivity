@@ -8,13 +8,13 @@ from rest_framework.serializers import ReadOnlyField
 from django.db.models import Count, Sum
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
         fields = '__all__'
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
