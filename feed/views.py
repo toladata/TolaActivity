@@ -4,7 +4,7 @@ from indicators.models import *
 from formlibrary.models import *
 
 from django.db.models import Count, Sum
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from tola.util import getCountry, getLevel1
 from django.shortcuts import get_object_or_404
 
@@ -57,6 +57,14 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    """
+    A ViewSet for listing or retrieving users.
+    """
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
 
 
 class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
