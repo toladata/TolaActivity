@@ -4,6 +4,7 @@
   <li><a href="/indicators/home/0/0/0/">Indicators</a></li>
   <li class="active">Reports</li>
 </ol>
+
 <div class="btn-group" role="group">
   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
     {{ workflowlevel1 }}
@@ -169,12 +170,16 @@
         }
 
         // INDICATOR REPORT
-        function indicator_report() {
-            // get the workflowlevel1 and indicator id from the url
-            indicator_id = document.URL.split('/')[5];
-            console.log(indicator_id);
-            program_id = document.URL.split('/')[6];
-            type_id = document.URL.split('/')[7];
+        function indicator_report(pid, iid, tid) {
+            // get the program and indicator id from the url
+            var program_id = typeof pid !== 'undefined' ? pid : document.URL.split('/')[6];
+            var indicator_id = typeof iid !== 'undefined' ? iid : document.URL.split('/')[5];
+            var type_id = typeof tid !== 'undefined' ? tid : document.URL.split('/')[7];
+            //indicator_id = document.URL.split('/')[5];
+            //console.log(indicator_id);
+            // program_id = document.URL.split('/')[6];
+            //type_id = document.URL.split('/')[7];
+            //console.log("/indicators/report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/");
 
             $.getJSON("/indicators/report_data/" + indicator_id + "/" + program_id + "/" + type_id + "/", function(data) {
                 show_indicator_table(data['indicator']);

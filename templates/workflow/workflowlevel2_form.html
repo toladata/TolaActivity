@@ -29,6 +29,14 @@
             $("#myModalContent").load(url);
             $("#myModal").modal('show');
         });
+
+        $("#budget_contributions_table").on("click", ".output", function(e){
+            e.preventDefault();
+            var url = $(this).attr("href");
+            $("#myModalContent").empty();
+            $("#myModalContent").load(url);
+            $("#myModal").modal('show');
+        });
     </script>
 
 {% endblock %}

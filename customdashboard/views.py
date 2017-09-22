@@ -82,12 +82,12 @@ def DefaultCustomDashboard(request,id=0,status=0):
     selected_countries_list = Country.objects.all().filter(workflowlevel1__id=workflowlevel1_id)
 
     getQuantitativeDataSums = CollectedData.objects.filter(indicator__workflowlevel1__id=workflowlevel1_id,achieved__isnull=False, indicator__key_performance_indicator=True).exclude(achieved=None,periodic_target=None).order_by('indicator__number').values('indicator__number','indicator__name','indicator__id').annotate(targets=Sum('periodic_target'), actuals=Sum('achieved')).exclude(achieved=None)
-    
+
     totalTargets = getQuantitativeDataSums.aggregate(Sum('targets'))
     totalActuals = getQuantitativeDataSums.aggregate(Sum('actuals'))
 
     getFilteredName=WorkflowLevel1.objects.get(id=workflowlevel1_id)
-    
+
     getProjectsCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries).count()
     getBudgetEstimated = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, workflowlevel1__country__in=countries).annotate(estimated=Sum('total_estimated_budget'))
     getAwaitingApprovalCount = WorkflowLevel2.objects.all().filter(workflowlevel1__id=workflowlevel1_id, status='awaiting approval', workflowlevel1__country__in=countries).count()

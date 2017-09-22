@@ -129,6 +129,7 @@ class Level1Dash(ListView):
 
             status = self.kwargs['status']
             getDashboard.filter(workflowlevel2__status=self.kwargs['status'])
+
         else:
             status = None
 
@@ -419,7 +420,7 @@ class ProjectAgreementUpdate(UpdateView):
         else:
             form = WorkflowLevel2Form
 
-        return form(**self.get_form_kwargs())
+        return form_class(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)
@@ -432,6 +433,7 @@ class ProjectAgreementUpdate(UpdateView):
 
         try:
             getQuantitative = CollectedData.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).order_by('indicator')
+
         except CollectedData.DoesNotExist:
             getQuantitative = None
         context.update({'getQuantitative': getQuantitative})
@@ -870,6 +872,33 @@ class DocumentationDelete(DeleteView):
         return self.render_to_response(self.get_context_data(form=form))
 
     form_class = DocumentationForm
+
+class IndicatorDataBySite(ListView):
+    template_name = 'workflow/site_indicatordata.html'
+    context_object_name = 'collecteddata'
+
+    def get_context_data(self, **kwargs):
+        context = super(IndicatorDataBySite, self).get_context_data(**kwargs)
+        context['site'] = SiteProfile.objects.get(pk=self.kwargs.get('site_id'))
+        return context
+
+    def get_queryset(self):
+        q = CollectedData.objects.filter(site__id = self.kwargs.get('site_id')).order_by('program', 'indicator')
+        return q
+
+
+class ProjectCompleteBySite(ListView):
+    template_name = 'workflow/site_projectcomplete.html'
+    context_object_name = 'projects'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProjectCompleteBySite, self).get_context_data(**kwargs)
+        context['site'] = SiteProfile.objects.get(pk=self.kwargs.get('site_id'))
+        return context
+
+    def get_queryset(self):
+        q = ProjectComplete.objects.filter(site__id = self.kwargs.get('site_id')).order_by('program')
+        return q
 
 
 class IndicatorDataBySite(ListView):

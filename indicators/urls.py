@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 
 from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
-    IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData, IndicatorReport, IndicatorDataExport, TVAReport, DisaggregationReport, PeriodicTargetDeleteView
+    IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData, IndicatorReport, IndicatorDataExport, TVAReport, DisaggregationReport, PeriodicTargetDeleteView, TVAPrint, DisaggregationPrint
 
 from indicators import views as indicatorviews
 
@@ -19,6 +19,8 @@ urlpatterns = [
     url(r'^indicator_delete/(?P<pk>\w+)/$', IndicatorDelete.as_view(), name='indicator_delete'),
     url(r'^periodic_target_delete/(?P<pk>\w+)/$', PeriodicTargetDeleteView.as_view(), name='pt_delete'),
 
+    url(r'^periodic_target_delete/(?P<pk>\w+)/$', PeriodicTargetDeleteView.as_view(), name='pt_delete'),
+
     # Collected Data List
     url(r'^collecteddata/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
     url(r'^collecteddata_add/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/$', CollectedDataCreate.as_view(), name='collecteddata_add'),
@@ -30,7 +32,9 @@ urlpatterns = [
     # Indicator Report
     url(r'^report/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', indicatorviews.indicator_report, name='indicator_report'),
     url(r'^tvareport/$', TVAReport.as_view(), name='tvareport'),
+    url(r'^tvaprint/(?P<workflowlevel1>\w+)/$', TVAPrint.as_view(), name='tvaprint'),
     url(r'^disrep/(?P<workflowlevel1>\w+)/$', DisaggregationReport.as_view(), name='disrep'),
+    url(r'^disrepprint/(?P<workflowlevel1>\w+)/$', DisaggregationPrint.as_view(), name='disrepprint'),
     url(r'^report_table/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', IndicatorReport.as_view(), name='indicator_table'),
     url(r'^program_report/(?P<workflowlevel1>\w+)/$', indicatorviews.WorkflowLevel1IndicatorReport,name='programIndicatorReport'),
 

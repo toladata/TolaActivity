@@ -12,6 +12,12 @@ Welcome to TolaActivity's documentation!
 
    api
    install
+   indicator
+   country
+   programs
+   sector
+
+
 
 Indices and tables
 ==================

@@ -4,9 +4,11 @@ from settings.local import OFFLINE_MODE
 from settings.local import NON_LDAP
 from workflow.models import Organization
 
+from django.conf import settings
 
 def report_server_check(request):
     return {'report_server': REPORT_SERVER, 'offline_mode': OFFLINE_MODE, 'non_ldap': NON_LDAP}
+
 
 
 # get the organization labels from the user for each level of workflow for display in templates
@@ -23,3 +25,19 @@ def org_levels(request):
         workflowlevel3 = "Activity"
 
     return {'WORKFLOWLEVEL1': workflowlevel1, 'WORKFLOWLEVEL2': workflowlevel2, 'WORKFLOWLEVEL3': workflowlevel3}
+
+def google_analytics(request):
+    """
+    Use the variables returned in this function to render Google Analytics Tracking Code template.
+    """
+
+    ga_prop_id = getattr(settings, 'GOOGLE_ANALYTICS_PROPERTY_ID', False)
+    ga_domain = getattr(settings, 'GOOGLE_ANALYTICS_DOMAIN', False)
+
+    if not settings.DEBUG and ga_prop_id and ga_domain:
+        return {
+            'GOOGLE_ANALYTICS_PROPERTY_ID': ga_prop_id,
+            'GOOGLE_ANALYTICS_DOMAIN': ga_domain,
+        }
+    return {}
+

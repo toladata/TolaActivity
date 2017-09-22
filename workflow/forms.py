@@ -93,6 +93,7 @@ class BudgetForm(forms.ModelForm):
 
         super(BudgetForm, self).__init__(*args, **kwargs)
         self.fields['workflowlevel2'].widget = forms.HiddenInput()#TextInput()
+
         #countries = getCountry(self.request.user)
 
         #self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in = countries)
@@ -983,6 +984,7 @@ class StakeholderForm(forms.ModelForm):
 
     class Meta:
         model = Stakeholder
+        #fields = ['contact', 'country', 'approved_by', 'filled_by', 'sectors', 'formal_relationship_document', 'vetting_document', ]
         exclude = ['create_date', 'edit_date']
 
     approval = forms.ChoiceField(

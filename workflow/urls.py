@@ -34,6 +34,7 @@ urlpatterns = [
 
                        url(r'^documentation_list/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationList.as_view(), name='documentation_list'),
                        url(r'^documentation_objects/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationListObjects.as_view(), name='documentation_objects'),
+                       url(r'^site_projectscomplete/(?P<site_id>\w+)/$', ProjectCompleteBySite.as_view(), name='site_projectscomplete'),
                        url(r'^documentation_add', DocumentationCreate.as_view(), name='documentation_add'),
                        url(r'^documentation_agreement_list/(?P<workflowlevel1>\w+)/(?P<project>\w+)/$', DocumentationAgreementList.as_view(), name='documentation_agreement_list'),
                        url(r'^documentation_agreement_add/(?P<id>\w+)/$', DocumentationAgreementCreate.as_view(),name='documentation_agreement_add'),
