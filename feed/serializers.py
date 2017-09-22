@@ -3,10 +3,9 @@ from rest_framework import serializers
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 from rest_framework.serializers import ReadOnlyField
 from django.db.models import Count, Sum
-
 
 
 
@@ -14,8 +13,13 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'is_staff')
+        fields = '__all__'
 
+class GroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        fields = '__all__'
 
 class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
     workflow_key = serializers.UUIDField(read_only=True)

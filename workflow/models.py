@@ -677,7 +677,7 @@ class WorkflowTeam(models.Model):
 
     @property
     def workflowlevel1s(self):
-        return ', '.join([x.workflowlevel1 for x in self.workflowlevel1.all()])
+        return ', '.join([x.name for x in self.workflowlevel1.all()])
 
     # displayed in admin templates
     def __unicode__(self):

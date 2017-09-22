@@ -20,6 +20,7 @@ admin.site.site_header = 'TolaActivity administration'
 #REST FRAMEWORK
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
+router.register(r'groups', GroupViewSet)
 router.register(r'tolauser', TolaUserViewSet)
 router.register(r'tolauserfilter', TolaUserFilterViewSet)
 router.register(r'organization', OrganizationViewSet)
