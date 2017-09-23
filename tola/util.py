@@ -46,12 +46,12 @@ def getOrganization(user):
 
 def getLevel1(user):
     """
-    Returns the object the view is displaying.
+    Returns a list of program ID's the user has access to.
     """
-    # get users country from django cosign module
-    user_team = WorkflowTeam.objects.all().filter(workflow_user__id=user.id).values('workflowlevel1')
+    # get user
+    
+    get_level1 = WorkflowLevel1.objects.all().filter(workflowteam__workflow_user__user=user).values('id')
 
-    get_level1 = WorkflowLevel1.objects.all().filter(id__in=user_team)
 
     return get_level1
 
