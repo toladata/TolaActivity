@@ -4,7 +4,7 @@ import unicodedata
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import WorkflowLevel1, Country, Province, AdminLevelThree, District, WorkflowLevel2, SiteProfile, \
+from .models import WorkflowLevel1, Country, AdminLevelOne, AdminLevelThree, AdminLevelTwo, WorkflowLevel2, SiteProfile, \
     Documentation, WorkflowLevel3, Budget, WorkflowTeam, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
     TolaBookmarks, TolaUser, ApprovalWorkflow, CodedField
 from formlibrary.models import TrainingAttendance, Distribution
@@ -2112,7 +2112,7 @@ def country_json(request, country):
     For populating the province dropdown based  country dropdown value
     """
     selected_country = Country.objects.get(id=country)
-    province = Province.objects.all().filter(country=selected_country)
+    province = AdminLevelOne.objects.all().filter(country=selected_country)
     provinces_json = serializers.serialize("json", province)
     return HttpResponse(provinces_json, content_type="application/json")
 
@@ -2121,8 +2121,8 @@ def province_json(request, province):
     """
     For populating the office district based  country province value
     """
-    selected_province = Province.objects.get(id=province)
-    district = District.objects.all().filter(province=selected_province)
+    selected_province = AdminLevelOne.objects.get(id=province)
+    district = AdminLevelTwo.objects.all().filter(province=selected_province)
     districts_json = serializers.serialize("json", district)
     return HttpResponse(districts_json, content_type="application/json")
 
@@ -2131,7 +2131,7 @@ def district_json(request, district):
     """
     For populating the office dropdown based  country dropdown value
     """
-    selected_district = District.objects.get(id=district)
+    selected_district = AdminLevelTwo.objects.get(id=district)
     adminthree = AdminLevelThree.objects.all().filter(district=selected_district)
     adminthree_json = serializers.serialize("json", adminthree)
     return HttpResponse(adminthree_json, content_type="application/json")

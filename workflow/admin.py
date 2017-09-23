@@ -72,8 +72,8 @@ class CountryResource(resources.ModelResource):
 
 class CountryAdmin(ImportExportModelAdmin):
     resource_class = CountryResource
-    list_display = ('country','code','organization','create_date', 'edit_date')
-    list_filter = ('country','organization__name')
+    list_display = ('country','code','create_date', 'edit_date')
+    list_filter = ('country',)
 
 
 # Resource for CSV export
@@ -81,8 +81,8 @@ class SiteProfileResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     type = fields.Field(column_name='type', attribute='type', widget=ForeignKeyWidget(ProfileType, 'profile'))
     office = fields.Field(column_name='office', attribute='office', widget=ForeignKeyWidget(Office, 'code'))
-    district = fields.Field(column_name='admin level 2', attribute='district', widget=ForeignKeyWidget(District, 'name'))
-    province = fields.Field(column_name='admin level 1', attribute='province', widget=ForeignKeyWidget(Province, 'name'))
+    adminlevelone = fields.Field(column_name='admin level 1', attribute='adminlevelone', widget=ForeignKeyWidget(AdminLevelOne, 'name'))
+    adminleveltwo = fields.Field(column_name='admin level 2', attribute='adminleveltwo', widget=ForeignKeyWidget(AdminLevelTwo, 'name'))
     admin_level_three = fields.Field(column_name='admin level 3', attribute='admin_level_three', widget=ForeignKeyWidget(AdminLevelThree, 'name'))
 
     class Meta:
@@ -94,7 +94,7 @@ class SiteProfileResource(resources.ModelResource):
 
 class SiteProfileAdmin(ImportExportModelAdmin):
     resource_class = SiteProfileResource
-    list_display = ('name','office', 'country', 'province','district','admin_level_three','village')
+    list_display = ('name','office', 'country', 'adminlevelone','adminleveltwo','admin_level_three','adminlevelthree')
     list_filter = ('country__country',)
     search_fields = ('office__code','country__country')
     pass
@@ -245,24 +245,31 @@ class ApprovalWorkflowAdmin(admin.ModelAdmin):
     display = 'Approval Workflow'
 
 
-class ProvinceAdmin(admin.ModelAdmin):
+class AdminLevelOneAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'create_date')
     search_fields = ('name','country__country')
     list_filter = ('create_date','country')
     display = 'Admin Boundary 1'
 
 
-class DistrictAdmin(admin.ModelAdmin):
-    list_display = ('name', 'province', 'create_date')
-    search_fields = ('create_date','province')
-    list_filter = ('province__country__country','province')
+class AdminLevelTwoAdmin(admin.ModelAdmin):
+    list_display = ('name', 'adminlevelone', 'create_date')
+    search_fields = ('create_date','adminlevelone')
+    list_filter = ('adminlevelone__country__country','adminlevelone')
     display = 'Admin Boundary 2'
 
 
 class AdminLevelThreeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'district', 'create_date')
-    search_fields = ('name','district__name')
-    list_filter = ('district__province__country__country','district')
+    list_display = ('name', 'adminleveltwo', 'create_date')
+    search_fields = ('name','adminleveltwo__name')
+    list_filter = ('adminleveltwo__adminlevelone__country__country','name')
+    display = 'Admin Boundary 3'
+
+
+class AdminLevelFourAdmin(admin.ModelAdmin):
+    list_display = ('name', 'adminlevelthree', 'create_date')
+    search_fields = ('name','adminlevelthree__name')
+    list_filter = ('adminlevelthree__adminleveltwo__adminlevelone__country__country','name')
     display = 'Admin Boundary 3'
 
 
@@ -338,11 +345,11 @@ class WorkflowLevel1SectorAdmin(admin.ModelAdmin):
 
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Country, CountryAdmin)
-admin.site.register(Province, ProvinceAdmin)
+admin.site.register(AdminLevelOne, AdminLevelOneAdmin)
 admin.site.register(Office, OfficeAdmin)
-admin.site.register(District, DistrictAdmin)
+admin.site.register(AdminLevelTwo, AdminLevelTwoAdmin)
 admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
-admin.site.register(Village)
+admin.site.register(AdminLevelFour,AdminLevelFourAdmin)
 admin.site.register(WorkflowLevel1, SimpleHistoryAdmin)
 admin.site.register(Sector)
 admin.site.register(WorkflowLevel2, SimpleHistoryAdmin)

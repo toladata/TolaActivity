@@ -4,7 +4,7 @@ import json
 import sys
 import requests
 
-from workflow.models import Country, TolaUser, TolaSites, WorkflowTeam, WorkflowLevel1
+from workflow.models import Country, TolaUser, TolaSites, WorkflowTeam, WorkflowLevel1, Organization
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
 from django.core.exceptions import PermissionDenied
@@ -52,6 +52,7 @@ def getLevel1(user):
     
     get_level1 = WorkflowLevel1.objects.all().filter(workflowteam__workflow_user__user=user).values('id')
 
+    print get_level1
 
     return get_level1
 
@@ -106,10 +107,12 @@ def user_to_tola(backend, user, response, *args, **kwargs):
 
     # Add a google auth user to the tola profile
     default_country = Country.objects.first()
+    organization = Organization.objects.first()
     userprofile, created = TolaUser.objects.get_or_create(
         user = user)
 
     userprofile.country = default_country
+    userprofile.organization = organization
 
     userprofile.name = response.get('displayName')
 
@@ -117,7 +120,7 @@ def user_to_tola(backend, user, response, *args, **kwargs):
 
     userprofile.save()
     #add user to country permissions table
-    userprofile.countries.add(default_country)
+    # userprofile.countries.add(default_country)
 
 
 def group_excluded(*group_names, **url):

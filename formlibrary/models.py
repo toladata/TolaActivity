@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib import admin
 from datetime import datetime
-from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, Province, Organization
+from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, AdminLevelOne, Organization
 from indicators.models import DisaggregationValue, Indicator
 from django.contrib.postgres.fields import JSONField
 
@@ -63,7 +63,7 @@ class Distribution(models.Model):
     distribution_indicator = models.ForeignKey(Indicator,blank=True,null=True)
     distribution_implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
-    province = models.ForeignKey(Province, null=True, blank=True)
+    province = models.ForeignKey(AdminLevelOne, null=True, blank=True)
     total_beneficiaries_received_input = models.IntegerField(null=True, blank=True)
     distribution_location = models.CharField(max_length=255, null=True, blank=True)
     input_type_distributed = models.CharField(max_length=255, null=True, blank=True)

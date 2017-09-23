@@ -4,7 +4,7 @@ from .models import TrainingAttendance, Distribution, Beneficiary
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 
-from workflow.models import WorkflowLevel1, WorkflowLevel2, Office, Province, SiteProfile
+from workflow.models import WorkflowLevel1, WorkflowLevel2, Office, AdminLevelOne, SiteProfile
 from functools import partial
 from tola.util import getCountry
 
@@ -365,7 +365,7 @@ class DistributionForm(forms.ModelForm):
         self.fields['workflowlevel2'].queryset = WorkflowLevel2.objects.filter(workflowlevel1__country__in=countries)
         self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
         self.fields['office_code'].queryset = Office.objects.filter(country__in=countries)
-        self.fields['province'].queryset = Province.objects.filter(country__in=countries)
+        self.fields['province'].queryset = AdminLevelOne.objects.filter(country__in=countries)
 
 
 class BeneficiaryForm(forms.ModelForm):

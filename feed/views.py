@@ -506,7 +506,7 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = Province.objects.all()
+    queryset = AdminLevelOne.objects.all()
     serializer_class = ProvinceSerializer
 
 
@@ -515,7 +515,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = District.objects.all()
+    queryset = AdminLevelTwo.objects.all()
     serializer_class = DistrictSerializer
 
 
@@ -533,7 +533,7 @@ class VillageViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = Village.objects.all()
+    queryset = AdminLevelFour.objects.all()
     serializer_class = VillageSerializer
 
 
