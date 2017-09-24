@@ -20,7 +20,7 @@ class SiteProfileTestCase(TestCase):
         new_office = Office.objects.create(name="testoffice", country=new_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
-        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,adminlevelone=get_province)
+        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
         new_community.save()
 
     def test_community_exists(self):
@@ -50,7 +50,7 @@ class AgreementTestCase(TestCase):
         new_office = Office.objects.create(name="testoffice", country=get_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
-        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,adminlevelone=get_province)
+        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
         new_community.save()
         get_community = SiteProfile.objects.get(name="testcommunity")
         #load from fixtures

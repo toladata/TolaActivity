@@ -47,7 +47,7 @@ class DistributionTestCase(TestCase):
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
         #create project agreement -- and load from fixtures
-        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,adminlevelone=get_province)
+        new_community = SiteProfile.objects.create(name="testcommunity", country=get_country, office=get_office,province=get_province)
         new_community.save()
         get_community = SiteProfile.objects.get(name="testcommunity")
         get_sector = Sector.objects.get(id='2')
