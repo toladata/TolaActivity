@@ -1,5 +1,5 @@
 from django.test import TestCase
-from workflow.models import Organization, WorkflowLevel1, Country, Province, WorkflowLevel2, Sector, ProjectType, \
+from workflow.models import Organization, WorkflowLevel1, Country, AdminLevelOne, WorkflowLevel2, Sector, ProjectType, \
     SiteProfile, Office, WorkflowLevel3, Budget
 
 
@@ -11,12 +11,12 @@ class SiteProfileTestCase(TestCase):
         new_organization = Organization.objects.create(name="tola")
         new_organization.save()
         get_organization = Organization.objects.get(name="tola")
-        new_country = Country.objects.create(country="testcountry", organization=get_organization)
+        new_country = Country.objects.create(country="testcountry")
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
-        new_province = Province.objects.create(name="testprovince", country=get_country)
+        new_province = AdminLevelOne.objects.create(name="testprovince", country=get_country)
         new_province.save()
-        get_province = Province.objects.get(name="testprovince")
+        get_province = AdminLevelOne.objects.get(name="testprovince")
         new_office = Office.objects.create(name="testoffice", country=new_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")
@@ -37,16 +37,16 @@ class AgreementTestCase(TestCase):
         new_organization = Organization.objects.create(name="tola")
         new_organization.save()
         get_organization = Organization.objects.get(name="tola")
-        new_country = Country.objects.create(country="testcountry", organization=get_organization)
+        new_country = Country.objects.create(country="testcountry")
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
         new_program = WorkflowLevel1.objects.create(name="testprogram")
         new_program.save()
         new_program.country.add(get_country)
         get_program = WorkflowLevel1.objects.get(name="testprogram")
-        new_province = Province.objects.create(name="testprovince", country=get_country)
+        new_province = AdminLevelOne.objects.create(name="testprovince", country=get_country)
         new_province.save()
-        get_province = Province.objects.get(name="testprovince")
+        get_province = AdminLevelOne.objects.get(name="testprovince")
         new_office = Office.objects.create(name="testoffice", country=get_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")

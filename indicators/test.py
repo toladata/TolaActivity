@@ -14,7 +14,7 @@ class IndicatorTestCase(TestCase):
         new_organization = Organization.objects.create(name="tola")
         new_organization.save()
         get_organization = Organization.objects.get(name="tola")
-        new_country = Country.objects.create(country="testcountry", organization=get_organization)
+        new_country = Country.objects.create(country="testcountry")
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
         new_program = WorkflowLevel1.objects.create(name="testprogram")

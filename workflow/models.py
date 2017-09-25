@@ -38,8 +38,9 @@ class TolaSites(models.Model):
     name = models.CharField(blank=True, null=True, max_length=255)
     agency_name = models.CharField(blank=True, null=True, max_length=255)
     agency_url = models.CharField(blank=True, null=True, max_length=255)
-    tola_report_url = models.CharField(blank=True, null=True, max_length=255)
-    tola_tables_url = models.CharField(blank=True, null=True, max_length=255)
+    tola_report_url = models.CharField(default="https://report.toladata.io", null=True, max_length=255)
+    tola_tables_url = models.CharField(default="https://activity.toladata.io", null=True, max_length=255)
+    front_end_url = models.CharField(default="https://activity.toladata.io", null=True, max_length=255)
     tola_tables_user = models.CharField(blank=True, null=True, max_length=255)
     tola_tables_token = models.CharField(blank=True, null=True, max_length=255)
     site = models.ForeignKey(Site)
@@ -152,7 +153,6 @@ class Organization(models.Model):
 
 class Country(models.Model):
     country = models.CharField("Country Name", max_length=255, blank=True)
-    organization = models.ForeignKey(Organization, blank=True, null=True)
     code = models.CharField("2 Letter Country Code", max_length=4, blank=True)
     description = models.TextField("Description/Notes", max_length=765,blank=True)
     latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
@@ -402,33 +402,6 @@ class ProjectType(models.Model):
 
     class Meta:
         ordering = ('name',)
-
-
-class Contact(models.Model):
-    name = models.CharField("Name", max_length=255, blank=True, null=True)
-    title = models.CharField("Title", max_length=255, blank=True, null=True)
-    city = models.CharField("City/Town", max_length=255, blank=True, null=True)
-    address = models.TextField("Address", max_length=255, blank=True, null=True)
-    email = models.CharField("Email", max_length=255, blank=True, null=True)
-    phone = models.CharField("Phone", max_length=255, blank=True, null=True)
-    country = models.ForeignKey(Country)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name', 'country','title')
-        verbose_name_plural = "Contact"
-
-    # onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Contact, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.name + ", " + self.title
 
 
 class FundCode(models.Model):
@@ -684,7 +657,7 @@ class WorkflowTeam(models.Model):
         return self.workflow_user.user.first_name + " " + self.workflow_user.user.last_name
 
 
-class Province(models.Model):
+class AdminLevelOne(models.Model):
     name = models.CharField("Admin Boundary 1", max_length=255, blank=True)
     country = models.ForeignKey(Country)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -700,16 +673,16 @@ class Province(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Province, self).save()
+        super(AdminLevelOne, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
         return self.name
 
 
-class District(models.Model):
+class AdminLevelTwo(models.Model):
     name = models.CharField("Admin Boundary 2", max_length=255, blank=True)
-    province = models.ForeignKey(Province,verbose_name="Admin Level 1")
+    adminlevelone = models.ForeignKey(AdminLevelOne,verbose_name="Admin Level 1")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -723,7 +696,7 @@ class District(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(District, self).save()
+        super(AdminLevelTwo, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
@@ -732,7 +705,7 @@ class District(models.Model):
 
 class AdminLevelThree(models.Model):
     name = models.CharField("Admin Boundary 3", max_length=255, blank=True)
-    district = models.ForeignKey(District,verbose_name="Admin Level 2")
+    adminleveltwo = models.ForeignKey(AdminLevelTwo, null=True, blank=True, verbose_name="Admin Level 2")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -753,10 +726,10 @@ class AdminLevelThree(models.Model):
         return self.name
 
 
-class Village(models.Model):
+class AdminLevelFour(models.Model):
     name = models.CharField("Admin Boundary 4", max_length=255, blank=True)
-    district = models.ForeignKey(District,null=True,blank=True)
-    admin_3 = models.ForeignKey(AdminLevelThree,verbose_name="Admin Boundary 3",null=True,blank=True)
+    adminlevelthree = models.ForeignKey(AdminLevelThree,null=True,blank=True)
+    adminleveltwo = models.ForeignKey(AdminLevelTwo,verbose_name="Admin Boundary 3",null=True,blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -770,7 +743,7 @@ class Village(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
-        super(Village, self).save()
+        super(AdminLevelFour, self).save()
 
     # displayed in admin templates
     def __unicode__(self):
@@ -878,10 +851,10 @@ class SiteProfile(models.Model):
     households_owning_livestock = models.IntegerField("Households Owning Livestock", help_text="(%)", null=True, blank=True)
     animal_type = models.CharField("Animal Types", help_text="List Animal Types", max_length=255, null=True, blank=True)
     country = models.ForeignKey(Country)
-    province = models.ForeignKey(Province, verbose_name="Administrative Level 1", null=True, blank=True)
-    district = models.ForeignKey(District, verbose_name="Administrative Level 2", null=True, blank=True)
-    admin_level_three = models.ForeignKey(AdminLevelThree, verbose_name="Administrative Level 3", null=True, blank=True)
-    village = models.ForeignKey(Village, verbose_name="Administrative Level 4", null=True, blank=True)
+    province = models.ForeignKey(AdminLevelOne, verbose_name="Administrative Level 1", null=True, blank=True)
+    district = models.ForeignKey(AdminLevelTwo, verbose_name="Administrative Level 2", null=True, blank=True)
+    admin_level_three = models.ForeignKey(AdminLevelThree, verbose_name="Administrative Level 3", null=True, blank=True, related_name="site_level3")
+    village = models.ForeignKey(AdminLevelThree, verbose_name="Administrative Level 4", null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     status = models.BooleanField("Site Active", default=True)
@@ -910,6 +883,35 @@ class SiteProfile(models.Model):
     def __unicode__(self):
         new_name = self.name
         return new_name
+
+
+class Contact(models.Model):
+    name = models.CharField("Name", max_length=255, blank=True, null=True)
+    title = models.CharField("Title", max_length=255, blank=True, null=True)
+    city = models.CharField("City/Town", max_length=255, blank=True, null=True)
+    address = models.TextField("Address", max_length=255, blank=True, null=True)
+    email = models.CharField("Email", max_length=255, blank=True, null=True)
+    phone = models.CharField("Phone", max_length=255, blank=True, null=True)
+    country = models.ForeignKey(Country)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name', 'country','title')
+        verbose_name_plural = "Contact"
+
+    # onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Contact, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.name + ", " + self.title
 
 
 class StakeholderType(models.Model):

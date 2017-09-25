@@ -7,7 +7,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
 from .models import WorkflowLevel1, WorkflowLevel2, WorkflowLevel3, SiteProfile, Documentation, Budget, ApprovalWorkflow, \
-    Office, ChecklistItem, Province, Stakeholder, TolaUser, Contact, Sector
+    Office, ChecklistItem, AdminLevelOne, Stakeholder, TolaUser, Contact, Sector
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
@@ -815,7 +815,7 @@ class SiteProfileForm(forms.ModelForm):
         countries = getCountry(self.request.user)
         self.fields['date_of_firstcontact'].label = "Date of First Contact"
         self.fields['office'].queryset = Office.objects.filter(country__in=countries)
-        self.fields['province'].queryset = Province.objects.filter(country__in=countries)
+        self.fields['province'].queryset = AdminLevelOne.objects.filter(country__in=countries)
         self.fields['site_uuid'].widget = forms.HiddenInput()
 
 

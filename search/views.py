@@ -50,7 +50,7 @@ def search(request, index, term):
             "bool": {
               "should": [
                 {"match": {
-                    "project_name":  {
+                    "name":  {
                       "query": term,
                       "boost": 4
                 }}},

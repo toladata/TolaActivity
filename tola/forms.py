@@ -8,7 +8,6 @@ from workflow.models import TolaUser, TolaBookmarks
 from django.contrib.auth.models import User
 
 
-
 class RegistrationForm(UserChangeForm):
     """
     Form for registering a new account.
@@ -54,7 +53,6 @@ class NewUserRegistrationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(NewUserRegistrationForm, self).__init__(*args, **kwargs)
 
-
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_class = 'form-horizontal'
@@ -73,7 +71,9 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     """
     class Meta:
         model = TolaUser
-        fields = ['title', 'country', 'privacy_disclaimer_accepted']
+        fields = ['title','organization', 'privacy_disclaimer_accepted']
+
+    organization = forms.CharField()
 
     def __init__(self, *args, **kwargs):
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
@@ -89,7 +89,7 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     helper.html5_required = True
     helper.form_tag = False
     helper.layout = Layout(
-        Fieldset('Information','title', 'country'),
+        Fieldset('Information','title', 'organization'),
         Fieldset('Privacy Statement','privacy_disclaimer_accepted',),
 
     )

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from workflow.models import WorkflowLevel1, Country, Province, WorkflowLevel2, Sector, ProjectType, SiteProfile, Office
+from workflow.models import WorkflowLevel1, Country, AdminLevelOne, WorkflowLevel2, Sector, SiteProfile, Office
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
 from datetime import datetime
 
@@ -40,9 +40,9 @@ class DistributionTestCase(TestCase):
         new_country = Country.objects.create(country="testcountry")
         new_country.save()
         get_country = Country.objects.get(country="testcountry")
-        new_province = Province.objects.create(name="testprovince", country=get_country)
+        new_province = AdminLevelOne.objects.create(name="testprovince", country=get_country)
         new_province.save()
-        get_province = Province.objects.get(name="testprovince")
+        get_province = AdminLevelOne.objects.get(name="testprovince")
         new_office = Office.objects.create(name="testoffice", country=new_country)
         new_office.save()
         get_office = Office.objects.get(name="testoffice")

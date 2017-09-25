@@ -85,7 +85,7 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
             queryset = WorkflowLevel1.objects.all()
         else:
             user_level1 = getLevel1(request.user)
-            queryset = WorkflowLevel1.objects.all().filter(workflowlevel1__in=user_level1)
+            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     ordering_fields = ('country__country', 'name')
@@ -295,11 +295,11 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
             queryset = Objective.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Objective.objects.all().filter(workflowlevel1__country__organization=user_org)
+            queryset = Objective.objects.all().filter(workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel1__country__organization__id',)
+    filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
     queryset = Objective.objects.all()
@@ -506,7 +506,7 @@ class ProvinceViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = Province.objects.all()
+    queryset = AdminLevelOne.objects.all()
     serializer_class = ProvinceSerializer
 
 
@@ -515,7 +515,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = District.objects.all()
+    queryset = AdminLevelTwo.objects.all()
     serializer_class = DistrictSerializer
 
 
@@ -533,7 +533,7 @@ class VillageViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
-    queryset = Village.objects.all()
+    queryset = AdminLevelFour.objects.all()
     serializer_class = VillageSerializer
 
 
@@ -549,11 +549,11 @@ class ContactViewSet(viewsets.ModelViewSet):
         else:
             user_level1 = getLevel1(request.user)
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Contact.objects.all().filter(stakeholder__country__organization=user_org).filter(workflowlevel1__in=user_level1)
+            queryset = Contact.objects.all().filter(stakeholder__organization=user_org).filter(workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('name','stakeholder__country__organization__id','stakeholder')
+    filter_fields = ('name','stakeholder__organization__id','stakeholder')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
@@ -575,7 +575,7 @@ class DocumentationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel1__country__country','workflowlevel2__workflowlevel1__country__country','workflowlevel2__workflowlevel1__country__organization__id')
+    filter_fields = ('workflowlevel2__workflowlevel1__country__country','workflowlevel2__workflowlevel1__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Documentation.objects.all()
     serializer_class = DocumentationSerializer
@@ -599,11 +599,11 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         user_level1 = getLevel1(request.user)
-        queryset = CollectedData.objects.all().filter(workflowlevel1__in=user_level1)
+        queryset = CollectedData.objects.all().filter(indicator__workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name','indicator','indicator__workflowlevel1__country__organization__id')
+    filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name','indicator','indicator__workflowlevel1__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CollectedData.objects.all()
     serializer_class = CollectedDataSerializer
@@ -683,7 +683,7 @@ class ChecklistViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel2__name','workflowlevel2__workflowlevel1__country__organization__id','workflowlevel2__workflowlevel1__country__country','owner')
+    filter_fields = ('workflowlevel2__name','workflowlevel2__workflowlevel1__organization__id','workflowlevel2__workflowlevel1__country__country','owner')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
@@ -760,7 +760,7 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
 
 
 class WorkflowModulesViewSet(viewsets.ModelViewSet):
-    filter_fields = ('workflowlevel2__workflowlevel1__country__organization__id',)
+    filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowModules.objects.all()
     serializer_class = WorkflowModulesSerializer
@@ -883,7 +883,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel2__workflowlevel1__country__organization__id',)
+    filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Budget.objects.all()
     serializer_class = BudgetSerializer
@@ -915,7 +915,7 @@ class CodedFieldViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel2__workflowlevel1__country__organization__id',)
+    filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CodedField.objects.all()
     serializer_class = CodedFieldSerializer
@@ -937,7 +937,7 @@ class IssueRegisterViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel2__workflowlevel1__country__organization__id',)
+    filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = IssueRegister.objects.all()
     serializer_class = IssueRegisterSerializer
@@ -994,7 +994,7 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel1__country__organization__id',)
+    filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowTeam.objects.all()
     serializer_class = WorkflowTeamSerializer
@@ -1011,7 +1011,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel1__country__organization__id',)
+    filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Milestone.objects.all()
     serializer_class = MilestoneSerializer

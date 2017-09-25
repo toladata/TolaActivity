@@ -291,7 +291,7 @@ class ProvinceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Province
+        model = AdminLevelOne
         fields = '__all__'
 
 
@@ -299,7 +299,7 @@ class DistrictSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = District
+        model = AdminLevelTwo
         fields = '__all__'
 
 
@@ -315,7 +315,7 @@ class VillageSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Village
+        model = AdminLevelFour
         fields = '__all__'
 
 
