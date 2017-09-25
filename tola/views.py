@@ -8,7 +8,7 @@ from django.shortcuts import render
 from workflow.models import TolaUser,TolaSites, TolaBookmarks, FormGuidance, Organization
 from indicators.models import CollectedData, Indicator
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.db.models import Sum, Q, Count
 from tola.util import getCountry
 from django.contrib.auth.models import Group
@@ -22,20 +22,22 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer
 @login_required(login_url='/accounts/login/')
 def index(request, selected_countries=None, id=0, sector=0):
     getSite = TolaSites.objects.get(name="TolaData")
-
-    if getSite:
-        redirect = getSite.front_end_url
+    if request.user.is_authenticated():
+        if getSite:
+            template = getSite.front_end_url
+            return HttpResponseRedirect(template, content_type="application/x-www-form-urlencoded")
+        else:
+            template = "index.html"
+            return render(request, template)
     else:
-        redirect = "index.html"
-
-    return render(request, redirect)
+        return redirect('register')
 
 
 def register(request):
     """
     Register a new User profile using built in Django Users Model
     """
-    privacy = TolaSites.objects.get(id=1)
+    getSite = TolaSites.objects.get(name="TolaData")
     if request.method == 'POST':
         uf = NewUserRegistrationForm(request.POST)
         tf = NewTolaUserRegistrationForm(request.POST)
@@ -48,13 +50,17 @@ def register(request):
             tolauser.user = user
             tolauser.save()
             messages.error(request, 'Thank you, You have been registered as a new user.', fail_silently=False)
-            return HttpResponseRedirect("/")
+            if getSite:
+                template = getSite.front_end_url
+                return HttpResponseRedirect(template, content_type="application/x-www-form-urlencoded")
+            else:
+                return HttpResponseRedirect("/")
     else:
         uf = NewUserRegistrationForm()
         tf = NewTolaUserRegistrationForm()
 
     return render(request, "registration/register.html", {
-        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,'privacy':privacy
+        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,'privacy': getSite.privacy_disclaimer
     })
 
 
