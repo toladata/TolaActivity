@@ -5,8 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Sector,Country, TolaUser,TolaSites, \
-    TolaBookmarks, FormGuidance, ApprovalWorkflow, Organization
+from workflow.models import TolaUser,TolaSites, TolaBookmarks, FormGuidance, Organization
 from indicators.models import CollectedData, Indicator
 
 from django.shortcuts import get_object_or_404
@@ -22,8 +21,14 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer
 
 @login_required(login_url='/accounts/login/')
 def index(request, selected_countries=None, id=0, sector=0):
+    getSite = TolaSites.objects.get(name="TolaData")
 
-    return render(request, "index.html")
+    if getSite:
+        redirect = getSite.front_end_url
+    else:
+        redirect = "index.html"
+
+    return render(request, redirect)
 
 
 def register(request):
