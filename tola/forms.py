@@ -53,7 +53,6 @@ class NewUserRegistrationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(NewUserRegistrationForm, self).__init__(*args, **kwargs)
 
-
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_class = 'form-horizontal'
@@ -74,7 +73,7 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
         model = TolaUser
         fields = ['title','organization', 'privacy_disclaimer_accepted']
 
-    organization = forms.TextInput()
+    organization = forms.CharField()
 
     def __init__(self, *args, **kwargs):
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)

@@ -37,7 +37,13 @@ def register(request):
     """
     Register a new User profile using built in Django Users Model
     """
+    privacy = ""
     getSite = TolaSites.objects.get(name="TolaData")
+
+    if getSite:
+        template = getSite.front_end_url
+        privacy = getSite.privacy_disclaimer
+
     if request.method == 'POST':
         uf = NewUserRegistrationForm(request.POST)
         tf = NewTolaUserRegistrationForm(request.POST)
@@ -51,7 +57,6 @@ def register(request):
             tolauser.save()
             messages.error(request, 'Thank you, You have been registered as a new user.', fail_silently=False)
             if getSite:
-                template = getSite.front_end_url
                 return HttpResponseRedirect(template, content_type="application/x-www-form-urlencoded")
             else:
                 return HttpResponseRedirect("/")
@@ -59,8 +64,9 @@ def register(request):
         uf = NewUserRegistrationForm()
         tf = NewTolaUserRegistrationForm()
 
+
     return render(request, "registration/register.html", {
-        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,'privacy': getSite.privacy_disclaimer
+        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,'privacy': privacy
     })
 
 
