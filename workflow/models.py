@@ -404,33 +404,6 @@ class ProjectType(models.Model):
         ordering = ('name',)
 
 
-class Contact(models.Model):
-    name = models.CharField("Name", max_length=255, blank=True, null=True)
-    title = models.CharField("Title", max_length=255, blank=True, null=True)
-    city = models.CharField("City/Town", max_length=255, blank=True, null=True)
-    address = models.TextField("Address", max_length=255, blank=True, null=True)
-    email = models.CharField("Email", max_length=255, blank=True, null=True)
-    phone = models.CharField("Phone", max_length=255, blank=True, null=True)
-    country = models.ForeignKey(Country)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name', 'country','title')
-        verbose_name_plural = "Contact"
-
-    # onsave add create date or update edit date
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
-        super(Contact, self).save()
-
-    # displayed in admin templates
-    def __unicode__(self):
-        return self.name + ", " + self.title
-
-
 class FundCode(models.Model):
     name = models.CharField("Fund Code", max_length=255, blank=True)
     default_global = models.BooleanField(default=0)
@@ -910,6 +883,35 @@ class SiteProfile(models.Model):
     def __unicode__(self):
         new_name = self.name
         return new_name
+
+
+class Contact(models.Model):
+    name = models.CharField("Name", max_length=255, blank=True, null=True)
+    title = models.CharField("Title", max_length=255, blank=True, null=True)
+    city = models.CharField("City/Town", max_length=255, blank=True, null=True)
+    address = models.TextField("Address", max_length=255, blank=True, null=True)
+    email = models.CharField("Email", max_length=255, blank=True, null=True)
+    phone = models.CharField("Phone", max_length=255, blank=True, null=True)
+    country = models.ForeignKey(Country)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name', 'country','title')
+        verbose_name_plural = "Contact"
+
+    # onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Contact, self).save()
+
+    # displayed in admin templates
+    def __unicode__(self):
+        return self.name + ", " + self.title
 
 
 class StakeholderType(models.Model):
