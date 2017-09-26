@@ -71,9 +71,9 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     """
     class Meta:
         model = TolaUser
-        fields = ['title','organization', 'privacy_disclaimer_accepted']
+        fields = ['title', 'privacy_disclaimer_accepted']
 
-    organization = forms.CharField()
+    org = forms.CharField()
 
     def __init__(self, *args, **kwargs):
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
@@ -89,7 +89,7 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     helper.html5_required = True
     helper.form_tag = False
     helper.layout = Layout(
-        Fieldset('Information','title', 'organization'),
+        Fieldset('Information','title', 'org'),
         Fieldset('Privacy Statement','privacy_disclaimer_accepted',),
 
     )

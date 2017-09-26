@@ -38,7 +38,9 @@ def register(request):
     Register a new User profile using built in Django Users Model
     """
     privacy = ""
+    org_error = False
     getSite = TolaSites.objects.get(name="TolaData")
+    check_org = None
 
     if getSite:
         template = getSite.front_end_url
@@ -48,16 +50,41 @@ def register(request):
         uf = NewUserRegistrationForm(request.POST)
         tf = NewTolaUserRegistrationForm(request.POST)
 
-        if uf.is_valid() * tf.is_valid():
-            user = uf.save()
+        # Get the Org and check to make sure it's real
+        org = request.POST.get('org')
+        print org
+        try:
+            check_org = Organization.objects.get(name=org)
+        except Organization.DoesNotExist:
+            # bad org name so ask them to check again
+            messages.error(request, 'The Organization you entered was not found.', fail_silently=False)
+            # reset org
+            tf = NewTolaUserRegistrationForm()
+            return render(request, "registration/register.html", {
+                'userform': uf, 'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper, 'privacy': privacy,
+                'org_error': True
+            })
+
+        # copy new post and alter with new org value
+        new_post = request.POST.copy()
+        new_post['organization'] = check_org
+        # set new instances of form objects to validate
+        user_form = NewUserRegistrationForm(new_post)
+        tola_form = NewTolaUserRegistrationForm(new_post)
+
+        if user_form.is_valid() * tola_form.is_valid():
+
+            user = user_form.save()
             user.groups.add(Group.objects.get(name='ViewOnly'))
 
-            tolauser = tf.save(commit=False)
+            tolauser = tola_form.save(commit=False)
             tolauser.user = user
+            tolauser.organization = check_org
             tolauser.save()
             messages.error(request, 'Thank you, You have been registered as a new user.', fail_silently=False)
+            # register user and redirect them to front end or home page depending on config
             if getSite:
-                return HttpResponseRedirect(template, content_type="application/x-www-form-urlencoded")
+                return HttpResponseRedirect("/accounts/login/")
             else:
                 return HttpResponseRedirect("/")
     else:
@@ -66,7 +93,7 @@ def register(request):
 
 
     return render(request, "registration/register.html", {
-        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,'privacy': privacy
+        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,'privacy': privacy, 'org_error': False
     })
 
 
