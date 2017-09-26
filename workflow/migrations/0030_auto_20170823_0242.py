@@ -12,26 +12,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='historicalbudget',
-            name='history_change_reason',
-        ),
-        migrations.RemoveField(
-            model_name='historicalissueregister',
-            name='history_change_reason',
-        ),
-        migrations.RemoveField(
-            model_name='historicalriskregister',
-            name='history_change_reason',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsiteprofile',
-            name='history_change_reason',
-        ),
-        migrations.RemoveField(
-            model_name='historicalworkflowlevel2',
-            name='history_change_reason',
-        ),
         migrations.AlterField(
             model_name='historicalworkflowlevel2',
             name='status',
