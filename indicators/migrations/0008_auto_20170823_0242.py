@@ -12,12 +12,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='historicalcollecteddata',
-            name='history_change_reason',
-        ),
-        migrations.RemoveField(
-            model_name='historicalindicator',
-            name='history_change_reason',
-        ),
     ]
