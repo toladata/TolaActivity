@@ -401,6 +401,7 @@ class Indicator(models.Model): # TODO change back to SecurityModel
         return self.name
 
 
+
 class PeriodicTarget(models.Model):
     indicator = models.ForeignKey(Indicator, null=False, blank=False)
     period = models.CharField(max_length=255, null=True, blank=True)
@@ -454,7 +455,7 @@ class CollectedData(models.Model):
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+        self.edit_date = datetime.utcnow()
         super(CollectedData, self).save()
 
     #displayed in admin templates

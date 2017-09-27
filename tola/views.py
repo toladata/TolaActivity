@@ -21,12 +21,12 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer
 
 @login_required(login_url='/accounts/login/')
 def index(request, selected_countries=None, id=0, sector=0):
-    getSite = TolaSites.objects.get(name="TolaData")
     if request.user.is_authenticated():
-        if getSite:
+        try:
+            getSite = TolaSites.objects.get(name="TolaData")
             template = getSite.front_end_url
             return HttpResponseRedirect(template, content_type="application/x-www-form-urlencoded")
-        else:
+        except TolaSites.DoesNotExist as e:
             template = "index.html"
             return render(request, template)
     else:

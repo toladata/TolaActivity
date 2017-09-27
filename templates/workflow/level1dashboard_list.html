@@ -65,6 +65,12 @@
                       {% empty %}
                           <li class="list-group-item">No {{ WORKFLOWLEVEL2}} awaiting approval.</li>
                       {% endfor %}
+                    {% elif status == "new" %}
+                      {% for item in program.agreement.get_new %}
+                        {% include "workflow/program_projects_table.html" %}
+                      {% empty %}
+                          <li class="list-group-item">No New projects.</li>
+                      {% endfor %}
                     {% else %}
 
                       {% for item in workflowlevel1.workflowlevel2.all %}

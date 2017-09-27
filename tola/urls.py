@@ -61,7 +61,7 @@ router.register(r'contact', ContactViewSet)
 router.register(r'documentation', DocumentationViewSet)
 router.register(r'collecteddata', CollectedDataViewSet)
 router.register(r'periodictarget', PeriodicTargetViewSet)
-router.register(r'tolatable', TolaTableViewSet)
+router.register(r'tolatable', TolaTableViewSet, base_name='tolatable')
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
 router.register(r'dissagregationlabel', DisaggregationLabelViewSet)
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
@@ -86,7 +86,7 @@ router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pind
 
 from formlibrary.views import BinaryFieldViewSet, binary_test
 router.register(r'binary', BinaryFieldViewSet, base_name='binary')
-
+router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 urlpatterns = [ # rest framework
                 url(r'^check', views.check_view),
                 url(r'^dev_loader', views.dev_view),

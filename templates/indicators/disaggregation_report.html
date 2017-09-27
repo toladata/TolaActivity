@@ -133,6 +133,14 @@
             disrep_table.draw();
         }
 
+        function export_to_pdf() {
+            var programId = "{{ program_selected.id }}"; // $("#program_filter_value").data('programid');
+            if (programId != undefined && programId > 0) {
+                window.location.href = "/indicators/disrepprint/" + programId + "/";
+            } else {
+                alert("Select a program before exporting it to PDF");
+            }
+        }
     </script>
 
 {% endblock content %}

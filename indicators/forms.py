@@ -206,7 +206,6 @@ class CollectedDataForm(forms.ModelForm):
             ),
 
                 Div(
-                        "",
                         HTML("""<br/>
                                 {% if getDisaggregationLabelStandard and not getDisaggregationValueStandard %}
                                     <div class='panel panel-default'>

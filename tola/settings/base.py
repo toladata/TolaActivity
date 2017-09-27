@@ -119,7 +119,7 @@ SECRET_KEY = r"!0^+)=t*ly6ycprf9@kfw$6fsjd0xoh#pa*2erx1m*lp5k9ko7"
 ########## SITE CONFIGURATION
 # Hosts/domain names that are valid for this site
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'mercycorps.org']
 ########## END SITE CONFIGURATION
 
 
@@ -138,6 +138,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             normpath(join(SITE_ROOT, 'templates')),
+            normpath(join(SITE_ROOT, 'customdashboard','templates')),
         ],
         #'APP_DIRS': True,
         'OPTIONS': {
@@ -145,6 +146,8 @@ TEMPLATES = [
                 # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
                 # list if you haven't customized them:
                 'django.contrib.auth.context_processors.auth',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
@@ -154,6 +157,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'tola.processor.report_server_check',
                 'tola.processor.org_levels',
+                'tola.processor.google_analytics',
 
             ],
             'loaders':[
@@ -180,10 +184,13 @@ MIDDLEWARE= (
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     #'simple_history.middleware.HistoryRequestMiddleware',
     'tola.middleware.TolaSecurityMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware'
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 
@@ -270,11 +277,17 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 ####### AUTHENTICATION BAKEND CONFIG ##################
 # https://github.com/django/django/blob/master/django/contrib/auth/backends.py
 AUTHENTICATION_BACKENDS = (
+    #'social_core.backends.open_id.OpenIdAuth',
+    #'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth2',
+    #'social_core.backends.google.GoogleOAuth',
+    #'social_core.backends.twitter.TwitterOAuth',
+    #'social_core.backends.yahoo.YahooOpenId',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
     'oauth2_provider.backends.OAuth2Backend',
 )
+
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
@@ -289,13 +302,12 @@ SOCIAL_AUTH_PIPELINE = (
     'tola.util.user_to_tola',
 )
 
-
 ############ END OF AUTHENTICATION BACKEND ##############
 
 ########## Login redirect ###########
 LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -365,4 +377,7 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
     '127.0.0.1:4000',
 )
+
+GOOGLE_ANALYTICS_PROPERTY_ID = None # replaced in private settings file
+GOOGLE_ANALYTICS_DOMAIN = 'example.org' # replaced in private settings file
 
