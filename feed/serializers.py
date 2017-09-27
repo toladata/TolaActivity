@@ -14,11 +14,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
+
 class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Group
         fields = '__all__'
+
 
 class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
     workflow_key = serializers.UUIDField(read_only=True)
@@ -155,6 +157,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TolaUser
         fields = '__all__'
+        depth = 1
 
 
 class IndicatorTypeSerializer(serializers.HyperlinkedModelSerializer):
