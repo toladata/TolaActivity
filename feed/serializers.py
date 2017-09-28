@@ -29,7 +29,6 @@ class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
     status = serializers.SerializerMethodField()
 
     def get_status(self, obj):
-
         get_projects = WorkflowLevel2.objects.all().filter(workflowlevel1=obj)
         score = []
         red = ""
@@ -47,8 +46,6 @@ class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
             calculated_status = max(score)
         else:
             calculated_status = "green"
-
-        print calculated_status
 
         return calculated_status
 
