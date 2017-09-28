@@ -116,7 +116,6 @@ class Level1Dash(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-
         getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
         filtered_workflowlevel1 = None
         if int(self.kwargs['pk']) == 0:
@@ -420,7 +419,7 @@ class ProjectAgreementUpdate(UpdateView):
         else:
             form = WorkflowLevel2Form
 
-        return form_class(**self.get_form_kwargs())
+        return self.form_class(**self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(ProjectAgreementUpdate, self).get_context_data(**kwargs)

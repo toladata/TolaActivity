@@ -64,5 +64,8 @@
                 {% endfor %}
             </table>
         </div>
+        {% if GOOGLE_ANALYTICS_PROPERTY_ID %}
+            {% include "google_analytics.html" %}
+        {% endif %}
     </body>
 </html>
