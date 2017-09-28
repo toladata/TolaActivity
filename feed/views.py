@@ -989,8 +989,8 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = WorkflowTeam.objects.all()
         else:
-            user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = WorkflowTeam.objects.all().filter(organization=user_org)
+            user_level1 = getLevel1(request.user)
+            queryset = WorkflowTeam.objects.all().filter(workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
