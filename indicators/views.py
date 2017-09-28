@@ -32,7 +32,7 @@ import json
 import requests
 from export import IndicatorResource, CollectedDataResource
 # from reportlab.pdfgen import canvas
-from weasyprint import HTML, CSS
+# from weasyprint import HTML, CSS
 from django.template.loader import get_template
 from django.http import HttpResponse
 

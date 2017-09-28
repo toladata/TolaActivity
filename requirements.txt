@@ -50,4 +50,3 @@ elasticsearch
 gunicorn
 django-oauth-toolkit
 PyYAML==3.12
-WeasyPrint==0.39

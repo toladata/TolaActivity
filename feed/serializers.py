@@ -26,6 +26,31 @@ class GroupSerializer(serializers.ModelSerializer):
 class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
     workflow_key = serializers.UUIDField(read_only=True)
     id = serializers.ReadOnlyField()
+    status = serializers.SerializerMethodField()
+
+    def get_status(self, obj):
+
+        get_projects = WorkflowLevel2.objects.all().filter(workflowlevel1=obj)
+        score = []
+        red = ""
+        yellow = ""
+        green = ""
+
+        for project_status in get_projects:
+            if project_status.status == "red":
+                score.append(red)
+            if project_status.status == "yellow":
+                score.append(yellow)
+            if project_status.status == "green":
+                score.append(green)
+        if score:
+            calculated_status = max(score)
+        else:
+            calculated_status = "green"
+
+        print calculated_status
+
+        return calculated_status
 
     class Meta:
         model = WorkflowLevel1

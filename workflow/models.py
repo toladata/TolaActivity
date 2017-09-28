@@ -949,7 +949,7 @@ class Stakeholder(models.Model):
     role = models.CharField("Role", max_length=255, blank=True, null=True)
     contribution = models.CharField("Contribution", max_length=255, blank=True, null=True)
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, blank=True, null=True)
     organization = models.ForeignKey(Organization, default=1)
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     sectors = models.ManyToManyField(Sector, blank=True)
@@ -983,8 +983,10 @@ class Partner(models.Model):
     name = models.CharField("Partner/Organization Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(StakeholderType, blank=True, null=True, related_name="stakeholder_partner")
     contact = models.ManyToManyField(Contact, max_length=255, blank=True)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, blank=True, null=True)
     sectors = models.ManyToManyField(Sector, blank=True)
+    organization = models.ForeignKey(Organization, default=1)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -1101,7 +1103,7 @@ class WorkflowLevel2(models.Model):
         (STATUS_GREEN,"Green"),
         (STATUS_YELLOW,"Yellow"),
         (STATUS_ORANGE,"Orange"),
-        (STATUS_RED,"REd")
+        (STATUS_RED,"Red")
     )
 
     status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="green", blank=True)
