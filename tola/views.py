@@ -247,6 +247,13 @@ def logout_view(request):
     # Redirect to a success page.
     return HttpResponseRedirect("/")
 
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
+
 
 def check_view(request):
     return HttpResponse("Hostname "+request.get_host())

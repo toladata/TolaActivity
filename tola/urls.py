@@ -131,9 +131,9 @@ urlpatterns = [ # rest framework
                 url(r'^accounts/login/$', authviews.login, name='login'),
                 #url(r'^accounts/login/$', authviews.login, {'template_name': 'login.html'}, name="login") ,
 
-                url(r'^accounts/logout/$', authviews.LogoutView.as_view(), name='logout'),
+                url(r'^accounts/logout/$', authviews.logout, {'next_page': '/'}),
 
-                # accounts
+                  # accounts
                 url(r'^accounts/profile/$', views.profile, name='profile'),
                 url(r'^accounts/register/$', views.register, name='register'),
 
