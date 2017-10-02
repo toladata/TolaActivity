@@ -28,11 +28,6 @@ class Migration(migrations.Migration):
             name='status',
             field=models.CharField(blank=True, choices=[('green', 'Green'), ('yellow', 'Yellow'), ('orange', 'Orange'), ('red', 'Red')], default='green', max_length=50),
         ),
-        migrations.AddField(
-            model_name='historicalworkflowlevel2',
-            name='history_change_reason',
-            field=models.CharField(blank=True, null=True, max_length="255"),
-        ),
         migrations.AlterField(
             model_name='partner',
             name='country',
