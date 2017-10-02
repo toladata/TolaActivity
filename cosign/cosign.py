@@ -66,7 +66,7 @@ class CosignBackend(RemoteUserBackend):
         etc.
         """
         create_params = {
-            'created': datetime.datetime.utcnow().replace(tzinfo=utc),
+            'create_date': datetime.datetime.utcnow().replace(tzinfo=utc),
             'country': ldap_info['country_name']
             }
         country, new = Country.objects.get_or_create(
