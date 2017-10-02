@@ -1,7 +1,4 @@
 from base import *
-
-
-########## IN-MEMORY TEST DATABASE
 import os
 
 try:
