@@ -634,7 +634,7 @@ class TolaTableViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(table_id=table_id)
         return queryset
 
-    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__workflowlevel1__name','country__organization__id')
+    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__workflowlevel1__name','organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = TolaTableSerializer
     pagination_class = StandardResultsSetPagination
