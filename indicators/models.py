@@ -12,7 +12,6 @@ from decimal import Decimal
 class TolaTable(models.Model):
     name = models.CharField(max_length=255, blank=True)
     table_id = models.IntegerField(blank=True, null=True)
-    table_url = models.CharField(blank=True, null=True)
     owner = models.ForeignKey('auth.User')
     remote_owner = models.CharField(max_length=255, blank=True)
     country = models.ManyToManyField(Country, blank=True)
@@ -20,8 +19,8 @@ class TolaTable(models.Model):
     organization = models.ForeignKey(Organization, default=1)
     url = models.CharField(max_length=255, blank=True)
     unique_count = models.IntegerField(blank=True, null=True)
-    count_column_name_1 = models.CharField(blank=True, null=True)
-    count_column_name_2 = models.CharField(blank=True, null=True)
+    count_column_name_1 = models.CharField(max_length=255,blank=True, null=True)
+    count_column_name_2 = models.CharField(max_length=255,blank=True, null=True)
     column_sum = models.IntegerField(default=0 ,blank=True, null=True)
     column_avg = models.IntegerField(default=0, blank=True, null=True)
     refresh_interval = models.IntegerField(default=0, blank=True, null=True)
