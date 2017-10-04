@@ -17,6 +17,7 @@ services:
     depends_on:
       - db
     environment:
+      - DJANGO_SETTINGS_MODULE=tola.settings.dev
       - TOLA_DEBUG=True
       - TOLA_ERROR_LOG=error.log
       - TOLA_HOSTNAME=localhost
