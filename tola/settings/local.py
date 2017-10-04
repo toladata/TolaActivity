@@ -15,13 +15,13 @@ try:
 except KeyError:
     # Fallback for tests without environment variables configured
     # Depends on os.environ for correct functionality
-    print("Writing to LOCAL")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': 'tolaactivity',
         }
     }
+    print("DATABASES: {}".format(DATABASES))
 
 # Hosts/domain names that are valid for this site
 if os.getenv('TOLA_HOSTNAME') is not None:

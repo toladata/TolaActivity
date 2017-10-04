@@ -190,7 +190,6 @@ MIDDLEWARE= (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware'
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 

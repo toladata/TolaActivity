@@ -13,7 +13,11 @@ files.
 
 ## Configuration
 
-Copy the tola/settings/local-sample.py to local.py and modify for your environment.
+Location of settings:
+
+* Development: `tola/settings/dev.py`
+* Test runner: `tola/settings/test.py`
+* Staging/Production: `tola/settings/local.py`
 
 
 ## Deploy changes in activity servers
