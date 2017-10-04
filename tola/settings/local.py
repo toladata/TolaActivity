@@ -21,7 +21,7 @@ except KeyError:
             'NAME': 'tolaactivity',
         }
     }
-    print("Writing to LOCAL")
+    print("DATABASES: {}".format(DATABASES))
 
 # Hosts/domain names that are valid for this site
 if os.getenv('TOLA_HOSTNAME') is not None:
