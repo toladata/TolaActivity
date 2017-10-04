@@ -377,7 +377,7 @@ class CollectedDataSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class TolaTableSerializer(serializers.HyperlinkedModelSerializer):
+class TolaTableSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
