@@ -49,22 +49,22 @@ To run the tests:
 docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py test
 ```
 
-or if you initialized already a container:
-
-```bash
-docker-compose -f docker-compose-dev.yml exec web python manage.py test
-```
-
 To run bash:
 
 ```bash
-docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web bash
+docker -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web bash
 ```
 
 or if you initialized already a container:
 
 ```bash
-docker-compose -f docker-compose-dev.yml exec web bash
+docker exec -it web bash
+```
+
+To connect to the database when the container is running:
+
+```bash
+docker exec -it postgres psql -U root tola_activity
 ```
 
 ## Deploy locally using virtualenv
