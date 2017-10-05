@@ -53,8 +53,10 @@ class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
         return calculated_status
 
     def get_difference(self, obj):
-        return obj.budget - obj.actuals
-
+        if obj.budget:
+            return obj.budget - obj.actuals
+        else:
+            return 0
     class Meta:
         model = WorkflowLevel1
         fields = '__all__'

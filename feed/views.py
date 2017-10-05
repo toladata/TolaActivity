@@ -87,10 +87,10 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
             queryset = WorkflowLevel1.objects.all().annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
         elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = WorkflowLevel1.objects.all().filter(organization=user_org)
+            queryset = WorkflowLevel1.objects.all().filter(organization=user_org).annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
         else:
             user_level1 = getLevel1(request.user)
-            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1)
+            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1).annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -118,7 +118,7 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     filter_fields = ('country__country', 'name', 'level1_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
-    queryset = WorkflowLevel1.objects.all()
+    queryset = WorkflowLevel1.objects.all().annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
     serializer_class = WorkflowLevel1Serializer
 
 
