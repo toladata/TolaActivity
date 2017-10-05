@@ -626,7 +626,7 @@ class WorkflowLevel1Sector(models.Model):
 
 class WorkflowTeam(models.Model):
     workflow_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="auth_approving")
-    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True,blank=True)
     salary = models.CharField(max_length=255,null=True,blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
