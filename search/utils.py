@@ -13,7 +13,10 @@ import os
 
 
 class ElasticsearchIndexer:
-    es = Elasticsearch([settings.ELASTICSEARCH_URL])
+    if settings.ELASTICSEARCH_URL is not None:
+        es = Elasticsearch([settings.ELASTICSEARCH_URL])
+    else:
+        es = None
 
     def index_indicator(self, i):
         data = self.get_field_data(i)
