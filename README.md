@@ -37,7 +37,7 @@ docker-compose -f docker-compose-dev.yml build
 To run the webserver:
 
 ```bash
-docker-compose -f docker-compose-dev.yml up #-d for detached
+docker-compose -f docker-compose-dev.yml up # -d for detached
 ```
 
 User: `admin`
@@ -46,7 +46,7 @@ Password: `admin`.
 To run the tests:
 
 ```bash
-docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py test
+docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py test # --keepdb to run second time faster
 ```
 
 To run bash:
