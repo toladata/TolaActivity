@@ -79,3 +79,5 @@ CACHES = {
     }
 }
 ########## END CACHE CONFIGURATION
+
+ELASTICSEARCH_URL = None

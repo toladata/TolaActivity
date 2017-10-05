@@ -17,11 +17,14 @@ from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError
 import os
 import json
+from django.conf import settings
 
-if os.getenv('ELASTICSEARCH_URL') is not None:
-    es = Elasticsearch([os.getenv('ELASTICSEARCH_URL')])
+
+if settings.ELASTICSEARCH_URL is not None:
+    es = Elasticsearch([settings.ELASTICSEARCH_URL])
 else:
     es = None
+
 
 @login_required(login_url='/accounts/login/')
 def search_index(request):
