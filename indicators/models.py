@@ -310,6 +310,8 @@ class IndicatorManager(models.Manager):
         return super(IndicatorManager, self).get_queryset().prefetch_related('workflowlevel1').select_related('sector')
 
 from tola.security import SecurityModel
+from search.utils import ElasticsearchIndexer
+
 class Indicator(models.Model): # TODO change back to SecurityModel
     indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
@@ -363,7 +365,16 @@ class Indicator(models.Model): # TODO change back to SecurityModel
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
+
+        ei = ElasticsearchIndexer()
+        ei.index_indicator(self)
         super(Indicator, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        ei = ElasticsearchIndexer()
+        ei.delete_indicator(self)
+
+        super(Indicator, self).delete(*args, **kwargs)
 
     @property
     def just_created(self):
