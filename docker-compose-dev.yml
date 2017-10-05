@@ -1,9 +1,19 @@
 version: "2"
 
 services:
-  db:
+  postgres:
     container_name: postgres
-    image: postgres
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: tola_activity
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - /var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    restart: always
+
   web:
     build:
       context: .
@@ -15,12 +25,18 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - postgres
     environment:
       - DJANGO_SETTINGS_MODULE=tola.settings.dev
       - TOLA_DEBUG=True
       - TOLA_ERROR_LOG=error.log
       - TOLA_HOSTNAME=localhost
+      - TOLA_DB_ENGINE=django.db.backends.postgresql_psycopg2
+      - TOLA_DB_NAME=tola_activity
+      - TOLA_DB_USER=root
+      - TOLA_DB_PASS=root
+      - TOLA_DB_HOST=postgres
+      - TOLA_DB_PORT=5432
       - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=445847194486-gl2v6ud6ll65vf06vbjaslqqgejad61k.apps.googleusercontent.com
       - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=qAAdNMQy77Vwqgj4YgOu20f7
       - SOCIAL_AUTH_LOGIN_REDIRECT_URL=http://dev-v2.tolaactivity.app.tola.io/
