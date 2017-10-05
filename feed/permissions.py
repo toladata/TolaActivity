@@ -55,7 +55,7 @@ class UserIsTeamOrOrgAdmin(permissions.BasePermission):
             return request.user.is_authenticated() and (obj in user_level1
                                                 or 'OrgAdmin' in request.user.groups.values_list('name', flat=True))
         elif view.action == 'destroy':
-            return request.user.is_admin() and 'OrgAdmin' in request.user.groups.values_list('name', flat=True)
+            return request.user.is_staff() and 'OrgAdmin' in request.user.groups.values_list('name', flat=True)
         else:
             return False
 
