@@ -649,10 +649,6 @@ class WorkflowTeam(models.Model):
         self.edit_date = datetime.now()
         super(WorkflowTeam, self).save()
 
-    @property
-    def workflowlevel1s(self):
-        return ', '.join([x.name for x in self.workflowlevel1.all()])
-
     # displayed in admin templates
     def __unicode__(self):
         return self.workflow_user.user.first_name + " " + self.workflow_user.user.last_name
