@@ -108,7 +108,7 @@ class WorkflowLevel1Admin(admin.ModelAdmin):
 
 
 class WorkflowTeamAdmin(admin.ModelAdmin):
-    list_display = ('workflow_user','budget_limit','workflowlevel1s','country')
+    list_display = ('workflow_user','budget_limit','workflowlevel1','country')
     display = 'Workflow Team'
     search_fields = ('workflow_user__user__username','workflowlevel1__name', 'workflow_user__user__last_name', 'country__country')
     list_filter = ('create_date','country')

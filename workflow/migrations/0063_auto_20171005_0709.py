@@ -13,7 +13,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-
+        migrations.RemoveField(
+            model_name='workflowteam',
+            name='workflowlevel1',
+        ),
         migrations.AddField(
             model_name='workflowteam',
             name='workflowlevel1',
