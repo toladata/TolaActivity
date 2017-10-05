@@ -79,8 +79,3 @@ CACHES = {
     }
 }
 ########## END CACHE CONFIGURATION
-
-
-
-
-

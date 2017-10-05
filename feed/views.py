@@ -16,9 +16,8 @@ import django_filters
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
-
-from workflow.mixins import APIDefaultsMixin
+from rest_framework import status
+from .permissions import UserIsOwnerOrAdmin, UserIsTeamOrOrgAdmin
 
 
 class LargeResultsSetPagination(PageNumberPagination):
@@ -55,6 +54,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for listing or retrieving users.
     """
+    permission_classes = (UserIsOwnerOrAdmin,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -63,6 +63,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for listing or retrieving users.
     """
+    permission_classes = (UserIsOwnerOrAdmin,)
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
@@ -75,6 +76,8 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     limit to users logged in country permissions
     """
 
+    permission_classes = (UserIsTeamOrOrgAdmin,)
+
     # Remove CSRF request verification for posts to this API
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -83,11 +86,36 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     def list(self, request):
         if request.user.is_superuser:
             queryset = WorkflowLevel1.objects.all()
+        elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = WorkflowLevel1.objects.all().filter(organization=user_org)
         else:
             user_level1 = getLevel1(request.user)
             queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def delete(self, request, pk):
+        workflowlevel1 = self.get_object(pk)
+
+        if request.user.is_superuser:
+            workflowlevel1.delete()
+        elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
+            workflowlevel1.delete()
+        elif 'ProgAdmin' in request.user.groups.values_list('name', flat=True):
+            workflowlevel1.delete()
+        else:
+            user_level1 = getLevel1(request.user)
+            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1).filter(id=workflowlevel1.id)
+            if queryset:
+                workflowlevel1.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
     ordering_fields = ('country__country', 'name')
     filter_fields = ('country__country','name','level1_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -991,6 +1019,9 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
     def list(self, request):
         if request.user.is_superuser:
             queryset = WorkflowTeam.objects.all()
+        elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
+            user_org = TolaUser.objects.get(user=request.user).organization
+            queryset = WorkflowTeam.objects.all().filter(organization=user_org)
         else:
             user_level1 = getLevel1(request.user)
             queryset = WorkflowTeam.objects.all().filter(workflowlevel1__in=user_level1)

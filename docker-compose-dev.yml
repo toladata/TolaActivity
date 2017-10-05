@@ -1,0 +1,26 @@
+version: "2"
+
+services:
+  db:
+    container_name: postgres
+    image: postgres
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: web
+    image: web
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_SETTINGS_MODULE=tola.settings.dev
+      - TOLA_DEBUG=True
+      - TOLA_ERROR_LOG=error.log
+      - TOLA_HOSTNAME=localhost
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=445847194486-gl2v6ud6ll65vf06vbjaslqqgejad61k.apps.googleusercontent.com
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=qAAdNMQy77Vwqgj4YgOu20f7
+      - SOCIAL_AUTH_LOGIN_REDIRECT_URL=http://dev-v2.tolaactivity.app.tola.io/

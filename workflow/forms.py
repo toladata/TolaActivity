@@ -918,7 +918,7 @@ class BenchmarkForm(forms.ModelForm):
             self.helper.layout = Layout(
                 Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date',
                 Field('actual_start_date', css_class="act_datepicker", id="actual_start_date_id"),
-                 Field('actual_end_date', css_class="act_datepicker", id="actual_end_date_id"),'budget','cost','workflowlevel2',
+                 Field('actual_end_date', css_class="act_datepicker", id="actual_end_date_id"),'budget','cost','workflowlevel2', 'level3_uuid'
             )
         else:
             self.helper.layout = Layout(
@@ -931,6 +931,7 @@ class BenchmarkForm(forms.ModelForm):
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
         self.fields['workflowlevel2'].widget = HiddenInput()
+        self.fields['level3_uuid'].widget = HiddenInput()
 
 
 class ChecklistItemForm(forms.ModelForm):

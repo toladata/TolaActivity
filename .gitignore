@@ -38,6 +38,5 @@ error.log
 *.secret
 *.secret.yml
 assets/
-local-dev.py
 
 docker-compose.yml
