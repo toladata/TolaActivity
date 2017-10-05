@@ -265,6 +265,14 @@ class FrequencyViewSet(viewsets.ModelViewSet):
     `update` and `destroy` actions.
     """
 
+    def list(self, request):
+        organization = TolaUser.objects.get(user=request.user).organization
+        queryset = Frequency.objects.filter(organization=organization)
+        serializer = FrequencySerializer(instance=queryset,
+                                         context={'request': request},
+                                         many=True)
+        return Response(serializer.data)
+
     queryset = Frequency.objects.all()
     serializer_class = FrequencySerializer
 
