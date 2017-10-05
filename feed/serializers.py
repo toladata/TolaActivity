@@ -27,6 +27,9 @@ class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
     workflow_key = serializers.UUIDField(read_only=True)
     id = serializers.ReadOnlyField()
     status = serializers.SerializerMethodField()
+    budget = serializers.ReadOnlyField()
+    actuals = serializers.ReadOnlyField()
+    difference = serializers.SerializerMethodField()
 
     def get_status(self, obj):
         get_projects = WorkflowLevel2.objects.all().filter(workflowlevel1=obj)
@@ -48,6 +51,9 @@ class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
             calculated_status = "green"
 
         return calculated_status
+
+    def get_difference(self, obj):
+        return obj.budget - obj.actuals
 
     class Meta:
         model = WorkflowLevel1
