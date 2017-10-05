@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib import admin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.sites.models import Site
 from decimal import Decimal
 from datetime import datetime
@@ -631,7 +631,7 @@ class WorkflowTeam(models.Model):
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=255,null=True,blank=True)
-    role = models.TextField(null=True, blank=True)
+    role = models.ForeignKey(Group, null=True, blank=True)
     budget_limit = models.IntegerField(null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
     partner_org = models.ForeignKey(Organization, null=True, blank=True)
