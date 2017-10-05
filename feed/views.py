@@ -54,7 +54,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for listing or retrieving users.
     """
-    permission_classes = (UserIsOwnerOrAdmin,)
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -63,7 +62,6 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     A ViewSet for listing or retrieving users.
     """
-    permission_classes = (UserIsOwnerOrAdmin,)
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
