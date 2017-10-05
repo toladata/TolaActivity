@@ -5,7 +5,8 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from workflow.models import TolaUser,TolaSites, TolaBookmarks, FormGuidance, Organization
+from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Sector,Country, TolaUser,TolaSites, \
+    TolaBookmarks, FormGuidance, ApprovalWorkflow, Organization
 from indicators.models import CollectedData, Indicator
 
 from django.shortcuts import get_object_or_404, redirect
@@ -17,7 +18,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 import json
-from feed.serializers import TolaUserSerializer, OrganizationSerializer
+from feed.serializers import TolaUserSerializer, OrganizationSerializer, CountrySerializer
+from django.conf import settings
+import requests
 
 @login_required(login_url='/accounts/login/')
 def index(request, selected_countries=None, id=0, sector=0):
@@ -319,5 +322,23 @@ class OAuth_User_Endpoint(ProtectedResourceView):
         if len(tola_user) == 1:
             body["tola_user"] = TolaUserSerializer(instance=tola_user[0], context={'request': request}).data
             body["organization"] = OrganizationSerializer(instance=tola_user[0].organization, context={'request': request}).data
+            body["country"] = CountrySerializer(instance=tola_user[0].country, context={'request': request}).data
 
         return HttpResponse(json.dumps(body))
+
+
+class TolaTrackSiloProxy(ProtectedResourceView):
+    def get(self, request, *args, **kwargs):
+        url = settings.TOLA_TRACK_URL+'api/silo'
+        auth_headers = {"content-type": "application/json", 'Authorization': 'Token '+settings.TOLA_TRACK_TOKEN}
+
+        tola_user = TolaUser.objects.get(user=request.user)
+        print(tola_user.tola_user_uuid)
+
+        res = requests.get(url+'?user_uuid='+tola_user.tola_user_uuid, headers=auth_headers)
+        print(res.status_code, res.content)
+
+        if res.status_code == 200:
+            return HttpResponse(res.content)
+        else:
+            raise Exception()

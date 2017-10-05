@@ -135,3 +135,7 @@ LOGGING = {
         },
     },
 }
+
+TOLA_TRACK_URL = os.getenv('TOLA_TRACK_URL')
+TOLA_TRACK_TOKEN = os.getenv('TOLA_TRACK_TOKEN')
+
