@@ -83,7 +83,7 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         if request.user.is_superuser:
-            queryset = WorkflowLevel1.objects.all()
+            queryset = WorkflowLevel1.objects.all().annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
         elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = WorkflowLevel1.objects.all().filter(organization=user_org)
