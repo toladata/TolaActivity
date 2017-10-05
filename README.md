@@ -37,7 +37,7 @@ docker-compose -f docker-compose-dev.yml build
 To run the webserver:
 
 ```bash
-docker-compose -f docker-compose-dev.yml up
+docker-compose -f docker-compose-dev.yml up #-d for detached
 ```
 
 User: `admin`
