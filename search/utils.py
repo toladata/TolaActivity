@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from indicators.models import *
-from workflow.models import *
 from search.models import *
 from django.db.models.fields.related import ManyToManyField, RelatedField, ManyToManyRel, ManyToOneRel, ForeignKey
 
