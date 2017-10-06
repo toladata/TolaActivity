@@ -13,7 +13,11 @@ files.
 
 ## Configuration
 
-Copy the tola/settings/local-sample.py to local.py and modify for your environment.
+Location of settings:
+
+* Development: `tola/settings/dev.py`
+* Test runner: `tola/settings/test.py`
+* Staging/Production: `tola/settings/local.py`
 
 
 ## Deploy changes in activity servers
@@ -33,7 +37,7 @@ docker-compose -f docker-compose-dev.yml build
 To run the webserver:
 
 ```bash
-docker-compose -f docker-compose-dev.yml up
+docker-compose -f docker-compose-dev.yml up #-d for detached
 ```
 
 User: `admin`
@@ -45,10 +49,10 @@ To run the tests:
 docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py test
 ```
 
-or if you initialized already a container:
+To run the webserver with pdb support:
 
 ```bash
-docker-compose -f docker-compose-dev.yml exec web python manage.py test
+docker-compose -f docker-compose-dev.yml run --rm --service-ports web
 ```
 
 To run bash:
@@ -60,7 +64,13 @@ docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm we
 or if you initialized already a container:
 
 ```bash
-docker-compose -f docker-compose-dev.yml exec web bash
+docker exec -it web bash
+```
+
+To connect to the database when the container is running:
+
+```bash
+docker exec -it postgres psql -U root tola_activity
 ```
 
 ## Deploy locally using virtualenv

@@ -24,7 +24,7 @@ class IndicatorTestCase(TestCase):
         new_indicator_type = IndicatorType.objects.create(indicator_type="testtype")
         new_indicator_type.save()
         get_indicator_type = IndicatorType.objects.get(indicator_type="testtype")
-        new_disaggregation = DisaggregationType.objects.create(disaggregation_type="disagg")
+        new_disaggregation = DisaggregationType.objects.create(organization=get_organization,disaggregation_type="disagg")
         new_disaggregation.save()
         get_disaggregation = DisaggregationType.objects.get(disaggregation_type="disagg")
         new_frequency = Frequency.objects.create(frequency="newfreq")
@@ -45,11 +45,11 @@ class IndicatorTestCase(TestCase):
         new_collected.save()
 
     def test_indicator_exists(self):
-        """Check for Indicator object"""
+        #Check for Indicator object
         get_indicator = Indicator.objects.get(name="testindicator")
         self.assertEqual(Indicator.objects.filter(id=get_indicator.id).count(), 1)
 
     def test_collected_exists(self):
-        """Check for CollectedData object"""
+        #Check for CollectedData object
         get_collected = CollectedData.objects.get(description="somevaluecollected")
         self.assertEqual(CollectedData.objects.filter(id=get_collected.id).count(), 1)

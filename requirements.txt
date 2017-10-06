@@ -15,7 +15,6 @@ django-rest-swagger==2.1.0
 djangorestframework==3.6.3
 django-filter==1.0.4
 gdata==2.0.18
-google-api-python-client==1.5.1
 httplib2==0.10.3
 jdcal==1.3
 macholib==1.8
@@ -23,7 +22,6 @@ oauth2client==2.2.0
 openpyxl==2.4.8
 Pillow==2.5.1
 python-dateutil==2.6.0
-Twisted==13.2.0
 requests==2.18.1
 django-ckeditor==5.2.2
 django-wysiwyg==0.8.0
@@ -33,12 +31,11 @@ docutils==0.12
 simplejson==3.11.1
 python-logstash==0.4.6
 django-simple-history==1.9.0
-requests-oauthlib==0.8.0
 pytz==2017.2
-django_admin_report
+django_admin_report==0.4
 pyyaml==3.12
-psycopg2
-django-guardian
+psycopg2>=2.7,<=2.8
+django-guardian==1.4.9
 et-xmlfile==1.0.1
 odfpy==1.3.5
 tablib==0.11.5
@@ -46,7 +43,7 @@ unicodecsv==0.14.1
 xlrd==1.0.0
 xlwt==1.2.0
 django-cors-headers==2.1.0
-elasticsearch
-gunicorn
-django-oauth-toolkit
+elasticsearch==5.4.0
+gunicorn==19.7.1
+django-oauth-toolkit==1.0.0
 PyYAML==3.12

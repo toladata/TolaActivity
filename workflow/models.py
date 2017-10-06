@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.contrib import admin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.sites.models import Site
 from decimal import Decimal
 from datetime import datetime
@@ -19,6 +19,7 @@ from django.contrib.sessions.models import Session
 from django.db import migrations
 import requests
 import json
+from search.utils import ElasticsearchIndexer
 
 try:
     from django.utils import timezone
@@ -196,8 +197,8 @@ class TolaUser(models.Model):
     organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
     country = models.ForeignKey(Country, blank=True, null=True)
     countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
-    tables_api_token = models.CharField(blank=True, null=True, max_length=255)
-    activity_api_token = models.CharField(blank=True, null=True, max_length=255)
+    tables_api_token = models.CharField(blank=True, null=True, max_length=255)      # Todo delete maybe?
+    activity_api_token = models.CharField(blank=True, null=True, max_length=255)    # Todo delete maybe?
     privacy_disclaimer_accepted = models.BooleanField(default=False)
     filter = JSONField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -583,7 +584,17 @@ class WorkflowLevel1(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
+
         super(WorkflowLevel1, self).save()
+
+        ei = ElasticsearchIndexer()
+        ei.index_workflowlevel1(self)
+
+    def delete(self, *args, **kwargs):
+        super(WorkflowLevel1, self).delete(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.delete_workflows(self.level1_uuid)
 
     @property
     def countries(self):
@@ -626,12 +637,12 @@ class WorkflowLevel1Sector(models.Model):
 
 class WorkflowTeam(models.Model):
     workflow_user = models.ForeignKey(TolaUser,help_text='User', blank=True, null=True, related_name="auth_approving")
-    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1,null=True,blank=True)
     salary = models.CharField(max_length=255,null=True,blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=255,null=True,blank=True)
-    role = models.TextField(null=True, blank=True)
+    role = models.ForeignKey(Group, null=True, blank=True)
     budget_limit = models.IntegerField(null=True, blank=True)
     country = models.ForeignKey("Country", null=True, blank=True)
     partner_org = models.ForeignKey(Organization, null=True, blank=True)
@@ -648,10 +659,6 @@ class WorkflowTeam(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(WorkflowTeam, self).save()
-
-    @property
-    def workflowlevel1s(self):
-        return ', '.join([x.name for x in self.workflowlevel1.all()])
 
     # displayed in admin templates
     def __unicode__(self):
@@ -1144,7 +1151,16 @@ class WorkflowLevel2(models.Model):
         if self.agency_cost == None:
             self.agency_cost = Decimal("0.00")
 
-        super(WorkflowLevel2, self).save()
+        super(WorkflowLevel2, self).save(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.index_workflowlevel2(self)
+
+    def delete(self, *args, **kwargs):
+        super(WorkflowLevel2, self).delete(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.delete_workflows(self.level2_uuid)
 
     @property
     def project_name_clean(self):

@@ -17,7 +17,7 @@ from django.contrib import admin
 admin.autodiscover()
 admin.site.site_header = 'TolaActivity administration'
 
-#REST FRAMEWORK
+# REST FRAMEWORK
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'groups', GroupViewSet)
@@ -82,7 +82,7 @@ router.register(r'portfolio', PortfolioViewSet)
 router.register(r'sectorrelated', SectorRelatedViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 
-#router.register(r'search', SearchView, base_name='search')
+# router.register(r'search', SearchView, base_name='search')
 
 from formlibrary.views import BinaryFieldViewSet, binary_test
 router.register(r'binary', BinaryFieldViewSet, base_name='binary')
@@ -133,7 +133,7 @@ urlpatterns = [ # rest framework
 
                 url(r'^accounts/logout/$', authviews.logout, {'next_page': '/'}, name='logout'),
 
-                  # accounts
+                # accounts
                 url(r'^accounts/profile/$', views.profile, name='profile'),
                 url(r'^accounts/register/$', views.register, name='register'),
 
@@ -152,6 +152,8 @@ urlpatterns = [ # rest framework
 
                 url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
                 url(r'^oauthuser', OAuth_User_Endpoint.as_view()),
+                url(r'^tolatrack/silo', TolaTrackSiloProxy.as_view()),
+                url(r'^tolatrackdata/silo/(?P<silo_id>\w+)/$', TolaTrackSiloDataProxy.as_view()),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

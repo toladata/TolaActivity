@@ -16,9 +16,8 @@ import django_filters
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-
-
-from workflow.mixins import APIDefaultsMixin
+from rest_framework import status
+from .permissions import UserIsOwnerOrAdmin, UserIsTeamOrOrgAdmin
 
 
 class LargeResultsSetPagination(PageNumberPagination):
@@ -44,9 +43,10 @@ class ProgramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        queryset = WorkflowLevel1.objects.prefetch_related('indicator_set', \
-            'indicator_set__indicator_type',\
-            'indicator_set__sector', 'indicator_set__level', \
+        queryset = WorkflowLevel1.objects.prefetch_related(
+            'indicator_set',
+            'indicator_set__indicator_type',
+            'indicator_set__sector', 'indicator_set__level',
             'indicator_set__collecteddata_set').all()
         return queryset
 
@@ -75,6 +75,8 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     limit to users logged in country permissions
     """
 
+    permission_classes = (UserIsTeamOrOrgAdmin,)
+
     # Remove CSRF request verification for posts to this API
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -82,20 +84,41 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         if request.user.is_superuser:
-            queryset = WorkflowLevel1.objects.all()
+            queryset = WorkflowLevel1.objects.all().annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
         elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = WorkflowLevel1.objects.all().filter(organization=user_org)
+            queryset = WorkflowLevel1.objects.all().filter(organization=user_org).annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
         else:
             user_level1 = getLevel1(request.user)
-            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1)
+            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1).annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def delete(self, request, pk):
+        workflowlevel1 = self.get_object(pk)
+
+        if request.user.is_superuser:
+            workflowlevel1.delete()
+        elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
+            workflowlevel1.delete()
+        elif 'ProgAdmin' in request.user.groups.values_list('name', flat=True):
+            workflowlevel1.delete()
+        else:
+            user_level1 = getLevel1(request.user)
+            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1).filter(id=workflowlevel1.id)
+            if queryset:
+                workflowlevel1.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     ordering_fields = ('country__country', 'name')
-    filter_fields = ('country__country','name','level1_uuid')
+    filter_fields = ('country__country', 'name', 'level1_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
-    queryset = WorkflowLevel1.objects.all()
+    queryset = WorkflowLevel1.objects.all().annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
     serializer_class = WorkflowLevel1Serializer
 
 
@@ -158,7 +181,7 @@ class OfficeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country','country__organization__id')
+    filter_fields = ('country__country', 'country__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Office.objects.all()
     serializer_class = OfficeSerializer
@@ -220,14 +243,15 @@ class IndicatorViewSet(viewsets.ModelViewSet):
             queryset = Indicator.objects.all().annotate(actuals=Sum('collecteddata__achieved'))
         else:
             user_level1 = getLevel1(request.user)
-            queryset = Indicator.objects.all().filter(workflowlevel1__in=user_level1).annotate(actuals=Sum('collecteddata__achieved'))
+            queryset = Indicator.objects.all().filter(workflowlevel1__in=user_level1).annotate(
+                actuals=Sum('collecteddata__achieved'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def get_queryset(self):
         return Indicator.objects.annotate(actuals=Sum('collecteddata__achieved'))
 
-    filter_fields = ('workflowlevel1__country__country','workflowlevel1__name','indicator_uuid')
+    filter_fields = ('workflowlevel1__country__country', 'workflowlevel1__name', 'indicator_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
@@ -238,6 +262,14 @@ class FrequencyViewSet(viewsets.ModelViewSet):
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
     """
+
+    def list(self, request):
+        organization = TolaUser.objects.get(user=request.user).organization
+        queryset = Frequency.objects.filter(organization=organization)
+        serializer = FrequencySerializer(instance=queryset,
+                                         context={'request': request},
+                                         many=True)
+        return Response(serializer.data)
 
     queryset = Frequency.objects.all()
     serializer_class = FrequencySerializer
@@ -250,7 +282,7 @@ class TolaUserViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         queryset = TolaUser.objects.all()
-        serializer = TolaUserSerializer(instance=queryset,context={'request': request},many=True)
+        serializer = TolaUserSerializer(instance=queryset,context={'request': request}, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
