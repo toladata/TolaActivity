@@ -35,8 +35,13 @@ def search_index(request):
 @api_view(['GET'])
 def search(request, index, term):
     if request.method == 'GET' and es is not None:
-        if index == 'all':
-            index = 'workflows,indicators'
+        index = index.lower().replace('_', '')      # replace _ that _all cannot be accessed directly
+
+        allowed_indices = ['workflows','indicators','collected_data']
+        if index.lower() == 'all':
+            index = 'workflows,indicators,collected_data'
+        elif not index in allowed_indices:
+            raise Exception("Index not allowed to access")
 
         # TODO verify access permissions
         """
