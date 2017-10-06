@@ -345,7 +345,8 @@ class TolaTrackSiloProxy(ProtectedResourceView):
 
 
 class TolaTrackSiloDataProxy(ProtectedResourceView):
-    def getUrl(self, silo_id):
+
+    def get(self, request, silo_id, *args, **kwargs):
         token = TolaSites.objects.get(site_id=1)
         if token.tola_tables_token:
             headers = {'content-type': 'application/json',
@@ -353,11 +354,9 @@ class TolaTrackSiloDataProxy(ProtectedResourceView):
         else:
             headers = {'content-type': 'application/json'}
             print "Token Not Found"
-        print silo_id
-        url = token.tola_tables_url+'api/silo/' + silo_id + '/data'
 
+        url = token.tola_tables_url+'api/silo/' + silo_id + '/data'
         res = requests.get(url, headers=headers)
-        print(res.status_code, res.content)
 
         if res.status_code == 200:
             return HttpResponse(res.content)
