@@ -15,7 +15,6 @@ django-rest-swagger==2.1.0
 djangorestframework==3.6.3
 django-filter==1.0.4
 gdata==2.0.18
-google-api-python-client==1.5.1
 httplib2==0.10.3
 jdcal==1.3
 macholib==1.8
