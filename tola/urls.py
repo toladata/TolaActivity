@@ -153,7 +153,7 @@ urlpatterns = [ # rest framework
                 url(r'^oauth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
                 url(r'^oauthuser', OAuth_User_Endpoint.as_view()),
                 url(r'^tolatrack/silo', TolaTrackSiloProxy.as_view()),
-                url(r'^tolatrack/silodata/(?P<silo_id>\w+)/$', TolaTrackSiloProxy.as_view()),
+                url(r'^tolatrack/silodata/(?P<silo_id>\w+)/$', TolaTrackSiloDataProxy.as_view()),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

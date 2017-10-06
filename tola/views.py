@@ -344,7 +344,7 @@ class TolaTrackSiloProxy(ProtectedResourceView):
             raise Exception()
 
 
-class TolaTrackSiloProxy(ProtectedResourceView):
+class TolaTrackSiloDataProxy(ProtectedResourceView):
     def get(self, request,silo_id):
         url = settings.TOLA_TRACK_URL+'api/silo/' + silo_id + '/data/'
         auth_headers = {"content-type": "application/json", 'Authorization': 'Token '+settings.TOLA_TRACK_TOKEN}
