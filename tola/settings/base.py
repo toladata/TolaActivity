@@ -4,8 +4,6 @@ from os.path import abspath, basename, dirname, join, normpath
 from sys import path
 
 ########## PATH CONFIGURATION
-#BASE DIR
-#BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Absolute filesystem path to the Django project directory:
 DJANGO_ROOT = dirname(dirname(abspath(__file__)))
@@ -135,7 +133,6 @@ TEMPLATES = [
             normpath(join(SITE_ROOT, 'templates')),
             normpath(join(SITE_ROOT, 'customdashboard','templates')),
         ],
-        #'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
@@ -179,10 +176,9 @@ MIDDLEWARE= (
     'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    #'simple_history.middleware.HistoryRequestMiddleware',
-    'tola.middleware.TolaSecurityMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+
+    'tola.middleware.TolaSecurityMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware'
 )
@@ -227,7 +223,6 @@ DJANGO_APPS = (
     'admin_report',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    #'social.apps.django_app.default',
 )
 
 THIRD_PARTY_APPS = (
@@ -268,15 +263,10 @@ LOCAL_APPS = (
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 ########## END APP CONFIGURATION
 
-####### AUTHENTICATION BAKEND CONFIG ##################
+####### AUTHENTICATION BACKEND CONFIG ##################
 # https://github.com/django/django/blob/master/django/contrib/auth/backends.py
 AUTHENTICATION_BACKENDS = (
-    #'social_core.backends.open_id.OpenIdAuth',
-    #'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth2',
-    #'social_core.backends.google.GoogleOAuth',
-    #'social_core.backends.twitter.TwitterOAuth',
-    #'social_core.backends.yahoo.YahooOpenId',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
     'oauth2_provider.backends.OAuth2Backend',
@@ -347,12 +337,12 @@ WSGI_APPLICATION = '%s.wsgi.application' % SITE_NAME
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-#Report Builder
+# Report Builder
 # REPORT_BUILDER_INCLUDE = []
 # REPORT_BUILDER_EXCLUDE = ['user','groups','read','template','silo','readtoken']
 # REPORT_BUILDER_ASYNC_REPORT = False
 
-#wysiwyg settings
+# wysiwyg settings
 DJANGO_WYSIWYG_FLAVOR = "ckeditor"
 CKEDITOR_UPLOAD_PATH = "media/uploads/"
 
@@ -372,6 +362,5 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:4000',
 )
 
-GOOGLE_ANALYTICS_PROPERTY_ID = None # replaced in private settings file
-GOOGLE_ANALYTICS_DOMAIN = 'example.org' # replaced in private settings file
-
+GOOGLE_ANALYTICS_PROPERTY_ID = None  # replaced in private settings file
+GOOGLE_ANALYTICS_DOMAIN = 'example.org'  # replaced in private settings file
