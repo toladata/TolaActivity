@@ -1,4 +1,4 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, BaseDetailView
 from django.views.generic.list import ListView
 from tola.forms import RegistrationForm, NewUserRegistrationForm, NewTolaUserRegistrationForm, BookmarkForm
 from django.contrib import messages
@@ -345,14 +345,18 @@ class TolaTrackSiloProxy(ProtectedResourceView):
 
 
 class TolaTrackSiloDataProxy(ProtectedResourceView):
-    def get(self, request,silo_id):
-        url = settings.TOLA_TRACK_URL+'api/silo/' + silo_id + '/data'
-        auth_headers = {"content-type": "application/json", 'Authorization': 'Token '+settings.TOLA_TRACK_TOKEN}
+    def getUrl(self, silo_id):
+        token = TolaSites.objects.get(site_id=1)
+        if token.tola_tables_token:
+            headers = {'content-type': 'application/json',
+                   'Authorization': 'Token ' + token.tola_tables_token }
+        else:
+            headers = {'content-type': 'application/json'}
+            print "Token Not Found"
+        print silo_id
+        url = token.tola_tables_url+'api/silo/' + silo_id + '/data'
 
-        tola_user = TolaUser.objects.get(user=request.user)
-        print(tola_user.tola_user_uuid)
-
-        res = requests.get(url, headers=auth_headers)
+        res = requests.get(url, headers=headers)
         print(res.status_code, res.content)
 
         if res.status_code == 200:
