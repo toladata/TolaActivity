@@ -17,11 +17,14 @@ from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError
 import os
 import json
+from django.conf import settings
 
-if os.getenv('ELASTICSEARCH_URL') is not None:
-    es = Elasticsearch([os.getenv('ELASTICSEARCH_URL')])
+
+if settings.ELASTICSEARCH_URL is not None:
+    es = Elasticsearch([settings.ELASTICSEARCH_URL])
 else:
     es = None
+
 
 @login_required(login_url='/accounts/login/')
 def search_index(request):
@@ -32,8 +35,13 @@ def search_index(request):
 @api_view(['GET'])
 def search(request, index, term):
     if request.method == 'GET' and es is not None:
-        if index == 'all':
-            index = 'workflows,indicators'
+        index = index.lower().replace('_', '')      # replace _ that _all cannot be accessed directly
+
+        allowed_indices = ['workflows','indicators','collected_data']
+        if index.lower() == 'all':
+            index = 'workflows,indicators,collected_data'
+        elif not index in allowed_indices:
+            raise Exception("Index not allowed to access")
 
         # TODO verify access permissions
         """
