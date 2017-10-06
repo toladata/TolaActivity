@@ -22,7 +22,6 @@ oauth2client==2.2.0
 openpyxl==2.4.8
 Pillow==2.5.1
 python-dateutil==2.6.0
-Twisted==13.2.0
 requests==2.18.1
 django-ckeditor==5.2.2
 django-wysiwyg==0.8.0
