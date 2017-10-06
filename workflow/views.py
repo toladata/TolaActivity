@@ -116,7 +116,7 @@ class Level1Dash(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getworkflowlevel1s = WorkflowLevel1.objects.filter(country__in=countries).distinct()
         filtered_workflowlevel1 = None
         if int(self.kwargs['pk']) == 0:
             getDashboard = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_workflowlevel2=Count('workflowlevel2'))
