@@ -17,6 +17,9 @@ class ElasticsearchIndexer:
         es = None
 
     def index_indicator(self, i):
+        if self.es is None:
+            return
+
         data = self.get_field_data(i)
 
         # aggregate related models
@@ -29,12 +32,17 @@ class ElasticsearchIndexer:
             print(i, "Error")   # Todo write to error log
 
     def delete_indicator(self, id):
+        if self.es is None:
+            return
+
         try:
             self.es.delete(index="indicators", id=id, doc_type='indicator')
         except RequestError:
             print(id, "Error")   # Todo write to error log
 
     def index_workflowlevel1(self, wf):
+        if self.es is None:
+            return
         data = self.get_field_data(wf)
 
         # aggregate related models
@@ -51,6 +59,9 @@ class ElasticsearchIndexer:
             print(wf, "Error")  # Todo write to error log
 
     def index_workflowlevel2(self, wf):
+        if self.es is None:
+            return
+
         # get model field data
         data = self.get_field_data(wf)
 
@@ -69,12 +80,18 @@ class ElasticsearchIndexer:
             print(wf, "Error")
 
     def delete_workflows(self, id):
+        if self.es is None:
+            return
+
         try:
             self.es.delete(index="workflows", id=id, doc_type='workflow')
         except RequestError:
             print(id, "Error")   # Todo write to error log
 
     def index_collecteddata(self, d):
+        if self.es is None:
+            return
+
         # get model field data
         data = self.get_field_data(d)
 
@@ -89,12 +106,18 @@ class ElasticsearchIndexer:
             print(d, "Error")   # Todo write to error log
 
     def delete_collecteddata(self, id):
+        if self.es is None:
+            return
+
         try:
             self.es.delete(index="collected_data", id=id, doc_type='data_collection')
         except RequestError:
             print(id, "Error")   # Todo write to error log
 
     def get_field_data(self, obj):
+        if self.es is None:
+            return
+
         """
         Returns all field data that is stored in a related model
         :param obj: the object to retrieve data from
