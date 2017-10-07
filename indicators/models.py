@@ -366,15 +366,16 @@ class Indicator(models.Model): # TODO change back to SecurityModel
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
 
-        ei = ElasticsearchIndexer()
-        ei.index_indicator(self)
         super(Indicator, self).save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
         ei = ElasticsearchIndexer()
-        ei.delete_indicator(self)
+        ei.index_indicator(self)
 
+    def delete(self, *args, **kwargs):
         super(Indicator, self).delete(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.delete_indicator(self.id)
 
     @property
     def just_created(self):
@@ -472,7 +473,16 @@ class CollectedData(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.utcnow()
-        super(CollectedData, self).save()
+        super(CollectedData, self).save(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.index_collecteddata(self)
+
+    def delete(self, *args, **kwargs):
+        super(CollectedData, self).delete(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.delete_collecteddata(self.data_uuid)
 
     #displayed in admin templates
     def __unicode__(self):

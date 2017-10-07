@@ -5,9 +5,7 @@ from indicators.models import Indicator, IndicatorType, DisaggregationType, Freq
 from workflow.models import WorkflowLevel1, Country, Organization
 from django.contrib.auth.models import User
 
-"""
-Indicator tests are failing because of elastic update not available in test mode.
-TODO add workaround to test indicators without elastic
+
 class IndicatorTestCase(TestCase):
 
     fixtures = ['fixtures/001_organization.json','fixtures/config/sites.json']
@@ -55,4 +53,3 @@ class IndicatorTestCase(TestCase):
         #Check for CollectedData object
         get_collected = CollectedData.objects.get(description="somevaluecollected")
         self.assertEqual(CollectedData.objects.filter(id=get_collected.id).count(), 1)
-"""
