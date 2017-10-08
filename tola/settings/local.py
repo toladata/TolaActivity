@@ -47,11 +47,6 @@ MANAGERS = ADMINS
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True if os.getenv('TOLA_DEBUG') == 'True' else False
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
-#TEMPLATE_DEBUG = DEBUG
-########## END DEBUG CONFIGURATION
-
-
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 ########## END EMAIL CONFIGURATION

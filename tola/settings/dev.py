@@ -1,8 +1,6 @@
 from os.path import join, normpath
 from local import *
 
-TEMPLATE_DEBUG = DEBUG
-
 DEV_APPS = (
     'debug_toolbar',
 )
