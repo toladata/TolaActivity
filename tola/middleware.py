@@ -27,8 +27,6 @@ class TolaSecurityMiddleware(object):
         # print "middleware init"   # debug
 
     def __call__(self, request):
-        print "middleware called" # debug
-
         # Add user object to thread-dependent storage
         _current_users[current_thread()] = request.user
 
