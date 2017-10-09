@@ -34,7 +34,7 @@ Build first the images:
 docker-compose -f docker-compose-dev.yml build
 ```
 
-To run the webserver:
+To run the webserver (go to 127.0.0.1):
 
 ```bash
 docker-compose -f docker-compose-dev.yml up # -d for detached
