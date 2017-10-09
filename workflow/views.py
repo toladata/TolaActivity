@@ -67,7 +67,7 @@ class ProjectDash(ListView):
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries)
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries)
         project_id = int(self.kwargs['pk'])
 
         if project_id == 0:
