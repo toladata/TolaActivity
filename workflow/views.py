@@ -531,7 +531,7 @@ class ProjectAgreementUpdate(UpdateView):
             emailGroup(country=country,group=form.instance.approved_by,link=link,subject=subject,message=message)
         else:
             messages.success(self.request, 'Success, form updated!')
-        form.save()
+        # form.save()
         # Not in Use
         # save formset from context
         # context = self.get_context_data()
