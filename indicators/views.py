@@ -1317,7 +1317,7 @@ class TVAReport(TemplateView):
             .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))\
             #.values('actuals', 'number', 'name', 'indicator_type__indicator_type')
         """
-        context['program'] = program
+        context['program'] = workflowlevel1
         context['export_to_pdf_url'] = True
         return context
 
