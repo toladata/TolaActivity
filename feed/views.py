@@ -714,7 +714,7 @@ class ChecklistViewSet(viewsets.ModelViewSet):
             queryset = Checklist.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Checklist.objects.all().filter(workflowlevel1__organization=user_org)
+            queryset = Checklist.objects.all().filter(workflowlevel2__workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -830,7 +830,7 @@ class ApprovalTypeViewSet(viewsets.ModelViewSet):
             queryset = ApprovalType.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = ApprovalType.objects.all().filter(workflowlevel1__organization=user_org)
+            queryset = ApprovalType.objects.all().filter(organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -913,7 +913,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
             queryset = Budget.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Budget.objects.all().filter(organization=user_org)
+            queryset = Budget.objects.all().filter(workflowlevel2__workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
