@@ -721,7 +721,10 @@ class ChecklistViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel2__name','workflowlevel2__workflowlevel1__organization__id','workflowlevel2__workflowlevel1__country__country','owner')
+    filter_fields = ('workflowlevel2__name',
+                     'workflowlevel2__workflowlevel1__organization__id',
+                     'workflowlevel2__workflowlevel1__country__country',
+                     'owner')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
