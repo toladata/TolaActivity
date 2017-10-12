@@ -64,7 +64,7 @@ class IndicatorList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
         getIndicators = Indicator.objects.all().filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True).order_by("-number")
         getIndicatorTypes = IndicatorType.objects.all()
         workflowlevel1 = self.kwargs['workflowlevel1']
@@ -100,7 +100,7 @@ class IndicatorList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).filter(**q).order_by('name').annotate(indicator_count=Count('indicator'))
+        indicators = WorkflowLevel1.objects.all().filter(country__in=countries).filter(**q).order_by('name').annotate(indicator_count=Count('indicator'))
         return render(request, self.template_name, {'getPrograms': getPrograms,'getIndicators':getIndicators,
                                                     'workflowlevel1_name':workflowlevel1_name, 'indicator_name':indicator_name,
                                                     'type_name':type_name, 'workflowlevel1':workflowlevel1, 'indicator': indicator, 'type': type,
@@ -141,7 +141,7 @@ def indicator_create(request, id=0):
     getCountries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter( country__in=countries).distinct()
     getServices = ExternalService.objects.all()
     workflowlevel1_id = id
 
@@ -807,7 +807,7 @@ def indicator_report(request, workflowlevel1=0, indicator=0, type=0):
     """
     countries = getCountry(request.user)
 
-    getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter( country__in=countries).distinct()
     getIndicatorTypes = IndicatorType.objects.all()
 
     filters = {}
@@ -848,7 +848,7 @@ class IndicatorReport(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
 
         getIndicatorTypes = IndicatorType.objects.all()
 
@@ -906,7 +906,7 @@ def WorkflowLevel1IndicatorReport(request, workflowlevel1=0):
     """
     workflowlevel1 = int(workflowlevel1)
     countries = getCountry(request.user)
-    getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
     getIndicators = Indicator.objects.all().filter(workflowlevel1__id=workflowlevel1).select_related().order_by('level', 'number')
     getProgram = WorkflowLevel1.objects.get(id=workflowlevel1)
 
@@ -942,7 +942,7 @@ def indicator_data_report(request, id=0, workflowlevel1=0, type=0):
     :return:
     """
     countries = getCountry(request.user)
-    getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
     getIndicators = Indicator.objects.select_related().filter(workflowlevel1__country__in=countries)
     getTypes = IndicatorType.objects.all()
     indicator_name = None
@@ -1146,7 +1146,7 @@ class DisaggregationReportMixin(object):
         context = super(DisaggregationReportMixin, self).get_context_data(**kwargs)
 
         countries = getCountry(self.request.user)
-        programs = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        programs = WorkflowLevel1.objects.filter(country__in=countries).distinct()
         indicators = Indicator.objects.filter(workflowlevel1__country__in=countries)
 
         program_selected = WorkflowLevel1.objects.filter(id=kwargs.get('workflowlevel1', None)).first()
@@ -1308,7 +1308,7 @@ class TVAReport(TemplateView):
             #.annotate(actuals=Sum('collecteddata__disaggregation_value__value'))
         context['data'] = indicators
         context['getIndicators'] = Indicator.objects.filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True)
-        context['getPrograms'] = WorkflowLevel1.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        context['getPrograms'] = WorkflowLevel1.objects.filter(country__in=countries).distinct()
         context['getIndicatorTypes'] = IndicatorType.objects.all()
 
         """
@@ -1339,7 +1339,7 @@ class CollectedDataList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
         getIndicators = Indicator.objects.all().filter(workflowlevel1__country__in=countries).exclude(
             collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
