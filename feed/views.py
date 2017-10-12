@@ -181,7 +181,7 @@ class OfficeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'country__organization__id')
+    filter_fields = ('country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Office.objects.all()
     serializer_class = OfficeSerializer
@@ -200,7 +200,7 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
             queryset = SiteProfile.objects.all()
         else:
             user_level1 = getLevel1(request.user)
-            queryset = SiteProfile.objects.all().filter(workflowlevel1__in=user_level1)
+            queryset = SiteProfile.objects.all().filter(workflwolevel2__workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
