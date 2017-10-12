@@ -217,15 +217,12 @@ class CountryViewSet(viewsets.ModelViewSet):
     """
 
     def list(self, request):
-        if request.user.is_superuser:
-            queryset = Country.objects.all()
-        else:
-            user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Country.objects.all().filter(organization=user_org)
+
+        queryset = Country.objects.all()
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
@@ -738,7 +735,6 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
@@ -1008,7 +1004,7 @@ class AwardViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         if request.user.is_superuser:
-            queryset = Milestone.objects.all()
+            queryset = Award.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = Award.objects.all().filter(organization=user_org)
