@@ -6,7 +6,7 @@ pipeline:
       - pip install -r requirements.txt
       - python manage.py test
     when:
-      event: [push, pull_request, tag]
+      event: [push, tag]
   build-docker-image:
     image: plugins/docker
     insecure: true

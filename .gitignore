@@ -38,5 +38,7 @@ error.log
 *.secret
 *.secret.yml
 assets/
+src/
 
 docker-compose.yml
+

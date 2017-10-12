@@ -177,11 +177,11 @@ class OfficeViewSet(viewsets.ModelViewSet):
             queryset = Office.objects.all()
         else:
             user_level1 = getLevel1(request.user)
-            queryset = Office.objects.all().filter(workflowlevel1__in=user_level1)
+            queryset = Office.objects.all()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__country', 'country__organization__id')
+    filter_fields = ('country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Office.objects.all()
     serializer_class = OfficeSerializer
@@ -200,7 +200,7 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
             queryset = SiteProfile.objects.all()
         else:
             user_level1 = getLevel1(request.user)
-            queryset = SiteProfile.objects.all().filter(workflowlevel1__in=user_level1)
+            queryset = SiteProfile.objects.all().filter(workflowlevel2__workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -217,15 +217,12 @@ class CountryViewSet(viewsets.ModelViewSet):
     """
 
     def list(self, request):
-        if request.user.is_superuser:
-            queryset = Country.objects.all()
-        else:
-            user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Country.objects.all().filter(organization=user_org)
+
+        queryset = Country.objects.all()
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
@@ -717,7 +714,7 @@ class ChecklistViewSet(viewsets.ModelViewSet):
             queryset = Checklist.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Checklist.objects.all().filter(workflowlevel1__organization=user_org)
+            queryset = Checklist.objects.all().filter(workflowlevel2__workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -738,7 +735,6 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
@@ -834,7 +830,7 @@ class ApprovalTypeViewSet(viewsets.ModelViewSet):
             queryset = ApprovalType.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = ApprovalType.objects.all().filter(workflowlevel1__organization=user_org)
+            queryset = ApprovalType.objects.all().filter(organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -917,7 +913,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
             queryset = Budget.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Budget.objects.all().filter(organization=user_org)
+            queryset = Budget.objects.all().filter(workflowlevel2__workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -1008,7 +1004,7 @@ class AwardViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         if request.user.is_superuser:
-            queryset = Milestone.objects.all()
+            queryset = Award.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = Award.objects.all().filter(organization=user_org)
