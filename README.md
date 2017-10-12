@@ -34,7 +34,7 @@ Build first the images:
 docker-compose -f docker-compose-dev.yml build
 ```
 
-To run the webserver:
+To run the webserver (go to 127.0.0.1):
 
 ```bash
 docker-compose -f docker-compose-dev.yml up # -d for detached
@@ -119,3 +119,23 @@ Run the server:
 python manage.py runserver 0.0.0.0:8000
 ```
 
+## Development notes
+
+### Setup a HTTPS development webserver to run Microsoft log in
+
+As Microsoft requires HTTPS endpoints to be set in their Application
+Registration Portal (https://apps.dev.microsoft.com), the easiest way to do it
+is registering an account in ngrok.com, installing the software and running
+both ngrok and Django development webserver at the same time.
+
+With the URL displayed by ngrok, set it up in the Microsoft Application
+Registration Portal like this:
+
+* *Platforms >> Web >> Redirect URLs*: `https://<ID>.ngrok.io/complete/microsoft-graph`
+* *Platforms >> Web >> Logout URL*: `https://<ID>.ngrok.io/accounts/logout`
+
+Then set up the following environment variables in docker-compose-dev.yml:
+
+* `SOCIAL_AUTH_LOGIN_REDIRECT_URL=https://<ID>.ngrok.io`
+* `SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL=https://<ID>.ngrok.io/complete/microsoft-graph`
+* `TOLA_HOSTNAME=127.0.0.1,localhost,<ID>.ngrok.io`
