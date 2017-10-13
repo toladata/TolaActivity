@@ -34,11 +34,6 @@ MANAGERS = ADMINS
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
-TEMPLATE_DEBUG = DEBUG
-########## END DEBUG CONFIGURATION
-
-
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -80,7 +75,4 @@ CACHES = {
 }
 ########## END CACHE CONFIGURATION
 
-
-
-
-
+ELASTICSEARCH_URL = None

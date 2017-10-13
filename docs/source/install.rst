@@ -3,7 +3,7 @@ Install
 http://toladata.github.io/TolaActivity
 
 TolaActivity extends the functionality of TolaData to include a set of forms and
-reports for managing project activities for a Program.  It includes workflow for approving
+reports for managing project activities for a WorkflowLevel1.  It includes workflow for approving
 and completing projects as well as sharing the output data.
 
 TolaActivity functionality http:www.github.com/toladata/TolaAcitivty is intended to allow importing

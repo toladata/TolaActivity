@@ -14,7 +14,7 @@ import unicodedata
 import sys
 import urllib2
 from datetime import date
-from workflow.models import Country, Program
+from workflow.models import Country, WorkflowLevel1
 import urllib
 
 def run():
@@ -82,7 +82,7 @@ def getAllData(url, type, program_country):
             sys.stderr.write('ERROR: %s\n' % str(err))
         pass
 
-        latest = Program.objects.latest('id')
+        latest = WorkflowLevel1.objects.latest('id')
 
         query2 = "INSERT INTO activitydb_program_country (country_id,program_id) VALUES (%s,%s)" % (program_country, latest.id)
 

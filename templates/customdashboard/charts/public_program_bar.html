@@ -43,7 +43,7 @@ var expenditure_options = {
                 strokeColor: "rgba(220,220,220,0.8)",
                 highlightFill: "rgba(220,220,220,0.75)",
                 highlightStroke: "rgba(220,220,220,1)",
-                data : [{% for project in getProjects|slice:"10" %} {{ project.actual_budget }},{% endfor %}]
+                data : [{% for project in getProjects|slice:"10" %} {{ project.actual_cost }},{% endfor %}]
             },
             {
                 label: "Actuals",

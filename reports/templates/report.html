@@ -6,16 +6,16 @@
     <h3 id="report_type"></h3>
     <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
-    <script src="{{ STATIC_URL }}publicdashboard/js/vendor/Chart.min.js"></script>
+    <script src="{{ STATIC_URL }}js/Chart.bundle.min.js"></script>
     <script type="text/javascript">
 
     $(document).ready(function() {
         $("#countries").select2({ placeholder: "Country", allowClear: true });
         $("#id_sector").select2({placeholder: "Sector", allowClear: true,});
-        $("#id_program").select2({placeholder: "Program", allowClear: true,});
+        $("#id_program").select2({placeholder: "{{ WORKFLOWLEVEL1 }}", allowClear: true,});
         $('.dateinput').datepicker({  dateFormat: 'yyyy-mm-dd', });
 
-        //Show the program table
+        //Show the workflowlevel1 table
         function show_program_table(program_data,filters) {
             myRecords = JSON.parse(program_data);
             //First destroy any old version of the table to refresh anew
@@ -35,8 +35,8 @@
                     ]
             } );
 
-            // provide export url and filters for program
-            $('#export').click(function(){ do_export(filters,"program"); });
+            // provide export url and filters for workflowlevel1
+            $('#export').click(function(){ do_export(filters,"{{ WORKFLOWLEVEL1 }}"); });
 
         }
 
@@ -49,7 +49,7 @@
                 $('#data_table').empty();
             };
 
-            //go back to a program report if clicks
+            //go back to a workflowlevel1 report if clicks
             $("#id_search_form_reset_btn").on('click',function(){
                 program_report(filters);
             });
@@ -58,9 +58,9 @@
                 retrieve: true,
                 data: indicator_records,
                 columns: [
-                    { title: "Program", data: "program__name",
+                    { title: "{{ WORKFLOWLEVEL1 }}", data: "workflowlevel1__name",
                                 "mRender": function (data, type, row) {
-                                    return '<a id="program_report" name=' + row.program__id + '>' + data + '</a>';
+                                    return '<a id="program_report" name=' + row.workflowlevel1__id + '>' + data + '</a>';
                                 }
                     },
                     { title: "Indicator", data: "name"},
@@ -93,7 +93,7 @@
                 $('#data_table').empty();
             };
 
-            //go back to a program report if clicks
+            //go back to a workflowlevel1 report if clicks
             $("#id_search_form_reset_btn").on('click',function(){
                 program_report(filters);
             });
@@ -102,7 +102,7 @@
                 retrieve: true,
                 data: collecteddata_records,
                 columns: [
-                    { title: "Program", data: "indicator__program__name"},
+                    { title: "{{ WORKFLOWLEVEL1 }}", data: "indicator__workflowlevel1__name"},
                     { title: "Indicator Num.", data: "indicator__number"},
                     { title: "Indicator", data: "indicator__name"},
                     { title: "Targets", data: "targeted"},
@@ -129,13 +129,12 @@
                 retrieve: true,
                 data: project_records,
                 columns: [
-                    { title: "Program", data: "program__name"},
-                    { title: "Project", data: "project_name"},
-                    { title: "Activity Code", data: "activity_code"},
-                    { title: "Type", data: "project_type__name"},
+                    { title: "{{ WORKFLOWLEVEL1 }}", data: "workflowlevel1__name"},
+                    { title: "{{ WORKFLOWLEVEL2 }}", data: "name"},
+                    { title: "Type", data: "type__name"},
                     { title: "Sector", data: "sector__sector"},
                     { title: "Budget", data: "total_estimated_budget"},
-                    { title: "Status",data: "approval"}
+                    { title: "Status",data: "status"}
                     ]
             } );
 
@@ -144,57 +143,43 @@
 
         }
 
-        function show_program_charts(project_count,approval_count,approved_count,inprogress_count,rejected_count,nostatus_count,filters) {
+        function show_program_charts(project_count,approval_count,approved_count,inprogress_count,nostatus_count,filters) {
             document.getElementById('doughnut1-header').innerHTML = "Project Status";
             //render project_status in a doughnut chart
             var status_options = {
                 // single tooltip
-                tooltipTemplate: "<%=label + ' Projects' %>",
-                percentageInnerCutout : 60,
-                tooltipFontSize: 10,
+                cutoutPercentage : 60,
             };
-            var status_data = [
-                {
-                value: approved_count,
-                color:"#637b85",
-                label: "Approved " + approved_count
-                },
-                {
-                value : approval_count,
-                color : "#2c9c69",
-                label: "Waiting " + approval_count
-                },
-                {
-                value : rejected_count,
-                color : "#dbba34",
-                label: "Rejected " + rejected_count
-                },
-                {
-                value : inprogress_count,
-                color : "#c62f29",
-                label: "In Progress " + inprogress_count
-                },
-                {
-                value : nostatus_count,
-                color : "#ccffcc",
-                label: "New " + nostatus_count
-                }
-            ];
+            var status_data = {
+                datasets: [{
+                    data: [approved_count, approval_count, inprogress_count,nostatus_count],
+                    backgroundColor: ['#cc474d', '#bfbfbf','#1696a6','#d5b251']
+                }],
+
+                // These labels appear in the legend and in the tooltips when hovering different arcs
+                labels: [
+                    "Open " + nostatus_count,
+                    "Waiting " + approval_count,
+                    "In Progress " + inprogress_count,
+                    "New " + nostatus_count,
+                ]
+            };
             var ctx = document.getElementById("doughnut1").getContext("2d");
-            var statusChart = new Chart(ctx).Doughnut(status_data,status_options);
-            document.getElementById('doughnut1-legend').innerHTML = statusChart.generateLegend();
+            var statusChart = new Chart(ctx, {type: 'doughnut',data: status_data,options: status_options});
+
 
             $("#doughnut1").click(
                 function(evt){
-                    var activePoints = statusChart.getSegmentsAtEvent(evt);
+                    var activePoints = statusChart.getElementsAtEvent(evt);
+                    console.log(activePoints);
                     // add evidence filter if they clicked on that
-                    if (activePoints[0].label.indexOf("Approved") > -1){
+                    if (activePoints[0]._model.label.indexOf("Approved") > -1){
                         filters.approval = "approved"
-                    } else if (activePoints[0].label.indexOf("In Progress") > -1){
+                    } else if (activePoints[0]._model.label.indexOf("In Progress") > -1){
                         filters.approval = "in progress"
-                    } else if (activePoints[0].label.indexOf("Waiting ") > -1){
+                    } else if (activePoints[0]._model.label.indexOf("Waiting ") > -1){
                         filters.approval = "awaiting approval"
-                    } else if (activePoints[0].label.indexOf("New ") > -1){
+                    } else if (activePoints[0]._model.label.indexOf("New ") > -1){
                         filters.approval = "new"
                     }
                     project_report(filters);
@@ -207,34 +192,33 @@
             //render indicator data in a doughnut chart
             var indicator_options = {
                 // single tooltip
-                tooltipTemplate: "<%=label%>",
-                percentageInnerCutout : 60,
-                tooltipFontSize: 10,
+                cutoutPercentage : 60,
             };
 
-            var indicator_data = [
-                {
-                value: indicator_count,
-                color:"#637b85",
-                label: "Indicators " + indicator_count
-                },
-                {
-                value: data_count,
-                color:"#2c9c69",
-                label: "With Supporting Data " + data_count
-                },
-            ];
+
+            var indicator_data = {
+                datasets: [{
+                    data: [indicator_count, data_count],
+                    backgroundColor: ['#DD6E42', '#9fadb9']
+                }],
+
+                // These labels appear in the legend and in the tooltips when hovering different arcs
+                labels: [
+                    "Indicators " + indicator_count,
+                    "With Supporting Data " + data_count,
+                ]
+            };
+
             var ctx = document.getElementById("doughnut2").getContext("2d");
-            var indicatorChart = new Chart(ctx).Doughnut(indicator_data,indicator_options);
-            document.getElementById('doughnut2-legend').innerHTML = indicatorChart.generateLegend();
+            var indicatorChart = new Chart(ctx, {type: 'doughnut',data: indicator_data,options: indicator_options});
 
             $("#doughnut2").click(
                 function(evt){
-                    var activePoints = indicatorChart.getSegmentsAtEvent(evt);
+                    var activePoints = indicatorChart.getElementsAtEvent(evt);
                     // add evidence filter if they clicked on that
-                    if (activePoints[0].label.indexOf("With Supporting Data") > -1){
+                    if (activePoints[0]._model.label.indexOf("With Supporting Data") > -1){
                         filters.collecteddata__isnull="False";
-                    } else if (activePoints[0].label.indexOf("Indicators") > -1){
+                    } else if (activePoints[0]._model.label.indexOf("Indicators") > -1){
                         filters.collecteddata__isnull="True";
                     }
                     //console.log("filters:" + JSON.stringify(filters));
@@ -261,49 +245,40 @@
             //console.log(targeted);
             //console.log(achieved);
 
-            //KPI JSON data object
             var kpi_options = {
-                maintainAspectRatio: false,
-                responsive: true,
-                scaleOverlay : false,
+                // single tooltip
+                cutoutPercentage : 60,
             };
+
+
             var kpi_data = {
-                labels : labels,
-                datasets : [
-                    {
-                        label: "Targets",
-                        fillColor: "rgba(220,220,220,0.5)",
-                        strokeColor: "rgba(220,220,220,0.8)",
-                        highlightFill: "rgba(220,220,220,0.75)",
-                        highlightStroke: "rgba(220,220,220,1)",
-                        data: targeted,
-                    },
-                    {
-                        label: "Actuals",
-                        fillColor: "rgba(151,187,205,0.5)",
-                        strokeColor: "rgba(151,187,205,0.8)",
-                        highlightFill: "rgba(151,187,205,0.75)",
-                        highlightStroke: "rgba(151,187,205,1)",
-                        data: achieved,
-                    }
+                datasets: [{
+                    data: [targeted, achieved],
+                    backgroundColor: ['#cc474d', '#bfbfbf']
+                }],
+
+                // These labels appear in the legend and in the tooltips when hovering different arcs
+                labels: [
+                    "Targets",
+                    "Actuals",
                 ]
-            }
+            };
+
             //retrieve kpi_canvas, pass the kpi_JSON into a Line_chart
             var ctx = document.getElementById("kpi").getContext("2d");
             var kpiChart = new Chart(ctx).Bar(kpi_data, kpi_options);
-            document.getElementById('kpi-legend').innerHTML = kpiChart.generateLegend();
 
         };
 
         // PROGRAM REPORT
         function program_report(filters) {
-            document.getElementById('report_type').innerHTML = "Program Report";
+            document.getElementById('report_type').innerHTML = "WorkflowLevel1 Report";
             $("#bar-chart").hide();
             $("#doughnut-chart").show();
             $.getJSON("/reports/report_data/", filters, function(data) {
                 //console.log(filters);
-                show_program_table(data['program'],filters);
-                show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count'],data['nostatus_count'],filters);
+                show_program_table(data['workflowlevel1'],filters);
+                show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['nostatus_count'],filters);
                 show_indicator_charts(data['indicator_count'], data['data_count'],filters);
 
             });
@@ -343,7 +318,7 @@
             $.getJSON("/reports/report_data/project/", filters, function(data) {
                 //console.log(filters);
                 show_project_table(data['project'],filters);
-                show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['rejected_count'],data['nostatus_count'],filters);
+                show_program_charts(data['project_count'],data['approval_count'],data['approved_count'],data['inprogress_count'],data['nostatus_count'],filters);
                 show_indicator_charts(data['indicator_count'], data['data_count'],filters);
             });
         }
@@ -385,17 +360,17 @@
             });
 
 
-            if (document.getElementById('report_type').innerHTML.valueOf == "Program Report") {
-                // first time do the program report
+            if (document.getElementById('report_type').innerHTML.valueOf == "WorkflowLevel1 Report") {
+                // first time do the workflowlevel1 report
                 program_report(filters);
             } else if (document.getElementById('report_type').innerHTML.valueOf == "Indicator Report") {
-                // first time do the program report
+                // first time do the workflowlevel1 report
                 indicator_report(filters);
             } else if (document.getElementById('report_type').innerHTML.valueOf == "Collected Data Report") {
-                // first time do the program report
+                // first time do the workflowlevel1 report
                 collecteddata_report(filters);
             } else {
-                // first time do the program report
+                // first time do the workflowlevel1 report
                 program_report(filters);
             }
         });
@@ -419,7 +394,7 @@
         </div>
         <div class="col-sm-9">
             <div id='welcome-panel' class="panel panel-success">
-                <div class="panel-heading"> Program Filter Reports</div>
+                <div class="panel-heading"> {{ WORKFLOWLEVEL1 }} Filter Reports</div>
                 <div class="panel-body" id="welcome" style="padding:5px;"> Filter your search in the panel on the left to see results.</div>
             </div>
             <div id='data-panel' class="panel panel-primary" style="display: none;">

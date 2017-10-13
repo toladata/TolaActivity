@@ -115,13 +115,14 @@
                         { "visible": false, "targets": 2 },
                     ],
                     columns: [
+
                         { title: "PID", class: "noExport", data: "indicator__program__id"},
                         { title: "IID", class: "noExport", data: "indicator__id"},
                         { title: "ITID", class: "noExport", data: "indicator__indicator_type__id"},
                         { title: "Program", data: "indicator__program__name"},
                         { title: "Indicator", data: "name",
                                 "mRender": function (data, type, row) {
-                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ program }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
+                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ workflowlevel1 }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
                                 }
                             },
                         { title: "Level", data: "indicator__level__name"},
@@ -169,7 +170,7 @@
 
             // INDICATOR REPORT
             function indicator_report() {
-                // get the program and indicator id from the url
+                // get the workflowlevel1 and indicator id from the url
                 program_id = document.URL.split('/')[5];
                 //console.log(program_id);
                 indicator_id = document.URL.split('/')[6];
@@ -194,7 +195,7 @@
 
             // EXPORT DATA
             function do_export(type) {
-                // get the program and  indicator id from the url
+                // get the workflowlevel1 and  indicator id from the url
                 program_id = document.URL.split('/')[5];
                 indicator_id = document.URL.split('/')[6];
                 type_id = document.URL.split('/')[7];

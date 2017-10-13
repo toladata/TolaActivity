@@ -4,13 +4,14 @@ from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportModelAdmin, ExportMixin
 from tola.util import getCountry
 from admin_report.mixins import ChartReportAdmin
+from simple_history.admin import SimpleHistoryAdmin
 
 
 # Resource for CSV export
 class DocumentationResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
-    program = fields.Field(column_name='program', attribute='program', widget=ForeignKeyWidget(Program, 'name'))
-    project = fields.Field(column_name='project', attribute='project', widget=ForeignKeyWidget(ProjectAgreement, 'project_name'))
+    workflowlevel1 = fields.Field(column_name='workflowlevel1', attribute='workflowlevel1', widget=ForeignKeyWidget(WorkflowLevel1, 'name'))
+    workflowlevel2 = fields.Field(column_name='workflowlevel2', attribute='workflowlevel2', widget=ForeignKeyWidget(WorkflowLevel2, 'name'))
 
     class Meta:
         model = Documentation
@@ -23,49 +24,15 @@ class DocumentationResource(resources.ModelResource):
 
 class DocumentationAdmin(ImportExportModelAdmin):
     resource_class = DocumentationResource
-    list_display = ('program','project')
-    list_filter = ('program__country',)
+    list_display = ('workflowlevel1','workflowlevel2')
+    list_filter = ('workflowlevel1__country',)
     pass
 
 
 # Resource for CSV export
-class ProjectAgreementResource(resources.ModelResource):
-
+class WorkflowLevel2Resource(resources.ModelResource):
     class Meta:
-        model = ProjectAgreement
-        widgets = {
-                'create_date': {'format': '%d/%m/%Y'},
-                'edit_date': {'format': '%d/%m/%Y'},
-                'expected_start_date': {'format': '%d/%m/%Y'},
-                'expected_end_date': {'format': '%d/%m/%Y'},
-                }
-
-
-class ProjectAgreementAdmin(ImportExportModelAdmin):
-    resource_class = ProjectAgreementResource
-    list_display = ('program','project_name','short','create_date')
-    list_filter = ('program__country','short')
-    filter_horizontal = ('capacity','evaluate','site','stakeholder')
-
-    def queryset(self, request, queryset):
-        """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
-        `self.value()`.
-        """
-        # Filter by logged in users allowable countries
-        user_countries = getCountry(request.user)
-        #if not request.user.user.is_superuser:
-        return queryset.filter(country__in=user_countries)
-
-    pass
-
-
-# Resource for CSV export
-class ProjectCompleteResource(resources.ModelResource):
-
-    class Meta:
-        model = ProjectComplete
+        model = WorkflowLevel2
         widgets = {
                 'create_date': {'format': '%d/%m/%Y'},
                 'edit_date': {'format': '%d/%m/%Y'},
@@ -76,11 +43,11 @@ class ProjectCompleteResource(resources.ModelResource):
                 }
 
 
-class ProjectCompleteAdmin(ImportExportModelAdmin):
-    resource_class = ProjectCompleteResource
-    list_display = ('program', 'project_name', 'activity_code','short','create_date')
-    list_filter = ('program__country', 'office', 'short')
-    display = 'project_name'
+class WorkflowLevel2Admin(ImportExportModelAdmin):
+    resource_class = WorkflowLevel2Resource
+    list_display = ('workflowlevel1', 'name', 'short', 'create_date')
+    list_filter = ('workflowlevel1__country', 'office', 'short')
+    display = 'name'
 
     def queryset(self, request, queryset):
         """
@@ -105,8 +72,8 @@ class CountryResource(resources.ModelResource):
 
 class CountryAdmin(ImportExportModelAdmin):
     resource_class = CountryResource
-    list_display = ('country','code','organization','create_date', 'edit_date')
-    list_filter = ('country','organization__name')
+    list_display = ('country','code','create_date', 'edit_date')
+    list_filter = ('country',)
 
 
 # Resource for CSV export
@@ -114,8 +81,8 @@ class SiteProfileResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     type = fields.Field(column_name='type', attribute='type', widget=ForeignKeyWidget(ProfileType, 'profile'))
     office = fields.Field(column_name='office', attribute='office', widget=ForeignKeyWidget(Office, 'code'))
-    district = fields.Field(column_name='admin level 2', attribute='district', widget=ForeignKeyWidget(District, 'name'))
-    province = fields.Field(column_name='admin level 1', attribute='province', widget=ForeignKeyWidget(Province, 'name'))
+    adminlevelone = fields.Field(column_name='admin level 1', attribute='adminlevelone', widget=ForeignKeyWidget(AdminLevelOne, 'name'))
+    adminleveltwo = fields.Field(column_name='admin level 2', attribute='adminleveltwo', widget=ForeignKeyWidget(AdminLevelTwo, 'name'))
     admin_level_three = fields.Field(column_name='admin level 3', attribute='admin_level_three', widget=ForeignKeyWidget(AdminLevelThree, 'name'))
 
     class Meta:
@@ -127,29 +94,49 @@ class SiteProfileResource(resources.ModelResource):
 
 class SiteProfileAdmin(ImportExportModelAdmin):
     resource_class = SiteProfileResource
-    list_display = ('name','office', 'country', 'province','district','admin_level_three','village')
+    list_display = ('name','office', 'country', 'adminlevelone','adminleveltwo','admin_level_three','adminlevelthree')
     list_filter = ('country__country',)
     search_fields = ('office__code','country__country')
     pass
 
 
-class ProgramAdmin(admin.ModelAdmin):
-    list_display = ('countries','name','gaitid', 'description','budget_check','funding_status')
-    search_fields = ('name','gaitid')
-    list_filter = ('funding_status','country','budget_check','funding_status')
+class WorkflowLevel1Admin(admin.ModelAdmin):
+    list_display = ('countries','name','unique_id', 'description','funding_status')
+    search_fields = ('name','unique_id')
+    list_filter = ('funding_status','country','funding_status')
     display = 'Program'
 
 
-class ApprovalAuthorityAdmin(admin.ModelAdmin):
-    list_display = ('approval_user','budget_limit','fund','country')
-    display = 'Approval Authority'
-    search_fields = ('approval_user__user__first_name', 'approval_user__user__last_name', 'country__country')
+class WorkflowTeamAdmin(admin.ModelAdmin):
+    list_display = ('workflow_user','budget_limit','workflowlevel1','country')
+    display = 'Workflow Team'
+    search_fields = ('workflow_user__user__username','workflowlevel1__name', 'workflow_user__user__last_name', 'country__country')
     list_filter = ('create_date','country')
 
+
 class StakeholderAdmin(ImportExportModelAdmin):
-    list_display = ('name', 'type', 'country', 'approval', 'approved_by', 'filled_by', 'create_date')
+    list_display = ('name', 'type', 'country', 'create_date')
     display = 'Stakeholder List'
     list_filter = ('country', 'type')
+
+
+class RiskRegisterAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'type', 'workflowlevel2')
+    display = 'Risk Register'
+    list_filter = ('workflowlevel2', 'type')
+
+
+class IssueRegisterAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'type', 'workflowlevel2')
+    display = 'Issue Register'
+    list_filter = ('workflowlevel2', 'type')
+
+
+class CodedFieldAdmin(ImportExportModelAdmin):
+    list_display = ('name', 'type','is_universal')
+    display = 'Coded Fields'
+    list_filter = ('type', 'is_universal')
+
 
 class TolaUserProxyResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
@@ -184,28 +171,195 @@ class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin )
                 email = a_user.email
         return email
 
+
+class TolaSitesAdmin(admin.ModelAdmin):
+    list_display = ('name', 'agency_name')
+    display = 'Tola Site'
+    list_filter = ('name',)
+    search_fields = ('name','agency_name')
+
+
+class OrganizationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Organization'
+
+
+class MilestoneAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Milestone'
+
+
+class TolaBookmarksAdmin(admin.ModelAdmin):
+    list_display = ('user', 'name')
+    display = 'Tola User Bookmarks'
+    list_filter = ('user__name',)
+    search_fields = ('name','user')
+
+
+class TolaUserAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country')
+    display = 'Tola User'
+    list_filter = ('country', 'user__is_staff',)
+    search_fields = ('name','country__country','title')
+
+
+class FormGuidanceAdmin(admin.ModelAdmin):
+    list_display = ( 'form', 'guidance', 'guidance_link', 'create_date',)
+    display = 'Form Guidance'
+
+
+class ProjectTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'create_date', 'edit_date')
+    display = 'Project Type'
+
+
+class SectorAdmin(admin.ModelAdmin):
+    list_display = ('sector', 'create_date', 'edit_date')
+    display = 'Sector'
+
+
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'create_date', 'edit_date')
+    display = 'Contact'
+    list_filter = ('create_date','country')
+    search_fields = ('name','country','title','city')
+
+
+class FundCodeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Fund Code'
+
+
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ('source_currency','target_currency', 'current_rate', 'conversion_date')
+    display = 'Currency Conversion'
+
+
+class ApprovalTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    display = 'Approval Types'
+
+
+class ApprovalWorkflowAdmin(admin.ModelAdmin):
+    list_display = ('approval_type','section')
+    display = 'Approval Workflow'
+
+
+class AdminLevelOneAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'create_date')
+    search_fields = ('name','country__country')
+    list_filter = ('create_date','country')
+    display = 'Admin Boundary 1'
+
+
+class AdminLevelTwoAdmin(admin.ModelAdmin):
+    list_display = ('name', 'adminlevelone', 'create_date')
+    search_fields = ('create_date','adminlevelone')
+    list_filter = ('adminlevelone__country__country','adminlevelone')
+    display = 'Admin Boundary 2'
+
+
+class AdminLevelThreeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'adminleveltwo', 'create_date')
+    search_fields = ('name','adminleveltwo__name')
+    list_filter = ('adminleveltwo__adminlevelone__country__country','name')
+    display = 'Admin Boundary 3'
+
+
+class AdminLevelFourAdmin(admin.ModelAdmin):
+    list_display = ('name', 'adminlevelthree', 'create_date')
+    search_fields = ('name','adminlevelthree__name')
+    list_filter = ('adminlevelthree__adminleveltwo__adminlevelone__country__country','name')
+    display = 'Admin Boundary 3'
+
+
+class OfficeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'country', 'create_date', 'edit_date')
+    search_fields = ('name','country__country','code')
+    list_filter = ('create_date','country__country')
+    display = 'Office'
+
+
+class ProfileTypeAdmin(admin.ModelAdmin):
+    list_display = ('profile', 'create_date', 'edit_date')
+    display = 'ProfileType'
+
+
+class LandTypeAdmin(admin.ModelAdmin):
+    list_display = ('classify_land', 'create_date', 'edit_date')
+    display = 'Land Type'
+
+
+class WorkflowLevel3Admin(admin.ModelAdmin):
+    list_display = ('description', 'create_date', 'edit_date')
+    display = 'Workflow Level 3'
+
+
+class BudgetAdmin(admin.ModelAdmin):
+    list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
+    display = 'Budget'
+
+
+class ChecklistAdmin(admin.ModelAdmin):
+    list_display = ('name','country')
+    list_filter = ('country','workflowlevel2')
+
+
+class ChecklistItemAdmin(admin.ModelAdmin):
+    list_display = ('item','checklist','in_file')
+    list_filter = ('checklist','global_item')
+
+
+class WorkflowModulesAdmin(admin.ModelAdmin):
+    list_display = ('workflowlevel2',)
+    list_filter = ('workflowlevel2',)
+
+
+class StakeholderTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Stakeholder Types'
+    list_filter = ('create_date',)
+    search_fields = ('name',)
+
+
+class PortfolioAdmin(admin.ModelAdmin):
+    list_display = ('name', 'create_date', 'edit_date')
+    display = 'Portfolio'
+    list_filter = ('create_date',)
+    search_fields = ('name',)
+
+
+class SectorRelatedAdmin(admin.ModelAdmin):
+    list_display = ('sector', 'sector_related')
+    display = 'Sector Related'
+    list_filter = ('sector',)
+    search_fields = ('sector',)
+
+
+class WorkflowLevel1SectorAdmin(admin.ModelAdmin):
+    list_display = ('sector','workflowlevel1')
+    display = 'WorkflowLevel1 Sectors'
+    list_filter = ('workflowlevel1',)
+    search_fields = ('sector', 'workflowlevel1')
+
+
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Country, CountryAdmin)
-admin.site.register(Province, ProvinceAdmin)
+admin.site.register(AdminLevelOne, AdminLevelOneAdmin)
 admin.site.register(Office, OfficeAdmin)
-admin.site.register(District, DistrictAdmin)
+admin.site.register(AdminLevelTwo, AdminLevelTwoAdmin)
 admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
-admin.site.register(Village)
-admin.site.register(Program, ProgramAdmin)
+admin.site.register(AdminLevelFour,AdminLevelFourAdmin)
+admin.site.register(WorkflowLevel1, SimpleHistoryAdmin)
 admin.site.register(Sector)
-admin.site.register(ProjectAgreement, ProjectAgreementAdmin)
-admin.site.register(ProjectComplete, ProjectCompleteAdmin)
+admin.site.register(WorkflowLevel2, SimpleHistoryAdmin)
 admin.site.register(Documentation,DocumentationAdmin)
-admin.site.register(Template)
-admin.site.register(SiteProfile, SiteProfileAdmin)
-admin.site.register(Capacity)
-admin.site.register(Monitor)
-admin.site.register(Benchmarks)
-admin.site.register(Evaluate)
+admin.site.register(SiteProfile, SimpleHistoryAdmin)
+admin.site.register(WorkflowLevel3, WorkflowLevel3Admin)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
-admin.site.register(ApprovalAuthority, ApprovalAuthorityAdmin)
+admin.site.register(WorkflowTeam, WorkflowTeamAdmin)
 admin.site.register(ChecklistItem, ChecklistItemAdmin)
 admin.site.register(Checklist, ChecklistAdmin)
 admin.site.register(Stakeholder, StakeholderAdmin)
@@ -216,3 +370,16 @@ admin.site.register(TolaSites,TolaSitesAdmin)
 admin.site.register(FormGuidance,FormGuidanceAdmin)
 admin.site.register(TolaUserProxy, ReportTolaUserProxyAdmin)
 admin.site.register(TolaBookmarks, TolaBookmarksAdmin)
+admin.site.register(Currency, CurrencyAdmin)
+admin.site.register(ApprovalWorkflow, ApprovalWorkflowAdmin)
+admin.site.register(ApprovalType, ApprovalTypeAdmin)
+admin.site.register(FundCode, FundCodeAdmin)
+admin.site.register(RiskRegister, RiskRegisterAdmin)
+admin.site.register(IssueRegister, IssueRegisterAdmin)
+admin.site.register(CodedField, CodedFieldAdmin)
+admin.site.register(WorkflowModules, WorkflowModulesAdmin)
+admin.site.register(Milestone, MilestoneAdmin)
+admin.site.register(Portfolio, PortfolioAdmin)
+admin.site.register(SectorRelated, SectorRelatedAdmin)
+admin.site.register(WorkflowLevel1Sector, WorkflowLevel1SectorAdmin)
+

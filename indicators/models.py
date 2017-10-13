@@ -1,25 +1,41 @@
 from django.db import models
 from django.contrib import admin
-from workflow.models import Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country, Office, Documentation, TolaUser
+from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser,\
+    Organization
 from datetime import datetime, timedelta
 from django.utils import timezone
 import uuid
 from simple_history.models import HistoricalRecords
 from decimal import Decimal
 
+
 class TolaTable(models.Model):
     name = models.CharField(max_length=255, blank=True)
     table_id = models.IntegerField(blank=True, null=True)
-    owner = models.ForeignKey('auth.User')
-    remote_owner = models.CharField(max_length=255, blank=True)
+    owner = models.ForeignKey('auth.User',blank=True, null=True)
+    remote_owner = models.CharField(max_length=255, blank=True, null=True)
     country = models.ManyToManyField(Country, blank=True)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
+    organization = models.ForeignKey(Organization, default=1)
     url = models.CharField(max_length=255, blank=True)
     unique_count = models.IntegerField(blank=True, null=True)
+    count_column_name_1 = models.CharField(max_length=255,blank=True, null=True)
+    count_column_name_2 = models.CharField(max_length=255,blank=True, null=True)
+    column_sum = models.IntegerField(default=0 ,blank=True, null=True)
+    column_avg = models.IntegerField(default=0, blank=True, null=True)
+    refresh_interval = models.IntegerField(default=0, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(TolaTable, self).save(*args, **kwargs)
 
 
 class TolaTableAdmin(admin.ModelAdmin):
@@ -32,11 +48,20 @@ class TolaTableAdmin(admin.ModelAdmin):
 class IndicatorType(models.Model):
     indicator_type = models.CharField(max_length=135, blank=True)
     description = models.TextField(max_length=765, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.indicator_type
+
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(IndicatorType, self).save(*args, **kwargs)
 
 
 class IndicatorTypeAdmin(admin.ModelAdmin):
@@ -57,10 +82,12 @@ class StrategicObjective(models.Model):
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(StrategicObjective, self).save()
+        self.edit_date = datetime.now()
+        super(StrategicObjective, self).save(*args, **kwargs)
 
 
 class StrategicObjectiveAdmin(admin.ModelAdmin):
@@ -72,65 +99,79 @@ class StrategicObjectiveAdmin(admin.ModelAdmin):
 
 class Objective(models.Model):
     name = models.CharField(max_length=135, blank=True)
-    program = models.ForeignKey(Program, null=True, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
     description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('program','name')
+        ordering = ('workflowlevel1','name')
 
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(Objective, self).save()
+        self.edit_date = datetime.now()
+        super(Objective, self).save(*args, **kwargs)
 
 
 class ObjectiveAdmin(admin.ModelAdmin):
-    list_display = ('program','name')
-    search_fields = ('name','program__name')
-    list_filter = ('program__country__country',)
+    list_display = ('workflowlevel1','name')
+    search_fields = ('name','workflowlevel1__name')
+    list_filter = ('workflowlevel1__country__country',)
     display = 'Objectives'
 
 
 class Level(models.Model):
     name = models.CharField(max_length=135, blank=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True)
+    sort = models.IntegerField(default=0)
+    country = models.ForeignKey(Country, null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True)
+    parent_id = models.IntegerField(default=0)
+    global_default = models.BooleanField(default=0)
     description = models.TextField(max_length=765, blank=True)
+    color = models.CharField(max_length=135, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
 
-    def save(self):
-        if self.create_date is None:
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
             self.create_date = datetime.now()
-        super(Level, self).save()
-
-
-class LevelAdmin(admin.ModelAdmin):
-    list_display = ('name')
-    display = 'Levels'
+        self.edit_date = datetime.now()
+        super(Level, self).save(*args, **kwargs)
 
 
 class DisaggregationType(models.Model):
     disaggregation_type = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
-    country = models.ForeignKey(Country, null=True, blank=True)
-    standard = models.BooleanField(default=False, verbose_name="Standard (TolaData Admins Only)")
+    organization = models.ForeignKey(Organization, default=0)
+    standard = models.BooleanField(default=False, verbose_name="Standard")
+    default_global = models.BooleanField(default=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.disaggregation_type
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationType, self).save(*args, **kwargs)
+
 
 class DisaggregationTypeAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type','country','standard','description')
-    list_filter = ('country','standard','disaggregation_type')
+    list_display = ('disaggregation_type','organization','standard','description')
+    list_filter = ('organization','standard','disaggregation_type')
     display = 'Disaggregation Type'
 
 
@@ -144,11 +185,12 @@ class DisaggregationLabel(models.Model):
     def __unicode__(self):
         return self.label
 
-
-class DisaggregationLabelAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type', 'customsort', 'label',)
-    display = 'Disaggregation Label'
-    list_filter = ('disaggregation_type__disaggregation_type',)
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationLabel, self).save(*args, **kwargs)
 
 
 class DisaggregationValue(models.Model):
@@ -160,6 +202,13 @@ class DisaggregationValue(models.Model):
     def __unicode__(self):
         return self.value
 
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(DisaggregationValue, self).save(*args, **kwargs)
+
 
 class DisaggregationValueAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_label','value','create_date','edit_date')
@@ -167,38 +216,40 @@ class DisaggregationValueAdmin(admin.ModelAdmin):
     display = 'Disaggregation Value'
 
 
-class ReportingFrequency(models.Model):
+class Frequency(models.Model):
     frequency = models.CharField(max_length=135, blank=True)
     description = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-
-    def __unicode__(self):
-        return self.frequency
-
-
-class DataCollectionFrequency(models.Model):
-    frequency = models.CharField(max_length=135, blank=True, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
     numdays = models.PositiveIntegerField(default=0, verbose_name="Frequency in number of days")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, default=1)
 
     def __unicode__(self):
         return self.frequency
 
-class DataCollectionFrequencyAdmin(admin.ModelAdmin):
-    list_display = ('frequency', 'description', 'create_date', 'edit_date')
-    display = 'Data Collection Frequency'
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(Frequency, self).save(*args, **kwargs)
 
 
 class ReportingPeriod(models.Model):
-    frequency = models.ForeignKey(ReportingFrequency)
+    frequency = models.ForeignKey(Frequency)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.frequency
+
+    def save(self, *args, **kwargs):
+        # onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ReportingPeriod, self).save(*args, **kwargs)
 
 
 class ReportingPeriodAdmin(admin.ModelAdmin):
@@ -208,17 +259,26 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 class ExternalService(models.Model):
     name = models.CharField(max_length=255, blank=True)
-    url = models.CharField(max_length=765, blank=True)
+    service_url = models.CharField(max_length=765, blank=True)
     feed_url = models.CharField(max_length=765, blank=True)
+    default_global = models.BooleanField(default=0)
+    organization = models.ForeignKey(Organization, default=1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        #onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ExternalService, self).save(*args, **kwargs)
+
 
 class ExternalServiceAdmin(admin.ModelAdmin):
-    list_display = ('name','url','feed_url','create_date','edit_date')
+    list_display = ('name','service_url','feed_url','create_date','edit_date')
     display = 'External Indicator Data Service'
 
 
@@ -232,6 +292,13 @@ class ExternalServiceRecord(models.Model):
     def __unicode__(self):
         return self.full_url
 
+    def save(self, *args, **kwargs):
+        #onsave add create date or update edit date
+        if self.create_date == None:
+            self.create_date = datetime.now()
+        self.edit_date = datetime.now()
+        super(ExternalServiceRecord, self).save(*args, **kwargs)
+
 
 class ExternalServiceRecordAdmin(admin.ModelAdmin):
     list_display = ('external_service','full_url','record_id','create_date','edit_date')
@@ -240,14 +307,16 @@ class ExternalServiceRecordAdmin(admin.ModelAdmin):
 
 class IndicatorManager(models.Manager):
     def get_queryset(self):
-        return super(IndicatorManager, self).get_queryset().prefetch_related('program').select_related('sector')
+        return super(IndicatorManager, self).get_queryset().prefetch_related('workflowlevel1').select_related('sector')
 
+from tola.security import SecurityModel
+from search.utils import ElasticsearchIndexer
 
-class Indicator(models.Model):
-    indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
+class Indicator(models.Model): # TODO change back to SecurityModel
+    indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
-    level = models.ManyToManyField(Level, blank=True)
-    objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Program Objective", related_name="obj_indicator")
+    level = models.ForeignKey(Level, null=True, blank=True, on_delete=models.SET_NULL)
+    objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Objective", related_name="obj_indicator")
     strategic_objectives = models.ManyToManyField(StrategicObjective, verbose_name="Country Strategic Objective", blank=True, related_name="strat_indicator")
     name = models.CharField(max_length=255, null=False)
     number = models.CharField(max_length=255, null=True, blank=True)
@@ -257,23 +326,24 @@ class Indicator(models.Model):
     unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of Measure")
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
-    lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)
+    lop_target = models.IntegerField("LOP Target",default=0, blank=True)
     rationale_for_target = models.TextField(max_length=255, null=True, blank=True)
     means_of_verification = models.CharField(max_length=255, null=True, blank=True, verbose_name="Means of Verification / Data Source")
     data_collection_method = models.CharField(max_length=255, null=True, blank=True, verbose_name="Data Collection Method")
-    data_collection_frequency = models.ForeignKey(DataCollectionFrequency, null=True, blank=True, verbose_name="Frequency of Data Collection")
+    data_collection_frequency = models.ForeignKey(Frequency, related_name="data_collection_frequency",null=True, blank=True, verbose_name="Frequency of Data Collection")
     data_points = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Points")
     responsible_person = models.CharField(max_length=255, null=True, blank=True, verbose_name="Responsible Person(s) and Team")
     method_of_analysis = models.CharField(max_length=255, null=True, blank=True, verbose_name="Method of Analysis")
     information_use = models.CharField(max_length=255, null=True, blank=True, verbose_name="Information Use")
-    reporting_frequency = models.ForeignKey(ReportingFrequency, null=True, blank=True, verbose_name="Frequency of Reporting")
+    reporting_frequency = models.ForeignKey(Frequency, null=True, blank=True, verbose_name="Frequency of Reporting")
     quality_assurance = models.TextField(max_length=500, null=True, blank=True, verbose_name="Quality Assurance Measures")
     data_issues = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Issues")
     indicator_changes = models.TextField(max_length=500, null=True, blank=True, verbose_name="Changes to Indicator")
     comments = models.TextField(max_length=255, null=True, blank=True)
-    program = models.ManyToManyField(Program)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1)
     sector = models.ForeignKey(Sector, null=True, blank=True)
-    key_performance_indicator = models.BooleanField("Key Performance Indicator for this program?",default=False)
+    sub_sector = models.ManyToManyField(Sector, blank=True, related_name="indicator_sub_sector")
+    key_performance_indicator = models.BooleanField("Key Performance Indicator?",default=False)
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="approving_indicator")
     approval_submitted_by = models.ForeignKey(TolaUser, blank=True, null=True, related_name="indicator_submitted_by")
     external_service_record = models.ForeignKey(ExternalServiceRecord, verbose_name="External Service ID", blank=True, null=True)
@@ -286,13 +356,26 @@ class Indicator(models.Model):
 
     class Meta:
         ordering = ('create_date',)
+        permissions = (
+            ('view_indicator', 'View Indicator Model'),
+        )
 
     def save(self, *args, **kwargs):
         #onsave add create date or update edit date
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
+
         super(Indicator, self).save(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.index_indicator(self)
+
+    def delete(self, *args, **kwargs):
+        super(Indicator, self).delete(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.delete_indicator(self.id)
 
     @property
     def just_created(self):
@@ -314,7 +397,7 @@ class Indicator(models.Model):
 
     @property
     def programs(self):
-        return ', '.join([x.name for x in self.program.all()])
+        return ', '.join([x.name for x in self.workflowlevel1.all()])
 
     @property
     def indicator_types(self):
@@ -322,7 +405,10 @@ class Indicator(models.Model):
 
     @property
     def levels(self):
-        return ', '.join([x.name for x in self.level.all()])
+        #return ', '.join([x.name for x in self.level.all()])
+        if self.level:
+            return self.level.name
+        return None
 
     @property
     def disaggregations(self):
@@ -353,20 +439,19 @@ class PeriodicTargetAdmin(admin.ModelAdmin):
 
 class CollectedDataManager(models.Manager):
     def get_queryset(self):
-        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('program','indicator','agreement','complete','evidence','tola_table')
+        return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('workflowlevel1','indicator','workflowlevel2','evidence','tola_table')
 
 
 class CollectedData(models.Model):
-    data_key = models.UUIDField(default=uuid.uuid4, unique=True),
+    data_uuid = models.CharField(max_length=255,verbose_name='Data UUID', default=uuid.uuid4, unique=True, blank=True)
     periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True)
     #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
-    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
-    program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="i_workflowlevel2", verbose_name="Project Initiation")
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="i_workflowlevel1")
     date_collected = models.DateTimeField(null=True, blank=True)
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
@@ -380,7 +465,7 @@ class CollectedData(models.Model):
     objects = CollectedDataManager()
 
     class Meta:
-        ordering = ('agreement','indicator','date_collected','create_date')
+        ordering = ('workflowlevel2','indicator','date_collected','create_date')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
 
     #onsave add create date or update edit date
@@ -388,7 +473,16 @@ class CollectedData(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.utcnow()
-        super(CollectedData, self).save()
+        super(CollectedData, self).save(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.index_collecteddata(self)
+
+    def delete(self, *args, **kwargs):
+        super(CollectedData, self).delete(*args, **kwargs)
+
+        ei = ElasticsearchIndexer()
+        ei.delete_collecteddata(self.data_uuid)
 
     #displayed in admin templates
     def __unicode__(self):
@@ -403,7 +497,4 @@ class CollectedData(models.Model):
         return ', '.join([y.disaggregation_label.label + ': ' + y.value for y in self.disaggregation_value.all()])
 
 
-class CollectedDataAdmin(admin.ModelAdmin):
-    list_display = ('indicator','date_collected', 'create_date', 'edit_date')
-    list_filter = ['indicator__program__country__country']
-    display = 'Indicator Output/Outcome Collected Data'
+

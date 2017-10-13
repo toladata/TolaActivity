@@ -5,13 +5,11 @@ from django.http import HttpResponseRedirect
 from urlparse import urlparse
 import re
 from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
+from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
 from tola.util import getCountry, get_table
-from tables import IndicatorDataTable
-from django_tables2 import RequestConfig
 from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
 
@@ -26,15 +24,15 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
 from django.utils import timezone
-from django.urls import reverse, reverse_lazy
 
+from django.urls import reverse, reverse_lazy
 from workflow.mixins import AjaxableResponseMixin
 import json
 
 import requests
 from export import IndicatorResource, CollectedDataResource
 # from reportlab.pdfgen import canvas
-from weasyprint import HTML, CSS
+# from weasyprint import HTML, CSS
 from django.template.loader import get_template
 from django.http import HttpResponse
 
@@ -66,25 +64,25 @@ class IndicatorList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(collecteddata__isnull=True)
+        getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
+        getIndicators = Indicator.objects.all().filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True).order_by("-number")
         getIndicatorTypes = IndicatorType.objects.all()
-        program = self.kwargs['program']
+        workflowlevel1 = self.kwargs['workflowlevel1']
         indicator = self.kwargs['indicator']
         type = self.kwargs['type']
         indicator_name = ""
         type_name = ""
-        program_name = ""
+        workflowlevel1_name = ""
 
         q = {'id__isnull': False}
-        # if we have a program filter active
-        if int(program) != 0:
+        # if we have a workflowlevel1 filter active
+        if int(workflowlevel1) != 0:
             q = {
-                'id': program,
+                'id': workflowlevel1,
             }
-            # redress the indicator list based on program
-            getIndicators = Indicator.objects.select_related().filter(program=program)
-            program_name = Program.objects.get(id=program)
+            # redress the indicator list based on workflowlevel1
+            getIndicators = Indicator.objects.select_related().filter(workflowlevel1=workflowlevel1)
+            workflowlevel1_name = WorkflowLevel1.objects.get(id=workflowlevel1)
         # if we have an indicator type active
         if int(type) != 0:
             r = {
@@ -102,10 +100,10 @@ class IndicatorList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = Program.objects.all().filter(funding_status="Funded", country__in=countries).filter(**q).order_by('name').annotate(indicator_count=Count('indicator'))
+        indicators = WorkflowLevel1.objects.all().filter(country__in=countries).filter(**q).order_by('name').annotate(indicator_count=Count('indicator'))
         return render(request, self.template_name, {'getPrograms': getPrograms,'getIndicators':getIndicators,
-                                                    'program_name':program_name, 'indicator_name':indicator_name,
-                                                    'type_name':type_name, 'program':program, 'indicator': indicator, 'type': type,
+                                                    'workflowlevel1_name':workflowlevel1_name, 'indicator_name':indicator_name,
+                                                    'type_name':type_name, 'workflowlevel1':workflowlevel1, 'indicator': indicator, 'type': type,
                                                     'getProgramsIndicator': indicators, 'getIndicatorTypes': getIndicatorTypes})
 
 
@@ -143,19 +141,26 @@ def indicator_create(request, id=0):
     getCountries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries).distinct()
+    getPrograms = WorkflowLevel1.objects.all().filter( country__in=countries).distinct()
     getServices = ExternalService.objects.all()
-    program_id = id
+    workflowlevel1_id = id
 
     if request.method == 'POST':
         #set vars from form and get values from user
 
-        type = IndicatorType.objects.get(indicator_type="custom")
+        type = IndicatorType.objects.get(indicator_type="Custom")
         country = Country.objects.get(id=request.POST['country'])
-        program = Program.objects.get(id=request.POST['program'])
-        service = request.POST['services']
+        workflowlevel1 = WorkflowLevel1.objects.get(id=request.POST['workflowlevel1'])
+        if 'services' in request.POST:
+            service = request.POST['services']
+        else:
+            service = None
+
+        if 'service_indicator' in request.POST:
+            node_id = request.POST['service_indicator']
+        else:
+            node_id = None
         level = Level.objects.all()[0]
-        node_id = request.POST['service_indicator']
         sector = None
         # add a temp name for custom indicators
         name = "Temporary"
@@ -191,9 +196,9 @@ def indicator_create(request, id=0):
         #save form
         new_indicator = Indicator(sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
         new_indicator.save()
-        new_indicator.program.add(program)
+        new_indicator.workflowlevel1.add(workflowlevel1)
         new_indicator.indicator_type.add(type)
-        new_indicator.level.add(level)
+        new_indicator.level = level
 
         latest = new_indicator.id
 
@@ -203,7 +208,7 @@ def indicator_create(request, id=0):
         return HttpResponseRedirect(redirect_url)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/indicator_create.html", {'country_id': country_id, 'program_id':int(program_id),'getCountries':getCountries,
+    return render(request, "indicators/indicator_create.html", {'country_id': country_id, 'workflowlevel1_id':int(workflowlevel1_id),'getCountries':getCountries,
                                                                 'getPrograms': getPrograms,'getIndicatorTypes':getIndicatorTypes, 'getServices': getServices})
 
 
@@ -219,7 +224,7 @@ class IndicatorCreate(CreateView):
     def get_initial(self):
         user_profile = TolaUser.objects.get(user=self.request.user)
         initial = {
-            'program': self.kwargs['id'],
+            'workflowlevel1': self.kwargs['id'],
             }
 
         return initial
@@ -237,8 +242,8 @@ class IndicatorCreate(CreateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values("program__id")
-        kwargs['program'] = program
+        workflowlevel1 = Indicator.objects.all().filter(id=self.kwargs['pk']).values("workflowlevel1__id")
+        kwargs['workflowlevel1'] = workflowlevel1
         return kwargs
 
     def form_invalid(self, form):
@@ -281,7 +286,7 @@ class IndicatorUpdate(UpdateView):
         getIndicator = Indicator.objects.get(id=self.kwargs['pk'])
 
         context.update({'i_name': getIndicator.name})
-        context['programId'] = getIndicator.program.all()[0].id
+        context['programId'] = getIndicator.workflowlevel1.all()[0].id
         context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
 
         #get external service data if any
@@ -297,8 +302,8 @@ class IndicatorUpdate(UpdateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values_list("program__id", flat=True)
-        kwargs['program'] = program
+        workflowlevel1 = Indicator.objects.all().filter(id=self.kwargs['pk']).values_list("workflowlevel1__id", flat=True)
+        kwargs['workflowlevel1'] = workflowlevel1
         return kwargs
 
     def form_invalid(self, form):
@@ -333,8 +338,8 @@ class IndicatorUpdate(UpdateView):
         messages.success(self.request, 'Success, Indicator Updated!')
         if self.request.POST.has_key('_addanother'):
             url = "/indicators/indicator_create/"
-            program = self.request.POST['program']
-            qs = program + "/"
+            workflowlevel1 = self.request.POST['workflowlevel1']
+            qs = workflowlevel1 + "/"
             return HttpResponseRedirect(''.join((url, qs)))
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -417,14 +422,14 @@ class CollectedDataCreate(CreateView):
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'getDisaggregationLabelStandard': getDisaggregationLabelStandard})
         context.update({'indicator_id': self.kwargs['indicator']})
-        context.update({'program_id': self.kwargs['program']})
+        context.update({'workflowlevel1_id': self.kwargs['workflowlevel1']})
 
         return context
 
     def get_initial(self):
         initial = {
             'indicator': self.kwargs['indicator'],
-            'program': self.kwargs['program'],
+            'workflowlevel1': self.kwargs['workflowlevel1'],
         }
 
         return initial
@@ -433,7 +438,7 @@ class CollectedDataCreate(CreateView):
     def get_form_kwargs(self):
         kwargs = super(CollectedDataCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        kwargs['program'] = self.kwargs['program']
+        kwargs['workflowlevel1'] = self.kwargs['workflowlevel1']
         kwargs['indicator'] = self.kwargs['indicator']
         kwargs['tola_table'] = None
 
@@ -493,7 +498,7 @@ class CollectedDataCreate(CreateView):
 
         messages.success(self.request, 'Success, Data Created!')
 
-        redirect_url = '/indicators/home/0/0/0/#hidden-' + str(self.kwargs['program'])
+        redirect_url = '/indicators/home/0/0/0/#hidden-' + str(self.kwargs['workflowlevel1'])
         return HttpResponseRedirect(redirect_url)
 
 
@@ -553,7 +558,7 @@ class CollectedDataUpdate(UpdateView):
         get_data = CollectedData.objects.get(id=self.kwargs['pk'])
         kwargs = super(CollectedDataUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        kwargs['program'] = get_data.program
+        kwargs['workflowlevel1'] = get_data.workflowlevel1
         kwargs['indicator'] = get_data.indicator
         if get_data.tola_table:
             kwargs['tola_table'] = get_data.tola_table.id
@@ -600,7 +605,7 @@ class CollectedDataUpdate(UpdateView):
 
         messages.success(self.request, 'Success, Data Updated!')
 
-        redirect_url = '/indicators/home/0/0/0/#hidden-' + str(getIndicator.program.id)
+        redirect_url = '/indicators/home/0/0/0/#hidden-' + str(getIndicator.workflowlevel1.id)
         return HttpResponseRedirect(redirect_url)
 
     form_class = CollectedDataForm
@@ -631,7 +636,7 @@ def getTableCount(url,table_id):
         headers = {'content-type': 'application/json'}
         print "Token Not Found"
 
-    response = requests.get(url,headers=headers, verify=True)
+    response = requests.get(url,headers=headers, verify=False)
     data = json.loads(response.content)
     count = None
     try:
@@ -721,14 +726,14 @@ def service_json(request,service):
     return HttpResponse(service_indicators, content_type="application/json")
 
 
-def collected_data_json(AjaxableResponseMixin, indicator,program):
+def collected_data_json(AjaxableResponseMixin, indicator,workflowlevel1):
     """
     Displayed on the Indicator home page as a table of collected data entries related to an indicator
     Called from Indicator "data" button onClick
     :param AjaxableResponseMixin:
     :param indicator:
-    :param program:
-    :return: List of CollectedData entries and sum of there achieved & Targets as well as related indicator and program
+    :param workflowlevel1:
+    :return: List of CollectedData entries and sum of there achieved & Targets as well as related indicator and workflowlevel1
     """
 
     template_name = 'indicators/collected_data_table.html'
@@ -740,28 +745,29 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
             if data.tola_table:
                 data.tola_table.detail_url = const_table_det_url(str(data.tola_table.url))
     except Exception, e:
+        # FIXME
         pass
 
     collected_sum = CollectedData.objects.select_related('periodic_target').filter(indicator=indicator).aggregate(Sum('periodic_target__target'),Sum('achieved'))
     return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum,
-                                              'indicator_id': indicator, 'program_id': program})
+                                              'indicator_id': indicator, 'workflowlevel1_id': workflowlevel1})
 
 
-def program_indicators_json(AjaxableResponseMixin,program,indicator,type):
+def workflowlevel1_indicators_json(AjaxableResponseMixin,workflowlevel1,indicator,type):
     """
     Displayed on the Indicator home page as a table of indicators related to a Program
     Called from Program "Indicator" button onClick
     :param AjaxableResponseMixin:
-    :param program:
+    :param workflowlevel1:
     :return: List of Indicators and the Program they are related to
     """
-    template_name = 'indicators/program_indicators_table.html'
+    template_name = 'indicators/workflowlevel1_indicators_table.html'
 
-    q = {'program__id__isnull': False}
-    # if we have a program filter active
-    if int(program) != 0:
+    q = {'workflowlevel1__id__isnull': False}
+    # if we have a workflowlevel1 filter active
+    if int(workflowlevel1) != 0:
         q = {
-            'program__id': program,
+            'workflowlevel1__id': workflowlevel1,
         }
     # if we have an indicator type active
     if int(type) != 0:
@@ -777,7 +783,7 @@ def program_indicators_json(AjaxableResponseMixin,program,indicator,type):
         q.update(s)
 
     indicators = Indicator.objects.all().filter(**q).annotate(data_count=Count('collecteddata'))
-    return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
+    return render_to_response(template_name, {'indicators': indicators, 'workflowlevel1_id': workflowlevel1})
 
 
 def tool(request):
@@ -790,35 +796,36 @@ def tool(request):
 
 
 # REPORT VIEWS
-def indicator_report(request, program=0, indicator=0, type=0):
+def indicator_report(request, workflowlevel1=0, indicator=0, type=0):
     """
     This is the indicator library report.  List of all indicators across a country or countries filtered by
-    program.  Lives in the "Report" navigation.
+    workflowlevel1.  Lives in the "Report" navigation.
     URL: indicators/report/0/
     :param request:
-    :param program:
+    :param workflowlevel1:
     :return:
     """
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+
+    getPrograms = WorkflowLevel1.objects.all().filter( country__in=countries).distinct()
     getIndicatorTypes = IndicatorType.objects.all()
 
     filters = {}
-    if int(program) != 0:
-        filters['program__id'] = program
+    if int(workflowlevel1) != 0:
+        filters['workflowlevel1__id'] = workflowlevel1
     if int(type) != 0:
         filters['indicator_type'] = type
     if int(indicator) != 0:
         filters['id'] = indicator
-    if program == 0 and type == 0:
-        filters['program__country__in'] = countries
+    if workflowlevel1 == 0 and type == 0:
+        filters['workflowlevel1__country__in'] = countries
 
     indicator_data = Indicator.objects.filter(**filters)\
             .prefetch_related('sector')\
-            .select_related('program', 'external_service_record','indicator_type',\
+            .select_related('workflowlevel1', 'external_service_record','indicator_type',\
                 'disaggregation', 'reporting_frequency')\
-            .values('id','program__name','baseline','level__name','lop_target',\
-                   'program__id','external_service_record__external_service__name',\
+            .values('id','workflowlevel1__name','baseline','level__name','lop_target',\
+                   'workflowlevel1__id','external_service_record__external_service__name',\
                    'key_performance_indicator','name','indicator_type__id', 'indicator_type__indicator_type',\
                    'sector__sector','disaggregation__disaggregation_type',\
                    'means_of_verification','data_collection_method',\
@@ -828,8 +835,9 @@ def indicator_report(request, program=0, indicator=0, type=0):
     data = json.dumps(list(indicator_data), cls=DjangoJSONEncoder)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
+
     return render(request, "indicators/report.html", {
-                  'program': program,
+                  'workflowlevel1': workflowlevel1,
                   'getPrograms': getPrograms,
                   'getIndicatorTypes': getIndicatorTypes,
                   'getIndicators': indicator_data,
@@ -840,30 +848,30 @@ class IndicatorReport(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
 
         getIndicatorTypes = IndicatorType.objects.all()
 
-        program = int(self.kwargs['program'])
+        workflowlevel1 = int(self.kwargs['workflowlevel1'])
         indicator = int(self.kwargs['indicator'])
         type = int(self.kwargs['type'])
 
         filters = {}
-        if program != 0:
-            filters['program__id'] = program
+        if workflowlevel1 != 0:
+            filters['workflowlevel1__id'] = workflowlevel1
         if type != 0:
             filters['indicator_type'] = type
         if indicator != 0:
             filters['id'] = indicator
-        if program == 0 and type == 0:
-            filters['program__country__in'] = countries
+        if workflowlevel1 == 0 and type == 0:
+            filters['workflowlevel1__country__in'] = countries
 
         getIndicators = Indicator.objects.filter(**filters)\
             .prefetch_related('sector')\
-            .select_related('program', 'external_service_record','indicator_type',\
+            .select_related('workflowlevel1', 'external_service_record','indicator_type',\
                 'disaggregation', 'reporting_frequency')\
-            .values('id','program__name','baseline','level__name','lop_target',\
-                   'program__id','external_service_record__external_service__name',\
+            .values('id','workflowlevel1__name','baseline','level__name','lop_target',\
+                   'workflowlevel1__id','external_service_record__external_service__name',\
                    'key_performance_indicator','name','indicator_type__indicator_type',\
                    'sector__sector','disaggregation__disaggregation_type',\
                    'means_of_verification','data_collection_method',\
@@ -887,20 +895,20 @@ class IndicatorReport(View, AjaxableResponseMixin):
         return JsonResponse(get_indicators, safe=False)
 
 
-def programIndicatorReport(request, program=0):
+def WorkflowLevel1IndicatorReport(request, workflowlevel1=0):
     """
-    This is the GRID report or indicator plan for a program.  Shows a simple list of indicators sorted by level
+    This is the GRID report or indicator plan for a workflowlevel1.  Shows a simple list of indicators sorted by level
     and number. Lives in the "Indicator" home page as a link.
-    URL: indicators/program_report/[program_id]/
+    URL: indicators/workflowlevel1_report/[workflowlevel1_id]/
     :param request:
-    :param program:
+    :param workflowlevel1:
     :return:
     """
-    program = int(program)
+    workflowlevel1 = int(workflowlevel1)
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-    getIndicators = Indicator.objects.all().filter(program__id=program).select_related().order_by('level', 'number')
-    getProgram = Program.objects.get(id=program)
+    getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
+    getIndicators = Indicator.objects.all().filter(workflowlevel1__id=workflowlevel1).select_related().order_by('level', 'number')
+    getProgram = WorkflowLevel1.objects.get(id=workflowlevel1)
 
     getIndicatorTypes = IndicatorType.objects.all()
 
@@ -913,7 +921,7 @@ def programIndicatorReport(request, program=0):
             Q(name__icontains=request.GET["search"]) |
             Q(number__icontains=request.GET["search"]) |
             Q(definition__startswith=request.GET["search"])
-        ).filter(program__id=program).select_related().order_by('level', 'number')
+        ).filter(workflowlevel1__id=workflowlevel1).select_related().order_by('level', 'number')
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/grid_report.html", {'getIndicators': getIndicators, 'getPrograms': getPrograms,
@@ -922,23 +930,23 @@ def programIndicatorReport(request, program=0):
                                                            'getIndicatorTypes': getIndicatorTypes})
 
 
-def indicator_data_report(request, id=0, program=0, type=0):
+def indicator_data_report(request, id=0, workflowlevel1=0, type=0):
     """
-    This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
+    This is the Indicator Visual report for each indicator and workflowlevel1.  Displays a list collected data entries
     and sums it at the bottom.  Lives in the "Reports" navigation.
-    URL: indicators/data/[id]/[program]/[type]
+    URL: indicators/data/[id]/[workflowlevel1]/[type]
     :param request:
     :param id: Indicator ID
-    :param program: Program ID
+    :param workflowlevel1: Program ID
     :param type: Type ID
     :return:
     """
     countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-    getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
-    getIndicatorTypes = IndicatorType.objects.all()
+    getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
+    getIndicators = Indicator.objects.select_related().filter(workflowlevel1__country__in=countries)
+    getTypes = IndicatorType.objects.all()
     indicator_name = None
-    program_name = None
+    workflowlevel1_name = None
     type_name = None
     q = {'indicator__id__isnull': False}
     z = None
@@ -953,17 +961,17 @@ def indicator_data_report(request, id=0, program=0, type=0):
     else:
         getSiteProfile = SiteProfile.objects.all().select_related()
         z = {
-            'indicator__program__country__in': countries,
+            'indicator__workflowlevel1__country__in': countries,
         }
 
-    if int(program) != 0:
-        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program).select_related()
-        program_name = Program.objects.get(id=program).name
+    if int(workflowlevel1) != 0:
+        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__workflowlevel1__id=workflowlevel1).select_related()
+        workflowlevel1_name = WorkflowLevel1.objects.get(id=workflowlevel1).name
         q = {
-            'program__id': program
+            'workflowlevel1__id': workflowlevel1
         }
-        # redress the indicator list based on program
-        getIndicators = Indicator.objects.select_related().filter(program=program)
+        # redress the indicator list based on workflowlevel1
+        getIndicators = Indicator.objects.select_related().filter(workflowlevel1=workflowlevel1)
 
     if int(type) != 0:
         type_name = IndicatorType.objects.get(id=type).indicator_type
@@ -976,7 +984,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
 
     if request.method == "GET" and "search" in request.GET:
         queryset = CollectedData.objects.filter(**q).filter(
-            Q(agreement__project_name__contains=request.GET["search"]) |
+            Q(workflowlevel2__project_name__contains=request.GET["search"]) |
             Q(description__icontains=request.GET["search"]) |
             Q(indicator__name__contains=request.GET["search"])
         ).select_related()
@@ -984,38 +992,33 @@ def indicator_data_report(request, id=0, program=0, type=0):
 
         queryset = CollectedData.objects.all().filter(**q).select_related()
 
-    # pass query to table and configure
-    table = IndicatorDataTable(queryset)
-    table.paginate(page=request.GET.get('page', 1), per_page=20)
-
-    RequestConfig(request).configure(table)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/data_report.html",
                   {'getQuantitativeData': queryset, 'countries': countries, 'getSiteProfile': getSiteProfile,
                    'getPrograms': getPrograms, 'getIndicators': getIndicators,
-                   'getIndicatorTypes': getIndicatorTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
-                   'id': id, 'program': program, 'type': type, 'indicator': id, 'indicator_name': indicator_name,
-                   'type_name': type_name, 'program_name': program_name})
+                   'getTypes': getTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
+                   'id': id, 'workflowlevel1': workflowlevel1, 'type': type, 'indicator': id, 'indicator_name': indicator_name,
+                   'type_name': type_name, 'workflowlevel1_name': workflowlevel1_name})
 
 
 class IndicatorReportData(View, AjaxableResponseMixin):
     """
     This is the Indicator Visual report data, returns a json object of report data to be displayed in the table report
-    URL: indicators/report_data/[id]/[program]/
+    URL: indicators/report_data/[id]/[workflowlevel1]/
     :param request:
     :param id: Indicator ID
-    :param program: Program ID
+    :param workflowlevel1: Program ID
     :param type: Type ID
     :return: json dataset
     """
 
-    def get(self, request, program, type, id):
-        q = {'program__id__isnull': False}
-        # if we have a program filter active
-        if int(program) != 0:
+    def get(self, request, workflowlevel1, type, id):
+        q = {'workflowlevel1__id__isnull': False}
+        # if we have a workflowlevel1 filter active
+        if int(workflowlevel1) != 0:
             q = {
-                'program__id': program,
+                'workflowlevel1__id': workflowlevel1,
             }
         # if we have an indicator type active
         if int(type) != 0:
@@ -1032,17 +1035,17 @@ class IndicatorReportData(View, AjaxableResponseMixin):
 
         countries = getCountry(request.user)
 
-        indicator = Indicator.objects.filter(program__country__in=countries).filter(**q).values(\
-            'id', 'program__name', 'baseline','level__name','lop_target','program__id',\
+        indicator = Indicator.objects.filter(workflowlevel1__country__in=countries).filter(**q).values(\
+            'id', 'workflowlevel1__name', 'baseline','level__name','lop_target','workflowlevel1__id',\
             'external_service_record__external_service__name', 'key_performance_indicator',\
-            'name','indicator_type__id', 'indicator_type__indicator_type', \
+            'name','indicator_type__id', 'indicator_type__indicator_type',\
             'sector__sector').order_by('create_date')
 
         #indicator = {x['id']:x for x in indcator}.values()
 
-        indicator_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(
+        indicator_count = Indicator.objects.all().filter(workflowlevel1__country__in=countries).filter(**q).filter(
             collecteddata__isnull=True).distinct().count()
-        indicator_data_count = Indicator.objects.all().filter(program__country__in=countries).filter(**q).filter(collecteddata__isnull=False).distinct().count()
+        indicator_data_count = Indicator.objects.all().filter(workflowlevel1__country__in=countries).filter(**q).filter(collecteddata__isnull=False).distinct().count()
 
         indicator_serialized = json.dumps(list(indicator))
 
@@ -1074,15 +1077,15 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        program = kwargs['program']
+        workflowlevel1 = kwargs['workflowlevel1']
         indicator = kwargs['indicator']
         type = kwargs['type']
 
-        q = {'program__id__isnull': False}
-        # if we have a program filter active
-        if int(program) != 0:
+        q = {'workflowlevel1__id__isnull': False}
+        # if we have a workflowlevel1 filter active
+        if int(workflowlevel1) != 0:
             q = {
-                'indicator__program__id': program,
+                'indicator__workflowlevel1__id': workflowlevel1,
             }
         # if we have an indicator type active
         if int(type) != 0:
@@ -1097,13 +1100,15 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             }
             q.update(s)
 
-        getCollectedData = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
+
+        getCollectedData = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'workflowlevel1',
                                                                         'indicator__objectives',
                                                                         'indicator__strategic_objectives').filter(
-            program__country__in=countries).filter(
+            workflowlevel1__country__in=countries).filter(
             **q).order_by(
-            'indicator__program__name',
-            'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__program__id', 'indicator__program__name',
+
+            'indicator__workflowlevel1__name',
+            'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__workflowlevel1__name',
                                         'indicator__indicator_type__indicator_type', 'indicator__indicator_type__id', 'indicator__level__name',
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
@@ -1112,7 +1117,8 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
 
         #getCollectedData = {x['id']:x for x in getCollectedData}.values()
 
-        collected_sum = CollectedData.objects.select_related('periodic_target').filter(program__country__in=countries).filter(**q).aggregate(
+
+        collected_sum = CollectedData.objects.select_related('periodic_target').filter(workflowlevel1__country__in=countries).filter(**q).aggregate(
             Sum('periodic_target__target'), Sum('achieved'))
 
         # datetime encoding breaks without using this
@@ -1140,40 +1146,44 @@ class DisaggregationReportMixin(object):
         context = super(DisaggregationReportMixin, self).get_context_data(**kwargs)
 
         countries = getCountry(self.request.user)
-        programs = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
-        indicators = Indicator.objects.filter(program__country__in=countries)
+        programs = WorkflowLevel1.objects.filter(country__in=countries).distinct()
+        indicators = Indicator.objects.filter(workflowlevel1__country__in=countries)
 
-        program_selected = Program.objects.filter(id=kwargs.get('program', None)).first()
+        program_selected = WorkflowLevel1.objects.filter(id=kwargs.get('workflowlevel1', None)).first()
         if not program_selected:
             program_selected = programs.first()
 
         if program_selected:
             if program_selected.indicator_set.count() > 0:
-                indicators = indicators.filter(program=program_selected.id)
+                indicators = indicators.filter(workflowlevel1=program_selected.id)
 
         disagg_query = "SELECT i.id AS IndicatorID, dt.disaggregation_type AS DType, "\
             "l.customsort AS customsort, l.label AS Disaggregation, SUM(dv.value) AS Actuals "\
                 "FROM indicators_collecteddata_disaggregation_value AS cdv "\
                 "INNER JOIN indicators_collecteddata AS c ON c.id = cdv.collecteddata_id "\
                 "INNER JOIN indicators_indicator AS i ON i.id = c.indicator_id "\
-                "INNER JOIN indicators_indicator_program AS ip ON ip.indicator_id = i.id "\
-                "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
+                "INNER JOIN indicators_indicator_workflowlevel1 AS ip ON ip.indicator_id = i.id "\
+                "INNER JOIN workflow_workflowlevel1 AS p ON p.id = ip.workflowlevel1_id "\
                 "INNER JOIN indicators_disaggregationvalue AS dv ON dv.id = cdv.disaggregationvalue_id "\
                 "INNER JOIN indicators_disaggregationlabel AS l ON l.id = dv.disaggregation_label_id "\
                 "INNER JOIN indicators_disaggregationtype AS dt ON dt.id = l.disaggregation_type_id "\
                 "WHERE p.id = %s "\
                 "GROUP BY IndicatorID, DType, customsort, Disaggregation "\
                 "ORDER BY IndicatorID, DType, customsort, Disaggregation;"  % program_selected.id
-        cursor = connection.cursor()
-        cursor.execute(disagg_query)
-        disdata = dictfetchall(cursor)
+        # we need to limit this catch exception but we should fix the manual sql query first
+        try:
+            cursor = connection.cursor()
+            cursor.execute(disagg_query)
+            disdata = dictfetchall(cursor)
+        except:
+            disdata = {}
 
 
         indicator_query = "SELECT DISTINCT p.id as PID, i.id AS IndicatorID, i.number AS INumber, i.name AS Indicator, "\
             "i.lop_target AS LOP_Target, SUM(cd.achieved) AS Overall "\
             "FROM indicators_indicator AS i "\
-            "INNER JOIN indicators_indicator_program AS ip ON ip.indicator_id = i.id "\
-            "INNER JOIN workflow_program AS p ON p.id = ip.program_id "\
+            "INNER JOIN indicators_indicator_workflowlevel1 AS ip ON ip.indicator_id = i.id "\
+            "INNER JOIN workflow_workflowlevel1 AS p ON p.id = ip.workflowlevel1_id "\
             "LEFT OUTER JOIN indicators_collecteddata AS cd ON i.id = cd.indicator_id "\
             "WHERE p.id = %s "\
             "GROUP BY PID, IndicatorID "\
@@ -1278,13 +1288,13 @@ class TVAReport(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TVAReport, self).get_context_data(**kwargs)
         countries = getCountry(self.request.user)
-        filters = {'program__country__in': countries}
-        program = Program.objects.filter(id=kwargs.get('program', None)).first()
+        filters = {'workflowlevel1__country__in': countries}
+        workflowlevel1 = WorkflowLevel1.objects.filter(id=kwargs.get('workflowlevel1', None)).first()
         indicator_type = IndicatorType.objects.filter(id=kwargs.get('type', None)).first()
         indicator = Indicator.objects.filter(id=kwargs.get('indicator', None)).first()
 
-        if program:
-            filters['program'] = program.pk
+        if workflowlevel1:
+            filters['workflowlevel1'] = workflowlevel1.pk
         if indicator_type:
             filters['indicator__indicator_type__id'] = indicator_type.pk
         if indicator:
@@ -1292,28 +1302,34 @@ class TVAReport(TemplateView):
 
         indicators = Indicator.objects\
             .select_related('sector')\
-            .prefetch_related('indicator_type', 'level', 'program')\
+            .prefetch_related('indicator_type', 'level', 'workflowlevel1')\
             .filter(**filters)\
             .annotate(actuals=Sum('collecteddata__achieved'))
             #.annotate(actuals=Sum('collecteddata__disaggregation_value__value'))
         context['data'] = indicators
-        context['getIndicators'] = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
-        context['getPrograms'] = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        context['getIndicators'] = Indicator.objects.filter(workflowlevel1__country__in=countries).exclude(collecteddata__isnull=True)
+        context['getPrograms'] = WorkflowLevel1.objects.filter(country__in=countries).distinct()
         context['getIndicatorTypes'] = IndicatorType.objects.all()
-        context['program'] = program
+
+        """
+        WHY IS THIS REPEASE AND WITH A HARDCODED WORKFLOW NAME?  SHOULD BE REMOVED GWL
+        indicators = Indicator.objects.filter(workflowlevel1=223)\
+            .annotate(actuals=Sum('collecteddata__disaggregation_value__value'))\
+            #.values('actuals', 'number', 'name', 'indicator_type__indicator_type')
+        """
+        context['program'] = workflowlevel1
         context['export_to_pdf_url'] = True
         return context
 
 
-
 class CollectedDataList(ListView):
     """
-    This is the Indicator CollectedData report for each indicator and program.  Displays a list collected data entries
+    This is the Indicator CollectedData report for each indicator and workflowlevel1.  Displays a list collected data entries
     and sums it at the bottom.  Lives in the "Reports" navigation.
-    URL: indicators/data/[id]/[program]/[type]
+    URL: indicators/data/[id]/[workflowlevel1]/[type]
     :param request:
     :param indicator: Indicator ID
-    :param program: Program ID
+    :param workflowlevel1: Program ID
     :param type: Type ID
     :return:
     """
@@ -1323,26 +1339,26 @@ class CollectedDataList(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(
+        getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
+        getIndicators = Indicator.objects.all().filter(workflowlevel1__country__in=countries).exclude(
             collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
-        program = self.kwargs['program']
+        workflowlevel1 = self.kwargs['workflowlevel1']
         indicator = self.kwargs['indicator']
         type = self.kwargs['type']
         indicator_name = ""
         type_name = ""
-        program_name = ""
+        workflowlevel1_name = ""
 
-        q = {'program__id__isnull': False}
-        # if we have a program filter active
-        if int(program) != 0:
+        q = {'workflowlevel1__id__isnull': False}
+        # if we have a workflowlevel1 filter active
+        if int(workflowlevel1) != 0:
             q = {
-                'program__id': program,
+                'workflowlevel1__id': workflowlevel1,
             }
-            # redress the indicator list based on program
-            getIndicators = Indicator.objects.select_related().filter(program=program)
-            program_name = Program.objects.get(id=program)
+            # redress the indicator list based on workflowlevel1
+            getIndicators = Indicator.objects.select_related().filter(workflowlevel1=workflowlevel1)
+            workflowlevel1_name = WorkflowLevel1.objects.get(id=workflowlevel1)
         # if we have an indicator type active
         if int(type) != 0:
             r = {
@@ -1360,13 +1376,13 @@ class CollectedDataList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'program',
+        indicators = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'workflowlevel1',
                                                                   'indicator__objectives',
                                                                   'indicator__strategic_objectives').filter(
-            program__country__in=countries).filter(
+            workflowlevel1__country__in=countries).filter(
             **q).order_by(
-            'indicator__program__name',
-            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__program__name',
+            'indicator__workflowlevel1__name',
+            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__workflowlevel1__name',
                                         'indicator__indicator_type__indicator_type', 'indicator__level__name',
                                         'indicator__sector__sector', 'date_collected', 'indicator__baseline',
                                         'indicator__lop_target', 'indicator__key_performance_indicator',
@@ -1382,11 +1398,11 @@ class CollectedDataList(ListView):
         return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
                                                     'getIndicatorTypes': getIndicatorTypes,
                                                     'getIndicators': getIndicators,
-                                                    'program': program, 'indicator': indicator, 'type': type,
-                                                    'filter_program': program_name, 'filter_indicator': indicator_name,
-                                                    'indicator': indicator, 'program': program, 'type': type,
+                                                    'workflowlevel1': workflowlevel1, 'indicator': indicator, 'type': type,
+                                                    'filter_workflowlevel1': workflowlevel1_name, 'filter_indicator': indicator_name,
+                                                    'indicator': indicator, 'workflowlevel1': workflowlevel1, 'type': type,
                                                     'indicator_name': indicator_name,
-                                                    'program_name': program_name, 'type_name': type_name})
+                                                    'workflowlevel1_name': workflowlevel1_name, 'type_name': type_name})
 
 
 class IndicatorExport(View):
@@ -1400,12 +1416,12 @@ class IndicatorExport(View):
             del kwargs['id']
         if int(kwargs['indicator_type']) == 0:
             del kwargs['indicator_type']
-        if int(kwargs['program']) == 0:
-            del kwargs['program']
+        if int(kwargs['workflowlevel1']) == 0:
+            del kwargs['workflowlevel1']
 
         countries = getCountry(request.user)
 
-        queryset = Indicator.objects.filter(**kwargs).filter(program__country__in=countries)
+        queryset = Indicator.objects.filter(**kwargs).filter(workflowlevel1__country__in=countries)
 
 
         indicator = IndicatorResource().export(queryset)
@@ -1422,8 +1438,8 @@ class IndicatorDataExport(View):
 
         if int(kwargs['indicator']) == 0:
             del kwargs['indicator']
-        if int(kwargs['program']) == 0:
-            del kwargs['program']
+        if int(kwargs['workflowlevel1']) == 0:
+            del kwargs['workflowlevel1']
         if int(kwargs['type']) == 0:
             del kwargs['type']
         else:
@@ -1432,7 +1448,7 @@ class IndicatorDataExport(View):
 
         countries = getCountry(request.user)
 
-        queryset = CollectedData.objects.filter(**kwargs).filter(indicator__program__country__in=countries)
+        queryset = CollectedData.objects.filter(**kwargs).filter(indicator__workflowlevel1__country__in=countries)
         dataset = CollectedDataResource().export(queryset)
         response = HttpResponse(dataset.csv, content_type='application/ms-excel')
         response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'

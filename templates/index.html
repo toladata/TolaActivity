@@ -2,275 +2,11 @@
 
 {% block content %}
 
-<script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
-<script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
 
-<script>
-
-$(function () {
-    $('#container').highcharts({
-        chart: {
-            type: 'bar'
-        },
-        title: {
-            text: 'Program Projects by Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>'
-        },
-        xAxis: {
-            categories: ['Initiation', 'Tracking']
-        },
-        yAxis: {
-            min: 0,
-            title: {
-                text: 'Number of Approved, Pending or Open Projects'
-            }
-        },
-        legend: {
-            reversed: true
-        },
-        plotOptions: {
-            series: {
-                stacking: 'normal',
-                point: {
-                    events: {
-                        click: function () {
-                            location.href = this.options.ownURL;
-                        }
-                    }
-                }
-            }
-        },
-
-        series: [
-        {
-            name: 'Approved',
-            data: [{ y:{{ agreement_approved_count }},ownURL:'/workflow/projectagreement_list/0/none/' }, { y:{{ complete_approved_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
-        },
-        {
-            name: 'Pending',
-            data: [{ y:{{ agreement_wait_count }},ownURL:'/workflow/projectagreement_list/0/none/' }, { y:{{ complete_wait_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
-        },
-        {
-            name: 'Awaiting Approval',
-            data: [{ y:{{ agreement_awaiting_count }},ownURL:'/workflow/projectagreement_list/0/none/' }, { y:{{ complete_awaiting_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
-        },
-        {
-            name: 'Open',
-            data: [{ y:{{ agreement_open_count }},ownURL:'/workflow/projectagreement_list/0/none/' }, { y:{{ complete_open_count }},ownURL:'/workflow/projectcomplete_list/0/' }],
-        },
-
-        ]
-
-    });
-});
-
-
-
-$(function () {
-    $('#container_column').highcharts({
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: 'KPI Targets v. Actuals'
-        },
-        xAxis: {
-            categories: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  '{{ indicator.indicator__number }}', {% endfor %}]
-        },
-        yAxis: {
-            min: 0,
-            title: {
-                text: 'Results'
-            }
-        },
-        tooltip: {
-            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b><br/>',
-            shared: true
-        },
-        plotOptions: {
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0
-            }
-        },
-        series: [{
-            name: 'Targets',
-            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator__lop_target }}, {% endfor %}  ]
-        }, {
-            name: 'Actuals',
-            data: [ {% for indicator in getQuantitativeDataSums|slice:":20" %}  {{ indicator.actuals }}, {% endfor %}   ]
-        }]
-    });
-});
-
-
-//SPARKLINE CHART
-$(function () {
-    /**
-     * Create a constructor for sparklines that takes some sensible defaults and merges in the individual
-     * chart options. This function is also available from the jQuery plugin as $(element).highcharts('SparkLine').
-     */
-    Highcharts.SparkLine = function (a, b, c) {
-        var hasRenderToArg = typeof a === 'string' || a.nodeName,
-            options = arguments[hasRenderToArg ? 1 : 0],
-            defaultOptions = {
-                exporting: { enabled: false },
-                chart: {
-                    renderTo: (options.chart && options.chart.renderTo) || this,
-                    backgroundColor: null,
-                    borderWidth: 0,
-                    type: 'area',
-                    margin: [2, 0, 2, 0],
-                    width: 120,
-                    height: 20,
-                    style: {
-                        overflow: 'visible'
-                    },
-                    skipClone: true
-                },
-                title: {
-                    text: ''
-                },
-                credits: {
-                    enabled: false
-                },
-                xAxis: {
-                    labels: {
-                        enabled: false
-                    },
-                    title: {
-                        text: null
-                    },
-                    startOnTick: false,
-                    endOnTick: false,
-                    tickPositions: []
-                },
-                yAxis: {
-                    endOnTick: false,
-                    startOnTick: false,
-                    labels: {
-                        enabled: false
-                    },
-                    title: {
-                        text: null
-                    },
-                    tickPositions: [0]
-                },
-                legend: {
-                    enabled: false
-                },
-                tooltip: {
-                    backgroundColor: null,
-                    borderWidth: 0,
-                    shadow: false,
-                    useHTML: true,
-                    hideDelay: 0,
-                    shared: true,
-                    padding: 0,
-                    positioner: function (w, h, point) {
-                        return { x: point.plotX - w / 2, y: point.plotY - h };
-                    }
-                },
-                plotOptions: {
-                    series: {
-                        animation: false,
-                        lineWidth: 1,
-                        shadow: false,
-                        states: {
-                            hover: {
-                                lineWidth: 1
-                            }
-                        },
-                        marker: {
-                            radius: 1,
-                            states: {
-                                hover: {
-                                    radius: 2
-                                }
-                            }
-                        },
-                        fillOpacity: 0.25
-                    },
-                    column: {
-                        negativeColor: '#910000',
-                        borderColor: 'silver'
-                    }
-                }
-            };
-
-        options = Highcharts.merge(defaultOptions, options);
-
-        return hasRenderToArg ?
-            new Highcharts.Chart(a, options, c) :
-            new Highcharts.Chart(options, b);
-    };
-
-    var start = +new Date(),
-        $tds = $('td[data-sparkline]'),
-        fullLen = $tds.length,
-        n = 0;
-
-    // Creating 153 sparkline charts is quite fast in modern browsers, but IE8 and mobile
-    // can take some seconds, so we split the input into chunks and apply them in timeouts
-    // in order avoid locking up the browser process and allow interaction.
-    function doChunk() {
-        var time = +new Date(),
-            i,
-            len = $tds.length,
-            $td,
-            stringdata,
-            arr,
-            data,
-            chart;
-
-
-
-        for (i = 0; i < len; i += 1) {
-            $td = $($tds[i]);
-            stringdata = $td.data('sparkline');
-            arr = stringdata.split('; ');
-            data = $.map(arr[0].split(', '), parseFloat);
-            chart = {};
-
-            if (arr[1]) {
-                chart.type = arr[1];
-            }
-
-
-            $td.highcharts('SparkLine', {
-                series: [{
-                    data: data,
-                    pointStart: 0
-                }],
-                xAxis: {
-                    categories: ['Target', 'Actuals'],
-                },
-                tooltip: {
-                    headerFormat: '<span style="font-size: 10px"> {point.key} :</span><br/>',
-                    pointFormat: '<b>{point.y}</b>'
-                },
-                chart: chart
-            });
-
-            n += 1;
-
-            // If the process takes too much time, run a timeout to allow interaction with the browser
-            if (new Date() - time > 500) {
-                $tds.splice(0, i + 1);
-                setTimeout(doChunk, 0);
-                break;
-            }
-
-        }
-    }
-    doChunk();
-
-});
-
-</script>
     {% for approval in user_pending_approvals %}
         <div class="alert alert-success fade in">
                 <a class="close" data-dismiss="alert" href="#">&times;</a>
-                <p>Project Initiation, <span class="label label-success">{{approval}}</span>, is awaiting your <a href="/workflow/projectagreement_update/{{approval.id}}/#approval">approval</a></p>
+                <p>Project Initiation, <span class="label label-success">{{approval}}</span>, is awaiting your <a href="/workflow/projectagreement_update/{{approval.}}/">approval</a></p>
         </div>
     {% endfor %}
         <br />
@@ -280,7 +16,7 @@ $(function () {
         <div class="panel-heading">
             <div class="row">
                 <div class="col-md-4">
-                    <h4>Tola-Activity Dashboard</h4>
+                    <h4>TolaActivity Dashboard</h4>
                 </div>
 
                 <div class="col-md-6 col-md-offset-2">
@@ -300,19 +36,19 @@ $(function () {
                         </div>
                         <div class="btn-group">
                             <button class="btn btn-default btn-sm dropdown-toggle" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="false">
-                            Filter by Program <span class="caret"></span>
+                            Filter by {{ WORKFLOWLEVEL1 }} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li role="presentation"><a role="menuitem" tabindex="-1" href="/dashboard/{% if getFilteredName %}{{ getFilteredName.id }}{% else %}0{% endif %}/0/">-- All --</a></li>
-                                {%for program in programs%}
+                                {%for workflowlevel1 in programs%}
                                 <li class="list-group-item">
-                                    <a href="/dashboard/{{ program.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/">{{ program.name }}</a>
+                                    <a href="/dashboard/{{ workflowlevel1.id }}/{% if sector %}{{ sector }}{% else %}0{% endif %}/">{{ workflowlevel1.name }}</a>
                                 </li>
                                 {%endfor%}
                             </ul>
                         </div>
                         {% if report_server == False%}
-                          <a href="/workflow/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a Project</a>
+                          <a href="/workflow/dashboard/project/0/" class="btn btn-default btn-sm btn-success">Create a {{ WORKFLOWLEVEL2 }}</a>
                         {% endif %}
                     </div>
                 </div>
@@ -335,7 +71,7 @@ $(function () {
                         </tr>
                     {%for value in count_evidence  %}
                         <tr>
-                           <td>{{value.indicator__program__country__country}}</td>
+                           <td>{{value.indicator__workflowlevel1__country__country}}</td>
                            <td>{{value.indicator_count}}</td>
                            <td>{{value.evidence_count}}</td>
                         </tr>
@@ -385,13 +121,15 @@ $(function () {
                                 </tr>
                                 <tr>
                                     <th># of Indicators</th>
-                                    <th>Target/Actuals</th>
+                                    <th>Target</th>
+                                    <th>Actuals</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-sparkline">
+                            <tbody>
                                 <tr>
-                                   <th>{{value.indicators}}</th>
-                                   <td data-sparkline="{{value.targets}}, {{value.actuals}};"/>
+                                   <td>{{value.indicators}}</td>
+                                   <td>{{value.targets}}</td>
+                                   <td>{{value.actuals}}</td>
                                 </tr>
                             </tbody>
                         {%endfor%}
@@ -417,11 +155,11 @@ $(function () {
                 </tr>
                 <tr>
                     <td>Adoption of Workflow</td>
-                    <td class="status" bgcolor="{{ workflow_adoption }}">Total Programs: {{ count_program}} <br/>Using Workflow: {{ count_program_agreement }} </td>
+                    <td class="status" bgcolor="{{ workflow_adoption }}">Total {{ WORKFLOWLEVEL1 }}s: {{ count_program}} <br/>Using Workflow: {{ count_program_agreement }} </td>
                 </tr>
                 <tr>
                     <td>Adoption of Indicator</td>
-                    <td class="status" bgcolor="{{ indicator_adoption }}">Total Programs: {{ count_program}} <br/>Using Indicator Plans: {{ count_indicator }} </td>
+                    <td class="status" bgcolor="{{ indicator_adoption }}">Total {{ WORKFLOWLEVEL1 }}s: {{ count_program}} <br/>Using Indicator Plans: {{ count_indicator }} </td>
                 </tr>
                 <tr>
                     <td>Indicators w/ Evidence</td>
@@ -449,24 +187,42 @@ $(function () {
             </div>
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <div id="container" style=" width: 100%; height: 400px; margin: 0 auto; float:right"></div>
+                    <p><b>{{ WORKFLOWLEVEL2 }} Status {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</b></p>
+                    <canvas id="myChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
+<script src="{{ STATIC_URL }}/js/Chart.bundle.min.js"></script>
+<script>
 
-    <div class="row">
-        <div class="col-md-20">
-            <div class="panel panel-info">
-                <div class="panel-heading">Indicators {% if getFilteredName %} for {{ getFilteredName }} {% endif %}</div>
-                <div id="container_column" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-                <div class="panel-body">
-                {% load render_table from django_tables2 %}
-                {% render_table table %}
-                </div>
-            </div>
-        </div>
-    </div>
+var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ["Total", "Tracking", "Waiting for Approval", "Open", "Closed"],
+        datasets: [{
+            label: '# of {{ WORKFLOWLEVEL2}}s',
+            data: [{{ project_total_count }}, {{ project_approved_count }}, {{ project_waiting_count}} , {{ project_open_count}}, {{ project_closed_count}} ],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(255, 192, 192, 0.2)',
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(206, 192, 192, 0.2)',
+            ],
+            borderWidth: 1
+        }]
+    },
+});
 
+</script>
 
 {% endblock content %}

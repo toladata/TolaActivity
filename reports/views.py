@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView, View
-from workflow.models import ProjectAgreement, ProjectComplete, Program
+from workflow.models import WorkflowLevel2, WorkflowLevel1
 from indicators.models import CollectedData, Indicator
 from .forms import FilterForm
 
@@ -21,34 +21,34 @@ def make_filter(my_request):
     Build a list of filters for each object
     """
     query_attrs = {}
-    query_attrs['program'] = {}
-    query_attrs['project'] = {}
+    query_attrs['workflowlevel1'] = {}
+    query_attrs['workflowlevel2'] = {}
     query_attrs['indicator'] = {}
     query_attrs['collecteddata'] = {}
     for param, val in my_request.iteritems():
-        if param == 'program':
-            query_attrs['program']['id__in'] = val.split(',')
-            query_attrs['project']['program__id__in'] = val.split(',')
-            query_attrs['indicator']['program__id__in'] = val.split(',')
-            query_attrs['collecteddata']['indicator__program__id__in'] = val.split(',')
+        if param == 'workflowlevel1':
+            query_attrs['workflowlevel1']['id__in'] = val.split(',')
+            query_attrs['workflowlevel2']['workflowlevel1__id__in'] = val.split(',')
+            query_attrs['indicator']['workflowlevel1__id__in'] = val.split(',')
+            query_attrs['collecteddata']['indicator__workflowlevel1__id__in'] = val.split(',')
         elif param == 'sector':
-            query_attrs['program']['sector__in'] = val.split(',')
-            query_attrs['project']['sector__in'] = val.split(',')
+            query_attrs['workflowlevel1']['sector__in'] = val.split(',')
+            query_attrs['workflowlevel2']['sector__in'] = val.split(',')
             query_attrs['indicator']['sector__in'] = val.split(',')
             query_attrs['collecteddata']['indicator__sector__in'] = val.split(',')
         elif param == 'country':
-            query_attrs['program']['country__id__in'] = val.split(',')
-            query_attrs['project']['program__country__id__in'] = val.split(',')
-            query_attrs['indicator']['program__country__in'] = val.split(',')
-            query_attrs['collecteddata']['program__country__in'] = val.split(',')
+            query_attrs['workflowlevel1']['country__id__in'] = val.split(',')
+            query_attrs['workflowlevel2']['workflowlevel1__country__id__in'] = val.split(',')
+            query_attrs['indicator']['workflowlevel1__country__in'] = val.split(',')
+            query_attrs['collecteddata']['workflowlevel1__country__in'] = val.split(',')
         elif param == 'indicator__id':
             query_attrs['indicator']['id'] = val
             query_attrs['collecteddata']['indicator__id'] = val
         elif param == 'approval':
             if val == "new":
-                query_attrs['project']['approval'] = ""
+                query_attrs['workflowlevel2']['status'] = ""
             else:
-                query_attrs['project']['approval'] = val
+                query_attrs['workflowlevel2']['status'] = val
         elif param == 'collecteddata__isnull':
             if val == "True":
                 query_attrs['indicator']['collecteddata__isnull'] = True
@@ -59,8 +59,8 @@ def make_filter(my_request):
             IGNORE EXPORT PARAM
             """
         else:
-            query_attrs['program'][param] = val
-            query_attrs['project'][param] = val
+            query_attrs['workflowlevel1'][param] = val
+            query_attrs['workflowlevel2'][param] = val
             query_attrs['indicator'][param] = val
             query_attrs['collecteddata'][param] = val
 
@@ -90,27 +90,25 @@ class ReportData(View, AjaxableResponseMixin):
     def get(self, request, *args, **kwargs):
 
         filter = make_filter(self.request.GET)
-        program_filter = filter['program']
-        project_filter = filter['project']
+        program_filter = filter['workflowlevel1']
+        project_filter = filter['workflowlevel2']
         indicator_filter = filter['indicator']
 
-        program = Program.objects.all().filter(**program_filter).values('gaitid', 'name','funding_status','cost_center','country__country','sector__sector')
-        approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='awaiting approval').count()
-        approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='approved').count()
-        rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='rejected').count()
-        inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(approval='in progress').count()
-        nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
+        workflowlevel1 = WorkflowLevel1.objects.all().filter(**program_filter).values('unique_id', 'name', 'funding_status', 'cost_center', 'country__country', 'sector__sector')
+        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='awaitingapproval').count()
+        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='tracking').count()
+        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(status='closed').count()
+        nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(status=None) | Q(status=""))).count()
 
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
 
-        program_serialized = json.dumps(list(program))
+        program_serialized = json.dumps(list(workflowlevel1))
 
         final_dict = {
-            'criteria': program_filter, 'program': program_serialized,
+            'criteria': program_filter, 'workflowlevel1': program_serialized,
             'approval_count': approval_count,
             'approved_count': approved_count,
-            'rejected_count': rejected_count,
             'inprogress_count': inprogress_count,
             'nostatus_count': nostatus_count,
             'indicator_count': indicator_count,
@@ -118,10 +116,10 @@ class ReportData(View, AjaxableResponseMixin):
         }
 
         if request.GET.get('export'):
-            program_export = Program.objects.all().filter(**program_filter)
+            program_export = WorkflowLevel1.objects.all().filter(**program_filter)
             program_dataset = ProgramResource().export(program_export)
             response = HttpResponse(program_dataset.csv, content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename=program_data.csv'
+            response['Content-Disposition'] = 'attachment; filename=workflowlevel1_data.csv'
             return response
 
         return JsonResponse(final_dict, safe=False)
@@ -133,17 +131,17 @@ class ProjectReportData(View, AjaxableResponseMixin):
     """
     def get(self, request, *args, **kwargs):
         filter = make_filter(self.request.GET)
-        project_filter = filter['project']
+        project_filter = filter['workflowlevel2']
         indicator_filter = filter['indicator']
 
         print project_filter
 
-        project = ProjectAgreement.objects.all().filter(**project_filter).values('program__name','project_name','activity_code','project_type__name','sector__sector','total_estimated_budget','approval')
-        approval_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='awaiting approval').count()
-        approved_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='approved').count()
-        rejected_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='rejected').count()
-        inprogress_count = ProjectAgreement.objects.all().filter(**project_filter).filter(program__funding_status="Funded", approval='in progress').count()
-        nostatus_count = ProjectAgreement.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
+        project = WorkflowLevel2.objects.all().filter(**project_filter).values('workflowlevel1__name','name','sub_sector__sector','sector__sector','total_estimated_budget','status')
+        approval_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(workflowlevel1__funding_status="Funded", status='awaiting approval').count()
+        approved_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(workflowlevel1__funding_status="Funded", status='approved').count()
+        rejected_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(workflowlevel1__funding_status="Funded", status='rejected').count()
+        inprogress_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(workflowlevel1__funding_status="Funded", status='in progress').count()
+        nostatus_count = WorkflowLevel2.objects.all().filter(**project_filter).filter(Q(Q(approval=None) | Q(approval=""))).count()
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
 
@@ -161,7 +159,7 @@ class ProjectReportData(View, AjaxableResponseMixin):
         }
 
         if request.GET.get('export'):
-            project_export = ProjectAgreement.objects.all().filter(**project_filter)
+            project_export = WorkflowLevel2.objects.all().filter(**project_filter)
             dataset = ProjectAgreementResource().export(project_export)
             response = HttpResponse(dataset.csv, content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=project_data.csv'
@@ -180,7 +178,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
         filter = make_filter(self.request.GET)
         indicator_filter = filter['indicator']
 
-        indicator = Indicator.objects.all().filter(**indicator_filter).values('id','program__name','program__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','collecteddata','key_performance_indicator')
+        indicator = Indicator.objects.all().filter(**indicator_filter).values('id','workflowlevel1__name','workflowlevel1__id','name', 'indicator_type__indicator_type', 'sector__sector','strategic_objectives','level__name','lop_target','collecteddata','key_performance_indicator')
         indicator_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=True).count()
         indicator_data_count = Indicator.objects.all().filter(**indicator_filter).filter(collecteddata__isnull=False).count()
 
@@ -215,7 +213,7 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
         filter = make_filter(self.request.GET)
         collecteddata_filter = filter['collecteddata']
 
-        collecteddata = CollectedData.objects.all().filter(**collecteddata_filter).values('indicator__program__name','indicator__name','indicator__number','targeted','achieved')
+        collecteddata = CollectedData.objects.all().filter(**collecteddata_filter).values('indicator__workflowlevel1__name','indicator__name','indicator__number','targeted','achieved')
 
         collecteddata_serialized = json.dumps(list(collecteddata))
 

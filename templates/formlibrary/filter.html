@@ -1,10 +1,10 @@
 
 <div class="btn-group" role="group">
   <select id="program" class="listoption_filters">
-    <option>Program(s)</option>
+    <option>{{ WORKFLOWLEVEL1 }}(s)</option>
     <option value="all">---ALL---</option>
-    {% for program in getPrograms %}
-      <option value="{{program.id}}">{{program.name}}</option>
+    {% for workflowlevel1 in getPrograms %}
+      <option value="{{workflowlevel1.id}}">{{workflowlevel1.name}}</option>
     {% endfor %}
   </select>
 </div>

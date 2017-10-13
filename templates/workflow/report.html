@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Dashboards</a></li>
+  <li><a href="/workflow/dashboard/0/">{{ WORKFLOWLEVEL1 }} Dashboards</a></li>
   <li class="active">Reports</li>
 </ol>
 
 {% endblock bread_crumb %}
 
-{% block page_title %}Project Report{% endblock %}
+{% block page_title %}{{ WORKFLOWLEVEL2 }} Report{% endblock %}
 
 {% block content %}
 
@@ -69,12 +69,12 @@
                     }
                 }],
                 columns: [
+
                     { title: "Edit", class: "noExport"},
-                    { title: "PID", class: "noExport", data: "program__id" },
+                    { title: "PID", class: "noExport", data: "workflowlevel1__id" },
                     { title: "SID", class: "noExport", data: "approval"},
-                    { title: "Program", data: "program__name",
-                		"defaultContent": "<i>Not set</i>"},
-                    { title: "Project Name", data: "project_name",},
+                    { title: "Program", data: "workflowlevel1__name", "defaultContent": "<i>Not set</i>"},
+                    { title: "{{ WORKFLOWLEVEL2 }}", data: "name",},
                     { title: "Sites", data: "site",
                     	"defaultContent": "<i>Not set</i>"},
                     { title: "Project Code", data: "activity_code",
@@ -97,8 +97,6 @@
                 	},
                     { title: "Total Project Budget",data: "total_estimated_budget",
                     	"defaultContent": "<i>Not set</i>"},
-                    { title: "Organizations Portion of Project Budget",data: "mc_estimated_budget",
-                    	"defaultContent": "<i>Not set</i>"},
                     { title: "Total Cost",data: "total_cost",
                     	"defaultContent": "<i>Not set</i>"}
                 ],
@@ -115,7 +113,7 @@
         }
 
         function agreement_report() {
-            // get the program and indicator id from the url
+            // get the workflowlevel1 and indicator id from the url
             agreement_id = document.URL.split('/')[5];
             status_id = document.URL.split('/')[6];
 

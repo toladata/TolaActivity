@@ -8,7 +8,6 @@ from workflow.models import TolaUser, TolaBookmarks
 from django.contrib.auth.models import User
 
 
-
 class RegistrationForm(UserChangeForm):
     """
     Form for registering a new account.
@@ -17,7 +16,8 @@ class RegistrationForm(UserChangeForm):
         user = kwargs.pop('initial')
         super(RegistrationForm, self).__init__(*args, **kwargs)
         del self.fields['password']
-        print user['username'].is_superuser
+        self.fields['tola_user_uuid'].widget = forms.HiddenInput()
+        #print user['username'].is_superuser
         # if they aren't a super user or User Admin don't let them change countries form field
         if 'User Admin' not in user['username'].groups.values_list('name', flat=True) and not user['username'].is_superuser:
             self.fields['countries'].widget.attrs['disabled'] = "disabled"
@@ -37,8 +37,8 @@ class RegistrationForm(UserChangeForm):
     helper.error_text_inline = True
     helper.help_text_inline = True
     helper.html5_required = True
-    helper.layout = Layout(Fieldset('','title', 'name', 'employee_number', 'user', 'username',
-                                    'country', 'countries','modified_by','created','updated'),
+    helper.layout = Layout(Fieldset('', 'tola_user_uuid', 'title', 'name', 'employee_number', 'user',
+                                    'country', 'countries'),
                            Submit('submit', 'Submit', css_class='btn-default'),
                            Reset('reset', 'Reset', css_class='btn-warning'))
 
@@ -53,7 +53,6 @@ class NewUserRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(NewUserRegistrationForm, self).__init__(*args, **kwargs)
-
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -73,7 +72,9 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     """
     class Meta:
         model = TolaUser
-        fields = ['title', 'country', 'privacy_disclaimer_accepted']
+        fields = ['title', 'privacy_disclaimer_accepted']
+
+    org = forms.CharField()
 
     def __init__(self, *args, **kwargs):
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
@@ -89,7 +90,7 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     helper.html5_required = True
     helper.form_tag = False
     helper.layout = Layout(
-        Fieldset('Information','title', 'country'),
+        Fieldset('Information','title', 'org'),
         Fieldset('Privacy Statement','privacy_disclaimer_accepted',),
 
     )
