@@ -933,7 +933,7 @@ class RiskRegisterViewSet(viewsets.ModelViewSet):
             queryset = RiskRegister.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = RiskRegister.objects.all().filter(organization=user_org)
+            queryset = RiskRegister.objects.all().filter(workflowlevel2__workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
