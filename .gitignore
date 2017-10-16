@@ -41,4 +41,4 @@ assets/
 src/
 
 docker-compose.yml
-
+local_secret.py

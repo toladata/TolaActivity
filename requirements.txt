@@ -48,3 +48,4 @@ elasticsearch==5.4.0
 gunicorn==19.7.1
 django-oauth-toolkit==1.0.0
 PyYAML==3.12
+WeasyPrint==0.39
