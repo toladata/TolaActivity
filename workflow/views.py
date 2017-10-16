@@ -1818,11 +1818,10 @@ class ApprovalCreate(AjaxableResponseMixin, CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        obj = form.save(commit=False)
+        obj = form.save(commit=True)
         # update workflowlevel2 with approval
         level2 = WorkflowLevel2.objects.get(id=form.id)
-        level2.approval.create(obj)
-        obj.save()
+        level2.approval.add(obj)
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [obj])
