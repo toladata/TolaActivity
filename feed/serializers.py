@@ -3,10 +3,9 @@ from rest_framework import serializers
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
-from django.contrib.auth.models import User,Group
+from django.contrib.auth.models import User, Group
 from rest_framework.serializers import ReadOnlyField
 from django.db.models import Count, Sum
-
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -133,6 +132,7 @@ class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
         model = Indicator
         fields = '__all__'
 
+
 class IndicatorTypeLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = IndicatorType
@@ -143,6 +143,7 @@ class IndicatorLevelLightSerializer(serializers.ModelSerializer):
     class Meta:
         model = Level
         fields = ('id', 'name')
+
 
 class IndicatorLightSerializer(serializers.ModelSerializer):
     sector = serializers.SerializerMethodField()
@@ -163,6 +164,7 @@ class IndicatorLightSerializer(serializers.ModelSerializer):
         model = Indicator
         fields = ('name', 'number', 'lop_target', 'indicator_type', 'level', 'sector', 'datacount')
 
+
 class ProgramIndicatorSerializer(serializers.ModelSerializer):
     indicator_set = IndicatorLightSerializer(many=True, read_only=True)
     indicators_count = serializers.SerializerMethodField()
@@ -171,7 +173,7 @@ class ProgramIndicatorSerializer(serializers.ModelSerializer):
         return obj.indicator_set.count()
 
     class Meta:
-        model =  WorkflowLevel1
+        model = WorkflowLevel1
         fields = ('id', 'name', 'indicators_count', 'indicator_set')
 
 
@@ -577,7 +579,6 @@ class WorkflowLevel2FullSerializer(serializers.HyperlinkedModelSerializer):
     office = OfficeSerializer(read_only=True)
     sector = SectorSerializer(read_only=True)
     budget = BudgetSerializer(read_only=True)
-    #stakeholder = StakeholderSerializer(read_only=True, many=True)
 
     class Meta:
         model = WorkflowLevel2
