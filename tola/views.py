@@ -22,6 +22,9 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer, Country
 from django.conf import settings
 import requests
 
+ROLE_VIEW_ONLY = 'ViewOnly'
+
+
 @login_required(login_url='/accounts/login/')
 def index(request, selected_countries=None, id=0, sector=0):
     if request.user.is_authenticated():
@@ -76,7 +79,7 @@ def register(request):
         if user_form.is_valid() * tola_form.is_valid():
 
             user = user_form.save()
-            user.groups.add(Group.objects.get(name='ViewOnly'))
+            user.groups.add(Group.objects.get(name=ROLE_VIEW_ONLY))
 
             tolauser = tola_form.save(commit=False)
             tolauser.user = user
