@@ -113,7 +113,7 @@ class ApprovalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         self.request = kwargs.pop('request')
-        self.section = kwargs.pop('section')
+        self.section = kwargs.pop('section', None)
         self.id = kwargs.pop('id')
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'

@@ -1839,15 +1839,17 @@ class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
     """
     Budget Form
     """
-    model = Budget
+    model = ApprovalWorkflow
+    template_name = 'workflow/approval_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
-        return super(BudgetUpdate, self).dispatch(request, *args, **kwargs)
+        return super(ApprovalUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(BudgetUpdate, self).get_context_data(**kwargs)
+        context = super(ApprovalUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+        # context.update({'section': self.object.section})
         return context
 
     def form_invalid(self, form):
@@ -1856,8 +1858,10 @@ class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(BudgetUpdate, self).get_form_kwargs()
+        kwargs = super(ApprovalUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        # kwargs['section'] = self.object.section
+        kwargs['id'] = self.object.pk
         return kwargs
 
     def form_valid(self, form):
@@ -1870,7 +1874,7 @@ class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = BudgetForm
+    form_class = ApprovalForm
 
 
 class ApprovalDelete(AjaxableResponseMixin, DeleteView):
