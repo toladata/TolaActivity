@@ -120,7 +120,7 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.getenv('TOLA_ERROR_LOG'),
+            'filename': os.getenv('TOLA_ERROR_LOG', 'tola_activity_error.log'),
         },
         'console': {
             'class': 'logging.StreamHandler',
