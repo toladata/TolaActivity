@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Sector,Country, TolaUser,TolaSites, \
+from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Sector, Country, TolaUser, TolaSites, \
     TolaBookmarks, FormGuidance, ApprovalWorkflow, Organization
 from indicators.models import CollectedData, Indicator
 
@@ -22,14 +22,15 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer, Country
 from django.conf import settings
 import requests
 
+ROLE_VIEW_ONLY = 'ViewOnly'
+
+
 @login_required(login_url='/accounts/login/')
 def index(request, selected_countries=None, id=0, sector=0):
     if request.user.is_authenticated():
-
-        getSite = TolaSites.objects.get(name="TolaData")
-
+        get_site = TolaSites.objects.get(name="TolaData")
         template = "index.html"
-        return render(request, template,{'getSite': getSite,})
+        return render(request, template, {'getSite': get_site})
     else:
         return redirect('register')
 
@@ -39,13 +40,10 @@ def register(request):
     Register a new User profile using built in Django Users Model
     """
     privacy = ""
-    org_error = False
-    getSite = TolaSites.objects.get(name="TolaData")
-    check_org = None
+    get_site = TolaSites.objects.get(name="TolaData")
 
-    if getSite:
-        template = getSite.front_end_url
-        privacy = getSite.privacy_disclaimer
+    if get_site:
+        privacy = get_site.privacy_disclaimer
 
     if request.method == 'POST':
         uf = NewUserRegistrationForm(request.POST)
@@ -76,7 +74,7 @@ def register(request):
         if user_form.is_valid() * tola_form.is_valid():
 
             user = user_form.save()
-            user.groups.add(Group.objects.get(name='ViewOnly'))
+            user.groups.add(Group.objects.get(name=ROLE_VIEW_ONLY))
 
             tolauser = tola_form.save(commit=False)
             tolauser.user = user
@@ -84,7 +82,7 @@ def register(request):
             tolauser.save()
             messages.error(request, 'Thank you, You have been registered as a new user.', fail_silently=False)
             # register user and redirect them to front end or home page depending on config
-            if getSite:
+            if get_site:
                 return HttpResponseRedirect("/accounts/login/")
             else:
                 return HttpResponseRedirect("/")
@@ -92,9 +90,9 @@ def register(request):
         uf = NewUserRegistrationForm()
         tf = NewTolaUserRegistrationForm()
 
-
     return render(request, "registration/register.html", {
-        'userform': uf,'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,'privacy': privacy, 'org_error': False
+        'userform': uf, 'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,
+        'privacy': privacy, 'org_error': False
     })
 
 
@@ -105,7 +103,7 @@ def profile(request):
     """
     if request.user.is_authenticated():
         obj = get_object_or_404(TolaUser, user=request.user)
-        form = RegistrationForm(request.POST or None, instance=obj,initial={'username': request.user})
+        form = RegistrationForm(request.POST or None, instance=obj, initial={'username': request.user})
 
         if request.method == 'POST':
             if form.is_valid():
@@ -127,10 +125,10 @@ class BookmarkList(ListView):
     template_name = 'registration/bookmark_list.html'
 
     def get(self, request, *args, **kwargs):
-        getUser = TolaUser.objects.all().filter(user=request.user)
-        getBookmarks = TolaBookmarks.objects.all().filter(user=getUser)
+        get_user = TolaUser.objects.all().filter(user=request.user)
+        get_bookmarks = TolaBookmarks.objects.all().filter(user=get_user)
 
-        return render(request, self.template_name, {'getBookmarks':getBookmarks})
+        return render(request, self.template_name, {'getBookmarks': get_bookmarks})
 
 
 class BookmarkCreate(CreateView):
@@ -321,7 +319,8 @@ class OAuth_User_Endpoint(ProtectedResourceView):
         tola_user = TolaUser.objects.all().filter(user=user)
         if len(tola_user) == 1:
             body["tola_user"] = TolaUserSerializer(instance=tola_user[0], context={'request': request}).data
-            body["organization"] = OrganizationSerializer(instance=tola_user[0].organization, context={'request': request}).data
+            body["organization"] = OrganizationSerializer(instance=tola_user[0].organization,
+                                                          context={'request': request}).data
             body["country"] = CountrySerializer(instance=tola_user[0].country, context={'request': request}).data
 
         return HttpResponse(json.dumps(body))
