@@ -1,8 +1,9 @@
+from threading import current_thread
+
 from django.template import Template, Context
 from django.http import HttpResponse
-from threading import current_thread
+from django.utils.deprecation import MiddlewareMixin
 from rest_framework.exceptions import PermissionDenied
-
 
 _current_users = {}
 
@@ -23,8 +24,6 @@ class TolaSecurityMiddleware(object):
 
     def __init__(self, get_response):
         self.get_response = get_response
-        # One-time configuration and initialization.
-        # print "middleware init"   # debug
 
     def __call__(self, request):
         # Add user object to thread-dependent storage
@@ -32,7 +31,6 @@ class TolaSecurityMiddleware(object):
 
         response = self.get_response(request)
         return response
-
 
     def process_exception(self, request, exception):
         """
@@ -52,7 +50,6 @@ class TolaSecurityMiddleware(object):
             response.status_code = 403
             return response
 
-from django.utils.deprecation import MiddlewareMixin
 
 class DisableCsrfCheck(MiddlewareMixin):
 
