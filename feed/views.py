@@ -19,6 +19,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from .permissions import UserIsOwnerOrAdmin, UserIsTeamOrOrgAdmin
 
+ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
+
 
 class LargeResultsSetPagination(PageNumberPagination):
     page_size = 1000
@@ -93,6 +95,20 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
             queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1).annotate(budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)  # inherited from CreateModelMixin
+
+        # Make user admin of the Program
+        group = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
+        wflvl1 = WorkflowLevel1.objects.get(level1_uuid=serializer.data['level1_uuid'])
+        WorkflowTeam.objects.create(workflow_user=request.user.tola_user, workflowlevel1=wflvl1,
+                                    role=group)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def delete(self, request, pk):
         workflowlevel1 = self.get_object(pk)

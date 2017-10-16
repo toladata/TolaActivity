@@ -7,7 +7,7 @@ from feed.views import ChecklistViewSet
 from workflow.models import Checklist, Organization, TolaUser, WorkflowLevel1, WorkflowLevel2
 
 
-class ViewsTest(TestCase):
+class ChecklistViewsTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
         self.user.is_superuser = True
