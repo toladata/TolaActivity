@@ -402,7 +402,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/approval_request/{{ pk }}/?is_it_project_complete_form=true">Request Approval</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/approval_add/{{ pk }}/workflowlevel2/?is_it_project_complete_form=true">Request Approval</a>
                                       </div>
                                     </div>
                              """),
