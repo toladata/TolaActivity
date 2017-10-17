@@ -43,7 +43,7 @@ class RiskRegisterViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
-    def test_list_checklist_riskregister_one_result(self):
+    def test_list_riskregister_one_result(self):
         self.user.is_superuser = False
         self.user.is_staff = False
         self.user.save()
