@@ -755,7 +755,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             queryset = Organization.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Organization.objects.all().filter(organization=user_org)
+            queryset = Organization.objects.filter(id=user_org.id)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
