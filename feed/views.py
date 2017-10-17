@@ -390,7 +390,7 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
             queryset = DisaggregationType.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = DisaggregationType.objects.all().filter(country__organization=user_org)
+            queryset = DisaggregationType.objects.all().filter(organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
