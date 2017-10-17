@@ -1837,7 +1837,7 @@ class ApprovalCreate(AjaxableResponseMixin, CreateView):
 
 class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
     """
-    Budget Form
+    ApprovalWorkflow Form
     """
     model = ApprovalWorkflow
     template_name = 'workflow/approval_form.html'
@@ -1870,7 +1870,7 @@ class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
             data = serializers.serialize('json', [obj])
             return HttpResponse(data)
 
-        messages.success(self.request, 'Success, Budget Output Updated!')
+        messages.success(self.request, 'Success, Approval request updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -1878,18 +1878,19 @@ class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
 
 
 class ApprovalDelete(AjaxableResponseMixin, DeleteView):
+
     """
-    Budget Delete
+    ApprovalWorkflow Delete
     """
-    model = Budget
-    success_url = '/'
+    model = ApprovalWorkflow
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
-        return super(BudgetDelete, self).dispatch(request, *args, **kwargs)
+        return super(ApprovalDelete, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(BudgetDelete, self).get_context_data(**kwargs)
+        self.request.session['project_id_%s' % self.object.id] = self.request.META['HTTP_REFERER']
+        context = super(ApprovalDelete, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
 
@@ -1903,10 +1904,14 @@ class ApprovalDelete(AjaxableResponseMixin, DeleteView):
 
         form.save()
 
-        messages.success(self.request, 'Success, Budget Deleted!')
+        messages.success(self.request, 'Success, Approval request deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = BudgetForm
+    def get_success_url(self, **kwargs):
+        url = '%s#approval' % self.request.session['project_id_%s' % self.object.id] #'/workflow/projectagreement_update/%s/#approval/' %
+        del self.request.session['project_id_%s' % self.object.id]
+        return url
+    form_class = ApprovalForm
 
 
 class ChecklistItemList(ListView):
