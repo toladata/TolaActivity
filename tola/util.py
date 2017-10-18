@@ -48,10 +48,8 @@ def getLevel1(user):
     Returns a list of program ID's the user has access to.
     """
     # get user
-    
-    get_level1 = WorkflowLevel1.objects.all().filter(workflowteam__workflow_user__user=user).values('id')
-
-    print get_level1
+    get_level1 = WorkflowTeam.objects.filter(
+        workflow_user__user=user).values_list('workflowlevel1__id', flat=True)
 
     return get_level1
 
