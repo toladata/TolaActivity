@@ -1480,7 +1480,7 @@ class StakeholderCreate(CreateView):
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
-
+        print(".............................%s............................" % form.errors )
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
