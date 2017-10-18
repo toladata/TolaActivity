@@ -952,18 +952,32 @@ class SiteProfileList(ListView):
 
         #Filter SiteProfile list and map by activity or workflowlevel1
         if activity_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(workflowlevel2__id=activity_id).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(workflowlevel2__id=activity_id).distinct()
         elif workflowlevel1_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(workflowlevel2__workflowlevel1__id=workflowlevel1_id) | Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(\
+                    Q(workflowlevel2__workflowlevel1__id=workflowlevel1_id) | \
+                    Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).distinct()
         else:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(country__in=countries).distinct()
+
         if request.method == "GET" and "search" in request.GET:
-            """
-             fields = ('name', 'office')
-            """
-            getSiteProfile = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
-                                                            Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
-                                                             Q(workflowlevel2__project_name__contains=request.GET["search"]) | Q(workflowlevel2__project_name__contains=request.GET['search'])).select_related().distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .filter(\
+                    Q(country__in=countries), \
+                    Q(name__contains=request.GET["search"]) | \
+                    Q(office__name__contains=request.GET["search"]) | \
+                    Q(type__profile__contains=request.GET['search']) | \
+                    Q(province__name__contains=request.GET["search"]) | \
+                    Q(district__name__contains=request.GET["search"]) | \
+                    Q(village__contains=request.GET['search']) | \
+                    Q(workflowlevel2__project_name__contains=request.GET['search']))\
+                .select_related().distinct()
         #paginate site profile list
 
         default_list = 10 # default number of site profiles per page
@@ -983,7 +997,15 @@ class SiteProfileList(ListView):
         except EmptyPage:
             getSiteProfile = paginator.page(paginator.num_pages)
 
-        return render(request, self.template_name, {'inactiveSite':inactiveSite,'default_list':default_list,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getworkflowlevel1s':getworkflowlevel1s, 'form': FilterForm(), 'helper': FilterForm.helper})
+        return render(request, self.template_name, {\
+            'inactiveSite':inactiveSite,\
+            'default_list':default_list,\
+            'getSiteProfile':getSiteProfile,\
+            'project_agreement_id': activity_id,\
+            'country': countries,\
+            'getworkflowlevel1s':getworkflowlevel1s, \
+            'form': FilterForm(), \
+            'helper': FilterForm.helper})
 
 
 class SiteProfileReport(ListView):
