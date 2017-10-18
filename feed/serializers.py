@@ -305,6 +305,14 @@ class ExternalServiceRecordSerializer(serializers.HyperlinkedModelSerializer):
 class StrategicObjectiveSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
+    def create(self, validated_data, **kwargs):
+        user = self.context['request'].user
+        user_org = TolaUser.objects.get(user=user).organization
+        validated_data['organization'] = user_org
+
+        obj = StrategicObjective.objects.create(**validated_data)
+        return obj
+
     class Meta:
         model = StrategicObjective
         fields = '__all__'
@@ -489,6 +497,14 @@ class RiskRegisterSerializer(serializers.HyperlinkedModelSerializer):
 
 class IssueRegisterSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
+
+    def create(self, validated_data, **kwargs):
+        user = self.context['request'].user
+        user_org = TolaUser.objects.get(user=user).organization
+        validated_data['organization'] = user_org
+
+        obj = IssueRegister.objects.create(**validated_data)
+        return obj
 
     class Meta:
         model = IssueRegister

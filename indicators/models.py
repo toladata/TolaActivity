@@ -75,6 +75,7 @@ class StrategicObjective(models.Model):
     description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True)
 
     class Meta:
         ordering = ('country','name')

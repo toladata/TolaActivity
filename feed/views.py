@@ -393,7 +393,7 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
             queryset = DisaggregationType.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = DisaggregationType.objects.all().filter(country__organization=user_org)
+            queryset = DisaggregationType.objects.all().filter(organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -501,12 +501,12 @@ class StrategicObjectiveViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = StrategicObjective.objects.all()
         else:
-            user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = StrategicObjective.objects.all().filter(country__organization=user_org)
+            user = TolaUser.objects.get(user=request.user)
+            queryset = StrategicObjective.objects.filter(country=user.country, organization=user.organization)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('country__organization__id', 'country__country')
+    filter_fields = ('organization__id','country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = StrategicObjective.objects.all()
     serializer_class = StrategicObjectiveSerializer
@@ -758,7 +758,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
             queryset = Organization.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Organization.objects.all().filter(organization=user_org)
+            queryset = Organization.objects.filter(id=user_org.id)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 

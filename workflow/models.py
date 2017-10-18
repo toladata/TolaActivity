@@ -1395,6 +1395,7 @@ class IssueRegister(models.Model):
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True)
     history = HistoricalRecords()
 
     # on save add create date or update edit date
