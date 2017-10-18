@@ -621,14 +621,23 @@ class DocumentationList(ListView):
         getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries)
 
         if int(self.kwargs['workflowlevel1']) != 0 & int(self.kwargs['project']) == 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project'])
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2')\
+                .filter(workflowlevel2__id=self.kwargs['project'])
         elif int(self.kwargs['project']) != 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project'])
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2')\
+                .filter(workflowlevel2__id=self.kwargs['project'])
         else:
             countries = getCountry(request.user)
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office').filter(workflowlevel1__country__in=countries)
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office')\
+                .filter(workflowlevel1__country__in=countries)
 
-        return render(request, self.template_name, {'getworkflowlevel1s': getworkflowlevel1s, 'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
+        return render(request, self.template_name, \
+                    {'getworkflowlevel1s': getworkflowlevel1s, \
+                    'getDocumentation':getDocumentation, \
+                    'project_agreement_id': project_agreement_id})
 
 
 class DocumentationAgreementList(AjaxableResponseMixin, CreateView):
@@ -943,18 +952,32 @@ class SiteProfileList(ListView):
 
         #Filter SiteProfile list and map by activity or workflowlevel1
         if activity_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(workflowlevel2__id=activity_id).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(workflowlevel2__id=activity_id).distinct()
         elif workflowlevel1_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(workflowlevel2__workflowlevel1__id=workflowlevel1_id) | Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(\
+                    Q(workflowlevel2__workflowlevel1__id=workflowlevel1_id) | \
+                    Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).distinct()
         else:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(country__in=countries).distinct()
+
         if request.method == "GET" and "search" in request.GET:
-            """
-             fields = ('name', 'office')
-            """
-            getSiteProfile = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
-                                                            Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
-                                                             Q(workflowlevel2__project_name__contains=request.GET["search"]) | Q(workflowlevel2__project_name__contains=request.GET['search'])).select_related().distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .filter(\
+                    Q(country__in=countries), \
+                    Q(name__contains=request.GET["search"]) | \
+                    Q(office__name__contains=request.GET["search"]) | \
+                    Q(type__profile__contains=request.GET['search']) | \
+                    Q(province__name__contains=request.GET["search"]) | \
+                    Q(district__name__contains=request.GET["search"]) | \
+                    Q(village__contains=request.GET['search']) | \
+                    Q(workflowlevel2__project_name__contains=request.GET['search']))\
+                .select_related().distinct()
         #paginate site profile list
 
         default_list = 10 # default number of site profiles per page
@@ -974,7 +997,15 @@ class SiteProfileList(ListView):
         except EmptyPage:
             getSiteProfile = paginator.page(paginator.num_pages)
 
-        return render(request, self.template_name, {'inactiveSite':inactiveSite,'default_list':default_list,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getworkflowlevel1s':getworkflowlevel1s, 'form': FilterForm(), 'helper': FilterForm.helper})
+        return render(request, self.template_name, {\
+            'inactiveSite':inactiveSite,\
+            'default_list':default_list,\
+            'getSiteProfile':getSiteProfile,\
+            'project_agreement_id': activity_id,\
+            'country': countries,\
+            'getworkflowlevel1s':getworkflowlevel1s, \
+            'form': FilterForm(), \
+            'helper': FilterForm.helper})
 
 
 class SiteProfileReport(ListView):
@@ -1449,7 +1480,7 @@ class StakeholderCreate(CreateView):
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
-
+        print(".............................%s............................" % form.errors )
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
@@ -2276,12 +2307,21 @@ class DocumentationListObjects(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
 
         if int(self.kwargs['workflowlevel1']) != 0 & int(self.kwargs['project']) == 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel1__id=self.kwargs['workflowlevel1']).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2')\
+                .filter(workflowlevel1__id=self.kwargs['workflowlevel1'])\
+                .values('id', 'name', 'workflowlevel2__name', 'create_date')
         elif int(self.kwargs['project']) != 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project']).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2')\
+                .filter(workflowlevel2__id=self.kwargs['project'])\
+                .values('id', 'name', 'workflowlevel2__name', 'create_date')
         else:
-            countries = getCountry(request.user)
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office').filter(workflowlevel1__country__in=countries).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office')\
+                .filter(workflowlevel1__country__in=countries)\
+                .values('id', 'name', 'workflowlevel2__name', 'create_date')
+
 
         getDocumentation = json.dumps(list(getDocumentation), cls=DjangoJSONEncoder)
         final_dict  = {'getDocumentation': getDocumentation}
