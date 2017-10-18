@@ -104,9 +104,12 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)  # inherited from CreateModelMixin
 
-        # Make user admin of the Program
+        # Assign the user to multiple properties of the Program
         group = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
         wflvl1 = WorkflowLevel1.objects.get(level1_uuid=serializer.data['level1_uuid'])
+        wflvl1.organization = request.user.tola_user.organization
+        wflvl1.user_access.add(request.user.tola_user)
+        wflvl1.save()
         WorkflowTeam.objects.create(workflow_user=request.user.tola_user, workflowlevel1=wflvl1,
                                     role=group)
 
