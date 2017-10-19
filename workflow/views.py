@@ -135,7 +135,7 @@ class Level1Dash(ListView):
         print(getworkflowlevel1s)
         print(getDashboard)
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getworkflowlevel1s': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
 
 
 class ProjectAgreementList(ListView):
@@ -2139,7 +2139,13 @@ class Report(View, AjaxableResponseMixin):
 
 
         # send the keys and vars
-        return render(request, "workflow/report.html", {'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getworkflowlevel1s': getworkflowlevel1s})
+        return render(request, "workflow/report.html", {\
+                    'country': countries, \
+                    'form': FilterForm(), \
+                    'filter': filtered, \
+                    'helper': FilterForm.helper, \
+                    'APPROVALS': APPROVALS, \
+                    'getworkflowlevel1s': getworkflowlevel1s})
 
 
 class ReportData(View, AjaxableResponseMixin):
