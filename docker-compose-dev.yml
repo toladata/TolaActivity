@@ -13,7 +13,13 @@ services:
     ports:
       - "5432:5432"
     restart: always
-
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0-alpha2
+    ports:
+      - "9200:9200"
+    environment:
+      - xpack.security.enabled=false
   web:
     build:
       context: .
@@ -26,6 +32,7 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+      - elasticsearch
     environment:
       - DJANGO_SETTINGS_MODULE=tola.settings.dev
       - TOLA_DEBUG=True
@@ -37,6 +44,7 @@ services:
       - TOLA_DB_PASS=root
       - TOLA_DB_HOST=postgres
       - TOLA_DB_PORT=5432
+      - ELASTICSEARCH_URL=http://elasticsearch:9200/
       - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=445847194486-gl2v6ud6ll65vf06vbjaslqqgejad61k.apps.googleusercontent.com
       - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=qAAdNMQy77Vwqgj4YgOu20f7
       - SOCIAL_AUTH_LOGIN_REDIRECT_URL=http://dev-v2.tolaactivity.app.tola.io/
