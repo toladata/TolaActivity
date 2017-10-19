@@ -153,15 +153,19 @@ class BeneficiaryList(ListView):
 
         project_agreement_id = self.kwargs['pk']
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
 
 
         if int(self.kwargs['pk']) == 0:
-            getBeneficiaries = Beneficiary.objects.all().filter(Q(training__workflowlevel1__country__in=countries) | Q(distribution__workflowlevel1__country__in=countries) )
+            getBeneficiaries = Beneficiary.objects.all().filter(\
+                Q(training__workflowlevel1__country__in=countries) | \
+                Q(distribution__workflowlevel1__country__in=countries) )
         else:
             getBeneficiaries = Beneficiary.objects.all().filter(training__id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getBeneficiaries': getBeneficiaries, 'project_agreement_id': project_agreement_id, 'getworkflowlevel1s': getworkflowlevel1s})
+        return render(request, self.template_name, \
+                {'getBeneficiaries': getBeneficiaries, 'project_agreement_id': project_agreement_id, \
+                'getworkflowlevel1s': getworkflowlevel1s})
 
 
 class BeneficiaryCreate(CreateView):
