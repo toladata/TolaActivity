@@ -147,6 +147,8 @@ class Level(models.Model):
         if self.create_date == None:
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
+        if not self.organization:
+            self.organization = self.workflowlevel1.organization
         super(Level, self).save(*args, **kwargs)
 
 
