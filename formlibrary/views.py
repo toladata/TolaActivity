@@ -30,13 +30,16 @@ class TrainingList(ListView):
 
         project_agreement_id = self.kwargs['pk']
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
         if int(self.kwargs['pk']) == 0:
             getTraining = TrainingAttendance.objects.all().filter(workflowlevel1__country__in=countries)
         else:
             getTraining = TrainingAttendance.objects.all().filter(project_agreement_id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getTraining': getTraining, 'project_agreement_id': project_agreement_id, 'getworkflowlevel1s': getworkflowlevel1s})
+        return render(request, self.template_name, \
+                      {'getTraining': getTraining, \
+                      'project_agreement_id': project_agreement_id, \
+                      'getworkflowlevel1s': getworkflowlevel1s})
 
 
 class TrainingCreate(CreateView):
@@ -151,7 +154,7 @@ class BeneficiaryList(ListView):
         project_agreement_id = self.kwargs['pk']
         countries = getCountry(request.user)
         getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        
+
 
         if int(self.kwargs['pk']) == 0:
             getBeneficiaries = Beneficiary.objects.all().filter(Q(training__workflowlevel1__country__in=countries) | Q(distribution__workflowlevel1__country__in=countries) )
@@ -394,11 +397,17 @@ class TrainingListObjects(View, AjaxableResponseMixin):
         print project_id
         countries = getCountry(request.user)
         if int(self.kwargs['workflowlevel1']) == 0:
-            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1__country__in=countries).values('id', 'create_date', 'training_name', 'workflowlevel2__project_name')
+            getTraining = TrainingAttendance.objects.all()\
+                .filter(workflowlevel1__country__in=countries)\
+                .values('id', 'create_date', 'training_name', 'workflowlevel2__name')
         elif workflowlevel1_id != 0 and project_id == 0:
-            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1=workflowlevel1_id).values('id','create_date', 'training_name', 'workflowlevel2__project_name')
+            getTraining = TrainingAttendance.objects.all()\
+                .filter(workflowlevel1=workflowlevel1_id)\
+                .values('id','create_date', 'training_name', 'workflowlevel2__name')
         else:
-            getTraining = TrainingAttendance.objects.all().filter(workflowlevel1_id=workflowlevel1_id, project_agreement_id=project_id).values('id','create_date', 'training_name', 'workflowlevel2__project_name')
+            getTraining = TrainingAttendance.objects.all()\
+                .filter(workflowlevel1_id=workflowlevel1_id, project_agreement_id=project_id)\
+                .values('id','create_date', 'training_name', 'workflowlevel2__name')
 
         getTraining = json.dumps(list(getTraining), cls=DjangoJSONEncoder)
 
@@ -408,7 +417,7 @@ class TrainingListObjects(View, AjaxableResponseMixin):
 
 
 class BeneficiaryListObjects(View, AjaxableResponseMixin):
-    
+
     def get(self, request, *args, **kwargs):
 
         workflowlevel1_id = int(self.kwargs['workflowlevel1'])
@@ -442,7 +451,7 @@ class DistributionListObjects(View, AjaxableResponseMixin):
         else:
             getDistribution = Distribution.objects.all().filter(workflowlevel1_id=workflowlevel1_id, initiation_id=project_id).values('id', 'distribution_name', 'create_date', 'workflowlevel1')
 
-        
+
         getDistribution = json.dumps(list(getDistribution), cls=DjangoJSONEncoder)
 
         final_dict = {'getDistribution': getDistribution}
@@ -461,7 +470,7 @@ class GetAgreements(View, AjaxableResponseMixin):
             getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1=workflowlevel1_id).values('id', 'name')
         else:
             pass
-        
+
         final_dict = {}
         if getAgreements:
 
@@ -499,7 +508,7 @@ class BinaryFieldViewSet(viewsets.ModelViewSet):
         """
         Override create method for POST requests to save binary files to database
         :param request:
-        :return: 
+        :return:
         """
         d = base64.b64decode(request.data["data"])
         b = BinaryField(name=request.data["name"], data=d)
