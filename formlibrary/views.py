@@ -282,14 +282,17 @@ class DistributionList(ListView):
 
         workflowlevel1_id = self.kwargs['pk']
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
 
         if int(self.kwargs['pk']) == 0:
             getDistribution = Distribution.objects.all().filter(workflowlevel1__country__in=countries)
         else:
             getDistribution = Distribution.objects.all().filter(workflowlevel1_id=self.kwargs['pk'])
 
-        return render(request, self.template_name, {'getDistribution': getDistribution, 'workflowlevel1_id': workflowlevel1_id, 'getworkflowlevel1s': getworkflowlevel1s})
+        return render(request, self.template_name, \
+                    {'getDistribution': getDistribution, \
+                    'workflowlevel1_id': workflowlevel1_id, \
+                    'getworkflowlevel1s': getworkflowlevel1s})
 
 
 class DistributionCreate(CreateView):
@@ -429,11 +432,18 @@ class BeneficiaryListObjects(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
 
         if workflowlevel1_id == 0:
-            getBeneficiaries = Beneficiary.objects.all().filter(Q(training__workflowlevel1__country__in=countries) | Q(distribution__workflowlevel1__country__in=countries) ).values('id', 'beneficiary_name', 'create_date')
+            getBeneficiaries = Beneficiary.objects.all().filter(
+                    Q(training__workflowlevel1__country__in=countries) | \
+                    Q(distribution__workflowlevel1__country__in=countries) )\
+                .values('id', 'beneficiary_name', 'create_date')
         elif workflowlevel1_id !=0 and project_id == 0:
-            getBeneficiaries = Beneficiary.objects.all().filter(workflowlevel1__id=workflowlevel1_id).values('id', 'beneficiary_name', 'create_date')
+            getBeneficiaries = Beneficiary.objects.all()\
+                .filter(workflowlevel1__id=workflowlevel1_id)\
+                .values('id', 'beneficiary_name', 'create_date')
         else:
-            getBeneficiaries = Beneficiary.objects.all().filter(workflowlevel1__id=workflowlevel1_id, training__project_agreement=project_id).values('id', 'beneficiary_name', 'create_date')
+            getBeneficiaries = Beneficiary.objects.all()\
+                .filter(workflowlevel1__id=workflowlevel1_id, training__project_agreement=project_id)\
+                .values('id', 'beneficiary_name', 'create_date')
 
         getBeneficiaries = json.dumps(list(getBeneficiaries), cls=DjangoJSONEncoder)
 
@@ -449,11 +459,17 @@ class DistributionListObjects(View, AjaxableResponseMixin):
         project_id = int(self.kwargs['workflowlevel2'])
         countries = getCountry(request.user)
         if workflowlevel1_id == 0:
-            getDistribution = Distribution.objects.all().filter(workflowlevel1__country__in=countries).values('id', 'distribution_name', 'create_date', 'workflowlevel1')
+            getDistribution = Distribution.objects.all()\
+                .filter(workflowlevel1__country__in=countries)\
+                .values('id', 'distribution_name', 'create_date', 'workflowlevel1')
         elif workflowlevel1_id !=0 and project_id == 0:
-            getDistribution = Distribution.objects.all().filter(workflowlevel1_id=workflowlevel1_id).values('id', 'distribution_name', 'create_date', 'workflowlevel1')
+            getDistribution = Distribution.objects.all()\
+                .filter(workflowlevel1_id=workflowlevel1_id)\
+                .values('id', 'distribution_name', 'create_date', 'workflowlevel1')
         else:
-            getDistribution = Distribution.objects.all().filter(workflowlevel1_id=workflowlevel1_id, initiation_id=project_id).values('id', 'distribution_name', 'create_date', 'workflowlevel1')
+            getDistribution = Distribution.objects.all()\
+                .filter(workflowlevel1_id=workflowlevel1_id, initiation_id=project_id)\
+                .values('id', 'distribution_name', 'create_date', 'workflowlevel1')
 
 
         getDistribution = json.dumps(list(getDistribution), cls=DjangoJSONEncoder)
