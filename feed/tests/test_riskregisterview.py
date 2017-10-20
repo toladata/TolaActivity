@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory
 
 import factories
 from feed.views import RiskRegisterViewSet
-from workflow.models import RiskRegister, Organization, TolaUser, WorkflowLevel1, WorkflowLevel2
+from workflow.models import RiskRegister, TolaUser, WorkflowLevel1, WorkflowLevel2
 
 
 class RiskRegisterViewTest(TestCase):
@@ -27,7 +27,7 @@ class RiskRegisterViewTest(TestCase):
 
     def test_list_riskregister_normaluser(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         self.request.user = user
@@ -38,7 +38,7 @@ class RiskRegisterViewTest(TestCase):
 
     def test_list_riskregister_one_result(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         wflvl1 = WorkflowLevel1.objects.create(name='WorkflowLevel1', organization=organization)

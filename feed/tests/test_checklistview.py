@@ -4,7 +4,7 @@ from rest_framework.test import APIRequestFactory
 
 import factories
 from feed.views import ChecklistViewSet
-from workflow.models import Checklist, Organization, TolaUser, WorkflowLevel1, WorkflowLevel2
+from workflow.models import Checklist, TolaUser, WorkflowLevel1, WorkflowLevel2
 
 
 class ChecklistViewsTest(TestCase):
@@ -28,7 +28,7 @@ class ChecklistViewsTest(TestCase):
 
     def test_list_checklist_normaluser(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         self.request.user = user
@@ -39,7 +39,7 @@ class ChecklistViewsTest(TestCase):
 
     def test_list_checklist_normaluser_one_result(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         wflvl1 = WorkflowLevel1.objects.create(name='WorkflowLevel1', organization=organization)

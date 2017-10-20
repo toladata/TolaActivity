@@ -9,7 +9,7 @@ from workflow.models import Organization, TolaUser
 
 class DisaggregationTypeViewsTest(TestCase):
     def setUp(self):
-        Organization.objects.create(id=0, name="DefaultOrg")
+        factories.Organization(id=0)
         DisaggregationType.objects.bulk_create([
             DisaggregationType(disaggregation_type='DisaggregationType1'),
             DisaggregationType(disaggregation_type='DisaggregationType2'),
@@ -28,7 +28,7 @@ class DisaggregationTypeViewsTest(TestCase):
 
     def test_list_disaggregationtype_normaluser(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         self.request_get.user = user
@@ -39,7 +39,7 @@ class DisaggregationTypeViewsTest(TestCase):
 
     def test_list_disaggregationtype_normaluser_one_result(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         DisaggregationType.objects.create(disaggregation_type='DisaggregationType0', organization=organization)

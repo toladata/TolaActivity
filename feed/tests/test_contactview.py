@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory
 
 from feed.views import ContactViewSet
 import factories
-from workflow.models import Contact, Country, Organization, TolaUser, \
+from workflow.models import Contact, Country, TolaUser, \
     WorkflowLevel1, WorkflowTeam
 
 
@@ -28,7 +28,7 @@ class ContactViewsTest(TestCase):
 
     def test_list_contact_normaluser(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         self.request.user = user
@@ -39,7 +39,7 @@ class ContactViewsTest(TestCase):
 
     def test_list_contact_normaluser_one_result(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         tola_user = TolaUser.objects.create(user=user,
                                             organization=organization)
 

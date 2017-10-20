@@ -1,17 +1,14 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
-from feed.views import OrganizationViewSet
 import factories
-from workflow.models import Organization, TolaUser
+from feed.views import OrganizationViewSet
+from workflow.models import TolaUser, Organization
 
 
 class OrganizationViewTest(TestCase):
     def setUp(self):
-        Organization.objects.bulk_create([
-            Organization(name='Organization_0'),
-            Organization(name='Organization_1'),
-        ])
+        factories.Organization.create_batch(2)
 
         factory = APIRequestFactory()
         self.request = factory.get('/api/organization/')

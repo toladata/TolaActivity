@@ -4,7 +4,7 @@ from rest_framework.test import APIRequestFactory
 import factories
 from feed.views import StrategicObjectiveViewSet
 from indicators.models import StrategicObjective
-from workflow.models import Organization, TolaUser
+from workflow.models import TolaUser
 
 
 class StrategicObjectiveViewsTest(TestCase):
@@ -27,7 +27,7 @@ class StrategicObjectiveViewsTest(TestCase):
 
     def test_list_strategicobjective_normaluser(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         self.request_get.user = user
@@ -38,7 +38,7 @@ class StrategicObjectiveViewsTest(TestCase):
 
     def test_list_strategicobjective_normaluser_one_result(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         StrategicObjective.objects.create(name='StrategicObjective0', organization=organization)
@@ -51,7 +51,7 @@ class StrategicObjectiveViewsTest(TestCase):
     
     def test_create_strategicobjective_normaluser_one_result(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         self.request_post.user = user

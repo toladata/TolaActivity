@@ -1,9 +1,9 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
-from feed.views import IssueRegisterViewSet
 import factories
-from workflow.models import IssueRegister, Organization, TolaUser
+from feed.views import IssueRegisterViewSet
+from workflow.models import IssueRegister, TolaUser
 
 
 class IssueRegisterViewsTest(TestCase):
@@ -26,7 +26,7 @@ class IssueRegisterViewsTest(TestCase):
 
     def test_list_issueregister_normaluser(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         self.request_get.user = user
@@ -37,7 +37,7 @@ class IssueRegisterViewsTest(TestCase):
 
     def test_list_issueregister_normaluser_one_result(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         IssueRegister.objects.create(name='IssueRegister0', organization=organization)
@@ -50,7 +50,7 @@ class IssueRegisterViewsTest(TestCase):
     
     def test_create_issueregister_normaluser_one_result(self):
         user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
+        organization = factories.Organization()
         TolaUser.objects.create(user=user, organization=organization)
 
         self.request_post.user = user
