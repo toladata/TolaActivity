@@ -281,6 +281,13 @@ class LevelSerializer(serializers.HyperlinkedModelSerializer):
 class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
+    def create(self, validated_data, **kwargs):
+        user = self.context['request'].user
+        user_org = TolaUser.objects.get(user=user).organization
+        validated_data['organization'] = user_org
+
+        return super(StakeholderSerializer, self).create(validated_data)
+
     class Meta:
         model = Stakeholder
         fields = '__all__'
