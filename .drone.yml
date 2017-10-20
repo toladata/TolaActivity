@@ -2,6 +2,8 @@
 pipeline:
   build:
     image: python:${PYTHON_VERSION}
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200/
     commands:
       - pip install -r requirements-ci.txt
       - python manage.py test
@@ -45,6 +47,11 @@ pipeline:
       status: [failure]
       event: [push, tag]
       branches: [master, dev-v2]
+
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0-alpha2
 
 matrix:
   PYTHON_VERSION:
