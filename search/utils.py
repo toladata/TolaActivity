@@ -1,13 +1,15 @@
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
-
-from search.models import *
 from django.db.models.fields.related import ManyToManyField, RelatedField, ManyToManyRel, ManyToOneRel, ForeignKey
-
-from datetime import datetime
 from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import RequestError
-import os
+from elasticsearch.exceptions import RequestError, NotFoundError
+
+from search.exceptions import ValueNotFoundError
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 
 class ElasticsearchIndexer:
@@ -21,33 +23,33 @@ class ElasticsearchIndexer:
         es = None
 
     if settings.ELASTICSEARCH_INDEX_PREFIX is not None:
-        prefix = settings.ELASTICSEARCH_INDEX_PREFIX+'_'
+        prefix = settings.ELASTICSEARCH_INDEX_PREFIX + '_'
     else:
         prefix = ''
 
-    def index_indicator(self, i):
+    def index_indicator(self, indicator):
         if self.es is None:
             return
 
-        data = self.get_field_data(i)
+        data = self.get_field_data(indicator)
 
         # aggregate related models
-        data['workflowlevel1'] = list(map(lambda w: w.name, i.workflowlevel1.all()))
+        data['workflowlevel1'] = list(map(lambda w: w.name, indicator.workflowlevel1.all()))
 
         # index data with elasticsearch
         try:
             self.es.index(index=self.prefix+"indicators", id=data['id'], doc_type='indicator', body=data)
         except RequestError:
-            print(i, "Error")   # Todo write to error log
+            print(indicator, "Error")   # Todo write to error log
 
     def delete_indicator(self, id):
         if self.es is None:
             return
-
         try:
-            self.es.delete(index=self.prefix+"indicators", id=id, doc_type='indicator')
-        except RequestError:
-            print(id, "Error")   # Todo write to error log
+            self.es.delete(index=self.prefix + "indicators", id=id, doc_type='indicator')
+        except NotFoundError:
+            logger.warning('Indicator not found in Elasticsearch', exc_info=True)
+            raise ValueNotFoundError
 
     def index_workflowlevel1(self, wf):
         if self.es is None:
