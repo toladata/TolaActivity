@@ -1,17 +1,15 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
+import factories
 from feed.views import WorkflowLevel1ViewSet, ROLE_PROGRAM_ADMIN
 from workflow.models import Organization, TolaUser, WorkflowTeam, WorkflowLevel1
 
 
 class WorkflowLevel1ViewsTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-        self.user.is_superuser = True
-        self.user.is_staff = True
-        self.user.save()
+        self.user = factories.User(is_superuser=True, is_staff=True)
         self.organization = Organization.objects.create(name="TestOrg")
         TolaUser.objects.create(user=self.user, organization=self.organization)
         Group.objects.create(name=ROLE_PROGRAM_ADMIN)
