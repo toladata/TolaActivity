@@ -16,7 +16,7 @@ class ElasticsearchIndexer:
     To seperate indices of different servers a prefix can be defined in settings
     """
     if settings.ELASTICSEARCH_URL is not None:
-        es = Elasticsearch([settings.ELASTICSEARCH_URL])
+        es = Elasticsearch([settings.ELASTICSEARCH_URL], timeout=30, max_retries=10, retry_on_timeout=True)
     else:
         es = None
 
