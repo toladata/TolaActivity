@@ -35,6 +35,7 @@
 
                     var indicatorId = $("#indicator_filter_value").data('indicatorid');
                     var indicatorIdInTable = parseInt(data[1]) || 0;
+                    console.log("indicatorId=" + indicatorId + " AND indicatorIdInTable=" + indicatorIdInTable);
 
                     var typeId = $("#type_filter_value").data('typeid');
                     var typeIdInTable = parseInt(data[2]) || 0;
@@ -116,10 +117,10 @@
                     ],
                     columns: [
 
-                        { title: "PID", class: "noExport", data: "indicator__program__id"},
+                        { title: "PID", class: "noExport", data: "indicator__workflowlevel1__id"},
                         { title: "IID", class: "noExport", data: "indicator__id"},
                         { title: "ITID", class: "noExport", data: "indicator__indicator_type__id"},
-                        { title: "Program", data: "indicator__program__name"},
+                        { title: "Program", data: "indicator__workflowlevel1__name"},
                         { title: "Indicator", data: "name",
                                 "mRender": function (data, type, row) {
                                     return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ workflowlevel1 }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
@@ -156,7 +157,7 @@
                 $('#program_report').click(function(){ program_report(this.name); });
 
                 // Listen for filter and redraw
-                $('#dt2').change( function() {
+                $('#dt1').change( function() {
                     table.draw();
                 });
 
@@ -179,6 +180,7 @@
                 //console.log(type_id);
 
                 $.getJSON("/indicators/collecteddata_report_data/" + program_id + "/"  + indicator_id + "/" + type_id + "/", function(data) {
+                    console.log(data);
                     //console.log(data['collected']);
                     show_indicator_table(data['collected']);
                     // If the indicator id is passed then sum up for the indicator
@@ -191,17 +193,6 @@
                         document.getElementById("achieved2").innerHTML=data['collected_sum']['achieved__sum'];
                         }
                 });
-            }
-
-            // EXPORT DATA
-            function do_export(type) {
-                // get the workflowlevel1 and  indicator id from the url
-                program_id = document.URL.split('/')[5];
-                indicator_id = document.URL.split('/')[6];
-                type_id = document.URL.split('/')[7];
-                new_location="/indicators/collecteddata_report_data/" + program_id + "/" + indicator_id + "/" + type_id + "/" + "export";
-                window.location.assign(new_location);
-
             }
 
             indicator_report();
@@ -255,5 +246,4 @@
     <br/>
     <!-- <button type="button" class="btn btn-success" id="export">Export All</button> -->
     <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
-
 {% endblock content %}

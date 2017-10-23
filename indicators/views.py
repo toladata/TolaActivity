@@ -1101,25 +1101,28 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             q.update(s)
 
 
-        getCollectedData = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'workflowlevel1',
-                                                                        'indicator__objectives',
-                                                                        'indicator__strategic_objectives').filter(
-            workflowlevel1__country__in=countries).filter(
-            **q).order_by(
-
-            'indicator__workflowlevel1__name',
-            'indicator__number').values('id', 'indicator__id', 'indicator__name', 'indicator__workflowlevel1__name',
-                                        'indicator__indicator_type__indicator_type', 'indicator__indicator_type__id', 'indicator__level__name',
-                                        'indicator__sector__sector', 'date_collected', 'indicator__baseline',
-                                        'indicator__lop_target', 'indicator__key_performance_indicator',
-                                        'indicator__external_service_record__external_service__name', 'evidence',
-                                        'tola_table', 'periodic_target', 'achieved')
+        getCollectedData = CollectedData.objects.all()\
+            .select_related('periodic_target')\
+            .prefetch_related('evidence', 'indicator', 'workflowlevel1', \
+                              'indicator__objectives', 'indicator__strategic_objectives')\
+            .filter(workflowlevel1__country__in=countries)\
+            .filter(**q).order_by('indicator__workflowlevel1__name', 'indicator__number')\
+            .values('id', 'indicator__id', 'indicator__name', 'indicator__workflowlevel1__id',\
+                    'indicator__workflowlevel1__name',\
+                    'indicator__indicator_type__indicator_type', 'indicator__indicator_type__id', \
+                    'indicator__level__name', 'indicator__sector__sector', 'date_collected', \
+                    'indicator__baseline', 'indicator__lop_target', 'indicator__key_performance_indicator',\
+                    'indicator__external_service_record__external_service__name', 'evidence',\
+                    'tola_table', 'periodic_target', 'achieved')
 
         #getCollectedData = {x['id']:x for x in getCollectedData}.values()
 
 
-        collected_sum = CollectedData.objects.select_related('periodic_target').filter(workflowlevel1__country__in=countries).filter(**q).aggregate(
-            Sum('periodic_target__target'), Sum('achieved'))
+        collected_sum = CollectedData.objects\
+            .select_related('periodic_target')\
+            .filter(workflowlevel1__country__in=countries)\
+            .filter(**q)\
+            .aggregate(Sum('periodic_target__target'), Sum('achieved'))
 
         # datetime encoding breaks without using this
         from django.core.serializers.json import DjangoJSONEncoder
@@ -1340,9 +1343,11 @@ class CollectedDataList(ListView):
 
         countries = getCountry(request.user)
         getPrograms = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(workflowlevel1__country__in=countries).exclude(
-            collecteddata__isnull=True)
-        getIndicatorTypes = IndicatorType.objects.all()
+
+        getIndicators = Indicator.objects.all()\
+            .filter(workflowlevel1__country__in=countries)\
+            .exclude(collecteddata__isnull=True)
+
         workflowlevel1 = self.kwargs['workflowlevel1']
         indicator = self.kwargs['indicator']
         type = self.kwargs['type']
@@ -1350,44 +1355,6 @@ class CollectedDataList(ListView):
         type_name = ""
         workflowlevel1_name = ""
 
-        q = {'workflowlevel1__id__isnull': False}
-        # if we have a workflowlevel1 filter active
-        if int(workflowlevel1) != 0:
-            q = {
-                'workflowlevel1__id': workflowlevel1,
-            }
-            # redress the indicator list based on workflowlevel1
-            getIndicators = Indicator.objects.select_related().filter(workflowlevel1=workflowlevel1)
-            workflowlevel1_name = WorkflowLevel1.objects.get(id=workflowlevel1)
-        # if we have an indicator type active
-        if int(type) != 0:
-            r = {
-                'indicator__indicator_type__id': type,
-            }
-            q.update(r)
-            # redress the indicator list based on type
-            getIndicators = Indicator.objects.select_related().filter(indicator_type__id=type)
-            type_name = IndicatorType.objects.get(id=type).indicator_type
-        # if we have an indicator id append it to the query filter
-        if int(indicator) != 0:
-            s = {
-                'indicator': indicator,
-            }
-            q.update(s)
-            indicator_name = Indicator.objects.get(id=indicator)
-
-        indicators = CollectedData.objects.all().select_related('periodic_target').prefetch_related('evidence', 'indicator', 'workflowlevel1',
-                                                                  'indicator__objectives',
-                                                                  'indicator__strategic_objectives').filter(
-            workflowlevel1__country__in=countries).filter(
-            **q).order_by(
-            'indicator__workflowlevel1__name',
-            'indicator__number').values('indicator__id', 'indicator__name', 'indicator__workflowlevel1__name',
-                                        'indicator__indicator_type__indicator_type', 'indicator__level__name',
-                                        'indicator__sector__sector', 'date_collected', 'indicator__baseline',
-                                        'indicator__lop_target', 'indicator__key_performance_indicator',
-                                        'indicator__external_service_record__external_service__name', 'evidence',
-                                        'tola_table', 'periodic_target', 'achieved')
 
         if self.request.GET.get('export'):
             dataset = CollectedDataResource().export(indicators)
@@ -1395,12 +1362,11 @@ class CollectedDataList(ListView):
             response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
             return response
 
-        return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
-                                                    'getIndicatorTypes': getIndicatorTypes,
+        return render(request, self.template_name, {'getPrograms': getPrograms,
                                                     'getIndicators': getIndicators,
                                                     'workflowlevel1': workflowlevel1, 'indicator': indicator, 'type': type,
                                                     'filter_workflowlevel1': workflowlevel1_name, 'filter_indicator': indicator_name,
-                                                    'indicator': indicator, 'workflowlevel1': workflowlevel1, 'type': type,
+                                                    'indicator': indicator, 'workflowlevel1': workflowlevel1,
                                                     'indicator_name': indicator_name,
                                                     'workflowlevel1_name': workflowlevel1_name, 'type_name': type_name})
 
