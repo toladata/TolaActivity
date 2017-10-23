@@ -1,7 +1,30 @@
 from django.template.defaultfilters import slugify
-from factory import DjangoModelFactory, lazy_attribute
+from factory import DjangoModelFactory, lazy_attribute, SubFactory
 
-from workflow.models import Organization
+from workflow.models import (
+    Contact as ContactM,
+    Country as CountryM,
+    Organization as OrganizationM
+)
+
+
+class Country(DjangoModelFactory):
+    class Meta:
+        model = CountryM
+
+    country = 'Afghanistan'
+    code = 'AF'
+
+
+class Contact(DjangoModelFactory):
+    class Meta:
+        model = ContactM
+
+    name = 'Aryana Sayeed'
+    city = 'Kabul'
+    email = lazy_attribute(lambda o: o.name + "@external-contact.com")
+    phone = '+93 555444333'
+    country = SubFactory(Country)
 
 
 class User(DjangoModelFactory):
@@ -17,6 +40,6 @@ class User(DjangoModelFactory):
 
 class Organization(DjangoModelFactory):
     class Meta:
-        model = Organization
+        model = OrganizationM
 
     name = 'Tola Org'

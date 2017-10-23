@@ -9,12 +9,7 @@ from workflow.models import Contact, Country, TolaUser, \
 
 class ContactViewsTest(TestCase):
     def setUp(self):
-        self.country = Country.objects.create(country='Afghanistan', code='AF')
-
-        Contact.objects.bulk_create([
-            Contact(name='Contact_0', country=self.country),
-            Contact(name='Contact_1', country=self.country),
-        ])
+        factories.Contact.create_batch(2)
 
         factory = APIRequestFactory()
         self.request = factory.get('/api/contact/')
@@ -47,9 +42,7 @@ class ContactViewsTest(TestCase):
                                                organization=organization)
         WorkflowTeam.objects.create(workflow_user=tola_user,
                                     workflowlevel1=wflvl1)
-        Contact.objects.create(name='Contact_0', country=self.country,
-                               organization=organization,
-                               workflowlevel1=wflvl1)
+        factories.Contact(organization=organization, workflowlevel1=wflvl1)
 
         self.request.user = user
         view = ContactViewSet.as_view({'get': 'list'})
