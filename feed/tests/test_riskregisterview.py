@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory
 
 import factories
 from feed.views import RiskRegisterViewSet
-from workflow.models import RiskRegister, TolaUser, WorkflowLevel1, WorkflowLevel2
+from workflow.models import RiskRegister, WorkflowLevel1, WorkflowLevel2
 
 
 class RiskRegisterViewTest(TestCase):
@@ -26,26 +26,20 @@ class RiskRegisterViewTest(TestCase):
         self.assertEqual(len(response.data), 2)
 
     def test_list_riskregister_normaluser(self):
-        user = factories.User()
-        organization = factories.Organization()
-        TolaUser.objects.create(user=user, organization=organization)
-
-        self.request.user = user
+        tola_user = factories.TolaUser()
+        self.request.user = tola_user.user
         view = RiskRegisterViewSet.as_view({'get': 'list'})
         response = view(self.request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
     def test_list_riskregister_one_result(self):
-        user = factories.User()
-        organization = factories.Organization()
-        TolaUser.objects.create(user=user, organization=organization)
-
-        wflvl1 = WorkflowLevel1.objects.create(name='WorkflowLevel1', organization=organization)
+        tola_user = factories.TolaUser()
+        wflvl1 = WorkflowLevel1.objects.create(name='WorkflowLevel1', organization=tola_user.organization)
         wflvl2 = WorkflowLevel2.objects.create(name='WorkflowLevel2', workflowlevel1=wflvl1)
         RiskRegister.objects.create(name='RiskRegister_0', workflowlevel2=wflvl2)
 
-        self.request.user = user
+        self.request.user = tola_user.user
         view = RiskRegisterViewSet.as_view({'get': 'list'})
         response = view(self.request)
         self.assertEqual(response.status_code, 200)

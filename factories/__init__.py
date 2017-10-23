@@ -1,10 +1,11 @@
 from django.template.defaultfilters import slugify
-from factory import DjangoModelFactory, lazy_attribute, SubFactory
+from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, SubFactory
 
 from workflow.models import (
     Contact as ContactM,
     Country as CountryM,
-    Organization as OrganizationM
+    Organization as OrganizationM,
+    TolaUser as TolaUserM,
 )
 
 
@@ -43,3 +44,14 @@ class Organization(DjangoModelFactory):
         model = OrganizationM
 
     name = 'Tola Org'
+
+
+class TolaUser(DjangoModelFactory):
+    class Meta:
+        model = TolaUserM
+
+    user = SubFactory(User)
+    name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
+    organization = SubFactory(Organization)
+    position_description = 'Chief of Operations'
+    country = SubFactory(Country, country='Germany', code='DE')

@@ -4,7 +4,7 @@ from rest_framework.test import APIRequestFactory
 import factories
 from feed.views import DisaggregationTypeViewSet
 from indicators.models import DisaggregationType
-from workflow.models import Organization, TolaUser
+from workflow.models import Organization
 
 
 class DisaggregationTypeViewsTest(TestCase):
@@ -27,24 +27,19 @@ class DisaggregationTypeViewsTest(TestCase):
         self.assertEqual(len(response.data), 2)
 
     def test_list_disaggregationtype_normaluser(self):
-        user = factories.User()
-        organization = factories.Organization()
-        TolaUser.objects.create(user=user, organization=organization)
-
-        self.request_get.user = user
+        tola_user = factories.TolaUser()
+        self.request_get.user = tola_user.user
         view = DisaggregationTypeViewSet.as_view({'get': 'list'})
         response = view(self.request_get)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
     def test_list_disaggregationtype_normaluser_one_result(self):
-        user = factories.User()
-        organization = factories.Organization()
-        TolaUser.objects.create(user=user, organization=organization)
+        tola_user = factories.TolaUser()
+        DisaggregationType.objects.create(disaggregation_type='DisaggregationType0',
+                                          organization=tola_user.organization)
 
-        DisaggregationType.objects.create(disaggregation_type='DisaggregationType0', organization=organization)
-
-        self.request_get.user = user
+        self.request_get.user = tola_user.user
         view = DisaggregationTypeViewSet.as_view({'get': 'list'})
         response = view(self.request_get)
         self.assertEqual(response.status_code, 200)

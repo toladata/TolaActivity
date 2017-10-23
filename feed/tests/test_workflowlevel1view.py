@@ -4,14 +4,14 @@ from rest_framework.test import APIRequestFactory
 
 import factories
 from feed.views import WorkflowLevel1ViewSet, ROLE_PROGRAM_ADMIN
-from workflow.models import TolaUser, WorkflowTeam, WorkflowLevel1
+from workflow.models import WorkflowTeam, WorkflowLevel1
 
 
 class WorkflowLevel1ViewsTest(TestCase):
     def setUp(self):
         self.user = factories.User(is_superuser=True, is_staff=True)
-        self.organization = factories.Organization()
-        TolaUser.objects.create(user=self.user, organization=self.organization)
+        tola_user = factories.TolaUser(user=self.user)
+        self.organization = tola_user.organization
         Group.objects.create(name=ROLE_PROGRAM_ADMIN)
 
     def test_create_workflowlevel1(self):

@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory
 
 import factories
 from feed.views import OrganizationViewSet
-from workflow.models import TolaUser, Organization
+from workflow.models import Organization
 
 
 class OrganizationViewTest(TestCase):
@@ -21,11 +21,8 @@ class OrganizationViewTest(TestCase):
         self.assertEqual(len(response.data), 2)
 
     def test_list_organization_normaluser_one_result(self):
-        user = factories.User()
-        organization = Organization.objects.create(name="TestOrg")
-        TolaUser.objects.create(user=user, organization=organization)
-
-        self.request.user = user
+        tola_user = factories.TolaUser()
+        self.request.user = tola_user.user
         view = OrganizationViewSet.as_view({'get': 'list'})
         response = view(self.request)
         self.assertEqual(response.status_code, 200)
