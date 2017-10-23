@@ -501,12 +501,12 @@ class StrategicObjectiveViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = StrategicObjective.objects.all()
         else:
-            user = TolaUser.objects.get(user=request.user)
-            queryset = StrategicObjective.objects.filter(country=user.country, organization=user.organization)
+            tola_user = TolaUser.objects.get(user=request.user)
+            queryset = StrategicObjective.objects.filter(organization=tola_user.organization)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('organization__id','country__country')
+    filter_fields = ('organization__id', 'country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = StrategicObjective.objects.all()
     serializer_class = StrategicObjectiveSerializer
