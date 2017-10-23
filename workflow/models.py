@@ -188,6 +188,9 @@ TITLE_CHOICES = (
 
 
 class TolaUser(models.Model):
+    """
+    TolaUser is the registered user who belongs to some organization and can manage its projects.
+    """
     tola_user_uuid = models.CharField(max_length=255, verbose_name='TolaUser UUID', default=uuid.uuid4, unique=True)
     title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
@@ -197,7 +200,8 @@ class TolaUser(models.Model):
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
     organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
     country = models.ForeignKey(Country, blank=True, null=True)
-    countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
+    countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries',
+                                       blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)      # Todo delete maybe?
     activity_api_token = models.CharField(blank=True, null=True, max_length=255)    # Todo delete maybe?
     privacy_disclaimer_accepted = models.BooleanField(default=False)
@@ -896,6 +900,11 @@ class SiteProfile(models.Model):
 
 
 class Contact(models.Model):
+    """
+    A contact is a person or entity who may be approached for information or assistance about a Site.
+
+    Example: Building Maintenance Manager at a Training Center.
+    """
     name = models.CharField("Name", max_length=255, blank=True, null=True)
     title = models.CharField("Title", max_length=255, blank=True, null=True)
     city = models.CharField("City/Town", max_length=255, blank=True, null=True)
@@ -909,7 +918,7 @@ class Contact(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('name', 'country','title')
+        ordering = ('name', 'country', 'title')
         verbose_name_plural = "Contact"
 
     # onsave add create date or update edit date
@@ -949,10 +958,21 @@ class StakeholderType(models.Model):
 
 class StakeholderManager(models.Manager):
     def get_queryset(self):
-        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related('country','type','formal_relationship_document','vetting_document')
+        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related(
+            'country', 'type', 'formal_relationship_document', 'vetting_document')
 
 
 class Stakeholder(models.Model):
+    """
+    A Stakeholder is an individual, group, or organization, who may affect, be affected by, or perceive itself to be
+    affected by a decision, activity, or outcome of a project. This may be inside or outside an organization.
+
+    Any or all of these premises can be met for a stakeholder:
+
+    * Sponsors a project (with money or workforce).
+    * Has an interest or a gain upon a successful completion of a project.
+    * May have a positive or negative influence in the project completion.
+    """
     stakeholder_uuid = models.CharField(max_length=255, verbose_name='Stakeholder UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Stakeholder/Organization Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
@@ -964,12 +984,15 @@ class Stakeholder(models.Model):
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     sectors = models.ManyToManyField(Sector, blank=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?", default=0)
-    formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
-    vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, blank=True, related_name="vetting_document")
+    formal_relationship_document = models.ForeignKey(
+        'Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True,
+        related_name="relationship_document")
+    vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True,
+                                         blank=True, related_name="vetting_document")
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    #optimize query
+    # TODO: optimize query
     objects = StakeholderManager()
 
     class Meta:

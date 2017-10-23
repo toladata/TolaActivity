@@ -80,7 +80,7 @@ class StrategicObjective(models.Model):
     organization = models.ForeignKey(Organization, null=True, blank=True)
 
     class Meta:
-        ordering = ('country','name')
+        ordering = ('country', 'name')
 
     def __unicode__(self):
         return self.name
