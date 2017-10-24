@@ -1,20 +1,15 @@
-from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
+import factories
 from feed.views import DisaggregationTypeViewSet
 from indicators.models import DisaggregationType
-from workflow.models import Organization, TolaUser
+from workflow.models import Organization
 
 
 class DisaggregationTypeViewsTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
-        self.user.is_superuser = True
-        self.user.is_staff = True
-        self.user.save()
-
-        Organization.objects.create(id=0, name="DefaultOrg")
+        factories.Organization(id=0)
         DisaggregationType.objects.bulk_create([
             DisaggregationType(disaggregation_type='DisaggregationType1'),
             DisaggregationType(disaggregation_type='DisaggregationType2'),
@@ -25,35 +20,26 @@ class DisaggregationTypeViewsTest(TestCase):
         self.request_post = factory.post('/api/disaggregationtype/')
 
     def test_list_disaggregationtype_superuser(self):
-        self.request_get.user = self.user
+        self.request_get.user = factories.User.build(is_superuser=True, is_staff=True)
         view = DisaggregationTypeViewSet.as_view({'get': 'list'})
         response = view(self.request_get)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
     def test_list_disaggregationtype_normaluser(self):
-        self.user.is_superuser = False
-        self.user.is_staff = False
-        self.user.save()
-        organization = Organization.objects.create(name="TestOrg")
-        TolaUser.objects.create(user=self.user, organization=organization)
-
-        self.request_get.user = self.user
+        tola_user = factories.TolaUser()
+        self.request_get.user = tola_user.user
         view = DisaggregationTypeViewSet.as_view({'get': 'list'})
         response = view(self.request_get)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
     def test_list_disaggregationtype_normaluser_one_result(self):
-        self.user.is_superuser = False
-        self.user.is_staff = False
-        self.user.save()
-        organization = Organization.objects.create(name="TestOrg")
-        TolaUser.objects.create(user=self.user, organization=organization)
+        tola_user = factories.TolaUser()
+        DisaggregationType.objects.create(disaggregation_type='DisaggregationType0',
+                                          organization=tola_user.organization)
 
-        DisaggregationType.objects.create(disaggregation_type='DisaggregationType0', organization=organization)
-
-        self.request_get.user = self.user
+        self.request_get.user = tola_user.user
         view = DisaggregationTypeViewSet.as_view({'get': 'list'})
         response = view(self.request_get)
         self.assertEqual(response.status_code, 200)
