@@ -10,7 +10,16 @@ from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import RequestError
 import os
 
-es = Elasticsearch([os.getenv('ELASTICSEARCH_URL')])
+
+if settings.ELASTICSEARCH_URL is not None:
+    es = Elasticsearch([settings.ELASTICSEARCH_URL])
+else:
+    es = None
+
+if settings.ELASTICSEARCH_INDEX_PREFIX is not None:
+    prefix = settings.ELASTICSEARCH_INDEX_PREFIX+'_'
+else:
+    prefix = ''
 
 """
 Search index process command
@@ -50,11 +59,20 @@ class Command(BaseCommand):
     def index_workflows(self):
         print("Updating workflowlevel1 model index")
 
-        latest_update = SearchIndexLog.objects.latest("create_date").create_date
+        if len(SearchIndexLog.objects.all()) != 0:
+            latest_update = SearchIndexLog.objects.latest("create_date").create_date
 
-        wf1objects = WorkflowLevel1.objects.all().filter(
+            wf1objects = WorkflowLevel1.objects.all().filter(
+                    create_date__gte=latest_update,
+                    create_date__lte=datetime.now())
+            wf2objects = WorkflowLevel2.objects.all().filter(
                 create_date__gte=latest_update,
                 create_date__lte=datetime.now())
+
+        else:
+            wf1objects = WorkflowLevel1.objects.all()
+            wf2objects = WorkflowLevel2.objects.all()
+
         # index workflowlevel1 objects
         for wf1 in wf1objects:
             # get model field data
@@ -66,15 +84,12 @@ class Command(BaseCommand):
 
             # index data with elasticsearch
             try:
-                es.index(index="workflows", id=data['level1_uuid'], doc_type='workflow', body=data)
+                es.index(index=prefix+"workflows", id=data['level1_uuid'], doc_type='workflow', body=data)
             except RequestError:
                 print(wf1, "Error")
 
         print("Updating workflowlevel2 model index")
 
-        wf2objects = WorkflowLevel2.objects.all().filter(
-                create_date__gte=latest_update,
-                create_date__lte=datetime.now())
         # index workflowlevel2 objects
         for wf2 in wf2objects:
             # get model field data
@@ -90,7 +105,7 @@ class Command(BaseCommand):
 
             # index data with elasticsearch
             try:
-                es.index(index="workflows", id=data['level2_uuid'], doc_type='workflow', body=data)
+                es.index(index=prefix+"workflows", id=data['level2_uuid'], doc_type='workflow', body=data)
             except RequestError:
                 print(wf2, "Error")
 
@@ -100,10 +115,13 @@ class Command(BaseCommand):
         print("Updating collected data index")
         print(os.getenv('ELASTICSEARCH_URL'))
 
-        latest_update = SearchIndexLog.objects.latest("create_date").create_date
-        collected_data = CollectedData.objects.all().filter(
-                create_date__gte=latest_update,
-                create_date__lte=datetime.now())
+        if len(SearchIndexLog.objects.all()) != 0:
+            latest_update = SearchIndexLog.objects.latest("create_date").create_date
+            collected_data = CollectedData.objects.all().filter(
+                    create_date__gte=latest_update,
+                    create_date__lte=datetime.now())
+        else:
+            collected_data = CollectedData.objects.all()
 
         for d in collected_data:
             # get model field data
@@ -115,7 +133,7 @@ class Command(BaseCommand):
 
             # index data with elasticsearch
             try:
-                es.index(index="collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
+                es.index(index=prefix+"collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
             except RequestError:
                 print(d, "Error")
         return len(collected_data)
@@ -123,13 +141,15 @@ class Command(BaseCommand):
     def index_indicators(self):
         print("Updating indicator index")
 
-        latest_update = SearchIndexLog.objects.latest("create_date").create_date
+        if len(SearchIndexLog.objects.all()) != 0:
+            latest_update = SearchIndexLog.objects.latest("create_date").create_date
 
-        indicators = Indicator.objects.all().filter(
-                create_date__gte=latest_update,
-                create_date__lte=datetime.now())\
-            .prefetch_related('workflowlevel1')
-
+            indicators = Indicator.objects.all().filter(
+                    create_date__gte=latest_update,
+                    create_date__lte=datetime.now())\
+                .prefetch_related('workflowlevel1')
+        else:
+            indicators = Indicator.objects.all()
 
         for i in indicators:
             # get model field data
@@ -140,7 +160,7 @@ class Command(BaseCommand):
 
             # index data with elasticsearch
             try:
-                es.index(index="indicators", id=data['id'], doc_type='indicator', body=data)
+                es.index(index=prefix+"indicators", id=data['id'], doc_type='indicator', body=data)
             except RequestError:
                 print(i, "Error")
 
