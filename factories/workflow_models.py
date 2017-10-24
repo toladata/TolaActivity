@@ -1,11 +1,15 @@
 from django.template.defaultfilters import slugify
-from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, SubFactory
+from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
+    SubFactory, post_generation
 
 from workflow.models import (
     Contact as ContactM,
     Country as CountryM,
     Organization as OrganizationM,
+    SiteProfile as SiteProfileM,
     TolaUser as TolaUserM,
+    WorkflowLevel1 as WorkflowLevel1M,
+    WorkflowLevel2 as WorkflowLevel2M,
 )
 from .user_models import User
 
@@ -36,6 +40,13 @@ class Organization(DjangoModelFactory):
     name = 'Tola Org'
 
 
+class SiteProfile(DjangoModelFactory):
+    class Meta:
+        model = SiteProfileM
+
+    name = 'Tola Site'
+
+
 class TolaUser(DjangoModelFactory):
     class Meta:
         model = TolaUserM
@@ -45,3 +56,28 @@ class TolaUser(DjangoModelFactory):
     organization = SubFactory(Organization)
     position_description = 'Chief of Operations'
     country = SubFactory(Country, country='Germany', code='DE')
+
+
+class WorkflowLevel1(DjangoModelFactory):
+    class Meta:
+        model = WorkflowLevel1M
+
+    name = 'Health and Survival for Syrians in Affected Regions'
+
+
+class WorkflowLevel2(DjangoModelFactory):
+    class Meta:
+        model = WorkflowLevel2M
+
+    name = 'Help Syrians'
+
+    @post_generation
+    def site(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of site were passed in, use them
+            for site in extracted:
+                self.site.add(site)
