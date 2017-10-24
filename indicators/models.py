@@ -1,13 +1,12 @@
-from datetime import datetime, timedelta
 from decimal import Decimal
 import uuid
 
 from django.db import models
 from django.contrib import admin
+from datetime import datetime, timedelta
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
-from search.exceptions import ValueNotFoundError
 from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser,\
     Organization
 
@@ -381,10 +380,7 @@ class Indicator(models.Model): # TODO change back to SecurityModel
         super(Indicator, self).delete(*args, **kwargs)
 
         ei = ElasticsearchIndexer()
-        try:
-            ei.delete_indicator(self.id)
-        except ValueNotFoundError:
-            pass
+        ei.delete_indicator(self.id)
 
     @property
     def just_created(self):
