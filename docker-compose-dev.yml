@@ -1,8 +1,13 @@
-version: "2"
+version: "2.1"
 
 services:
   postgres:
     container_name: postgres
+    healthcheck:
+      test: "pg_isready -h localhost -p 5432 -q -U postgres"
+      interval: 3s
+      timeout: 5s
+      retries: 5
     image: postgres:9.6
     environment:
       POSTGRES_DB: tola_activity
@@ -15,6 +20,11 @@ services:
     restart: always
   elasticsearch:
     container_name: elasticsearch
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:9200"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
     image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0-alpha2
     ports:
       - "9200:9200"
