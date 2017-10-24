@@ -105,7 +105,9 @@ class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
         user = self.context['request'].user
         user_org = TolaUser.objects.get(user=user).organization
         validated_data['organization'] = user_org
-        approval = validated_data.pop('approval')
+        approval = []
+        if 'approval' in validated_data:
+            approval = validated_data.pop('approval')
 
         obj = SiteProfile.objects.create(**validated_data)
         obj.approval.add(*approval)
