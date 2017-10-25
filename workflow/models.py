@@ -875,6 +875,7 @@ class SiteProfile(models.Model):
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True)
     history = HistoricalRecords()
     #optimize query
     objects = SiteProfileManager()
