@@ -180,7 +180,8 @@ MIDDLEWARE= (
 
     'tola.middleware.TolaSecurityMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware'
+    'social_django.middleware.SocialAuthExceptionMiddleware',
+    'tola.middleware.TolaRedirectMiddleware'
 )
 ########## END MIDDLEWARE CONFIGURATION
 
@@ -285,6 +286,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
     'tola.util.user_to_tola',
+    'tola.util.redirect_after_login',
 )
 
 ############ END OF AUTHENTICATION BACKEND ##############

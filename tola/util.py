@@ -100,6 +100,12 @@ def get_table(url,data=None):
     return data
 
 
+def redirect_after_login(strategy, *args, **kwargs):
+    #print(strategy.session_get('redirect_after_login'))
+    redirect = strategy.session_get('redirect_after_login')
+    strategy.session_set('next',redirect)
+
+
 def user_to_tola(backend, user, response, *args, **kwargs):
 
     # Add a google auth user to the tola profile
