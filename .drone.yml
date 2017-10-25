@@ -3,12 +3,13 @@ pipeline:
   build:
     image: python:${PYTHON_VERSION}
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200/
+      - ELASTICSEARCH_URL=http://127.0.0.1:9300/
     commands:
       - pip install -r requirements-ci.txt
       - python manage.py test
     when:
       event: [push, tag]
+
   build-docker-image:
     image: plugins/docker
     insecure: true
@@ -50,8 +51,7 @@ pipeline:
 
 services:
   elasticsearch:
-    container_name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.0.0-alpha2
+    image: library/elasticsearch:latest
 
 matrix:
   PYTHON_VERSION:
