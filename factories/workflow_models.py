@@ -8,6 +8,7 @@ from workflow.models import (
     Organization as OrganizationM,
     SiteProfile as SiteProfileM,
     TolaUser as TolaUserM,
+    WorkflowTeam as WorkflowTeamM,
     WorkflowLevel1 as WorkflowLevel1M,
     WorkflowLevel2 as WorkflowLevel2M,
 )
@@ -56,6 +57,11 @@ class TolaUser(DjangoModelFactory):
     organization = SubFactory(Organization)
     position_description = 'Chief of Operations'
     country = SubFactory(Country, country='Germany', code='DE')
+
+
+class WorkflowTeam(DjangoModelFactory):
+    class Meta:
+        model = WorkflowTeamM
 
 
 class WorkflowLevel1(DjangoModelFactory):
