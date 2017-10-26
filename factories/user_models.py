@@ -11,3 +11,11 @@ class User(DjangoModelFactory):
     last_name = 'Yorke'
     username = lazy_attribute(lambda o: slugify(o.first_name + '.' + o.last_name))
     email = lazy_attribute(lambda o: o.username + "@testenv.com")
+
+
+class Group(DjangoModelFactory):
+    class Meta:
+        model = 'auth.Group'
+        django_get_or_create = ('name',)
+
+    name = 'ProgramAdmin'
