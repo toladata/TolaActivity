@@ -1049,9 +1049,6 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
     def list(self, request):
         if request.user.is_superuser:
             queryset = WorkflowTeam.objects.all()
-        elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
-            user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = WorkflowTeam.objects.all().filter(organization=user_org)
         else:
             user_level1 = getLevel1(request.user)
             queryset = WorkflowTeam.objects.all().filter(workflowlevel1__in=user_level1)

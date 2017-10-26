@@ -29,7 +29,7 @@ class GroupViewsTest(TestCase):
         self.assertEqual(len(response.data), 1)
 
     def test_create_group_error(self):
-        # create stakeholder via POST request
+        # create group via POST request
         data = {'name': 'TestGroup'}
         self.request_post = APIRequestFactory().post('/api/stakeholder/', data)
         self.request_post.user = factories.User.build(is_superuser=False,

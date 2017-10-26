@@ -4,7 +4,6 @@ from rest_framework.test import APIRequestFactory
 import factories
 from feed.views import DisaggregationTypeViewSet
 from indicators.models import DisaggregationType
-from workflow.models import Organization
 
 
 class DisaggregationTypeViewsTest(TestCase):
