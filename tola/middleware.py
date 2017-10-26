@@ -1,6 +1,8 @@
+from threading import current_thread
+
 from django.template import Template, Context
 from django.http import HttpResponse
-from threading import current_thread
+from django.utils.deprecation import MiddlewareMixin
 from rest_framework.exceptions import PermissionDenied
 
 
@@ -23,8 +25,6 @@ class TolaSecurityMiddleware(object):
 
     def __init__(self, get_response):
         self.get_response = get_response
-        # One-time configuration and initialization.
-        # print "middleware init"   # debug
 
     def __call__(self, request):
         # Add user object to thread-dependent storage
@@ -32,7 +32,6 @@ class TolaSecurityMiddleware(object):
 
         response = self.get_response(request)
         return response
-
 
     def process_exception(self, request, exception):
         """
@@ -52,7 +51,23 @@ class TolaSecurityMiddleware(object):
             response.status_code = 403
             return response
 
-from django.utils.deprecation import MiddlewareMixin
+
+class TolaRedirectMiddleware(object):
+    """
+    Middleware to store redirects in the session until they are ready to be processed.
+    Redirects with 'next' are overwritten by Social Auth during the process and have to be restored at the 
+    end of the Authentication pipeline
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # store the next value of the inital request in the session
+        if 'next' in request.GET:
+            request.session["redirect_after_login"] = request.GET['next']
+
+        return self.get_response(request)
+
 
 class DisableCsrfCheck(MiddlewareMixin):
 

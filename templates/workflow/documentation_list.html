@@ -18,9 +18,11 @@
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter(0)">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>>-- All --</a></li>
-    {% for workflowlevel1 in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>
+        <li role="presentation">
+            <a role="menuitem" tabindex="-1" onclick="program_filter(0)">--All--</a>
+        </li>
+    {% for workflowlevel1 in getworkflowlevel1s %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ workflowlevel1.unique_id|default:"" }} - {{ workflowlevel1.name }}</a></li>
     {% endfor %}
   </ul>
     <a href="/workflow/documentation_add" class="btn btn-large btn-success">New Document</a>
@@ -51,7 +53,7 @@
 
 
             table = $('#documentationtable').DataTable( {
-                 "order": [], 
+                 "order": [],
                  "bFilter": false,
                  'bLengthChange': false,
                  "aoColumnDefs": [
@@ -88,20 +90,20 @@
 
                 if (program_id != 0) {
 
-                    $.getJSON("/workflow/documentation_objects/"+ program_id + "/0/", function(data) {  
-                        show_documentation_table(data['getDocumentation']);                                          
-                    }); 
+                    $.getJSON("/workflow/documentation_objects/"+ program_id + "/0/", function(data) {
+                        show_documentation_table(data['getDocumentation']);
+                    });
 
                 }  else{
 
                     program_id = document.URL.split('/')[5];
                     project_id = document.URL.split('/')[6];
 
-                    $.getJSON("/workflow/documentation_objects/"+program_id+"/"+project_id+"/", function(data) {  
-                        show_documentation_table(data['getDocumentation']);          
-                    });     
+                    $.getJSON("/workflow/documentation_objects/"+program_id+"/"+project_id+"/", function(data) {
+                        show_documentation_table(data['getDocumentation']);
+                    });
                 }
-            } 
+            }
 
 </script>
 

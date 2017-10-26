@@ -25,6 +25,11 @@ if settings.ELASTICSEARCH_URL is not None:
 else:
     es = None
 
+if settings.ELASTICSEARCH_INDEX_PREFIX is not None:
+    prefix = settings.ELASTICSEARCH_INDEX_PREFIX+'_'
+else:
+    prefix = ''
+
 
 @login_required(login_url='/accounts/login/')
 def search_index(request):
@@ -39,10 +44,11 @@ def search(request, index, term):
 
         allowed_indices = ['workflows','indicators','collected_data']
         if index.lower() == 'all':
-            index = 'workflows,indicators,collected_data'
+            index = prefix+'workflows,'+prefix+'indicators,'+prefix+'collected_data'
         elif not index in allowed_indices:
             raise Exception("Index not allowed to access")
-
+        else:
+            index = prefix+index
         # TODO verify access permissions
         """
         To verify user permissions the following options are possible.

@@ -48,10 +48,8 @@ def getLevel1(user):
     Returns a list of program ID's the user has access to.
     """
     # get user
-    
-    get_level1 = WorkflowLevel1.objects.all().filter(workflowteam__workflow_user__user=user).values('id')
-
-    print get_level1
+    get_level1 = WorkflowTeam.objects.filter(
+        workflow_user__user=user).values_list('workflowlevel1__id', flat=True)
 
     return get_level1
 
@@ -100,6 +98,12 @@ def get_table(url,data=None):
     else:
         data = json.loads(response.content)
     return data
+
+
+def redirect_after_login(strategy, *args, **kwargs):
+    #print(strategy.session_get('redirect_after_login'))
+    redirect = strategy.session_get('redirect_after_login')
+    strategy.session_set('next',redirect)
 
 
 def user_to_tola(backend, user, response, *args, **kwargs):

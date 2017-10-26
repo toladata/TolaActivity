@@ -1,12 +1,15 @@
+from datetime import datetime, timedelta
+from decimal import Decimal
+import uuid
+
 from django.db import models
 from django.contrib import admin
+from django.utils import timezone
+from simple_history.models import HistoricalRecords
+
+from search.exceptions import ValueNotFoundError
 from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser,\
     Organization
-from datetime import datetime, timedelta
-from django.utils import timezone
-import uuid
-from simple_history.models import HistoricalRecords
-from decimal import Decimal
 
 
 class TolaTable(models.Model):
@@ -33,8 +36,8 @@ class TolaTable(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(TolaTable, self).save(*args, **kwargs)
 
 
@@ -59,8 +62,8 @@ class IndicatorType(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(IndicatorType, self).save(*args, **kwargs)
 
 
@@ -75,9 +78,10 @@ class StrategicObjective(models.Model):
     description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True)
 
     class Meta:
-        ordering = ('country','name')
+        ordering = ('country', 'name')
 
     def __unicode__(self):
         return self.name
@@ -85,8 +89,8 @@ class StrategicObjective(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(StrategicObjective, self).save(*args, **kwargs)
 
 
@@ -113,8 +117,8 @@ class Objective(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Objective, self).save(*args, **kwargs)
 
 
@@ -144,8 +148,10 @@ class Level(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
+        if not self.organization:
+            self.organization = self.workflowlevel1.organization
         super(Level, self).save(*args, **kwargs)
 
 
@@ -164,8 +170,8 @@ class DisaggregationType(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(DisaggregationType, self).save(*args, **kwargs)
 
 
@@ -188,8 +194,8 @@ class DisaggregationLabel(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(DisaggregationLabel, self).save(*args, **kwargs)
 
 
@@ -205,8 +211,8 @@ class DisaggregationValue(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(DisaggregationValue, self).save(*args, **kwargs)
 
 
@@ -230,8 +236,8 @@ class Frequency(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Frequency, self).save(*args, **kwargs)
 
 
@@ -247,8 +253,8 @@ class ReportingPeriod(models.Model):
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ReportingPeriod, self).save(*args, **kwargs)
 
 
@@ -272,8 +278,8 @@ class ExternalService(models.Model):
     def save(self, *args, **kwargs):
         #onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ExternalService, self).save(*args, **kwargs)
 
 
@@ -295,8 +301,8 @@ class ExternalServiceRecord(models.Model):
     def save(self, *args, **kwargs):
         #onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ExternalServiceRecord, self).save(*args, **kwargs)
 
 
@@ -363,8 +369,8 @@ class Indicator(models.Model): # TODO change back to SecurityModel
     def save(self, *args, **kwargs):
         #onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
 
         super(Indicator, self).save(*args, **kwargs)
 
@@ -375,7 +381,10 @@ class Indicator(models.Model): # TODO change back to SecurityModel
         super(Indicator, self).delete(*args, **kwargs)
 
         ei = ElasticsearchIndexer()
-        ei.delete_indicator(self.id)
+        try:
+            ei.delete_indicator(self.id)
+        except ValueNotFoundError:
+            pass
 
     @property
     def just_created(self):
@@ -471,7 +480,7 @@ class CollectedData(models.Model):
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
+            self.create_date = timezone.now()
         self.edit_date = datetime.utcnow()
         super(CollectedData, self).save(*args, **kwargs)
 

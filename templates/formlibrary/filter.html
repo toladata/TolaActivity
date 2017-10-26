@@ -3,13 +3,13 @@
   <select id="program" class="listoption_filters">
     <option>{{ WORKFLOWLEVEL1 }}(s)</option>
     <option value="all">---ALL---</option>
-    {% for workflowlevel1 in getPrograms %}
+    {% for workflowlevel1 in getworkflowlevel1s %}
       <option value="{{workflowlevel1.id}}">{{workflowlevel1.name}}</option>
     {% endfor %}
   </select>
 </div>
-<div class="btn-group" role="group">
+<!-- <div class="btn-group" role="group">
   <select id="project" disabled="true" class="listoption_filters">
     <option>Project(s)</option>
   </select>
-</div>
+</div> -->

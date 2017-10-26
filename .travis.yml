@@ -1,10 +1,13 @@
 language: python
 python:
   - "2.7"
-  # does not have headers provided, please ask https://launchpad.net/~pypy/+archive/ppa
-# command to install dependencies
+services:
+  - elasticsearch
+before_script:
+  - sleep 10
 install:
-  - pip install -r requirements.txt
+  - pip install -r requirements-ci.txt
+script: python manage.py test -v 2
+env:
+  - ELASTICSEARCH_URL=http://127.0.0.1:9200/
 
-# command to run tests
-script: python manage.py test 

@@ -17,7 +17,7 @@
     var table;
 	$(document).ready(function(){
 
-		$('#data_table').css('width', '50%');
+		// $('#data_table').css('width', '100%');
 
         $.fn.dataTable.ext.search.push(
             function( settings, data, dataIndex ) {
@@ -54,6 +54,7 @@
             };
 
             table = $('#data_table').DataTable({
+                responsive: true,
                 retrieve: true,
                 data: agreement_records,
                 'columnDefs': [
@@ -69,36 +70,22 @@
                     }
                 }],
                 columns: [
-
                     { title: "Edit", class: "noExport"},
                     { title: "PID", class: "noExport", data: "workflowlevel1__id" },
                     { title: "SID", class: "noExport", data: "approval"},
                     { title: "Program", data: "workflowlevel1__name", "defaultContent": "<i>Not set</i>"},
                     { title: "{{ WORKFLOWLEVEL2 }}", data: "name",},
-                    { title: "Sites", data: "site",
-                    	"defaultContent": "<i>Not set</i>"},
-                    { title: "Project Code", data: "activity_code",
-                		"defaultContent": "<i>Not set</i>"},
-                	/*{ title: "Office", data: "office__name",
-                		"defaultContent": "<i>Not set</i>"},*/
-                    { title: "Project Activity", data: "project_activity",
-                		"defaultContent": "<i>Not set</i>"},
-                    { title: "Sector", data: "sector__sector",
-                	"defaultContent": "<i>Not set</i>"},
-                    { title: "Project Type", data: "project_type",
-                        "defaultContent": "<i>Not set</i>"},
-                    /*{ title: "Account Code", data: "account_code",
-                        "defaultContent": "<i>Not set</i>"},*/
-                    /*{ title: "LIN Code", data: "lin_code",
-                    	"defaultContent": "<i>Not set</i>"},*/
-
-                    { title: "Est. By", data: "estimated_by__name",
-                    	"defaultContent": "<i>Not set</i>"
-                	},
-                    { title: "Total Project Budget",data: "total_estimated_budget",
-                    	"defaultContent": "<i>Not set</i>"},
-                    { title: "Total Cost",data: "total_cost",
-                    	"defaultContent": "<i>Not set</i>"}
+                    { title: "Sites", data: "site__name", "defaultContent": "<i>Not set</i>"},
+                    // { title: "Project Code", data: "activity_code", "defaultContent": "<i>Not set</i>"},
+                	/*{ title: "Office", data: "office__name", "defaultContent": "<i>Not set</i>"},*/
+                    // { title: "Project Activity", data: "project_activity", "defaultContent": "<i>Not set</i>"},
+                    { title: "Sector", data: "sector__sector", "defaultContent": "<i>Not set</i>"},
+                    // { title: "Project Type", data: "project_type", "defaultContent": "<i>Not set</i>"},
+                    /*{ title: "Account Code", data: "account_code", "defaultContent": "<i>Not set</i>"},*/
+                    /*{ title: "LIN Code", data: "lin_code", "defaultContent": "<i>Not set</i>"},*/
+                    // { title: "Est. By", data: "estimated_by__name", "defaultContent": "<i>Not set</i>" },
+                    { title: "Total Project Budget",data: "total_estimated_budget", "defaultContent": "<i>Not set</i>"},
+                    { title: "Approval",data: "approval", "defaultContent": "<i></i>"}
                 ],
                 dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 buttons: [
@@ -147,17 +134,15 @@
 </div>
 
 
-<br>
-        <div class="col-md-12 table-responsive row">
-            <table class="table table-bordered " id="data_table" class="display" cellspacing="0" width="100%">
-            </table>
-        </div>
-        <!--
-       <div class="row" >
-    		<button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/workflow/report/0/none/?export=true&{{ request.GET.urlencode }}'">Export All</button>
-       </div>
-       -->
 
-<br/>
+<div class="table-responsive">
+    <table class="table table-bordered" id="data_table" cellspacing="0" width="100%">
+    </table>
+    <!--
+   <div class="row" >
+		<button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/workflow/report/0/none/?export=true&{{ request.GET.urlencode }}'">Export All</button>
+   </div>
+   -->
+</div>
 
 {% endblock content %}

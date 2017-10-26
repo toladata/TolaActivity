@@ -19,8 +19,8 @@
   </button>
   <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
         <li role="presentation"><a role="menuitem" tabindex="-1" href="/workflow/siteprofile_list/0/0">-- All --</a></li>
-    {% for workflowlevel1 in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="/workflow/siteprofile_list/{{ program.id }}/0/">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>
+    {% for workflowlevel1 in getworkflowlevel1s %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="/workflow/siteprofile_list/{{ workflowlevel1.id }}/0/">{{ workflowlevel1.unique_id|default:""}} - {{ workflowlevel1.name }}</a></li>
     {% endfor %}
   </ul>
     <a href="/workflow/siteprofile_add" class="btn btn-large btn-success">New Site Profile</a>

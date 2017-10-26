@@ -58,6 +58,3 @@ class UserIsTeamOrOrgAdmin(permissions.BasePermission):
             return request.user.is_staff and 'OrgAdmin' in request.user.groups.values_list('name', flat=True)
         else:
             return False
-
-
-

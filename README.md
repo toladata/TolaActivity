@@ -139,3 +139,6 @@ Then set up the following environment variables in docker-compose-dev.yml:
 * `SOCIAL_AUTH_LOGIN_REDIRECT_URL=https://<ID>.ngrok.io`
 * `SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL=https://<ID>.ngrok.io/complete/microsoft-graph`
 * `TOLA_HOSTNAME=127.0.0.1,localhost,<ID>.ngrok.io`
+
+## Reset Migration Scripts
+If you are using a version of TolaActivity before we reset the migration scripts, you have to execute the script _reset_migration.sh_ in your environment.

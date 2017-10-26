@@ -1,44 +1,55 @@
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand
-
-from search.models import *
 from django.db.models.fields.related import ManyToManyField, RelatedField, ManyToManyRel, ManyToOneRel, ForeignKey
-
-from datetime import datetime
 from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import RequestError
-import os
+from elasticsearch.exceptions import RequestError, NotFoundError
+
+from search.exceptions import ValueNotFoundError
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 
 class ElasticsearchIndexer:
+    """
+    Adds an index process for each indicators, workflowlevel 1 and 2 and collecteddata models
+    To seperate indices of different servers a prefix can be defined in settings
+    """
     if settings.ELASTICSEARCH_URL is not None:
-        es = Elasticsearch([settings.ELASTICSEARCH_URL])
+        es = Elasticsearch([settings.ELASTICSEARCH_URL], timeout=30, max_retries=10, retry_on_timeout=True)
     else:
         es = None
 
-    def index_indicator(self, i):
+    if settings.ELASTICSEARCH_INDEX_PREFIX is not None:
+        prefix = settings.ELASTICSEARCH_INDEX_PREFIX + '_'
+    else:
+        prefix = ''
+
+    def index_indicator(self, indicator):
         if self.es is None:
             return
 
-        data = self.get_field_data(i)
+        data = self.get_field_data(indicator)
 
         # aggregate related models
-        data['workflowlevel1'] = list(map(lambda w: w.name, i.workflowlevel1.all()))
+        data['workflowlevel1'] = list(map(lambda w: w.name, indicator.workflowlevel1.all()))
 
         # index data with elasticsearch
         try:
-            self.es.index(index="indicators", id=data['id'], doc_type='indicator', body=data)
+            self.es.index(index=self.prefix+"indicators", id=data['id'], doc_type='indicator', body=data)
         except RequestError:
-            print(i, "Error")   # Todo write to error log
+            print(indicator, "Error")   # Todo write to error log
 
     def delete_indicator(self, id):
         if self.es is None:
             return
-
         try:
-            self.es.delete(index="indicators", id=id, doc_type='indicator')
-        except RequestError:
-            print(id, "Error")   # Todo write to error log
+            self.es.delete(index=self.prefix + "indicators", id=id, doc_type='indicator')
+        except NotFoundError:
+            logger.warning('Indicator not found in Elasticsearch', exc_info=True)
+            raise ValueNotFoundError
 
     def index_workflowlevel1(self, wf):
         if self.es is None:
@@ -54,7 +65,7 @@ class ElasticsearchIndexer:
 
         # index data with elasticsearch
         try:
-            self.es.index(index="workflows", id=data['level1_uuid'], doc_type='workflow', body=data)
+            self.es.index(index=self.prefix+"workflows", id=data['level1_uuid'], doc_type='workflow', body=data)
         except RequestError:
             print(wf, "Error")  # Todo write to error log
 
@@ -75,7 +86,7 @@ class ElasticsearchIndexer:
 
         # index data with elasticsearch
         try:
-            self.es.index(index="workflows", id=data['level2_uuid'], doc_type='workflow', body=data)
+            self.es.index(index=self.prefix+"workflows", id=data['level2_uuid'], doc_type='workflow', body=data)
         except RequestError:
             print(wf, "Error")
 
@@ -84,7 +95,7 @@ class ElasticsearchIndexer:
             return
 
         try:
-            self.es.delete(index="workflows", id=id, doc_type='workflow')
+            self.es.delete(index=self.prefix+"workflows", id=id, doc_type='workflow')
         except RequestError:
             print(id, "Error")   # Todo write to error log
 
@@ -101,7 +112,7 @@ class ElasticsearchIndexer:
 
         # index data with elasticsearch
         try:
-            self.es.index(index="collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
+            self.es.index(index=self.prefix+"collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
         except RequestError:
             print(d, "Error")   # Todo write to error log
 
@@ -110,7 +121,7 @@ class ElasticsearchIndexer:
             return
 
         try:
-            self.es.delete(index="collected_data", id=id, doc_type='data_collection')
+            self.es.delete(index=self.prefix+"collected_data", id=id, doc_type='data_collection')
         except RequestError:
             print(id, "Error")   # Todo write to error log
 

@@ -93,7 +93,7 @@ class ProjectDash(ListView):
             getChecklist = ChecklistItem.objects.all().filter(checklist__workflowlevel2_id=self.kwargs['pk'])
 
         if int(self.kwargs['pk']) == 0:
-            getworkflowlevel1 = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+            getworkflowlevel1 = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
         else:
             getworkflowlevel1 = WorkflowLevel1.objects.get(workflowlevel2__id=self.kwargs['pk'])
 
@@ -116,10 +116,11 @@ class Level1Dash(ListView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
+        print(countries)
         getworkflowlevel1s = WorkflowLevel1.objects.filter(country__in=countries).distinct()
         filtered_workflowlevel1 = None
         if int(self.kwargs['pk']) == 0:
-            getDashboard = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).order_by('name').annotate(has_workflowlevel2=Count('workflowlevel2'))
+            getDashboard = WorkflowLevel1.objects.all().filter(country__in=countries).order_by('name').annotate(has_workflowlevel2=Count('workflowlevel2'))
         else:
             getDashboard = WorkflowLevel1.objects.all().filter(id=self.kwargs['pk'])
             filtered_workflowlevel1 = WorkflowLevel1.objects.only('name').get(pk=self.kwargs['pk']).name
@@ -131,9 +132,10 @@ class Level1Dash(ListView):
 
         else:
             status = None
+        print(getworkflowlevel1s)
+        print(getDashboard)
 
-
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getworkflowlevel1s': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
 
 
 class ProjectAgreementList(ListView):
@@ -146,7 +148,7 @@ class ProjectAgreementList(ListView):
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
 
         if int(self.kwargs['pk']) != 0:
             getDashboard = WorkflowLevel2.objects.all().filter(workflowlevel1__id=self.kwargs['pk'])
@@ -172,7 +174,7 @@ class ProjectAgreementImport(ListView):
 
     def get(self, request, *args, **kwargs):
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries)
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries)
         getServices = ExternalService.objects.all()
         getCountries = Country.objects.all().filter(country__in=countries)
 
@@ -616,17 +618,26 @@ class DocumentationList(ListView):
 
         project_agreement_id = self.kwargs['project']
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries)
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries)
 
         if int(self.kwargs['workflowlevel1']) != 0 & int(self.kwargs['project']) == 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project'])
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2')\
+                .filter(workflowlevel2__id=self.kwargs['project'])
         elif int(self.kwargs['project']) != 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project'])
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2')\
+                .filter(workflowlevel2__id=self.kwargs['project'])
         else:
             countries = getCountry(request.user)
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office').filter(workflowlevel1__country__in=countries)
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office')\
+                .filter(workflowlevel1__country__in=countries)
 
-        return render(request, self.template_name, {'getworkflowlevel1s': getworkflowlevel1s, 'getDocumentation':getDocumentation, 'project_agreement_id': project_agreement_id})
+        return render(request, self.template_name, \
+                    {'getworkflowlevel1s': getworkflowlevel1s, \
+                    'getDocumentation':getDocumentation, \
+                    'project_agreement_id': project_agreement_id})
 
 
 class DocumentationAgreementList(AjaxableResponseMixin, CreateView):
@@ -639,7 +650,7 @@ class DocumentationAgreementList(AjaxableResponseMixin, CreateView):
     def get(self, request, *args, **kwargs):
 
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries)
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries)
 
         getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1', 'project')
 
@@ -934,25 +945,39 @@ class SiteProfileList(ListView):
         workflowlevel1_id = int(self.kwargs['workflowlevel1_id'])
 
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries)
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries)
 
         #this date, 3 months ago, a site is considered inactive
         inactiveSite = pytz.UTC.localize(datetime.now()) - relativedelta(months=3)
 
         #Filter SiteProfile list and map by activity or workflowlevel1
         if activity_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(workflowlevel2__id=activity_id).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(workflowlevel2__id=activity_id).distinct()
         elif workflowlevel1_id != 0:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(Q(workflowlevel2__workflowlevel1__id=workflowlevel1_id) | Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(\
+                    Q(workflowlevel2__workflowlevel1__id=workflowlevel1_id) | \
+                    Q(collecteddata__workflowlevel1__id=workflowlevel1_id)).distinct()
         else:
-            getSiteProfile = SiteProfile.objects.all().prefetch_related('country','district','province').filter(country__in=countries).distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .prefetch_related('country','district','province')\
+                .filter(country__in=countries).distinct()
+
         if request.method == "GET" and "search" in request.GET:
-            """
-             fields = ('name', 'office')
-            """
-            getSiteProfile = SiteProfile.objects.all().filter(Q(country__in=countries), Q(name__contains=request.GET["search"]) | Q(office__name__contains=request.GET["search"]) | Q(type__profile__contains=request.GET['search']) |
-                                                            Q(province__name__contains=request.GET["search"]) | Q(district__name__contains=request.GET["search"]) | Q(village__contains=request.GET['search']) |
-                                                             Q(workflowlevel2__project_name__contains=request.GET["search"]) | Q(workflowlevel2__project_name__contains=request.GET['search'])).select_related().distinct()
+            getSiteProfile = SiteProfile.objects.all()\
+                .filter(\
+                    Q(country__in=countries), \
+                    Q(name__contains=request.GET["search"]) | \
+                    Q(office__name__contains=request.GET["search"]) | \
+                    Q(type__profile__contains=request.GET['search']) | \
+                    Q(province__name__contains=request.GET["search"]) | \
+                    Q(district__name__contains=request.GET["search"]) | \
+                    Q(village__contains=request.GET['search']) | \
+                    Q(workflowlevel2__project_name__contains=request.GET['search']))\
+                .select_related().distinct()
         #paginate site profile list
 
         default_list = 10 # default number of site profiles per page
@@ -972,7 +997,15 @@ class SiteProfileList(ListView):
         except EmptyPage:
             getSiteProfile = paginator.page(paginator.num_pages)
 
-        return render(request, self.template_name, {'inactiveSite':inactiveSite,'default_list':default_list,'getSiteProfile':getSiteProfile,'project_agreement_id': activity_id,'country': countries,'getworkflowlevel1s':getworkflowlevel1s, 'form': FilterForm(), 'helper': FilterForm.helper})
+        return render(request, self.template_name, {\
+            'inactiveSite':inactiveSite,\
+            'default_list':default_list,\
+            'getSiteProfile':getSiteProfile,\
+            'project_agreement_id': activity_id,\
+            'country': countries,\
+            'getworkflowlevel1s':getworkflowlevel1s, \
+            'form': FilterForm(), \
+            'helper': FilterForm.helper})
 
 
 class SiteProfileReport(ListView):
@@ -1392,7 +1425,7 @@ class StakeholderList(ListView):
             workflowlevel1_id = 0
 
         countries = getCountry(request.user)
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries)
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries)
 
         countries = getCountry(request.user)
 
@@ -1447,7 +1480,6 @@ class StakeholderCreate(CreateView):
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
-
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
@@ -1816,11 +1848,10 @@ class ApprovalCreate(AjaxableResponseMixin, CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        obj = form.save(commit=False)
+        obj = form.save(commit=True)
         # update workflowlevel2 with approval
         level2 = WorkflowLevel2.objects.get(id=form.id)
-        level2.approval.create(obj)
-        obj.save()
+        level2.approval.add(obj)
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [obj])
@@ -1836,17 +1867,19 @@ class ApprovalCreate(AjaxableResponseMixin, CreateView):
 
 class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
     """
-    Budget Form
+    ApprovalWorkflow Form
     """
-    model = Budget
+    model = ApprovalWorkflow
+    template_name = 'workflow/approval_form.html'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
-        return super(BudgetUpdate, self).dispatch(request, *args, **kwargs)
+        return super(ApprovalUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(BudgetUpdate, self).get_context_data(**kwargs)
+        context = super(ApprovalUpdate, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
+        # context.update({'section': self.object.section})
         return context
 
     def form_invalid(self, form):
@@ -1855,8 +1888,10 @@ class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
 
     # add the request to the kwargs
     def get_form_kwargs(self):
-        kwargs = super(BudgetUpdate, self).get_form_kwargs()
+        kwargs = super(ApprovalUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
+        # kwargs['section'] = self.object.section
+        kwargs['id'] = self.object.pk
         return kwargs
 
     def form_valid(self, form):
@@ -1865,26 +1900,27 @@ class ApprovalUpdate(AjaxableResponseMixin, UpdateView):
             data = serializers.serialize('json', [obj])
             return HttpResponse(data)
 
-        messages.success(self.request, 'Success, Budget Output Updated!')
+        messages.success(self.request, 'Success, Approval request updated!')
 
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = BudgetForm
+    form_class = ApprovalForm
 
 
 class ApprovalDelete(AjaxableResponseMixin, DeleteView):
+
     """
-    Budget Delete
+    ApprovalWorkflow Delete
     """
-    model = Budget
-    success_url = '/'
+    model = ApprovalWorkflow
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
-        return super(BudgetDelete, self).dispatch(request, *args, **kwargs)
+        return super(ApprovalDelete, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(BudgetDelete, self).get_context_data(**kwargs)
+        self.request.session['project_id_%s' % self.object.id] = self.request.META['HTTP_REFERER']
+        context = super(ApprovalDelete, self).get_context_data(**kwargs)
         context.update({'id': self.kwargs['pk']})
         return context
 
@@ -1898,10 +1934,14 @@ class ApprovalDelete(AjaxableResponseMixin, DeleteView):
 
         form.save()
 
-        messages.success(self.request, 'Success, Budget Deleted!')
+        messages.success(self.request, 'Success, Approval request deleted!')
         return self.render_to_response(self.get_context_data(form=form))
 
-    form_class = BudgetForm
+    def get_success_url(self, **kwargs):
+        url = '%s#approval' % self.request.session['project_id_%s' % self.object.id] #'/workflow/projectagreement_update/%s/#approval/' %
+        del self.request.session['project_id_%s' % self.object.id]
+        return url
+    form_class = ApprovalForm
 
 
 class ChecklistItemList(ListView):
@@ -2075,7 +2115,7 @@ class Report(View, AjaxableResponseMixin):
         else:
             getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries)
 
-        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+        getworkflowlevel1s = WorkflowLevel1.objects.all().filter(country__in=countries).distinct()
 
         filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
 
@@ -2099,7 +2139,13 @@ class Report(View, AjaxableResponseMixin):
 
 
         # send the keys and vars
-        return render(request, "workflow/report.html", {'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getworkflowlevel1s': getworkflowlevel1s})
+        return render(request, "workflow/report.html", {\
+                    'country': countries, \
+                    'form': FilterForm(), \
+                    'filter': filtered, \
+                    'helper': FilterForm.helper, \
+                    'APPROVALS': APPROVALS, \
+                    'getworkflowlevel1s': getworkflowlevel1s})
 
 
 class ReportData(View, AjaxableResponseMixin):
@@ -2112,26 +2158,32 @@ class ReportData(View, AjaxableResponseMixin):
         countries=getCountry(request.user)
         filters = {}
         if int(self.kwargs['pk']) != 0:
-            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1__id=self.kwargs['pk']).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name', 'estimated_by__name','total_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.all()\
+                .filter(workflowlevel1__id=self.kwargs['pk'])\
+                .values('id', 'workflowlevel1__name', 'name','site', 'office__name', \
+                        'name', 'sector__sector', 'total_estimated_budget')
 
         elif self.kwargs['status'] != 'none':
-            getAgreements = WorkflowLevel2.objects.all().filter(approval=self.kwargs['status']).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name','estimated_by__name','total_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.all()\
+                .filter(approval=self.kwargs['status'])\
+                .values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'name', \
+                        'sector__sector', 'total_estimated_budget')
         else:
-            getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name', 'estimated_by__name','total_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.select_related()\
+                .filter(workflowlevel1__country__in=countries)\
+                .values('id', 'workflowlevel1__name', 'name','site', 'office__name', \
+                        'name', 'sector__sector', 'total_estimated_budget')
 
-        getAgreements = WorkflowLevel2.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
-                'program__name', 'name','site', 'office__name', \
-                'project_name', 'sector__sector', 'type__name', \
-                'estimated_by__name','total_estimated_budget',\
-                'total_estimated_budget')
+        getAgreements = WorkflowLevel2.objects.prefetch_related('sectors')\
+            .select_related('program', 'office', 'estimated_by', 'site')\
+            .filter(**filters).values('id', 'workflowlevel1__id', 'workflowlevel1__name', 'approval', \
+                'name', 'site__name', 'office__name', 'sector__sector', 'total_estimated_budget')
 
         getAgreements = json.dumps(list(getAgreements), cls=DjangoJSONEncoder)
 
         final_dict = { 'get_agreements': getAgreements }
 
+        print(".............................%s............................" % final_dict )
         return JsonResponse(final_dict, safe=False)
 
 
@@ -2266,12 +2318,21 @@ class DocumentationListObjects(View, AjaxableResponseMixin):
         countries = getCountry(request.user)
 
         if int(self.kwargs['workflowlevel1']) != 0 & int(self.kwargs['project']) == 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel1__id=self.kwargs['workflowlevel1']).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2')\
+                .filter(workflowlevel1__id=self.kwargs['workflowlevel1'])\
+                .values('id', 'name', 'workflowlevel2__name', 'create_date')
         elif int(self.kwargs['project']) != 0:
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2').filter(workflowlevel2__id=self.kwargs['project']).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2')\
+                .filter(workflowlevel2__id=self.kwargs['project'])\
+                .values('id', 'name', 'workflowlevel2__name', 'create_date')
         else:
-            countries = getCountry(request.user)
-            getDocumentation = Documentation.objects.all().prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office').filter(workflowlevel1__country__in=countries).values('id', 'name', 'workflowlevel2__project_name', 'create_date')
+            getDocumentation = Documentation.objects.all()\
+                .prefetch_related('workflowlevel1','workflowlevel2','workflowlevel2__office')\
+                .filter(workflowlevel1__country__in=countries)\
+                .values('id', 'name', 'workflowlevel2__name', 'create_date')
+
 
         getDocumentation = json.dumps(list(getDocumentation), cls=DjangoJSONEncoder)
         final_dict  = {'getDocumentation': getDocumentation}

@@ -67,6 +67,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_MICROSOFT_GRAPH_KEY = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_KEY')
 SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET')
 SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL')
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['redirect_after_login',]
 
 
 ########## CACHE CONFIGURATION
@@ -120,7 +121,7 @@ LOGGING = {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': os.getenv('TOLA_ERROR_LOG'),
+            'filename': os.getenv('TOLA_ERROR_LOG', 'tola_activity_error.log'),
         },
         'console': {
             'class': 'logging.StreamHandler',
@@ -139,3 +140,9 @@ TOLA_TRACK_URL = os.getenv('TOLA_TRACK_URL')
 TOLA_TRACK_TOKEN = os.getenv('TOLA_TRACK_TOKEN')
 
 ELASTICSEARCH_URL = os.getenv('ELASTICSEARCH_URL')
+ELASTICSEARCH_INDEX_PREFIX = os.getenv('ELASTICSEARCH_INDEX_PREFIX')
+
+try:
+    from local_secret import *
+except ImportError:
+    pass

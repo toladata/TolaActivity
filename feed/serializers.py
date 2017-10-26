@@ -3,10 +3,9 @@ from rest_framework import serializers
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
-from django.contrib.auth.models import User,Group
+from django.contrib.auth.models import User, Group
 from rest_framework.serializers import ReadOnlyField
 from django.db.models import Count, Sum
-
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -102,6 +101,18 @@ class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
     site_key = serializers.UUIDField(read_only=True)
     id = serializers.ReadOnlyField()
 
+    def create(self, validated_data, **kwargs):
+        user = self.context['request'].user
+        user_org = TolaUser.objects.get(user=user).organization
+        validated_data['organization'] = user_org
+        approval = []
+        if 'approval' in validated_data:
+            approval = validated_data.pop('approval')
+
+        obj = SiteProfile.objects.create(**validated_data)
+        obj.approval.add(*approval)
+        return obj
+
     class Meta:
         model = SiteProfile
         fields = '__all__'
@@ -132,47 +143,6 @@ class IndicatorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Indicator
         fields = '__all__'
-
-class IndicatorTypeLightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = IndicatorType
-        fields = ('id', 'indicator_type')
-
-
-class IndicatorLevelLightSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Level
-        fields = ('id', 'name')
-
-class IndicatorLightSerializer(serializers.ModelSerializer):
-    sector = serializers.SerializerMethodField()
-    indicator_type = IndicatorTypeLightSerializer(many=True, read_only=True)
-    level = IndicatorLevelLightSerializer(many=True, read_only=True)
-    datacount = serializers.SerializerMethodField()
-
-    def get_datacount(self, obj):
-        # Returns the number of collecteddata points by an indicator
-        return obj.collecteddata_set.count()
-
-    def get_sector(self, obj):
-        if obj.sector is None:
-            return ''
-        return {"id": obj.sector.id, "name": obj.sector.sector}
-
-    class Meta:
-        model = Indicator
-        fields = ('name', 'number', 'lop_target', 'indicator_type', 'level', 'sector', 'datacount')
-
-class ProgramIndicatorSerializer(serializers.ModelSerializer):
-    indicator_set = IndicatorLightSerializer(many=True, read_only=True)
-    indicators_count = serializers.SerializerMethodField()
-
-    def get_indicators_count(self, obj):
-        return obj.indicator_set.count()
-
-    class Meta:
-        model =  WorkflowLevel1
-        fields = ('id', 'name', 'indicators_count', 'indicator_set')
 
 
 class IndicatorTypeLightSerializer(serializers.ModelSerializer):
@@ -279,6 +249,13 @@ class LevelSerializer(serializers.HyperlinkedModelSerializer):
 class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
+    def create(self, validated_data, **kwargs):
+        user = self.context['request'].user
+        user_org = TolaUser.objects.get(user=user).organization
+        validated_data['organization'] = user_org
+
+        return super(StakeholderSerializer, self).create(validated_data)
+
     class Meta:
         model = Stakeholder
         fields = '__all__'
@@ -302,6 +279,14 @@ class ExternalServiceRecordSerializer(serializers.HyperlinkedModelSerializer):
 
 class StrategicObjectiveSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
+
+    def create(self, validated_data, **kwargs):
+        user = self.context['request'].user
+        user_org = TolaUser.objects.get(user=user).organization
+        validated_data['organization'] = user_org
+
+        obj = StrategicObjective.objects.create(**validated_data)
+        return obj
 
     class Meta:
         model = StrategicObjective
@@ -488,6 +473,14 @@ class RiskRegisterSerializer(serializers.HyperlinkedModelSerializer):
 class IssueRegisterSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
+    def create(self, validated_data, **kwargs):
+        user = self.context['request'].user
+        user_org = TolaUser.objects.get(user=user).organization
+        validated_data['organization'] = user_org
+
+        obj = IssueRegister.objects.create(**validated_data)
+        return obj
+
     class Meta:
         model = IssueRegister
         fields = '__all__'
@@ -577,7 +570,6 @@ class WorkflowLevel2FullSerializer(serializers.HyperlinkedModelSerializer):
     office = OfficeSerializer(read_only=True)
     sector = SectorSerializer(read_only=True)
     budget = BudgetSerializer(read_only=True)
-    #stakeholder = StakeholderSerializer(read_only=True, many=True)
 
     class Meta:
         model = WorkflowLevel2

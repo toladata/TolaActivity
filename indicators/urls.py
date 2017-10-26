@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^collecteddata_import/$', indicatorviews.collecteddata_import, name='collecteddata_import'),
     url(r'^collecteddata_update/(?P<pk>\w+)/$', CollectedDataUpdate.as_view(), name='collecteddata_update'),
     url(r'^collecteddata_delete/(?P<pk>\w+)/$', CollectedDataDelete.as_view(), name='collecteddata_delete'),
-    url(r'^collecteddata_export/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
+    # url(r'^collecteddata_export/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),
 
     # Indicator Report
     url(r'^report/(?P<workflowlevel1>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', indicatorviews.indicator_report, name='indicator_report'),

@@ -15,8 +15,8 @@
   </button>
 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
         <li role="presentation"><a role="menuitem" tabindex="-1" href=" ">-- All --</a></li>
-    {% for workflowlevel1 in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ workflowlevel1.gaitid}} - {{ workflowlevel1.name }}</a></li>
+    {% for workflowlevel1 in getworkflowlevel1s %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{workflowlevel1.id}})">{{ workflowlevel1.unique_id|default:""}} - {{ workflowlevel1.name }}</a></li>
     {% endfor %}
   </ul>
 <a href="/workflow/stakeholder_add/0/" class="btn btn-large btn-success">New Stakeholder</a> &nbsp;
@@ -40,7 +40,7 @@
     });
 
      function show_stakeholder_table(stakeholder_data) {
-            console.log(stakeholder_data);
+            // console.log(stakeholder_data);
             stakeholder_records = JSON.parse(stakeholder_data);
             //First destroy any old version of the table to refresh anew
             if ( $.fn.dataTable.isDataTable( '#stakeholdertable' ) ) {

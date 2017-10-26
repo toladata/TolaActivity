@@ -1,0 +1,2 @@
+class ValueNotFoundError(Exception):
+    pass

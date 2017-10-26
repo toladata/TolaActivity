@@ -113,7 +113,7 @@ class ApprovalForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         self.request = kwargs.pop('request')
-        self.section = kwargs.pop('section')
+        self.section = kwargs.pop('section', None)
         self.id = kwargs.pop('id')
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'
@@ -402,7 +402,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                                           </table>
                                       {% endif %}
                                       <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/approval_request/{{ pk }}/?is_it_project_complete_form=true">Request Approval</a>
+                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/approval_add/{{ pk }}/workflowlevel2/?is_it_project_complete_form=true">Request Approval</a>
                                       </div>
                                     </div>
                              """),
@@ -1013,7 +1013,7 @@ class StakeholderForm(forms.ModelForm):
             TabHolder(
                 Tab('Details',
                     Fieldset('Details',
-                        'stakeholder_uuid','name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % pkval ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
+                        'organization', 'stakeholder_uuid','name', 'type', 'contact', HTML("""<a onclick="window.open('/workflow/contact_add/%s/0/').focus();">Add New Contact</a>""" % pkval ), 'country', 'sectors', PrependedText('stakeholder_register',''), 'formal_relationship_document', 'vetting_document', 'notes',
                     ),
                 ),
 
@@ -1072,6 +1072,7 @@ class StakeholderForm(forms.ModelForm):
         self.fields['formal_relationship_document'].queryset = Documentation.objects.filter(workflowlevel1__country__in=countries)
         self.fields['vetting_document'].queryset = Documentation.objects.filter(workflowlevel1__country__in=countries)
         self.fields['stakeholder_uuid'].widget = forms.HiddenInput()
+        self.fields['organization'].widget = forms.HiddenInput()
 
 
 class FilterForm(forms.Form):
