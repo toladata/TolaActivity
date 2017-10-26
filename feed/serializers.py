@@ -4,8 +4,7 @@ from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
 from django.contrib.auth.models import User, Group
-from rest_framework.serializers import ReadOnlyField
-from django.db.models import Count, Sum
+from rest_framework.reverse import reverse
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,6 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField('get_self')
+
+    def get_self(self, obj):
+        request = self.context['request']
+        return reverse('group-detail', kwargs={'pk': obj.id}, request=request)
 
     class Meta:
         model = Group
