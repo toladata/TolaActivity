@@ -1,6 +1,6 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation
+    SubFactory
 
 from workflow.models import (
     Contact as ContactM,
@@ -76,14 +76,3 @@ class WorkflowLevel2(DjangoModelFactory):
         model = WorkflowLevel2M
 
     name = 'Help Syrians'
-
-    @post_generation
-    def site(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            # A list of site were passed in, use them
-            for site in extracted:
-                self.site.add(site)
