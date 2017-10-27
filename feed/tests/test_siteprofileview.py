@@ -75,7 +75,8 @@ class SiteProfileViewsTest(TestCase):
                                           organization=tola_user.organization,
                                           country=self.country)
         wkf1 = factories.WorkflowLevel1()
-        factories.WorkflowLevel2.build(workflowlevel1=wkf1, site=site)
+        wkf2 = factories.WorkflowLevel2.create(workflowlevel1=wkf1)
+        wkf2.site.add(site)
 
         path = \
             '/api/siteprofile/?workflowlevel2__workflowlevel1=%s' % wkf1.id
