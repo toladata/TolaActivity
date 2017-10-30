@@ -224,6 +224,11 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def perform_create(self, serializer):
+        user = self.request.user
+        user_org = TolaUser.objects.get(user=user).organization
+        serializer.save(organization=user_org)
+
     filter_fields = ('country__country', 'workflowlevel2__workflowlevel1')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = SiteProfile .objects.all()
@@ -451,6 +456,11 @@ class StakeholderViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    def perform_create(self, serializer):
+        user = self.request.user
+        user_org = TolaUser.objects.get(user=user).organization
+        serializer.save(organization=user_org)
+
     filter_fields = ('workflowlevel1__name',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Stakeholder.objects.all()
@@ -503,6 +513,11 @@ class StrategicObjectiveViewSet(viewsets.ModelViewSet):
             queryset = StrategicObjective.objects.filter(organization=tola_user.organization)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        user_org = TolaUser.objects.get(user=user).organization
+        serializer.save(organization=user_org)
 
     filter_fields = ('organization__id', 'country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -996,6 +1011,11 @@ class IssueRegisterViewSet(viewsets.ModelViewSet):
             queryset = IssueRegister.objects.all().filter(organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        user_org = TolaUser.objects.get(user=user).organization
+        serializer.save(organization=user_org)
 
     filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
