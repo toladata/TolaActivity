@@ -1,6 +1,8 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute
 
+from feed.views import ROLE_PROGRAM_ADMIN
+
 
 class User(DjangoModelFactory):
     class Meta:
@@ -18,4 +20,4 @@ class Group(DjangoModelFactory):
         model = 'auth.Group'
         django_get_or_create = ('name',)
 
-    name = 'ProgramAdmin'
+    name = ROLE_PROGRAM_ADMIN
