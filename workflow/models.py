@@ -28,6 +28,9 @@ except ImportError:
     from datetime import datetime as timezone
 from django.db.models import Q
 
+ROLE_ORGANIZATION_ADMIN = 'OrgAdmin'
+ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
+
 
 # New user created generate a token
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
