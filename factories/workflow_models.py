@@ -3,6 +3,7 @@ from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
     SubFactory
 
 from workflow.models import (
+    ApprovalType as ApprovalTypeM,
     Contact as ContactM,
     Country as CountryM,
     Organization as OrganizationM,
@@ -13,6 +14,13 @@ from workflow.models import (
     WorkflowLevel2 as WorkflowLevel2M,
 )
 from .user_models import User
+
+
+class ApprovalType(DjangoModelFactory):
+    class Meta:
+        model = ApprovalTypeM
+
+    name = 'Approval Type A'
 
 
 class Country(DjangoModelFactory):
