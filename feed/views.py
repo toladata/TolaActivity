@@ -17,9 +17,7 @@ import django_filters
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
-from .permissions import UserIsOwnerOrAdmin, UserIsTeamOrOrgAdmin
-
-ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
+from .permissions import UserIsOwnerOrAdmin, WorkflowLevel1Permissions
 
 
 class LargeResultsSetPagination(PageNumberPagination):
@@ -77,7 +75,7 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     limit to users logged in country permissions
     """
 
-    permission_classes = (UserIsTeamOrOrgAdmin,)
+    permission_classes = (WorkflowLevel1Permissions,)
 
     # Remove CSRF request verification for posts to this API
     @method_decorator(csrf_exempt)
@@ -88,7 +86,7 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = WorkflowLevel1.objects.all().annotate(budget=Sum('workflowlevel2__total_estimated_budget'),
                                                              actuals=Sum('workflowlevel2__actual_cost'))
-        elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
+        elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True):
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = WorkflowLevel1.objects.all().filter(organization=user_org).annotate(
                 budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
@@ -105,35 +103,20 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)  # inherited from CreateModelMixin
 
         # Assign the user to multiple properties of the Program
-        group = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
+        group_program_admin = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
         wflvl1 = WorkflowLevel1.objects.get(level1_uuid=serializer.data['level1_uuid'])
         wflvl1.organization = request.user.tola_user.organization
         wflvl1.user_access.add(request.user.tola_user)
         wflvl1.save()
         WorkflowTeam.objects.create(workflow_user=request.user.tola_user, workflowlevel1=wflvl1,
-                                    role=group)
+                                    role=group_program_admin)
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def delete(self, request, pk):
-        workflowlevel1 = self.get_object(pk)
-
-        if request.user.is_superuser:
-            workflowlevel1.delete()
-        elif 'OrgAdmin' in request.user.groups.values_list('name', flat=True):
-            workflowlevel1.delete()
-        elif 'ProgAdmin' in request.user.groups.values_list('name', flat=True):
-            workflowlevel1.delete()
-        else:
-            user_level1 = getLevel1(request.user)
-            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1).filter(id=workflowlevel1.id)
-            if queryset:
-                workflowlevel1.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            else:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
-
+    def destroy(self, request, pk):
+        workflowlevel1 = self.get_object()
+        workflowlevel1.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     ordering_fields = ('country__country', 'name')
