@@ -98,6 +98,7 @@ class Sector(models.Model):
     organization = models.ForeignKey("Organization", default=1, related_name="org_specific_sector")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='sectors', null=True, blank=True)
 
     class Meta:
         ordering = ('sector',)
@@ -466,6 +467,7 @@ class ApprovalWorkflow(models.Model):
     date_approved = models.DateTimeField(null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='approval', null=True, blank=True)
 
     STATUS_OPEN = "open"
     STATUS_AWAITING_APPROVAL = "awaiting_approval"
@@ -542,6 +544,7 @@ class Milestone(models.Model):
     is_global = models.BooleanField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='milestones', null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
@@ -879,6 +882,7 @@ class SiteProfile(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     organization = models.ForeignKey(Organization, null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='sites', null=True, blank=True)
     history = HistoricalRecords()
     #optimize query
     objects = SiteProfileManager()
@@ -996,6 +1000,7 @@ class Stakeholder(models.Model):
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='stakeholders', null=True, blank=True)
     # TODO: optimize query
     objects = StakeholderManager()
 
@@ -1127,6 +1132,7 @@ class WorkflowLevel2(models.Model):
     sort = models.IntegerField(default=0, blank=True)  # sort array for activities related to a project
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='workflowlevel2', null=True, blank=True)
     history = HistoricalRecords()
     # optimize base query for all classbasedviews
     objects = WorkflowLevel2Manager()
@@ -1298,6 +1304,7 @@ class Documentation(models.Model):
     workflowlevel1 = models.ForeignKey(WorkflowLevel1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='documentation', null=True, blank=True)
 
      # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1363,6 +1370,7 @@ class Budget(models.Model):
     donor_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="donor")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='budgets', null=True, blank=True)
     history = HistoricalRecords()
     # on save add create date or update edit date
     def save(self, *args, **kwargs):

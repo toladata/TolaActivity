@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
+from rest_framework.reverse import reverse
 
 import factories
 from feed.views import StakeholderViewSet
@@ -54,6 +55,8 @@ class StakeholderViewsTest(TestCase):
         wflvl1 = WorkflowLevel1.objects.create(name='WorkflowLevel1')
         WorkflowTeam.objects.create(workflow_user=self.tola_user,
                                     workflowlevel1=wflvl1)
+        user_url = reverse('user-detail', kwargs={'pk': self.tola_user.user.id},
+                           request=self.request_post)
 
         # create stakeholder via POST request
         data = {'workflowlevel1': [
@@ -63,6 +66,7 @@ class StakeholderViewsTest(TestCase):
         view = StakeholderViewSet.as_view({'post': 'create'})
         response = view(self.request_post)
         self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['owner'], user_url)
 
         # check if the obj created has the user organization
         self.request_get.user = self.tola_user.user

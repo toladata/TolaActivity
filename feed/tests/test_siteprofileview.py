@@ -1,5 +1,6 @@
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
+from rest_framework.reverse import reverse
 
 import factories
 from feed.views import SiteProfileViewSet
@@ -50,6 +51,8 @@ class SiteProfileViewsTest(TestCase):
     
     def test_create_siteprofile_normaluser_one_result(self):
         tola_user = factories.TolaUser()
+        user_url = reverse('user-detail', kwargs={'pk': tola_user.user.id},
+                           request=self.request_post)
 
         data = {
             'name': 'Site Profile 1',
@@ -60,6 +63,7 @@ class SiteProfileViewsTest(TestCase):
         view = SiteProfileViewSet.as_view({'post': 'create'})
         response = view(self.request_post)
         self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['owner'], user_url)
 
         # check if the obj created has the user organization
         self.request_get.user = tola_user.user
