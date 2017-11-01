@@ -17,8 +17,10 @@ class ApprovalWorkflowViewTest(TestCase):
     def test_create_approvalworkflow(self):
         user_john = factories.User(first_name='John', last_name='Lennon')
         user_paul = factories.User(first_name='Paul', last_name='McCartney')
-        assigned_user = factories.TolaUser(user=user_john)
-        requested_user = factories.TolaUser(user=user_paul)
+        assigned_user = factories.TolaUser(user=user_john,
+                                           organization=self.organization)
+        requested_user = factories.TolaUser(user=user_paul,
+                                            organization=self.organization)
         approval_type = factories.ApprovalType()
         assigned_user_url = reverse('tolauser-detail',
                                     kwargs={'pk': assigned_user.id},

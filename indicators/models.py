@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from decimal import Decimal
 import uuid
 
@@ -485,7 +485,7 @@ class CollectedData(models.Model):
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
-        self.edit_date = datetime.utcnow()
+        self.edit_date = timezone.now()
         super(CollectedData, self).save(*args, **kwargs)
 
         ei = ElasticsearchIndexer()
