@@ -15,6 +15,7 @@ class Report(models.Model):
     public = models.BooleanField(default=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey('auth.User', related_name='reports', null=True, blank=True)
 
     def __unicode__(self):
         return self.workflowlevel1.name
