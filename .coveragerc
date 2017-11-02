@@ -1,0 +1,7 @@
+[run]
+omit =
+  */tests/*
+  */test_*
+  */migrations/*
+  src/*
+  tola/settings/*
