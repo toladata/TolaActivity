@@ -45,18 +45,15 @@ class WorkflowLevel1Permissions(permissions.BasePermission):
         user_level1 = getLevel1(request.user)
         if view.action == 'list':
             user_org = TolaUser.objects.get(user=request.user).organization
+            user_groups = request.user.groups.values_list('name', flat=True)
             return (request.user.is_authenticated() and
                     (obj in user_level1 and obj.organization in user_org
-                     or ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True)))
+                     or ROLE_ORGANIZATION_ADMIN in user_groups))
         if view.action == 'retrieve':
+            user_groups = request.user.groups.values_list('name', flat=True)
             return (request.user.is_authenticated() and
                     (obj in user_level1 or
-                     ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True)))
-        elif view.action in ['update', 'partial_update']:
-            return (request.user.is_authenticated() and
-                    (obj in user_level1 or
-                     ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True)))
-        elif view.action == 'destroy':
+                     ROLE_ORGANIZATION_ADMIN in user_groups))
             if request.user.is_superuser:
                 return True
             elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True):
