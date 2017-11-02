@@ -1,9 +1,11 @@
 from django.contrib.auth.models import Group
+from django.db.models import Q
 from rest_framework import permissions
 
 from tola.util import getLevel1
 from workflow.models import (
-    TolaUser, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN, WorkflowTeam)
+    TolaUser, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM,
+    WorkflowTeam)
 
 
 class UserIsOwnerOrAdmin(permissions.BasePermission):
@@ -45,30 +47,47 @@ class WorkflowLevel1Permissions(permissions.BasePermission):
         user_level1 = getLevel1(request.user)
         if view.action == 'list':
             user_org = TolaUser.objects.get(user=request.user).organization
+            user_groups = request.user.groups.values_list('name', flat=True)
             return (request.user.is_authenticated() and
                     (obj in user_level1 and obj.organization in user_org
-                     or ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True)))
+                     or ROLE_ORGANIZATION_ADMIN in user_groups))
         if view.action == 'retrieve':
+            user_groups = request.user.groups.values_list('name', flat=True)
             return (request.user.is_authenticated() and
                     (obj in user_level1 or
-                     ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True)))
-        elif view.action in ['update', 'partial_update']:
-            return (request.user.is_authenticated() and
-                    (obj in user_level1 or
-                     ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True)))
-        elif view.action == 'destroy':
+                     ROLE_ORGANIZATION_ADMIN in user_groups))
+        elif view.action in ['update', 'partial_update', 'destroy']:
             if request.user.is_superuser:
                 return True
-            elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True):
+
+            if obj.organization != request.user.tola_user.organization:
+                return False
+
+            user_groups = request.user.groups.values_list('name', flat=True)
+            if ROLE_ORGANIZATION_ADMIN in user_groups:
                 return True
 
-            group_program_admin = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
-            try:
-                WorkflowTeam.objects.get(workflow_user=request.user.tola_user, workflowlevel1=obj,
-                                         role=group_program_admin)
-            except WorkflowTeam.DoesNotExist:
-                return False
+            if view.action == 'destroy':
+                try:
+                    WorkflowTeam.objects.get(
+                        workflow_user=request.user.tola_user,
+                        workflowlevel1=obj,
+                        role__name=ROLE_PROGRAM_ADMIN)
+                except WorkflowTeam.DoesNotExist:
+                    return False
+                else:
+                    return True
             else:
-                return True
+                try:
+                    WorkflowTeam.objects.get(
+                        Q(role__name=ROLE_PROGRAM_ADMIN) |
+                        Q(role__name=ROLE_PROGRAM_TEAM),
+                        workflow_user=request.user.tola_user,
+                        workflowlevel1=obj)
+                except WorkflowTeam.DoesNotExist:
+                    return False
+                else:
+                    return True
+
         else:
             return False

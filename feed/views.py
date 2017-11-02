@@ -104,15 +104,18 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
 
         # Assign the user to multiple properties of the Program
         group_program_admin = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
-        wflvl1 = WorkflowLevel1.objects.get(level1_uuid=serializer.data['level1_uuid'])
+        wflvl1 = WorkflowLevel1.objects.get(
+            level1_uuid=serializer.data['level1_uuid'])
         wflvl1.organization = request.user.tola_user.organization
         wflvl1.user_access.add(request.user.tola_user)
         wflvl1.save()
-        WorkflowTeam.objects.create(workflow_user=request.user.tola_user, workflowlevel1=wflvl1,
-                                    role=group_program_admin)
+        WorkflowTeam.objects.create(
+            workflow_user=request.user.tola_user, workflowlevel1=wflvl1,
+            role=group_program_admin)
 
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
     def destroy(self, request, pk):
         workflowlevel1 = self.get_object()
