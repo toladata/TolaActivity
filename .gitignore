@@ -30,6 +30,7 @@ docs/api/conf/config.json/awstats.conf
 #Misc.
 .idea/
 .DS_Store
+.coverage
 media/
 client_secrets.json
 *.crt

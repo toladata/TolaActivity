@@ -1,17 +1,26 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation
+    SubFactory
 
 from workflow.models import (
+    ApprovalType as ApprovalTypeM,
     Contact as ContactM,
     Country as CountryM,
     Organization as OrganizationM,
     SiteProfile as SiteProfileM,
     TolaUser as TolaUserM,
+    WorkflowTeam as WorkflowTeamM,
     WorkflowLevel1 as WorkflowLevel1M,
     WorkflowLevel2 as WorkflowLevel2M,
 )
 from .user_models import User
+
+
+class ApprovalType(DjangoModelFactory):
+    class Meta:
+        model = ApprovalTypeM
+
+    name = 'Approval Type A'
 
 
 class Country(DjangoModelFactory):
@@ -58,6 +67,11 @@ class TolaUser(DjangoModelFactory):
     country = SubFactory(Country, country='Germany', code='DE')
 
 
+class WorkflowTeam(DjangoModelFactory):
+    class Meta:
+        model = WorkflowTeamM
+
+
 class WorkflowLevel1(DjangoModelFactory):
     class Meta:
         model = WorkflowLevel1M
@@ -70,14 +84,3 @@ class WorkflowLevel2(DjangoModelFactory):
         model = WorkflowLevel2M
 
     name = 'Help Syrians'
-
-    @post_generation
-    def site(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            # A list of site were passed in, use them
-            for site in extracted:
-                self.site.add(site)

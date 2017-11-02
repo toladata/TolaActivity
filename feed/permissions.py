@@ -1,6 +1,11 @@
+from django.contrib.auth.models import Group
+from django.db.models import Q
 from rest_framework import permissions
-from workflow.models import TolaUser
+
 from tola.util import getLevel1
+from workflow.models import (
+    TolaUser, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM,
+    WorkflowTeam)
 
 
 class UserIsOwnerOrAdmin(permissions.BasePermission):
@@ -14,18 +19,16 @@ class UserIsOwnerOrAdmin(permissions.BasePermission):
             return True
         else:
             return False
-        return request.user and request.user.is_authenticated()
 
     def check_object_permission(self, user, obj):
         return (user and user.is_authenticated() and
-          (user.is_staff or obj == user))
+                (user.is_staff or obj == user))
 
     def has_object_permission(self, request, view, obj):
         return self.check_object_permission(request.user, obj)
 
 
-class UserIsTeamOrOrgAdmin(permissions.BasePermission):
-
+class WorkflowLevel1Permissions(permissions.BasePermission):
     def has_permission(self, request, view):
         if view.action == 'list':
             return True
@@ -35,26 +38,56 @@ class UserIsTeamOrOrgAdmin(permissions.BasePermission):
             return True
         else:
             return False
-        return request.user and request.user.is_authenticated()
 
     def check_object_permission(self, user, obj):
         return (user and user.is_authenticated() and
-          (user.is_staff or obj == user))
+                (user.is_staff or obj == user))
 
     def has_object_permission(self, request, view, obj):
-
         user_level1 = getLevel1(request.user)
-        user_org = TolaUser.objects.get(user=request.user).organization
         if view.action == 'list':
-            return request.user.is_authenticated() and (obj in user_level1 and obj.organization in user_org
-                                                or 'OrgAdmin' in request.user.groups.values_list('name', flat=True))
+            user_org = TolaUser.objects.get(user=request.user).organization
+            user_groups = request.user.groups.values_list('name', flat=True)
+            return (request.user.is_authenticated() and
+                    (obj in user_level1 and obj.organization in user_org
+                     or ROLE_ORGANIZATION_ADMIN in user_groups))
         if view.action == 'retrieve':
-            return request.user.is_authenticated() and (obj in user_level1
-                                                or 'OrgAdmin' in request.user.groups.values_list('name', flat=True))
-        elif view.action in ['update', 'partial_update']:
-            return request.user.is_authenticated() and (obj in user_level1
-                                                or 'OrgAdmin' in request.user.groups.values_list('name', flat=True))
-        elif view.action == 'destroy':
-            return request.user.is_staff and 'OrgAdmin' in request.user.groups.values_list('name', flat=True)
+            user_groups = request.user.groups.values_list('name', flat=True)
+            return (request.user.is_authenticated() and
+                    (obj in user_level1 or
+                     ROLE_ORGANIZATION_ADMIN in user_groups))
+        elif view.action in ['update', 'partial_update', 'destroy']:
+            if request.user.is_superuser:
+                return True
+
+            if obj.organization != request.user.tola_user.organization:
+                return False
+
+            user_groups = request.user.groups.values_list('name', flat=True)
+            if ROLE_ORGANIZATION_ADMIN in user_groups:
+                return True
+
+            if view.action == 'destroy':
+                try:
+                    WorkflowTeam.objects.get(
+                        workflow_user=request.user.tola_user,
+                        workflowlevel1=obj,
+                        role__name=ROLE_PROGRAM_ADMIN)
+                except WorkflowTeam.DoesNotExist:
+                    return False
+                else:
+                    return True
+            else:
+                try:
+                    WorkflowTeam.objects.get(
+                        Q(role__name=ROLE_PROGRAM_ADMIN) |
+                        Q(role__name=ROLE_PROGRAM_TEAM),
+                        workflow_user=request.user.tola_user,
+                        workflowlevel1=obj)
+                except WorkflowTeam.DoesNotExist:
+                    return False
+                else:
+                    return True
+
         else:
             return False

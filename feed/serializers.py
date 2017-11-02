@@ -4,8 +4,7 @@ from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
 from django.contrib.auth.models import User, Group
-from rest_framework.serializers import ReadOnlyField
-from django.db.models import Count, Sum
+from rest_framework.reverse import reverse
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,6 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField('get_self')
+
+    def get_self(self, obj):
+        request = self.context['request']
+        return reverse('group-detail', kwargs={'pk': obj.id}, request=request)
 
     class Meta:
         model = Group
@@ -100,18 +104,6 @@ class BudgetSerializer(serializers.HyperlinkedModelSerializer):
 class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
     site_key = serializers.UUIDField(read_only=True)
     id = serializers.ReadOnlyField()
-
-    def create(self, validated_data, **kwargs):
-        user = self.context['request'].user
-        user_org = TolaUser.objects.get(user=user).organization
-        validated_data['organization'] = user_org
-        approval = []
-        if 'approval' in validated_data:
-            approval = validated_data.pop('approval')
-
-        obj = SiteProfile.objects.create(**validated_data)
-        obj.approval.add(*approval)
-        return obj
 
     class Meta:
         model = SiteProfile
@@ -249,13 +241,6 @@ class LevelSerializer(serializers.HyperlinkedModelSerializer):
 class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
-    def create(self, validated_data, **kwargs):
-        user = self.context['request'].user
-        user_org = TolaUser.objects.get(user=user).organization
-        validated_data['organization'] = user_org
-
-        return super(StakeholderSerializer, self).create(validated_data)
-
     class Meta:
         model = Stakeholder
         fields = '__all__'
@@ -279,14 +264,6 @@ class ExternalServiceRecordSerializer(serializers.HyperlinkedModelSerializer):
 
 class StrategicObjectiveSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
-
-    def create(self, validated_data, **kwargs):
-        user = self.context['request'].user
-        user_org = TolaUser.objects.get(user=user).organization
-        validated_data['organization'] = user_org
-
-        obj = StrategicObjective.objects.create(**validated_data)
-        return obj
 
     class Meta:
         model = StrategicObjective
@@ -472,14 +449,6 @@ class RiskRegisterSerializer(serializers.HyperlinkedModelSerializer):
 
 class IssueRegisterSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
-
-    def create(self, validated_data, **kwargs):
-        user = self.context['request'].user
-        user_org = TolaUser.objects.get(user=user).organization
-        validated_data['organization'] = user_org
-
-        obj = IssueRegister.objects.create(**validated_data)
-        return obj
 
     class Meta:
         model = IssueRegister
