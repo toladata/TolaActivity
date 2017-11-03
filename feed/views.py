@@ -147,7 +147,7 @@ class SectorViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -217,7 +217,7 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         user_org = TolaUser.objects.get(user=user).organization
-        serializer.save(organization=user_org, owner=self.request.user)
+        serializer.save(organization=user_org, created_by=self.request.user)
 
     filter_fields = ('country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -264,7 +264,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
         return Indicator.objects.annotate(actuals=Sum('collecteddata__achieved'))
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel1__country__country', 'workflowlevel1__name', 'indicator_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -350,7 +350,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -418,7 +418,7 @@ class LevelViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('organization__id', 'country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -458,7 +458,7 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         user_org = TolaUser.objects.get(user=user).organization
-        serializer.save(organization=user_org, owner=self.request.user)
+        serializer.save(organization=user_org, created_by=self.request.user)
 
     filter_fields = ('workflowlevel1__name',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -643,7 +643,7 @@ class DocumentationViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel2__workflowlevel1__country__country',
                      'workflowlevel2__workflowlevel1__organization__id')
@@ -678,7 +678,7 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name',
                      'indicator', 'indicator__workflowlevel1__organization__id')
@@ -825,7 +825,7 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     """
     def post(self,request):
@@ -897,7 +897,7 @@ class ApprovalWorkflowViewSet(viewsets.ModelViewSet):
     serializer_class = ApprovalWorkflowSerializer
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
 
 class BeneficiaryViewSet(viewsets.ModelViewSet):
@@ -946,7 +946,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -976,7 +976,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -1112,7 +1112,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)

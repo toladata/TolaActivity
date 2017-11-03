@@ -45,4 +45,4 @@ class ApprovalWorkflowViewTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['assigned_to'], assigned_user_url)
         self.assertEqual(response.data['requested_from'], requested_user_url)
-        self.assertEqual(response.data['owner'], user_url)
+        self.assertEqual(response.data['created_by'], user_url)

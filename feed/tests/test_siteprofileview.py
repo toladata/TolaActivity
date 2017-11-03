@@ -63,7 +63,7 @@ class SiteProfileViewsTest(TestCase):
         view = SiteProfileViewSet.as_view({'post': 'create'})
         response = view(self.request_post)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['owner'], user_url)
+        self.assertEqual(response.data['created_by'], user_url)
 
         # check if the obj created has the user organization
         self.request_get.user = tola_user.user

@@ -26,4 +26,4 @@ class SectorViewTest(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['sector'], u'Agriculture')
-        self.assertEqual(response.data['owner'], user_url)
+        self.assertEqual(response.data['created_by'], user_url)

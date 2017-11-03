@@ -107,7 +107,7 @@ class Objective(models.Model):
     description = models.TextField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    owner = models.ForeignKey('auth.User', related_name='objectives', null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='objectives', null=True, blank=True)
 
     class Meta:
         ordering = ('workflowlevel1','name')
@@ -142,7 +142,7 @@ class Level(models.Model):
     color = models.CharField(max_length=135, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    owner = models.ForeignKey('auth.User', related_name='levels', null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='levels', null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -359,7 +359,7 @@ class Indicator(models.Model): # TODO change back to SecurityModel
     edit_date = models.DateTimeField(null=True, blank=True)
     history = HistoricalRecords()
     notes = models.TextField(max_length=500, null=True, blank=True)
-    owner = models.ForeignKey('auth.User', related_name='indicators', null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='indicators', null=True, blank=True)
     #optimize query for class based views etc.
     objects = IndicatorManager()
 
@@ -473,7 +473,7 @@ class CollectedData(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
-    owner = models.ForeignKey('auth.User', related_name='collecteddata', null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='collecteddata', null=True, blank=True)
     history = HistoricalRecords()
     objects = CollectedDataManager()
 
