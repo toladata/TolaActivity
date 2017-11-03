@@ -96,13 +96,13 @@ class WorkflowLevel1Permissions(permissions.BasePermission):
 class IndicatorPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if view.action == 'list':
-            # TODO
+            # TODO Ticket: #793
             return True
         if view.action == 'retrieve':
-            # TODO
+            # TODO Ticket: #794
             return True
         elif view.action in ['update', 'partial_update']:
-            # TODO
+            # TODO Ticket: #792
             return True
         elif view.action == 'destroy':
             if request.user.is_superuser:
