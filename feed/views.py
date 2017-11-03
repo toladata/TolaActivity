@@ -14,7 +14,8 @@ from .serializers import *
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
-from .permissions import UserIsOwnerOrAdmin, WorkflowLevel1Permissions
+from .permissions import (UserIsOwnerOrAdmin, WorkflowLevel1Permissions,
+                          IndicatorPermissions)
 from tola.util import getCountry, getLevel1
 
 
@@ -265,6 +266,11 @@ class IndicatorViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def destroy(self, request, pk):
+        indicator = self.get_object()
+        indicator.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     def get_queryset(self):
         return Indicator.objects.annotate(
             actuals=Sum('collecteddata__achieved'))
@@ -276,6 +282,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
                      'indicator_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
+    permission_classes = (IndicatorPermissions,)
     serializer_class = IndicatorSerializer
 
 
