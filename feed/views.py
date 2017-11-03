@@ -206,10 +206,11 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
     limit to users logged in country permissions
     """
     def list(self, request):
-        queryset = self.filter_queryset(self.get_queryset())
-        if not request.user.is_superuser:
+        if request.user.is_superuser:
+            queryset = SiteProfile.objects.all()
+        else:
             tola_user = TolaUser.objects.get(user=request.user)
-            queryset = queryset.filter(organization=tola_user.organization)
+            queryset = SiteProfile.objects.filter(organization=tola_user.organization)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -218,7 +219,7 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
         user_org = TolaUser.objects.get(user=user).organization
         serializer.save(organization=user_org, owner=self.request.user)
 
-    filter_fields = ('country__country', 'workflowlevel2__workflowlevel1')
+    filter_fields = ('country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = SiteProfile .objects.all()
     serializer_class = SiteProfileSerializer
