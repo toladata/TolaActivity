@@ -84,7 +84,7 @@ class Command(BaseCommand):
 
             # index data with elasticsearch
             try:
-                es.index(index=prefix+"workflows", id=data['level1_uuid'], doc_type='workflow', body=data)
+                es.index(index=prefix+"workflow_level1", id=data['level1_uuid'], doc_type='workflow', body=data)
             except RequestError:
                 print(wf1, "Error")
 
@@ -105,7 +105,7 @@ class Command(BaseCommand):
 
             # index data with elasticsearch
             try:
-                es.index(index=prefix+"workflows", id=data['level2_uuid'], doc_type='workflow', body=data)
+                es.index(index=prefix+"workflow_level2", id=data['level2_uuid'], doc_type='workflow', body=data)
             except RequestError:
                 print(wf2, "Error")
 
