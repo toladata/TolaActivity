@@ -1,4 +1,4 @@
-# Tola Activity [![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
+# Tola Activity [![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity) [![Coverage Status](https://coveralls.io/repos/github/toladata/TolaActivity/badge.svg)](https://coveralls.io/github/toladata/TolaActivity)
 
 http://toladata.com/products/activity/
 

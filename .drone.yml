@@ -3,7 +3,7 @@ pipeline:
   build:
     image: python:${PYTHON_VERSION}
     commands:
-      - pip install -r requirements.txt
+      - pip install -r requirements-ci.txt
       - python manage.py test
     when:
       event: [push, tag]

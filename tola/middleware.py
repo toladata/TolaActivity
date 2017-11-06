@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.utils.deprecation import MiddlewareMixin
 from rest_framework.exceptions import PermissionDenied
 
+
 _current_users = {}
 
 
@@ -49,6 +50,23 @@ class TolaSecurityMiddleware(object):
             response = HttpResponse(response_html)
             response.status_code = 403
             return response
+
+
+class TolaRedirectMiddleware(object):
+    """
+    Middleware to store redirects in the session until they are ready to be processed.
+    Redirects with 'next' are overwritten by Social Auth during the process and have to be restored at the 
+    end of the Authentication pipeline
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # store the next value of the inital request in the session
+        if 'next' in request.GET:
+            request.session["redirect_after_login"] = request.GET['next']
+
+        return self.get_response(request)
 
 
 class DisableCsrfCheck(MiddlewareMixin):

@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.contrib.sites.models import Site
+from django.utils import timezone
 from decimal import Decimal
 from datetime import datetime
 import uuid
@@ -26,6 +27,10 @@ try:
 except ImportError:
     from datetime import datetime as timezone
 from django.db.models import Q
+
+ROLE_ORGANIZATION_ADMIN = 'OrgAdmin'
+ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
+ROLE_PROGRAM_TEAM = 'ProgramTeam'
 
 
 # New user created generate a token
@@ -58,9 +63,9 @@ class TolaSites(models.Model):
     def save(self, *args, **kwargs):
         ''' On save, update timestamps as appropriate '''
         if kwargs.pop('new_entry', True):
-            self.created = datetime.now()
+            self.created = timezone.now()
         else:
-            self.updated = datetime.now()
+            self.updated = timezone.now()
         return super(TolaSites, self).save(*args, **kwargs)
 
 
@@ -78,8 +83,8 @@ class Industry(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Industry, self).save()
 
     # displayed in admin templates
@@ -94,6 +99,7 @@ class Sector(models.Model):
     organization = models.ForeignKey("Organization", default=1, related_name="org_specific_sector")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='sectors', null=True, blank=True)
 
     class Meta:
         ordering = ('sector',)
@@ -101,8 +107,8 @@ class Sector(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Sector, self).save()
 
     # displayed in admin templates
@@ -143,8 +149,8 @@ class Organization(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Organization, self).save()
 
     # displayed in admin templates
@@ -170,8 +176,8 @@ class Country(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Country, self).save()
 
     # displayed in admin templates
@@ -187,6 +193,9 @@ TITLE_CHOICES = (
 
 
 class TolaUser(models.Model):
+    """
+    TolaUser is the registered user who belongs to some organization and can manage its projects.
+    """
     tola_user_uuid = models.CharField(max_length=255, verbose_name='TolaUser UUID', default=uuid.uuid4, unique=True)
     title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
     name = models.CharField("Given Name", blank=True, null=True, max_length=100)
@@ -196,7 +205,8 @@ class TolaUser(models.Model):
     user = models.OneToOneField(User, unique=True, related_name='tola_user')
     organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
     country = models.ForeignKey(Country, blank=True, null=True)
-    countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
+    countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries',
+                                       blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)      # Todo delete maybe?
     activity_api_token = models.CharField(blank=True, null=True, max_length=255)    # Todo delete maybe?
     privacy_disclaimer_accepted = models.BooleanField(default=False)
@@ -217,8 +227,8 @@ class TolaUser(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(TolaUser, self).save()
 
 
@@ -236,8 +246,8 @@ class Currency(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Currency, self).save()
 
     # displayed in admin templates
@@ -282,8 +292,8 @@ class Award(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Award, self).save()
 
 
@@ -302,8 +312,8 @@ class Internationalization(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Internationalization, self).save()
 
 
@@ -325,8 +335,8 @@ class TolaBookmarks(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(TolaBookmarks, self).save()
 
 
@@ -350,8 +360,8 @@ class TolaUserFilter(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(TolaUserFilter, self).save()
 
 
@@ -376,7 +386,7 @@ class FormGuidance(models.Model):
 
     def save(self):
         if self.create_date is None:
-            self.create_date = datetime.now()
+            self.create_date = timezone.now()
         super(FormGuidance, self).save()
 
     def __unicode__(self):
@@ -394,8 +404,8 @@ class ProjectType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ProjectType, self).save()
 
     def __unicode__(self):
@@ -418,8 +428,8 @@ class FundCode(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(FundCode, self).save()
 
     # displayed in admin templates
@@ -440,8 +450,8 @@ class ApprovalType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ApprovalType, self).save()
 
     # displayed in admin templates
@@ -458,6 +468,7 @@ class ApprovalWorkflow(models.Model):
     date_approved = models.DateTimeField(null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='approval', null=True, blank=True)
 
     STATUS_OPEN = "open"
     STATUS_AWAITING_APPROVAL = "awaiting_approval"
@@ -492,8 +503,8 @@ class ApprovalWorkflow(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ApprovalWorkflow, self).save()
 
     # displayed in admin templates
@@ -516,8 +527,8 @@ class Portfolio(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Portfolio, self).save()
 
     # displayed in admin templates
@@ -534,6 +545,7 @@ class Milestone(models.Model):
     is_global = models.BooleanField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='milestones', null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
@@ -541,8 +553,8 @@ class Milestone(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Milestone, self).save()
 
     # displayed in admin templates
@@ -582,8 +594,8 @@ class WorkflowLevel1(models.Model):
         if not 'force_insert' in kwargs:
             kwargs['force_insert'] = False
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
 
         super(WorkflowLevel1, self).save()
 
@@ -622,8 +634,8 @@ class WorkflowLevel1Sector(models.Model):
         if not 'force_insert' in kwargs:
             kwargs['force_insert'] = False
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(WorkflowLevel1Sector, self).save()
 
     @property
@@ -657,8 +669,8 @@ class WorkflowTeam(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(WorkflowTeam, self).save()
 
     # displayed in admin templates
@@ -680,8 +692,8 @@ class AdminLevelOne(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(AdminLevelOne, self).save()
 
     # displayed in admin templates
@@ -703,8 +715,8 @@ class AdminLevelTwo(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(AdminLevelTwo, self).save()
 
     # displayed in admin templates
@@ -726,8 +738,8 @@ class AdminLevelThree(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(AdminLevelThree, self).save()
 
     # displayed in admin templates
@@ -750,8 +762,8 @@ class AdminLevelFour(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(AdminLevelFour, self).save()
 
     # displayed in admin templates
@@ -772,8 +784,8 @@ class Office(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Office, self).save()
 
     # displayed in admin templates
@@ -795,8 +807,8 @@ class ProfileType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ProfileType, self).save()
 
     # displayed in admin templates
@@ -817,8 +829,8 @@ class LandType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(LandType, self).save()
 
     # displayed in admin templates
@@ -870,6 +882,8 @@ class SiteProfile(models.Model):
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='sites', null=True, blank=True)
     history = HistoricalRecords()
     #optimize query
     objects = SiteProfileManager()
@@ -883,8 +897,8 @@ class SiteProfile(models.Model):
 
         # Check if a create date has been specified. If not, display today's date in create_date and edit_date
         if self.create_date == None:
-            self.create_date = datetime.now()
-            self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+            self.edit_date = timezone.now()
 
         super(SiteProfile, self).save()
 
@@ -895,6 +909,11 @@ class SiteProfile(models.Model):
 
 
 class Contact(models.Model):
+    """
+    A contact is a person or entity who may be approached for information or assistance about a Site.
+
+    Example: Building Maintenance Manager at a Training Center.
+    """
     name = models.CharField("Name", max_length=255, blank=True, null=True)
     title = models.CharField("Title", max_length=255, blank=True, null=True)
     city = models.CharField("City/Town", max_length=255, blank=True, null=True)
@@ -908,14 +927,14 @@ class Contact(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('name', 'country','title')
+        ordering = ('name', 'country', 'title')
         verbose_name_plural = "Contact"
 
     # onsave add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Contact, self).save()
 
     # displayed in admin templates
@@ -937,8 +956,8 @@ class StakeholderType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(StakeholderType, self).save()
 
     # displayed in admin templates
@@ -948,10 +967,21 @@ class StakeholderType(models.Model):
 
 class StakeholderManager(models.Manager):
     def get_queryset(self):
-        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related('country','type','formal_relationship_document','vetting_document')
+        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related(
+            'country', 'type', 'formal_relationship_document', 'vetting_document')
 
 
 class Stakeholder(models.Model):
+    """
+    A Stakeholder is an individual, group, or organization, who may affect, be affected by, or perceive itself to be
+    affected by a decision, activity, or outcome of a project. This may be inside or outside an organization.
+
+    Any or all of these premises can be met for a stakeholder:
+
+    * Sponsors a project (with money or workforce).
+    * Has an interest or a gain upon a successful completion of a project.
+    * May have a positive or negative influence in the project completion.
+    """
     stakeholder_uuid = models.CharField(max_length=255, verbose_name='Stakeholder UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Stakeholder/Organization Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
@@ -963,12 +993,16 @@ class Stakeholder(models.Model):
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     sectors = models.ManyToManyField(Sector, blank=True)
     stakeholder_register = models.BooleanField("Has this partner been added to stakeholder register?", default=0)
-    formal_relationship_document = models.ForeignKey('Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True, related_name="relationship_document")
-    vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True, blank=True, related_name="vetting_document")
+    formal_relationship_document = models.ForeignKey(
+        'Documentation', verbose_name="Formal Written Description of Relationship", null=True, blank=True,
+        related_name="relationship_document")
+    vetting_document = models.ForeignKey('Documentation', verbose_name="Vetting/ due diligence statement", null=True,
+                                         blank=True, related_name="vetting_document")
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    #optimize query
+    created_by = models.ForeignKey('auth.User', related_name='stakeholders', null=True, blank=True)
+    # TODO: optimize query
     objects = StakeholderManager()
 
     class Meta:
@@ -978,8 +1012,8 @@ class Stakeholder(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Stakeholder, self).save()
 
     # displayed in admin templates
@@ -1007,8 +1041,8 @@ class Partner(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Partner, self).save()
 
     # displayed in admin templates
@@ -1099,6 +1133,7 @@ class WorkflowLevel2(models.Model):
     sort = models.IntegerField(default=0, blank=True)  # sort array for activities related to a project
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='workflowlevel2', null=True, blank=True)
     history = HistoricalRecords()
     # optimize base query for all classbasedviews
     objects = WorkflowLevel2Manager()
@@ -1141,8 +1176,8 @@ class WorkflowLevel2(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
 
         # defaults don't work if they aren't in the form so preset these to 0
         if self.total_estimated_budget == None:
@@ -1196,8 +1231,8 @@ class WorkflowLevel2Sort(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(WorkflowLevel2Sort, self).save()
 
     # displayed in admin templates
@@ -1227,8 +1262,8 @@ class CodedField(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(CodedField, self).save()
 
     # displayed in admin templates
@@ -1250,8 +1285,8 @@ class CodedFieldValues(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(CodedFieldValues, self).save()
 
     # displayed in admin templates
@@ -1270,12 +1305,13 @@ class Documentation(models.Model):
     workflowlevel1 = models.ForeignKey(WorkflowLevel1)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='documentation', null=True, blank=True)
 
      # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Documentation, self).save()
 
     def __unicode__(self):
@@ -1313,8 +1349,8 @@ class WorkflowLevel3(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(WorkflowLevel3, self).save()
 
     # displayed in admin templates
@@ -1335,12 +1371,13 @@ class Budget(models.Model):
     donor_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="donor")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', related_name='budgets', null=True, blank=True)
     history = HistoricalRecords()
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Budget, self).save()
 
     def __unicode__(self):
@@ -1371,8 +1408,8 @@ class RiskRegister(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(RiskRegister, self).save()
 
     def __unicode__(self):
@@ -1401,8 +1438,8 @@ class IssueRegister(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(IssueRegister, self).save()
 
     def __unicode__(self):
@@ -1426,8 +1463,8 @@ class Checklist(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Checklist, self).save()
 
     # displayed in admin templates
@@ -1451,8 +1488,8 @@ class ChecklistItem(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ChecklistItem, self).save()
 
     # displayed in admin templates
@@ -1486,8 +1523,8 @@ class WorkflowModules(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(WorkflowModules, self).save()
 
     # displayed in admin templates

@@ -10,7 +10,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
 
-#CREATE NEW DATA DICTIONARY OBJECT
+# CREATE NEW DATA DICTIONARY OBJECT
 def siloToDict(silo):
     parsed_data = {}
     key_value = 1
@@ -37,27 +37,26 @@ def getCountry(user):
         return get_countries
 
 
-
 def getOrganization(user):
 
     org = TolaUser.objects.get(user__id=user.id).organization
     return org
+
 
 def getLevel1(user):
     """
     Returns a list of program ID's the user has access to.
     """
     # get user
-    
-    get_level1 = WorkflowLevel1.objects.all().filter(workflowteam__workflow_user__user=user).values('id')
-
-    print get_level1
+    get_level1 = WorkflowTeam.objects.filter(
+        workflow_user__user=user).values_list('workflowlevel1__id', flat=True)
 
     return get_level1
 
 
-def emailGroup(country,group,link,subject,message,submiter=None):
-        #email incident to admins in each country assoicated with the projects program
+def emailGroup(country, group, link, subject, message, submiter=None):
+        # email incident to admins in each country assoicated with the
+        # projects program
         for single_country in country.all():
             country = Country.objects.all().filter(country=single_country)
             getGroupEmails = User.objects.all().filter(tola_user=group,tola_user__country=country).values_list('email', flat=True)
@@ -79,11 +78,12 @@ def emailGroup(country,group,link,subject,message,submiter=None):
         mail_admins(subject, message, fail_silently=False)
 
 
-def get_table(url,data=None):
+def get_table(url, data=None):
     """
     Get table data from a Silo.  First get the Data url from the silo details
     then get data and return it
     :param url: URL to silo meta detail info
+    :param data:
     :return: json dump of table data
     """
     token = TolaSites.objects.get(site_id=1)
@@ -102,24 +102,26 @@ def get_table(url,data=None):
     return data
 
 
+def redirect_after_login(strategy, *args, **kwargs):
+    #print(strategy.session_get('redirect_after_login'))
+    redirect = strategy.session_get('redirect_after_login')
+    strategy.session_set('next',redirect)
+
+
 def user_to_tola(backend, user, response, *args, **kwargs):
 
     # Add a google auth user to the tola profile
     default_country = Country.objects.first()
-    organization = Organization.objects.first()
-    userprofile, created = TolaUser.objects.get_or_create(
-        user = user)
+    default_organization = Organization.objects.first()
+    userprofile, created = TolaUser.objects.get_or_create(user=user)
 
-    userprofile.country = default_country
-    userprofile.organization = organization
-
-    userprofile.name = response.get('displayName')
-
-    userprofile.email = response.get('emails["value"]')
-
-    userprofile.save()
-    #add user to country permissions table
-    # userprofile.countries.add(default_country)
+    # Do not set default values for existing TolaUser
+    if created:
+        userprofile.country = default_country
+        userprofile.organization = default_organization
+        userprofile.name = response.get('displayName')
+        userprofile.email = response.get('emails["value"]')
+        userprofile.save()
 
 
 def group_excluded(*group_names, **url):

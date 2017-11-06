@@ -135,7 +135,7 @@ class Level1Dash(ListView):
         print(getworkflowlevel1s)
         print(getDashboard)
 
-        return render(request, self.template_name, {'getDashboard': getDashboard, 'getPrograms': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
+        return render(request, self.template_name, {'getDashboard': getDashboard, 'getworkflowlevel1s': getworkflowlevel1s, 'APPROVALS': APPROVALS, 'workflowlevel1_id':  self.kwargs['pk'], 'status': status, 'filtered_workflowlevel1': filtered_workflowlevel1})
 
 
 class ProjectAgreementList(ListView):
@@ -1480,7 +1480,6 @@ class StakeholderCreate(CreateView):
     def form_invalid(self, form):
 
         messages.error(self.request, 'Invalid Form', fail_silently=False)
-        print(".............................%s............................" % form.errors )
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
@@ -2140,7 +2139,13 @@ class Report(View, AjaxableResponseMixin):
 
 
         # send the keys and vars
-        return render(request, "workflow/report.html", {'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getworkflowlevel1s': getworkflowlevel1s})
+        return render(request, "workflow/report.html", {\
+                    'country': countries, \
+                    'form': FilterForm(), \
+                    'filter': filtered, \
+                    'helper': FilterForm.helper, \
+                    'APPROVALS': APPROVALS, \
+                    'getworkflowlevel1s': getworkflowlevel1s})
 
 
 class ReportData(View, AjaxableResponseMixin):
@@ -2153,26 +2158,32 @@ class ReportData(View, AjaxableResponseMixin):
         countries=getCountry(request.user)
         filters = {}
         if int(self.kwargs['pk']) != 0:
-            getAgreements = WorkflowLevel2.objects.all().filter(workflowlevel1__id=self.kwargs['pk']).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name', 'estimated_by__name','total_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.all()\
+                .filter(workflowlevel1__id=self.kwargs['pk'])\
+                .values('id', 'workflowlevel1__name', 'name','site', 'office__name', \
+                        'name', 'sector__sector', 'total_estimated_budget')
 
         elif self.kwargs['status'] != 'none':
-            getAgreements = WorkflowLevel2.objects.all().filter(approval=self.kwargs['status']).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name','estimated_by__name','total_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.all()\
+                .filter(approval=self.kwargs['status'])\
+                .values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'name', \
+                        'sector__sector', 'total_estimated_budget')
         else:
-            getAgreements = WorkflowLevel2.objects.select_related().filter(workflowlevel1__country__in=countries).values('id', 'workflowlevel1__name', 'name','site', 'office__name', 'project_name', 'sector__sector', 'project_activity',
-                             'type__name', 'estimated_by__name','total_estimated_budget','total_estimated_budget')
+            getAgreements = WorkflowLevel2.objects.select_related()\
+                .filter(workflowlevel1__country__in=countries)\
+                .values('id', 'workflowlevel1__name', 'name','site', 'office__name', \
+                        'name', 'sector__sector', 'total_estimated_budget')
 
-        getAgreements = WorkflowLevel2.objects.prefetch_related('sectors').select_related('program', 'project_type', 'office', 'estimated_by').filter(**filters).values('id', 'program__id', 'approval', \
-                'program__name', 'name','site', 'office__name', \
-                'project_name', 'sector__sector', 'type__name', \
-                'estimated_by__name','total_estimated_budget',\
-                'total_estimated_budget')
+        getAgreements = WorkflowLevel2.objects.prefetch_related('sectors')\
+            .select_related('program', 'office', 'estimated_by', 'site')\
+            .filter(**filters).values('id', 'workflowlevel1__id', 'workflowlevel1__name', 'approval', \
+                'name', 'site__name', 'office__name', 'sector__sector', 'total_estimated_budget')
 
         getAgreements = json.dumps(list(getAgreements), cls=DjangoJSONEncoder)
 
         final_dict = { 'get_agreements': getAgreements }
 
+        print(".............................%s............................" % final_dict )
         return JsonResponse(final_dict, safe=False)
 
 
