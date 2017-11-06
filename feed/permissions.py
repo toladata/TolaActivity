@@ -91,3 +91,40 @@ class WorkflowLevel1Permissions(permissions.BasePermission):
 
         else:
             return False
+
+
+class IndicatorPermissions(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if view.action == 'list':
+            # TODO Ticket: #793
+            return True
+        if view.action == 'retrieve':
+            # TODO Ticket: #794
+            return True
+        elif view.action in ['update', 'partial_update']:
+            # TODO Ticket: #792
+            return True
+        elif view.action == 'destroy':
+            if request.user.is_superuser:
+                return True
+
+            # As all worflowlevel1 objects associated to an indicator have the
+            # same org, we take the first one.
+            organization = obj.workflowlevel1.first().organization
+            is_org_admin = WorkflowTeam.objects.filter(
+                workflow_user=request.user.tola_user,
+                partner_org=organization,
+                role__name=ROLE_ORGANIZATION_ADMIN).exists()
+            if is_org_admin:
+                return True
+
+            is_program_admin = WorkflowTeam.objects.filter(
+                workflow_user=request.user.tola_user,
+                workflowlevel1__in=obj.workflowlevel1.all(),
+                role__name=ROLE_PROGRAM_ADMIN).exists()
+            if is_program_admin:
+                return True
+
+            return False
+        else:
+            return False

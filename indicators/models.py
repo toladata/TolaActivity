@@ -381,13 +381,12 @@ class Indicator(models.Model): # TODO change back to SecurityModel
         ei.index_indicator(self)
 
     def delete(self, *args, **kwargs):
-        super(Indicator, self).delete(*args, **kwargs)
-
         ei = ElasticsearchIndexer()
         try:
             ei.delete_indicator(self.id)
         except ValueNotFoundError:
             pass
+        super(Indicator, self).delete(*args, **kwargs)
 
     @property
     def just_created(self):
