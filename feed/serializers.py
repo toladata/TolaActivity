@@ -166,7 +166,8 @@ class IndicatorLightSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Indicator
-        fields = ('name', 'number', 'lop_target', 'indicator_type', 'level', 'sector', 'datacount')
+        fields = ('name', 'number', 'lop_target', 'indicator_type', 'level',
+                  'sector', 'datacount')
 
 
 class ProgramIndicatorSerializer(serializers.ModelSerializer):
