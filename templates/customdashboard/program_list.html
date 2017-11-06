@@ -25,12 +25,12 @@
 <table class="table">
     <tr>
         <th>Date Created</th>
-        <th>Program Name</th>
+        <th>{{ WORKFLOWLEVEL1 }} Name</th>
         <th>Data Complete</th>
         <th>Public Dashboard</th>
         <th>View Dashboard</th>
     </tr>
-    {% for item in getProgram %}
+    {% for item in getworkflowlevel1 %}
     <tr>
         <td>{{ item.create_date}}</td>
         <td>{{ item.name}}</td>

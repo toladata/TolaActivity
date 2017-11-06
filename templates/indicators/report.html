@@ -6,7 +6,6 @@
 </ol>
 
 {% endblock bread_crumb %}
-{% load render_table from django_tables2 %}
 
 {% block page_title %}Indicator Report{% endblock %}
 
@@ -94,10 +93,10 @@
                 ],
                 columns: [
                     { title: "Edit"},
-                    { title: "PID", data: "program__id"},
+                    { title: "PID", data: "workflowlevel1__id"},
                     { title: "IID", data: "id"},
                     { title: "ITID", data: "indicator_type__id"},
-                    { title: "Program", data: "program__name", "defaultContent": "<i>Not set</i>"},
+                    { title: "Program", data: "workflowlevel1__name", "defaultContent": "<i>Not set</i>"},
                     { title: "Indicator", data: "name", "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, type, row) {
                             return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';

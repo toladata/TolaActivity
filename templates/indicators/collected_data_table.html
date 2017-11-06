@@ -25,12 +25,12 @@
             <td colspan="3"><span style="float: right;">Sum:</span></td>
             <td>{{ collected_sum.periodic_target__target__sum }}</td>
             <td>{{ collected_sum.achieved__sum }}</td>
-            <td width="100"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
+            <td width="100"><a href="/indicators/collecteddata_add/{{ workflowlevel1_id }}/{{ indicator_id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
         </tr>
     {% else %}
         <tr>
             <td colspan="5">No Data Collected</td>
-            <td><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
+            <td><a href="/indicators/collecteddata_add/{{ workflowlevel1_id }}/{{ indicator_id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
         </tr>
     {% endif %}
 </table>

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
+  <li><a href="/workflow/dashboard/0/">{{ WORKFLOWLEVEL1 }} Index</a></li>
   <li class="active">Stakeholder List</li>
 </ol>
 {% endblock %}
@@ -15,8 +15,8 @@
   </button>
 <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
         <li role="presentation"><a role="menuitem" tabindex="-1" href=" ">-- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
+    {% for workflowlevel1 in getworkflowlevel1s %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{workflowlevel1.id}})">{{ workflowlevel1.unique_id|default:""}} - {{ workflowlevel1.name }}</a></li>
     {% endfor %}
   </ul>
 <a href="/workflow/stakeholder_add/0/" class="btn btn-large btn-success">New Stakeholder</a> &nbsp;
@@ -40,7 +40,7 @@
     });
 
      function show_stakeholder_table(stakeholder_data) {
-            console.log(stakeholder_data);
+            // console.log(stakeholder_data);
             stakeholder_records = JSON.parse(stakeholder_data);
             //First destroy any old version of the table to refresh anew
             if ( $.fn.dataTable.isDataTable( '#stakeholdertable' ) ) {
@@ -103,7 +103,7 @@
         }
 
 function program_filter(program_id) {
-        // get the program and indicator id from the url
+        // get the workflowlevel1 and indicator id from the url
         if (program_id != 0) {
 
             $.getJSON("/workflow/stakeholder_table/"+ program_id + "/0/", function(data) {

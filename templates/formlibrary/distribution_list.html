@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
+  <li><a href="/workflow/dashboard/0/">{{ WORKFLOWLEVEL1 }} Index</a></li>
 <!--   {%  if project_agreement_id != '0'%}
     <li><a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
   {% endif %} -->
@@ -25,7 +25,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
-         $("select#program").change(function() {
+         $("select#workflowlevel1").change(function() {
 
             if ($(this).val() == 'all') {
                     $("select#project").html("<option>Project(s)</option>");
@@ -46,7 +46,7 @@
                         }else{
                             data = JSON.parse(models['getAgreements']);
                             for (var i = 0; i < data.length; i++) {
-                                options += '<option value="' + data[i]['id'] + '">' + data[i]['project_name'] + '</option>';
+                                options += '<option value="' + data[i]['id'] + '">' + data[i]['name'] + '</option>';
                             }
 
                             $("select#project").html(options);
@@ -61,7 +61,7 @@
 
         $('select#project').change(function(){
             project_id = $(this).val();
-            program_id = $('select#program').val();
+            program_id = $('select#workflowlevel1').val();
             program_filter(program_id, project_id);
         });
       program_filter(0, 0);
