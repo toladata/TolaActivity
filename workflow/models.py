@@ -31,6 +31,7 @@ from django.db.models import Q
 ROLE_ORGANIZATION_ADMIN = 'OrgAdmin'
 ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
 ROLE_PROGRAM_TEAM = 'ProgramTeam'
+ROLE_VIEW_ONLY = 'ViewOnly'
 
 
 # New user created generate a token
@@ -583,6 +584,7 @@ class WorkflowLevel1(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', null=True, blank=True)
     sort = models.IntegerField(default=0)  #sort array
 
     class Meta:
@@ -606,7 +608,7 @@ class WorkflowLevel1(models.Model):
         super(WorkflowLevel1, self).delete(*args, **kwargs)
 
         ei = ElasticsearchIndexer()
-        ei.delete_workflows(self.level1_uuid)
+        ei.delete_workflowlevel1(self.level1_uuid)
 
     @property
     def countries(self):
