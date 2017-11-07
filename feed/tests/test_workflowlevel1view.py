@@ -6,7 +6,7 @@ import factories
 from feed.views import WorkflowLevel1ViewSet
 from workflow.models import (WorkflowTeam, WorkflowLevel1,
                              ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM,
-                             ROLE_PROGRAM_ADMIN)
+                             ROLE_PROGRAM_ADMIN, ROLE_VIEW_ONLY)
 
 
 class WorkflowLevel1ViewsTest(TestCase):
@@ -93,6 +93,10 @@ class WorkflowLevel1ViewsTest(TestCase):
         self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
 
     def test_list_workflowlevel1_normal_user_same_org(self):
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            partner_org=self.tola_user.organization,
+            role=factories.Group(name=ROLE_VIEW_ONLY))
         factories.WorkflowLevel1(organization=self.tola_user.organization)
 
         request = self.factory.get('/api/workflowlevel1/')
@@ -214,6 +218,9 @@ class WorkflowLevel1ViewsTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_update_unexisting_workflowlevel1(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
         data = {'name': 'Save the Lennons'}
         request = self.factory.post('/api/workflowlevel1/', data)
         request.user = self.tola_user.user
@@ -367,6 +374,11 @@ class WorkflowLevel1ViewsTest(TestCase):
         WorkflowLevel1.objects.get(pk=wflvl1.pk)
 
     def test_delete_workflowlevel1_program_admin(self):
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            partner_org=self.tola_user.organization,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
         # Create a program
         data = {'name': 'Save the Children'}
         request = self.factory.post('/api/workflowlevel1/', data)
