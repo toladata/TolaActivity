@@ -102,7 +102,11 @@ class WorkflowLevel1ViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
-    def test_create_workflowlevel1(self):
+    def test_create_workflowlevel1_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
         data = {'name': 'Save the Children'}
         request = self.factory.post('/api/workflowlevel1/', data)
         request.user = self.tola_user.user
@@ -111,13 +115,105 @@ class WorkflowLevel1ViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Save the Children')
 
-        wft = WorkflowTeam.objects.get(workflowlevel1__id=response.data['id'])
-        self.assertEqual(wft.workflow_user, self.tola_user)
+        WorkflowTeam.objects.get(
+            workflowlevel1__id=response.data['id'],
+            workflow_user=self.tola_user,
+            role__name=ROLE_PROGRAM_ADMIN)
 
         wflvl1 = WorkflowLevel1.objects.get(pk=response.data['id'])
         self.assertEqual(wflvl1.organization, self.tola_user.organization)
         self.assertEqual(wflvl1.user_access.all().count(), 1)
         self.assertEqual(wflvl1.user_access.first(), self.tola_user)
+
+    def test_create_workflowlevel1_org_admin(self):
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            partner_org=self.tola_user.organization,
+            role=factories.Group(name=ROLE_ORGANIZATION_ADMIN))
+
+        data = {'name': 'Save the Children'}
+        request = self.factory.post('/api/workflowlevel1/', data)
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Save the Children')
+
+        WorkflowTeam.objects.get(
+            workflowlevel1__id=response.data['id'],
+            workflow_user=self.tola_user,
+            role__name=ROLE_PROGRAM_ADMIN)
+
+        wflvl1 = WorkflowLevel1.objects.get(pk=response.data['id'])
+        self.assertEqual(wflvl1.organization, self.tola_user.organization)
+        self.assertEqual(wflvl1.user_access.all().count(), 1)
+        self.assertEqual(wflvl1.user_access.first(), self.tola_user)
+
+    def test_create_workflowlevel1_program_admin(self):
+        """
+        A ProgramAdmin member of any other program can create a new program
+        in the same organization.
+        """
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=factories.WorkflowLevel1(
+                organization=self.tola_user.organization),
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'name': 'Save the Children'}
+        request = self.factory.post('/api/workflowlevel1/', data)
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Save the Children')
+
+        WorkflowTeam.objects.get(
+            workflowlevel1__id=response.data['id'],
+            workflow_user=self.tola_user,
+            role__name=ROLE_PROGRAM_ADMIN)
+
+        wflvl1 = WorkflowLevel1.objects.get(pk=response.data['id'])
+        self.assertEqual(wflvl1.organization, self.tola_user.organization)
+        self.assertEqual(wflvl1.user_access.all().count(), 1)
+        self.assertEqual(wflvl1.user_access.first(), self.tola_user)
+
+    def test_create_workflowlevel1_program_team(self):
+        """
+        A ProgramTeam member of any other program can create a new program in
+        the same organization.
+        """
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=factories.WorkflowLevel1(
+                organization=self.tola_user.organization),
+            role=factories.Group(name=ROLE_PROGRAM_TEAM))
+
+        data = {'name': 'Save the Children'}
+        request = self.factory.post('/api/workflowlevel1/', data)
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Save the Children')
+
+        WorkflowTeam.objects.get(
+            workflowlevel1__id=response.data['id'],
+            workflow_user=self.tola_user,
+            role__name=ROLE_PROGRAM_ADMIN)
+
+        wflvl1 = WorkflowLevel1.objects.get(pk=response.data['id'])
+        self.assertEqual(wflvl1.organization, self.tola_user.organization)
+        self.assertEqual(wflvl1.user_access.all().count(), 1)
+        self.assertEqual(wflvl1.user_access.first(), self.tola_user)
+
+    def test_create_workflowlevel1_normal_user(self):
+        data = {'name': 'Save the Children'}
+        request = self.factory.post('/api/workflowlevel1/', data)
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 403)
 
     def test_update_unexisting_workflowlevel1(self):
         data = {'name': 'Save the Lennons'}
