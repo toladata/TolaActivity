@@ -126,10 +126,8 @@ class WorkflowLevel1ViewsTest(TestCase):
         self.assertEqual(wflvl1.user_access.first(), self.tola_user)
 
     def test_create_workflowlevel1_org_admin(self):
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user,
-            partner_org=self.tola_user.organization,
-            role=factories.Group(name=ROLE_ORGANIZATION_ADMIN))
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
 
         data = {'name': 'Save the Children'}
         request = self.factory.post('/api/workflowlevel1/', data)
