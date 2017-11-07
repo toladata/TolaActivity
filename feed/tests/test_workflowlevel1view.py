@@ -266,16 +266,14 @@ class WorkflowLevel1ViewsTest(TestCase):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        wflvl1 = factories.WorkflowLevel1(
-            factories.Organization(name='Other Org'))
+        org_other = factories.Organization(name='Other Org')
+        wflvl1 = factories.WorkflowLevel1(organization=org_other)
         request = self.factory.delete('/api/workflowlevel1/')
         request.user = self.tola_user.user
         view = WorkflowLevel1ViewSet.as_view({'delete': 'destroy'})
         response = view(request, pk=wflvl1.pk)
-        self.assertEquals(response.status_code, 204)
-        self.assertRaises(
-            WorkflowLevel1.DoesNotExist,
-            WorkflowLevel1.objects.get, pk=wflvl1.pk)
+        self.assertEquals(response.status_code, 403)
+        WorkflowLevel1.objects.get(pk=wflvl1.pk)
 
     def test_delete_workflowlevel1_program_admin(self):
         # Create a program
@@ -295,7 +293,7 @@ class WorkflowLevel1ViewsTest(TestCase):
             WorkflowLevel1.DoesNotExist,
             WorkflowLevel1.objects.get, pk=response.data['id'])
 
-    def test_delete_workflowlevel1_different_org_admin(self):
+    def test_delete_workflowlevel1_different_org(self):
         group_other = factories.Group(name='other')
         self.tola_user.user.groups.add(group_other)
 
