@@ -84,3 +84,5 @@ class WorkflowLevel2(DjangoModelFactory):
         model = WorkflowLevel2M
 
     name = 'Help Syrians'
+    total_estimated_budget = 15000
+    actual_cost = 2900

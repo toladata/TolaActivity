@@ -5,7 +5,8 @@ from rest_framework.test import APIRequestFactory
 import factories
 from feed.views import WorkflowLevel1ViewSet
 from workflow.models import (WorkflowTeam, WorkflowLevel1,
-                             ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM)
+                             ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM,
+                             ROLE_PROGRAM_ADMIN)
 
 
 class WorkflowLevel1ViewsTest(TestCase):
@@ -13,6 +14,96 @@ class WorkflowLevel1ViewsTest(TestCase):
         self.factory = APIRequestFactory()
         self.tola_user = factories.TolaUser()
         factories.Group()
+
+    def test_list_workflowlevel1_superuser(self):
+        wflvl1 = factories.WorkflowLevel1()
+        wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        request = self.factory.get('/api/workflowlevel1/')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)
+        self.assertEqual(response.data[0]['budget'],
+                         wflvl2.total_estimated_budget)
+        self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
+
+    def test_list_workflowlevel1_org_admin(self):
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user, workflowlevel1=wflvl1,
+            role=group_org_admin)
+
+        request = self.factory.get('/api/workflowlevel1/')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)
+        self.assertEqual(response.data[0]['budget'],
+                         wflvl2.total_estimated_budget)
+        self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
+
+    def test_list_workflowlevel1_program_admin(self):
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        group_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user, workflowlevel1=wflvl1,
+            role=group_program_admin)
+
+        request = self.factory.get('/api/workflowlevel1/')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)
+        self.assertEqual(response.data[0]['budget'],
+                         wflvl2.total_estimated_budget)
+        self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
+
+    def test_list_workflowlevel1_program_team(self):
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        group_program_team = factories.Group(name=ROLE_PROGRAM_TEAM)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user, workflowlevel1=wflvl1,
+            role=group_program_team)
+
+        request = self.factory.get('/api/workflowlevel1/')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)
+        self.assertEqual(response.data[0]['budget'],
+                         wflvl2.total_estimated_budget)
+        self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
+
+    def test_list_workflowlevel1_normal_user_same_org(self):
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+
+        request = self.factory.get('/api/workflowlevel1/')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
 
     def test_create_workflowlevel1(self):
         data = {'name': 'Save the Children'}
