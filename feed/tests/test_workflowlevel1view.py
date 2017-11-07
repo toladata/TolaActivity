@@ -39,9 +39,7 @@ class WorkflowLevel1ViewsTest(TestCase):
             organization=self.tola_user.organization)
         wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user, workflowlevel1=wflvl1,
-            role=group_org_admin)
+        self.tola_user.user.groups.add(group_org_admin)
 
         request = self.factory.get('/api/workflowlevel1/')
         request.user = self.tola_user.user
@@ -95,8 +93,7 @@ class WorkflowLevel1ViewsTest(TestCase):
         self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
 
     def test_list_workflowlevel1_normal_user_same_org(self):
-        wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
+        factories.WorkflowLevel1(organization=self.tola_user.organization)
 
         request = self.factory.get('/api/workflowlevel1/')
         request.user = self.tola_user.user
