@@ -64,9 +64,7 @@ class IndicatorViewTest(TestCase):
         wflvl1 = factories.WorkflowLevel1()
         indicator = factories.Indicator(workflowlevel1=[wflvl1])
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user, partner_org=wflvl1.organization,
-            role=group_org_admin)
+        self.tola_user.user.groups.add(group_org_admin)
 
         request = self.factory.delete('/api/indicator/')
         request.user = self.tola_user.user
