@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from tola.util import getLevel1
+from tola.util import get_programs_user
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
