@@ -14,8 +14,8 @@ from .serializers import *
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
-from .permissions import *
-from tola.util import getCountry, getLevel1
+from .permissions import UserIsOwnerOrAdmin, IsOrgMember, AllowTolaRoles
+from tola.util import getCountry, get_programs_user
 
 
 class LargeResultsSetPagination(PageNumberPagination):
@@ -90,9 +90,9 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
                 budget=Sum('workflowlevel2__total_estimated_budget'),
                 actuals=Sum('workflowlevel2__actual_cost'))
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = WorkflowLevel1.objects.all().filter(
-                id__in=user_level1).annotate(
+                id__in=wflvl1_ids).annotate(
                 budget=Sum('workflowlevel2__total_estimated_budget'),
                 actuals=Sum('workflowlevel2__actual_cost'))
         serializer = self.get_serializer(queryset, many=True)
@@ -213,7 +213,8 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
             queryset = SiteProfile.objects.all()
         else:
             tola_user = TolaUser.objects.get(user=request.user)
-            queryset = SiteProfile.objects.filter(organization=tola_user.organization)
+            queryset = SiteProfile.objects.filter(
+                organization=tola_user.organization)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -259,9 +260,9 @@ class IndicatorViewSet(viewsets.ModelViewSet):
             queryset = Indicator.objects.all().annotate(
                 actuals=Sum('collecteddata__achieved'))
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = Indicator.objects.all().filter(
-                workflowlevel1__in=user_level1).annotate(
+                workflowlevel1__in=wflvl1_ids).annotate(
                 actuals=Sum('collecteddata__achieved'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -456,9 +457,9 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
 
-        user_level1 = getLevel1(request.user)
+        wflvl1_ids = get_programs_user(request.user)
         queryset = Stakeholder.objects.all().filter(
-            workflowlevel1__in=user_level1)
+            workflowlevel1__in=wflvl1_ids)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
@@ -641,10 +642,10 @@ class ContactViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = Contact.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = Contact.objects.filter(organization=user_org,
-                                              workflowlevel1__in=user_level1)
+                                              workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -665,11 +666,11 @@ class DocumentationViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = Documentation.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = Documentation.objects.all().filter(
                 workflowlevel2__workflowlevel1__organization=user_org).filter(
-                workflowlevel1__in=user_level1)
+                workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -704,9 +705,9 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = CollectedData.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = CollectedData.objects.all().filter(
-                indicator__workflowlevel1__in=user_level1)
+                indicator__workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -735,8 +736,8 @@ class TolaTableViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def get_queryset(self):
-        user_level1 = getLevel1(self.request.user)
-        queryset = TolaTable.objects.filter(workflowlevel1__in=user_level1)
+        wflvl1_ids = get_programs_user(self.request.user)
+        queryset = TolaTable.objects.filter(workflowlevel1__in=wflvl1_ids)
         table_id = self.request.query_params.get('table_id', None)
         if table_id is not None:
             queryset = queryset.filter(table_id=table_id)
@@ -844,9 +845,9 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = WorkflowLevel2.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = WorkflowLevel2.objects.all().filter(
-                workflowlevel1__in=user_level1)
+                workflowlevel1__in=wflvl1_ids)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
@@ -900,9 +901,9 @@ class WorkflowLevel2SortViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = WorkflowLevel2Sort.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = WorkflowLevel2Sort.objects.all().filter(
-                workflowlevel1__in=user_level1)
+                workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -1144,10 +1145,15 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
     def list(self, request):
         if request.user.is_superuser:
             queryset = WorkflowTeam.objects.all()
+        elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
+                'name', flat=True):
+            organization = request.user.tola_user.organization
+            queryset = WorkflowTeam.objects.filter(partner_org=organization)
         else:
-            user_level1 = getLevel1(request.user)
-            queryset = WorkflowTeam.objects.all().filter(
-                workflowlevel1__in=user_level1)
+            wflvl1_ids = get_programs_user(request.user)
+            queryset = WorkflowTeam.objects.filter(
+                workflowlevel1__in=wflvl1_ids)
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 

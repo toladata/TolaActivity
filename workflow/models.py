@@ -1197,7 +1197,7 @@ class WorkflowLevel2(models.Model):
         super(WorkflowLevel2, self).delete(*args, **kwargs)
 
         ei = ElasticsearchIndexer()
-        ei.delete_workflows(self.level2_uuid)
+        ei.delete_workflowlevel2(self.level2_uuid)
 
     @property
     def project_name_clean(self):
