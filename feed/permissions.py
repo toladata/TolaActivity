@@ -1,11 +1,8 @@
 from rest_framework import permissions
 
-from tola.util import get_programs_user
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
-
-VIEW_ACTIONS = ['retrieve', 'list']
 
 
 class UserIsOwnerOrAdmin(permissions.BasePermission):
@@ -30,6 +27,9 @@ class UserIsOwnerOrAdmin(permissions.BasePermission):
 
 class IsOrgMember(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+        """Object level permissions are used to determine if a user
+                should be allowed to act on a particular object"""
+
         if request.user.is_superuser:
             return True
         user_org = request.user.tola_user.organization
@@ -42,9 +42,9 @@ class IsOrgMember(permissions.BasePermission):
                              CodedField, IssueRegister, Award, Milestone,
                              Portfolio, WorkflowLevel1]:
             return obj.organization == user_org
-        elif obj.__class__ in [Objective, Beneficiary]:
+        elif obj.__class__ in [Objective, Beneficiary, Documentation]:
             return obj.workflowlevel1.organization == user_org
-        elif obj.__class__ in [Checklist, Budget, RiskRegister, Documentation]:
+        elif obj.__class__ in [Checklist, Budget, RiskRegister]:
             return obj.workflowlevel2.workflowlevel1.organization == user_org
         elif obj.__class__ in [Organization]:
             return obj == user_org
@@ -101,6 +101,9 @@ class AllowTolaRoles(permissions.BasePermission):
         return view.queryset
 
     def has_object_permission(self, request, view, obj):
+        """Object level permissions are used to determine if a user
+        should be allowed to act on a particular object"""
+
         if request.user and request.user.is_authenticated():
             if request.user.is_superuser:
                 return True
@@ -117,12 +120,12 @@ class AllowTolaRoles(permissions.BasePermission):
                     'role__name', flat=True)
                 if ROLE_PROGRAM_ADMIN in team_groups or ROLE_PROGRAM_TEAM in \
                         team_groups:
-                    return view.action in VIEW_ACTIONS
+                    return view.action == 'retrieve'
             elif model_cls.__name__ == 'WorkflowTeam':
                 if ROLE_PROGRAM_ADMIN == obj.role.name:
                     return True
                 else:
-                    return view.action in VIEW_ACTIONS
+                    return view.action == 'retrieve'
             elif model_cls.__name__ == 'WorkflowLevel1':
                 team_groups = WorkflowTeam.objects.filter(
                     workflow_user=request.user.tola_user,
@@ -142,7 +145,7 @@ class AllowTolaRoles(permissions.BasePermission):
                 elif ROLE_PROGRAM_TEAM in team_groups:
                     return view.action != 'destroy'
                 elif ROLE_VIEW_ONLY in team_groups:
-                    return view.action in VIEW_ACTIONS
+                    return view.action == 'retrieve'
             elif model_cls.__name__ in ['CollectedData', 'Level',
                                         'WorkflowLevel2']:
                 team_groups = WorkflowTeam.objects.filter(
@@ -154,7 +157,7 @@ class AllowTolaRoles(permissions.BasePermission):
                 elif ROLE_PROGRAM_TEAM in team_groups:
                     return view.action != 'destroy'
                 elif ROLE_VIEW_ONLY in team_groups:
-                    return view.action in VIEW_ACTIONS
+                    return view.action == 'retrieve'
             else:
                 return True
 
