@@ -213,9 +213,10 @@ class WorkflowLevel1ViewsTest(TestCase):
         data = {'name': 'Save the Children'}
         request = self.factory.post('/api/workflowlevel1/', data)
         request.user = self.tola_user.user
+
         view = WorkflowLevel1ViewSet.as_view({'post': 'create'})
         response = view(request)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 201)
 
     def test_update_unexisting_workflowlevel1(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
