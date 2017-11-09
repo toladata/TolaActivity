@@ -3,7 +3,7 @@ Stakeholder
 
 Endpoint
 ---------
- * “stakeholder”: “http://dev-v2.tolaactivity.app.tola.io/api/stakeholder/”,
+ * “stakeholder”: “http://dev-v2.tolaactivity.app.tola.io/api/stakeholder/”
 
 
 This endpoint provides access to submitted stakeholders in JSON format.
@@ -59,7 +59,7 @@ Response
       ...
     ]
 
-GET JSON List of stakeholder end points using limit operators
+GET JSON List of stakeholder endpoints using limit operators
 -------------------------------------------------------------
 
 Lists the stakeholder endpoints accesible to the requesting user based on 'start'
@@ -73,6 +73,7 @@ of records and the limit parameter to limit the number of records returned.
     </pre>
 
 ::
+
     curl -H "Authorization: Token xxxxxxxxxxxx"http://dev-v2.tolaactivity.app.tola.io/api/stakeholder/?start=5
     
 
@@ -98,11 +99,11 @@ of records and the limit parameter to limit the number of records returned.
 
 
 
-GET JSON List of stakeholder endpoints filter by  workflowlevel1 name
----------------------------------------------------------------------
+GET JSON List of stakeholder endpoints filter by  workflowlevel1
+-----------------------------------------------------------------
 
 Lists the data endpoints accessible to requesting user, for the specified
-``workflowlevel1 name`` as a query parameter.
+``workflowlevel1 `` as a query parameter.
 
 .. raw:: html
 
@@ -156,6 +157,7 @@ Example
 Response
 ^^^^^^^^^
 ::
+
   {
     "url": "http://dev-v2.tolaactivity.app.tola.io/api/stakeholder/2",
     "id": 2,
