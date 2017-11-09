@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group
 from django.test import TestCase
+from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
 import factories
@@ -111,7 +112,10 @@ class WorkflowLevel1ViewsTest(TestCase):
         self.tola_user.user.is_superuser = True
         self.tola_user.user.save()
 
-        data = {'name': 'Save the Children'}
+        organization_url = reverse(
+            'organization-detail',
+            kwargs={'pk': self.tola_user.organization.pk})
+        data = {'name': 'Save the Children', 'organization': organization_url}
         request = self.factory.post('/api/workflowlevel1/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel1ViewSet.as_view({'post': 'create'})

@@ -69,22 +69,25 @@ class AllowTolaRoles(permissions.BasePermission):
             if model_cls.__name__ in ['Contact', 'Documentation', 'Indicator',
                                       'CollectedData', 'Level', 'Objective',
                                       'WorkflowLevel2']:
-                wkflvl1 = request.data['workflowlevel1']
+                wflvl1 = request.data['workflowlevel1']
                 team_groups = WorkflowTeam.objects.fitler(
                     workflow_user=request.user.tola_user,
-                    workflowlevel1=wkflvl1).values_list(
+                    workflowlevel1=wflvl1).values_list(
                     'role__name', flat=True)
                 return (ROLE_VIEW_ONLY not in team_groups and
-                        wkflvl1.organization == user_org)
+                        wflvl1.organization == user_org)
             elif model_cls.__name__ == 'WorkflowTeam':
-                wkflvl1 = request.data['workflowlevel1']
-                team_groups = WorkflowTeam.objects.fitler(
+                wflvl1_serializer = view.serializer_class().get_fields()[
+                    'workflowlevel1']
+                primitive_value = request.data['workflowlevel1']
+                wflvl1 = wflvl1_serializer.run_validation(primitive_value)
+                team_groups = WorkflowTeam.objects.filter(
                     workflow_user=request.user.tola_user,
-                    workflowlevel1=wkflvl1).values_list(
+                    workflowlevel1=wflvl1).values_list(
                     'role__name', flat=True)
                 return (ROLE_VIEW_ONLY not in team_groups and
-                       ROLE_PROGRAM_TEAM not in team_groups and
-                        wkflvl1.organization == user_org)
+                        ROLE_PROGRAM_TEAM not in team_groups and
+                        wflvl1.organization == user_org)
         return True
 
     def _queryset(self, view):
