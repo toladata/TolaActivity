@@ -12,7 +12,6 @@ Welcome to TolaDataV2's documentation!
 
    api
    install
-   AuthenticationStatusCode
    country
    indicator
    sector
