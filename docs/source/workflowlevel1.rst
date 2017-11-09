@@ -3,7 +3,7 @@ Workflowlevel1
 
 Endpoint
 ---------
- * "workflowlevel1": "http://dev-v2.tolaactivity.app.tola.io/api/workflowlevel1/",
+ * "workflowlevel1": "http://dev-v2.tolaactivity.app.tola.io/api/workflowlevel1/"
 
 
 This endpoint provides access to submitted workflowlevel1 in JSON format
@@ -78,11 +78,12 @@ of records and the limit parameter to limit the number of records returned.
 
 .. raw:: html
 
-    <pre class="prettyprint">
-    <b>GET</b> /api/workflowlevel1/</code>?<code>start</code>=<code>start_value</code>
-    </pre>
+  <pre class="prettyprint">
+  <b>GET</b> /api/workflowlevel1/</code>?<code>start</code>=<code>start_value</code>
+  </pre>
 
 ::
+
     curl -H "Authorization: Token xxxxxxxxxxxx"http://dev-v2.tolaactivity.app.tola.io/api/workflowlevel1/?start=5
     
 
@@ -166,6 +167,7 @@ Example
 Response
 ^^^^^^^^^
 ::
+
   {
     "url": "http://dev-v2.tolaactivity.app.tola.io/api/workflowlevel1/3/",
     "id": 3,

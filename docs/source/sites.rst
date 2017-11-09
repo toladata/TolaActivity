@@ -3,7 +3,7 @@ Siteprofile
 
 Endpoint
 ---------
- * "siteprofile": "http://dev-v2.tolaactivity.app.tola.io/api/siteprofile/",
+ * "siteprofile": "http://dev-v2.tolaactivity.app.tola.io/api/siteprofile/"
 
 
 This endpoint provides access to submitted siteprofiles in JSON format.
@@ -88,11 +88,12 @@ of records and the limit parameter to limit the number of records returned.
 
 .. raw:: html
 
-    <pre class="prettyprint">
-    <b>GET</b> /api/siteprofile/</code>?<code>start</code>=<code>start_value</code>
-    </pre>
+  <pre class="prettyprint">
+  <b>GET</b> /api/siteprofile/</code>?<code>start</code>=<code>start_value</code>
+  </pre>
 
 ::
+
     curl -H "Authorization: Token xxxxxxxxxxxx"http://dev-v2.tolaactivity.app.tola.io/api/siteprofile/?start=5
     
 
@@ -158,6 +159,7 @@ Example
 Response
 ^^^^^^^^^
 ::
+
   {
     "url": "http://dev-v2.tolaactivity.app.tola.io/api/siteprofile/1/",
     "id": 1,
