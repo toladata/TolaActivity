@@ -12,9 +12,9 @@ Welcome to TolaDataV2's documentation!
 
    api
    install
-   country
    indicator
-   sector
+   stakeholders
+   sites
    workflowlevel1
    workflowlevel2
 
