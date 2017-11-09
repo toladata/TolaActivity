@@ -10,7 +10,7 @@ from workflow.models import (WorkflowTeam, WorkflowLevel1,
                              ROLE_PROGRAM_ADMIN, ROLE_VIEW_ONLY)
 
 
-class WorkflowLevel1ViewsTest(TestCase):
+class WorkflowLevel1ListViewsTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.tola_user = factories.TolaUser()
@@ -106,6 +106,13 @@ class WorkflowLevel1ViewsTest(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
+
+
+class WorkflowLevel1CreateViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+        factories.Group()
 
     def test_create_workflowlevel1_superuser(self):
         self.tola_user.user.is_staff = True
@@ -222,11 +229,18 @@ class WorkflowLevel1ViewsTest(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 201)
 
+
+class WorkflowLevel1UpdateViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+        factories.Group()
+
     def test_update_unexisting_workflowlevel1(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        data = {'name': 'Save the Lennons'}
+        data = {'salary': '10'}
         request = self.factory.post('/api/workflowlevel1/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel1ViewSet.as_view({'post': 'update'})
@@ -334,6 +348,13 @@ class WorkflowLevel1ViewsTest(TestCase):
         view = WorkflowLevel1ViewSet.as_view({'post': 'update'})
         response = view(request, pk=wflvl1.pk)
         self.assertEqual(response.status_code, 403)
+
+
+class WorkflowLevel1DeleteViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+        factories.Group()
 
     def test_delete_workflowlevel1_superuser(self):
         self.tola_user.user.is_staff = True
