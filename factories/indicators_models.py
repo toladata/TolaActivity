@@ -2,8 +2,8 @@ from factory import DjangoModelFactory, SubFactory, post_generation
 
 from indicators.models import (
     Indicator as IndicatorM,
+    Objective as ObjectiveM,
 )
-from workflow_models import WorkflowLevel1
 
 
 class Indicator(DjangoModelFactory):
@@ -22,3 +22,10 @@ class Indicator(DjangoModelFactory):
             # A list of workflowlevel1 were passed in, use them
             for workflowlevel1 in extracted:
                 self.workflowlevel1.add(workflowlevel1)
+
+
+class Objective(DjangoModelFactory):
+    class Meta:
+        model = ObjectiveM
+
+    name = 'Macht Deutschland wieder gesund'

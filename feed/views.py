@@ -373,7 +373,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    permission_classes = (IsOrgMember,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     queryset = Objective.objects.all()
     serializer_class = ObjectiveSerializer
 
