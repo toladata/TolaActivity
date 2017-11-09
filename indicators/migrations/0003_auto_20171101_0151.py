@@ -17,32 +17,32 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='collecteddata',
-            name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='collecteddata', to=settings.AUTH_USER_MODEL),
+            name='created_by',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='collecteddata', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='historicalcollecteddata',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='historicalindicator',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='indicator',
-            name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='indicators', to=settings.AUTH_USER_MODEL),
+            name='created_by',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='indicators', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='level',
-            name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='levels', to=settings.AUTH_USER_MODEL),
+            name='created_by',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='levels', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='objective',
-            name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='objectives', to=settings.AUTH_USER_MODEL),
+            name='created_by',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='objectives', to=settings.AUTH_USER_MODEL),
         ),
     ]
