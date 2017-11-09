@@ -232,6 +232,89 @@ class WorkflowTeamCreateViewsTest(TestCase):
         )
 
 
+class WorkflowTeamUpdateViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+        user_ringo = factories.User(first_name='Ringo', last_name='Starr')
+        tola_user_ringo = factories.TolaUser(
+            user=user_ringo, organization=self.tola_user.organization)
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        self.workflowteam = factories.WorkflowTeam(
+            workflow_user=tola_user_ringo,
+            workflowlevel1=wflvl1,
+            partner_org=wflvl1.organization,
+            role=factories.Group(name=ROLE_VIEW_ONLY))
+
+    def test_update_unexisting_workflowteam(self):
+        data = {'salary': '100'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'post': 'update'})
+        response = view(request, pk=288)
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_workflowteam_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        data = {'salary': '100'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 200)
+
+        salary_updated = WorkflowTeam.objects.\
+            values_list('salary', flat=True).get(pk=self.workflowteam.pk)
+        self.assertEqual(salary_updated, '100')
+
+    def test_update_workflowteam_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        data = {'salary': '100'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 200)
+
+        salary_updated = WorkflowTeam.objects.\
+            values_list('salary', flat=True).get(pk=self.workflowteam.pk)
+        self.assertEqual(salary_updated, '100')
+
+    def test_update_workflowteam_program_admin(self):
+        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        self.workflowteam.save()
+
+        data = {'salary': '100'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 200)
+
+        salary_updated = WorkflowTeam.objects.\
+            values_list('salary', flat=True).get(pk=self.workflowteam.pk)
+        self.assertEqual(salary_updated, '100')
+
+    def test_update_workflowteam_other_user(self):
+        role_without_benefits = ROLE_PROGRAM_TEAM
+        self.workflowteam.role = factories.Group(name=role_without_benefits)
+        self.workflowteam.save()
+
+        data = {'salary': '100'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 403)
+
+
 class WorkflowTeamDeleteViewsTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
