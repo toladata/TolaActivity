@@ -4,7 +4,7 @@ from rest_framework.reverse import reverse
 
 from feed.views import ContactViewSet
 import factories
-from workflow.models import Contact, Country, WorkflowLevel1, WorkflowTeam, \
+from workflow.models import Contact, WorkflowLevel1, WorkflowTeam, \
     ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
     ROLE_VIEW_ONLY
 

@@ -34,23 +34,26 @@ class IsOrgMember(permissions.BasePermission):
             return True
         user_org = request.user.tola_user.organization
 
-        if obj.__class__ in [Sector, ProjectType, SiteProfile, Frequency,
-                             IndicatorType, FundCode, DisaggregationType,
-                             Level, ExternalService, StrategicObjective,
-                             StakeholderType, ProfileType, Contact,
-                             ApprovalType, Distribution, CustomForm,
-                             CodedField, IssueRegister, Award, Milestone,
-                             Portfolio, WorkflowLevel1]:
-            return obj.organization == user_org
-        elif obj.__class__ in [Objective, Beneficiary, Documentation]:
-            return obj.workflowlevel1.organization == user_org
-        elif obj.__class__ in [Checklist, Budget, RiskRegister]:
-            return obj.workflowlevel2.workflowlevel1.organization == user_org
-        elif obj.__class__ in [Organization]:
-            return obj == user_org
-        elif obj.__class__ in [WorkflowTeam]:
-            return obj.partner_org == user_org
-
+        try:
+            if obj.__class__ in [Sector, ProjectType, SiteProfile, Frequency,
+                                 IndicatorType, FundCode, DisaggregationType,
+                                 Level, ExternalService, StrategicObjective,
+                                 StakeholderType, ProfileType, Contact,
+                                 ApprovalType, Distribution, CustomForm,
+                                 CodedField, IssueRegister, Award, Milestone,
+                                 Portfolio, WorkflowLevel1]:
+                return obj.organization == user_org
+            elif obj.__class__ in [Objective, Beneficiary, Documentation]:
+                return obj.workflowlevel1.organization == user_org
+            elif obj.__class__ in [Checklist, Budget, RiskRegister]:
+                return obj.workflowlevel2.workflowlevel1.organization == \
+                       user_org
+            elif obj.__class__ in [Organization]:
+                return obj == user_org
+            elif obj.__class__ in [WorkflowTeam]:
+                return obj.partner_org == user_org
+        except AttributeError:
+            pass
         return False
 
 
@@ -66,17 +69,7 @@ class AllowTolaRoles(permissions.BasePermission):
         model_cls = queryset.model
         if view.action == 'create':
             user_org = request.user.tola_user.organization
-            if model_cls.__name__ in ['Contact', 'Documentation', 'Indicator',
-                                      'CollectedData', 'Level', 'Objective',
-                                      'WorkflowLevel2']:
-                wflvl1 = request.data['workflowlevel1']
-                team_groups = WorkflowTeam.objects.fitler(
-                    workflow_user=request.user.tola_user,
-                    workflowlevel1=wflvl1).values_list(
-                    'role__name', flat=True)
-                return (ROLE_VIEW_ONLY not in team_groups and
-                        wflvl1.organization == user_org)
-            elif model_cls.__name__ == 'WorkflowTeam':
+            if 'workflowlevel1' in request.data:
                 wflvl1_serializer = view.serializer_class().get_fields()[
                     'workflowlevel1']
                 primitive_value = request.data['workflowlevel1']
@@ -85,9 +78,16 @@ class AllowTolaRoles(permissions.BasePermission):
                     workflow_user=request.user.tola_user,
                     workflowlevel1=wflvl1).values_list(
                     'role__name', flat=True)
-                return (ROLE_VIEW_ONLY not in team_groups and
-                        ROLE_PROGRAM_TEAM not in team_groups and
-                        wflvl1.organization == user_org)
+                if model_cls.__name__ in ['Contact', 'Documentation',
+                                          'Indicator', 'CollectedData',
+                                          'Level', 'Objective',
+                                          'WorkflowLevel2']:
+                    return (ROLE_VIEW_ONLY not in team_groups and
+                            wflvl1.organization == user_org)
+                elif model_cls.__name__ == 'WorkflowTeam':
+                    return (ROLE_VIEW_ONLY not in team_groups and
+                            ROLE_PROGRAM_TEAM not in team_groups and
+                            wflvl1.organization == user_org)
         return True
 
     def _queryset(self, view):

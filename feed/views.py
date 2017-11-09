@@ -651,7 +651,7 @@ class ContactViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('name', 'stakeholder__organization__id', 'stakeholder')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    permission_classes = (IsOrgMember,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
 
