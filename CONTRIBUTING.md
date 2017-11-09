@@ -34,7 +34,7 @@ If you don't see your idea listed, and you think it fits into the goals of this 
 
 ## Contribution review process
 
-This repo is currently maintained by @glind and @mahmoodkhan, who have commit access. They will likely review your contribution. If you haven't heard from anyone in 10 days, feel free to bump the thread or @-mention a maintainer to review your contribution.
+This repo is currently maintained by @glind and @mahmoodkhan, who have commit access. They will likely review your contribution in the form of a pull request. If you haven't heard from anyone in 10 days, feel free to bump the thread or @-mention a maintainer to review your contribution.
 
 ## Community
 
