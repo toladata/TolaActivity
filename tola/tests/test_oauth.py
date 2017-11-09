@@ -2,10 +2,8 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-from docs.api.Connection import TolaApiConnection
 from tola.settings.local import *
 from django.test import Client
-from django.contrib.auth.models import User
 from oauth2_provider.models import Application
 
 # TODO Extend OAuth tests
@@ -28,12 +26,13 @@ class OAuthTest(TestCase):
 
         oauth_app = Application.objects.all()[0]
 
-        #Get Authorization token
+        # Get Authorization token
         authorize_url = '/oauth/authorize?state=random_state_string' \
                         '&client_id='+oauth_app.client_id+'' \
                         '&response_type=code'
 
         response = c.get(authorize_url, follow=True)
 
-        self.assertContains(response, "value=\"CXGVOGFnTAt5cQW6m5AxbGrRq1lzKNSrou31dWm9\"")
+        self.assertContains(
+            response, "value=\"CXGVOGFnTAt5cQW6m5AxbGrRq1lzKNSrou31dWm9\"")
         self.assertEqual(response.status_code, 200)
