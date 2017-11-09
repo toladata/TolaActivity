@@ -12,14 +12,12 @@ Welcome to TolaDataV2's documentation!
 
    api
    install
-<<<<<<< Updated upstream
-   indicator
+   AuthenticationStatusCode
    country
-   programs
+   indicator
    sector
-=======
-   
->>>>>>> Stashed changes
+   workflowlevel1
+   workflowlevel2
 
 
 
