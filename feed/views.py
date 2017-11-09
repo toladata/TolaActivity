@@ -1141,7 +1141,10 @@ class AwardViewSet(viewsets.ModelViewSet):
 
 
 class WorkflowTeamViewSet(viewsets.ModelViewSet):
-
+    """
+    This viewset provides `list`, `create`, `retrieve`, `update` and
+    `destroy` actions.
+    """
     def list(self, request):
         if request.user.is_superuser:
             queryset = WorkflowTeam.objects.all()

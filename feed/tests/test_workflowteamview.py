@@ -230,3 +230,75 @@ class WorkflowTeamCreateViewsTest(TestCase):
             workflow_user=self.tola_user,
             role=role,
         )
+
+
+class WorkflowTeamDeleteViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+        user_ringo = factories.User(first_name='Ringo', last_name='Starr')
+        tola_user_ringo = factories.TolaUser(
+            user=user_ringo, organization=self.tola_user.organization)
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        self.workflowteam = factories.WorkflowTeam(
+            workflow_user=tola_user_ringo,
+            workflowlevel1=wflvl1,
+            partner_org=wflvl1.organization,
+            role=factories.Group(name=ROLE_VIEW_ONLY))
+
+    def test_delete_workflowteam_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        request = self.factory.delete(None)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 204)
+
+        self.assertRaises(
+            WorkflowTeam.DoesNotExist,
+            WorkflowTeam.objects.get, pk=self.workflowteam.pk)
+
+    def test_delete_workflowteam_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        request = self.factory.delete(None)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 204)
+
+        self.assertRaises(
+            WorkflowTeam.DoesNotExist,
+            WorkflowTeam.objects.get, pk=self.workflowteam.pk)
+
+    def test_delete_workflowteam_program_admin(self):
+        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        self.workflowteam.save()
+
+        request = self.factory.delete(None)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 204)
+
+        self.assertRaises(
+            WorkflowTeam.DoesNotExist,
+            WorkflowTeam.objects.get, pk=self.workflowteam.pk)
+
+    def test_delete_workflowteam_other_user(self):
+        role_without_benefits = ROLE_PROGRAM_TEAM
+        self.workflowteam.role = factories.Group(name=role_without_benefits)
+        self.workflowteam.save()
+
+        request = self.factory.delete(None)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 403)
+        WorkflowTeam.objects.get(pk=self.workflowteam.pk)

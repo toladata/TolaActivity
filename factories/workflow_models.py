@@ -14,7 +14,7 @@ from workflow.models import (
     WorkflowLevel1 as WorkflowLevel1M,
     WorkflowLevel2 as WorkflowLevel2M,
 )
-from .user_models import User
+from .user_models import User, Group
 
 
 class ApprovalType(DjangoModelFactory):
@@ -68,16 +68,21 @@ class TolaUser(DjangoModelFactory):
     country = SubFactory(Country, country='Germany', code='DE')
 
 
-class WorkflowTeam(DjangoModelFactory):
-    class Meta:
-        model = WorkflowTeamM
-
-
 class WorkflowLevel1(DjangoModelFactory):
     class Meta:
         model = WorkflowLevel1M
 
     name = 'Health and Survival for Syrians in Affected Regions'
+
+
+class WorkflowTeam(DjangoModelFactory):
+    class Meta:
+        model = WorkflowTeamM
+
+    workflow_user = SubFactory(TolaUser)
+    workflowlevel1 = SubFactory(WorkflowLevel1)
+    salary = '60,000'
+    role = SubFactory(Group)
 
 
 class WorkflowLevel2(DjangoModelFactory):
