@@ -6,6 +6,7 @@ from workflow.models import (
     ApprovalType as ApprovalTypeM,
     Contact as ContactM,
     Country as CountryM,
+    Documentation as DocumentationM,
     Organization as OrganizationM,
     SiteProfile as SiteProfileM,
     TolaUser as TolaUserM,
@@ -86,3 +87,11 @@ class WorkflowLevel2(DjangoModelFactory):
     name = 'Help Syrians'
     total_estimated_budget = 15000
     actual_cost = 2900
+
+
+class Documentation(DjangoModelFactory):
+    class Meta:
+        model = DocumentationM
+
+    name = 'Strengthening access and demand in Mandera County'
+    workflowlevel1 = SubFactory(WorkflowLevel1)

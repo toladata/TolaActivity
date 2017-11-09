@@ -65,6 +65,7 @@ class AllowTolaRoles(permissions.BasePermission):
         queryset = self._queryset(view)
         model_cls = queryset.model
         if view.action == 'create':
+            user_org = request.user.tola_user.organization
             if model_cls.__name__ in ['Contact', 'Documentation', 'Indicator',
                                       'CollectedData', 'Level', 'Objective',
                                       'WorkflowLevel2']:
@@ -73,15 +74,17 @@ class AllowTolaRoles(permissions.BasePermission):
                     workflow_user=request.user.tola_user,
                     workflowlevel1=wkflvl1).values_list(
                     'role__name', flat=True)
-                return ROLE_VIEW_ONLY not in team_groups
+                return (ROLE_VIEW_ONLY not in team_groups and
+                        wkflvl1.organization == user_org)
             elif model_cls.__name__ == 'WorkflowTeam':
                 wkflvl1 = request.data['workflowlevel1']
                 team_groups = WorkflowTeam.objects.fitler(
                     workflow_user=request.user.tola_user,
                     workflowlevel1=wkflvl1).values_list(
                     'role__name', flat=True)
-                return ROLE_VIEW_ONLY not in team_groups and \
-                       ROLE_PROGRAM_TEAM not in team_groups
+                return (ROLE_VIEW_ONLY not in team_groups and
+                       ROLE_PROGRAM_TEAM not in team_groups and
+                        wkflvl1.organization == user_org)
         return True
 
     def _queryset(self, view):

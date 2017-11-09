@@ -47,16 +47,36 @@ class DocumentationViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
-    def test_create_documentation_superuser(self):
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.save()
+    def test_create_documentation_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
 
         request = self.factory.post('/api/documentation/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         wflvl1_url = reverse('workflowlevel1-detail', kwargs={'pk': wflvl1.id},
                              request=request)
+
+        data = {'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/documentation/', data)
+        request.user = self.tola_user.user
+        view = DocumentationViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['workflowlevel1'], wflvl1_url)
+
+    def test_create_documentation_program_admin(self):
+        request = self.factory.post('/api/documentation/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail', kwargs={'pk': wflvl1.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         data = {'workflowlevel1': wflvl1_url}
 
@@ -125,8 +145,10 @@ class DocumentationViewsTest(TestCase):
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         documentation = factories.Documentation(workflowlevel1=wflvl1)
-        group_org_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
-        self.tola_user.user.groups.add(group_org_admin)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         request = self.factory.delete('/api/documentation/')
         request.user = self.tola_user.user
