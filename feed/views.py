@@ -1,23 +1,22 @@
-from .serializers import *
-from workflow.models import *
-from indicators.models import *
-from formlibrary.models import *
-
 from django.db.models import Count, Sum
 from django.contrib.auth.models import User, Group
-from tola.util import getCountry, getLevel1
 from django.shortcuts import get_object_or_404
-
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
 import django_filters
-
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
-from .permissions import UserIsOwnerOrAdmin, WorkflowLevel1Permissions
+
+from .serializers import *
+from workflow.models import *
+from indicators.models import *
+from formlibrary.models import *
+from .permissions import (UserIsOwnerOrAdmin, WorkflowLevel1Permissions,
+                          IndicatorPermissions)
+from tola.util import getCountry, getLevel1
 
 
 class LargeResultsSetPagination(PageNumberPagination):
@@ -74,9 +73,6 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     search by country name and workflowlevel1 name
     limit to users logged in country permissions
     """
-
-    permission_classes = (WorkflowLevel1Permissions,)
-
     # Remove CSRF request verification for posts to this API
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
@@ -84,16 +80,22 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         if request.user.is_superuser:
-            queryset = WorkflowLevel1.objects.all().annotate(budget=Sum('workflowlevel2__total_estimated_budget'),
-                                                             actuals=Sum('workflowlevel2__actual_cost'))
-        elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list('name', flat=True):
+            queryset = WorkflowLevel1.objects.all().annotate(
+                budget=Sum('workflowlevel2__total_estimated_budget'),
+                actuals=Sum('workflowlevel2__actual_cost'))
+        elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
+                'name', flat=True):
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = WorkflowLevel1.objects.all().filter(organization=user_org).annotate(
-                budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
+            queryset = WorkflowLevel1.objects.all().filter(
+                organization=user_org).annotate(
+                budget=Sum('workflowlevel2__total_estimated_budget'),
+                actuals=Sum('workflowlevel2__actual_cost'))
         else:
             user_level1 = getLevel1(request.user)
-            queryset = WorkflowLevel1.objects.all().filter(id__in=user_level1).annotate(
-                budget=Sum('workflowlevel2__total_estimated_budget'), actuals=Sum('workflowlevel2__actual_cost'))
+            queryset = WorkflowLevel1.objects.all().filter(
+                id__in=user_level1).annotate(
+                budget=Sum('workflowlevel2__total_estimated_budget'),
+                actuals=Sum('workflowlevel2__actual_cost'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -126,8 +128,10 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     filter_fields = ('country__country', 'name', 'level1_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
-    queryset = WorkflowLevel1.objects.all().annotate(budget=Sum('workflowlevel2__total_estimated_budget'),
-                                                     actuals=Sum('workflowlevel2__actual_cost'))
+    queryset = WorkflowLevel1.objects.all().annotate(
+        budget=Sum('workflowlevel2__total_estimated_budget'),
+        actuals=Sum('workflowlevel2__actual_cost'))
+    permission_classes = (WorkflowLevel1Permissions,)
     serializer_class = WorkflowLevel1Serializer
 
 
@@ -147,7 +151,7 @@ class SectorViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -206,19 +210,20 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
     limit to users logged in country permissions
     """
     def list(self, request):
-        queryset = self.filter_queryset(self.get_queryset())
-        if not request.user.is_superuser:
+        if request.user.is_superuser:
+            queryset = SiteProfile.objects.all()
+        else:
             tola_user = TolaUser.objects.get(user=request.user)
-            queryset = queryset.filter(organization=tola_user.organization)
+            queryset = SiteProfile.objects.filter(organization=tola_user.organization)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
         user = self.request.user
         user_org = TolaUser.objects.get(user=user).organization
-        serializer.save(organization=user_org, owner=self.request.user)
+        serializer.save(organization=user_org, created_by=self.request.user)
 
-    filter_fields = ('country__country', 'workflowlevel2__workflowlevel1')
+    filter_fields = ('country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = SiteProfile .objects.all()
     serializer_class = SiteProfileSerializer
@@ -251,23 +256,33 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         if request.user.is_superuser:
-            queryset = Indicator.objects.all().annotate(actuals=Sum('collecteddata__achieved'))
+            queryset = Indicator.objects.all().annotate(
+                actuals=Sum('collecteddata__achieved'))
         else:
             user_level1 = getLevel1(request.user)
-            queryset = Indicator.objects.all().filter(workflowlevel1__in=user_level1).annotate(
+            queryset = Indicator.objects.all().filter(
+                workflowlevel1__in=user_level1).annotate(
                 actuals=Sum('collecteddata__achieved'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def destroy(self, request, pk):
+        indicator = self.get_object()
+        indicator.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     def get_queryset(self):
-        return Indicator.objects.annotate(actuals=Sum('collecteddata__achieved'))
+        return Indicator.objects.annotate(
+            actuals=Sum('collecteddata__achieved'))
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
-    filter_fields = ('workflowlevel1__country__country', 'workflowlevel1__name', 'indicator_uuid')
+    filter_fields = ('workflowlevel1__country__country', 'workflowlevel1__name',
+                     'indicator_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = Indicator.objects.all()
+    permission_classes = (IndicatorPermissions,)
     serializer_class = IndicatorSerializer
 
 
@@ -296,13 +311,15 @@ class TolaUserViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
         queryset = TolaUser.objects.all()
-        serializer = TolaUserSerializer(instance=queryset, context={'request': request}, many=True)
+        serializer = TolaUserSerializer(
+            instance=queryset, context={'request': request}, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         queryset = TolaUser.objects.all()
         user = get_object_or_404(queryset, pk=pk)
-        serializer = TolaUserSerializer(instance=user, context={'request': request})
+        serializer = TolaUserSerializer(instance=user,
+                                        context={'request': request})
         return Response(serializer.data)
 
     filter_fields = ('organization__id',)
@@ -344,12 +361,13 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
             queryset = Objective.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Objective.objects.all().filter(workflowlevel1__organization=user_org)
+            queryset = Objective.objects.all().filter(
+                workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -391,7 +409,8 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
             queryset = DisaggregationType.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = DisaggregationType.objects.all().filter(organization=user_org)
+            queryset = DisaggregationType.objects.all().filter(
+                organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -417,7 +436,7 @@ class LevelViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('organization__id', 'country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -435,7 +454,8 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     def list(self, request):
 
         user_level1 = getLevel1(request.user)
-        queryset = Stakeholder.objects.all().filter(workflowlevel1__in=user_level1)
+        queryset = Stakeholder.objects.all().filter(
+            workflowlevel1__in=user_level1)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
@@ -457,7 +477,7 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = self.request.user
         user_org = TolaUser.objects.get(user=user).organization
-        serializer.save(organization=user_org, owner=self.request.user)
+        serializer.save(organization=user_org, created_by=self.request.user)
 
     filter_fields = ('workflowlevel1__name',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -476,7 +496,8 @@ class ExternalServiceViewSet(viewsets.ModelViewSet):
             queryset = ExternalService.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = ExternalService.objects.all().filter(organization=user_org)
+            queryset = ExternalService.objects.all().filter(
+                organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -508,7 +529,8 @@ class StrategicObjectiveViewSet(viewsets.ModelViewSet):
             queryset = StrategicObjective.objects.all()
         else:
             tola_user = TolaUser.objects.get(user=request.user)
-            queryset = StrategicObjective.objects.filter(organization=tola_user.organization)
+            queryset = StrategicObjective.objects.filter(
+                organization=tola_user.organization)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -534,7 +556,8 @@ class StakeholderTypeViewSet(viewsets.ModelViewSet):
             queryset = StakeholderType.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = StakeholderType.objects.all().filter(organization=user_org)
+            queryset = StakeholderType.objects.all().filter(
+                organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -637,12 +660,13 @@ class DocumentationViewSet(viewsets.ModelViewSet):
             user_level1 = getLevel1(request.user)
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = Documentation.objects.all().filter(
-                workflowlevel2__workflowlevel1__organization=user_org).filter(workflowlevel1__in=user_level1)
+                workflowlevel2__workflowlevel1__organization=user_org).filter(
+                workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel2__workflowlevel1__country__country',
                      'workflowlevel2__workflowlevel1__organization__id')
@@ -672,15 +696,17 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
             queryset = CollectedData.objects.all()
         else:
             user_level1 = getLevel1(request.user)
-            queryset = CollectedData.objects.all().filter(indicator__workflowlevel1__in=user_level1)
+            queryset = CollectedData.objects.all().filter(
+                indicator__workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
-    filter_fields = ('indicator__workflowlevel1__country__country', 'indicator__workflowlevel1__name',
-                     'indicator', 'indicator__workflowlevel1__organization__id')
+    filter_fields = ('indicator__workflowlevel1__country__country',
+                     'indicator__workflowlevel1__name', 'indicator',
+                     'indicator__workflowlevel1__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CollectedData.objects.all()
     serializer_class = CollectedDataSerializer
@@ -706,7 +732,8 @@ class TolaTableViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(table_id=table_id)
         return queryset
 
-    filter_fields = ('table_id', 'country__country', 'collecteddata__indicator__workflowlevel1__name',
+    filter_fields = ('table_id', 'country__country',
+                     'collecteddata__indicator__workflowlevel1__name',
                      'organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = TolaTableSerializer
@@ -755,7 +782,8 @@ class ChecklistViewSet(viewsets.ModelViewSet):
             queryset = Checklist.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Checklist.objects.all().filter(workflowlevel2__workflowlevel1__organization=user_org)
+            queryset = Checklist.objects.all().filter(
+                workflowlevel2__workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -804,7 +832,8 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
             queryset = WorkflowLevel2.objects.all()
         else:
             user_level1 = getLevel1(request.user)
-            queryset = WorkflowLevel2.objects.all().filter(workflowlevel1__in=user_level1)
+            queryset = WorkflowLevel2.objects.all().filter(
+                workflowlevel1__in=user_level1)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
@@ -824,7 +853,7 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     """
     def post(self,request):
@@ -836,8 +865,8 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         return blank
     """
 
-    filter_fields = ('workflowlevel1__country__country', 'workflowlevel1__name', 'level2_uuid',
-                     'workflowlevel1__id')
+    filter_fields = ('workflowlevel1__country__country', 'workflowlevel1__name',
+                     'level2_uuid', 'workflowlevel1__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel2.objects.all()
     serializer_class = WorkflowLevel2Serializer
@@ -858,7 +887,8 @@ class WorkflowLevel2SortViewSet(viewsets.ModelViewSet):
             queryset = WorkflowLevel2Sort.objects.all()
         else:
             user_level1 = getLevel1(request.user)
-            queryset = WorkflowLevel2Sort.objects.all().filter(workflowlevel1__in=user_level1)
+            queryset = WorkflowLevel2Sort.objects.all().filter(
+                workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -896,7 +926,7 @@ class ApprovalWorkflowViewSet(viewsets.ModelViewSet):
     serializer_class = ApprovalWorkflowSerializer
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
 
 class BeneficiaryViewSet(viewsets.ModelViewSet):
@@ -906,7 +936,8 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
             queryset = Beneficiary.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Beneficiary.objects.all().filter(workflowlevel1__organization=user_org)
+            queryset = Beneficiary.objects.all().filter(
+                workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -945,7 +976,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -970,12 +1001,13 @@ class BudgetViewSet(viewsets.ModelViewSet):
             queryset = Budget.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = Budget.objects.all().filter(workflowlevel2__workflowlevel1__organization=user_org)
+            queryset = Budget.objects.all().filter(
+                workflowlevel2__workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
@@ -990,7 +1022,8 @@ class RiskRegisterViewSet(viewsets.ModelViewSet):
             queryset = RiskRegister.objects.all()
         else:
             user_org = TolaUser.objects.get(user=request.user).organization
-            queryset = RiskRegister.objects.all().filter(workflowlevel2__workflowlevel1__organization=user_org)
+            queryset = RiskRegister.objects.all().filter(
+                workflowlevel2__workflowlevel1__organization=user_org)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -1089,7 +1122,8 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
             queryset = WorkflowTeam.objects.all()
         else:
             user_level1 = getLevel1(request.user)
-            queryset = WorkflowTeam.objects.all().filter(workflowlevel1__in=user_level1)
+            queryset = WorkflowTeam.objects.all().filter(
+                workflowlevel1__in=user_level1)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -1111,7 +1145,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        serializer.save(created_by=self.request.user)
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)

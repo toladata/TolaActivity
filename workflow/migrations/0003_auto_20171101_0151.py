@@ -17,57 +17,57 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='approvalworkflow',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='approval', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='budget',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='budgets', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='documentation',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='documentation', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='historicalbudget',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='historicalsiteprofile',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='historicalworkflowlevel2',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='milestone',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='milestones', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='sector',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sectors', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='siteprofile',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sites', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='stakeholder',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='stakeholders', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='workflowlevel2',
-            name='owner',
+            name='created_by',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='workflowlevel2', to=settings.AUTH_USER_MODEL),
         ),
     ]

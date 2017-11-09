@@ -65,7 +65,7 @@ class ElasticsearchIndexer:
 
         # index data with elasticsearch
         try:
-            self.es.index(index=self.prefix+"workflows", id=data['level1_uuid'], doc_type='workflow', body=data)
+            self.es.index(index=self.prefix+"workflow_level1", id=data['level1_uuid'], doc_type='workflow', body=data)
         except RequestError:
             print(wf, "Error")  # Todo write to error log
 
@@ -86,16 +86,25 @@ class ElasticsearchIndexer:
 
         # index data with elasticsearch
         try:
-            self.es.index(index=self.prefix+"workflows", id=data['level2_uuid'], doc_type='workflow', body=data)
+            self.es.index(index=self.prefix+"workflow_level2", id=data['level2_uuid'], doc_type='workflow', body=data)
         except RequestError:
             print(wf, "Error")
 
-    def delete_workflows(self, id):
+    def delete_workflowlevel1(self, id):
         if self.es is None:
             return
 
         try:
-            self.es.delete(index=self.prefix+"workflows", id=id, doc_type='workflow')
+            self.es.delete(index=self.prefix+"workflow_level1", id=id, doc_type='workflow')
+        except RequestError:
+            print(id, "Error")   # Todo write to error log
+
+    def delete_workflowlevel2(self, id):
+        if self.es is None:
+            return
+
+        try:
+            self.es.delete(index=self.prefix+"workflow_level2", id=id, doc_type='workflow')
         except RequestError:
             print(id, "Error")   # Todo write to error log
 

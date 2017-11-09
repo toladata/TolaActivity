@@ -42,9 +42,9 @@ def search(request, index, term):
     if request.method == 'GET' and es is not None:
         index = index.lower().replace('_', '')      # replace _ that _all cannot be accessed directly
 
-        allowed_indices = ['workflows','indicators','collected_data']
+        allowed_indices = ['workflow_level1','workflow_level2','indicators','collected_data']
         if index.lower() == 'all':
-            index = prefix+'workflows,'+prefix+'indicators,'+prefix+'collected_data'
+            index = prefix+'workflow_level1,'+prefix+'workflow_level2,'+prefix+'indicators,'+prefix+'collected_data'
         elif not index in allowed_indices:
             raise Exception("Index not allowed to access")
         else:
