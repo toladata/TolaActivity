@@ -1,9 +1,9 @@
 Indicator
-****
+**********
 
 Endpoint
----------
- * “indicator”: “http://activity.toladata.io/api/indicator/”,
+--------
+ * “indicator”: “http://dev-v2.tolaactivity.app.tola.io/api/indicator/”,
 
 
 This endpoint provides access to submitted indicators in JSON format.
@@ -13,7 +13,7 @@ This endpoint provides access to submitted indicators in JSON format.
 GET JSON List of all Indicators
 --------------------------------
 
-Lists the programs endpoints accessible to requesting user
+Lists the indicator endpoints accessible to requesting user
 
 .. raw:: html
 
@@ -22,10 +22,10 @@ Lists the programs endpoints accessible to requesting user
   </pre>
 
 Example
-^^^^^^^^
+^^^^^^^
 ::
 
-    curl -H "Authorization: Token adkai39a9sdfj239m0afi2" https://activity.toladata.io/api/indicator/
+    curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/
 
 
 Response
@@ -34,48 +34,62 @@ Response
 
     [
       {
-        "url": "http://activity.toladata.io/api/indicator/20/",
-        "name": "Number and percent of households using a financial product or service developed through SimulaKO",
-        "number": "3.3",
-        "source": "DFID",
-        "definition": "Banko accounts opened through TabanKO that enrolled in a new financial product developed by SimulaKO and opened by Banko. This does not include HH accessing their accounts through the agent network",
-        "baseline": "0",
-        "lop_target": "7500",
-        "means_of_verification": "Banko records",
-        "data_collection_method": "reviewing banko reports and data",
-        "responsible_person": "Simulako research manager",
+        "url": "http://dev-v2.tolaactivity.app.tola.io/api/indicator/1/",
+        "id": 1,
+        "indicator_uuid": "6279914f-c4a5-4673",
+        "name": "Number of people that receive training (gullies, water and soil conservation and land restoration) on land restoration practices",
+        "number": "2.0.3",
+        "source": "Training sheets, monitoring visits, trainees action plan",
+        "definition": "",
+        "justification": "",
+        "unit_of_measure": "people",
+        "baseline": "",
+        "lop_target": 2520,
+        "rationale_for_target": "",
+        "means_of_verification": "Training sheets, monitoring visits, trainees action plan",
+        "data_collection_method": "training sheets",
+        "data_points": "",
+        "responsible_person": "Partner",
         "method_of_analysis": "",
         "information_use": "",
+        "quality_assurance": "",
+        "data_issues": "",
+        "indicator_changes": "",
         "comments": "",
         "key_performance_indicator": false,
-        "create_date": "2017-02-22T18:26:12Z",
-        "edit_date": "2017-02-22T18:26:12Z",
-        "notes": null,
-        "reporting_frequency": null,
-        "sector": "http://activity.toladata.io/api/sector/4/",
+        "create_date": "2017-11-01T13:10:55.687997Z",
+        "edit_date": "2017-11-01T13:10:55.688009Z",
+        "notes": "",
+        "level": "http://demo.tolaactivity.app.tola.io/api/level/10/",
+        "data_collection_frequency": "http://demo.tolaactivity.app.tola.io/api/frequency/2/",
+        "reporting_frequency": "http://demo.tolaactivity.app.tola.io/api/frequency/3/",
+        "sector": "http://demo.tolaactivity.app.tola.io/api/sector/187/",
         "approved_by": null,
         "approval_submitted_by": null,
         "external_service_record": null,
+        "owner": "http://dev-v2.tolaactivity.app.tola.io/api/users/62/",
         "indicator_type": [
-            "http://activity.toladata.io/api/indicatortype/1/"
-        ],
-        "level": [
-            "http://activity.toladata.io/api/level/3/"
-        ],
-        "objectives": [],
-        "strategic_objectives": [],
+             "http://dev-v2.tolaactivity.app.tola.io/api/indicatortype/7/"
+          ],
+        "objectives": [
+            "http://dev-v2.tolaactivity.app.tola.io/api/objective/12/"
+          ],
+        "strategic_objectives": ["http://dev-v2.tolaactivity.app.tola.io/api/strategicobjective/2/"],
         "disaggregation": [],
-        "program": [
-            "http://activity.toladata.io/api/programs/1/"
+        "workflowlevel1": [
+          "http://dev-v2.tolaactivity.app.tola.io/api/workflowlevel1/1/"
+        ],
+        "sub_sector": [
+          "http://dev-v2.tolaactivity.app.tola.io/api/sector/1/"
         ]
       },
       ...
     ]
 
-GET JSON List of indicator end points using limit operators
--------------------------------------------------------
+GET JSON List of indicator endpoints using limit operators
+----------------------------------------------------------
 
-Lists the programs endpoints accesible to the requesting user based on 'start'
+Lists the indicator endpoints accesible to the requesting user based on 'start'
 and/or 'limit' query parameters. Use the start parameter to skip a number
 of records and the limit parameter to limit the number of records returned.
 
@@ -86,7 +100,7 @@ of records and the limit parameter to limit the number of records returned.
     </pre>
 
 ::
-    curl -H "Authorization: Token adkai39a9sdfj239m0afi2" https://activity.toladata.io/api/indicator/?start=5
+    curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?start=5
     
 
 .. raw:: html
@@ -97,7 +111,7 @@ of records and the limit parameter to limit the number of records returned.
 
 ::
 
-	curl -H "Authorization: Token adkai39a9sdfj239m0afi2" https://activity.toladata.io/api/indicator/?limit=2
+	curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?limit=2
 
 .. raw:: html
 
@@ -107,48 +121,30 @@ of records and the limit parameter to limit the number of records returned.
 
 ::
 
-	 curl -H "Authorization: Token adkai39a9sdfj239m0afi2" https://activity.toladata.io/api/indicator/?start=3&limit=4
+	 curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?start=3&limit=4
 
 
 
-GET JSON List of indicator end points filter by  program name
---------------------------------------------------------------
+GET JSON List of indicator endpoints filter by workflowlevel1 name
+------------------------------------------------------------------
 
 Lists the data endpoints accessible to requesting user, for the specified
-``program name`` as a query parameter.
+``workflowlevel1 name`` as a query parameter.
 
 .. raw:: html
 
 
   <pre class="prettyprint">
-  <b>GET</b> /api/indicator/?<code>program_name</code>=<code>program_name</code>
+  <b>GET</b> /api/indicator/?<code>workflowlevel1_name</code>=<code>workflowlevel1_name</code>
   </pre>
 
 Example
 ^^^^^^^^^
 ::
 
-       curl -H "Authorization: Token adkai39a9sdfj239m0afi2" https://activity.toladata.io/api/indicator/?program_name=Financial Assistance to Affected Communities
+       curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?workflowlevel1_name=Financial Assistance to Affected Communities
 
 
-GET JSON List of indicator end points filter by program country
---------------------------------------------------------------
-
-Lists the indicator endpoints accessible to requesting user, for the specified
-``program country`` as a query parameter.
-
-.. raw:: html
-
-
-  <pre class="prettyprint">
-  <b>GET</b> /api/indicator/?<code>program_country_country</code>=<code>programs_country</code>
-  </pre>
-
-Example
-^^^^^^^^^
-::
-
-       curl -H "Authorization: Token adkai39a9sdfj239m0afi2" https://activity.toladata.io/api/indicator/?program_country_country=Afghanistan
 
 
 Retrieve a specific Indicator
@@ -164,51 +160,60 @@ Example
 ^^^^^^^^^
 ::
 
-      curl -H "Authorization: Token adkai39a9sdfj239m0afi2" https://activity.toladata.io/api/indicator/2
+      curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/3
 
 Response
 ^^^^^^^^^
 ::
   {
-    "url": "http://activity.toladata.io/api/indicator/2/",
-    "name": "Total number of male and female individuals participating in cash transfer programming (CTP)",
-    "number": "1.1",
-    "source": "Mercy Corps",
-    "definition": "This is the total number of individuals included in the program, specifically per activity. For instance, total # of program participants receiving cash transfers, participating in CFW, receiving vouchers, or other activities falling under Early Economic Recovery (EER).",
-    "baseline": "0",
-    "lop_target": "1300",
-    "means_of_verification": "",
-    "data_collection_method": "",
-    "responsible_person": "",
-    "method_of_analysis": "",
-    "information_use": "",
-    "comments": "",
-    "key_performance_indicator": true,
-    "create_date": "2017-02-22T18:26:13Z",
-    "edit_date": "2017-03-09T04:46:39Z",
-    "notes": "",
-    "reporting_frequency": null,
-    "sector": "http://activity.toladata.io/api/sector/4/",
-    "approved_by": null,
-    "approval_submitted_by": null,
-    "external_service_record": null,
-    "indicator_type": [
-        "http://activity.toladata.io/api/indicatortype/8/"
-    ],
-    "level": [
-        "http://activity.toladata.io/api/level/1/"
-    ],
-    "objectives": [],
-    "strategic_objectives": [
-        "http://activity.toladata.io/api/strategicobjective/1/"
-    ],
-    "disaggregation": [],
-    "program": [
-        "http://activity.toladata.io/api/programs/1/"
-    ]
+     "url": "http://dev-v2.tolaactivity.app.tola.io/api/indicator/3/",
+      "id": 3,
+      "actuals": null,
+      "indicator_uuid": "78374b06-d70f-4e0a",
+      "name": "% of respondents who know 3 of 5 critical times to wash hands",
+      "number": "3.1",
+      "source": null,
+      "definition": "",
+      "justification": "",
+      "unit_of_measure": null,
+      "baseline": null,
+      "lop_target": 90,
+      "rationale_for_target": "",
+      "means_of_verification": null,
+      "data_collection_method": null,
+      "data_points": "",
+      "responsible_person": null,
+      "method_of_analysis": null,
+      "information_use": null,
+      "quality_assurance": "",
+      "data_issues": "",
+      "indicator_changes": "",
+      "comments": "",
+      "key_performance_indicator": true,
+      "create_date": "2017-10-13T13:57:33.150073Z",
+      "edit_date": "2017-11-02T12:31:48.071533Z",
+      "notes": "",
+      "level": "http://dev-v2.tolaactivity.app.tola.io/api/level/13/",
+      "data_collection_frequency": null,
+      "reporting_frequency": null,
+      "sector": "http://dev-v2.tolaactivity.app.tola.io/api/sector/109/",
+      "approved_by": null,
+      "approval_submitted_by": null,
+      "external_service_record": null,
+      "owner": null,
+      "indicator_type": [],
+      "objectives": [],
+      "strategic_objectives": [],
+      "disaggregation": [],
+      "workflowlevel1": [
+            "http://dev-v2.tolaactivity.app.tola.io/api/workflowlevel1/4/"
+        ],
+      "sub_sector": [
+            "http://dev-v2.tolaactivity.app.tola.io/api/sector/196/"
+        ]
   }
 
-Paginate data of a specific form
+Paginate data of a specific formslack
 -------------------------------------------
 Returns a list of json submitted data for a specific form using page number and the number of items per page. Use the ``page`` parameter to specify page number and ``page_size`` parameter is used to set the custom page size.
 
@@ -216,5 +221,5 @@ Example
 ^^^^^^^^
 ::
 
-      curl -H "Authorization: Token adkai39a9sdfj239m0afi2" https://activity.toladata.io/api/indicator/20.json?page=1&page_size=4
+      curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/20.json?page=1&page_size=4
 
