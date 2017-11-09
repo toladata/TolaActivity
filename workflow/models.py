@@ -1072,68 +1072,118 @@ class WorkflowLevel2Manager(models.Manager):
 
 class WorkflowLevel2(models.Model):
     """
-        Releated to workflowlevel1 this is the activity piece multiple workflows2 can be created and related
-        to a workflowlevel1 and configured with components
+        Releated to workflowlevel1 this is the activity piece multiple
+        workflows2 can be created and related to a workflowlevel1 and
+        configured with components
     """
     # START of Project Definition Fields
-    level2_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel2 UUID', default=uuid.uuid4, unique=True, blank=True)
-    short = models.BooleanField(default=True, verbose_name="Short Form (recommended)")
-    workflowlevel1 = models.ForeignKey(WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
+    level2_uuid = models.CharField(max_length=255,
+                                   verbose_name='WorkflowLevel2 UUID',
+                                   default=uuid.uuid4, unique=True, blank=True)
+    short = models.BooleanField(
+        default=True, verbose_name="Short Form (recommended)")
+    workflowlevel1 = models.ForeignKey(
+        WorkflowLevel1, verbose_name="Program", related_name="workflowlevel2")
     parent_workflowlevel2 = models.IntegerField("Parent", default=0, blank=True)
-    milestone = models.ForeignKey("Milestone", null=True, blank=True)
-    date_of_request = models.DateTimeField("Date of Request", blank=True, null=True)
+    milestone = models.ForeignKey("Milestone", null=True, blank=True,
+                                  on_delete=models.SET_NULL)
+    date_of_request = models.DateTimeField("Date of Request", blank=True,
+                                           null=True)
     name = models.CharField("Name",max_length=255)
-    sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True, null=True, related_name="workflow2_sector")
-    sub_sector = models.ManyToManyField("Sector", verbose_name="Sub-Sector", blank=True, related_name="workflowlevel2_sub_sector")
-    description = models.TextField("Description", help_text='', blank=True, null=True)
+    sector = models.ForeignKey("Sector", verbose_name="Sector", blank=True,
+                               null=True, related_name="workflow2_sector",
+                               on_delete=models.SET_NULL)
+    sub_sector = models.ManyToManyField(
+        "Sector", verbose_name="Sub-Sector", blank=True,
+        related_name="workflowlevel2_sub_sector"
+    )
+    description = models.TextField("Description", help_text='', blank=True,
+                                   null=True)
     site = models.ManyToManyField(SiteProfile, blank=True)
-    # this needs to be a smart acronym generated based on the program name and project names initials
-    short_name = models.CharField("Code", help_text='', max_length=20, blank=True, null=True)
-    office = models.ForeignKey(Office, verbose_name="Office", null=True, blank=True)
-    staff_responsible = models.CharField("Staff Responsible", max_length=255, blank=True, null=True)
-    partners = models.ForeignKey(Partner, blank=True, null=True, verbose_name="Partners")
-    stakeholder = models.ManyToManyField(Stakeholder, verbose_name="Stakeholders", blank=True)
-    effect_or_impact = models.TextField("What is the anticipated Outcome or Goal?", blank=True, null=True)
-    expected_start_date = models.DateTimeField("Expected starting date", blank=True, null=True)
-    expected_end_date = models.DateTimeField("Expected ending date", blank=True, null=True)
-    total_estimated_budget = models.DecimalField("Total Project Budget", decimal_places=2, max_digits=12,
-                                                 help_text="In USD", default=Decimal("0.00"), blank=True)
-    local_currency = models.ForeignKey(Currency, null=True, blank=True, related_name="local_project")
-    donor_currency = models.ForeignKey(Currency, null=True, blank=True, related_name="donor_project")
+    # this needs to be a smart acronym generated based on
+    # the program name and project names initials
+    short_name = models.CharField("Code", help_text='', max_length=20,
+                                  blank=True, null=True)
+    office = models.ForeignKey(Office, verbose_name="Office", null=True,
+                               blank=True, on_delete=models.SET_NULL)
+    staff_responsible = models.CharField("Staff Responsible", max_length=255,
+                                         blank=True, null=True)
+    partners = models.ForeignKey(Partner, blank=True, null=True,
+                                 verbose_name="Partners",
+                                 on_delete=models.SET_NULL)
+    stakeholder = models.ManyToManyField(Stakeholder,
+                                         verbose_name="Stakeholders",
+                                         blank=True)
+    effect_or_impact = models.TextField(
+        "What is the anticipated Outcome or Goal?", blank=True, null=True)
+    expected_start_date = models.DateTimeField("Expected starting date",
+                                               blank=True, null=True)
+    expected_end_date = models.DateTimeField("Expected ending date",
+                                             blank=True, null=True)
+    total_estimated_budget = models.DecimalField(
+        "Total Project Budget", decimal_places=2, max_digits=12,
+        help_text="In USD", default=Decimal("0.00"), blank=True)
+    local_currency = models.ForeignKey(Currency, null=True, blank=True,
+                                       related_name="local_project",
+                                       on_delete=models.SET_NULL)
+    donor_currency = models.ForeignKey(Currency, null=True, blank=True,
+                                       related_name="donor_project",
+                                       on_delete=models.SET_NULL)
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
-    justification_background = models.TextField("General Background and Problem Statement", blank=True, null=True)
-    risks_assumptions = models.TextField("Risks and Assumptions", blank=True, null=True)
-    description_of_government_involvement = models.TextField(blank=True, null=True)
-    description_of_community_involvement = models.TextField(blank=True, null=True)
+    justification_background = models.TextField(
+        "General Background and Problem Statement", blank=True, null=True)
+    risks_assumptions = models.TextField(
+        "Risks and Assumptions", blank=True, null=True)
+    description_of_government_involvement = models.TextField(blank=True,
+                                                             null=True)
+    description_of_community_involvement = models.TextField(blank=True,
+                                                            null=True)
     actual_start_date = models.DateTimeField(blank=True, null=True)
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     on_time = models.BooleanField(default=True)
-    no_explanation = models.TextField("If not on time explain delay", blank=True, null=True)
-    actual_cost = models.DecimalField("Actual Cost", decimal_places=2, max_digits=20, default=Decimal("0.00"),
-                                        blank=True,
-                                        help_text="What was the actual final cost?  This should match any financial documentation you have in the file.   It should be completely documented and verifiable by finance and any potential audit")
-    actual_cost_date = models.DateTimeField(blank=True, null=True)
-    budget_variance = models.CharField("Budget versus Actual variance", blank=True, null=True, max_length=255)
-    explanation_of_variance = models.CharField("Explanation of variance", blank=True, null=True, max_length=255)
-    total_cost = models.DecimalField("Estimated Budget for Organization", decimal_places=2, max_digits=12,
-                                     help_text="In USD", default=Decimal("0.00"), blank=True)
-    agency_cost = models.DecimalField("Actual Cost for Organization", decimal_places=2, max_digits=12,
-                                      help_text="In USD", default=Decimal("0.00"), blank=True)
-    community_handover = models.BooleanField("CommunityHandover/Sustainability Maintenance Plan",
-                                             help_text='Check box if it was completed', default=False)
-    capacity_built = models.TextField("Describe how sustainability was ensured for this project?", max_length=755,
+    no_explanation = models.TextField("If not on time explain delay",
                                       blank=True, null=True)
-    quality_assured = models.TextField("How was quality assured for this project", max_length=755, blank=True,
-                                       null=True)
-    issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)",
-                                             blank=True, null=True)
+    actual_cost = models.DecimalField(
+        "Actual Cost", decimal_places=2, max_digits=20, default=Decimal("0.00"),
+        blank=True, help_text="What was the actual final cost? This should "
+                              "match any financial documentation you have in "
+                              "the file. It should be completely documented "
+                              "and verifiable by finance and any potential "
+                              "audit"
+    )
+    actual_cost_date = models.DateTimeField(blank=True, null=True)
+    budget_variance = models.CharField("Budget versus Actual variance",
+                                       blank=True, null=True, max_length=255)
+    explanation_of_variance = models.CharField(
+        "Explanation of variance", blank=True, null=True, max_length=255)
+    total_cost = models.DecimalField(
+        "Estimated Budget for Organization", decimal_places=2, max_digits=12,
+        help_text="In USD", default=Decimal("0.00"), blank=True)
+    agency_cost = models.DecimalField(
+        "Actual Cost for Organization", decimal_places=2, max_digits=12,
+        help_text="In USD", default=Decimal("0.00"), blank=True)
+    community_handover = models.BooleanField(
+        "CommunityHandover/Sustainability Maintenance Plan",
+        help_text='Check box if it was completed', default=False)
+    capacity_built = models.TextField(
+        "Describe how sustainability was ensured for this project?",
+        max_length=755, blank=True, null=True)
+    quality_assured = models.TextField(
+        "How was quality assured for this project", max_length=755,
+        blank=True, null=True)
+    issues_and_challenges = models.TextField(
+        "List any issues or challenges faced (include reasons for delays)",
+        blank=True, null=True)
     lessons_learned = models.TextField("Lessons learned", blank=True, null=True)
     indicators = models.ManyToManyField("indicators.Indicator", blank=True)
-    sort = models.IntegerField(default=0, blank=True)  # sort array for activities related to a project
+    # sort array for activities related to a project
+    sort = models.IntegerField(default=0, blank=True)
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
-    created_by = models.ForeignKey('auth.User', related_name='workflowlevel2', null=True, blank=True)
+    created_by = models.ForeignKey('auth.User',
+                                   related_name='workflowlevel2', null=True,
+                                   blank=True, on_delete=models.SET_NULL)
     history = HistoricalRecords()
     # optimize base query for all classbasedviews
     objects = WorkflowLevel2Manager()
@@ -1150,7 +1200,8 @@ class WorkflowLevel2(models.Model):
         (STATUS_RED,"Red")
     )
 
-    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default="green", blank=True)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=50,
+                              default="green", blank=True)
 
     PROGRESS_OPEN = "open"
     PROGRESS_AWAITING_APPROVAL = "awaitingapproval"
@@ -1164,7 +1215,8 @@ class WorkflowLevel2(models.Model):
         (PROGRESS_CLOSED,"Closed")
     )
 
-    progress = models.CharField(choices=PROGRESS_CHOICES, max_length=50, default="open", blank=True)
+    progress = models.CharField(choices=PROGRESS_CHOICES, max_length=50,
+                                default="open", blank=True)
 
     class Meta:
         ordering = ('name',)
