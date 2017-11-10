@@ -1,6 +1,6 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory
+    SubFactory, post_generation, PostGeneration
 
 from workflow.models import (
     ApprovalType as ApprovalTypeM,
@@ -8,6 +8,7 @@ from workflow.models import (
     Country as CountryM,
     Documentation as DocumentationM,
     Organization as OrganizationM,
+    Portfolio as PortfolioM,
     SiteProfile as SiteProfileM,
     TolaUser as TolaUserM,
     WorkflowTeam as WorkflowTeamM,
@@ -100,3 +101,25 @@ class Documentation(DjangoModelFactory):
 
     name = 'Strengthening access and demand in Mandera County'
     workflowlevel1 = SubFactory(WorkflowLevel1)
+
+
+class Portfolio(DjangoModelFactory):
+    class Meta:
+        model = PortfolioM
+
+    name = 'Syrian programs'
+    description = 'Projects developed in Syria'
+    organization = SubFactory(Organization)
+
+    @post_generation
+    def country(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of country were passed in, use them
+            for country in extracted:
+                self.country.add(country)
+        else:
+            self.country.add(Country(country='Syria', code='SY'))
