@@ -152,7 +152,7 @@ class Level(models.Model):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
-        if not self.organization:
+        if not self.organization and self.workflowlevel1:
             self.organization = self.workflowlevel1.organization
         super(Level, self).save(*args, **kwargs)
 

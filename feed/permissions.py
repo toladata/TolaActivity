@@ -156,7 +156,7 @@ class AllowTolaRoles(permissions.BasePermission):
                                         'WorkflowLevel2']:
                 team_groups = WorkflowTeam.objects.filter(
                     workflow_user=request.user.tola_user,
-                    workflowlevel1_in=obj.workflowlevel1_set).values_list(
+                    workflowlevel1=obj.workflowlevel1).values_list(
                     'role__name', flat=True)
                 if ROLE_PROGRAM_ADMIN in team_groups:
                     return True
