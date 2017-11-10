@@ -1,6 +1,7 @@
-from factory import DjangoModelFactory, SubFactory, post_generation
+from factory import post_generation
 
 from indicators.models import (
+    CollectedData as CollectedDataM,
     Indicator as IndicatorM,
     Level as LevelM,
     Objective as ObjectiveM,
@@ -40,3 +41,11 @@ class Level(DjangoModelFactory):
 
     name = 'Intermediate Results'
     workflowlevel1 = SubFactory(WorkflowLevel1)
+
+
+class CollectedData(DjangoModelFactory):
+    class Meta:
+        model = CollectedDataM
+
+    workflowlevel1 = SubFactory(WorkflowLevel1)
+    indicator = SubFactory(Indicator)

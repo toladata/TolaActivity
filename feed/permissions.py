@@ -43,7 +43,8 @@ class IsOrgMember(permissions.BasePermission):
                                  CodedField, IssueRegister, Award, Milestone,
                                  Portfolio, WorkflowLevel1]:
                 return obj.organization == user_org
-            elif obj.__class__ in [Objective, Beneficiary, Documentation]:
+            elif obj.__class__ in [Objective, Beneficiary, Documentation,
+                                   CollectedData]:
                 return obj.workflowlevel1.organization == user_org
             elif obj.__class__ in [Checklist, Budget, RiskRegister]:
                 return obj.workflowlevel2.workflowlevel1.organization == \
