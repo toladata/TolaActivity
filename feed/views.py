@@ -282,7 +282,7 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     filter_fields = ('workflowlevel1__country__country', 'workflowlevel1__name',
                      'indicator_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    permission_classes = (AllowTolaRoles,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     queryset = Indicator.objects.all()
     serializer_class = IndicatorSerializer
 
