@@ -93,6 +93,7 @@ class WorkflowLevel2(DjangoModelFactory):
     name = 'Help Syrians'
     total_estimated_budget = 15000
     actual_cost = 2900
+    workflowlevel1 = SubFactory(WorkflowLevel1)
 
 
 class Documentation(DjangoModelFactory):

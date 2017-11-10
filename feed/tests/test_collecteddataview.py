@@ -180,7 +180,7 @@ class CollectedDataCreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['indicator'], indicator_url)
 
-    def test_create_level_program_team(self):
+    def test_create_collecteddata_program_team(self):
         request = self.factory.post('/api/collecteddata/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
@@ -206,7 +206,7 @@ class CollectedDataCreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['indicator'], indicator_url)
 
-    def test_create_level_view_only(self):
+    def test_create_collecteddata_view_only(self):
         request = self.factory.post('/api/collecteddata/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
