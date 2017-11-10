@@ -130,6 +130,63 @@ class PortfolioListViewsTest(TestCase):
         self.assertEqual(len(response.data), 1)
 
 
+class PortfolioCreateViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_create_portfolio_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        organization_url = reverse(
+            'organization-detail',
+            kwargs={'pk': factories.Organization().pk})
+        data = {'name': 'New portfolio', 'organization': organization_url}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+
+        portfolio = Portfolio.objects.values('name', 'organization').get(
+            pk=response.data['id'])
+        self.assertEqual(portfolio['name'], data['name'])
+        self.assertEqual(portfolio['organization'],
+                         self.tola_user.organization.pk)
+
+    def test_create_portfolio_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        data = {'name': 'New portfolio'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+
+        portfolio = Portfolio.objects.values('name', 'organization').get(
+            pk=response.data['id'])
+        self.assertEqual(portfolio['name'], data['name'])
+        self.assertEqual(portfolio['organization'],
+                         self.tola_user.organization.pk)
+
+    def test_create_portfolio_other_user(self):
+        role_without_benefits = ROLE_PROGRAM_ADMIN
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            role=factories.Group(name=role_without_benefits))
+
+        data = {'name': 'New portfolio'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 403)
+
+
 class PortfolioUpdateViewsTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -192,9 +249,10 @@ class PortfolioUpdateViewsTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_update_portfolio_org_admin_other_user(self):
-        role_without_benefits = ROLE_PROGRAM_TEAM
-        group_org_admin = factories.Group(name=role_without_benefits)
-        self.tola_user.user.groups.add(group_org_admin)
+        role_without_benefits = ROLE_PROGRAM_ADMIN
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            role=factories.Group(name=role_without_benefits))
 
         self.portfolio.organization = self.tola_user.organization
         self.portfolio.save()
@@ -255,9 +313,10 @@ class PortfolioDeleteViewsTest(TestCase):
         Portfolio.objects.get(pk=self.portfolio.pk)
 
     def test_delete_portfolio_org_admin_other_user(self):
-        role_without_benefits = ROLE_PROGRAM_TEAM
-        group_org_admin = factories.Group(name=role_without_benefits)
-        self.tola_user.user.groups.add(group_org_admin)
+        role_without_benefits = ROLE_PROGRAM_ADMIN
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            role=factories.Group(name=role_without_benefits))
 
         self.portfolio.organization = self.tola_user.organization
         self.portfolio.save()

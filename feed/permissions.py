@@ -72,10 +72,10 @@ class AllowTolaRoles(permissions.BasePermission):
         if ROLE_ORGANIZATION_ADMIN in user_groups:
             return True
 
+        queryset = self._queryset(view)
+        model_cls = queryset.model
         if view.action == 'create' and 'workflowlevel1' in request.data:
             user_org = request.user.tola_user.organization
-            queryset = self._queryset(view)
-            model_cls = queryset.model
             wflvl1_serializer = view.serializer_class().get_fields()['workflowlevel1']
 
             # Check if the field is Many-To-Many or not
@@ -104,6 +104,13 @@ class AllowTolaRoles(permissions.BasePermission):
                 return (ROLE_VIEW_ONLY not in team_groups and
                         ROLE_PROGRAM_TEAM not in team_groups and
                         self._check_organization(wflvl1, user_org))
+
+        elif view.action == 'create' and model_cls is Portfolio:
+            user_groups = WorkflowTeam.objects.filter(
+                workflow_user=request.user.tola_user).values_list(
+                'role__name', flat=True)
+            return ROLE_ORGANIZATION_ADMIN in user_groups
+
         return True
 
     def _check_organization(self, workflowlevel1s, organization):

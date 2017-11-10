@@ -1199,6 +1199,19 @@ class PortfolioViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)  # inherited from CreateModelMixin
+
+        portfolio = Portfolio.objects.get(pk=serializer.data['id'])
+        portfolio.organization = request.user.tola_user.organization
+        portfolio.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
+
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     permission_classes = (AllowTolaRoles, IsOrgMember)
