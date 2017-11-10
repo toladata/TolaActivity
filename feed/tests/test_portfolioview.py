@@ -130,13 +130,90 @@ class PortfolioListViewsTest(TestCase):
         self.assertEqual(len(response.data), 1)
 
 
+class PortfolioUpdateViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+        self.portfolio = factories.Portfolio()
+
+    def test_update_unexisting_portfolio(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        request = self.factory.post(None, {})
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'update'})
+        response = view(request, pk=288)
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_portfolio_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        data = {'name': 'Some name'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.portfolio.pk)
+        self.assertEqual(response.status_code, 200)
+
+        name = Portfolio.objects.values_list('name', flat=True).get(
+            pk=self.portfolio.pk)
+        self.assertEqual(name, 'Some name')
+
+    def test_update_portfolio_org_admin_same_org(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        self.portfolio.organization = self.tola_user.organization
+        self.portfolio.save()
+
+        data = {'name': 'Some name'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.portfolio.pk)
+        self.assertEqual(response.status_code, 200)
+
+        name = Portfolio.objects.values_list('name', flat=True).get(
+            pk=self.portfolio.pk)
+        self.assertEqual(name, 'Some name')
+
+    def test_update_portfolio_org_admin_different_org(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        data = {'name': 'Some name'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.portfolio.pk)
+        self.assertEqual(response.status_code, 403)
+
+    def test_update_portfolio_org_admin_other_user(self):
+        role_without_benefits = ROLE_PROGRAM_TEAM
+        group_org_admin = factories.Group(name=role_without_benefits)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        self.portfolio.organization = self.tola_user.organization
+        self.portfolio.save()
+
+        data = {'name': 'Some name'}
+        request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.portfolio.pk)
+        self.assertEqual(response.status_code, 403)
+
+
 class PortfolioDeleteViewsTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.tola_user = factories.TolaUser()
         self.portfolio = factories.Portfolio()
 
-    def test_delete_workflowlevel1_superuser(self):
+    def test_delete_portfolio_superuser(self):
         self.tola_user.user.is_staff = True
         self.tola_user.user.is_superuser = True
         self.tola_user.user.save()
@@ -150,7 +227,7 @@ class PortfolioDeleteViewsTest(TestCase):
             Portfolio.DoesNotExist,
             Portfolio.objects.get, pk=self.portfolio.pk)
 
-    def test_delete_workflowlevel1_org_admin_same_org(self):
+    def test_delete_portfolio_org_admin_same_org(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
@@ -166,7 +243,7 @@ class PortfolioDeleteViewsTest(TestCase):
             Portfolio.DoesNotExist,
             Portfolio.objects.get, pk=self.portfolio.pk)
 
-    def test_delete_workflowlevel1_org_admin_different_org(self):
+    def test_delete_portfolio_org_admin_different_org(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
@@ -177,10 +254,13 @@ class PortfolioDeleteViewsTest(TestCase):
         self.assertEquals(response.status_code, 403)
         Portfolio.objects.get(pk=self.portfolio.pk)
 
-    def test_delete_workflowlevel1_org_admin_other_user(self):
+    def test_delete_portfolio_org_admin_other_user(self):
         role_without_benefits = ROLE_PROGRAM_TEAM
         group_org_admin = factories.Group(name=role_without_benefits)
         self.tola_user.user.groups.add(group_org_admin)
+
+        self.portfolio.organization = self.tola_user.organization
+        self.portfolio.save()
 
         request = self.factory.delete(None)
         request.user = self.tola_user.user
