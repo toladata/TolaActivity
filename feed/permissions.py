@@ -94,13 +94,11 @@ class AllowTolaRoles(permissions.BasePermission):
                 workflow_user=request.user.tola_user,
                 workflowlevel1__in=wflvl1).values_list('role__name', flat=True)
 
-            if model_cls.__name__ in ['Contact', 'Documentation',
-                                      'Indicator', 'CollectedData',
-                                      'Level', 'Objective',
-                                      'WorkflowLevel2']:
+            if model_cls in [Contact, Documentation, Indicator, CollectedData,
+                             Level, Objective, WorkflowLevel2]:
                 return (ROLE_VIEW_ONLY not in team_groups and
                         self._check_organization(wflvl1, user_org))
-            elif model_cls.__name__ == 'WorkflowTeam':
+            elif model_cls is WorkflowTeam:
                 return (ROLE_VIEW_ONLY not in team_groups and
                         ROLE_PROGRAM_TEAM not in team_groups and
                         self._check_organization(wflvl1, user_org))
@@ -160,7 +158,7 @@ class AllowTolaRoles(permissions.BasePermission):
 
             queryset = self._queryset(view)
             model_cls = queryset.model
-            if model_cls.__name__ == 'Portfolio':
+            if model_cls is Portfolio:
                 team_groups = WorkflowTeam.objects.filter(
                     workflow_user=request.user.tola_user,
                     workflowlevel1__portfolio=obj).values_list(
@@ -168,12 +166,12 @@ class AllowTolaRoles(permissions.BasePermission):
                 if ROLE_PROGRAM_ADMIN in team_groups or ROLE_PROGRAM_TEAM in \
                         team_groups:
                     return view.action == 'retrieve'
-            elif model_cls.__name__ == 'WorkflowTeam':
+            elif model_cls is WorkflowTeam:
                 if ROLE_PROGRAM_ADMIN == obj.role.name:
                     return True
                 else:
                     return view.action == 'retrieve'
-            elif model_cls.__name__ == 'WorkflowLevel1':
+            elif model_cls is WorkflowLevel1:
                 team_groups = WorkflowTeam.objects.filter(
                     workflow_user=request.user.tola_user,
                     workflowlevel1=obj).values_list(
@@ -182,7 +180,7 @@ class AllowTolaRoles(permissions.BasePermission):
                     return True
                 elif ROLE_PROGRAM_TEAM in team_groups:
                     return view.action != 'destroy'
-            elif model_cls.__name__ == 'Indicator':
+            elif model_cls is Indicator:
                 team_groups = WorkflowTeam.objects.filter(
                     workflow_user=request.user.tola_user,
                     workflowlevel1__indicator=obj).values_list(
@@ -193,8 +191,7 @@ class AllowTolaRoles(permissions.BasePermission):
                     return view.action != 'destroy'
                 elif ROLE_VIEW_ONLY in team_groups:
                     return view.action == 'retrieve'
-            elif model_cls.__name__ in ['CollectedData', 'Level',
-                                        'WorkflowLevel2']:
+            elif model_cls in [CollectedData, Level, WorkflowLevel2]:
                 team_groups = WorkflowTeam.objects.filter(
                     workflow_user=request.user.tola_user,
                     workflowlevel1=obj.workflowlevel1).values_list(
