@@ -1,0 +1,72 @@
+// Color Palette
+$white: #fff;
+$black: #000;
+
+$gray-dark: #222;
+$gray: #333333;
+$gray-medium: #686C82;
+$gray-light: #9B9B9B;
+$gray-light-200: #dfdfdf;
+$gray-lighter: #F5F5F5;
+
+
+$orange-darker: #D18518;
+$orange: #FFA21D;
+$orange-lighter: #FFB246;
+
+
+$green-darker: #07C498;
+$green: #07D7A7;
+$green-lighter: #1DDAAF;
+
+$blue-moon: #151F56;
+$blue-moon-lighter: #101F74;
+$blue-flash: #3937DD;
+$blue-very-dark : #074054;
+$blue-darker: #0B607D;
+//$blue-darker: #117e8e;
+$blue: #13B0E5;
+$blue-lighter: #3DBEE9;
+$blue-very-light: #f4fbfe;
+
+$red-darker: #FF464F;
+$red: #FF1D29;
+$red-lighter: #D11822;
+
+$yellow-darker: #af9245;
+$yellow: #d5b251;
+$yellow-lighter: #d9bc6e;
+
+// Component Colors
+$body-bg-color: $gray-lighter;
+$navbar-bg: $gray-lighter;
+$navbar-brand-bg: $orange;
+
+$border-color-default: $gray-lighter;
+$radius-default: 3px;
+$card-headings: $white;
+
+$container-fluid-max-width: rem-calc(1440);
+
+// Margins
+$global-margin: rem-calc(28);
+$spacing: rem-calc(15);
+$spacing-half: $spacing/2;
+
+// Progress bars
+$progress-bg:                   white !default;
+$progress-bar-bg:               $navy-darker !default;
+
+$defaultTransition: all .2s;
+
+$scandia: "scandia", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$brix: 'brix-sans', Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+// Breakpoints
+$small-down: '(max-width: 719px)';
+$medium: '(min-width: 720px)';
+$medium-down: '(max-width: 959px)';
+$large: '(min-width: 960px)';
+$large-down: '(max-width: 1139px)';
+
+

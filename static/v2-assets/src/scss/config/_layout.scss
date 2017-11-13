@@ -1,0 +1,13 @@
+.site-content{
+    margin-top: 66px;
+}
+
+.elementor-column-gap-default{
+    padding: 0 22px;
+    @include respond-to($tablet) {
+        padding: 0 10px;
+    }
+    @include respond-to($desktop) {
+        padding: 0 20px;
+    }
+}
