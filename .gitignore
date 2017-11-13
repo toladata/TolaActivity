@@ -24,12 +24,13 @@ build
 venv/
 venv-ta/
 
-conf
-conf/awstats.conf
+docs/api/conf/config.json
+docs/api/conf/config.json/awstats.conf
 
 #Misc.
 .idea/
 .DS_Store
+.coverage
 media/
 client_secrets.json
 *.crt
@@ -38,4 +39,7 @@ error.log
 *.secret
 *.secret.yml
 assets/
-local.py
+src/
+
+docker-compose.yml
+local_secret.py

@@ -95,13 +95,14 @@ of records and the limit parameter to limit the number of records returned.
 
 .. raw:: html
 
-    <pre class="prettyprint">
-    <b>GET</b> /api/indicator/</code>?<code>start</code>=<code>start_value</code>
-    </pre>
+  <pre class="prettyprint">
+  <b>GET</b> /api/indicator/</code>?<code>start</code>=<code>start_value</code>
+  </pre>
 
 ::
     curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?start=5
     
+
 
 .. raw:: html
 
@@ -139,12 +140,16 @@ Lists the data endpoints accessible to requesting user, for the specified
   </pre>
 
 Example
-^^^^^^^^^
 ::
 
        curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?workflowlevel1_name=Financial Assistance to Affected Communities
 
 
+=======
+^^^^^^^^
+::
+
+       curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?workflowlevel1_name=Financial Assistance to Affected Communities
 
 
 Retrieve a specific Indicator

@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 
-{% block page_title %}Program Indicators{% endblock %}
+{% block page_title %}{{ WORKFLOWLEVEL1 }} Indicators{% endblock %}
 
 {% block content %}
 <script>
 /*
 *  Load the collected data for an indicator on the results page
 */
-function loadCollected(indicator,program){
+function loadCollected(indicator,workflowlevel1){
     var indicator;
-    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
+    $('.ajaxLoader').show();
+    $.get('/indicators/collected_data_table/' + indicator + '/' + workflowlevel1 + '/', function(data){
         $('#hidden-' + indicator).html(data);
     });
 };
@@ -17,16 +18,17 @@ function loadCollected(indicator,program){
 /*
 *  Load the collected data for an indicator on the results page
 */
-function loadIndicators(program,indicator,type){
-    var program;
-    $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
-        $('#hidden-' + program).html(data);
+
+function loadIndicators(workflowlevel1,indicator,type){
+    var workflowlevel1;
+    $.get('/indicators/program_indicators/' + workflowlevel1 + '/' + indicator + '/' + type + '/', function(data){
+        $('#hidden-' + workflowlevel1).html(data);
       });
-    $('#hidden-' + program).on('shown', function () {
+    $('#hidden-' + workflowlevel1).on('shown', function () {
        $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
     });
 
-    $('#hidden-' + program).on('hidden', function () {
+    $('#hidden-' + workflowlevel1).on('hidden', function () {
        $(".icon-chevron-up").removeClass("icon-chevron-up").addClass("icon-chevron-down");
     });
 };
@@ -37,20 +39,20 @@ function loadIndicators(program,indicator,type){
 <div id="toplevel_div">
 <!-- Default panel contents -->
 {% if getProgramsIndicator %}
-    {% for program in getProgramsIndicator %}
+    {% for workflowlevel1 in getProgramsIndicator %}
         <div class='panel panel-default'>
-            <div class='panel-heading'><h4>{{ program.name|truncatechars:85 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
-            {% if not program.indicator_set.all %}
+            <div class='panel-heading'><h4>{{ workflowlevel1.name|truncatechars:85 }}<span style="float: right;" class="btn-group" role="group"><a href="/indicators/indicator_create/{{ workflowlevel1.id }}/" class="btn btn-xs btn-success">New Indicator</a><a href="/indicators/program_report/{{ workflowlevel1.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a></span></h4></div>
+            {% if not workflowlevel1.indicator_set.all %}
                 <div class='panel-body'>
-                    <h4>No Indicators have been entered for this program</h4>
-                    <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
+                    <h4>No Indicators have been entered for this {{ workflowlevel1 }}</h4>
+                    <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ workflowlevel1.id }}/">New Indicator</a>" button above.</p>
                 </div>
             {% else %}
                 <div class='panel-body'>
-                    <a onclick="loadIndicators({{ program.id }},{{indicator}},{{type}})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
+                    <a onclick="loadIndicators({{ workflowlevel1.id }},{{indicator}},{{type}})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ workflowlevel1.id }}">{{ workflowlevel1.indicator_count }} Indicators </a>
                 </div>
-                <div id="hidden-{{ program.id }}" class="accordian-body collapse">
-                    {% include "indicators/program_indicators_table.html" %}
+                <div id="hidden-{{ workflowlevel1.id }}" class="accordian-body collapse">
+                    {% include "indicators/workflowlevel1_indicators_table.html" %}
                 </div>
             {% endif %}
         </div>
@@ -89,6 +91,7 @@ function loadIndicators(program,indicator,type){
 <script type="text/javascript">
     /*
     var program_id = document.URL.split('/')[5];
+    console.log(document.URL.split('/')[5]);
     var indicator_id = document.URL.split('/')[6];
     var type_id = document.URL.split('/')[7];
     $(document).ready(function() {
@@ -153,80 +156,6 @@ function loadIndicators(program,indicator,type){
 
     });
 
-    // Intercept IndicatorUpdate form submission and then use ajax to submit it.
-    $("#indicator_modal_body").on("submit", "#indicator_update_form", function(e){
-        e.preventDefault();
-        var form_url = $(this).attr('action');
-        var form_data = $(this).serialize();
-        var periodic_targets = [];
-        $('#periodic_targets_table tr').each(function () {
-            var $this = $(this);
-            var values = [];
-            $this.find('input[type=text]').each(function (i, input) {
-                if (i == 0) {
-                    values.push($(input).attr('name').split('-')[1]);
-                }
-                values.push($(input).val());
-            });
-            if(values.length > 0) {
-                if ( !$.isNumeric(values[2]) || values[1] == '') {
-                    return;
-                }
-                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
-            }
-        });
-        form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
-        //console.log(JSON.stringify(periodic_targets));
-        submitForm(form_url, form_data);
-
-    });
-
-    function addPeriodicTarget() {
-        var markup = `
-            <tr id="0">
-                <td><input type="text" name="period-0" class="textinput textInput form-control"></td>
-                <td><input type="text" name="target-0" class="textinput textInput form-control"></td>
-                <td style="vertical-align:middle">
-                    <a href="#" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a>
-                </td>
-            </tr>`;
-
-        $("#periodic_targets_table tbody").append(markup);
-
-    }
-    function submitForm(form_url, form_data) {
-        $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
-        $.ajax({
-            method: 'POST',
-            url: form_url,
-            data: form_data,
-            global: false, }
-        ).done(function(data, textStatus, jqXHR) {
-            // if there are any erros show them and then STOP
-            if (jqXHR.getResponseHeader('error') == "True") {
-                //$("#modalerrors").html(data);
-                createAlert("danger", data, true, "#modalmessages");
-                return;
-            }
-            //var json = $.parseJSON(jqXHR.responseText);
-            $("#modalmessages").html('');
-            createAlert("success", "Success, form data saved.", true, "#modalmessages");
-            var jsondata = $.parseJSON(data);
-            //var item = data;
-            var indicator = jsondata[0][0];
-            var pts = jsondata[1];
-
-            $("#id_achieved").val(indicator['fields']['achieved']);
-            $("#periodic_targets_table").find("tr:gt(0)").remove();
-
-            $.each(pts, function(i, pt) {
-
-                var markup = '<tr id=' + pt.pk + '"><td><input type="text" name="period-' + pt.pk + '" value="' + pt.fields.period +'" class="textinput textInput form-control"></td><td><input type="text" name="target-' + pt.pk + '" value="' + pt.fields.target +'" class="textinput textInput form-control"></td><td style="vertical-align:middle"> <a href="/indicators/periodic_target_delete/' + pt.pk + '/" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a></td></tr>';
-
-                $("#periodic_targets_table tbody").append(markup);
-            });
-        });
-    }
 
     function program_filter(program_id) {
         window.location.href = '/indicators/home/'+program_id+'/0/0/';
@@ -241,4 +170,5 @@ function loadIndicators(program,indicator,type){
     }
 
  </script>
+ {% include 'indicators/indicator_form_common_js.html' %}
 {% endblock content %}

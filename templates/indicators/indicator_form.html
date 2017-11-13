@@ -18,7 +18,7 @@
         //Searchable select option for service indicator
         $(document).ready(function() {
             /* add select2 js library to the indicator select box */
-            $("#id_program").select2().on("select2:selecting select2:unselecting", function(e) {
+            $("#id_workflowlevel1").select2().on("select2:selecting select2:unselecting", function(e) {
                 e.preventDefault();
             });
             $("#id_strategic_objectives").select2();
@@ -41,7 +41,11 @@
     {% endif %}
 
 	{% csrf_token %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
+    <div id="indicator_form">
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    </div>
+
+ {% include 'indicators/indicator_form_common_js.html' %}
 
 {% endblock content %}

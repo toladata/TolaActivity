@@ -115,13 +115,14 @@
                         { "visible": false, "targets": 2 },
                     ],
                     columns: [
-                        { title: "PID", class: "noExport", data: "indicator__program__id"},
+
+                        { title: "PID", class: "noExport", data: "indicator__workflowlevel1__id"},
                         { title: "IID", class: "noExport", data: "indicator__id"},
                         { title: "ITID", class: "noExport", data: "indicator__indicator_type__id"},
-                        { title: "Program", data: "indicator__program__name"},
+                        { title: "Program", data: "indicator__workflowlevel1__name"},
                         { title: "Indicator", data: "name",
                                 "mRender": function (data, type, row) {
-                                    return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ program }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
+                                    return '<a class="indicator-link" name=' + row.indicator__id + ' href="/indicators/indicator_update/' + row.indicator__id + '">' + row.indicator__name + '</a>';
                                 }
                             },
                         { title: "Level", data: "indicator__level__name"},
@@ -155,7 +156,7 @@
                 $('#program_report').click(function(){ program_report(this.name); });
 
                 // Listen for filter and redraw
-                $('#dt2').change( function() {
+                $('#dt1').change( function() {
                     table.draw();
                 });
 
@@ -169,7 +170,7 @@
 
             // INDICATOR REPORT
             function indicator_report() {
-                // get the program and indicator id from the url
+                // get the workflowlevel1 and indicator id from the url
                 program_id = document.URL.split('/')[5];
                 //console.log(program_id);
                 indicator_id = document.URL.split('/')[6];
@@ -192,17 +193,6 @@
                 });
             }
 
-            // EXPORT DATA
-            function do_export(type) {
-                // get the program and  indicator id from the url
-                program_id = document.URL.split('/')[5];
-                indicator_id = document.URL.split('/')[6];
-                type_id = document.URL.split('/')[7];
-                new_location="/indicators/collecteddata_report_data/" + program_id + "/" + indicator_id + "/" + type_id + "/" + "export";
-                window.location.assign(new_location);
-
-            }
-
             indicator_report();
 
         });
@@ -221,7 +211,33 @@
             $("#type_filter_value").data('typeid', type);
             table.draw();
         }
+
+            // Open the IndicatorUpdate Form in a modal
+    $("body").on("click", ".indicator-link", function(e) {
+        e.preventDefault();
+        var url = $(this).attr("href");
+        console.log(url);
+        $("#indicator_modal_content").empty();
+        $("#modalmessages").empty();
+
+        $("#indicator_modal_content").load(url+"/?modal=1");
+        $("#indicator_modal_div").modal('show');
+
+    });
     </script>
+
+    <div id="indicator_modal_div" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body" id="indicator_modal_body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <span id = "modalmessages"></span>
+                    <div id="indicator_modal_content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="sum1" style="display: none; float: right;">
         <p>
             <b>Targeted Total:</b> <span class="badge" id="targeted1"></span>&nbsp;
@@ -255,4 +271,5 @@
     <!-- <button type="button" class="btn btn-success" id="export">Export All</button> -->
     <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
 
+    {% include 'indicators/indicator_form_common_js.html' %}
 {% endblock content %}

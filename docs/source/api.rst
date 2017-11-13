@@ -83,15 +83,32 @@ Token Authentication
 ---------------------
 Example using curl:
 
-curl -X GET http://dev-v2.tolaactivity.app.tola.io/api/ -H "Authorization: Token TOKEN_KEY xxxxxxx" 
+curl -X GET http://dev-v2.tolaactivity.app.tola.io/api/ -H "Authorization: Token TOKEN_KEY xxxxxxx"
 
+
+Status Codes
+-------------
+* 200 - Successful[GET, PATCH, PUT]
+* 201 - Instance successfully created [POST]
+* 204 - Instance successfully deleted [DELETE]
+* 404 - Instance was not found
+
+Request based Authentication
+-----------------------------
+Tola JSON API endpoints support API Token Authentication through the Authorization header.
+
+
+
+Token Authentication
+--------------------
 
 
 Example
--------
+^^^^^^^
 ::
     curl -H "Authorization: Token TOKEN_KEY xxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/
 
+.. raw:: html
 
 GET /api/workflowlevel1/
 
@@ -110,27 +127,28 @@ Response
         "id": 124,
         "status": "green",
         "difference": null,
-        "level1_uuid": "Test",
-        "unique_id": "",
-        "name": "",
-        "funding_status": "",
-        "cost_center": "",
+        "level1_uuid": "69825d8e-c2e8-4748-9ea5-20a3d89",
+        "unique_id": "null",
+        "name": "Building Resilience in Mali",
+        "funding_status": "funded",
+        "cost_center": "23",
         "description": "",
         "public_dashboard": false,
-        "start_date": null,
-        "end_date": null,
+        "start_date": "2017-11-01T12:35:09.070032Z",
+        "end_date": "2017-11-01T12:35:09.070032Z",
         "create_date": "2017-11-01T12:35:09.070032Z",
         "edit_date": "2017-11-01T12:35:09.070037Z",
         "sort": 0,
-        "organization": null,
+        "organization": "http://dev-v2.tolaactivity.app.tola.io/api/organization/17/",
         "portfolio": null,
         "fund_code": [],
-        "award": [],
+        "award": ["http://demo.tolaactivity.app.tola.io/api/award/6/"],
         "sector": [
             "http://dev-v2.tolaactivity.app.tola.io/api/sector/177/"
         ],
         "sub_sector": [
             "http://dev-v2.tolaactivity.app.tola.io/api/sector/287/"
+
         ],
         "country": [
             "http://dev-v2.tolaactivity.app.tola.io/api/country/1/"
@@ -142,6 +160,5 @@ Response
             "http://dev-v2.tolaactivity.app.tola.io/api/tolauser/57/"
         ]
         },
-      ...
-    ]
 
+    ]

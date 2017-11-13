@@ -18,18 +18,18 @@ def run():
     print "Setting KPI"
 
 
-from workflow.models import Program
+from workflow.models import WorkflowLevel1
 from indicators.models import Indicator, Level
 
-for program in Program.objects.all():
+for level1 in WorkflowLevel1.objects.all():
     kpi_count = 0
-    for indicator in Indicator.objects.all().filter(program__id=program.id):
+    for indicator in Indicator.objects.all().filter(workflowlevel1__id=level1.id):
         if indicator.key_performance_indicator == True:
             kpi_count = kpi_count + 1
     # if the program has no kpis update goal level indicators to be kpi
     if kpi_count == 0:
         # get_level = Level.objects.get(name="Goal")
         get_level = Level.objects.get(name="Impact")
-        Indicator.objects.all().filter(program__id=program.id,level=get_level).update(key_performance_indicator=True)
-    print program
+        Indicator.objects.all().filter(workflowlevel1__id=level1.id,level=get_level).update(key_performance_indicator=True)
+    print level1
     print kpi_count

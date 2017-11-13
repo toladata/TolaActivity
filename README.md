@@ -1,57 +1,144 @@
-Tola Activity [![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
-====
+# Tola Activity [![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity) [![Coverage Status](https://coveralls.io/repos/github/toladata/TolaActivity/badge.svg)](https://coveralls.io/github/toladata/TolaActivity)
+
 http://toladata.com/products/activity/
 
 TolaActivity extends the functionality of TolaData to include a set of forms and
-reports for managing project activities for a Program.  It includes workflow for approving
+reports for managing project activities for a WorkflowLevel1.  It includes workflow for approving
 and completing projects as well as sharing the output data.
-
 
 TolaActivity functionality http://www.github.com/toladata/TolaActivity is intended to allow importing
 and exporting of project specific data from 3rd party data sources or excel
 files.
 
-## Configuration
-Copy the tola/settings/local-sample.py to local.py and modify for your environment.
 
-## To deploy changes in activity servers
+## Configuration
+
+Location of settings:
+
+* Development: `tola/settings/dev.py`
+* Test runner: `tola/settings/test.py`
+* Staging/Production: `tola/settings/local.py`
+
+
+## Deploy changes in activity servers
+
 Once all your changes have been commited to the repo, and before pushing them, run:
 `. travis.sh`
 
-## To deploy locally via Docker
-Run the following commands from the root of this repository:
-  - `docker-compose build`
-  - `docker-compose up`
 
-## USING virtualenv
-(Install virtualenv)
+## Deploy locally via Docker
+
+Build first the images:
+
+```bash
+docker-compose -f docker-compose-dev.yml build
+```
+
+To run the webserver (go to 127.0.0.1):
+
+```bash
+docker-compose -f docker-compose-dev.yml up # -d for detached
+```
+
+User: `admin`
+Password: `admin`.
+
+To run the tests:
+
+```bash
+docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py test # --keepdb to run second time faster
+```
+
+To run the webserver with pdb support:
+
+```bash
+docker-compose -f docker-compose-dev.yml run --rm --service-ports web
+```
+
+To run bash:
+
+```bash
+docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web bash
+```
+
+or if you initialized already a container:
+
+```bash
+docker exec -it web bash
+```
+
+To connect to the database when the container is running:
+
+```bash
+docker exec -it postgres psql -U root tola_activity
+```
+
+## Deploy locally using virtualenv
+
+Given pip is installed:
+
+```bash
 pip install virtualenv
+```
 
-# Create Virtualenv
+Create the environment:
+
+```bash
 virtualenv —no-site-packages venv
-* use no site packages to prevent virtualenv from seeing your global packages
+````
 
+Note: use no site packages to prevent virtualenv from seeing your global packages.
+
+Activate the environment:
+
+```bash
 . venv/bin/activate
-* allows us to just use pip from command line by adding to the path rather then full path
+```
 
-##Activate Virtualenv
+or:
+
+```bash
 source venv/bin/activate
+```
 
-## Fix probable mysql path issue (for mac)
-export PATH=$PATH:/usr/local/mysql/bin
-* or whatever path you have to your installed mysql_config file in the bin folder of mysql
+Install requirements:
 
-pip install -r requirements.txt
+```bash
+pip install -r requirements-dev.txt
+```
 
-## Set up DB
+Set up database:
+
+```bash
 python manage.py migrate
+```
 
-# Run App
-If your using more then one settings file change manage.py to point to local or dev file first
+Run the server:
 
+```bash
 python manage.py runserver 0.0.0.0:8000
+```
 
-GOOGLE API
+## Development notes
 
-sudo pip install --upgrade google-api-python-client
-* 0’s let it run on any local address i.e. localhost,127.0.0.1 etc.
+### Setup a HTTPS development webserver to run Microsoft log in
+
+As Microsoft requires HTTPS endpoints to be set in their Application
+Registration Portal (https://apps.dev.microsoft.com), the easiest way to do it
+is registering an account in ngrok.com, installing the software and running
+both ngrok and Django development webserver at the same time.
+
+With the URL displayed by ngrok, set it up in the Microsoft Application
+Registration Portal like this:
+
+* *Platforms >> Web >> Redirect URLs*: `https://<ID>.ngrok.io/complete/microsoft-graph`
+* *Platforms >> Web >> Logout URL*: `https://<ID>.ngrok.io/accounts/logout`
+
+Then set up the following environment variables in docker-compose-dev.yml:
+
+* `SOCIAL_AUTH_LOGIN_REDIRECT_URL=https://<ID>.ngrok.io`
+* `SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL=https://<ID>.ngrok.io/complete/microsoft-graph`
+* `TOLA_HOSTNAME=127.0.0.1,localhost,<ID>.ngrok.io`
+
+## Reset Migration Scripts
+If you are using a version of TolaActivity before we reset the migration scripts, you have to execute the script _reset_migration.sh_ in your environment.

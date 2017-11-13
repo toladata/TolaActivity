@@ -3,8 +3,13 @@ import os
 import sys
 
 if __name__ == "__main__":
-
-    settings = 'tola.settings.test' if 'test' in sys.argv else 'tola.settings.local'
+    if 'test' in sys.argv:
+        settings = 'tola.settings.test'
+        os.environ['DJANGO_SETTINGS_MODULE'] = settings
+    elif os.environ.get("DJANGO_SETTINGS_MODULE"):
+        settings = os.environ.get("DJANGO_SETTINGS_MODULE")
+    else:
+        settings = 'tola.settings.local'
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings)
 

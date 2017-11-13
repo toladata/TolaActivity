@@ -1,46 +1,35 @@
 <div class="dropdown">
-    {% if getPrograms %}
-        <div class="btn-group" role="group">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownProgram" data-toggle="dropdown" aria-expanded="true">
-                Programs
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownProgram">
-                {% for program in getPrograms %}
-                    <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
-    {% if getIndicators %}
-        <div class="btn-group" role="group">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownIndicator" data-toggle="dropdown" aria-expanded="true">
-                Indicators
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownIndicator">
-                <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter(0)"> -- All -- </a></li>
-                {% for item in getIndicators %}
-                    <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{item.id}})">{{ item.number}} - {{ item.name }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
+    <div class="btn-group" role="group">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+            Programs
+        <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        {% for workflowlevel1 in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{workflowlevel1.id}})">{{ workflowlevel1.name }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="btn-group" role="group">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownIndicator" data-toggle="dropdown" aria-expanded="true">
+            Indicators
+        <span class="caret"></span>
+        </button>
+
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownIndicator">
+            <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter(0)"> -- All -- </a></li>
+            {% for item in getIndicators %}
+                <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_filter({{item.id}})">{{ item.number|default:""}} - {{ item.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% if export_to_pdf_url %}
+        <button id="export_to_pdf_button" class="btn btn-default pull-right" onclick="export_to_pdf()">Export to PDF</button>
     {% endif %}
 
-    {%if getIndicatorTypes %}
-        <div class="btn-group" role="group">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownIndicatorType" data-toggle="dropdown" aria-expanded="true">
-                Indicator Type
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownIndicatorType">
-                <li role="presentation"><a role="menuitem" tabindex="1" onclick="indicator_type_filter(0)"> -- All -- </a></li>
-                {% for item in getIndicatorTypes %}
-                    <li role="presentation"><a role="menuitem" tabindex="-1" onclick="indicator_type_filter({{ item.id}})">{{ item.indicator_type}}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
+    {% if disaggregationprint_button %}
+        <button id="export_to_pdf_button" class="btn btn-default pull-right" onclick="export_to_pdf()">Export to PDF</button>
     {% endif %}
-    <br/>
-    <br/>
 </div>
+<br/>
+

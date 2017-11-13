@@ -5,6 +5,33 @@
   <li class="active">Reports</li>
 </ol>
 
+<div class="btn-group" role="group">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+    {{ workflowlevel1 }}
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+      <li role="presentation"><a role="menuitem" tabindex="2" href="/indicators/data/0/0/0/">--All--</a></li>
+    {% for item in getPrograms %}
+        <li role="presentation"><a role="menuitem" tabindex="2" href="/indicators/data/0/{{ item.id }}/{{ type }}/">{{ item.name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="btn-group" role="group">
+  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+    Indicator
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+      <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/0/{{ program }}/{{ type }}/">--All--</a></li>
+    {% for item in getIndicators %}
+        <li role="presentation"><a role="menuitem" tabindex="1" href="/indicators/data/{{ item.id }}/{{ program }}/{{ type }}/">{{ item.name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+
     <div class="row">
         <div class="col-sm-12 clearfix">
 
@@ -28,6 +55,7 @@
     <span class="filter" id="program_filter_value"></span>
     <span class="filter" id="type_filter_value"></span>
 </div>
+
 
 {% if "map" in request.get_full_path %}
     <style>
@@ -98,10 +126,11 @@
                     { "visible": false, "targets": 2 },
                 ],
                 columns: [
-                    { title: "PID", class: "noExport", data: "program__id"},
+
+                    { title: "PID", class: "noExport", data: "workflowlevel1__id"},
                     { title: "IID", class: "noExport", data: "id"},
                     { title: "ITID", class: "noExport", data: "indicator_type__id"},
-                    { title: "Program", data: "program__name"},
+                    { title: "Program", data: "workflowlevel1__name"},
                     { title: "Indicator", data: "name",
                             "mRender": function (data, type, row) {
                                 return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
@@ -159,7 +188,7 @@
 
         // EXPORT DATA
         function do_export(type) {
-            // get the program and indicator id from the url
+            // get the workflowlevel1 and indicator id from the url
             indicator_id = document.URL.split('/')[5];
             console.log(indicator_id);
             program_id = document.URL.split('/')[6];
