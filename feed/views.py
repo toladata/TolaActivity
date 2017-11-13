@@ -448,8 +448,6 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     """
     This viewset automatically provides `list`, `create`, `retrieve`,
     `update` and `destroy` actions.
-    Search by Country
-    Limited to logged in users accessible countires
     """
     def list(self, request):
 
