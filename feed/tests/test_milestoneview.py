@@ -24,4 +24,4 @@ class MilestoneViewTest(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Project Implementation')
-        self.assertEqual(response.data['owner'], user_url)
+        self.assertEqual(response.data['created_by'], user_url)
