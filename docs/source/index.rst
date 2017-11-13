@@ -12,9 +12,10 @@ Welcome to TolaDataV2's documentation!
 
    api
    install
+   AuthenticationStatusCode
+   country
    indicator
-   stakeholders
-   sites
+   sector
    workflowlevel1
    workflowlevel2
 
