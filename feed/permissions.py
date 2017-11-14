@@ -1,11 +1,9 @@
-from django.contrib.auth.models import Group
-from django.db.models import Q
 from rest_framework import permissions
+from rest_framework.relations import ManyRelatedField
 
-from tola.util import getLevel1
-from workflow.models import (
-    TolaUser, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM,
-    WorkflowTeam)
+from workflow.models import *
+from indicators.models import *
+from formlibrary.models import *
 
 
 class UserIsOwnerOrAdmin(permissions.BasePermission):
@@ -28,103 +26,183 @@ class UserIsOwnerOrAdmin(permissions.BasePermission):
         return self.check_object_permission(request.user, obj)
 
 
-class WorkflowLevel1Permissions(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if view.action == 'list':
-            return True
-        elif view.action == 'create':
-            return True
-        elif view.action in ['retrieve', 'update', 'partial_update', 'destroy']:
-            return True
-        else:
-            return False
+class IsOrgMember(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        """
+        Object level permissions are used to determine if a user
+        should be allowed to act on a particular object
+        """
 
-    def check_object_permission(self, user, obj):
-        return (user and user.is_authenticated() and
-                (user.is_staff or obj == user))
+        if request.user.is_superuser:
+            return True
+        user_org = request.user.tola_user.organization
+
+        try:
+            if obj.__class__ in [Sector, ProjectType, SiteProfile, Frequency,
+                                 FundCode, DisaggregationType, Level,
+                                 ExternalService, StrategicObjective,
+                                 StakeholderType, ProfileType, Contact,
+                                 ApprovalType, Distribution, CustomForm,
+                                 CodedField, IssueRegister, Award, Milestone,
+                                 Portfolio, WorkflowLevel1]:
+                return obj.organization == user_org
+            elif obj.__class__ in [Objective, Beneficiary, Documentation,
+                                   CollectedData, WorkflowLevel2]:
+                return obj.workflowlevel1.organization == user_org
+            elif obj.__class__ in [Checklist, Budget, RiskRegister]:
+                return obj.workflowlevel2.workflowlevel1.organization == \
+                       user_org
+            elif obj.__class__ in [Organization]:
+                return obj == user_org
+            elif obj.__class__ in [WorkflowTeam]:
+                return obj.partner_org == user_org
+            elif obj.__class__ in [Indicator]:
+                return obj.workflowlevel1.all().filter(
+                    organization=user_org).exists()
+        except AttributeError:
+            pass
+        return False
+
+
+class AllowTolaRoles(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+        user_groups = request.user.groups.values_list('name', flat=True)
+        if ROLE_ORGANIZATION_ADMIN in user_groups:
+            return True
+
+        queryset = self._queryset(view)
+        model_cls = queryset.model
+        if view.action == 'create' and 'workflowlevel1' in request.data:
+            user_org = request.user.tola_user.organization
+            wflvl1_serializer = view.serializer_class().get_fields()['workflowlevel1']
+
+            # Check if the field is Many-To-Many or not
+            if wflvl1_serializer.__class__ == ManyRelatedField:
+                primitive_value = request.data.getlist('workflowlevel1')
+            else:
+                primitive_value = request.data.get('workflowlevel1')
+
+            # Get objects using their URLs
+            wflvl1 = wflvl1_serializer.run_validation(primitive_value)
+
+            # We use a list to fetch the program teams
+            if not isinstance(wflvl1, list):
+                wflvl1 = [wflvl1]
+            team_groups = WorkflowTeam.objects.filter(
+                workflow_user=request.user.tola_user,
+                workflowlevel1__in=wflvl1).values_list('role__name', flat=True)
+
+            if model_cls in [Contact, Documentation, Indicator, CollectedData,
+                             Level, Objective, WorkflowLevel2]:
+                return (ROLE_VIEW_ONLY not in team_groups and
+                        self._check_organization(wflvl1, user_org))
+            elif model_cls is WorkflowTeam:
+                return (ROLE_VIEW_ONLY not in team_groups and
+                        ROLE_PROGRAM_TEAM not in team_groups and
+                        self._check_organization(wflvl1, user_org))
+
+        elif view.action == 'create' and model_cls is Portfolio:
+            user_groups = WorkflowTeam.objects.filter(
+                workflow_user=request.user.tola_user).values_list(
+                'role__name', flat=True)
+            return ROLE_ORGANIZATION_ADMIN in user_groups
+
+        return True
+
+    def _check_organization(self, workflowlevel1s, organization):
+        """
+        Check if the organization passed matches with one of the programs
+        :param workflowlevel1s:
+        :param organization:
+        :return: boolean
+        """
+        for wflvl1 in workflowlevel1s:
+            if wflvl1.organization == organization:
+                return True
+        return False
+
+    def _queryset(self, view):
+        """
+        Return the queryset of the view
+        :param view:
+        :return: QuerySet
+        """
+        assert hasattr(view, 'get_queryset') \
+            or getattr(view, 'queryset', None) is not None, (
+            'Cannot apply {} on a view that does not set '
+            '`.queryset` or have a `.get_queryset()` method.'
+        ).format(self.__class__.__name__)
+
+        if hasattr(view, 'get_queryset'):
+            queryset = view.get_queryset()
+            assert queryset is not None, (
+                '{}.get_queryset() returned None'.format(
+                    view.__class__.__name__)
+            )
+            return queryset
+        return view.queryset
 
     def has_object_permission(self, request, view, obj):
-        user_level1 = getLevel1(request.user)
-        if view.action == 'list':
-            user_org = TolaUser.objects.get(user=request.user).organization
-            user_groups = request.user.groups.values_list('name', flat=True)
-            return (request.user.is_authenticated() and
-                    (obj in user_level1 and obj.organization in user_org
-                     or ROLE_ORGANIZATION_ADMIN in user_groups))
-        if view.action == 'retrieve':
-            user_groups = request.user.groups.values_list('name', flat=True)
-            return (request.user.is_authenticated() and
-                    (obj in user_level1 or
-                     ROLE_ORGANIZATION_ADMIN in user_groups))
-        elif view.action in ['update', 'partial_update', 'destroy']:
+        """
+        Object level permissions are used to determine if a user
+        should be allowed to act on a particular object
+        """
+        if request.user and request.user.is_authenticated():
             if request.user.is_superuser:
                 return True
-
-            if obj.organization != request.user.tola_user.organization:
-                return False
-
             user_groups = request.user.groups.values_list('name', flat=True)
             if ROLE_ORGANIZATION_ADMIN in user_groups:
                 return True
 
-            if view.action == 'destroy':
-                try:
-                    WorkflowTeam.objects.get(
-                        workflow_user=request.user.tola_user,
-                        workflowlevel1=obj,
-                        role__name=ROLE_PROGRAM_ADMIN)
-                except WorkflowTeam.DoesNotExist:
-                    return False
-                else:
+            queryset = self._queryset(view)
+            model_cls = queryset.model
+            if model_cls is Portfolio:
+                team_groups = WorkflowTeam.objects.filter(
+                    workflow_user=request.user.tola_user,
+                    workflowlevel1__portfolio=obj).values_list(
+                    'role__name', flat=True)
+                if ROLE_PROGRAM_ADMIN in team_groups or ROLE_PROGRAM_TEAM in \
+                        team_groups:
+                    return view.action == 'retrieve'
+            elif model_cls is WorkflowTeam:
+                if ROLE_PROGRAM_ADMIN == obj.role.name:
                     return True
+                else:
+                    return view.action == 'retrieve'
+            elif model_cls is WorkflowLevel1:
+                team_groups = WorkflowTeam.objects.filter(
+                    workflow_user=request.user.tola_user,
+                    workflowlevel1=obj).values_list(
+                    'role__name', flat=True)
+                if ROLE_PROGRAM_ADMIN in team_groups:
+                    return True
+                elif ROLE_PROGRAM_TEAM in team_groups:
+                    return view.action != 'destroy'
+            elif model_cls is Indicator:
+                team_groups = WorkflowTeam.objects.filter(
+                    workflow_user=request.user.tola_user,
+                    workflowlevel1__indicator=obj).values_list(
+                    'role__name', flat=True)
+                if ROLE_PROGRAM_ADMIN in team_groups:
+                    return True
+                elif ROLE_PROGRAM_TEAM in team_groups:
+                    return view.action != 'destroy'
+                elif ROLE_VIEW_ONLY in team_groups:
+                    return view.action == 'retrieve'
+            elif model_cls in [CollectedData, Level, WorkflowLevel2]:
+                team_groups = WorkflowTeam.objects.filter(
+                    workflow_user=request.user.tola_user,
+                    workflowlevel1=obj.workflowlevel1).values_list(
+                    'role__name', flat=True)
+                if ROLE_PROGRAM_ADMIN in team_groups:
+                    return True
+                elif ROLE_PROGRAM_TEAM in team_groups:
+                    return view.action != 'destroy'
+                elif ROLE_VIEW_ONLY in team_groups:
+                    return view.action == 'retrieve'
             else:
-                try:
-                    WorkflowTeam.objects.get(
-                        Q(role__name=ROLE_PROGRAM_ADMIN) |
-                        Q(role__name=ROLE_PROGRAM_TEAM),
-                        workflow_user=request.user.tola_user,
-                        workflowlevel1=obj)
-                except WorkflowTeam.DoesNotExist:
-                    return False
-                else:
-                    return True
-
-        else:
-            return False
-
-
-class IndicatorPermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if view.action == 'list':
-            # TODO Ticket: #793
-            return True
-        if view.action == 'retrieve':
-            # TODO Ticket: #794
-            return True
-        elif view.action in ['update', 'partial_update']:
-            # TODO Ticket: #792
-            return True
-        elif view.action == 'destroy':
-            if request.user.is_superuser:
                 return True
 
-            # As all worflowlevel1 objects associated to an indicator have the
-            # same org, we take the first one.
-            organization = obj.workflowlevel1.first().organization
-            is_org_admin = WorkflowTeam.objects.filter(
-                workflow_user=request.user.tola_user,
-                partner_org=organization,
-                role__name=ROLE_ORGANIZATION_ADMIN).exists()
-            if is_org_admin:
-                return True
-
-            is_program_admin = WorkflowTeam.objects.filter(
-                workflow_user=request.user.tola_user,
-                workflowlevel1__in=obj.workflowlevel1.all(),
-                role__name=ROLE_PROGRAM_ADMIN).exists()
-            if is_program_admin:
-                return True
-
-            return False
-        else:
-            return False
+        return False

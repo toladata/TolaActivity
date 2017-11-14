@@ -14,9 +14,8 @@ from .serializers import *
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
-from .permissions import (UserIsOwnerOrAdmin, WorkflowLevel1Permissions,
-                          IndicatorPermissions)
-from tola.util import getCountry, getLevel1
+from .permissions import UserIsOwnerOrAdmin, IsOrgMember, AllowTolaRoles
+from tola.util import getCountry, get_programs_user
 
 
 class LargeResultsSetPagination(PageNumberPagination):
@@ -91,9 +90,9 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
                 budget=Sum('workflowlevel2__total_estimated_budget'),
                 actuals=Sum('workflowlevel2__actual_cost'))
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = WorkflowLevel1.objects.all().filter(
-                id__in=user_level1).annotate(
+                id__in=wflvl1_ids).annotate(
                 budget=Sum('workflowlevel2__total_estimated_budget'),
                 actuals=Sum('workflowlevel2__actual_cost'))
         serializer = self.get_serializer(queryset, many=True)
@@ -131,7 +130,7 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
     queryset = WorkflowLevel1.objects.all().annotate(
         budget=Sum('workflowlevel2__total_estimated_budget'),
         actuals=Sum('workflowlevel2__actual_cost'))
-    permission_classes = (WorkflowLevel1Permissions,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     serializer_class = WorkflowLevel1Serializer
 
 
@@ -155,7 +154,7 @@ class SectorViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-
+    permission_classes = (IsOrgMember,)
     queryset = Sector.objects.all()
     serializer_class = SectorSerializer
 
@@ -177,7 +176,7 @@ class ProjectTypeViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-
+    permission_classes = (IsOrgMember,)
     queryset = ProjectType.objects.all()
     serializer_class = ProjectTypeSerializer
 
@@ -214,7 +213,8 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
             queryset = SiteProfile.objects.all()
         else:
             tola_user = TolaUser.objects.get(user=request.user)
-            queryset = SiteProfile.objects.filter(organization=tola_user.organization)
+            queryset = SiteProfile.objects.filter(
+                organization=tola_user.organization)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -225,6 +225,7 @@ class SiteProfileViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('country__country',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = SiteProfile .objects.all()
     serializer_class = SiteProfileSerializer
 
@@ -259,9 +260,9 @@ class IndicatorViewSet(viewsets.ModelViewSet):
             queryset = Indicator.objects.all().annotate(
                 actuals=Sum('collecteddata__achieved'))
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = Indicator.objects.all().filter(
-                workflowlevel1__in=user_level1).annotate(
+                workflowlevel1__in=wflvl1_ids).annotate(
                 actuals=Sum('collecteddata__achieved'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -281,8 +282,8 @@ class IndicatorViewSet(viewsets.ModelViewSet):
     filter_fields = ('workflowlevel1__country__country', 'workflowlevel1__name',
                      'indicator_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     queryset = Indicator.objects.all()
-    permission_classes = (IndicatorPermissions,)
     serializer_class = IndicatorSerializer
 
 
@@ -300,6 +301,7 @@ class FrequencyViewSet(viewsets.ModelViewSet):
                                          many=True)
         return Response(serializer.data)
 
+    permission_classes = (IsOrgMember,)
     queryset = Frequency.objects.all()
     serializer_class = FrequencySerializer
 
@@ -345,7 +347,7 @@ class IndicatorTypeViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-
+    permission_classes = (IsOrgMember,)
     queryset = IndicatorType.objects.all()
     serializer_class = IndicatorTypeSerializer
 
@@ -371,7 +373,7 @@ class ObjectiveViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     queryset = Objective.objects.all()
     serializer_class = ObjectiveSerializer
 
@@ -393,7 +395,7 @@ class FundCodeViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-
+    permission_classes = (IsOrgMember,)
     queryset = FundCode.objects.all()
     serializer_class = FundCodeSerializer
 
@@ -415,7 +417,7 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-
+    permission_classes = (IsOrgMember,)
     queryset = DisaggregationType.objects.all()
     serializer_class = DisaggregationTypeSerializer
 
@@ -440,6 +442,8 @@ class LevelViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id', 'country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
+
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
 
@@ -451,9 +455,9 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     """
     def list(self, request):
 
-        user_level1 = getLevel1(request.user)
+        wflvl1_ids = get_programs_user(request.user)
         queryset = Stakeholder.objects.all().filter(
-            workflowlevel1__in=user_level1)
+            workflowlevel1__in=wflvl1_ids)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
@@ -501,6 +505,7 @@ class ExternalServiceViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = ExternalService.objects.all()
     serializer_class = ExternalServiceSerializer
 
@@ -539,6 +544,7 @@ class StrategicObjectiveViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id', 'country__country')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = StrategicObjective.objects.all()
     serializer_class = StrategicObjectiveSerializer
 
@@ -561,6 +567,7 @@ class StakeholderTypeViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = StakeholderType.objects.all()
     serializer_class = StakeholderTypeSerializer
 
@@ -582,6 +589,7 @@ class ProfileTypeViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = ProfileType.objects.all()
     serializer_class = ProfileTypeSerializer
 
@@ -632,15 +640,16 @@ class ContactViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = Contact.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = Contact.objects.filter(organization=user_org,
-                                              workflowlevel1__in=user_level1)
+                                              workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     filter_fields = ('name', 'stakeholder__organization__id', 'stakeholder')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
 
@@ -655,11 +664,11 @@ class DocumentationViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = Documentation.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             user_org = TolaUser.objects.get(user=request.user).organization
             queryset = Documentation.objects.all().filter(
                 workflowlevel2__workflowlevel1__organization=user_org).filter(
-                workflowlevel1__in=user_level1)
+                workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -669,6 +678,7 @@ class DocumentationViewSet(viewsets.ModelViewSet):
     filter_fields = ('workflowlevel2__workflowlevel1__country__country',
                      'workflowlevel2__workflowlevel1__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = Documentation.objects.all()
     serializer_class = DocumentationSerializer
 
@@ -693,9 +703,9 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = CollectedData.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = CollectedData.objects.all().filter(
-                indicator__workflowlevel1__in=user_level1)
+                indicator__workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -707,6 +717,7 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
                      'indicator__workflowlevel1__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = CollectedData.objects.all()
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     serializer_class = CollectedDataSerializer
     pagination_class = SmallResultsSetPagination
 
@@ -723,8 +734,8 @@ class TolaTableViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def get_queryset(self):
-        user_level1 = getLevel1(self.request.user)
-        queryset = TolaTable.objects.filter(workflowlevel1__in=user_level1)
+        wflvl1_ids = get_programs_user(self.request.user)
+        queryset = TolaTable.objects.filter(workflowlevel1__in=wflvl1_ids)
         table_id = self.request.query_params.get('table_id', None)
         if table_id is not None:
             queryset = queryset.filter(table_id=table_id)
@@ -735,6 +746,7 @@ class TolaTableViewSet(viewsets.ModelViewSet):
                      'organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = TolaTableSerializer
+    permission_classes = (IsOrgMember,)
     pagination_class = StandardResultsSetPagination
     queryset = TolaTable.objects.all()
 
@@ -793,6 +805,7 @@ class ChecklistViewSet(viewsets.ModelViewSet):
                      'workflowlevel2__workflowlevel1__country__country',
                      'owner')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = Checklist.objects.all()
     serializer_class = ChecklistSerializer
 
@@ -809,6 +822,7 @@ class OrganizationViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
@@ -829,9 +843,9 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = WorkflowLevel2.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = WorkflowLevel2.objects.all().filter(
-                workflowlevel1__in=user_level1)
+                workflowlevel1__in=wflvl1_ids)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
@@ -867,6 +881,7 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
                      'level2_uuid', 'workflowlevel1__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = WorkflowLevel2.objects.all()
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     serializer_class = WorkflowLevel2Serializer
     pagination_class = SmallResultsSetPagination
 
@@ -884,13 +899,14 @@ class WorkflowLevel2SortViewSet(viewsets.ModelViewSet):
         if request.user.is_superuser:
             queryset = WorkflowLevel2Sort.objects.all()
         else:
-            user_level1 = getLevel1(request.user)
+            wflvl1_ids = get_programs_user(request.user)
             queryset = WorkflowLevel2Sort.objects.all().filter(
-                workflowlevel1__in=user_level1)
+                workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     queryset = WorkflowLevel2Sort.objects.all()
+    permission_classes = (IsOrgMember,)
     serializer_class = WorkflowLevel2SortSerializer
 
 
@@ -915,6 +931,7 @@ class ApprovalTypeViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = ApprovalType.objects.all()
     serializer_class = ApprovalTypeSerializer
 
@@ -941,6 +958,7 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = Beneficiary.objects.all()
     serializer_class = BeneficiarySerializer
 
@@ -958,6 +976,7 @@ class DistributionViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = Distribution.objects.all()
     serializer_class = DistributionSerializer
 
@@ -978,6 +997,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     queryset = CustomForm.objects.all()
     serializer_class = CustomFormSerializer
 
@@ -1009,6 +1029,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = Budget.objects.all()
     serializer_class = BudgetSerializer
 
@@ -1026,6 +1047,7 @@ class RiskRegisterViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     queryset = RiskRegister.objects.all()
+    permission_classes = (IsOrgMember,)
     serializer_class = RiskRegisterSerializer
 
 
@@ -1042,6 +1064,7 @@ class CodedFieldViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = CodedField.objects.all()
     serializer_class = CodedFieldSerializer
 
@@ -1069,6 +1092,7 @@ class IssueRegisterViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('workflowlevel2__workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = IssueRegister.objects.all()
     serializer_class = IssueRegisterSerializer
 
@@ -1109,24 +1133,34 @@ class AwardViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = Award.objects.all()
     serializer_class = AwardSerializer
 
 
 class WorkflowTeamViewSet(viewsets.ModelViewSet):
-
+    """
+    This viewset provides `list`, `create`, `retrieve`, `update` and
+    `destroy` actions.
+    """
     def list(self, request):
         if request.user.is_superuser:
             queryset = WorkflowTeam.objects.all()
+        elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
+                'name', flat=True):
+            organization = request.user.tola_user.organization
+            queryset = WorkflowTeam.objects.filter(partner_org=organization)
         else:
-            user_level1 = getLevel1(request.user)
-            queryset = WorkflowTeam.objects.all().filter(
-                workflowlevel1__in=user_level1)
+            wflvl1_ids = get_programs_user(request.user)
+            queryset = WorkflowTeam.objects.filter(
+                workflowlevel1__in=wflvl1_ids)
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (AllowTolaRoles,)
     queryset = WorkflowTeam.objects.all()
     serializer_class = WorkflowTeamSerializer
 
@@ -1147,6 +1181,7 @@ class MilestoneViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (IsOrgMember,)
     queryset = Milestone.objects.all()
     serializer_class = MilestoneSerializer
 
@@ -1162,8 +1197,22 @@ class PortfolioViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)  # inherited from CreateModelMixin
+
+        portfolio = Portfolio.objects.get(pk=serializer.data['id'])
+        portfolio.organization = request.user.tola_user.organization
+        portfolio.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
+
     filter_fields = ('workflowlevel1__organization__id',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
 
