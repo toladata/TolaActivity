@@ -1,28 +1,23 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, BaseDetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from tola.forms import RegistrationForm, NewUserRegistrationForm, NewTolaUserRegistrationForm, BookmarkForm
+from tola.forms import RegistrationForm, NewUserRegistrationForm, \
+    NewTolaUserRegistrationForm, BookmarkForm
 from django.contrib import messages
-from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from workflow.models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Sector, Country, TolaUser, TolaSites, \
-    TolaBookmarks, FormGuidance, ApprovalWorkflow, Organization
-from indicators.models import CollectedData, Indicator
+from workflow.models import TolaUser, TolaSites, TolaBookmarks, FormGuidance,\
+    Organization, ROLE_VIEW_ONLY
 
-from django.shortcuts import get_object_or_404, redirect
-from django.db.models import Sum, Q, Count
-from tola.util import getCountry
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import Group
 
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.http import HttpResponse
 import json
-from feed.serializers import TolaUserSerializer, OrganizationSerializer, CountrySerializer
+from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
+    CountrySerializer
 from django.conf import settings
 import requests
-
-ROLE_VIEW_ONLY = 'ViewOnly'
 
 
 @login_required(login_url='/accounts/login/')

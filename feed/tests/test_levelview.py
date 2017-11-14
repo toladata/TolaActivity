@@ -4,30 +4,443 @@ from rest_framework.reverse import reverse
 
 import factories
 from feed.views import LevelViewSet
+from indicators.models import Level
+from workflow.models import WorkflowLevel1, WorkflowTeam, \
+    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
+    ROLE_VIEW_ONLY
 
 
-class LevelViewTest(TestCase):
+class LevelListViewsTest(TestCase):
     def setUp(self):
-        self.user = factories.User(is_superuser=True, is_staff=True)
-        tola_user = factories.TolaUser(user=self.user)
-        self.organization = tola_user.organization
-        factory = APIRequestFactory()
-        self.request = factory.post('/api/level/')
+        factories.Level.create_batch(2)
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
 
-    def test_create_level(self):
+    def test_list_level_superuser(self):
+        request = self.factory.get('/api/level/')
+        request.user = factories.User.build(is_superuser=True,
+                                            is_staff=True)
+        view = LevelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+    def test_list_level_org_admin(self):
+        request = self.factory.get('/api/level/')
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+        factories.Level(organization=self.tola_user.organization)
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_level_program_admin(self):
+        request = self.factory.get('/api/level/')
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+        factories.Level(organization=self.tola_user.organization)
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_level_program_team(self):
+        request = self.factory.get('/api/level/')
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            role=factories.Group(name=ROLE_PROGRAM_TEAM))
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+        factories.Level(organization=self.tola_user.organization)
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_level_normaluser(self):
+        request = self.factory.get('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+        factories.Level(organization=self.tola_user.organization)
+        view = LevelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+
+class LevelCreateViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+        factories.Group()
+
+    def test_create_level_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        request = self.factory.post('/api/level/')
         wflvl1 = factories.WorkflowLevel1()
-        wflvl1_url = reverse('workflowlevel1-detail', kwargs={'pk': wflvl1.id},
-                             request=self.request)
-        user_url = reverse('user-detail', kwargs={'pk': self.user.id},
-                           request=self.request)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
 
-        data = {'name': 'Intermediate Results',
+        data = {'name': 'Goal',
                 'workflowlevel1': wflvl1_url}
-        self.request = APIRequestFactory().post('/api/level/', data)
-        self.request.user = self.user
+
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
         view = LevelViewSet.as_view({'post': 'create'})
-        response = view(self.request)
+        response = view(request)
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['name'], u'Intermediate Results')
-        self.assertEqual(response.data['created_by'], user_url)
+        self.assertEqual(response.data['name'], u'Goal')
+
+    def test_create_level_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        request = self.factory.post('/api/level/')
+        wflvl1 = factories.WorkflowLevel1()
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+
+        data = {'name': 'Goal',
+                'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Goal')
+
+    def test_create_level_program_admin(self):
+        request = self.factory.post('/api/level/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'name': 'Goal',
+                'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Goal')
+
+    def test_create_level_program_team(self):
+        request = self.factory.post('/api/level/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_TEAM))
+
+        data = {'name': 'Goal',
+                'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Goal')
+
+    def test_create_level_view_only(self):
+        request = self.factory.post('/api/level/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_VIEW_ONLY))
+
+        data = {'name': 'Goal',
+                'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 403)
+
+
+class LevelUpdateViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+        factories.Group()
+
+    def test_update_unexisting_level(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        data = {'name': 'Intermediate Results'}
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'update'})
+        response = view(request, pk=288)
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_level_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        level = factories.Level()
+        data = {'name': 'Goal'}
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'update'})
+        response = view(request, pk=level.pk)
+        self.assertEqual(response.status_code, 200)
+
+        level = Level.objects.get(pk=response.data['id'])
+        self.assertEquals(level.name, data['name'])
+
+    def test_update_level_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        level = factories.Level(organization=self.tola_user.organization)
+        data = {'name': 'Goal'}
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'update'})
+        response = view(request, pk=level.pk)
+        self.assertEqual(response.status_code, 200)
+
+        level = Level.objects.get(pk=response.data['id'])
+        self.assertEquals(level.name, data['name'])
+
+    def test_update_level_diff_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        another_org = factories.Organization(name='Another Org')
+        level = factories.Level(organization=another_org)
+        data = {'name': 'Goal'}
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'update'})
+        response = view(request, pk=level.pk)
+        self.assertEqual(response.status_code, 403)
+
+    def test_update_level_program_admin(self):
+        wflvl1 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        level = factories.Level(organization=self.tola_user.organization,
+                                workflowlevel1=wflvl1)
+
+        data = {'name': 'Goal'}
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'update'})
+        response = view(request, pk=level.pk)
+        self.assertEqual(response.status_code, 200)
+
+        level = Level.objects.get(pk=response.data['id'])
+        self.assertEquals(level.name, data['name'])
+
+    def test_update_level_program_team(self):
+        wflvl1 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_TEAM))
+        level = factories.Level(organization=self.tola_user.organization,
+                                workflowlevel1=wflvl1)
+
+        data = {'name': 'Goal'}
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'update'})
+        response = view(request, pk=level.pk)
+        self.assertEqual(response.status_code, 200)
+
+        level = Level.objects.get(pk=response.data['id'])
+        self.assertEquals(level.name, data['name'])
+
+    def test_update_level_view_only(self):
+        wflvl1 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_VIEW_ONLY))
+        level = factories.Level(organization=self.tola_user.organization,
+                                workflowlevel1=wflvl1)
+
+        data = {'name': 'Goal'}
+        request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'update'})
+        response = view(request, pk=level.pk)
+        self.assertEqual(response.status_code, 403)
+
+
+class LevelDeleteViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+        factories.Group()
+
+    def test_delete_level_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        level = factories.Level()
+        request = self.factory.delete('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=level.pk)
+        self.assertEquals(response.status_code, 204)
+        self.assertRaises(
+            Level.DoesNotExist,
+            Level.objects.get, pk=level.pk)
+
+    def test_delete_level_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        level = factories.Level(organization=self.tola_user.organization)
+        request = self.factory.delete('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=level.pk)
+        self.assertEquals(response.status_code, 204)
+        self.assertRaises(
+            Level.DoesNotExist,
+            Level.objects.get, pk=level.pk)
+
+    def test_delete_level_diff_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        another_org = factories.Organization(name='Another Org')
+        level = factories.Level(organization=another_org)
+        request = self.factory.delete('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=level.pk)
+        self.assertEquals(response.status_code, 403)
+        Level.objects.get(pk=level.pk)
+
+    def test_delete_level_program_admin(self):
+        wflvl1 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        level = factories.Level(organization=self.tola_user.organization,
+                                workflowlevel1=wflvl1)
+
+        request = self.factory.delete('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=level.pk)
+        self.assertEquals(response.status_code, 204)
+        self.assertRaises(
+            Level.DoesNotExist,
+            Level.objects.get, pk=level.pk)
+
+    def test_delete_level_diff_org(self):
+        wflvl1 = factories.WorkflowLevel1()
+        another_org = factories.Organization(name='Another Org')
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        level = factories.Level(organization=another_org,
+                                workflowlevel1=wflvl1)
+
+        request = self.factory.delete('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=level.pk)
+        self.assertEquals(response.status_code, 403)
+        Level.objects.get(pk=level.pk)
+
+    def test_delete_level_program_team(self):
+        wflvl1 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_TEAM))
+        level = factories.Level(organization=self.tola_user.organization,
+                                workflowlevel1=wflvl1)
+
+        request = self.factory.delete('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=level.pk)
+        self.assertEquals(response.status_code, 403)
+        Level.objects.get(pk=level.pk)
+
+    def test_delete_level_view_only(self):
+        wflvl1 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_VIEW_ONLY))
+        level = factories.Level(organization=self.tola_user.organization,
+                                workflowlevel1=wflvl1)
+
+        request = self.factory.delete('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=level.pk)
+        self.assertEquals(response.status_code, 403)
+        Level.objects.get(pk=level.pk)
+
+    def test_delete_level_normal_user(self):
+        level = factories.Level()
+        request = self.factory.delete('/api/level/')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=level.pk)
+        self.assertEquals(response.status_code, 403)
+        Level.objects.get(pk=level.pk)
