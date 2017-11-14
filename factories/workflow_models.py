@@ -1,19 +1,21 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory
+    SubFactory, post_generation, PostGeneration
 
 from workflow.models import (
     ApprovalType as ApprovalTypeM,
     Contact as ContactM,
     Country as CountryM,
+    Documentation as DocumentationM,
     Organization as OrganizationM,
+    Portfolio as PortfolioM,
     SiteProfile as SiteProfileM,
     TolaUser as TolaUserM,
     WorkflowTeam as WorkflowTeamM,
     WorkflowLevel1 as WorkflowLevel1M,
     WorkflowLevel2 as WorkflowLevel2M,
 )
-from .user_models import User
+from .user_models import User, Group
 
 
 class ApprovalType(DjangoModelFactory):
@@ -67,11 +69,6 @@ class TolaUser(DjangoModelFactory):
     country = SubFactory(Country, country='Germany', code='DE')
 
 
-class WorkflowTeam(DjangoModelFactory):
-    class Meta:
-        model = WorkflowTeamM
-
-
 class WorkflowLevel1(DjangoModelFactory):
     class Meta:
         model = WorkflowLevel1M
@@ -79,8 +76,51 @@ class WorkflowLevel1(DjangoModelFactory):
     name = 'Health and Survival for Syrians in Affected Regions'
 
 
+class WorkflowTeam(DjangoModelFactory):
+    class Meta:
+        model = WorkflowTeamM
+
+    workflow_user = SubFactory(TolaUser)
+    workflowlevel1 = SubFactory(WorkflowLevel1)
+    salary = '60,000'
+    role = SubFactory(Group)
+
+
 class WorkflowLevel2(DjangoModelFactory):
     class Meta:
         model = WorkflowLevel2M
 
     name = 'Help Syrians'
+    total_estimated_budget = 15000
+    actual_cost = 2900
+    workflowlevel1 = SubFactory(WorkflowLevel1)
+
+
+class Documentation(DjangoModelFactory):
+    class Meta:
+        model = DocumentationM
+
+    name = 'Strengthening access and demand in Mandera County'
+    workflowlevel1 = SubFactory(WorkflowLevel1)
+
+
+class Portfolio(DjangoModelFactory):
+    class Meta:
+        model = PortfolioM
+
+    name = 'Syrian programs'
+    description = 'Projects developed in Syria'
+    organization = SubFactory(Organization)
+
+    @post_generation
+    def country(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of country were passed in, use them
+            for country in extracted:
+                self.country.add(country)
+        else:
+            self.country.add(Country(country='Syria', code='SY'))
