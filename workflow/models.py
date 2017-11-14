@@ -884,6 +884,7 @@ class SiteProfile(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     organization = models.ForeignKey(Organization, null=True, blank=True)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='sites', null=True, blank=True)
     history = HistoricalRecords()
     #optimize query
