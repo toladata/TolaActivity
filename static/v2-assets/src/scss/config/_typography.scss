@@ -1,11 +1,5 @@
 //including the font
-@include font-face("scandia", astra-child/assets/fonts/Scandia-Regular, 400);
-@include font-face("scandia", astra-child/assets/fonts/Scandia-Bold, 600);
-@include font-face("scandia", astra-child/assets/fonts/Scandia-Medium, 500);
-@include font-face("brix-sans", astra-child/assets/fonts/BrixSansMedium, 500);
-@include font-face("brix-sans", astra-child/assets/fonts/BrixSansRegular, 400);
-@include font-face("brix-sans", astra-child/assets/fonts/BrixSansLight, 200);
-
+@include font-face("scandia", fonts/Scandia-Bold, 600);
 
 html, html a {
   text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
@@ -30,43 +24,6 @@ body {
 h1, h2, h3, h4{
   font-family: "scandia", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-weight: 600;
-}
-h1, .entry-content h1, .entry-content h1 a {
-  font-size: 63px;
-  line-height: 82px !important;
-}
-@include respond-to($mobile-down) {
-  h1, .entry-content h1, .entry-content h1{
-    font-size: 26px;
-    line-height: 37px !important;
-  }
-}
-h2, .entry-content h2, .entry-content h2 a {
-  font-size: 35px;
-  line-height: 46px !important;
-}
-@include respond-to($mobile-down) {
-  h2, .entry-content h2, .entry-content h2 a {
-    font-size: 20px;
-    line-height: 26px !important;
-  }
-}
-h3, .entry-content h3, .entry-content h3 a {
-  font-size: 25px;
-  line-height: 35px !important;
-}
-@include respond-to($mobile-down) {
-  h3, .entry-content h3, .entry-content h3 a {
-    font-size: 16px;
-    line-height: 20px !important;
-  }
-}
-h4, .entry-content h4, .entry-content h4 a {
-  font-size: 16px;
-  font-size: 24px !important;
-}
-.scandia-medium{
-  font-family: "scandia-medium", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
 }
 .scandia{
   font-family: "scandia", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;

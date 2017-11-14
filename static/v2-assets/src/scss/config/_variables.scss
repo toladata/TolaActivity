@@ -1,3 +1,13 @@
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #B3B7CC !default;
+$gray-600: #6A6E7D !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+
 // Color Palette
 $white: #fff;
 $black: #000;
@@ -37,6 +47,7 @@ $yellow-darker: #af9245;
 $yellow: #d5b251;
 $yellow-lighter: #d9bc6e;
 
+
 // Component Colors
 $body-bg-color: $gray-lighter;
 $navbar-bg: $gray-lighter;
@@ -46,17 +57,11 @@ $border-color-default: $gray-lighter;
 $radius-default: 3px;
 $card-headings: $white;
 
-$container-fluid-max-width: rem-calc(1440);
-
 // Margins
-$global-margin: rem-calc(28);
-$spacing: rem-calc(15);
-$spacing-half: $spacing/2;
 
 // Progress bars
 $progress-bg:                   white !default;
-$progress-bar-bg:               $navy-darker !default;
-
+$progress-bar-bg:               $blue-darker !default;
 $defaultTransition: all .2s;
 
 $scandia: "scandia", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

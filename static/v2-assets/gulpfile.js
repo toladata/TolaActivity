@@ -4,19 +4,28 @@ let autoprefixer = require('gulp-autoprefixer');
 let browserSync = require('browser-sync').create();
 let sass        = require('gulp-sass');
 let concat = require('gulp-concat');
+let cssmin = require('gulp-cssmin');
+let reload      = browserSync.reload;
 
 // Compile sass into CSS & auto-inject into browsers
-gulp.task('sass', function() {
-    return gulp.src(['node_modules/bootstrap/scss/bootstrap.scss', 'src/scss/*.scss'])
+gulp.task('sass', function () {
+    return gulp.src('src/scss/**/*.scss')
         .pipe(sass())
+        .on('error', function(err){
+            console.error(err.message);
+            browserSync.notify(err.message, 3000);
+            this.emit('end');
+        })
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
             cascade: false
         }))
-        .pipe(cleanCSS({compatibility: 'ie8'}))
+        .pipe(cssmin())
+        .pipe(gulp.dest('lib/css'))
         .pipe(gulp.dest("src/css"))
-        .pipe(browserSync.stream());
+        .pipe(reload({stream:true}));
 });
+
 
 // Move the javascript files into our /src/js folder
 gulp.task('js', function() {
@@ -34,7 +43,7 @@ gulp.task('serve', ['sass'], function() {
         //server: "./src"  
     });
 
-    gulp.watch(['node_modules/bootstrap/scss/bootstrap.scss', 'src/scss/*.scss'], ['sass']);
+    gulp.watch( 'src/scss/**/*.scss', ['sass']);
     gulp.watch("src/*.html").on('change', browserSync.reload);
 });
 

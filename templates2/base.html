@@ -13,91 +13,46 @@
         <link rel="icon" href="{{ STATIC_URL }}img/favicon.ico?v=2" />
 
         <!-- Datatables css for HTML tables -->
-        <link href="{{ STATIC_URL }}css/datatables.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ STATIC_URL }}v2-assets/src/css/style.css" rel="stylesheet" type="text/css" />
 
-        <!-- Bootstrap -->
-        <link href="{{ STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-
-        <!-- JQuery UI CSS -->
-        <link href="{{ STATIC_URL }}css/jquery-ui.min.css" rel="stylesheet" type="text/css" />
-
-        <!-- Dynatable -->
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/select2.min.css">
-
-        <!-- Custom CSS -->
-        <link href="{{ STATIC_URL }}css/app.css" rel="stylesheet" type="text/css">
-
-        <!-- Hosted Leaflet CSS -->
-        <link rel="stylesheet" href="{{ STATIC_URL }}css/leaflet.css">
 
         {% block extra_js_in_header %}
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
-
-        <!-- App specific Javascript -->
-        <script type="text/javascript" src="{{ STATIC_URL }}js/app.js"></script>
-
-        <!-- Hosted Leaflet -->
-        <script src="{{ STATIC_URL }}js/leaflet.js"></script>
 
         {% endblock %}
 
     </head>
     <body>
-        <!--http://getbootstrap.com/examples/sticky-footer-navbar/-->
-        <nav class="navbar navbar-default navbar-tola navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="{% url 'index' %}">
-                        <img src="{{ STATIC_URL }}img/TolaActivity.svg" />
-                    </a>
-                    <!-- hamburger nav -->
-                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <!-- end hamburger nav -->
-                </div><!-- .navbar-header collapse -->
-            </div><!-- .container collapse -->
-        </nav><!-- .navbar collapse -->
-        <br/>
-        <div class="container" style="margin-top:5px;">
-            <br/>
-            <div>{% block bread_crumb %}{% endblock %}</div>
-            <div id = "alerts">
-                <!-- Any messages for users -->
-                {% block messages %}
+    <div class="main">
+        <div class="main__feature">
+        </div>
+        <div class="main__panel">
+            <div class="main__panel__content">
+                <div>{% block bread_crumb %}{% endblock %}</div>
+                <div id = "alerts">
+                    <!-- Any messages for users -->
+                    {% block messages %}
                     {% if messages %}
-                            {% for message in messages %}
-                                    {% if 'safe' in message.tags %}
-                                        <div class="alert alert-{{message.tags}}">{{ message|safe }}</div>
-                                    {% else %}
-                                        <div class="alert alert-{{message.tags}}">{{ message|safe }}</div>
-                                    {% endif %}
-                            {% endfor %}
+                    {% for message in messages %}
+                    {% if 'safe' in message.tags %}
+                    <div class="alert alert-{{message.tags}}">{{ message|safe }}</div>
+                    {% else %}
+                    <div class="alert alert-{{message.tags}}">{{ message|safe }}</div>
+                    {% endif %}
+                    {% endfor %}
                     <br/>
                     {% endif %}
-                {% endblock messages %}
+                    {% endblock messages %}
+                </div>
+                <!-- Page title  -->
+                <h2>{% block page_title %}{% endblock %}</h2>
+
+                <!-- Main body content -->
+                <p>{% block content %}{% endblock %}</p>
             </div>
-            <!-- Page title  -->
-            <h2>{% block page_title %}{% endblock %}</h2>
-
-            <!-- Main body content -->
-            <p>{% block content %}{% endblock %}</p>
-
         </div><!-- .container collapse -->
+    </div>
 
         <div id = "ajaxloading" class="modal ajax_loading"></div>
-        <div id="footer">
-            <!-- Sticky Footer -->
-            <div class="container">
-                <div class="col-md-6 text-left">
-                    <a href="http://www.toladata.com" class="text-muted"><b>Tola</b>Data</a>
-                </div>
-            </div>
-        </div><!-- .footer collapse -->
 
         <!-- jQuery UI (necessary for datepicker as well as dataTables library -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>
