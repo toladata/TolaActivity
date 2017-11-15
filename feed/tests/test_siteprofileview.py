@@ -53,10 +53,19 @@ class SiteProfileViewsTest(TestCase):
         tola_user = factories.TolaUser()
         user_url = reverse('user-detail', kwargs={'pk': tola_user.user.id},
                            request=self.request_post)
+        wflvl1_1 = factories.WorkflowLevel1()
+        wflvl1_2 = factories.WorkflowLevel1()
+        wflvl1_1_url = reverse('workflowlevel1-detail',
+                               kwargs={'pk': wflvl1_1.id},
+                               request=self.request_post)
+        wflvl1_2_url = reverse('workflowlevel1-detail',
+                               kwargs={'pk': wflvl1_2.id},
+                               request=self.request_post)
 
         data = {
             'name': 'Site Profile 1',
-            'country': 'http://testserver/api/country/%s/' % self.country.id
+            'country': 'http://testserver/api/country/%s/' % self.country.id,
+            'workflowlevel1': [wflvl1_1_url, wflvl1_2_url]
         }
         self.request_post = APIRequestFactory().post('/api/siteprofile/', data)
         self.request_post.user = tola_user.user

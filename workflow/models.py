@@ -31,6 +31,7 @@ from django.db.models import Q
 ROLE_ORGANIZATION_ADMIN = 'OrgAdmin'
 ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
 ROLE_PROGRAM_TEAM = 'ProgramTeam'
+ROLE_VIEW_ONLY = 'ViewOnly'
 
 
 # New user created generate a token
@@ -883,6 +884,7 @@ class SiteProfile(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     organization = models.ForeignKey(Organization, null=True, blank=True)
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='sites', null=True, blank=True)
     history = HistoricalRecords()
     #optimize query
