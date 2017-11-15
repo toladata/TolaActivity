@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bootstrap": "^4.0.0-beta.2"
+    "bootstrap": "^4.0.0-beta.2",
+    "jquery": "^3.2.1"
   },
   "devDependencies": {
     "browser-sync": "^2.18.13",
