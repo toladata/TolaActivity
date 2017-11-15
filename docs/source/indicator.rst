@@ -3,7 +3,7 @@ Indicator
 
 Endpoint
 --------
- * “indicator”: “http://dev-v2.tolaactivity.app.tola.io/api/indicator/”
+ * “indicator”: “http://dev-v2.tolaactivity.app.tola.io/api/indicator/”,
 
 
 This endpoint provides access to submitted indicators in JSON format.
@@ -24,6 +24,7 @@ Lists the indicator endpoints accessible to requesting user
 Example
 ^^^^^^^
 ::
+
     curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/
 
 
@@ -99,8 +100,8 @@ of records and the limit parameter to limit the number of records returned.
   </pre>
 
 ::
-
-  curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?start=5
+    curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?start=5
+    
 
 
 .. raw:: html
@@ -125,11 +126,11 @@ of records and the limit parameter to limit the number of records returned.
 
 
 
-GET JSON List of indicator endpoints filter by workflowlevel1 
--------------------------------------------------------------
+GET JSON List of indicator endpoints filter by workflowlevel1 name
+------------------------------------------------------------------
 
 Lists the data endpoints accessible to requesting user, for the specified
-``workflowlevel1`` as a query parameter.
+``workflowlevel1 name`` as a query parameter.
 
 .. raw:: html
 
@@ -143,8 +144,6 @@ Example
 ::
 
        curl -H "Authorization: Token xxxxxxxxxxxx" http://dev-v2.tolaactivity.app.tola.io/api/indicator/?workflowlevel1_name=Financial Assistance to Affected Communities
-
-
 
 
 Retrieve a specific Indicator
@@ -165,8 +164,7 @@ Example
 Response
 ^^^^^^^^^
 ::
-
-   {
+  {
      "url": "http://dev-v2.tolaactivity.app.tola.io/api/indicator/3/",
       "id": 3,
       "actuals": null,
@@ -212,7 +210,7 @@ Response
       "sub_sector": [
             "http://dev-v2.tolaactivity.app.tola.io/api/sector/196/"
         ]
-   }
+  }
 
 Paginate data of a specific formslack
 -------------------------------------------
