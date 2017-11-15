@@ -312,7 +312,14 @@ class TolaUserViewSet(viewsets.ModelViewSet):
 
     """
     def list(self, request):
-        queryset = TolaUser.objects.all()
+        if request.user.is_superuser:
+            queryset = TolaUser.objects.all()
+        else:
+            organization_id = TolaUser.objects.\
+                values_list('organization_id', flat=True).\
+                get(user=request.user)
+            queryset = TolaUser.objects.filter(
+                organization_id=organization_id)
         serializer = TolaUserSerializer(
             instance=queryset, context={'request': request}, many=True)
         return Response(serializer.data)
