@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="141" height="169" viewBox="0 0 141 169">
+  <defs>
+    <polygon id="t-shape" points="0 35.733 0 0 141 0 141 35.733 91.749 35.733 91.749 169 49.251 169 49.251 35.733"/>
+  </defs>
+  <mask id="t-shape-mask" fill="#fff">
+    <use xlink:href="#t-shape"/>
+  </mask>
+  <g id="masked-group" mask="url(#t-shape-mask)">
+    <use fill="#4854A4" xlink:href="#t-shape"/>
+    <rect width="140" height="61" x="36" y="-17" fill="#16ACE0" id="top-rectangle"/>
+    <ellipse cx="4" cy="27" fill="#EE2D31" rx="71" ry="67" id="top-left-circle"/>
+    <ellipse cx="156.5" cy="160" fill="#4AC09F" rx="121.5" ry="107" id="bottom-circle"/>
+    <animateMotion
+      xlink:href="#top-left-circle"
+      dur="4s"
+      begin="0s"
+      fill="freeze"
+      repeatCount="indefinite"
+      path="M2.78680081,20.8798869 C-6.74733503,5.41088219 21.3643649,-7.35627924 31.3412762,5.18320459 C42.8308249,19.6238473 12.5420781,34.6886969 2.78680081,20.8798869 Z"
+    />
+    <animateMotion
+      xlink:href="#bottom-circle"
+      dur="4s"
+      begin="0s"
+      fill="freeze"
+      repeatCount="indefinite"
+      from="1 1"
+      keyPoints="1;0"
+      keyTimes="0;1"
+      calcMode="linear"
+      path="M2.78680081,20.8798869 C-6.74733503,5.41088219 21.3643649,-7.35627924 31.3412762,5.18320459 C42.8308249,19.6238473 12.5420781,34.6886969 2.78680081,20.8798869 Z"
+    />
+  </g>
+</svg>

@@ -43,15 +43,14 @@ def getOrganization(user):
     return org
 
 
-def getLevel1(user):
+def get_programs_user(user):
     """
-    Returns a list of program ID's the user has access to.
+    Returns a list of Programs (WorkflowLevel1) ID's where the user has access
+    to.
     """
     # get user
-    get_level1 = WorkflowTeam.objects.filter(
+    return WorkflowTeam.objects.filter(
         workflow_user__user=user).values_list('workflowlevel1__id', flat=True)
-
-    return get_level1
 
 
 def emailGroup(country, group, link, subject, message, submiter=None):
