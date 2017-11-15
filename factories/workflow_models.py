@@ -9,6 +9,7 @@ from workflow.models import (
     Documentation as DocumentationM,
     Organization as OrganizationM,
     Portfolio as PortfolioM,
+    Sector as SectorM,
     SiteProfile as SiteProfileM,
     TolaUser as TolaUserM,
     WorkflowTeam as WorkflowTeamM,
@@ -102,6 +103,13 @@ class Documentation(DjangoModelFactory):
 
     name = 'Strengthening access and demand in Mandera County'
     workflowlevel1 = SubFactory(WorkflowLevel1)
+
+
+class Sector(DjangoModelFactory):
+    class Meta:
+        model = SectorM
+
+    sector = 'Basic Needs'
 
 
 class Portfolio(DjangoModelFactory):

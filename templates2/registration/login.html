@@ -3,19 +3,32 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-  <br/>
-    <h1>Login</h1>
-    <p>Log in with your TolaData account below, or use your organizations Google Apps or Microsoft accounts.</p>
-  <form action="" method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <input type="hidden" name="next" value="{{ next }}" />
-      <input type="submit" value="login">
-        <div class="social-buttons">
-            <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-go"><i class="fa fa-google"></i>Google</a>
-            <a href="{% url 'social:begin' 'microsoft-graph' %}" class="btn btn-go"><i class="fa fa-microsoft"></i>Microsoft</a>
-        </div>
-        or
-        <a href="{% url 'register' %}">Register a new Tola Account</a><br/>
-  </form>
+    <div class="login-page">
+        <img src="{{ STATIC_URL }}v2-assets/src/img/t-shape-colors.svg" alt="" class="mx-auto login__logo">
+        <h3 class="text-center">Login to TolaData</h3>
+        <p class="text-center text--gray text--light">Enter your details below.</p>
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="tola-form">
+            {{ form.as_p }}
+              <input type="hidden" name="next" value="{{ next }}" class="form-control" id="username"/>
+              <div class="text-center">
+                  <input type="submit" value="Login"class="btn btn-primary">
+              </div>
+          </div>
+            <p class="text-center login-page__or-seperator__wrap"> <span class="login-page__or-seperator">or</span></p>
+            <div class="social-buttons row">
+                <div class="col-md-6">
+                    <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-block  btn-social btn-social--google"><i class="icon-google"></i>Login with Google</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="{% url 'social:begin' 'microsoft-graph' %}" class="btn btn-social btn-social--microsoft"><i class="icon-microsoft"></i>Login with Microsoft</a>
+                </div>
+            </div>
+          <p class="mt-4 text-center">
+              Don't have an account? <a href="{% url 'register' %}">Register a new Tola Account</a><br/>
+          </p>
+
+        </form>
+    </div>
 {% endblock %}
