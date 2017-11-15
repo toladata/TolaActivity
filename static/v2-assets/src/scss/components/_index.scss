@@ -1,0 +1,26 @@
+.logo-app{
+  display: block;
+  &__image{
+    margin-bottom: 15px;
+  }
+  &__caption{
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    width: 120px;
+    padding: rem-calc(4);
+    background-color: #e8e8e8;
+    border-radius: 13px 13px 13px 13px;
+    color: #737581;
+  }
+  &:hover{
+    text-decoration: none;
+  }
+}
+.app-description{
+  margin-top: rem-calc(20);
+}
+
+.card{
+  padding: rem-calc(25);
+}
