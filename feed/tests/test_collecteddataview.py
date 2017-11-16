@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
+import json
 import factories
 from feed.views import CollectedDataViewSet
 from indicators.models import CollectedData
@@ -180,6 +181,33 @@ class CollectedDataCreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['indicator'], indicator_url)
 
+    def test_create_collecteddata_program_admin_json(self):
+        request = self.factory.post('/api/collecteddata/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        indicator = factories.Indicator(workflowlevel1=[wflvl1])
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+        indicator_url = reverse('indicator-detail', kwargs={'pk': indicator.id},
+                                request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'indicator': indicator_url,
+                'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/collecteddata/', json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = CollectedDataViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['indicator'], indicator_url)
+
     def test_create_collecteddata_program_team(self):
         request = self.factory.post('/api/collecteddata/')
         wflvl1 = factories.WorkflowLevel1(
@@ -330,6 +358,31 @@ class CollectedDataUpdateViewsTest(TestCase):
         data = {'indicator': indicator_url,
                 'description': 'Intermediate Results'}
         request = self.factory.post('/api/collecteddata/', data)
+        request.user = self.tola_user.user
+        view = CollectedDataViewSet.as_view({'post': 'update'})
+        response = view(request, pk=collecteddata.pk)
+        self.assertEqual(response.status_code, 200)
+
+        collecteddata = CollectedData.objects.get(pk=response.data['id'])
+        self.assertEquals(collecteddata.description, data['description'])
+
+    def test_update_collecteddata_program_admin_json(self):
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        collecteddata = factories.CollectedData(workflowlevel1=wflvl1)
+        request = self.factory.post('/api/collecteddata/')
+        indicator_url = reverse('indicator-detail',
+                                kwargs={'pk': collecteddata.indicator.id},
+                                request=request)
+
+        data = {'indicator': indicator_url,
+                'description': 'Intermediate Results'}
+        request = self.factory.post('/api/collecteddata/', json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = CollectedDataViewSet.as_view({'post': 'update'})
         response = view(request, pk=collecteddata.pk)

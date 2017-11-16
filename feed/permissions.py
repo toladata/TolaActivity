@@ -1,6 +1,8 @@
 from rest_framework import permissions
 from rest_framework.relations import ManyRelatedField
 
+from django.http import QueryDict
+
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
@@ -84,7 +86,8 @@ class AllowTolaRoles(permissions.BasePermission):
             wflvl1_serializer = view.serializer_class().get_fields()['workflowlevel1']
 
             # Check if the field is Many-To-Many or not
-            if wflvl1_serializer.__class__ == ManyRelatedField:
+            if wflvl1_serializer.__class__ == ManyRelatedField and \
+                    isinstance(request.data, QueryDict):
                 primitive_value = request.data.getlist('workflowlevel1')
             else:
                 primitive_value = request.data.get('workflowlevel1')

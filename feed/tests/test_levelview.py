@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
+import json
 import factories
 from feed.views import LevelViewSet
 from indicators.models import Level
@@ -159,6 +160,30 @@ class LevelCreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Goal')
 
+    def test_create_level_program_admin_json(self):
+        request = self.factory.post('/api/level/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'name': 'Goal',
+                'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/level/', json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Goal')
+
     def test_create_level_program_team(self):
         request = self.factory.post('/api/level/')
         wflvl1 = factories.WorkflowLevel1(
@@ -277,6 +302,26 @@ class LevelUpdateViewsTest(TestCase):
 
         data = {'name': 'Goal'}
         request = self.factory.post('/api/level/', data)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'post': 'update'})
+        response = view(request, pk=level.pk)
+        self.assertEqual(response.status_code, 200)
+
+        level = Level.objects.get(pk=response.data['id'])
+        self.assertEquals(level.name, data['name'])
+
+    def test_update_level_program_admin_json(self):
+        wflvl1 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        level = factories.Level(organization=self.tola_user.organization,
+                                workflowlevel1=wflvl1)
+
+        data = {'name': 'Goal'}
+        request = self.factory.post('/api/level/', json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = LevelViewSet.as_view({'post': 'update'})
         response = view(request, pk=level.pk)

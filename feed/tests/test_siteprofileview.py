@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
+import json
 import factories
 from feed.views import SiteProfileViewSet
 from workflow.models import SiteProfile
@@ -68,6 +69,40 @@ class SiteProfileViewsTest(TestCase):
             'workflowlevel1': [wflvl1_1_url, wflvl1_2_url]
         }
         self.request_post = APIRequestFactory().post('/api/siteprofile/', data)
+        self.request_post.user = tola_user.user
+        view = SiteProfileViewSet.as_view({'post': 'create'})
+        response = view(self.request_post)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['created_by'], user_url)
+
+        # check if the obj created has the user organization
+        self.request_get.user = tola_user.user
+        view = SiteProfileViewSet.as_view({'get': 'list'})
+        response = view(self.request_get)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_create_siteprofile_normaluser_one_result_json(self):
+        tola_user = factories.TolaUser()
+        user_url = reverse('user-detail', kwargs={'pk': tola_user.user.id},
+                           request=self.request_post)
+        wflvl1_1 = factories.WorkflowLevel1()
+        wflvl1_2 = factories.WorkflowLevel1()
+        wflvl1_1_url = reverse('workflowlevel1-detail',
+                               kwargs={'pk': wflvl1_1.id},
+                               request=self.request_post)
+        wflvl1_2_url = reverse('workflowlevel1-detail',
+                               kwargs={'pk': wflvl1_2.id},
+                               request=self.request_post)
+
+        data = {
+            'name': 'Site Profile 1',
+            'country': 'http://testserver/api/country/%s/' % self.country.id,
+            'workflowlevel1': [wflvl1_1_url, wflvl1_2_url]
+        }
+        self.request_post = APIRequestFactory().post(
+            '/api/siteprofile/', json.dumps(data),
+            content_type='application/json')
         self.request_post.user = tola_user.user
         view = SiteProfileViewSet.as_view({'post': 'create'})
         response = view(self.request_post)

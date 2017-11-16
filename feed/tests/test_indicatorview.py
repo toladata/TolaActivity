@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
+import json
 import factories
 from feed.views import IndicatorViewSet
 from indicators.models import Indicator
@@ -175,6 +176,35 @@ class IndicatorCreateViewsTest(TestCase):
                 'workflowlevel1': [wflvl1_url, wflvl2_url]}
 
         request = self.factory.post('/api/indicator/', data)
+        request.user = self.tola_user.user
+        view = IndicatorViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Building resilience in Mali')
+
+    def test_create_indicator_program_admin_json(self):
+        request = self.factory.post('/api/indicator/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+
+        wflvl2 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl2_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl2.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'name': 'Building resilience in Mali',
+                'workflowlevel1': [wflvl1_url, wflvl2_url]}
+        request = self.factory.post('/api/indicator/', json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = IndicatorViewSet.as_view({'post': 'create'})
         response = view(request)
