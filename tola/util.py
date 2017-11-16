@@ -37,12 +37,6 @@ def getCountry(user):
         return get_countries
 
 
-def getOrganization(user):
-
-    org = TolaUser.objects.get(user__id=user.id).organization
-    return org
-
-
 def get_programs_user(user):
     """
     Returns a list of Programs (WorkflowLevel1) ID's where the user has access
