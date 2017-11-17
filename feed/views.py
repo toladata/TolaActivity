@@ -295,7 +295,7 @@ class FrequencyViewSet(viewsets.ModelViewSet):
         organization_id = TolaUser.objects.\
                 values_list('organization_id', flat=True).\
                 get(user=request.user)
-        queryset = Frequency.objects.filter(organization=organization)
+        queryset = Frequency.objects.filter(organization_id=organization_id)
         serializer = FrequencySerializer(instance=queryset,
                                          context={'request': request},
                                          many=True)
@@ -1197,7 +1197,8 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
         elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
                 'name', flat=True):
             organization = request.user.tola_user.organization
-            queryset = WorkflowTeam.objects.filter(workflow_user__organization=organization)
+            queryset = WorkflowTeam.objects.filter(
+                workflow_user__organization=organization)
         else:
             wflvl1_ids = get_programs_user(request.user)
             queryset = WorkflowTeam.objects.filter(

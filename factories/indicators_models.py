@@ -1,13 +1,22 @@
-from factory import post_generation
+from factory import DjangoModelFactory, post_generation, SubFactory
 
 from indicators.models import (
     CollectedData as CollectedDataM,
+    Frequency as FrequencyM,
     Indicator as IndicatorM,
     Level as LevelM,
     Objective as ObjectiveM,
 )
+from .workflow_models import (Organization, WorkflowLevel1)
 
-from .workflow_models import *
+
+class Frequency(DjangoModelFactory):
+    class Meta:
+        model = FrequencyM
+
+    frequency = 'Bi-weekly'
+    description = 'Every two weeks'
+    organization = SubFactory(Organization)
 
 
 class Indicator(DjangoModelFactory):
