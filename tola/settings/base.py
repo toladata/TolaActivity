@@ -165,9 +165,11 @@ TEMPLATES = [
 
 ########## MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
-MIDDLEWARE= (
-    # Default Django middleware.
+MIDDLEWARE = (
+    # CorsMiddleware needs to come before Django's CommonMiddleware
     'corsheaders.middleware.CorsMiddleware',
+
+    # Default Django middleware.
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'tola.middleware.DisableCsrfCheck',
@@ -181,7 +183,7 @@ MIDDLEWARE= (
     'tola.middleware.TolaSecurityMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'tola.middleware.TolaRedirectMiddleware'
+    'tola.middleware.TolaRedirectMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 
