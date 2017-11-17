@@ -300,8 +300,8 @@ def oauth_user_view(request):
 
 
 class OAuth_User_Endpoint(ProtectedResourceView):
-    def get(self, request, *args, **kwargs):
 
+    def get(self, request, *args, **kwargs):
         user = request.user
         body = {
             'username': user.username,
@@ -322,14 +322,14 @@ class OAuth_User_Endpoint(ProtectedResourceView):
 
 
 class TolaTrackSiloProxy(ProtectedResourceView):
+
     def get(self, request, *args, **kwargs):
-        url = settings.TOLA_TRACK_URL+'api/silo'
-        auth_headers = {"content-type": "application/json", 'Authorization': 'Token '+settings.TOLA_TRACK_TOKEN}
+        url = settings.TOLA_TRACK_URL + 'api/silo'
+        headers = {"content-type": "application/json", 'Authorization': 'Token ' + settings.TOLA_TRACK_TOKEN}
 
         tola_user = TolaUser.objects.get(user=request.user)
-        print(tola_user.tola_user_uuid)
 
-        res = requests.get(url+'?user_uuid='+tola_user.tola_user_uuid, headers=auth_headers)
+        res = requests.get(url + '?user_uuid=' + tola_user.tola_user_uuid, headers=headers)
         print(res.status_code, res.content)
 
         if res.status_code == 200:
@@ -341,15 +341,9 @@ class TolaTrackSiloProxy(ProtectedResourceView):
 class TolaTrackSiloDataProxy(ProtectedResourceView):
 
     def get(self, request, silo_id, *args, **kwargs):
-        token = TolaSites.objects.get(site_id=1)
-        if token.tola_tables_token:
-            headers = {'content-type': 'application/json',
-                   'Authorization': 'Token ' + token.tola_tables_token }
-        else:
-            headers = {'content-type': 'application/json'}
-            print "Token Not Found"
+        url = settings.TOLA_TRACK_URL + 'api/silo' + '/' + silo_id + '/data'
+        headers = {'content-type': 'application/json','Authorization': 'Token ' + settings.TOLA_TRACK_TOKEN}
 
-        url = token.tola_tables_url+'api/silo/' + silo_id + '/data'
         res = requests.get(url, headers=headers)
 
         if res.status_code == 200:
