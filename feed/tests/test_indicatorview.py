@@ -513,3 +513,52 @@ class IndicatorDeleteViewsTest(TestCase):
         response = view(request, pk=indicator.pk)
         self.assertEquals(response.status_code, 403)
         Indicator.objects.get(pk=indicator.pk)
+
+
+class IndicatorFilterViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_filter_indicator_superuser(self):
+        wflvl1_1 = factories.WorkflowLevel1()
+        wflvl1_2 = factories.WorkflowLevel1(name='Population Health Initiative')
+        indicator1_1 = factories.Indicator(workflowlevel1=[wflvl1_1])
+        factories.Indicator(name='Another Indicator', workflowlevel1=[wflvl1_2])
+
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        request = self.factory.get('/api/indicator/?workflowlevel1__name=%s' %
+                                   wflvl1_1.name)
+        request.user = self.tola_user.user
+        view = IndicatorViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], indicator1_1.name)
+
+    def test_filter_indicator_program_admin(self):
+        wflvl1_1 = factories.WorkflowLevel1()
+        wflvl1_2 = factories.WorkflowLevel1(name='Population Health Initiative')
+        indicator1_1 = factories.Indicator(workflowlevel1=[wflvl1_1])
+        factories.Indicator(name='Another Indicator', workflowlevel1=[wflvl1_2])
+
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1_1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1_2,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        request = self.factory.get('/api/indicator/?workflowlevel1__name=%s' %
+                                   wflvl1_1.name)
+        request.user = self.tola_user.user
+        view = IndicatorViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], indicator1_1.name)

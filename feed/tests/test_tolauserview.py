@@ -43,3 +43,33 @@ class TolaUserListViewsTest(TestCase):
 
         for i, name in enumerate((u'Ringo Starr', u'Thom Yorke')):
             self.assertEqual(response.data[i]['name'], name)
+
+
+class TolaUserFilterViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+        self.tolauser1 = self.tola_user_ringo = factories.TolaUser(
+            user=factories.User(first_name='Ringo', last_name='Starr'),
+            organization=self.tola_user.organization)
+        self.tolauser2 = self.tola_user_george = factories.TolaUser(
+            user=factories.User(first_name='George', last_name='Harrison'),
+            organization=factories.Organization(name='Other Org'))
+
+    def test_filter_tolauser_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        request = self.factory.get('/api/tolauser/?organization__id=%s' %
+                                   self.tola_user.organization.pk)
+        request.user = self.tola_user.user
+        view = TolaUserViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        for i, name in enumerate((u'Ringo Starr',
+                                  u'Thom Yorke')):
+            self.assertEqual(response.data[i]['name'], name)

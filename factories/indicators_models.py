@@ -2,10 +2,13 @@ from factory import DjangoModelFactory, post_generation, SubFactory
 
 from indicators.models import (
     CollectedData as CollectedDataM,
+    ExternalService as ExternalServiceM,
     Frequency as FrequencyM,
     Indicator as IndicatorM,
+    IndicatorType as IndicatorTypeM,
     Level as LevelM,
     Objective as ObjectiveM,
+    StrategicObjective as StrategicObjectiveM,
 )
 from .workflow_models import (Organization, WorkflowLevel1)
 
@@ -58,3 +61,25 @@ class CollectedData(DjangoModelFactory):
 
     workflowlevel1 = SubFactory(WorkflowLevel1)
     indicator = SubFactory(Indicator)
+
+
+class IndicatorType(DjangoModelFactory):
+    class Meta:
+        model = IndicatorTypeM
+
+    indicator_type = 'Indicator Type A'
+
+
+class ExternalService(DjangoModelFactory):
+    class Meta:
+        model = ExternalServiceM
+
+    name = 'External Service A'
+    organization = SubFactory(Organization)
+
+
+class StrategicObjective(DjangoModelFactory):
+    class Meta:
+        model = StrategicObjectiveM
+
+    name = 'Strategic Objective A'
