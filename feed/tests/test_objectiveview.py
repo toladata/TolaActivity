@@ -209,3 +209,33 @@ class ObjectiveViewTest(TestCase):
         response = view(request, pk=objective.pk)
         self.assertEquals(response.status_code, 403)
         Objective.objects.get(pk=objective.pk)
+
+
+class ObjectiveFilterViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_filter_indicator_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        another_org = factories.Organization(name='Another Org')
+        wflvl1_1 = WorkflowLevel1.objects.create(
+            name='WorkflowLevel1', organization=self.tola_user.organization)
+        wflvl1_2 = WorkflowLevel1.objects.create(
+            name='WorkflowLevel1', organization=another_org)
+        objective1 = factories.Objective(workflowlevel1=wflvl1_1)
+        factories.Objective(name='20% increase in incomes',
+                            workflowlevel1=wflvl1_2)
+
+        request = self.factory.get(
+            '/api/objective/?workflowlevel1__organization__id=%s' %
+            self.tola_user.organization.pk)
+        request.user = self.tola_user.user
+        view = ObjectiveViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], objective1.name)

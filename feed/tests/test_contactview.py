@@ -10,7 +10,7 @@ from workflow.models import Contact, WorkflowLevel1, WorkflowTeam, \
     ROLE_VIEW_ONLY
 
 
-class ContactViewsTest(TestCase):
+class ContactListViewTest(TestCase):
     def setUp(self):
         factories.Contact.create_batch(2)
         self.factory = APIRequestFactory()
@@ -47,6 +47,12 @@ class ContactViewsTest(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
+
+
+class ContactCreateViewTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
 
     def test_create_contact_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
@@ -140,6 +146,12 @@ class ContactViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'John Lennon')
 
+
+class ContactDeleteViewTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
     def test_delete_contact_non_existing(self):
         request = self.factory.delete('/api/contact/')
         request.user = self.tola_user.user
@@ -228,3 +240,31 @@ class ContactViewsTest(TestCase):
         response = view(request, pk=contact.pk)
         self.assertEquals(response.status_code, 403)
         Contact.objects.get(pk=contact.pk)
+
+
+class ContactFilterViewTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_filter_contact_stakeholder_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        wkflvl1 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wkflvl1)
+        contact1 = factories.Contact(name='John',
+                                     organization=self.tola_user.organization,
+                                     workflowlevel1=wkflvl1)
+        factories.Contact(name='Paul',
+                          organization=self.tola_user.organization,
+                          workflowlevel1=wkflvl1)
+        request = self.factory.get('/api/contact/?name=%s' % contact1.name)
+        request.user = self.tola_user.user
+        view = ContactViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], contact1.name)
