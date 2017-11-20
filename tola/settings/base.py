@@ -213,7 +213,6 @@ ROOT_URLCONF = '%s.urls' % SITE_NAME
 
 ########## APP CONFIGURATION
 DJANGO_APPS = (
-    # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -221,14 +220,12 @@ DJANGO_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    'admin_report',
-    # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 )
 
 THIRD_PARTY_APPS = (
+    'admin_report',
     'rest_framework',
     'rest_framework.authtoken',
     'crispy_forms',
@@ -243,12 +240,10 @@ THIRD_PARTY_APPS = (
     'guardian',
     'social_django',
     'corsheaders',
-    # required by restframework
     'django_filters',
     'oauth2_provider',
 )
 
-# Apps specific for this project go here.
 LOCAL_APPS = (
     'workflow',
     'formlibrary',
@@ -259,10 +254,8 @@ LOCAL_APPS = (
     'reports',
     'gladmap',
     'search',
-
 )
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 ########## END APP CONFIGURATION
 
