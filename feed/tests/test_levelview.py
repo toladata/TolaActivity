@@ -489,3 +489,51 @@ class LevelDeleteViewsTest(TestCase):
         response = view(request, pk=level.pk)
         self.assertEquals(response.status_code, 403)
         Level.objects.get(pk=level.pk)
+
+        
+class LevelFilterViewTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_filter_level_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        another_org = factories.Organization(name='Another Org')
+        level1 = factories.Level(
+            name='Level 1',
+            organization=self.tola_user.organization)
+        factories.Level(name='Level 2', organization=another_org)
+
+        request = self.factory.get(
+            '/api/level/?organization__id=%s' %
+            self.tola_user.organization.pk)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], level1.name)
+
+    def test_filter_level_normaluser(self):
+        country1 = factories.Country(country='Brazil', code='BR')
+        country2 = factories.Country()
+        level1 = factories.Level(
+            name='Level 1',
+            country=country1,
+            organization=self.tola_user.organization
+        )
+        factories.Level(name='Level 2', country=country2,
+                        organization=self.tola_user.organization)
+
+        request = self.factory.get(
+            '/api/level/?country__country=%s' %
+            country1.country)
+        request.user = self.tola_user.user
+        view = LevelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], level1.name)

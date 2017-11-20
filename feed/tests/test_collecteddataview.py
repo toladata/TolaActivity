@@ -562,3 +562,125 @@ class CollectedDataDeleteViewsTest(TestCase):
         response = view(request, pk=collecteddata.pk)
         self.assertEquals(response.status_code, 403)
         CollectedData.objects.get(pk=collecteddata.pk)
+
+
+class CollectedDataFilterViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_filter_collecteddata_org_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        another_org = factories.Organization(name='Another Org')
+        wkflvl1_1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wkflvl1_2 = factories.WorkflowLevel1(organization=another_org)
+        indicator1 = factories.Indicator(workflowlevel1=[wkflvl1_1])
+        indicator2 = factories.Indicator(workflowlevel1=[wkflvl1_2])
+        collecteddata1 = factories.CollectedData(
+            data_uuid=111, indicator=indicator1)
+        factories.CollectedData(
+            data_uuid=222, indicator=indicator2)
+
+        request = self.factory.get(
+            '/api/collecteddata/?indicator__workflowlevel1__organization__id=%s'
+            % self.tola_user.organization.pk)
+        request.user = self.tola_user.user
+        view = CollectedDataViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['data_uuid'],
+                         str(collecteddata1.data_uuid))
+
+    def test_filter_collecteddata_country_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        country1 = factories.Country(country='Brazil', code='BR')
+        country2 = factories.Country(country='Germany', code='DE')
+        wkflvl1_1 = factories.WorkflowLevel1(
+            country=[country1])
+        wkflvl1_2 = factories.WorkflowLevel1(country=[country2])
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wkflvl1_1)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wkflvl1_2)
+        indicator1 = factories.Indicator(workflowlevel1=[wkflvl1_1])
+        indicator2 = factories.Indicator(workflowlevel1=[wkflvl1_2])
+        collecteddata1 = factories.CollectedData(
+            data_uuid=111, indicator=indicator1)
+        factories.CollectedData(data_uuid=222, indicator=indicator2)
+
+        request = self.factory.get(
+            '/api/collecteddata/?indicator__workflowlevel1__country__country=%s'
+            % country1.country)
+        request.user = self.tola_user.user
+        view = CollectedDataViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['data_uuid'],
+                         str(collecteddata1.data_uuid))
+
+    def test_filter_collecteddata_wkflvl1_name_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        wkflvl1_1 = factories.WorkflowLevel1()
+        wkflvl1_2 = factories.WorkflowLevel1(name='Construction Project')
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wkflvl1_1)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wkflvl1_2)
+        indicator1 = factories.Indicator(workflowlevel1=[wkflvl1_1])
+        indicator2 = factories.Indicator(workflowlevel1=[wkflvl1_2])
+        collecteddata1 = factories.CollectedData(
+            data_uuid=111, indicator=indicator1)
+        factories.CollectedData(data_uuid=222, indicator=indicator2)
+
+        request = self.factory.get(
+            '/api/collecteddata/?indicator__workflowlevel1__name=%s'
+            % wkflvl1_1.name)
+        request.user = self.tola_user.user
+        view = CollectedDataViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['data_uuid'],
+                         str(collecteddata1.data_uuid))
+
+    def test_filter_collecteddata_indicator_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        wkflvl1_1 = factories.WorkflowLevel1()
+        wkflvl1_2 = factories.WorkflowLevel1()
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wkflvl1_1)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wkflvl1_2)
+        indicator1 = factories.Indicator(workflowlevel1=[wkflvl1_1])
+        indicator2 = factories.Indicator(workflowlevel1=[wkflvl1_2])
+        collecteddata1 = factories.CollectedData(
+            data_uuid=111, indicator=indicator1)
+        factories.CollectedData(data_uuid=222, indicator=indicator2)
+
+        request = self.factory.get(
+            '/api/collecteddata/?indicator=%s' % indicator1.pk)
+        request.user = self.tola_user.user
+        view = CollectedDataViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['data_uuid'],
+                         str(collecteddata1.data_uuid))

@@ -10,7 +10,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework.authtoken import views as auth_views
 from django.contrib.auth import views as authviews
-from django.contrib.auth import forms as authforms
+
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -158,3 +158,13 @@ urlpatterns = [ # rest framework
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()
+
+if settings.DEBUG:
+    try:
+        import debug_toolbar
+    except ImportError:
+        pass
+    else:
+        urlpatterns = [
+            url(r'^__debug__/', include(debug_toolbar.urls)),
+        ] + urlpatterns
