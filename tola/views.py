@@ -1,23 +1,23 @@
+import json
+from urlparse import urljoin
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from tola.forms import RegistrationForm, NewUserRegistrationForm, \
-    NewTolaUserRegistrationForm, BookmarkForm
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from workflow.models import TolaUser, TolaSites, TolaBookmarks, FormGuidance,\
-    Organization, ROLE_VIEW_ONLY
+from oauth2_provider.views.generic import ProtectedResourceView
+import requests
 
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import Group
-
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-import json
 from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
     CountrySerializer
-from django.conf import settings
-import requests
+from tola.forms import RegistrationForm, NewUserRegistrationForm, \
+    NewTolaUserRegistrationForm, BookmarkForm
+from workflow.models import TolaUser, TolaSites, TolaBookmarks, FormGuidance,\
+    Organization, ROLE_VIEW_ONLY
 
 
 @login_required(login_url='/accounts/login/')
@@ -292,8 +292,6 @@ def dev_view(request):
         redirect_url = '/'
         return HttpResponseRedirect(redirect_url)
 
-
-from oauth2_provider.views.generic import ProtectedResourceView
 
 def oauth_user_view(request):
     return HttpResponse("Hostname "+request.get_host())
