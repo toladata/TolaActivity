@@ -322,20 +322,26 @@ class OAuth_User_Endpoint(ProtectedResourceView):
 
 
 class TolaTrackSiloProxy(ProtectedResourceView):
-
     def get(self, request, *args, **kwargs):
-        url = settings.TOLA_TRACK_URL + 'api/silo'
-        headers = {"content-type": "application/json", 'Authorization': 'Token ' + settings.TOLA_TRACK_TOKEN}
+        headers = {
+            "content-type": "application/json",
+            'Authorization': 'Token {}'.format(settings.TOLA_TRACK_TOKEN),
+        }
 
-        tola_user = TolaUser.objects.get(user=request.user)
+        tola_user_uuid = TolaUser.objects.values_list(
+            'tola_user_uuid', flat=True).get(user=request.user)
 
-        res = requests.get(url + '?user_uuid=' + tola_user.tola_user_uuid, headers=headers)
-        print(res.status_code, res.content)
+        url_subpath = 'api/silo'
+        url_base = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+        url = '{}?user_uuid={}'.format(url_base, tola_user_uuid)
 
-        if res.status_code == 200:
-            return HttpResponse(res.content)
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return HttpResponse(response.content)
         else:
-            raise Exception()
+            reason = 'URL: {}. Responded with status code {}'.format(
+                url, response.status_code)
+            return HttpResponse(status=502, reason=reason)
 
 
 class TolaTrackSiloDataProxy(ProtectedResourceView):
