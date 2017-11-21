@@ -343,14 +343,18 @@ class TolaTrackSiloProxy(ProtectedResourceView):
 
 
 class TolaTrackSiloDataProxy(ProtectedResourceView):
-
     def get(self, request, silo_id, *args, **kwargs):
-        url = settings.TOLA_TRACK_URL + 'api/silo' + '/' + silo_id + '/data'
-        headers = {'content-type': 'application/json','Authorization': 'Token ' + settings.TOLA_TRACK_TOKEN}
+        headers = {
+            "content-type": "application/json",
+            'Authorization': 'Token {}'.format(settings.TOLA_TRACK_TOKEN),
+        }
 
-        res = requests.get(url, headers=headers)
-
-        if res.status_code == 200:
-            return HttpResponse(res.content)
+        url_subpath = 'api/silo/{}/data'.format(silo_id)
+        url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return HttpResponse(response.content)
         else:
-            raise Exception()
+            reason = 'URL: {}. Responded with status code {}'.format(
+                url, response.status_code)
+            return HttpResponse(status=502, reason=reason)

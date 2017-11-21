@@ -137,3 +137,61 @@ class TolaTrackSiloProxyTest(TestCase):
         request = Mock(user=self.tola_user.user)
         response = views.TolaTrackSiloProxy().get(request)
         self.assertEqual(response.status_code, 502)
+
+
+class TolaTrackSiloDataProxyTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_get_unauthenticated_user(self):
+        request = self.factory.get('')
+        view = views.TolaTrackSiloDataProxy.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 403)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.views.requests')
+    def test_get_authenticated_user_url_without_ending_slash(
+            self, mock_requests):
+        external_response = ['foo', {'bar': 'baz'}]
+        mock_requests.get.return_value = Mock(
+            status_code=200, content=json.dumps(external_response))
+        request = Mock(user=self.tola_user.user)
+        response = views.TolaTrackSiloDataProxy().get(request, '123')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content), external_response)
+        mock_requests.get.assert_called_once_with(
+            'https://tolatrack.com/api/silo/123/data',
+            headers={'content-type': 'application/json',
+                     'Authorization': 'Token TheToken'})
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com/')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.views.requests')
+    def test_get_authenticated_user_url_with_ending_slash(
+            self, mock_requests):
+        external_response = ['foo', {'bar': 'baz'}]
+        mock_requests.get.return_value = Mock(
+            status_code=200, content=json.dumps(external_response))
+        request = Mock(user=self.tola_user.user)
+        response = views.TolaTrackSiloDataProxy().get(request, '123')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content), external_response)
+        mock_requests.get.assert_called_once_with(
+            'https://tolatrack.com/api/silo/123/data',
+            headers={'content-type': 'application/json',
+                     'Authorization': 'Token TheToken'})
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com/')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.views.requests')
+    def test_get_gateway_502_exception(
+            self, mock_requests):
+        mock_requests.get.return_value = Mock(status_code=400)
+        request = Mock(user=self.tola_user.user)
+        response = views.TolaTrackSiloDataProxy().get(request, '288')
+        self.assertEqual(response.status_code, 502)
