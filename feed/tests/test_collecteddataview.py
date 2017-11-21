@@ -140,12 +140,17 @@ class CollectedDataCreateViewsTest(TestCase):
         self.tola_user.user.groups.add(group_org_admin)
 
         request = self.factory.post('/api/collecteddata/')
-        wflvl1 = factories.WorkflowLevel1()
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
         indicator = factories.Indicator(workflowlevel1=[wflvl1])
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
         indicator_url = reverse('indicator-detail', kwargs={'pk': indicator.id},
                                 request=request)
 
-        data = {'indicator': indicator_url}
+        data = {'indicator': indicator_url,
+                'workflowlevel1': wflvl1_url}
 
         request = self.factory.post('/api/collecteddata/', data)
         request.user = self.tola_user.user

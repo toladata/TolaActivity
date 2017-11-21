@@ -59,7 +59,8 @@ class ContactCreateViewTest(TestCase):
         self.tola_user.user.groups.add(group_org_admin)
 
         request = self.factory.post('/api/contact/')
-        wflvl1 = factories.WorkflowLevel1()
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
         wflvl1_url = reverse('workflowlevel1-detail', kwargs={'pk': wflvl1.id},
                              request=request)
         organization_url = reverse('organization-detail',
