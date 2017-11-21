@@ -46,7 +46,6 @@ def register(request):
 
         # Get the Org and check to make sure it's real
         org = request.POST.get('org')
-        print org
         try:
             check_org = Organization.objects.get(name=org)
         except Organization.DoesNotExist:
@@ -72,6 +71,7 @@ def register(request):
             user.groups.add(Group.objects.get(name=ROLE_VIEW_ONLY))
 
             tolauser = tola_form.save(commit=False)
+            tolauser.name = ' '.join([user.first_name, user.last_name]).strip()
             tolauser.user = user
             tolauser.organization = check_org
             tolauser.save()

@@ -22,6 +22,7 @@ from workflow.models import (
     SiteProfile as SiteProfileM,
     Stakeholder as StakeholderM,
     StakeholderType as StakeholderTypeM,
+    TolaSites as TolaSitesM,
     TolaUser as TolaUserM,
     WorkflowTeam as WorkflowTeamM,
     WorkflowLevel1 as WorkflowLevel1M,
@@ -272,3 +273,10 @@ class Milestone(DjangoModelFactory):
         model = MilestoneM
 
     name = 'Design Stage'
+
+
+class TolaSites(DjangoModelFactory):
+    class Meta:
+        model = TolaSitesM
+
+    name = 'TolaData'

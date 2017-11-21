@@ -2,7 +2,6 @@
 import factories
 
 from django.test import TestCase
-from django.http import HttpResponse
 from workflow.models import TolaUser
 from tola import util
 
