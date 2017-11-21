@@ -8,6 +8,17 @@ from indicators.models import *
 from formlibrary.models import *
 
 
+class IsSuperUserBrowseableAPI(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        if request.user.is_authenticated():
+            if view.__class__.__name__ == 'APIRootView':
+                return request.user.is_superuser
+            else:
+                return True
+        return False
+
+
 class UserIsOwnerOrAdmin(permissions.BasePermission):
 
     def has_permission(self, request, view):
