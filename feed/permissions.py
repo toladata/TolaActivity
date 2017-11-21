@@ -64,7 +64,7 @@ class IsOrgMember(permissions.BasePermission):
                 else:
                     return obj.workflowlevel1.organization == user_org
             elif obj.__class__ in [Indicator]:
-                return obj.workflowlevel1.all().filter(
+                return obj.workflowlevel1.filter(
                     organization=user_org).exists()
         except AttributeError:
             pass
@@ -76,8 +76,6 @@ class AllowTolaRoles(permissions.BasePermission):
         if request.user.is_superuser:
             return True
         user_groups = request.user.groups.values_list('name', flat=True)
-        if ROLE_ORGANIZATION_ADMIN in user_groups:
-            return True
 
         queryset = self._queryset(view)
         model_cls = queryset.model
@@ -104,17 +102,16 @@ class AllowTolaRoles(permissions.BasePermission):
 
             if model_cls in [Contact, Documentation, Indicator, CollectedData,
                              Level, Objective, WorkflowLevel2]:
-                return (ROLE_VIEW_ONLY not in team_groups and
+                return ((ROLE_VIEW_ONLY not in team_groups or
+                         ROLE_ORGANIZATION_ADMIN in user_groups) and
                         self._check_organization(wflvl1, user_org))
             elif model_cls is WorkflowTeam:
-                return (ROLE_VIEW_ONLY not in team_groups and
-                        ROLE_PROGRAM_TEAM not in team_groups and
+                return (((ROLE_VIEW_ONLY not in team_groups and
+                        ROLE_PROGRAM_TEAM not in team_groups) or
+                         ROLE_ORGANIZATION_ADMIN in user_groups) and
                         self._check_organization(wflvl1, user_org))
 
         elif view.action == 'create' and model_cls is Portfolio:
-            user_groups = WorkflowTeam.objects.filter(
-                workflow_user=request.user.tola_user).values_list(
-                'role__name', flat=True)
             return ROLE_ORGANIZATION_ADMIN in user_groups
 
         return True
