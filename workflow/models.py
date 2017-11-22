@@ -1094,7 +1094,7 @@ class WorkflowLevel2(models.Model):
     # the program name and project names initials
     short_name = models.CharField("Code", help_text='', max_length=20, blank=True, null=True)
     office = models.ForeignKey(Office, verbose_name="Office", null=True, blank=True, on_delete=models.SET_NULL)
-    staff_responsible = models.CharField("Staff Responsible", max_length=255, blank=True, null=True)
+    staff_responsible = models.ForeignKey(TolaUser, on_delete=models.SET_NULL, blank=True, null=True)
     partners = models.ForeignKey(Partner, blank=True, null=True, verbose_name="Partners", on_delete=models.SET_NULL)
     stakeholder = models.ManyToManyField(Stakeholder, verbose_name="Stakeholders", blank=True)
     effect_or_impact = models.TextField("What is the anticipated Outcome or Goal?", blank=True, null=True)
