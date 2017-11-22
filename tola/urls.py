@@ -96,7 +96,8 @@ urlpatterns = [ # rest framework
                 url(r'^api-token-auth/', authtoken_views.obtain_auth_token),
 
                 # index
-                url(r'^$', views.index, name='index'),
+                url(r'^$', tola_views.IndexView.as_view(), name='index'),
+
                 # enable the admin:
                 url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
                 url(r'^admin/', include(admin.site.urls)),

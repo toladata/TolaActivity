@@ -1,14 +1,16 @@
 import json
 
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
-from django.contrib.auth.models import User
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory, TestCase, override_settings
+from django.urls import reverse
 from mock import Mock, patch
 
 import factories
 from tola import views
-from workflow.models import TolaUser, ROLE_VIEW_ONLY
+from workflow.models import TolaUser, TolaSites, ROLE_VIEW_ONLY
+
 
 # TODO Extend View tests
 
@@ -77,6 +79,50 @@ class ViewsTest(TestCase):
         user = User.objects.filter(username='johnlennon')
         self.assertEqual(len(tolauser), 1)
         self.assertEqual(len(user), 1)
+
+
+class IndexViewTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_dispatch_unauthenticated(self):
+        request = self.factory.get('', follow=True)
+        request.user = AnonymousUser()
+        response = views.IndexView.as_view()(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('login'), response.url)
+
+    @override_settings(TOLA_ACTIVITY_URL='https://tolaactivity.com')
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    def test_dispatch_authenticated_with_urls_set(self):
+        request = self.factory.get('')
+        request.user = self.tola_user.user
+        response = views.IndexView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        response.context_data['tolaactivity_url'] = 'https://tolaactivity.com'
+        response.context_data['tolatrack_url'] = 'https://tolatrack.com'
+        template_content = response.render().content
+        self.assertIn('https://tolaactivity.com', template_content)
+        self.assertIn('https://tolatrack.com', template_content)
+
+    def test_dispatch_authenticated_with_urls_not_set(self):
+        site = Site.objects.create(domain='api.toladata.com', name='API')
+        TolaSites.objects.create(
+            name='TolaData',
+            front_end_url='https://tolaactivity.com',
+            tola_tables_url='https://tolatrack.com',
+            site=site)
+
+        request = self.factory.get('')
+        request.user = self.tola_user.user
+        response = views.IndexView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        response.context_data['tolaactivity_url'] = 'https://tolaactivity.com'
+        response.context_data['tolatrack_url'] = 'https://tolatrack.com'
+        template_content = response.render().content
+        self.assertIn('https://tolaactivity.com', template_content)
+        self.assertIn('https://tolatrack.com', template_content)
 
 
 class TolaTrackSiloProxyTest(TestCase):

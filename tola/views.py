@@ -1,12 +1,17 @@
 import json
 from urlparse import urljoin
+import warnings
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
@@ -16,18 +21,34 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
     CountrySerializer
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
     NewTolaUserRegistrationForm, BookmarkForm
-from workflow.models import TolaUser, TolaSites, TolaBookmarks, FormGuidance,\
-    Organization, ROLE_VIEW_ONLY
+from workflow.models import (TolaUser, TolaBookmarks, FormGuidance,
+                             Organization, ROLE_VIEW_ONLY, TolaSites)
 
 
-@login_required(login_url='/accounts/login/')
-def index(request, selected_countries=None, id=0, sector=0):
-    if request.user.is_authenticated():
-        get_site = TolaSites.objects.get(name="TolaData")
-        template = "index.html"
-        return render(request, template, {'getSite': get_site})
-    else:
-        return redirect('register')
+@method_decorator(login_required, name='dispatch')
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        if settings.TOLA_ACTIVITY_URL and settings.TOLA_TRACK_URL:
+            extra_context = {
+                'tolaactivity_url': settings.TOLA_ACTIVITY_URL,
+                'tolatrack_url': settings.TOLA_TRACK_URL,
+            }
+        else:  # CE only
+            warnings.warn(
+                "TolaSite.front_end_url and TolaSite.tola_tables_url are "
+                "deprecated. Please, set instead TOLA_ACTIVITY_URL and "
+                "TOLA_TRACK_URL values in settings", DeprecationWarning)
+            from workflow.models import TolaSites
+            tola_site = TolaSites.objects.get(name="TolaData")
+            extra_context = {
+                'tolaactivity_url': tola_site.front_end_url,
+                'tolatrack_url': tola_site.tola_tables_url,
+            }
+        context.update(extra_context)
+        return context
 
 
 def register(request):

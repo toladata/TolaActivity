@@ -61,3 +61,5 @@ services:
       - SOCIAL_AUTH_MICROSOFT_GRAPH_KEY=63783b55-0c15-4e94-8ceb-4de040fea71d
       - SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET=w8zgk5dz5JVErCNzc8Jz7EM
       - SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL=https://localhost:8000/complete/microsoft-graph
+      - TOLA_ACTIVITY_URL=http://tolaactivity.dev.com
+      - TOLA_TRACK_URL=http://tolatrack.dev.com
