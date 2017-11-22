@@ -37,12 +37,15 @@ class StakeholderListViewTest(TestCase):
         self.assertEqual(len(response.data), 0)
 
     def test_list_stakeholder_normaluser_one_result(self):
-        wflvl1 = WorkflowLevel1.objects.create(name='WorkflowLevel1')
+        wflvl1_1 = WorkflowLevel1.objects.create(name='WorkflowLevel1_1')
+        wflvl1_2 = WorkflowLevel1.objects.create(name='WorkflowLevel1_2')
         WorkflowTeam.objects.create(workflow_user=self.tola_user,
-                                    workflowlevel1=wflvl1)
+                                    workflowlevel1=wflvl1_1)
+        WorkflowTeam.objects.create(workflow_user=self.tola_user,
+                                    workflowlevel1=wflvl1_2)
         stk = Stakeholder.objects.create(
             name='Stakeholder_0', organization=self.tola_user.organization)
-        stk.workflowlevel1.add(wflvl1)
+        stk.workflowlevel1.add(wflvl1_1, wflvl1_2)
 
         request = self.factory.get('/api/stakeholder/')
         request.user = self.tola_user.user

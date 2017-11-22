@@ -464,7 +464,7 @@ class StakeholderViewSet(viewsets.ModelViewSet):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
         wflvl1_ids = get_programs_user(request.user)
-        queryset = queryset.filter(workflowlevel1__in=wflvl1_ids)
+        queryset = queryset.filter(workflowlevel1__in=wflvl1_ids).distinct()
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
