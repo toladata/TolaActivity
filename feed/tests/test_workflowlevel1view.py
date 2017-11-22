@@ -191,6 +191,9 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         A ProgramAdmin member of any other program can create a new program
         in the same organization.
         """
+        organization_url = reverse(
+            'organization-detail',
+            kwargs={'pk': self.tola_user.organization.pk})
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=factories.WorkflowLevel1(
@@ -204,6 +207,7 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Save the Children')
+        self.assertIn(organization_url, response.data['organization'])
 
         WorkflowTeam.objects.get(
             workflowlevel1__id=response.data['id'],

@@ -103,9 +103,6 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         group_program_admin = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
         wflvl1 = WorkflowLevel1.objects.get(
             level1_uuid=serializer.data['level1_uuid'])
-        wflvl1.organization = request.user.tola_user.organization
-        wflvl1.user_access.add(request.user.tola_user)
-        wflvl1.save()
         WorkflowTeam.objects.create(
             workflow_user=request.user.tola_user, workflowlevel1=wflvl1,
             role=group_program_admin)
@@ -113,6 +110,13 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED,
                         headers=headers)
+
+    def perform_create(self, serializer):
+        organization_id = TolaUser.objects. \
+            values_list('organization_id', flat=True). \
+            get(user=self.request.user)
+        obj = serializer.save(organization_id=organization_id)
+        obj.user_access.add(self.request.user.tola_user)
 
     def destroy(self, request, pk):
         workflowlevel1 = self.get_object()
