@@ -161,13 +161,17 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
                              request=request)
+        tolauser_url = reverse('tolauser-detail',
+                               kwargs={'pk': self.tola_user.id},
+                               request=request)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         data = {'name': 'Help Syrians',
-                'workflowlevel1': wflvl1_url}
+                'workflowlevel1': wflvl1_url,
+                'staff_responsible': tolauser_url}
 
         request = self.factory.post('/api/workflowLlevel2/', data)
         request.user = self.tola_user.user
@@ -176,6 +180,7 @@ class WorkflowLevel2CreateViewsTest(TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Help Syrians')
+        self.assertEqual(response.data['staff_responsible'], tolauser_url)
 
     def test_create_workflowLlevel2_program_admin_json(self):
         request = self.factory.post('/api/workflowLlevel2/')
