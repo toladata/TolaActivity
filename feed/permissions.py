@@ -90,54 +90,56 @@ class AllowTolaRoles(permissions.BasePermission):
 
         queryset = self._queryset(view)
         model_cls = queryset.model
-        if view.action == 'create' and 'workflowlevel1' in request.data:
+        if view.action == 'create':
+            org_match = True
             user_org = request.user.tola_user.organization
-            wflvl1_serializer = view.serializer_class().get_fields()['workflowlevel1']
 
-            # Check if the field is Many-To-Many or not
-            if wflvl1_serializer.__class__ == ManyRelatedField and \
-                    isinstance(request.data, QueryDict):
-                primitive_value = request.data.getlist('workflowlevel1')
-            else:
-                primitive_value = request.data.get('workflowlevel1')
+            if 'organization' in request.data:
+                org_serializer = view.serializer_class().get_fields()[
+                    'organization']
+                primitive_value = request.data.get('organization')
+                org = org_serializer.run_validation(primitive_value)
+                org_match = org == user_org
 
-            # Get objects using their URLs
-            wflvl1 = wflvl1_serializer.run_validation(primitive_value)
+            if 'workflowlevel1' in request.data:
+                wflvl1_serializer = view.serializer_class().get_fields()[
+                    'workflowlevel1']
 
-            # We use a list to fetch the program teams
-            if not isinstance(wflvl1, list):
-                wflvl1 = [wflvl1]
-            team_groups = WorkflowTeam.objects.filter(
-                workflow_user=request.user.tola_user,
-                workflowlevel1__in=wflvl1).values_list('role__name', flat=True)
+                # Check if the field is Many-To-Many or not
+                if wflvl1_serializer.__class__ == ManyRelatedField and \
+                        isinstance(request.data, QueryDict):
+                    primitive_value = request.data.getlist('workflowlevel1')
+                else:
+                    primitive_value = request.data.get('workflowlevel1')
 
-            if model_cls in [Contact, Documentation, Indicator, CollectedData,
-                             Level, Objective, WorkflowLevel2]:
-                return ((ROLE_VIEW_ONLY not in team_groups or
-                         ROLE_ORGANIZATION_ADMIN in user_groups) and
-                        self._check_organization(wflvl1, user_org))
-            elif model_cls is WorkflowTeam:
-                return (((ROLE_VIEW_ONLY not in team_groups and
-                        ROLE_PROGRAM_TEAM not in team_groups) or
-                         ROLE_ORGANIZATION_ADMIN in user_groups) and
-                        self._check_organization(wflvl1, user_org))
+                # Get objects using their URLs
+                wflvl1 = wflvl1_serializer.run_validation(primitive_value)
 
-        elif view.action == 'create' and model_cls is Portfolio:
-            return ROLE_ORGANIZATION_ADMIN in user_groups
+                # We use a list to fetch the program teams
+                if not isinstance(wflvl1, list):
+                    wflvl1 = [wflvl1]
+                team_groups = WorkflowTeam.objects.filter(
+                    workflow_user=request.user.tola_user,
+                    workflowlevel1__in=wflvl1).values_list(
+                    'role__name', flat=True)
+
+                if model_cls in [Contact, Documentation, Indicator, Level,
+                                 CollectedData, Objective, WorkflowLevel2]:
+                    return ((ROLE_VIEW_ONLY not in team_groups or
+                             ROLE_ORGANIZATION_ADMIN in user_groups) and
+                            all(x.organization == user_org for x in wflvl1)
+                            and org_match)
+                elif model_cls is WorkflowTeam:
+                    return (((ROLE_VIEW_ONLY not in team_groups and
+                            ROLE_PROGRAM_TEAM not in team_groups) or
+                             ROLE_ORGANIZATION_ADMIN in user_groups) and
+                            all(x.organization == user_org for x in wflvl1)
+                            and org_match)
+
+            elif model_cls is Portfolio:
+                return ROLE_ORGANIZATION_ADMIN in user_groups and org_match
 
         return True
-
-    def _check_organization(self, workflowlevel1s, organization):
-        """
-        Check if the organization passed matches with one of the programs
-        :param workflowlevel1s:
-        :param organization:
-        :return: boolean
-        """
-        for wflvl1 in workflowlevel1s:
-            if wflvl1.organization == organization:
-                return True
-        return False
 
     def _queryset(self, view):
         """

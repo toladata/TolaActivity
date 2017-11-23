@@ -183,6 +183,34 @@ class IndicatorCreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Building resilience in Mali')
 
+    def test_create_indicator_program_admin_wflvl1_another_org(self):
+        request = self.factory.post('/api/indicator/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+
+        another_org = factories.Organization(name='Another Org')
+        wflvl2 = factories.WorkflowLevel1(organization=another_org)
+        wflvl2_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl2.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'name': 'Building resilience in Mali',
+                'workflowlevel1': [wflvl1_url, wflvl2_url]}
+
+        request = self.factory.post('/api/indicator/', data)
+        request.user = self.tola_user.user
+        view = IndicatorViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 403)
+
     def test_create_indicator_program_admin_json(self):
         request = self.factory.post('/api/indicator/')
         wflvl1 = factories.WorkflowLevel1(
