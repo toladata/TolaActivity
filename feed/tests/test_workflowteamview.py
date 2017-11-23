@@ -327,12 +327,12 @@ class WorkflowTeamUpdateViewsTest(TestCase):
         user_ringo = factories.User(first_name='Ringo', last_name='Starr')
         tola_user_ringo = factories.TolaUser(
             user=user_ringo, organization=self.tola_user.organization)
-        wflvl1 = factories.WorkflowLevel1(
+        self.wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         self.workflowteam = factories.WorkflowTeam(
             workflow_user=tola_user_ringo,
-            workflowlevel1=wflvl1,
-            partner_org=wflvl1.organization,
+            workflowlevel1=self.wflvl1,
+            partner_org=self.wflvl1.organization,
             role=factories.Group(name=ROLE_VIEW_ONLY))
 
     def test_update_unexisting_workflowteam(self):
@@ -375,8 +375,10 @@ class WorkflowTeamUpdateViewsTest(TestCase):
         self.assertEqual(salary_updated, '100')
 
     def test_update_workflowteam_program_admin(self):
-        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
-        self.workflowteam.save()
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         data = {'salary': '100'}
         request = self.factory.post(None, data)
@@ -390,8 +392,10 @@ class WorkflowTeamUpdateViewsTest(TestCase):
         self.assertEqual(salary_updated, '100')
 
     def test_update_workflowteam_program_admin_json(self):
-        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
-        self.workflowteam.save()
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         data = {'salary': '100'}
         request = self.factory.post(None, json.dumps(data),
@@ -426,12 +430,12 @@ class WorkflowTeamDeleteViewsTest(TestCase):
         user_ringo = factories.User(first_name='Ringo', last_name='Starr')
         tola_user_ringo = factories.TolaUser(
             user=user_ringo, organization=self.tola_user.organization)
-        wflvl1 = factories.WorkflowLevel1(
+        self.wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         self.workflowteam = factories.WorkflowTeam(
             workflow_user=tola_user_ringo,
-            workflowlevel1=wflvl1,
-            partner_org=wflvl1.organization,
+            workflowlevel1=self.wflvl1,
+            partner_org=self.wflvl1.organization,
             role=factories.Group(name=ROLE_VIEW_ONLY))
 
     def test_delete_workflowteam_superuser(self):
@@ -464,8 +468,10 @@ class WorkflowTeamDeleteViewsTest(TestCase):
             WorkflowTeam.objects.get, pk=self.workflowteam.pk)
 
     def test_delete_workflowteam_program_admin(self):
-        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
-        self.workflowteam.save()
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         request = self.factory.delete(None)
         request.user = self.tola_user.user
@@ -477,10 +483,11 @@ class WorkflowTeamDeleteViewsTest(TestCase):
             WorkflowTeam.DoesNotExist,
             WorkflowTeam.objects.get, pk=self.workflowteam.pk)
 
-    def test_delete_workflowteam_other_user(self):
-        role_without_benefits = ROLE_PROGRAM_TEAM
-        self.workflowteam.role = factories.Group(name=role_without_benefits)
-        self.workflowteam.save()
+    def test_delete_workflowteam_role_without_benefit(self):
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_TEAM))
 
         request = self.factory.delete(None)
         request.user = self.tola_user.user
