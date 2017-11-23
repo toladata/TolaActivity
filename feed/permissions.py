@@ -40,6 +40,22 @@ class UserIsOwnerOrAdmin(permissions.BasePermission):
 
 
 class IsOrgMember(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
+        if view.action == 'create':
+            user_org = request.user.tola_user.organization
+
+            if 'organization' in request.data:
+                org_serializer = view.serializer_class().get_fields()[
+                    'organization']
+                primitive_value = request.data.get('organization')
+                org = org_serializer.run_validation(primitive_value)
+                return org == user_org
+
+        return True
+
     def has_object_permission(self, request, view, obj):
         """
         Object level permissions are used to determine if a user
@@ -91,15 +107,7 @@ class AllowTolaRoles(permissions.BasePermission):
         queryset = self._queryset(view)
         model_cls = queryset.model
         if view.action == 'create':
-            org_match = True
             user_org = request.user.tola_user.organization
-
-            if 'organization' in request.data:
-                org_serializer = view.serializer_class().get_fields()[
-                    'organization']
-                primitive_value = request.data.get('organization')
-                org = org_serializer.run_validation(primitive_value)
-                org_match = org == user_org
 
             if 'workflowlevel1' in request.data:
                 wflvl1_serializer = view.serializer_class().get_fields()[
@@ -127,17 +135,15 @@ class AllowTolaRoles(permissions.BasePermission):
                                  CollectedData, Objective, WorkflowLevel2]:
                     return ((ROLE_VIEW_ONLY not in team_groups or
                              ROLE_ORGANIZATION_ADMIN in user_groups) and
-                            all(x.organization == user_org for x in wflvl1)
-                            and org_match)
+                            all(x.organization == user_org for x in wflvl1))
                 elif model_cls is WorkflowTeam:
                     return (((ROLE_VIEW_ONLY not in team_groups and
                             ROLE_PROGRAM_TEAM not in team_groups) or
                              ROLE_ORGANIZATION_ADMIN in user_groups) and
-                            all(x.organization == user_org for x in wflvl1)
-                            and org_match)
+                            all(x.organization == user_org for x in wflvl1))
 
             elif model_cls is Portfolio:
-                return ROLE_ORGANIZATION_ADMIN in user_groups and org_match
+                return ROLE_ORGANIZATION_ADMIN in user_groups
 
         return True
 
@@ -185,7 +191,11 @@ class AllowTolaRoles(permissions.BasePermission):
                         team_groups:
                     return view.action == 'retrieve'
             elif model_cls is WorkflowTeam:
-                if ROLE_PROGRAM_ADMIN == obj.role.name:
+                team_groups = WorkflowTeam.objects.filter(
+                    workflow_user=request.user.tola_user,
+                    workflowlevel1=obj.workflowlevel1).values_list(
+                    'role__name', flat=True)
+                if ROLE_PROGRAM_ADMIN in team_groups:
                     return True
                 else:
                     return view.action == 'retrieve'
