@@ -1,6 +1,6 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation, PostGeneration
+    SubFactory, post_generation
 
 from workflow.models import (
     ApprovalType as ApprovalTypeM,

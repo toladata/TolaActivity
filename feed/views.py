@@ -14,7 +14,7 @@ from .serializers import *
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
-from .permissions import UserIsOwnerOrAdmin, IsOrgMember, AllowTolaRoles
+from .permissions import IsOrgMember, AllowTolaRoles
 from tola.util import getCountry, get_programs_user
 
 
