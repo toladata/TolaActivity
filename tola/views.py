@@ -9,9 +9,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View, ContextMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
@@ -51,65 +51,53 @@ class IndexView(LoginRequiredMixin, TemplateView):
         return context
 
 
-def register(request):
-    """
-    Register a new User profile using built in Django Users Model
-    """
-    privacy = ""
-    get_site = TolaSites.objects.get(name="TolaData")
+class RegisterView(View):
+    template_name = 'registration/register.html'
 
-    if get_site:
-        privacy = get_site.privacy_disclaimer
+    def _get_context_data(self, **kwargs):
+        context = {}
+        try:  # CE only
+            privacy_disclaimer = TolaSites.objects.values_list(
+                'privacy_disclaimer', flat=True).get(name="TolaData")
+        except TolaSites.DoesNotExist:
+            privacy_disclaimer = ''
+        context['privacy_disclaimer'] = privacy_disclaimer
+        if kwargs:
+            context.update(kwargs)
+        return context
 
-    if request.method == 'POST':
-        uf = NewUserRegistrationForm(request.POST)
-        tf = NewTolaUserRegistrationForm(request.POST)
+    def get(self, request, *args, **kwargs):
+        extra_context = {
+            'form_user': NewUserRegistrationForm(),
+            'form_tolauser': NewTolaUserRegistrationForm(),
+        }
+        context = self._get_context_data(**extra_context)
+        return render(request, self.template_name, context)
 
-        # Get the Org and check to make sure it's real
-        org = request.POST.get('org')
-        try:
-            check_org = Organization.objects.get(name=org)
-        except Organization.DoesNotExist:
-            # bad org name so ask them to check again
-            messages.error(request, 'The Organization you entered was not found.', fail_silently=False)
-            # reset org
-            tf = NewTolaUserRegistrationForm()
-            return render(request, "registration/register.html", {
-                'userform': uf, 'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper, 'privacy': privacy,
-                'org_error': True
-            })
+    def post(self, request, *args, **kwargs):
+        form_user = NewUserRegistrationForm(request.POST)
+        form_tolauser = NewTolaUserRegistrationForm(request.POST)
 
-        # copy new post and alter with new org value
-        new_post = request.POST.copy()
-        new_post['organization'] = check_org
-        # set new instances of form objects to validate
-        user_form = NewUserRegistrationForm(new_post)
-        tola_form = NewTolaUserRegistrationForm(new_post)
-
-        if user_form.is_valid() * tola_form.is_valid():
-
-            user = user_form.save()
+        if form_user.is_valid() and form_tolauser.is_valid():
+            user = form_user.save()
             user.groups.add(Group.objects.get(name=ROLE_VIEW_ONLY))
 
-            tolauser = tola_form.save(commit=False)
-            tolauser.name = ' '.join([user.first_name, user.last_name]).strip()
+            tolauser = form_tolauser.save(commit=False)
             tolauser.user = user
-            tolauser.organization = check_org
+            tolauser.organization = form_tolauser.cleaned_data.get('org')
+            tolauser.name = ' '.join([user.first_name, user.last_name]).strip()
             tolauser.save()
-            messages.error(request, 'Thank you, You have been registered as a new user.', fail_silently=False)
-            # register user and redirect them to front end or home page depending on config
-            if get_site:
-                return HttpResponseRedirect("/accounts/login/")
-            else:
-                return HttpResponseRedirect("/")
-    else:
-        uf = NewUserRegistrationForm()
-        tf = NewTolaUserRegistrationForm()
+            messages.error(
+                request,
+                'Thank you, You have been registered as a new user.',
+                fail_silently=False)
+            return HttpResponseRedirect(reverse('login'))
 
-    return render(request, "registration/register.html", {
-        'userform': uf, 'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,
-        'privacy': privacy, 'org_error': False
-    })
+        context = self._get_context_data(**{
+            'form_user': form_user,
+            'form_tolauser': form_tolauser,
+        })
+        return render(request, self.template_name, context)
 
 
 def profile(request):

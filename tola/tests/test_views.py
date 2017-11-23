@@ -9,76 +9,10 @@ from mock import Mock, patch
 
 import factories
 from tola import views
-from workflow.models import TolaUser, TolaSites, ROLE_VIEW_ONLY
+from workflow.models import TolaUser, TolaSites, ROLE_VIEW_ONLY, TITLE_CHOICES
 
 
 # TODO Extend View tests
-
-
-class ViewsTest(TestCase):
-    """
-    Test cases for Views
-    """
-    def setUp(self):
-        site = Site.objects.create(name='TolaSite')
-        factories.TolaSites(site=site)
-        factories.Group(name=ROLE_VIEW_ONLY)
-
-        self.org = factories.Organization()
-        self.factory = RequestFactory()
-
-    def test_register_full_name(self):
-        data = {
-            'first_name': 'John',
-            'last_name': 'Lennon',
-            'email': 'johnlennon@test.com',
-            'username': 'johnlennon',
-            'password1': 'thebeatles',
-            'password2': 'thebeatles',
-            'title': '',
-            'privacy_disclaimer_accepted': 'on',
-            'org': self.org.name
-        }
-
-        request = self.factory.post('/accounts/register/', data)
-        setattr(request, 'session', 'session')
-        messages = FallbackStorage(request)
-        setattr(request, '_messages', messages)
-        response = views.register(request)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/login/')
-
-        tolauser = TolaUser.objects.filter(name='John Lennon')
-        user = User.objects.filter(username='johnlennon')
-        self.assertEqual(len(tolauser), 1)
-        self.assertEqual(len(user), 1)
-
-    def test_register_first_name(self):
-        data = {
-            'first_name': 'John',
-            'email': 'johnlennon@test.com',
-            'username': 'johnlennon',
-            'password1': 'thebeatles',
-            'password2': 'thebeatles',
-            'title': '',
-            'privacy_disclaimer_accepted': 'on',
-            'org': self.org.name
-        }
-
-        request = self.factory.post('/accounts/register/', data)
-        setattr(request, 'session', 'session')
-        messages = FallbackStorage(request)
-        setattr(request, '_messages', messages)
-        response = views.register(request)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, '/accounts/login/')
-
-        tolauser = TolaUser.objects.filter(name='John')
-        user = User.objects.filter(username='johnlennon')
-        self.assertEqual(len(tolauser), 1)
-        self.assertEqual(len(user), 1)
 
 
 class IndexViewTest(TestCase):
@@ -123,6 +57,131 @@ class IndexViewTest(TestCase):
         template_content = response.render().content
         self.assertIn('https://tolaactivity.com', template_content)
         self.assertIn('https://tolatrack.com', template_content)
+
+
+class RegisterViewGetTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_get_with_disclaimer_in_tolasite(self):
+        site = Site.objects.create(domain='api.toladata.com', name='API')
+        TolaSites.objects.create(
+            name='TolaData',
+            privacy_disclaimer='Nice disclaimer',
+            site=site)
+
+        request = self.factory.get('')
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        template_content = response.content
+        self.assertIn('Nice disclaimer', template_content)
+
+    def test_get_with_disclaimer_in_template(self):
+        request = self.factory.get('')
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        template_content = response.content
+        self.assertIn('TolaData - Privacy Policy', template_content)
+
+
+class RegisterViewPostTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.organization = factories.Organization()
+        factories.Group(name=ROLE_VIEW_ONLY)
+
+    @staticmethod
+    def _hotfix_django_bug(request):
+        # Django 1.4 bug
+        # https://code.djangoproject.com/ticket/17971
+        from django.contrib.messages.storage.fallback import FallbackStorage
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+
+    def test_post_organization_not_found(self):
+        data = {
+            'org': 'Invalid Org'
+        }
+        request = self.factory.post(reverse('register'), data)
+        self._hotfix_django_bug(request)
+        view = views.RegisterView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        template_content = response.content
+        self.assertIn('The Organization was not found',
+                      template_content)
+
+    def test_post_fields_not_sent(self):
+        data = {
+            'org': self.organization.name
+        }
+        request = self.factory.post(reverse('register'), data)
+        self._hotfix_django_bug(request)
+        view = views.RegisterView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        template_content = response.content
+        for field in ('username', 'password1', 'password2'):
+            msg = ('<p id="error_1_id_{}" class="help-block"><strong>'
+                   'This field is required.</strong></p>'.format(field))
+            self.assertIn(msg, template_content)
+
+    def test_post_success_with_full_name(self):
+        data = {
+            'first_name': 'John',
+            'last_name': 'Lennon',
+            'email': 'johnlennon@test.com',
+            'username': 'ILoveYoko',
+            'password1': '123456',
+            'password2': '123456',
+            'title': TITLE_CHOICES[0][0],
+            'privacy_disclaimer_accepted': 'on',
+            'org': self.organization.name,
+        }
+        request = self.factory.post(reverse('register'), data)
+        self._hotfix_django_bug(request)
+        view = views.RegisterView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('index'), response.url)
+
+        tolauser = TolaUser.objects.select_related('user').get(
+            name='John Lennon')
+        user = tolauser.user
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.last_name, data['last_name'])
+        self.assertEqual(user.email, data['email'])
+        self.assertEqual(tolauser.organization, self.organization)
+        self.assertEqual(tolauser.title, data['title'])
+        self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
+
+    def test_post_success_with_first_name(self):
+        data = {
+            'first_name': 'John',
+            'email': 'johnlennon@test.com',
+            'username': 'ILoveYoko',
+            'password1': '123456',
+            'password2': '123456',
+            'title': TITLE_CHOICES[0][0],
+            'privacy_disclaimer_accepted': 'on',
+            'org': self.organization.name,
+        }
+        request = self.factory.post(reverse('register'), data)
+        self._hotfix_django_bug(request)
+        view = views.RegisterView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('index'), response.url)
+
+        tolauser = TolaUser.objects.select_related('user').get(
+            name='John')
+        user = tolauser.user
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.email, data['email'])
+        self.assertEqual(tolauser.organization, self.organization)
+        self.assertEqual(tolauser.title, data['title'])
+        self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
 
 class TolaTrackSiloProxyTest(TestCase):

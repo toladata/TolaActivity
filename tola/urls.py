@@ -126,7 +126,7 @@ urlpatterns = [ # rest framework
 
                 # accounts
                 url(r'^accounts/profile/$', tola_views.profile, name='profile'),
-                url(r'^accounts/register/$', tola_views.register, name='register'),
+                url(r'^accounts/register/$', tola_views.RegisterView.as_view(), name='register'),
 
                 # bookmarks
                 url(r'^bookmark_list', BookmarkList.as_view(), name='bookmark_list'),

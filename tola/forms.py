@@ -4,7 +4,7 @@ from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Div
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from workflow.models import TolaUser, TolaBookmarks
+from workflow.models import TolaUser, TolaBookmarks, Organization
 from django.contrib.auth.models import User
 
 
@@ -75,6 +75,14 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
         fields = ['title', 'privacy_disclaimer_accepted']
 
     org = forms.CharField()
+
+    def clean_org(self):
+        try:
+            org = Organization.objects.get(name=self.cleaned_data['org'])
+        except Organization.DoesNotExist:
+            raise forms.ValidationError("The Organization was not found.")
+        else:
+            return org
 
     def __init__(self, *args, **kwargs):
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
