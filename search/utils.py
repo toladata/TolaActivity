@@ -154,7 +154,7 @@ class ElasticsearchIndexer:
             return
 
         try:
-            if d.workflowlevel1.organization is not None and d.workflowlevel1.organization is not None:
+            if d.workflowlevel1.organization is not None:
                 org_uuid = str(d.workflowlevel1.organization.organization_uuid)
 
                 self.es.delete(index=self.prefix + org_uuid + "_collected_data", id=d.data_uuid, doc_type='data_collection')
