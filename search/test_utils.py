@@ -1,4 +1,5 @@
 from unittest import skipIf
+import factories
 
 from django.conf import settings
 from django.test import TestCase
@@ -21,12 +22,11 @@ class ElasticsearchIndexerTest(TestCase):
         indicator = Indicator.objects.create(name="TestIndicator")
         indexer.delete_indicator(indicator)
 
-    """
-    Disabled because an indicator object needs to exist in database to add a workflowlevel1 many to many relation
     def test_delete_unexisting_indicator_raises_exception(self):
         indexer = ElasticsearchIndexer()
         org = Organization.objects.create(organization_uuid="not-existing-uuid")
-        wf1 = WorkflowLevel1.objects.create(organization=org)
-        indicator = Indicator(name="NotExistingIndicator", id=999, workflowlevel1=[wf1])
+        wflvl1 = factories.WorkflowLevel1(organization=org)
+        indicator = factories.Indicator(workflowlevel1=[wflvl1])
+        indexer.delete_indicator(indicator)
+
         self.assertRaises(ValueNotFoundError, indexer.delete_indicator, indicator)
-    """
