@@ -17,6 +17,8 @@ DEBUG_TOOLBAR_CONFIG = {
     "SHOW_TOOLBAR_CALLBACK": lambda request: True,
 }
 
+DEBUG = True
+
 OFFLINE_MODE = True
 INTERNAL_IPS = ('127.0.0.1',)
 

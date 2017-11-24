@@ -125,6 +125,8 @@ LOGGING = {
     },
 }
 
+TOLA_ACTIVITY_URL = os.getenv('TOLA_ACTIVITY_URL')  # frontend URL
+
 TOLA_TRACK_URL = os.getenv('TOLA_TRACK_URL')
 TOLA_TRACK_TOKEN = os.getenv('TOLA_TRACK_TOKEN')
 
