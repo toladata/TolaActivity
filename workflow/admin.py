@@ -160,7 +160,6 @@ class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin):
     resource_class = TolaUserProxyResource
 
     def get_queryset(self, request):
-
         qs = super(ReportTolaUserProxyAdmin, self).get_queryset(request)
         return qs.filter(user__is_active=True)
 
@@ -168,11 +167,7 @@ class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin):
     list_filter = ('country', 'create_date', 'user__is_staff')
 
     def email(self, data):
-        auth_users = User.objects.all()
-        for a_user in auth_users:
-            if data.user == a_user:
-                email = a_user.email
-        return email
+        return data.user.email
 
 
 class TolaSitesAdmin(admin.ModelAdmin):
