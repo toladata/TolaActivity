@@ -24,9 +24,8 @@ class DocumentationResource(resources.ModelResource):
 
 class DocumentationAdmin(ImportExportModelAdmin):
     resource_class = DocumentationResource
-    list_display = ('workflowlevel1','workflowlevel2')
+    list_display = ('workflowlevel1', 'workflowlevel2')
     list_filter = ('workflowlevel1__country',)
-    pass
 
 
 # Resource for CSV export
@@ -57,7 +56,6 @@ class WorkflowLevel2Admin(ImportExportModelAdmin):
         """
         # Filter by logged in users allowable countries
         user_countries = getCountry(request.user)
-        #if not request.user.user.is_superuser:
         return queryset.filter(country__in=user_countries)
 
     pass
@@ -72,7 +70,7 @@ class CountryResource(resources.ModelResource):
 
 class CountryAdmin(ImportExportModelAdmin):
     resource_class = CountryResource
-    list_display = ('country','code','create_date', 'edit_date')
+    list_display = ('country', 'code', 'create_date', 'edit_date')
     list_filter = ('country',)
 
 
@@ -94,24 +92,28 @@ class SiteProfileResource(resources.ModelResource):
 
 class SiteProfileAdmin(ImportExportModelAdmin):
     resource_class = SiteProfileResource
-    list_display = ('name','office', 'country', 'adminlevelone','adminleveltwo','admin_level_three','adminlevelthree')
+    list_display = ('name', 'office', 'country', 'adminlevelone',
+                    'adminleveltwo', 'admin_level_three', 'adminlevelthree')
     list_filter = ('country__country',)
-    search_fields = ('office__code','country__country')
+    search_fields = ('office__code', 'country__country')
     pass
 
 
 class WorkflowLevel1Admin(admin.ModelAdmin):
-    list_display = ('countries','name','unique_id', 'description','funding_status')
-    search_fields = ('name','unique_id')
-    list_filter = ('funding_status','country','funding_status')
+    list_display = ('countries', 'name', 'unique_id', 'description',
+                    'funding_status')
+    search_fields = ('name', 'unique_id')
+    list_filter = ('funding_status', 'country', 'funding_status')
     display = 'Program'
 
 
 class WorkflowTeamAdmin(admin.ModelAdmin):
-    list_display = ('workflow_user','budget_limit','workflowlevel1','country')
+    list_display = ('workflow_user', 'budget_limit', 'workflowlevel1',
+                    'country')
     display = 'Workflow Team'
-    search_fields = ('workflow_user__user__username','workflowlevel1__name', 'workflow_user__user__last_name', 'country__country')
-    list_filter = ('create_date','country')
+    search_fields = ('workflow_user__user__username', 'workflowlevel1__name',
+                     'workflow_user__user__last_name', 'country__country')
+    list_filter = ('create_date', 'country')
 
 
 class StakeholderAdmin(ImportExportModelAdmin):
@@ -148,20 +150,21 @@ class TolaUserProxyResource(resources.ModelResource):
 
     class Meta:
         model = TolaUserProxy
-        fields = ('title', 'name', 'user','country','create_date', 'email' )
-        export_order = ('title', 'name', 'user','country','email','create_date')
+        fields = ('title', 'name', 'user', 'country', 'create_date', 'email')
+        export_order = ('title', 'name', 'user', 'country', 'email',
+                        'create_date')
 
 
-class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin ):
+class ReportTolaUserProxyAdmin(ChartReportAdmin, ExportMixin, admin.ModelAdmin):
 
     resource_class = TolaUserProxyResource
 
     def get_queryset(self, request):
 
         qs = super(ReportTolaUserProxyAdmin, self).get_queryset(request)
-        return qs.filter(user__is_active= True)
+        return qs.filter(user__is_active=True)
 
-    list_display = ('title','name', 'user','email', 'country', 'create_date')
+    list_display = ('title', 'name', 'user', 'email', 'country', 'create_date')
     list_filter = ('country', 'create_date', 'user__is_staff')
 
     def email(self, data):
@@ -176,7 +179,7 @@ class TolaSitesAdmin(admin.ModelAdmin):
     list_display = ('name', 'agency_name')
     display = 'Tola Site'
     list_filter = ('name',)
-    search_fields = ('name','agency_name')
+    search_fields = ('name', 'agency_name')
 
 
 class OrganizationAdmin(admin.ModelAdmin):
@@ -193,18 +196,18 @@ class TolaBookmarksAdmin(admin.ModelAdmin):
     list_display = ('user', 'name')
     display = 'Tola User Bookmarks'
     list_filter = ('user__name',)
-    search_fields = ('name','user')
+    search_fields = ('name', 'user')
 
 
 class TolaUserAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
     display = 'Tola User'
     list_filter = ('country', 'user__is_staff',)
-    search_fields = ('name','country__country','title')
+    search_fields = ('name', 'country__country', 'title')
 
 
 class FormGuidanceAdmin(admin.ModelAdmin):
-    list_display = ( 'form', 'guidance', 'guidance_link', 'create_date',)
+    list_display = ('form', 'guidance', 'guidance_link', 'create_date')
     display = 'Form Guidance'
 
 
@@ -231,7 +234,8 @@ class FundCodeAdmin(admin.ModelAdmin):
 
 
 class CurrencyAdmin(admin.ModelAdmin):
-    list_display = ('source_currency','target_currency', 'current_rate', 'conversion_date')
+    list_display = ('source_currency', 'target_currency', 'current_rate',
+                    'conversion_date')
     display = 'Currency Conversion'
 
 
@@ -247,36 +251,36 @@ class ApprovalWorkflowAdmin(admin.ModelAdmin):
 
 class AdminLevelOneAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'create_date')
-    search_fields = ('name','country__country')
-    list_filter = ('create_date','country')
+    search_fields = ('name', 'country__country')
+    list_filter = ('create_date', 'country')
     display = 'Admin Boundary 1'
 
 
 class AdminLevelTwoAdmin(admin.ModelAdmin):
     list_display = ('name', 'adminlevelone', 'create_date')
-    search_fields = ('create_date','adminlevelone')
-    list_filter = ('adminlevelone__country__country','adminlevelone')
+    search_fields = ('create_date', 'adminlevelone')
+    list_filter = ('adminlevelone__country__country', 'adminlevelone')
     display = 'Admin Boundary 2'
 
 
 class AdminLevelThreeAdmin(admin.ModelAdmin):
     list_display = ('name', 'adminleveltwo', 'create_date')
-    search_fields = ('name','adminleveltwo__name')
+    search_fields = ('name', 'adminleveltwo__name')
     list_filter = ('adminleveltwo__adminlevelone__country__country','name')
     display = 'Admin Boundary 3'
 
 
 class AdminLevelFourAdmin(admin.ModelAdmin):
     list_display = ('name', 'adminlevelthree', 'create_date')
-    search_fields = ('name','adminlevelthree__name')
+    search_fields = ('name', 'adminlevelthree__name')
     list_filter = ('adminlevelthree__adminleveltwo__adminlevelone__country__country','name')
     display = 'Admin Boundary 3'
 
 
 class OfficeAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'country', 'create_date', 'edit_date')
-    search_fields = ('name','country__country','code')
-    list_filter = ('create_date','country__country')
+    search_fields = ('name', 'country__country', 'code')
+    list_filter = ('create_date', 'country__country')
     display = 'Office'
 
 
@@ -296,18 +300,19 @@ class WorkflowLevel3Admin(admin.ModelAdmin):
 
 
 class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('contributor', 'description_of_contribution', 'proposed_value', 'create_date', 'edit_date')
+    list_display = ('contributor', 'description_of_contribution',
+                    'proposed_value', 'create_date', 'edit_date')
     display = 'Budget'
 
 
 class ChecklistAdmin(admin.ModelAdmin):
-    list_display = ('name','country')
-    list_filter = ('country','workflowlevel2')
+    list_display = ('name', 'country')
+    list_filter = ('country', 'workflowlevel2')
 
 
 class ChecklistItemAdmin(admin.ModelAdmin):
-    list_display = ('item','checklist','in_file')
-    list_filter = ('checklist','global_item')
+    list_display = ('item', 'checklist', 'in_file')
+    list_filter = ('checklist', 'global_item')
 
 
 class WorkflowModulesAdmin(admin.ModelAdmin):
@@ -337,7 +342,7 @@ class SectorRelatedAdmin(admin.ModelAdmin):
 
 
 class WorkflowLevel1SectorAdmin(admin.ModelAdmin):
-    list_display = ('sector','workflowlevel1')
+    list_display = ('sector', 'workflowlevel1')
     display = 'WorkflowLevel1 Sectors'
     list_filter = ('workflowlevel1',)
     search_fields = ('sector', 'workflowlevel1')
@@ -349,11 +354,11 @@ admin.site.register(AdminLevelOne, AdminLevelOneAdmin)
 admin.site.register(Office, OfficeAdmin)
 admin.site.register(AdminLevelTwo, AdminLevelTwoAdmin)
 admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
-admin.site.register(AdminLevelFour,AdminLevelFourAdmin)
+admin.site.register(AdminLevelFour, AdminLevelFourAdmin)
 admin.site.register(WorkflowLevel1, SimpleHistoryAdmin)
 admin.site.register(Sector)
 admin.site.register(WorkflowLevel2, SimpleHistoryAdmin)
-admin.site.register(Documentation,DocumentationAdmin)
+admin.site.register(Documentation, DocumentationAdmin)
 admin.site.register(SiteProfile, SimpleHistoryAdmin)
 admin.site.register(WorkflowLevel3, WorkflowLevel3Admin)
 admin.site.register(ProjectType, ProjectTypeAdmin)
@@ -365,9 +370,9 @@ admin.site.register(Checklist, ChecklistAdmin)
 admin.site.register(Stakeholder, StakeholderAdmin)
 admin.site.register(Contact, ContactAdmin)
 admin.site.register(StakeholderType)
-admin.site.register(TolaUser,TolaUserAdmin)
-admin.site.register(TolaSites,TolaSitesAdmin)
-admin.site.register(FormGuidance,FormGuidanceAdmin)
+admin.site.register(TolaUser, TolaUserAdmin)
+admin.site.register(TolaSites, TolaSitesAdmin)
+admin.site.register(FormGuidance, FormGuidanceAdmin)
 admin.site.register(TolaUserProxy, ReportTolaUserProxyAdmin)
 admin.site.register(TolaBookmarks, TolaBookmarksAdmin)
 admin.site.register(Currency, CurrencyAdmin)
@@ -382,4 +387,3 @@ admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(Portfolio, PortfolioAdmin)
 admin.site.register(SectorRelated, SectorRelatedAdmin)
 admin.site.register(WorkflowLevel1Sector, WorkflowLevel1SectorAdmin)
-

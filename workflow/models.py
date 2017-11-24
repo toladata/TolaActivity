@@ -1223,7 +1223,7 @@ class WorkflowLevel2Sort(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('workflowlevel1','workflowlevel2_id')
+        ordering = ('workflowlevel1', 'workflowlevel2_id')
         verbose_name_plural = "WorkflowLevel Sort"
 
     # on save add create date or update edit date
