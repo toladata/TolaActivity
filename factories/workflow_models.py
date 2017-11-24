@@ -2,6 +2,8 @@ from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
     SubFactory, post_generation
 
+import random
+
 from workflow.models import (
     ApprovalType as ApprovalTypeM,
     Award as AwardM,
@@ -27,6 +29,7 @@ from workflow.models import (
     WorkflowTeam as WorkflowTeamM,
     WorkflowLevel1 as WorkflowLevel1M,
     WorkflowLevel2 as WorkflowLevel2M,
+    WorkflowLevel2Sort as WorkflowLevel2SortM,
 )
 from .user_models import User, Group
 
@@ -280,3 +283,10 @@ class TolaSites(DjangoModelFactory):
         model = TolaSitesM
 
     name = 'TolaData'
+
+
+class WorkflowLevel2Sort(DjangoModelFactory):
+    class Meta:
+        model = WorkflowLevel2SortM
+
+    workflowlevel2_id = random.randint(1, 9999)
