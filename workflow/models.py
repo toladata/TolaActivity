@@ -56,6 +56,7 @@ class TolaSites(models.Model):
     updated = models.DateTimeField(auto_now=False, blank=True, null=True)
 
     class Meta:
+        verbose_name = "Tola Site"
         verbose_name_plural = "Tola Sites"
 
     def __unicode__(self):
@@ -243,6 +244,7 @@ class Currency(models.Model):
 
     class Meta:
         ordering = ('source_currency',)
+        verbose_name_plural = "Currencies"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -329,6 +331,7 @@ class TolaBookmarks(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name_plural = "Tola Bookmarks"
 
     def __unicode__(self):
         return self.name
@@ -588,7 +591,8 @@ class WorkflowLevel1(models.Model):
 
     class Meta:
         ordering = ('name',)
-        verbose_name_plural = "WorkflowLevel1"
+        verbose_name = "Workflow Level 1"
+        verbose_name_plural = "Workflow Level 1"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -628,7 +632,8 @@ class WorkflowLevel1Sector(models.Model):
 
     class Meta:
         ordering = ('create_date',)
-        verbose_name_plural = "WorkflowLevel1 Sectors"
+        verbose_name = "Workflow Level 1 Sector"
+        verbose_name_plural = "Workflow Level 1 Sectors"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -665,7 +670,8 @@ class WorkflowTeam(models.Model):
 
     class Meta:
         ordering = ('workflow_user',)
-        verbose_name_plural = "WorkflowTeam"
+        verbose_name = "Workflow Team"
+        verbose_name_plural = "Workflow Teams"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1166,7 +1172,8 @@ class WorkflowLevel2(models.Model):
 
     class Meta:
         ordering = ('name',)
-        verbose_name_plural = "WorkflowLevel2"
+        verbose_name = "Workflow Level 2"
+        verbose_name_plural = "Workflow Level 2"
         permissions = (
             ("can_approve", "Can approve initiation"),
         )
@@ -1223,8 +1230,9 @@ class WorkflowLevel2Sort(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('workflowlevel1','workflowlevel2_id')
-        verbose_name_plural = "WorkflowLevel Sort"
+        ordering = ('workflowlevel1', 'workflowlevel2_id')
+        verbose_name = "Workflow Level 2 Sort"
+        verbose_name_plural = "Workflow Level 2 Sort"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1254,7 +1262,7 @@ class CodedField(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('name','type')
+        ordering = ('name', 'type')
         verbose_name_plural = "CodedFields"
 
     # on save add create date or update edit date
@@ -1277,7 +1285,7 @@ class CodedFieldValues(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ('value','coded_field','workflowlevel2__name')
+        ordering = ('value', 'coded_field', 'workflowlevel2__name')
         verbose_name_plural = "CodedFields"
 
     # on save add create date or update edit date
@@ -1342,7 +1350,8 @@ class WorkflowLevel3(models.Model):
 
     class Meta:
         ordering = ('description',)
-        verbose_name_plural = "WorkflowLevel3"
+        verbose_name = "Workflow Level 3"
+        verbose_name_plural = "Workflow Level 3"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
@@ -1517,6 +1526,7 @@ class WorkflowModules(models.Model):
 
     class Meta:
         ordering = ('modules',)
+        verbose_name_plural = "Workflow Modules"
 
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
