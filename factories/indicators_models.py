@@ -8,6 +8,7 @@ from indicators.models import (
     IndicatorType as IndicatorTypeM,
     Level as LevelM,
     Objective as ObjectiveM,
+    PeriodicTarget as PeriodicTargetM,
     StrategicObjective as StrategicObjectiveM,
 )
 from .workflow_models import (Organization, WorkflowLevel1)
@@ -83,3 +84,8 @@ class StrategicObjective(DjangoModelFactory):
         model = StrategicObjectiveM
 
     name = 'Strategic Objective A'
+
+
+class PeriodicTarget(DjangoModelFactory):
+    class Meta:
+        model = PeriodicTargetM
