@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
+import json
 from feed.views import ContactViewSet
 import factories
 from workflow.models import Contact, WorkflowLevel1, WorkflowTeam, \
@@ -100,6 +101,38 @@ class ContactViewsTest(TestCase):
                 'organization': organization_url}
 
         request = self.factory.post('/api/contact/', data)
+        request.user = self.tola_user.user
+        view = ContactViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'John Lennon')
+
+    def test_create_contact_program_admin_json(self):
+        request = self.factory.post('/api/contact/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail', kwargs={'pk': wflvl1.id},
+                             request=request)
+        organization_url = reverse('organization-detail',
+                                   kwargs={'pk': self.tola_user.organization.id}
+                                   , request=request)
+        country_url = reverse('country-detail',
+                              kwargs={'pk': self.tola_user.country.id},
+                              request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'name': 'John Lennon',
+                'city': 'Liverpool',
+                'country': country_url,
+                'workflowlevel1': wflvl1_url,
+                'organization': organization_url}
+
+        request = self.factory.post('/api/contact/', json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = ContactViewSet.as_view({'post': 'create'})
         response = view(request)

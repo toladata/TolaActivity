@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
+import json
 import factories
 from feed.views import WorkflowTeamViewSet
 from workflow.models import (WorkflowTeam, ROLE_ORGANIZATION_ADMIN,
@@ -16,9 +17,9 @@ class WorkflowTeamListViewsTest(TestCase):
 
         user_ringo = factories.User(first_name='Ringo', last_name='Starr')
         tola_user_ringo = factories.TolaUser(
-            user=user_ringo, organization=self.tola_user.organization)
+            user=user_ringo, organization=factories.Organization())
         self.wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
+            organization=tola_user_ringo.organization)
         factories.WorkflowTeam(workflow_user=tola_user_ringo,
                                workflowlevel1=self.wflvl1,
                                partner_org=self.wflvl1.organization,
@@ -40,16 +41,72 @@ class WorkflowTeamListViewsTest(TestCase):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+
+        # Create a workflow team having a diff partner org
+        factories.WorkflowTeam(workflow_user=self.tola_user,
+                               workflowlevel1=wflvl1)
+
+        request_get = self.factory.get('/api/workflowteam/')
+        request_get.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'get': 'list'})
+        response = view(request_get)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_workflowteam_org_admin_diff_user_org(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        # Create a user belonging to other Project in other Org
+        another_org = factories.Organization(name='Another Org')
+        user_george = factories.User(first_name='George', last_name='Harrison')
+        tola_user_george = factories.TolaUser(
+            user=user_george, organization=another_org)
+        wflvl1_other = factories.WorkflowLevel1(organization=another_org)
+        factories.WorkflowTeam(workflow_user=tola_user_george,
+                               workflowlevel1=wflvl1_other)
+
+        request_get = self.factory.get('/api/workflowteam/')
+        request_get.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'get': 'list'})
+        response = view(request_get)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+    def test_list_workflowteam_org_admin_diff_user_same_org(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
         # Create a user belonging to other Project in other Org
         user_george = factories.User(first_name='George', last_name='Harrison')
         tola_user_george = factories.TolaUser(
-            user=user_george, organization=factories.Organization())
+            user=user_george, organization=self.tola_user.organization)
         wflvl1_other = factories.WorkflowLevel1(
-            organization=tola_user_george.organization)
+            organization=self.tola_user.organization)
         factories.WorkflowTeam(workflow_user=tola_user_george,
-                               workflowlevel1=wflvl1_other,
-                               partner_org=wflvl1_other.organization,
-                               role=factories.Group(name=ROLE_VIEW_ONLY))
+                               workflowlevel1=wflvl1_other)
+
+        request_get = self.factory.get('/api/workflowteam/')
+        request_get.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'get': 'list'})
+        response = view(request_get)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_workflowteam_org_admin_diff_partner_org(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+
+        # Create a workflow team having a diff partner org
+        another_org = factories.Organization(name='Another Org')
+        factories.WorkflowTeam(workflow_user=self.tola_user,
+                               workflowlevel1=wflvl1,
+                               partner_org=another_org)
 
         request_get = self.factory.get('/api/workflowteam/')
         request_get.user = self.tola_user.user
@@ -200,6 +257,36 @@ class WorkflowTeamCreateViewsTest(TestCase):
             role=role,
         )
 
+    def test_create_workflowteam_program_admin_json(self):
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user, workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': self.wflvl1.id})
+        tolauser_url = reverse('tolauser-detail',
+                               kwargs={'pk': self.tola_user.id})
+        role = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        role_url = reverse('group-detail', kwargs={'pk': role.id})
+        data = {
+            'role': role_url,
+            'workflow_user': tolauser_url,
+            'workflowlevel1': wflvl1_url,
+        }
+
+        request = self.factory.post(None, json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+
+        WorkflowTeam.objects.get(
+            workflowlevel1=self.wflvl1,
+            workflow_user=self.tola_user,
+            role=role,
+        )
+
     def test_create_workflowteam_other_user(self):
         role_without_benefits = ROLE_PROGRAM_TEAM
         WorkflowTeam.objects.create(
@@ -293,6 +380,22 @@ class WorkflowTeamUpdateViewsTest(TestCase):
 
         data = {'salary': '100'}
         request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.workflowteam.pk)
+        self.assertEqual(response.status_code, 200)
+
+        salary_updated = WorkflowTeam.objects.\
+            values_list('salary', flat=True).get(pk=self.workflowteam.pk)
+        self.assertEqual(salary_updated, '100')
+
+    def test_update_workflowteam_program_admin_json(self):
+        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        self.workflowteam.save()
+
+        data = {'salary': '100'}
+        request = self.factory.post(None, json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = WorkflowTeamViewSet.as_view({'post': 'update'})
         response = view(request, pk=self.workflowteam.pk)

@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
+import json
 import factories
 from feed.views import PortfolioViewSet
 from workflow.models import (ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
@@ -173,6 +174,24 @@ class PortfolioCreateViewsTest(TestCase):
         self.assertEqual(portfolio['organization'],
                          self.tola_user.organization.pk)
 
+    def test_create_portfolio_org_admin_json(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        data = {'name': 'New portfolio'}
+        request = self.factory.post(None, json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+
+        portfolio = Portfolio.objects.values('name', 'organization').get(
+            pk=response.data['id'])
+        self.assertEqual(portfolio['name'], data['name'])
+        self.assertEqual(portfolio['organization'],
+                         self.tola_user.organization.pk)
+
     def test_create_portfolio_other_user(self):
         role_without_benefits = ROLE_PROGRAM_ADMIN
         factories.WorkflowTeam(
@@ -228,6 +247,25 @@ class PortfolioUpdateViewsTest(TestCase):
 
         data = {'name': 'Some name'}
         request = self.factory.post(None, data)
+        request.user = self.tola_user.user
+        view = PortfolioViewSet.as_view({'post': 'update'})
+        response = view(request, pk=self.portfolio.pk)
+        self.assertEqual(response.status_code, 200)
+
+        name = Portfolio.objects.values_list('name', flat=True).get(
+            pk=self.portfolio.pk)
+        self.assertEqual(name, 'Some name')
+
+    def test_update_portfolio_org_admin_same_org_json(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        self.portfolio.organization = self.tola_user.organization
+        self.portfolio.save()
+
+        data = {'name': 'Some name'}
+        request = self.factory.post(None, json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = PortfolioViewSet.as_view({'post': 'update'})
         response = view(request, pk=self.portfolio.pk)

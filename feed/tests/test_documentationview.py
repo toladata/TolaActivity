@@ -4,6 +4,7 @@ from rest_framework.reverse import reverse
 
 from feed.views import DocumentationViewSet
 import factories
+import json
 from workflow.models import Documentation, WorkflowLevel1, WorkflowTeam, \
     ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
     ROLE_VIEW_ONLY
@@ -81,6 +82,28 @@ class DocumentationViewsTest(TestCase):
         data = {'workflowlevel1': wflvl1_url}
 
         request = self.factory.post('/api/documentation/', data)
+        request.user = self.tola_user.user
+        view = DocumentationViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['workflowlevel1'], wflvl1_url)
+
+    def test_create_documentation_program_admin_json(self):
+        request = self.factory.post('/api/documentation/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail', kwargs={'pk': wflvl1.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/documentation/', json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = DocumentationViewSet.as_view({'post': 'create'})
         response = view(request)

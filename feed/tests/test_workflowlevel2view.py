@@ -2,6 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
+import json
 import factories
 from feed.views import WorkflowLevel2ViewSet
 from workflow.models import WorkflowLevel1, WorkflowLevel2, WorkflowTeam, \
@@ -176,6 +177,30 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Help Syrians')
 
+    def test_create_workflowLlevel2_program_admin_json(self):
+        request = self.factory.post('/api/workflowLlevel2/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'name': 'Help Syrians',
+                'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/workflowLlevel2/', json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = WorkflowLevel2ViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Help Syrians')
+
     def test_create_workflowLlevel2_program_team(self):
         request = self.factory.post('/api/workflowLlevel2/')
         wflvl1 = factories.WorkflowLevel1(
@@ -326,6 +351,32 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
                 'workflowlevel1': wflvl1_url}
 
         request = self.factory.post('/api/workflowLlevel2/', data)
+        request.user = self.tola_user.user
+        view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
+        response = view(request, pk=workflowLlevel2.pk)
+        self.assertEqual(response.status_code, 200)
+
+        workflowLlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
+        self.assertEquals(workflowLlevel2.name, data['name'])
+
+    def test_update_workflowLlevel2_program_admin_json(self):
+        request = self.factory.post('/api/workflowLlevel2/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+
+        data = {'name': 'Community awareness program conducted to plant trees',
+                'workflowlevel1': wflvl1_url}
+
+        request = self.factory.post('/api/indicator/', json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
         response = view(request, pk=workflowLlevel2.pk)

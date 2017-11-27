@@ -3,6 +3,7 @@ from django.test import TestCase
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
+import json
 import factories
 from feed.views import WorkflowLevel1ViewSet
 from workflow.models import (WorkflowTeam, WorkflowLevel1,
@@ -191,6 +192,36 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         self.assertEqual(wflvl1.user_access.all().count(), 1)
         self.assertEqual(wflvl1.user_access.first(), self.tola_user)
 
+    def test_create_workflowlevel1_program_admin_json(self):
+        """
+        A ProgramAdmin member of any other program can create a new program
+        in the same organization.
+        """
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            workflowlevel1=factories.WorkflowLevel1(
+                organization=self.tola_user.organization),
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+
+        data = {'name': 'Save the Children'}
+        request = self.factory.post('/api/workflowlevel1/', json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], u'Save the Children')
+
+        WorkflowTeam.objects.get(
+            workflowlevel1__id=response.data['id'],
+            workflow_user=self.tola_user,
+            role__name=ROLE_PROGRAM_ADMIN)
+
+        wflvl1 = WorkflowLevel1.objects.get(pk=response.data['id'])
+        self.assertEqual(wflvl1.organization, self.tola_user.organization)
+        self.assertEqual(wflvl1.user_access.all().count(), 1)
+        self.assertEqual(wflvl1.user_access.first(), self.tola_user)
+
     def test_create_workflowlevel1_program_team(self):
         """
         A ProgramTeam member of any other program can create a new program in
@@ -301,6 +332,25 @@ class WorkflowLevel1UpdateViewsTest(TestCase):
 
         data = {'name': 'Save the Lennons'}
         request = self.factory.post('/api/workflowlevel1/', data)
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'post': 'update'})
+        response = view(request, pk=response.data['id'])
+        self.assertEqual(response.status_code, 200)
+
+        wflvl1 = WorkflowLevel1.objects.get(pk=response.data['id'])
+        self.assertEquals(wflvl1.name, data['name'])
+
+    def test_update_workflowlevel1_program_admin_json(self):
+        data = {'name': 'Save the Children'}
+        request = self.factory.post('/api/workflowlevel1/', json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        data = {'name': 'Save the Lennons'}
+        request = self.factory.post('/api/workflowlevel1/', json.dumps(data),
+                                    content_type='application/json')
         request.user = self.tola_user.user
         view = WorkflowLevel1ViewSet.as_view({'post': 'update'})
         response = view(request, pk=response.data['id'])

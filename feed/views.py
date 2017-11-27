@@ -1149,7 +1149,7 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
         elif ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
                 'name', flat=True):
             organization = request.user.tola_user.organization
-            queryset = WorkflowTeam.objects.filter(partner_org=organization)
+            queryset = WorkflowTeam.objects.filter(workflow_user__organization=organization)
         else:
             wflvl1_ids = get_programs_user(request.user)
             queryset = WorkflowTeam.objects.filter(

@@ -1,6 +1,8 @@
 from rest_framework import permissions
 from rest_framework.relations import ManyRelatedField
 
+from django.http import QueryDict
+
 from workflow.models import *
 from indicators.models import *
 from formlibrary.models import *
@@ -35,8 +37,10 @@ class IsOrgMember(permissions.BasePermission):
 
         if request.user.is_superuser:
             return True
-        user_org = request.user.tola_user.organization
+        user_groups = request.user.groups.values_list('name', flat=True)
+        org_admin = True if ROLE_ORGANIZATION_ADMIN in user_groups else False
 
+        user_org = request.user.tola_user.organization
         try:
             if obj.__class__ in [Sector, ProjectType, SiteProfile, Frequency,
                                  FundCode, DisaggregationType, Level,
@@ -55,7 +59,10 @@ class IsOrgMember(permissions.BasePermission):
             elif obj.__class__ in [Organization]:
                 return obj == user_org
             elif obj.__class__ in [WorkflowTeam]:
-                return obj.partner_org == user_org
+                if org_admin:
+                    return obj.workflow_user.organization == user_org
+                else:
+                    return obj.workflowlevel1.organization == user_org
             elif obj.__class__ in [Indicator]:
                 return obj.workflowlevel1.all().filter(
                     organization=user_org).exists()
@@ -79,7 +86,8 @@ class AllowTolaRoles(permissions.BasePermission):
             wflvl1_serializer = view.serializer_class().get_fields()['workflowlevel1']
 
             # Check if the field is Many-To-Many or not
-            if wflvl1_serializer.__class__ == ManyRelatedField:
+            if wflvl1_serializer.__class__ == ManyRelatedField and \
+                    isinstance(request.data, QueryDict):
                 primitive_value = request.data.getlist('workflowlevel1')
             else:
                 primitive_value = request.data.get('workflowlevel1')
