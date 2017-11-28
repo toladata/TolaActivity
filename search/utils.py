@@ -54,10 +54,9 @@ class ElasticsearchIndexer:
         if self.es is None:
             return
         try:
-            for wf1 in indicator.workflowlevel1.all():
-                if wf1.organization is not None:
-                    org_uuid = str(wf1.organization.organization_uuid)
-                    self.es.delete(index=self.prefix + org_uuid + "_indicators", id=indicator.id, doc_type='indicator')
+            for org_uuid in indicator.workflowlevel1.values_list('organization__organization_uuid'):
+                org_uuid = str(org_uuid[0])
+                self.es.delete(index=self.prefix + org_uuid + "_indicators", id=indicator.id, doc_type='indicator')
         except NotFoundError:
             logger.warning('Indicator not found in Elasticsearch', exc_info=True)
             raise ValueNotFoundError
