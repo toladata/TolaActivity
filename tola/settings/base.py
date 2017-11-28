@@ -362,3 +362,6 @@ CORS_ORIGIN_WHITELIST = (
 
 GOOGLE_ANALYTICS_PROPERTY_ID = None  # replaced in private settings file
 GOOGLE_ANALYTICS_DOMAIN = 'example.org'  # replaced in private settings file
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
