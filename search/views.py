@@ -35,7 +35,7 @@ def search(request, index, term):
         user_org_uuid = TolaUser.objects.get(user=request.user).organization.organization_uuid
         prefix = prefix + str(user_org_uuid) + '_'
 
-        index = index.lower().replace('_', '')  # replace _ that _all cannot be accessed directly
+        index = index.lower().strip('_')  # replace leading _ that _all cannot be accessed directly
 
         allowed_indices = ['workflow_level1', 'workflow_level2', 'indicators', 'collected_data']
         if index.lower() == 'all':
