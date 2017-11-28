@@ -35,6 +35,27 @@ class WorkflowLevel1ListViewsTest(TestCase):
                          wflvl2.total_estimated_budget)
         self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
 
+    def test_list_workflowlevel1_superuser_and_org_admin(self):
+        wflvl1 = factories.WorkflowLevel1()
+        wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        request = self.factory.get('/api/workflowlevel1/')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)
+        self.assertEqual(response.data[0]['budget'],
+                         wflvl2.total_estimated_budget)
+        self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
+
     def test_list_workflowlevel1_org_admin(self):
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
