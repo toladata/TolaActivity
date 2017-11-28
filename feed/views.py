@@ -82,15 +82,16 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         queryset = self.filter_queryset(self.get_queryset()).annotate(
             budget=Sum('workflowlevel2__total_estimated_budget'),
             actuals=Sum('workflowlevel2__actual_cost'))
-        if ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
-                'name', flat=True):
-            organization_id = TolaUser.objects. \
-                values_list('organization_id', flat=True). \
-                get(user=request.user)
-            queryset = queryset.filter(organization_id=organization_id)
-        elif not request.user.is_superuser:
-            wflvl1_ids = get_programs_user(request.user)
-            queryset = queryset.filter(id__in=wflvl1_ids)
+        if not request.user.is_superuser:
+            if ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
+                    'name', flat=True):
+                organization_id = TolaUser.objects. \
+                    values_list('organization_id', flat=True). \
+                    get(user=request.user)
+                queryset = queryset.filter(organization_id=organization_id)
+            else:
+                wflvl1_ids = get_programs_user(request.user)
+                queryset = queryset.filter(id__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -251,10 +252,18 @@ class IndicatorViewSet(viewsets.ModelViewSet):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
         if not request.user.is_superuser:
-            wflvl1_ids = get_programs_user(request.user)
-            queryset = queryset.filter(
-                workflowlevel1__in=wflvl1_ids).annotate(
-                actuals=Sum('collecteddata__achieved'))
+            if ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
+                    'name', flat=True):
+                organization_id = TolaUser.objects. \
+                    values_list('organization_id', flat=True). \
+                    get(user=request.user)
+                queryset = queryset.filter(
+                    workflowlevel1__organization_id=organization_id)
+            else:
+                wflvl1_ids = get_programs_user(request.user)
+                queryset = queryset.filter(
+                    workflowlevel1__in=wflvl1_ids).annotate(
+                    actuals=Sum('collecteddata__achieved'))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -1165,16 +1174,17 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
     def list(self, request):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
-        if ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
-                'name', flat=True):
-            organization_id = TolaUser.objects. \
-                values_list('organization_id', flat=True). \
-                get(user=request.user)
-            queryset = queryset.filter(
-                workflow_user__organization_id=organization_id)
-        elif not request.user.is_superuser:
-            wflvl1_ids = get_programs_user(request.user)
-            queryset = queryset.filter(workflowlevel1__in=wflvl1_ids)
+        if not request.user.is_superuser:
+            if ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
+                    'name', flat=True):
+                organization_id = TolaUser.objects. \
+                    values_list('organization_id', flat=True). \
+                    get(user=request.user)
+                queryset = queryset.filter(
+                    workflow_user__organization_id=organization_id)
+            else:
+                wflvl1_ids = get_programs_user(request.user)
+                queryset = queryset.filter(workflowlevel1__in=wflvl1_ids)
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)

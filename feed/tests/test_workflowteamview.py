@@ -37,6 +37,21 @@ class WorkflowTeamListViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
+    def test_list_workflowteam_superuser_and_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        view = WorkflowTeamViewSet.as_view({'get': 'list'})
+        request_get = self.factory.get('/api/workflowteam/')
+        request_get.user = self.tola_user.user
+        response = view(request_get)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
     def test_list_workflowteam_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
