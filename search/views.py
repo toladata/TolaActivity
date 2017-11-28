@@ -16,12 +16,13 @@ if settings.ELASTICSEARCH_URL is not None:
 else:
     es = None
 
-
+"""
 @login_required(login_url='/accounts/login/')
 def search_index(request):
+    # TODO remove
     call_command('search-index', '_all')
     return HttpResponse("Index process done.")
-
+"""
 
 @api_view(['GET'])
 def search(request, index, term):
@@ -65,6 +66,17 @@ def search(request, index, term):
                 }
             }
         }
-        results = es.search(index=index, body=b)
+        response = es.search(index=index, body=b)
+        results = {"workflowlevel1": [], "workflowlevel2": [], "indicators": [], "collected_data": []}
 
-        return HttpResponse(json.dumps(results["hits"]), content_type="application/json")
+        for hit in response["hits"]["hits"]:
+            if "workflow_level1" in hit["_index"]:
+                results["workflowlevel1"].append(hit)
+            elif "workflow_level2" in hit["_index"]:
+                results["workflowlevel2"].append(hit)
+            elif "indicators" in hit["_index"]:
+                results["indicators"].append(hit)
+            elif "collected_data" in hit["_index"]:
+                results["collected_data"].append(hit)
+
+        return HttpResponse(json.dumps(results), content_type="application/json")
