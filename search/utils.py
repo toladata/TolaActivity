@@ -17,15 +17,16 @@ class ElasticsearchIndexer:
     Adds an index process for each indicators, workflowlevel 1 and 2 and collecteddata models
     To seperate indices of different servers a prefix can be defined in settings
     """
-    if settings.ELASTICSEARCH_URL is not None:
-        es = Elasticsearch([settings.ELASTICSEARCH_URL], timeout=30, max_retries=10, retry_on_timeout=True)
-    else:
-        es = None
+    es = None
 
-    if settings.ELASTICSEARCH_INDEX_PREFIX is not None:
-        prefix = settings.ELASTICSEARCH_INDEX_PREFIX + '_'
-    else:
-        prefix = ''
+    def __init__(self):
+        if settings.ELASTICSEARCH_ENABLED and settings.ELASTICSEARCH_URL is not None:
+            self.es = Elasticsearch([settings.ELASTICSEARCH_URL], timeout=30, max_retries=10, retry_on_timeout=True)
+
+        if settings.ELASTICSEARCH_INDEX_PREFIX is not None:
+            self.prefix = settings.ELASTICSEARCH_INDEX_PREFIX + '_'
+        else:
+            self.prefix = ''
 
     def index_indicator(self, indicator):
         if self.es is None:
