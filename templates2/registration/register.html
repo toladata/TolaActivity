@@ -29,14 +29,16 @@
                 {% load crispy_forms_tags %}
                 {{ form_user|crispy }}
                 {{ form_tolauser|crispy }}
-                <div id="iframe">
+                <div id="iframe" class="mt-4">
                     <h6>Notice/Disclaimer:</h6>
                     {% if privacy_disclaimer %}
                     <p>
                         {{ privacy_disclaimer }}
                     </p>
                     {% else %}
-                        {% include "registration/privacy_policy.html" %}
+                        <div class="privacy-policy">
+                            {% include "registration/privacy_policy.html" %}
+                        </div>
                     {% endif %}
                 </div>
                 <br/>
