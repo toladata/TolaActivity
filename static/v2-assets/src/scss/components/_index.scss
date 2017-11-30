@@ -22,5 +22,17 @@
 }
 
 .card{
-  padding: rem-calc(25);
+
+}
+.app-page{
+  &__card{
+    margin-top: 20px;
+    padding: rem-calc(40 25 30 25);
+    transition: transform .3s, box-shadow .3s;
+
+    &:hover{
+      transform: translateY(-10px);
+      box-shadow: rgba(0, 0, 0, 0.1) -2px 2px 6px;
+    }
+  }
 }
