@@ -12,7 +12,7 @@ class LoadInitialDataTest(TestCase):
     def test_load_basic_data(self):
         args = []
         opts = {}
-        call_command('loaddemo', *args, **opts)
+        call_command('loadinitialdata', *args, **opts)
 
         Organization.objects.get(name="TolaData")
         for name in (ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
@@ -24,8 +24,8 @@ class LoadInitialDataTest(TestCase):
     def test_load_basic_data_two_times_no_crash(self):
         args = []
         opts = {}
-        call_command('loaddemo', *args, **opts)
-        call_command('loaddemo', *args, **opts)
+        call_command('loadinitialdata', *args, **opts)
+        call_command('loadinitialdata', *args, **opts)
 
         # We make sure it only returns one unique object of each model
         Organization.objects.get(name="TolaData")
@@ -38,7 +38,7 @@ class LoadInitialDataTest(TestCase):
     def test_load_demo_data(self):
         args = ['--demo']
         opts = {}
-        call_command('loaddemo', *args, **opts)
+        call_command('loadinitialdata', *args, **opts)
 
         Organization.objects.get(name="TolaData")
         for name in (ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
@@ -53,12 +53,12 @@ class LoadInitialDataTest(TestCase):
     def test_load_demo_data_two_times_crashes_but_db_keeps_consistent(self):
         args = ['--demo']
         opts = {}
-        call_command('loaddemo', *args, **opts)
+        call_command('loadinitialdata', *args, **opts)
 
         User.objects.all().delete()
 
         with self.assertRaises(IntegrityError):
-            call_command('loaddemo', *args, **opts)
+            call_command('loadinitialdata', *args, **opts)
 
         self.assertRaises(User.DoesNotExist, User.objects.get,
                           first_name="Andrew", last_name="Ham")
