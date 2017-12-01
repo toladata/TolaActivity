@@ -100,7 +100,6 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     helper.layout = Layout(
         Fieldset('Information','title', 'org'),
         Fieldset('Privacy Statement','privacy_disclaimer_accepted',),
-
     )
 
 class BookmarkForm(forms.ModelForm):
