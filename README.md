@@ -73,6 +73,14 @@ To connect to the database when the container is running:
 docker exec -it postgres psql -U root tola_activity
 ```
 
+If the database is empty, you may want to populate extra demo data to play
+around with Activity:
+
+```bash
+docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py loadinitialdata  --demo
+```
+
+
 ## Deploy locally using virtualenv
 
 Given pip is installed:
