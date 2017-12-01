@@ -35,7 +35,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
         if settings.TOLA_ACTIVITY_URL and settings.TOLA_TRACK_URL:
             extra_context = {
                 'tolaactivity_url': settings.TOLA_ACTIVITY_URL,
-                'tolatrack_url': settings.TOLA_TRACK_URL,
+                'tolatrack_url': urljoin(settings.TOLA_TRACK_URL, 'login/tola'),
             }
         else:  # CE only
             warnings.warn(
@@ -46,7 +46,8 @@ class IndexView(LoginRequiredMixin, TemplateView):
             tola_site = TolaSites.objects.get(name="TolaData")
             extra_context = {
                 'tolaactivity_url': tola_site.front_end_url,
-                'tolatrack_url': tola_site.tola_tables_url,
+                'tolatrack_url': urljoin(tola_site.tola_tables_url,
+                                         'login/tola'),
             }
         context.update(extra_context)
         return context
