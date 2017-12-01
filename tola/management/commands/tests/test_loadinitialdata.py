@@ -3,6 +3,7 @@ from django.core.management import call_command
 from django.db import IntegrityError
 from django.test import TestCase
 
+from indicators.models import IndicatorType
 from workflow.models import (Country, Organization, Sector, ROLE_VIEW_ONLY,
                              ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
                              ROLE_PROGRAM_TEAM, WorkflowLevel1)
@@ -20,6 +21,8 @@ class LoadInitialDataTest(TestCase):
             Group.objects.get(name=name)
         Country.objects.get(code="AF")
         Sector.objects.get(sector="Agriculture")
+        for name in ("Custom", "Donor", "Standard"):
+            IndicatorType.objects.get(indicator_type=name)
 
     def test_load_basic_data_two_times_no_crash(self):
         args = []

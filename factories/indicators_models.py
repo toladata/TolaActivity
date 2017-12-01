@@ -1,4 +1,4 @@
-from factory import DjangoModelFactory, post_generation, SubFactory
+from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy
 
 from indicators.models import (
     CollectedData as CollectedDataM,
@@ -67,8 +67,9 @@ class CollectedData(DjangoModelFactory):
 class IndicatorType(DjangoModelFactory):
     class Meta:
         model = IndicatorTypeM
+        django_get_or_create = ('indicator_type',)
 
-    indicator_type = 'Indicator Type A'
+    indicator_type = fuzzy.FuzzyText()
 
 
 class ExternalService(DjangoModelFactory):

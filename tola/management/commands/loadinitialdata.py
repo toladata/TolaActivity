@@ -17,7 +17,7 @@ class Command(BaseCommand):
     Loads initial factories data.
 
     By default, a new TolaData organization will be created, plus countries,
-    groups and sectors.
+    groups, sectors and indicator types.
 
     Passing a --demo flag will populate the database with extra sample projects,
     activities, indicators, workflowteams etc. As a pre-condition for it to
@@ -892,6 +892,25 @@ class Command(BaseCommand):
             sector="Micronutrient Deficiency Prevention",
             organization=self._organization,
         ))
+
+    def _create_indicator_types(self):
+        factories.IndicatorType(
+            id=1,
+            indicator_type="Custom",
+            organization=self._organization,
+        )
+
+        factories.IndicatorType(
+            id=2,
+            indicator_type="Donor",
+            organization=self._organization,
+        )
+
+        factories.IndicatorType(
+            id=3,
+            indicator_type="Standard",
+            organization=self._organization,
+        )
 
     def _create_users(self):
         self._tolauser_andrew = factories.TolaUser(
@@ -2351,6 +2370,7 @@ class Command(BaseCommand):
         self._create_groups()
         self._create_countries()
         self._create_sectors()
+        self._create_indicator_types()
 
         if options['demo']:
             try:
