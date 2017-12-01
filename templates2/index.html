@@ -16,22 +16,19 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card">
-                      <a href="{{ tolaactivity_url }}" class="logo-app text-center">
-                          <img src="{{ STATIC_URL }}v2-assets/src/img/svg-activity.svg" height="46" class="logo-app__image">
-                          <span class="logo-app__caption">Activity</span>
-                      </a>
-                       <p class="app-description">Use Activity to manage, organize and share project activites and more...</p>
-                    </div>
+                  <a href="{{ tolaactivity_url }}" class="card app-page__card logo-app text-center">
+                      <img src="{{ STATIC_URL }}v2-assets/src/img/svg-activity.svg" height="46" class="logo-app__image">
+                      <span class="logo-app__caption">Activity</span>
+                      <p class="app-description">Use Activity to manage, organize and share project activites and more...</p>
+                  </a>
                 </div>
                 <div class="col-md-6">
-                    <div class="card">
-                        <a href="{{ tolatrack_url }}/login/tola" class="logo-app text-center">
-                            <img src="{{ STATIC_URL }}v2-assets/src/img/svg-track.svg" height="46" class="logo-app__image">
-                            <span class="logo-app__caption">Track</span>
-                        </a>
+                    <a href="{{ tolatrack_url }}/login/tola" class="card app-page__card logo-app text-center">
+                        <img src="{{ STATIC_URL }}v2-assets/src/img/svg-track.svg" height="46" class="logo-app__image">
+                        <span class="logo-app__caption">Track</span>
+
                         <p class="app-description">Use Track to collect and manage your multiple datasets.</p>
-                    </div>
+                    </a>
                 </div>
             </div>
 
