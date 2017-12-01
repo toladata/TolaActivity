@@ -303,9 +303,9 @@ class ProjectAgreementForm(forms.ModelForm):
                                             </tr>
                                             {% for item in getQuantitative %}
                                             <tr>
-                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.periodic_target|default:""}}</td>
                                                 <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/?redirect_uri={{request.path}}#me' data-target="#myModal">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
