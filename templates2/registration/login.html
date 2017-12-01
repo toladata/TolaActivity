@@ -28,7 +28,25 @@
           <p class="mt-4 text-center">
               Don't have an account? <a href="{% url 'register' %}">Register a new Tola Account</a><br/>
           </p>
-
         </form>
+        <p class="mt-4 text-center">
+          <a href="#" data-toggle="modal" data-target="#exampleModal">Register Your Organization with TolaData</a>
+        </p>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Register Your Organization with TolaData</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <script type="text/javascript">(function a(d, w, u) {var h = d.getElementsByTagName("head")[0];var s = d.createElement("script");s.type = "text/javascript";s.src = "https://portal.form.io/lib/seamless/seamless.parent.min.js";s.onload = function b() {var f = d.getElementById("formio-form-5a1ed777a1089400018eabae");if (!f || (typeof w.seamless === u)) {return setTimeout(b, 100);}w.seamless(f, {fallback:false}).receive(function(d, e) {});};h.appendChild(s);})(document, window);</script><iframe id="formio-form-5a1ed777a1089400018eabae" style="width:100%;border:none;" height="600px" src="https://formview.io/#/zkhfgxnjoriblfv/neworg?iframe=1&amp;header=0"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
 {% endblock %}

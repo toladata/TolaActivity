@@ -17,15 +17,16 @@ class ElasticsearchIndexer:
     Adds an index process for each indicators, workflowlevel 1 and 2 and collecteddata models
     To seperate indices of different servers a prefix can be defined in settings
     """
-    if settings.ELASTICSEARCH_URL is not None:
-        es = Elasticsearch([settings.ELASTICSEARCH_URL], timeout=30, max_retries=10, retry_on_timeout=True)
-    else:
-        es = None
+    es = None
 
-    if settings.ELASTICSEARCH_INDEX_PREFIX is not None:
-        prefix = settings.ELASTICSEARCH_INDEX_PREFIX + '_'
-    else:
-        prefix = ''
+    def __init__(self):
+        if settings.ELASTICSEARCH_ENABLED and settings.ELASTICSEARCH_URL is not None:
+            self.es = Elasticsearch([settings.ELASTICSEARCH_URL], timeout=30, max_retries=10, retry_on_timeout=True)
+
+        if settings.ELASTICSEARCH_INDEX_PREFIX is not None:
+            self.prefix = settings.ELASTICSEARCH_INDEX_PREFIX + '_'
+        else:
+            self.prefix = ''
 
     def index_indicator(self, indicator):
         if self.es is None:
@@ -33,20 +34,29 @@ class ElasticsearchIndexer:
 
         data = self.get_field_data(indicator)
 
-        # aggregate related models
-        data['workflowlevel1'] = list(map(lambda w: w.name, indicator.workflowlevel1.all()))
+        for wf1 in indicator.workflowlevel1.all():
+            if wf1.organization is not None and wf1.organization is not None:
+                org_uuid = str(wf1.organization.organization_uuid)
 
-        # index data with elasticsearch
-        try:
-            self.es.index(index=self.prefix+"indicators", id=data['id'], doc_type='indicator', body=data)
-        except RequestError:
-            print(indicator, "Error")   # Todo write to error log
+                # aggregate related models
+                data['workflowlevel1'] = list(map(lambda w: w.name, [wf1]))
 
-    def delete_indicator(self, id):
+                # index data with elasticsearch
+                try:
+                    self.es.index(index=self.prefix + org_uuid + "_indicators", id=data['id'], doc_type='indicator',
+                             body=data)
+                except RequestError:
+                    logger.error('Error indexing indicator', exc_info=True)
+            else:
+                continue
+
+    def delete_indicator(self, indicator):
         if self.es is None:
             return
         try:
-            self.es.delete(index=self.prefix + "indicators", id=id, doc_type='indicator')
+            for org_uuid in indicator.workflowlevel1.values_list('organization__organization_uuid'):
+                org_uuid = str(org_uuid[0])
+                self.es.delete(index=self.prefix + org_uuid + "_indicators", id=indicator.id, doc_type='indicator')
         except NotFoundError:
             logger.warning('Indicator not found in Elasticsearch', exc_info=True)
             raise ValueNotFoundError
@@ -54,85 +64,102 @@ class ElasticsearchIndexer:
     def index_workflowlevel1(self, wf):
         if self.es is None:
             return
-        data = self.get_field_data(wf)
 
-        # aggregate related models
-        data = self.get_field_data(wf)
+        if wf.organization is not None:
+            org_uuid = str(wf.organization.organization_uuid)
 
-        # aggregate related models
-        data['sectors'] = list(map(lambda s: s.sector, wf.sector.all()))
-        data['country'] = list(map(lambda c: self.get_field_data(c), wf.country.all()))
+            # aggregate related models
+            data = self.get_field_data(wf)
 
-        # index data with elasticsearch
-        try:
-            self.es.index(index=self.prefix+"workflow_level1", id=data['level1_uuid'], doc_type='workflow', body=data)
-        except RequestError:
-            print(wf, "Error")  # Todo write to error log
+            # aggregate related models
+            data['sectors'] = list(map(lambda s: s.sector, wf.sector.all()))
+            data['country'] = list(map(lambda c: self.get_field_data(c), wf.country.all()))
+
+            # index data with elasticsearch
+            try:
+                self.es.index(index=self.prefix + org_uuid + "_workflow_level1", id=data['level1_uuid'], doc_type='workflow', body=data)
+            except RequestError:
+                logger.error('Error indexing workflowlevel1', exc_info=True)
 
     def index_workflowlevel2(self, wf):
         if self.es is None:
             return
 
-        # get model field data
-        data = self.get_field_data(wf)
+        if wf.workflowlevel1.organization is not None and wf.workflowlevel1.organization is not None:
+            org_uuid = str(wf.workflowlevel1.organization.organization_uuid)
 
-        # aggregate related models
-        data['sector'] = wf.sector.sector if wf.sector is not None else None
+            # get model field data
+            data = self.get_field_data(wf)
 
-        data['workflowlevel1'] = self.get_field_data(wf.workflowlevel1)
-        data['indicators'] = list(map(lambda i: self.get_field_data(i), wf.indicators.all()))
-        data['stakeholder'] = list(map(lambda s: self.get_field_data(s), wf.stakeholder.all()))
-        data['site'] = list(map(lambda s: self.get_field_data(s), wf.site.all()))
+            # aggregate related models
+            data['sector'] = wf.sector.sector if wf.sector is not None else None
 
-        # index data with elasticsearch
-        try:
-            self.es.index(index=self.prefix+"workflow_level2", id=data['level2_uuid'], doc_type='workflow', body=data)
-        except RequestError:
-            print(wf, "Error")
+            data['workflowlevel1'] = self.get_field_data(wf.workflowlevel1)
+            data['indicators'] = list(map(lambda i: self.get_field_data(i), wf.indicators.all()))
+            data['stakeholder'] = list(map(lambda s: self.get_field_data(s), wf.stakeholder.all()))
+            data['site'] = list(map(lambda s: self.get_field_data(s), wf.site.all()))
 
-    def delete_workflowlevel1(self, id):
+            # index data with elasticsearch
+            try:
+                self.es.index(index=self.prefix + org_uuid + "_workflow_level2", id=data['level2_uuid'], doc_type='workflow', body=data)
+            except RequestError:
+                logger.error('Error indexing workflowlevel2', exc_info=True)
+
+    def delete_workflowlevel1(self, wf):
         if self.es is None:
             return
 
         try:
-            self.es.delete(index=self.prefix+"workflow_level1", id=id, doc_type='workflow')
-        except RequestError:
-            print(id, "Error")   # Todo write to error log
+            if wf.organization is not None and wf.organization is not None:
+                org_uuid = str(wf.organization.organization_uuid)
 
-    def delete_workflowlevel2(self, id):
+                self.es.delete(index=self.prefix + org_uuid + "_workflow_level1", id=wf.level1_uuid, doc_type='workflow')
+        except RequestError:
+            logger.error('Error deleting workflowlevel1 from index', exc_info=True)
+
+    def delete_workflowlevel2(self, wf):
         if self.es is None:
             return
 
         try:
-            self.es.delete(index=self.prefix+"workflow_level2", id=id, doc_type='workflow')
+            if wf.workflowlevel1.organization is not None and wf.workflowlevel1.organization is not None:
+                org_uuid = str(wf.workflowlevel1.organization.organization_uuid)
+
+                self.es.delete(index=self.prefix + org_uuid + "_workflow_level2", id=wf.level2_uuid, doc_type='workflow')
         except RequestError:
-            print(id, "Error")   # Todo write to error log
+            logger.error('Error deleting workflowlevel2 from index', exc_info=True)
 
     def index_collecteddata(self, d):
         if self.es is None:
             return
 
-        # get model field data
-        data = self.get_field_data(d)
+        if d.workflowlevel1 is not None and d.workflowlevel1.organization is not None:
+            org_uuid = str(d.workflowlevel1.organization.organization_uuid)
 
-        # aggregate related models
-        di = d.indicator
-        data['indicator'] = di.name
+            # get model field data
+            data = self.get_field_data(d)
 
-        # index data with elasticsearch
-        try:
-            self.es.index(index=self.prefix+"collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
-        except RequestError:
-            print(d, "Error")   # Todo write to error log
+            # aggregate related models
+            di = d.indicator
+            data['indicator'] = di.name
 
-    def delete_collecteddata(self, id):
+            # index data with elasticsearch
+            try:
+                self.es.index(index=self.prefix + org_uuid + "_collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
+            except RequestError:
+                logger.error('Error indexing collected data', exc_info=True)
+
+    def delete_collecteddata(self, d):
         if self.es is None:
             return
 
         try:
-            self.es.delete(index=self.prefix+"collected_data", id=id, doc_type='data_collection')
+            if d.workflowlevel1.organization is not None:
+                org_uuid = str(d.workflowlevel1.organization.organization_uuid)
+
+                self.es.delete(index=self.prefix + org_uuid + "_collected_data", id=d.data_uuid, doc_type='data_collection')
         except RequestError:
-            print(id, "Error")   # Todo write to error log
+            logger.error('Error deleting collected data from index', exc_info=True)
 
     def get_field_data(self, obj):
         if self.es is None:

@@ -26,26 +26,42 @@ class IndicatorListViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
+    def test_list_indicator_superuser_and_org_admin(self):
+        request = self.factory.get('/api/indicator/')
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        request.user = factories.User.build(is_superuser=True,
+                                            is_staff=True)
+        view = IndicatorViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
     def test_list_indicator_org_admin(self):
         request = self.factory.get('/api/indicator/')
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        wflvl1 = factories.WorkflowLevel1(
+        another_org = factories.Organization(name='Another Org')
+        wflvl1_1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user,
-            workflowlevel1=wflvl1)
+        wflvl1_2 = factories.WorkflowLevel1(
+            organization=another_org)
+        wflvl1_3 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+
         request.user = self.tola_user.user
         view = IndicatorViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
-        factories.Indicator(workflowlevel1=[wflvl1])
+        factories.Indicator(workflowlevel1=[wflvl1_1])
+        factories.Indicator(workflowlevel1=[wflvl1_2, wflvl1_3])
         response = view(request)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 2)
 
     def test_list_indicator_program_admin(self):
         request = self.factory.get('/api/indicator/')
