@@ -29,18 +29,22 @@ class IndexViewTest(TestCase):
         self.assertIn(reverse('login'), response.url)
 
     @override_settings(TOLA_ACTIVITY_URL='https://tolaactivity.com')
-    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com/')
     def test_dispatch_authenticated_with_urls_set(self):
         request = self.factory.get('')
         request.user = self.tola_user.user
         response = views.IndexView.as_view()(request)
         self.assertEqual(response.status_code, 200)
-        response.context_data['tolaactivity_url'] = 'https://tolaactivity.com'
-        response.context_data['tolatrack_url'] = 'https://tolatrack.com'
+        self.assertEqual(response.context_data['tolaactivity_url'],
+                         'https://tolaactivity.com')
+        self.assertEqual(response.context_data['tolatrack_url'],
+                         'https://tolatrack.com/login/tola')
         template_content = response.render().content
         self.assertIn('https://tolaactivity.com', template_content)
-        self.assertIn('https://tolatrack.com', template_content)
+        self.assertIn('https://tolatrack.com/login/tola', template_content)
 
+    @override_settings(TOLA_ACTIVITY_URL='')
+    @override_settings(TOLA_TRACK_URL='')
     def test_dispatch_authenticated_with_urls_not_set(self):
         site = Site.objects.create(domain='api.toladata.com', name='API')
         TolaSites.objects.create(
@@ -53,11 +57,13 @@ class IndexViewTest(TestCase):
         request.user = self.tola_user.user
         response = views.IndexView.as_view()(request)
         self.assertEqual(response.status_code, 200)
-        response.context_data['tolaactivity_url'] = 'https://tolaactivity.com'
-        response.context_data['tolatrack_url'] = 'https://tolatrack.com'
+        self.assertEqual(response.context_data['tolaactivity_url'],
+                         'https://tolaactivity.com')
+        self.assertEqual(response.context_data['tolatrack_url'],
+                         'https://tolatrack.com/login/tola')
         template_content = response.render().content
         self.assertIn('https://tolaactivity.com', template_content)
-        self.assertIn('https://tolatrack.com', template_content)
+        self.assertIn('https://tolatrack.com/login/tola', template_content)
 
 
 class RegisterViewGetTest(TestCase):
