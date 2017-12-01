@@ -56,6 +56,7 @@ router.register(r'loggedusers', LoggedUserViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
 router.register(r'pindicators', PogramIndicatorReadOnlyViewSet, base_name='pindicators')
+router.register(r'periodictargets', PeriodicTargetReadOnlyViewSet, base_name='periodictargets')
 
 
 urlpatterns = [ # rest framework
