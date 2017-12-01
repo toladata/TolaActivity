@@ -1,10 +1,15 @@
+import logging
+import sys
+
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 import factories
 from workflow.models import (
     ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
     ROLE_PROGRAM_TEAM)
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -2348,16 +2353,24 @@ class Command(BaseCommand):
         self._create_sectors()
 
         if options['demo']:
-            self._create_users()
-            self._create_site_profiles()
-            self._create_stakeholders()
-            self._create_milestones()
-            self._create_workflow_1s()
-            self._create_workflow_2s()
-            self._create_levels()
-            self._create_indicators()
-            self._create_periodic_targets()
-            self._create_collected_data()
-            self._create_frequencies()
-            self._create_workflowlevel1_sectors()
-            self._create_workflowteams()
+            try:
+                self._create_users()
+                self._create_site_profiles()
+                self._create_stakeholders()
+                self._create_milestones()
+                self._create_workflow_1s()
+                self._create_workflow_2s()
+                self._create_levels()
+                self._create_indicators()
+                self._create_periodic_targets()
+                self._create_collected_data()
+                self._create_frequencies()
+                self._create_workflowlevel1_sectors()
+                self._create_workflowteams()
+            except IntegrityError as error:
+                msg = ("Error: the data could not be populated in the "
+                       "database. Check that the affected database tables are "
+                       "empty.")
+                logger.error(msg)
+                sys.stderr.write("{}\n".format(msg))
+                raise
