@@ -96,7 +96,7 @@ urlpatterns = [ # rest framework
                 url(r'^formlibrary/', include('formlibrary.urls')),
 
                 # app include of configurable dashboard urls
-                url(r'^configurabledashboard/', include('configurabledashboard.urls')),
+                # url(r'^configurabledashboard/', include('configurabledashboard.urls')),
 
                 # local login
                 url(r'^login/$', authviews.login, name='login'),
