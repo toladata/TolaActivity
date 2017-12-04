@@ -30,18 +30,19 @@ class WorkflowLevel2ListViewsTest(TestCase):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
+        wflvl1 = factories.WorkflowLevel1()
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1)
+        factories.WorkflowLevel2(workflowlevel1=wflvl1)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'get': 'list'})
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 0)
 
-        factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        wflvl1.organization = self.tola_user.organization
+        wflvl1.save()
         response = view(request)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
@@ -599,8 +600,11 @@ class WorkflowLevel2FilterViewsTest(TestCase):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        wkflvl1_1 = factories.WorkflowLevel1()
-        wkflvl1_2 = factories.WorkflowLevel1(name='Construction Project')
+        wkflvl1_1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wkflvl1_2 = factories.WorkflowLevel1(
+            name='Construction Project',
+            organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wkflvl1_1)
@@ -625,8 +629,10 @@ class WorkflowLevel2FilterViewsTest(TestCase):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        wkflvl1_1 = factories.WorkflowLevel1()
-        wkflvl1_2 = factories.WorkflowLevel1()
+        wkflvl1_1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wkflvl1_2 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wkflvl1_1)
@@ -651,7 +657,8 @@ class WorkflowLevel2FilterViewsTest(TestCase):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        wkflvl1 = factories.WorkflowLevel1()
+        wkflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wkflvl1)
