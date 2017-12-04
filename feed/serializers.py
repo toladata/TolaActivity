@@ -3,7 +3,8 @@ from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, C
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
     Province, District, AdminLevelThree, Village, StakeholderType, Contact, Documentation, LoggedUser, Checklist, Organization
 from indicators.models import Indicator, ReportingFrequency, TolaUser, IndicatorType, Objective, DisaggregationType, \
-    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue
+    Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue,\
+    PeriodicTarget
 from django.contrib.auth.models import User
 
 
@@ -14,6 +15,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ('url', 'username', 'email', 'is_staff')
+
+class PeriodicTargetSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PeriodicTarget
+        fields = '__all__'
 
 
 class ProgramSerializer(serializers.HyperlinkedModelSerializer):

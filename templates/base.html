@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load static %}
+{% load group_tag %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -237,10 +238,14 @@
                 <div class="col-md-6 text-left">
                     <a href="http://www.toladata.com" class="text-muted"><b>Tola</b>Data</a>
                 </div>
-                <div class="col-md-6 text-right">
-                    <!-- http://tola.work/documentation -->
-                    <a href="https://sites.google.com/mercycorps.org/tolauserguide/home" class="text-muted" target="_blank">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a> | <a href="https://github.com/toladata/TolaActivity/blob/master/LICENSE" class="text-muted">License</a>
-                </div>
+                {% if "links.html"|template_exists %}
+                    {% include "links.html" %}
+                {% else %}
+                    <div class="col-md-6 text-right">
+                        <a href="https://sites.google.com/mercycorps.org/tolauserguide/home" class="text-muted" target="_blank">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a> | <a href="https://github.com/toladata/TolaActivity/blob/master/LICENSE" class="text-muted">License</a>
+                    </div>
+                {% endif %}
+
             </div>
         </div><!-- .footer collapse -->
 

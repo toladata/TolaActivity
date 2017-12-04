@@ -19,6 +19,11 @@
             /* add select2 js library to the indicator select box */
             $("#id_site").select2();
             $("#id_stakeholder").select2();
+
+            $("#myModal").on('hidden.bs.modal', function () {
+                // destroy the modal content so that it is not cached and
+                $(this).data('bs.modal', null);
+            });
         });
 
         $("#budget_contributions_table").on("click", ".output", function(e){

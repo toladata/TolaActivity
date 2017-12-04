@@ -35,6 +35,18 @@ class SmallResultsSetPagination(PageNumberPagination):
     max_page_size = 50
 
 
+
+class PeriodicTargetReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = PeriodicTargetSerializer
+
+    def get_queryset(self):
+        queryset = PeriodicTarget.objects.all()
+        indicator_id = self.request.query_params.get('indicator', None)
+        if indicator_id:
+            queryset = queryset.filter(indicator=indicator_id)
+        return queryset
+
+
 class PogramIndicatorReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProgramIndicatorSerializer
     pagination_class = StandardResultsSetPagination

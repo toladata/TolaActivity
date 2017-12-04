@@ -360,7 +360,7 @@ class CollectedData(models.Model):
     data_key = models.UUIDField(default=uuid.uuid4, unique=True),
     periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True)
     #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
-    achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2)
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
     description = models.TextField("Remarks/comments", blank=True, null=True)
     indicator = models.ForeignKey(Indicator)
