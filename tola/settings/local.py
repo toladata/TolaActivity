@@ -8,8 +8,8 @@ try:
             'ENGINE': os.environ["TOLA_DB_ENGINE"],
             'NAME': os.environ["TOLA_DB_NAME"],
             'USER': os.environ["TOLA_DB_USER"],
-            'PASSWORD': os.environ["TOLA_DB_PASS"],
-            'HOST': os.environ["TOLA_DB_HOST"],
+            'PASSWORD': os.environ.get("TOLA_DB_PASS"),
+            'HOST': os.environ.get("TOLA_DB_HOST", "localhost"),
             'PORT': os.environ["TOLA_DB_PORT"],
         }
     }
