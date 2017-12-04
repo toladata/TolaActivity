@@ -16,8 +16,8 @@ class WorkflowLevel2ListViewsTest(TestCase):
         self.factory = APIRequestFactory()
         self.tola_user = factories.TolaUser()
 
-    def test_list_workflowLlevel2_superuser(self):
-        request = self.factory.get('/api/workflowLlevel2/')
+    def test_list_workflowlevel2_superuser(self):
+        request = self.factory.get('/api/workflowlevel2/')
         request.user = factories.User.build(is_superuser=True,
                                             is_staff=True)
         view = WorkflowLevel2ViewSet.as_view({'get': 'list'})
@@ -25,8 +25,8 @@ class WorkflowLevel2ListViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
-    def test_list_workflowLlevel2_org_admin(self):
-        request = self.factory.get('/api/workflowLlevel2/')
+    def test_list_workflowlevel2_org_admin(self):
+        request = self.factory.get('/api/workflowlevel2/')
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
@@ -46,8 +46,8 @@ class WorkflowLevel2ListViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
-    def test_list_workflowLlevel2_program_admin(self):
-        request = self.factory.get('/api/workflowLlevel2/')
+    def test_list_workflowlevel2_program_admin(self):
+        request = self.factory.get('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
@@ -65,8 +65,8 @@ class WorkflowLevel2ListViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
-    def test_list_workflowLlevel2_program_team(self):
-        request = self.factory.get('/api/workflowLlevel2/')
+    def test_list_workflowlevel2_program_team(self):
+        request = self.factory.get('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
@@ -84,8 +84,8 @@ class WorkflowLevel2ListViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
-    def test_list_workflowLlevel2_view_only(self):
-        request = self.factory.get('/api/workflowLlevel2/')
+    def test_list_workflowlevel2_view_only(self):
+        request = self.factory.get('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
@@ -115,7 +115,7 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         self.tola_user.user.is_superuser = True
         self.tola_user.user.save()
 
-        request = self.factory.post('/api/workflowLlevel2/')
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1()
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
@@ -132,11 +132,11 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Help Syrians')
 
-    def test_create_workflowLlevel2_org_admin(self):
+    def test_create_workflowlevel2_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        request = self.factory.post('/api/workflowLlevel2/')
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         wflvl1_url = reverse('workflowlevel1-detail',
@@ -154,8 +154,8 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Help Syrians')
 
-    def test_create_workflowLlevel2_program_admin(self):
-        request = self.factory.post('/api/workflowLlevel2/')
+    def test_create_workflowlevel2_program_admin(self):
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         wflvl1_url = reverse('workflowlevel1-detail',
@@ -173,7 +173,7 @@ class WorkflowLevel2CreateViewsTest(TestCase):
                 'workflowlevel1': wflvl1_url,
                 'staff_responsible': tolauser_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'create'})
         response = view(request)
@@ -182,8 +182,8 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         self.assertEqual(response.data['name'], u'Help Syrians')
         self.assertEqual(response.data['staff_responsible'], tolauser_url)
 
-    def test_create_workflowLlevel2_program_admin_json(self):
-        request = self.factory.post('/api/workflowLlevel2/')
+    def test_create_workflowlevel2_program_admin_json(self):
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         wflvl1_url = reverse('workflowlevel1-detail',
@@ -197,7 +197,7 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         data = {'name': 'Help Syrians',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', json.dumps(data),
+        request = self.factory.post('/api/workflowlevel2/', json.dumps(data),
                                     content_type='application/json')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'create'})
@@ -206,8 +206,8 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Help Syrians')
 
-    def test_create_workflowLlevel2_program_team(self):
-        request = self.factory.post('/api/workflowLlevel2/')
+    def test_create_workflowlevel2_program_team(self):
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         wflvl1_url = reverse('workflowlevel1-detail',
@@ -221,7 +221,7 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         data = {'name': 'Help Syrians',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'create'})
         response = view(request)
@@ -229,8 +229,8 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Help Syrians')
 
-    def test_create_workflowLlevel2_view_only(self):
-        request = self.factory.post('/api/workflowLlevel2/')
+    def test_create_workflowlevel2_view_only(self):
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         wflvl1_url = reverse('workflowlevel1-detail',
@@ -244,7 +244,7 @@ class WorkflowLevel2CreateViewsTest(TestCase):
         data = {'name': 'Help Syrians',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'create'})
         response = view(request)
@@ -258,26 +258,26 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
         self.tola_user = factories.TolaUser()
         factories.Group()
 
-    def test_update_unexisting_workflowLlevel2(self):
+    def test_update_unexisting_workflowlevel2(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
         data = {'name': 'Community awareness program conducted to plant trees'}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
         response = view(request, pk=288)
         self.assertEqual(response.status_code, 404)
 
-    def test_update_workflowLlevel2_superuser(self):
+    def test_update_workflowlevel2_superuser(self):
         self.tola_user.user.is_staff = True
         self.tola_user.user.is_superuser = True
         self.tola_user.user.save()
 
-        request = self.factory.post('/api/workflowLlevel2/')
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1()
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
                              request=request)
@@ -285,23 +285,23 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
         data = {'name': 'Community awareness program conducted to plant trees',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEqual(response.status_code, 200)
 
-        workflowLlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
-        self.assertEquals(workflowLlevel2.name, data['name'])
+        workflowlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
+        self.assertEquals(workflowlevel2.name, data['name'])
 
-    def test_update_workflowLlevel2_org_admin(self):
+    def test_update_workflowlevel2_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        request = self.factory.post('/api/workflowLlevel2/')
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
                              request=request)
@@ -309,23 +309,23 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
         data = {'name': 'Community awareness program conducted to plant trees',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEqual(response.status_code, 200)
 
-        workflowLlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
-        self.assertEquals(workflowLlevel2.name, data['name'])
+        workflowlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
+        self.assertEquals(workflowlevel2.name, data['name'])
 
-    def test_update_workflowLlevel2_diff_org_admin(self):
+    def test_update_workflowlevel2_diff_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        request = self.factory.post('/api/workflowLlevel2/')
+        request = self.factory.post('/api/workflowlevel2/')
         another_org = factories.Organization(name='Another Org')
         wflvl1 = factories.WorkflowLevel1(organization=another_org)
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
                              request=request)
@@ -333,21 +333,21 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
         data = {'name': 'Community awareness program conducted to plant trees',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEqual(response.status_code, 403)
 
-    def test_update_workflowLlevel2_program_admin(self):
-        request = self.factory.post('/api/workflowLlevel2/')
+    def test_update_workflowlevel2_program_admin(self):
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_PROGRAM_ADMIN))
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
                              request=request)
@@ -355,24 +355,24 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
         data = {'name': 'Community awareness program conducted to plant trees',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEqual(response.status_code, 200)
 
-        workflowLlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
-        self.assertEquals(workflowLlevel2.name, data['name'])
+        workflowlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
+        self.assertEquals(workflowlevel2.name, data['name'])
 
-    def test_update_workflowLlevel2_program_admin_json(self):
-        request = self.factory.post('/api/workflowLlevel2/')
+    def test_update_workflowlevel2_program_admin_json(self):
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_PROGRAM_ADMIN))
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
                              request=request)
@@ -384,21 +384,21 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
                                     content_type='application/json')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEqual(response.status_code, 200)
 
-        workflowLlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
-        self.assertEquals(workflowLlevel2.name, data['name'])
+        workflowlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
+        self.assertEquals(workflowlevel2.name, data['name'])
 
-    def test_update_workflowLlevel2_program_team(self):
-        request = self.factory.post('/api/workflowLlevel2/')
+    def test_update_workflowlevel2_program_team(self):
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_PROGRAM_TEAM))
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
                              request=request)
@@ -406,24 +406,24 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
         data = {'name': 'Community awareness program conducted to plant trees',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEqual(response.status_code, 200)
 
-        workflowLlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
-        self.assertEquals(workflowLlevel2.name, data['name'])
+        workflowlevel2 = WorkflowLevel2.objects.get(pk=response.data['id'])
+        self.assertEquals(workflowlevel2.name, data['name'])
 
-    def test_update_workflowLlevel2_view_only(self):
-        request = self.factory.post('/api/workflowLlevel2/')
+    def test_update_workflowlevel2_view_only(self):
+        request = self.factory.post('/api/workflowlevel2/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_VIEW_ONLY))
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         wflvl1_url = reverse('workflowlevel1-detail',
                              kwargs={'pk': wflvl1.id},
                              request=request)
@@ -431,10 +431,10 @@ class WorkflowLevel2UpdateViewsTest(TestCase):
         data = {'name': 'Community awareness program conducted to plant trees',
                 'workflowlevel1': wflvl1_url}
 
-        request = self.factory.post('/api/workflowLlevel2/', data)
+        request = self.factory.post('/api/workflowlevel2/', data)
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'post': 'update'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEqual(response.status_code, 403)
 
 
@@ -444,127 +444,127 @@ class WorkflowLevel2DeleteViewsTest(TestCase):
         self.tola_user = factories.TolaUser()
         factories.Group()
 
-    def test_delete_workflowLlevel2_superuser(self):
+    def test_delete_workflowlevel2_superuser(self):
         self.tola_user.user.is_staff = True
         self.tola_user.user.is_superuser = True
         self.tola_user.user.save()
 
-        workflowLlevel2 = factories.WorkflowLevel2()
-        request = self.factory.delete('/api/workflowLlevel2/')
+        workflowlevel2 = factories.WorkflowLevel2()
+        request = self.factory.delete('/api/workflowlevel2/')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEquals(response.status_code, 204)
         self.assertRaises(
             WorkflowLevel2.DoesNotExist,
-            WorkflowLevel2.objects.get, pk=workflowLlevel2.pk)
+            WorkflowLevel2.objects.get, pk=workflowlevel2.pk)
 
-    def test_delete_workflowLlevel2_org_admin(self):
+    def test_delete_workflowlevel2_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
 
-        request = self.factory.delete('/api/workflowLlevel2/')
+        request = self.factory.delete('/api/workflowlevel2/')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEquals(response.status_code, 204)
         self.assertRaises(
             WorkflowLevel2.DoesNotExist,
-            WorkflowLevel2.objects.get, pk=workflowLlevel2.pk)
+            WorkflowLevel2.objects.get, pk=workflowlevel2.pk)
 
-    def test_delete_workflowLlevel2_diff_org_admin(self):
+    def test_delete_workflowlevel2_diff_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
         another_org = factories.Organization(name='Another Org')
         wflvl1 = factories.WorkflowLevel1(organization=another_org)
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
 
-        request = self.factory.delete('/api/workflowLlevel2/')
+        request = self.factory.delete('/api/workflowlevel2/')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEquals(response.status_code, 403)
-        WorkflowLevel2.objects.get(pk=workflowLlevel2.pk)
+        WorkflowLevel2.objects.get(pk=workflowlevel2.pk)
 
-    def test_delete_workflowLlevel2_program_admin(self):
+    def test_delete_workflowlevel2_program_admin(self):
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_PROGRAM_ADMIN))
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
 
-        request = self.factory.delete('/api/workflowLlevel2/')
+        request = self.factory.delete('/api/workflowlevel2/')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEquals(response.status_code, 204)
         self.assertRaises(
             WorkflowLevel2.DoesNotExist,
-            WorkflowLevel2.objects.get, pk=workflowLlevel2.pk)
+            WorkflowLevel2.objects.get, pk=workflowlevel2.pk)
 
-    def test_delete_workflowLlevel2_diff_org(self):
+    def test_delete_workflowlevel2_diff_org(self):
         another_org = factories.Organization(name='Another Org')
         wflvl1 = factories.WorkflowLevel1(organization=another_org)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_PROGRAM_ADMIN))
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
 
-        request = self.factory.delete('/api/workflowLlevel2/')
+        request = self.factory.delete('/api/workflowlevel2/')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEquals(response.status_code, 403)
-        WorkflowLevel2.objects.get(pk=workflowLlevel2.pk)
+        WorkflowLevel2.objects.get(pk=workflowlevel2.pk)
 
-    def test_delete_workflowLlevel2_program_team(self):
+    def test_delete_workflowlevel2_program_team(self):
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_PROGRAM_TEAM))
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
 
-        request = self.factory.delete('/api/workflowLlevel2/')
+        request = self.factory.delete('/api/workflowlevel2/')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEquals(response.status_code, 403)
-        WorkflowLevel2.objects.get(pk=workflowLlevel2.pk)
+        WorkflowLevel2.objects.get(pk=workflowlevel2.pk)
 
-    def test_delete_workflowLlevel2_view_only(self):
+    def test_delete_workflowlevel2_view_only(self):
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_VIEW_ONLY))
-        workflowLlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        workflowlevel2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
 
-        request = self.factory.delete('/api/workflowLlevel2/')
+        request = self.factory.delete('/api/workflowlevel2/')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEquals(response.status_code, 403)
-        WorkflowLevel2.objects.get(pk=workflowLlevel2.pk)
+        WorkflowLevel2.objects.get(pk=workflowlevel2.pk)
 
-    def test_delete_workflowLlevel2_normal_user(self):
-        workflowLlevel2 = factories.WorkflowLevel2()
-        request = self.factory.delete('/api/workflowLlevel2/')
+    def test_delete_workflowlevel2_normal_user(self):
+        workflowlevel2 = factories.WorkflowLevel2()
+        request = self.factory.delete('/api/workflowlevel2/')
         request.user = self.tola_user.user
         view = WorkflowLevel2ViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=workflowLlevel2.pk)
+        response = view(request, pk=workflowlevel2.pk)
         self.assertEquals(response.status_code, 403)
-        WorkflowLevel2.objects.get(pk=workflowLlevel2.pk)
+        WorkflowLevel2.objects.get(pk=workflowlevel2.pk)
 
 
 class WorkflowLevel2FilterViewsTest(TestCase):
@@ -572,7 +572,7 @@ class WorkflowLevel2FilterViewsTest(TestCase):
         self.factory = APIRequestFactory()
         self.tola_user = factories.TolaUser()
 
-    def test_filter_workflowLevel2_wkflvl1_country_superuser(self):
+    def test_filter_workflowlevel2_wkflvl1_country_superuser(self):
         self.tola_user.user.is_staff = True
         self.tola_user.user.is_superuser = True
         self.tola_user.user.save()
@@ -595,7 +595,7 @@ class WorkflowLevel2FilterViewsTest(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'], wkflvl2.name)
 
-    def test_filter_workflowLevel2_wkflvl1_name_org_admin(self):
+    def test_filter_workflowlevel2_wkflvl1_name_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
@@ -621,7 +621,7 @@ class WorkflowLevel2FilterViewsTest(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'], wkflvl2.name)
 
-    def test_filter_workflowLevel2_wkflvl1_id_org_admin(self):
+    def test_filter_workflowlevel2_wkflvl1_id_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
@@ -647,7 +647,7 @@ class WorkflowLevel2FilterViewsTest(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'], wkflvl2.name)
 
-    def test_filter_workflowLevel2_level2_uuid_org_admin(self):
+    def test_filter_workflowlevel2_level2_uuid_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
