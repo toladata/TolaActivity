@@ -318,6 +318,7 @@ class CollectedDataForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
+        self.fields['agreement'].label = "Project"
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
