@@ -1025,6 +1025,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
                 'Authorization': 'Token {}'.format(
                     settings.TOLA_TRACK_TOKEN),
             }
+            # Check if the customform already has a program associated
             if not instance.workflowlevel1:
                 wflvl1_serializer = self.serializer_class().get_fields()[
                     'workflowlevel1']
@@ -1036,6 +1037,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
                              'level1_uuid': wkfl1.level1_uuid,
                              'tola_user_uuid': tola_user.tola_user_uuid}
 
+                # Make a POST request to Track to create a table
                 url_subpath = 'api/customform'
                 url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
                 response = requests.post(url, data=silo_data, headers=headers)
@@ -1043,12 +1045,14 @@ class CustomFormViewSet(viewsets.ModelViewSet):
                 silo_json = json.loads(response.content)
                 form_data['silo_id'] = silo_json.get('id')
             else:
+                # Check if there is already data in table
                 url_subpath = 'api/customform/%s/has_data' % instance.silo_id
                 url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
                 response = requests.get(url, headers=headers)
                 has_data = json.loads(response.content)
 
                 if has_data == 'false':
+                    # Update the table info in Track
                     data = {'name': form_data.get('name'),
                             'description': form_data.get('description'),
                             'fields': form_data.get('fields')}
