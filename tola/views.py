@@ -42,10 +42,10 @@ def index(request, selected_countries=None, id=0, sector=0):
 
     #limit the programs by the selected sector
     if int(sector) == 0:
-        getPrograms = Program.objects.all().prefetch_related('agreement','agreement__office').filter(funding_status="Funded", country__in=selected_countries).exclude(agreement__isnull=True)
+        getPrograms = Program.objects.all().prefetch_related('agreement','agreement__office').filter(funding_status="Funded", country__in=selected_countries)#.exclude(agreement__isnull=True)
         sectors = Sector.objects.all()
     else:
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=selected_countries, sector=sector).exclude(agreement__isnull=True)
+        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=selected_countries, sector=sector)#.exclude(agreement__isnull=True)
         sectors = Sector.objects.all().filter(id=sector)
 
     filterForQuantitativeDataSums = {
