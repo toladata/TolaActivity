@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import uuid
+
 from django.db import models
 from django.contrib import admin
 from django.contrib.postgres.fields import JSONField
@@ -192,17 +194,18 @@ class CustomFormFieldAdmin(admin.ModelAdmin):
 
 class CustomForm(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
+    form_uuid = models.CharField(max_length=255, verbose_name='CustomForm UUID', default=uuid.uuid4, unique=True)
     description = models.TextField(null=True, blank=True)
     validations = models.CharField(max_length=500, null=True, blank=True)
     fields = JSONField(null=True)
     is_public = models.BooleanField(default=0)
     default_global = models.BooleanField(default=0)
     organization = models.ForeignKey(Organization, default=1)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
+    silo_id = models.IntegerField(default=0)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
-    created_by = models.ForeignKey('auth.User', related_name='customforms',
-                                   null=True, blank=True,
-                                   on_delete=models.SET_NULL)
+    created_by = models.ForeignKey('auth.User', related_name='customforms', null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         ordering = ('name',)
