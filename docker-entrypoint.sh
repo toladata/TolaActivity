@@ -2,9 +2,9 @@
 set -o xtrace
 
 echo "Migrate"
-#python manage.py migrate
+python manage.py migrate
 
-RESULT=0;#$?
+RESULT=$?
 
 nginx;
 
