@@ -34,7 +34,10 @@
 
             <div class="row">
                 <div class="col-md-2">
-
+                     {% if "demo" in request.build_absolute_uri %}
+                        <h2>This is a Demonstration server and account.</h2>
+                        <p>All data will be deleted from the server every 7 days.</p>
+                     {% endif %}
                 </div>
                 <div class="col-md-10">
                 </div>
