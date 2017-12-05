@@ -281,7 +281,7 @@ class Contact(models.Model):
 
     # displayed in admin templates
     def __unicode__(self):
-        return self.name + ", " + self.title
+        return u'%s, %s' % (self.name, self.title)
 
 
 class ContactAdmin(admin.ModelAdmin):
