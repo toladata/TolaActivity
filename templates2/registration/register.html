@@ -27,13 +27,19 @@
             <form action="" method="post">
                 {% csrf_token %}
                 {% load crispy_forms_tags %}
-                {{ userform|crispy }}
-                {{ tolaform|crispy }}
-                <div id="iframe">
+                {{ form_user|crispy }}
+                {{ form_tolauser|crispy }}
+                <div id="iframe" class="mt-5">
                     <h6>Notice/Disclaimer:</h6>
+                    {% if privacy_disclaimer %}
                     <p>
-                        {{ privacy }}
+                        {{ privacy_disclaimer }}
                     </p>
+                    {% else %}
+                        <div class="privacy-policy">
+                            {% include "registration/privacy_policy.html" %}
+                        </div>
+                    {% endif %}
                 </div>
                 <br/>
                 <div class="text-right">

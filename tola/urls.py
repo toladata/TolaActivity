@@ -1,21 +1,22 @@
-from tola import views
+from django.conf import settings
+from django.conf.urls import include, url
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.contrib.auth import views as auth_views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.generic import TemplateView
+from rest_framework import routers
+from rest_framework.authtoken import views as authtoken_views
+
+from formlibrary.views import BinaryFieldViewSet, binary_test
+from tola import views as tola_views
 from tola.views import *
 from feed.views import *
 from search.views import *
-from django.conf.urls import include, url
-from django.views.generic import TemplateView
-from rest_framework import routers
-from django.conf import settings
-from django.conf.urls.static import static
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from rest_framework.authtoken import views as auth_views
-from django.contrib.auth import views as authviews
-from django.contrib.auth import forms as authforms
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
 admin.autodiscover()
 admin.site.site_header = 'TolaActivity administration'
+
 
 # REST FRAMEWORK
 router = routers.DefaultRouter()
@@ -84,29 +85,22 @@ router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pind
 
 # router.register(r'search', SearchView, base_name='search')
 
-from formlibrary.views import BinaryFieldViewSet, binary_test
 router.register(r'binary', BinaryFieldViewSet, base_name='binary')
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
 urlpatterns = [ # rest framework
-                url(r'^check', views.check_view),
-                url(r'^dev_loader', views.dev_view),
+                url(r'^check', tola_views.check_view),
+                url(r'^dev_loader', tola_views.dev_view),
                 url(r'^api/', include(router.urls)),
                 url(r'^binarytest/(?P<id>\w+)', binary_test),
                 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-                url(r'^api-token-auth/', auth_views.obtain_auth_token),
+                url(r'^api-token-auth/', authtoken_views.obtain_auth_token),
 
                 # index
-                url(r'^$', views.index, name='index'),
+                url(r'^$', tola_views.IndexView.as_view(), name='index'),
+
                 # enable the admin:
                 url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
                 url(r'^admin/', include(admin.site.urls)),
-                #url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
-
-                # index
-                url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', views.index, name='index'),
-
-                # base template for layout
-                url(r'^$', TemplateView.as_view(template_name='base.html')),
 
                 # enable admin documentation:
                 url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -127,17 +121,14 @@ urlpatterns = [ # rest framework
                 url(r'^formlibrary/', include('formlibrary.urls')),
 
                 # local login
-                url(r'^login/$', authviews.login, name='login'),
-                url(r'^accounts/login/$', authviews.login, name='login'),
-                #url(r'^accounts/login/$', authviews.login, {'template_name': 'login.html'}, name="login") ,
-
-                url(r'^accounts/logout/$', authviews.logout, {'next_page': '/'}, name='logout'),
+                url(r'^accounts/login/$', auth_views.login, name='login'),
+                url(r'^accounts/logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
 
                 # accounts
-                url(r'^accounts/profile/$', views.profile, name='profile'),
-                url(r'^accounts/register/$', views.register, name='register'),
+                url(r'^accounts/profile/$', tola_views.profile, name='profile'),
+                url(r'^accounts/register/$', tola_views.RegisterView.as_view(), name='register'),
 
-                #bookmarks
+                # bookmarks
                 url(r'^bookmark_list', BookmarkList.as_view(), name='bookmark_list'),
                 url(r'^bookmark_add', BookmarkCreate.as_view(), name='bookmark_add'),
                 url(r'^bookmark_update/(?P<pk>\w+)/$', BookmarkUpdate.as_view(), name='bookmark_update'),
@@ -158,3 +149,13 @@ urlpatterns = [ # rest framework
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()
+
+if settings.DEBUG:
+    try:
+        import debug_toolbar
+    except ImportError:
+        pass
+    else:
+        urlpatterns = [
+            url(r'^__debug__/', include(debug_toolbar.urls)),
+        ] + urlpatterns

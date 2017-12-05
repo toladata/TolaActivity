@@ -1,22 +1,45 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation, PostGeneration
+    SubFactory, post_generation
+
+import random
 
 from workflow.models import (
     ApprovalType as ApprovalTypeM,
+    Award as AwardM,
+    Budget as BudgetM,
+    Checklist as ChecklistM,
+    CodedField as CodedFieldM,
     Contact as ContactM,
     Country as CountryM,
     Documentation as DocumentationM,
+    FundCode as FundCodeM,
+    IssueRegister as IssueRegisterM,
+    Milestone as MilestoneM,
     Organization as OrganizationM,
     Portfolio as PortfolioM,
+    ProfileType as ProfileTypeM,
+    ProjectType as ProjectTypeM,
     Sector as SectorM,
     SiteProfile as SiteProfileM,
+    Stakeholder as StakeholderM,
+    StakeholderType as StakeholderTypeM,
+    TolaSites as TolaSitesM,
     TolaUser as TolaUserM,
     WorkflowTeam as WorkflowTeamM,
     WorkflowLevel1 as WorkflowLevel1M,
     WorkflowLevel2 as WorkflowLevel2M,
+    WorkflowLevel2Sort as WorkflowLevel2SortM,
 )
 from .user_models import User, Group
+
+
+class Award(DjangoModelFactory):
+    class Meta:
+        model = AwardM
+
+    name = 'Award A'
+    status = 'open'
 
 
 class ApprovalType(DjangoModelFactory):
@@ -24,6 +47,13 @@ class ApprovalType(DjangoModelFactory):
         model = ApprovalTypeM
 
     name = 'Approval Type A'
+
+
+class Budget(DjangoModelFactory):
+    class Meta:
+        model = BudgetM
+
+    contributor = 'John Lennon'
 
 
 class Country(DjangoModelFactory):
@@ -76,6 +106,19 @@ class WorkflowLevel1(DjangoModelFactory):
 
     name = 'Health and Survival for Syrians in Affected Regions'
 
+    @post_generation
+    def country(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of country were passed in, use them
+            for country in extracted:
+                self.country.add(country)
+        else:
+            self.country.add(Country(country='Syria', code='SY'))
+
 
 class WorkflowTeam(DjangoModelFactory):
     class Meta:
@@ -112,6 +155,55 @@ class Sector(DjangoModelFactory):
     sector = 'Basic Needs'
 
 
+class Stakeholder(DjangoModelFactory):
+    class Meta:
+        model = StakeholderM
+
+    name = 'Stakeholder A'
+    organization = SubFactory(Organization)
+
+    @post_generation
+    def workflowlevel1(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of workflowlevel1 were passed in, use them
+            for workflowlevel1 in extracted:
+                self.workflowlevel1.add(workflowlevel1)
+
+
+class FundCode(DjangoModelFactory):
+    class Meta:
+        model = FundCodeM
+
+    name = 'Fund Code A'
+    organization = SubFactory(Organization)
+
+
+class ProjectType(DjangoModelFactory):
+    class Meta:
+        model = ProjectTypeM
+
+    name = 'Adaptive Management'
+    description = 'Adaptive Management'
+
+
+class StakeholderType(DjangoModelFactory):
+    class Meta:
+        model = StakeholderTypeM
+
+    name = 'Association'
+
+
+class ProfileType(DjangoModelFactory):
+    class Meta:
+        model = ProfileTypeM
+
+    profile = 'Distribution Center'
+
+
 class Portfolio(DjangoModelFactory):
     class Meta:
         model = PortfolioM
@@ -132,3 +224,69 @@ class Portfolio(DjangoModelFactory):
                 self.country.add(country)
         else:
             self.country.add(Country(country='Syria', code='SY'))
+
+
+class Checklist(DjangoModelFactory):
+    class Meta:
+        model = ChecklistM
+
+    name = 'Checklist A'
+
+
+class CodedField(DjangoModelFactory):
+    class Meta:
+        model = CodedFieldM
+
+    name = 'coded_field_a'
+    label = 'CodedField A'
+    organization = SubFactory(Organization)
+
+    @post_generation
+    def workflowlevel1(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of workflowlevel1 were passed in, use them
+            for workflowlevel1 in extracted:
+                self.workflowlevel1.add(workflowlevel1)
+
+    @post_generation
+    def workflowlevel2(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of workflowlevel2 were passed in, use them
+            for workflowlevel2 in extracted:
+                self.workflowlevel2.add(workflowlevel2)
+
+
+class IssueRegister(DjangoModelFactory):
+    class Meta:
+        model = IssueRegisterM
+
+    name = 'IssueRegister A'
+
+
+class Milestone(DjangoModelFactory):
+    class Meta:
+        model = MilestoneM
+
+    name = 'Design Stage'
+
+
+class TolaSites(DjangoModelFactory):
+    class Meta:
+        model = TolaSitesM
+
+    name = 'TolaData'
+
+
+class WorkflowLevel2Sort(DjangoModelFactory):
+    class Meta:
+        model = WorkflowLevel2SortM
+
+    workflowlevel2_id = random.randint(1, 9999)

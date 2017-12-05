@@ -165,9 +165,11 @@ TEMPLATES = [
 
 ########## MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
-MIDDLEWARE= (
-    # Default Django middleware.
+MIDDLEWARE = (
+    # CorsMiddleware needs to come before Django's CommonMiddleware
     'corsheaders.middleware.CorsMiddleware',
+
+    # Default Django middleware.
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'tola.middleware.DisableCsrfCheck',
@@ -181,7 +183,7 @@ MIDDLEWARE= (
     'tola.middleware.TolaSecurityMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'tola.middleware.TolaRedirectMiddleware'
+    'tola.middleware.TolaRedirectMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 
@@ -196,7 +198,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'feed.permissions.IsSuperUserBrowseableAPI',
     )
 }
 
@@ -211,7 +213,6 @@ ROOT_URLCONF = '%s.urls' % SITE_NAME
 
 ########## APP CONFIGURATION
 DJANGO_APPS = (
-    # Default Django apps:
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -219,14 +220,12 @@ DJANGO_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    'admin_report',
-    # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 )
 
 THIRD_PARTY_APPS = (
+    'admin_report',
     'rest_framework',
     'rest_framework.authtoken',
     'crispy_forms',
@@ -241,12 +240,10 @@ THIRD_PARTY_APPS = (
     'guardian',
     'social_django',
     'corsheaders',
-    # required by restframework
     'django_filters',
     'oauth2_provider',
 )
 
-# Apps specific for this project go here.
 LOCAL_APPS = (
     'workflow',
     'formlibrary',
@@ -257,10 +254,8 @@ LOCAL_APPS = (
     'reports',
     'gladmap',
     'search',
-
 )
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 ########## END APP CONFIGURATION
 

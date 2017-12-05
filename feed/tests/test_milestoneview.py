@@ -5,6 +5,88 @@ from rest_framework.reverse import reverse
 import json
 import factories
 from feed.views import MilestoneViewSet
+from workflow.models import WorkflowTeam, ROLE_ORGANIZATION_ADMIN, \
+    ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, ROLE_VIEW_ONLY
+
+
+class MilestoneListViewsTest(TestCase):
+    def setUp(self):
+        factories.Milestone.create_batch(2)
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+
+    def test_list_milestone_superuser(self):
+        request = self.factory.get('/api/milestone/')
+        request.user = factories.User.build(is_superuser=True,
+                                            is_staff=True)
+        view = MilestoneViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+    def test_list_milestone_org_admin(self):
+        request = self.factory.get('/api/milestone/')
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        request.user = self.tola_user.user
+        view = MilestoneViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+        factories.Milestone(organization=self.tola_user.organization)
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_milestone_program_admin(self):
+        request = self.factory.get('/api/milestone/')
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+        request.user = self.tola_user.user
+        view = MilestoneViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+        factories.Milestone(organization=self.tola_user.organization)
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_milestone_program_team(self):
+        request = self.factory.get('/api/milestone/')
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            role=factories.Group(name=ROLE_PROGRAM_TEAM))
+        request.user = self.tola_user.user
+        view = MilestoneViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+        factories.Milestone(organization=self.tola_user.organization)
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
+    def test_list_milestone_view_only(self):
+        request = self.factory.get('/api/milestone/')
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user,
+            role=factories.Group(name=ROLE_VIEW_ONLY))
+        request.user = self.tola_user.user
+        view = MilestoneViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
+
+        factories.Milestone(organization=self.tola_user.organization)
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
 
 
 class MilestoneViewTest(TestCase):

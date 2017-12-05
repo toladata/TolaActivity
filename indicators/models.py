@@ -383,7 +383,7 @@ class Indicator(models.Model): # TODO change back to SecurityModel
     def delete(self, *args, **kwargs):
         ei = ElasticsearchIndexer()
         try:
-            ei.delete_indicator(self.id)
+            ei.delete_indicator(self)
         except ValueNotFoundError:
             pass
         super(Indicator, self).delete(*args, **kwargs)
@@ -494,7 +494,7 @@ class CollectedData(models.Model):
         super(CollectedData, self).delete(*args, **kwargs)
 
         ei = ElasticsearchIndexer()
-        ei.delete_collecteddata(self.data_uuid)
+        ei.delete_collecteddata(self)
 
     #displayed in admin templates
     def __unicode__(self):

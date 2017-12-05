@@ -37,6 +37,21 @@ class WorkflowTeamListViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
+    def test_list_workflowteam_superuser_and_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        view = WorkflowTeamViewSet.as_view({'get': 'list'})
+        request_get = self.factory.get('/api/workflowteam/')
+        request_get.user = self.tola_user.user
+        response = view(request_get)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+
     def test_list_workflowteam_org_admin(self):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
@@ -327,12 +342,12 @@ class WorkflowTeamUpdateViewsTest(TestCase):
         user_ringo = factories.User(first_name='Ringo', last_name='Starr')
         tola_user_ringo = factories.TolaUser(
             user=user_ringo, organization=self.tola_user.organization)
-        wflvl1 = factories.WorkflowLevel1(
+        self.wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         self.workflowteam = factories.WorkflowTeam(
             workflow_user=tola_user_ringo,
-            workflowlevel1=wflvl1,
-            partner_org=wflvl1.organization,
+            workflowlevel1=self.wflvl1,
+            partner_org=self.wflvl1.organization,
             role=factories.Group(name=ROLE_VIEW_ONLY))
 
     def test_update_unexisting_workflowteam(self):
@@ -375,8 +390,10 @@ class WorkflowTeamUpdateViewsTest(TestCase):
         self.assertEqual(salary_updated, '100')
 
     def test_update_workflowteam_program_admin(self):
-        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
-        self.workflowteam.save()
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         data = {'salary': '100'}
         request = self.factory.post(None, data)
@@ -390,8 +407,10 @@ class WorkflowTeamUpdateViewsTest(TestCase):
         self.assertEqual(salary_updated, '100')
 
     def test_update_workflowteam_program_admin_json(self):
-        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
-        self.workflowteam.save()
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         data = {'salary': '100'}
         request = self.factory.post(None, json.dumps(data),
@@ -426,12 +445,12 @@ class WorkflowTeamDeleteViewsTest(TestCase):
         user_ringo = factories.User(first_name='Ringo', last_name='Starr')
         tola_user_ringo = factories.TolaUser(
             user=user_ringo, organization=self.tola_user.organization)
-        wflvl1 = factories.WorkflowLevel1(
+        self.wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         self.workflowteam = factories.WorkflowTeam(
             workflow_user=tola_user_ringo,
-            workflowlevel1=wflvl1,
-            partner_org=wflvl1.organization,
+            workflowlevel1=self.wflvl1,
+            partner_org=self.wflvl1.organization,
             role=factories.Group(name=ROLE_VIEW_ONLY))
 
     def test_delete_workflowteam_superuser(self):
@@ -464,8 +483,10 @@ class WorkflowTeamDeleteViewsTest(TestCase):
             WorkflowTeam.objects.get, pk=self.workflowteam.pk)
 
     def test_delete_workflowteam_program_admin(self):
-        self.workflowteam.role = factories.Group(name=ROLE_PROGRAM_ADMIN)
-        self.workflowteam.save()
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
 
         request = self.factory.delete(None)
         request.user = self.tola_user.user
@@ -477,10 +498,11 @@ class WorkflowTeamDeleteViewsTest(TestCase):
             WorkflowTeam.DoesNotExist,
             WorkflowTeam.objects.get, pk=self.workflowteam.pk)
 
-    def test_delete_workflowteam_other_user(self):
-        role_without_benefits = ROLE_PROGRAM_TEAM
-        self.workflowteam.role = factories.Group(name=role_without_benefits)
-        self.workflowteam.save()
+    def test_delete_workflowteam_role_without_benefit(self):
+        factories.WorkflowTeam(
+            workflow_user=self.tola_user,
+            workflowlevel1=self.wflvl1,
+            role=factories.Group(name=ROLE_PROGRAM_TEAM))
 
         request = self.factory.delete(None)
         request.user = self.tola_user.user
@@ -488,3 +510,36 @@ class WorkflowTeamDeleteViewsTest(TestCase):
         response = view(request, pk=self.workflowteam.pk)
         self.assertEqual(response.status_code, 403)
         WorkflowTeam.objects.get(pk=self.workflowteam.pk)
+
+
+class WorkflowTeamFilterViewTest(TestCase):
+    def setUp(self):
+        self.tola_user = factories.TolaUser()
+        self.factory = APIRequestFactory()
+
+    def test_filter_workflowteam_superuser(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        another_org = factories.Organization(name='Another Org')
+        wkflvl1_1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wkflvl1_2 = factories.WorkflowLevel1(
+            organization=another_org)
+        workflowteam1 = factories.WorkflowTeam(workflow_user=self.tola_user,
+                                               salary=1111,
+                                               workflowlevel1=wkflvl1_1)
+        factories.WorkflowTeam(workflow_user=self.tola_user,
+                               salary=2222,
+                               workflowlevel1=wkflvl1_2)
+
+        request = self.factory.get(
+            '/api/workflowteam/?workflowlevel1__organization__id=%s' %
+            self.tola_user.organization.pk)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['salary'], str(workflowteam1.salary))

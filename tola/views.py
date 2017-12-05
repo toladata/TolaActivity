@@ -1,94 +1,127 @@
+import json
+from urlparse import urljoin
+import warnings
+import logging
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import Group
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
+from django.views.generic.base import TemplateView, View, ContextMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from tola.forms import RegistrationForm, NewUserRegistrationForm, \
-    NewTolaUserRegistrationForm, BookmarkForm
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from workflow.models import TolaUser, TolaSites, TolaBookmarks, FormGuidance,\
-    Organization, ROLE_VIEW_ONLY
-
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import Group
-
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-import json
-from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
-    CountrySerializer
-from django.conf import settings
+from oauth2_provider.views.generic import ProtectedResourceView
 import requests
 
-
-@login_required(login_url='/accounts/login/')
-def index(request, selected_countries=None, id=0, sector=0):
-    if request.user.is_authenticated():
-        get_site = TolaSites.objects.get(name="TolaData")
-        template = "index.html"
-        return render(request, template, {'getSite': get_site})
-    else:
-        return redirect('register')
+from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
+    CountrySerializer
+from tola.forms import RegistrationForm, NewUserRegistrationForm, \
+    NewTolaUserRegistrationForm, BookmarkForm
+from workflow.models import (TolaUser, TolaBookmarks, FormGuidance,
+                             Organization, ROLE_VIEW_ONLY, TolaSites)
 
 
-def register(request):
-    """
-    Register a new User profile using built in Django Users Model
-    """
-    privacy = ""
-    get_site = TolaSites.objects.get(name="TolaData")
+@method_decorator(login_required, name='dispatch')
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'index.html'
 
-    if get_site:
-        privacy = get_site.privacy_disclaimer
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        if settings.TOLA_ACTIVITY_URL and settings.TOLA_TRACK_URL:
+            extra_context = {
+                'tolaactivity_url': settings.TOLA_ACTIVITY_URL,
+                'tolatrack_url': urljoin(settings.TOLA_TRACK_URL, 'login/tola'),
+            }
+        else:  # CE only
+            warnings.warn(
+                "TolaSite.front_end_url and TolaSite.tola_tables_url are "
+                "deprecated. Please, set instead TOLA_ACTIVITY_URL and "
+                "TOLA_TRACK_URL values in settings", DeprecationWarning)
+            from workflow.models import TolaSites
+            tola_site = TolaSites.objects.get(name="TolaData")
+            extra_context = {
+                'tolaactivity_url': tola_site.front_end_url,
+                'tolatrack_url': urljoin(tola_site.tola_tables_url,
+                                         'login/tola'),
+            }
+        context.update(extra_context)
+        return context
 
-    if request.method == 'POST':
-        uf = NewUserRegistrationForm(request.POST)
-        tf = NewTolaUserRegistrationForm(request.POST)
 
-        # Get the Org and check to make sure it's real
-        org = request.POST.get('org')
-        print org
-        try:
-            check_org = Organization.objects.get(name=org)
-        except Organization.DoesNotExist:
-            # bad org name so ask them to check again
-            messages.error(request, 'The Organization you entered was not found.', fail_silently=False)
-            # reset org
-            tf = NewTolaUserRegistrationForm()
-            return render(request, "registration/register.html", {
-                'userform': uf, 'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper, 'privacy': privacy,
-                'org_error': True
-            })
+class RegisterView(View):
+    template_name = 'registration/register.html'
 
-        # copy new post and alter with new org value
-        new_post = request.POST.copy()
-        new_post['organization'] = check_org
-        # set new instances of form objects to validate
-        user_form = NewUserRegistrationForm(new_post)
-        tola_form = NewTolaUserRegistrationForm(new_post)
+    def _get_context_data(self, **kwargs):
+        context = {}
+        try:  # CE only
+            privacy_disclaimer = TolaSites.objects.values_list(
+                'privacy_disclaimer', flat=True).get(name="TolaData")
+        except TolaSites.DoesNotExist:
+            privacy_disclaimer = ''
+        context['privacy_disclaimer'] = privacy_disclaimer
+        if kwargs:
+            context.update(kwargs)
+        return context
 
-        if user_form.is_valid() * tola_form.is_valid():
+    def get(self, request, *args, **kwargs):
+        extra_context = {
+            'form_user': NewUserRegistrationForm(),
+            'form_tolauser': NewTolaUserRegistrationForm(),
+        }
+        context = self._get_context_data(**extra_context)
+        return render(request, self.template_name, context)
 
-            user = user_form.save()
+    def post(self, request, *args, **kwargs):
+        form_user = NewUserRegistrationForm(request.POST)
+        form_tolauser = NewTolaUserRegistrationForm(request.POST)
+
+        if form_user.is_valid() and form_tolauser.is_valid():
+            user = form_user.save()
             user.groups.add(Group.objects.get(name=ROLE_VIEW_ONLY))
 
-            tolauser = tola_form.save(commit=False)
+            tolauser = form_tolauser.save(commit=False)
             tolauser.user = user
-            tolauser.organization = check_org
+            tolauser.organization = form_tolauser.cleaned_data.get('org')
+            tolauser.name = ' '.join([user.first_name, user.last_name]).strip()
             tolauser.save()
-            messages.error(request, 'Thank you, You have been registered as a new user.', fail_silently=False)
-            # register user and redirect them to front end or home page depending on config
-            if get_site:
-                return HttpResponseRedirect("/accounts/login/")
-            else:
-                return HttpResponseRedirect("/")
-    else:
-        uf = NewUserRegistrationForm()
-        tf = NewTolaUserRegistrationForm()
+            self.register_in_track(request, tolauser)
+            messages.error(
+                request,
+                'Thank you, You have been registered as a new user.',
+                fail_silently=False)
+            return HttpResponseRedirect(reverse('login'))
 
-    return render(request, "registration/register.html", {
-        'userform': uf, 'tolaform': tf, 'helper': NewTolaUserRegistrationForm.helper,
-        'privacy': privacy, 'org_error': False
-    })
+        context = self._get_context_data(**{
+            'form_user': form_user,
+            'form_tolauser': form_tolauser,
+        })
+        return render(request, self.template_name, context)
+
+    def register_in_track(self, request, tolauser):
+        headers = {
+            'Authorization': 'Token {}'.format(settings.TOLA_TRACK_TOKEN),
+        }
+
+        data = request.POST.copy().dict()
+        data.update({'tola_user_uuid': tolauser.tola_user_uuid})
+        url_subpath = 'accounts/register/'
+        url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+
+        response = requests.post(url, data=data, headers=headers)
+        logger = logging.getLogger(__name__)
+        if response.status_code == 201:
+            logger.info("The TolaUser %s (id=%s) was created successfully in "
+                        "Track." % (tolauser.name, tolauser.id))
+        elif response.status_code in [400, 403]:
+            logger.warning("The TolaUser %s (id=%s) could not be created "
+                           "successfully in Track." %
+                           (tolauser.name, tolauser.id))
+        return response
 
 
 def profile(request):
@@ -293,8 +326,6 @@ def dev_view(request):
         return HttpResponseRedirect(redirect_url)
 
 
-from oauth2_provider.views.generic import ProtectedResourceView
-
 def oauth_user_view(request):
     return HttpResponse("Hostname "+request.get_host())
 
@@ -322,31 +353,41 @@ class OAuth_User_Endpoint(ProtectedResourceView):
 
 
 class TolaTrackSiloProxy(ProtectedResourceView):
-
     def get(self, request, *args, **kwargs):
-        url = settings.TOLA_TRACK_URL + 'api/silo'
-        headers = {"content-type": "application/json", 'Authorization': 'Token ' + settings.TOLA_TRACK_TOKEN}
+        headers = {
+            "content-type": "application/json",
+            'Authorization': 'Token {}'.format(settings.TOLA_TRACK_TOKEN),
+        }
 
-        tola_user = TolaUser.objects.get(user=request.user)
+        tola_user_uuid = TolaUser.objects.values_list(
+            'tola_user_uuid', flat=True).get(user=request.user)
 
-        res = requests.get(url + '?user_uuid=' + tola_user.tola_user_uuid, headers=headers)
-        print(res.status_code, res.content)
+        url_subpath = 'api/silo'
+        url_base = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+        url = '{}?user_uuid={}'.format(url_base, tola_user_uuid)
 
-        if res.status_code == 200:
-            return HttpResponse(res.content)
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return HttpResponse(response.content)
         else:
-            raise Exception()
+            reason = 'URL: {}. Responded with status code {}'.format(
+                url, response.status_code)
+            return HttpResponse(status=502, reason=reason)
 
 
 class TolaTrackSiloDataProxy(ProtectedResourceView):
-
     def get(self, request, silo_id, *args, **kwargs):
-        url = settings.TOLA_TRACK_URL + 'api/silo' + '/' + silo_id + '/data'
-        headers = {'content-type': 'application/json','Authorization': 'Token ' + settings.TOLA_TRACK_TOKEN}
+        headers = {
+            "content-type": "application/json",
+            'Authorization': 'Token {}'.format(settings.TOLA_TRACK_TOKEN),
+        }
 
-        res = requests.get(url, headers=headers)
-
-        if res.status_code == 200:
-            return HttpResponse(res.content)
+        url_subpath = 'api/silo/{}/data'.format(silo_id)
+        url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return HttpResponse(response.content)
         else:
-            raise Exception()
+            reason = 'URL: {}. Responded with status code {}'.format(
+                url, response.status_code)
+            return HttpResponse(status=502, reason=reason)
