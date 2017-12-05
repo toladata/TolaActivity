@@ -10,7 +10,7 @@ try:
             'USER': os.environ["TOLA_DB_USER"],
             'PASSWORD': os.environ.get("TOLA_DB_PASS"),
             'HOST': os.environ.get("TOLA_DB_HOST", "localhost"),
-            'PORT': os.environ["TOLA_DB_PORT"],
+            'PORT': os.environ.get("TOLA_DB_PORT", 5432),
         }
     }
 except KeyError:
