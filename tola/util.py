@@ -3,9 +3,10 @@ import json
 import sys
 import requests
 
-from workflow.models import Country, TolaUser, TolaSites, WorkflowTeam, WorkflowLevel1, Organization
+from workflow.models import (Country, TolaUser, TolaSites, WorkflowTeam,
+                             WorkflowLevel1, Organization)
 from django.contrib.auth.models import User
-from django.core.mail import send_mail, mail_admins, mail_managers, EmailMessage
+from django.core.mail import mail_admins, EmailMessage
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
@@ -35,12 +36,6 @@ def getCountry(user):
         get_countries = Country.objects.all().filter(id__in=user_countries)
 
         return get_countries
-
-
-def getOrganization(user):
-
-    org = TolaUser.objects.get(user__id=user.id).organization
-    return org
 
 
 def get_programs_user(user):

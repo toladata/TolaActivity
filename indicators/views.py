@@ -1,40 +1,37 @@
+import json
+import re
+
 from django.db import connection
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from urlparse import urlparse
-import re
-from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
-from tola.util import getCountry, get_table
-from workflow.forms import FilterForm
-from .forms import IndicatorForm, CollectedDataForm
 
 from django.db.models import Count, Sum
 from django.db.models import Q
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView
-from django.views.generic.detail import View
-from django.views.generic import TemplateView
-from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
-from django.utils import timezone
-
-from django.urls import reverse, reverse_lazy
-from workflow.mixins import AjaxableResponseMixin
-import json
-
-import requests
-from export import IndicatorResource, CollectedDataResource
-# from reportlab.pdfgen import canvas
-from django.template.loader import get_template
 from django.http import HttpResponse
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
+from django.views.generic.detail import View
+import requests
 
+from export import IndicatorResource, CollectedDataResource
+from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
+from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
+from tola.util import getCountry, get_table
+from workflow.forms import FilterForm
+from .forms import IndicatorForm, CollectedDataForm
+from workflow.mixins import AjaxableResponseMixin
 
 
 def group_excluded(*group_names, **url):

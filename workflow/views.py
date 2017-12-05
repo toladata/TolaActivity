@@ -1,4 +1,3 @@
-import operator
 import unicodedata
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView

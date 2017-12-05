@@ -78,13 +78,18 @@ class Command(BaseCommand):
             # get model field data
             data = self.get_field_data(wf1)
 
+            if wf1.organization is not None:
+                org_uuid = str(wf1.organization.organization_uuid)
+            else:
+                continue
+
             # aggregate related models
             data['sectors'] = list(map(lambda s: s.sector, wf1.sector.all()))
             data['country'] = list(map(lambda c: self.get_field_data(c), wf1.country.all()))
 
             # index data with elasticsearch
             try:
-                es.index(index=prefix+"workflow_level1", id=data['level1_uuid'], doc_type='workflow', body=data)
+                es.index(index=prefix+org_uuid+"_workflow_level1", id=data['level1_uuid'], doc_type='workflow', body=data)
             except RequestError:
                 print(wf1, "Error")
 
@@ -94,6 +99,11 @@ class Command(BaseCommand):
         for wf2 in wf2objects:
             # get model field data
             data = self.get_field_data(wf2)
+
+            if wf2.workflowlevel1.organization is not None and wf2.workflowlevel1.organization is not None:
+                org_uuid = str(wf2.workflowlevel1.organization.organization_uuid)
+            else:
+                continue
 
             # aggregate related models
             data['sector'] = wf2.sector.sector if wf2.sector is not None else None
@@ -105,7 +115,7 @@ class Command(BaseCommand):
 
             # index data with elasticsearch
             try:
-                es.index(index=prefix+"workflow_level2", id=data['level2_uuid'], doc_type='workflow', body=data)
+                es.index(index=prefix+org_uuid+"_workflow_level2", id=data['level2_uuid'], doc_type='workflow', body=data)
             except RequestError:
                 print(wf2, "Error")
 
@@ -127,13 +137,18 @@ class Command(BaseCommand):
             # get model field data
             data = self.get_field_data(d)
 
+            if d.workflowlevel1.organization is not None and d.workflowlevel1.organization is not None:
+                org_uuid = str(d.workflowlevel1.organization.organization_uuid)
+            else:
+                continue
+
             # aggregate related models
             di = d.indicator
             data['indicator'] = di.name
 
             # index data with elasticsearch
             try:
-                es.index(index=prefix+"collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
+                es.index(index=prefix+org_uuid+"_collected_data", id=data['data_uuid'], doc_type='data_collection', body=data)
             except RequestError:
                 print(d, "Error")
         return len(collected_data)
@@ -155,14 +170,22 @@ class Command(BaseCommand):
             # get model field data
             data = self.get_field_data(i)
 
-            # aggregate related models
-            data['workflowlevel1'] = list(map(lambda w: w.name, i.workflowlevel1.all()))
+            for wf1 in i.workflowlevel1.all():
+                if wf1.organization is not None and wf1.organization is not None:
+                    org_uuid = str(wf1.organization.organization_uuid)
 
-            # index data with elasticsearch
-            try:
-                es.index(index=prefix+"indicators", id=data['id'], doc_type='indicator', body=data)
-            except RequestError:
-                print(i, "Error")
+                    # aggregate related models
+                    data['workflowlevel1'] = list(map(lambda w: w.name, [wf1]))
+                    # data['workflowlevel1'] = list(map(lambda w: w.name, i.workflowlevel1.all()))
+
+                    # index data with elasticsearch
+                    try:
+                        es.index(index=prefix + org_uuid + "_indicators", id=data['id'], doc_type='indicator',
+                                 body=data)
+                    except RequestError:
+                        print(i, "Error")
+                else:
+                    continue
 
         return len(indicators)
 

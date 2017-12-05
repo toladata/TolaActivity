@@ -1,4 +1,3 @@
-from django.contrib.auth.models import Group
 from django.test import TestCase
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
@@ -20,6 +19,27 @@ class WorkflowLevel1ListViewsTest(TestCase):
     def test_list_workflowlevel1_superuser(self):
         wflvl1 = factories.WorkflowLevel1()
         wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        request = self.factory.get('/api/workflowlevel1/')
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)
+        self.assertEqual(response.data[0]['budget'],
+                         wflvl2.total_estimated_budget)
+        self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
+
+    def test_list_workflowlevel1_superuser_and_org_admin(self):
+        wflvl1 = factories.WorkflowLevel1()
+        wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
 
         self.tola_user.user.is_staff = True
         self.tola_user.user.is_superuser = True
@@ -73,6 +93,30 @@ class WorkflowLevel1ListViewsTest(TestCase):
         self.assertEqual(response.data[0]['budget'],
                          wflvl2.total_estimated_budget)
         self.assertEqual(response.data[0]['actuals'], wflvl2.actual_cost)
+
+    def test_list_filter_workflowlevel1_program_admin(self):
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_2 = factories.WorkflowLevel1(
+            name='Population Health Initiative',
+            organization=self.tola_user.organization)
+        group_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user, workflowlevel1=wflvl1,
+            role=group_program_admin)
+        WorkflowTeam.objects.create(
+            workflow_user=self.tola_user, workflowlevel1=wflvl1_2,
+            role=group_program_admin)
+
+        request = self.factory.get('/api/workflowlevel1/?name=%s' %
+                                   wflvl1.name)
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)
+        self.assertNotEqual(response.data[0]['name'], wflvl1_2.name)
 
     def test_list_workflowlevel1_program_team(self):
         wflvl1 = factories.WorkflowLevel1(
@@ -168,6 +212,9 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         A ProgramAdmin member of any other program can create a new program
         in the same organization.
         """
+        organization_url = reverse(
+            'organization-detail',
+            kwargs={'pk': self.tola_user.organization.pk})
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=factories.WorkflowLevel1(
@@ -181,6 +228,7 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], u'Save the Children')
+        self.assertIn(organization_url, response.data['organization'])
 
         WorkflowTeam.objects.get(
             workflowlevel1__id=response.data['id'],
@@ -518,3 +566,44 @@ class WorkflowLevel1DeleteViewsTest(TestCase):
             WorkflowLevel1.DoesNotExist,
             WorkflowLevel1.objects.get, pk=response.data['id'])
         WorkflowLevel1.objects.get(pk=first_program_id)
+
+
+class WorkflowLevel1FilterViewsTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.tola_user = factories.TolaUser()
+        factories.Group()
+
+    def test_filter_workflowlevel1_superuser(self):
+        wflvl1 = factories.WorkflowLevel1()
+        factories.WorkflowLevel1(name='Population Health Initiative')
+
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        request = self.factory.get('/api/workflowlevel1/?name=%s' %
+                                   wflvl1.name)
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)
+
+    def test_filter_workflowlevel1_org_admin(self):
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        factories.WorkflowLevel1(name='Population Health Initiative',
+                                 organization=self.tola_user.organization)
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        request = self.factory.get('/api/workflowlevel1/?name=%s' %
+                                   wflvl1.name)
+        request.user = self.tola_user.user
+        view = WorkflowLevel1ViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], wflvl1.name)

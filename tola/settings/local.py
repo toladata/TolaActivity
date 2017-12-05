@@ -48,13 +48,6 @@ MANAGERS = ADMINS
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True if os.getenv('TOLA_DEBUG') == 'True' else False
 
-########## EMAIL CONFIGURATION
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-########## END EMAIL CONFIGURATION
-
-########## EMAIL SETTINGS
-
-########## END EMAIL SETTINGS
 CORS_ORIGIN_ALLOW_ALL = True
 
 ########## SOCIAL AUTH CLIENT CONFIG ###########
@@ -70,7 +63,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_MICROSOFT_GRAPH_KEY = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_KEY')
 SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET')
 SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL')
-SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['redirect_after_login',]
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['redirect_after_login']
 
 
 ########## CACHE CONFIGURATION
@@ -92,8 +85,7 @@ LOCAL_API_TOKEN = "ABC"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [normpath(join(SITE_ROOT, 'templates2')),],
-        #'APP_DIRS': True,
+        'DIRS': [normpath(join(SITE_ROOT, 'templates2'))],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -115,7 +107,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 LOGGING = {
     'version': 1,
@@ -139,13 +130,11 @@ LOGGING = {
     },
 }
 
+TOLA_ACTIVITY_URL = os.getenv('TOLA_ACTIVITY_URL')  # frontend URL
+
 TOLA_TRACK_URL = os.getenv('TOLA_TRACK_URL')
 TOLA_TRACK_TOKEN = os.getenv('TOLA_TRACK_TOKEN')
 
+ELASTICSEARCH_ENABLED = True if os.getenv('ELASTICSEARCH_ENABLED') == 'True' else False
 ELASTICSEARCH_URL = os.getenv('ELASTICSEARCH_URL')
 ELASTICSEARCH_INDEX_PREFIX = os.getenv('ELASTICSEARCH_INDEX_PREFIX')
-
-try:
-    from local_secret import *
-except ImportError:
-    pass

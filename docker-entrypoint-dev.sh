@@ -14,4 +14,4 @@ echo "Loading config fixtures"
 python manage.py loaddata fixtures/config/*
 
 echo "Running the server"
-python manage.py runserver 0.0.0.0:8080
+PYTHONUNBUFFERED=1 python manage.py runserver 0.0.0.0:8080

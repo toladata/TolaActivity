@@ -7,7 +7,7 @@ from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset
 from functools import partial
 from django import forms
-from tola.util import getCountry, getOrganization
+from tola.util import getCountry
 from django.db.models import Q
 
 
@@ -152,9 +152,12 @@ class IndicatorForm(forms.ModelForm):
 
         #override the country queryset to use request.user for country
         countries = getCountry(self.request.user)
-        org = getOrganization(self.request.user)
+        organization_id = TolaUser.objects.values_list(
+            'organization_id', flat=True).get(user=self.request.user)
         self.fields['workflowlevel1'].queryset = WorkflowLevel1.objects.filter(country__in=countries)
-        self.fields['disaggregation'].queryset = DisaggregationType.objects.filter(organization=org).filter(standard=False)
+        self.fields['disaggregation'].queryset = \
+            DisaggregationType.objects.filter(
+                organization_id=organization_id, standard=False)
         self.fields['objectives'].queryset = Objective.objects.all().filter(workflowlevel1__id__in=self.workflowlevel1)
         self.fields['strategic_objectives'].queryset = StrategicObjective.objects.filter(country__in=countries)
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
