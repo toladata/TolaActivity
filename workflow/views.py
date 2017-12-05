@@ -1808,7 +1808,12 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
-        getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
+        is_it_project_complete_form = self.request.GET.get('is_it_project_complete_form', None) or \
+            self.request.POST.get('is_it_project_complete_form', None)
+        if is_it_project_complete_form == 'true':
+            getProgram = Program.objects.get(complete__id = self.kwargs['id'])
+        else:
+            getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
         context.update({'id': self.kwargs['id']})
         context.update({'program': getProgram})
         return context
