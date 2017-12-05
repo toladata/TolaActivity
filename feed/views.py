@@ -865,8 +865,18 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
         if not request.user.is_superuser:
-            wflvl1_ids = get_programs_user(request.user)
-            queryset = queryset.filter(workflowlevel1__in=wflvl1_ids)
+            organization_id = TolaUser.objects. \
+                values_list('organization_id', flat=True). \
+                get(user=request.user)
+            if ROLE_ORGANIZATION_ADMIN in request.user.groups.values_list(
+                    'name', flat=True):
+                queryset = queryset.filter(
+                    workflowlevel1__organization_id=organization_id)
+            else:
+                wflvl1_ids = get_programs_user(request.user)
+                queryset = queryset.filter(
+                    workflowlevel1__organization_id=organization_id,
+                    workflowlevel1__in=wflvl1_ids)
 
         nested = request.GET.get('nested_models')
         if nested is not None and (nested.lower() == 'true' or nested == '1'):
