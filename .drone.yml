@@ -7,6 +7,12 @@ pipeline:
       - python manage.py test
     when:
       event: [push, tag]
+    environment:
+      - TOLA_DB_ENGINE=django.db.backends.postgresql_psycopg2
+      - TOLA_DB_NAME=tola_activity
+      - TOLA_DB_USER=root
+      - TOLA_DB_PASS=root
+      - TOLA_DB_HOST=postgres
   build-docker-image:
     image: plugins/docker
     insecure: true
@@ -45,6 +51,14 @@ pipeline:
       status: [failure]
       event: [push, tag]
       branches: [master, dev-v2]
+
+services:
+  postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_DB=tola_activity
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
 
 matrix:
   PYTHON_VERSION:
