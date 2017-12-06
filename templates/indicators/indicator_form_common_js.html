@@ -21,8 +21,12 @@
     // Intercept IndicatorUpdate form submission and then use ajax to submit it.
     $("#indicator_modal_body, #indicator_form").on("submit", "#indicator_update_form", function(e){
         e.preventDefault();
+        var submitBtnName = $(this).find("input[type=submit]:focus" );
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
+        if (submitBtnName.attr('name') == '_addanother') {
+            form_data += "&_addanother=true";
+        }
         var periodic_targets = [];
         $('#periodic_targets_table tr').each(function () {
             var $this = $(this);

@@ -328,6 +328,9 @@ class IndicatorUpdate(UpdateView):
             data = serializers.serialize('json', [self.object])
             pts = serializers.serialize('json', periodic_targets)
             #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
+            if self.request.POST.get('_addanother', None):
+                res = '{"redirect_url": "%s"}' % reverse_lazy('indicator_create', kwargs={'id': self.object.program.all()[0].id})
+                return HttpResponse(res)
             return HttpResponse("[" + data + "," + pts + "]")
 
         messages.success(self.request, 'Success, Indicator Updated!')
