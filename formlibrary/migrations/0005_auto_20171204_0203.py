@@ -18,6 +18,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='customform',
             name='form_uuid',
+            field=models.CharField(default='', max_length=255, verbose_name='CustomForm UUID'),
+        ),
+        migrations.AlterField(
+            model_name='customform',
+            name='form_uuid',
             field=models.CharField(default=uuid.uuid4, max_length=255, unique=True, verbose_name='CustomForm UUID'),
         ),
         migrations.AddField(
