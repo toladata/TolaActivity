@@ -231,6 +231,10 @@ class TolaUser(models.Model):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
+
+        if settings.TOLAUSER_OFUSCATED_NAME:
+            self.name = settings.TOLAUSER_OFUSCATED_NAME
+
         super(TolaUser, self).save()
 
 
