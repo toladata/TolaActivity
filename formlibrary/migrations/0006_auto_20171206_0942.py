@@ -6,6 +6,13 @@ from django.db import migrations, models
 import uuid
 
 
+def set_form_uuid(apps, schema_editor):
+    CustomForm = apps.get_model('formlibrary', 'CustomForm')
+    for customform in CustomForm.objects.all():
+        customform.form_uuid = uuid.uuid4()
+        customform.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -13,6 +20,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(set_form_uuid),
         migrations.AlterField(
             model_name='customform',
             name='form_uuid',
