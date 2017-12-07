@@ -47,6 +47,7 @@ class ElasticsearchIndexer:
                              body=data)
                 except RequestError:
                     logger.error('Error indexing indicator', exc_info=True)
+                    pass
             else:
                 continue
 
@@ -104,6 +105,7 @@ class ElasticsearchIndexer:
                 self.es.index(index=self.prefix + org_uuid + "_workflow_level2", id=data['level2_uuid'], doc_type='workflow', body=data)
             except RequestError:
                 logger.error('Error indexing workflowlevel2', exc_info=True)
+                pass
 
     def delete_workflowlevel1(self, wf):
         if self.es is None:
@@ -116,6 +118,10 @@ class ElasticsearchIndexer:
                 self.es.delete(index=self.prefix + org_uuid + "_workflow_level1", id=wf.level1_uuid, doc_type='workflow')
         except RequestError:
             logger.error('Error deleting workflowlevel1 from index', exc_info=True)
+            pass
+        except NotFoundError:
+            logger.warning('Workflowlevel1 not found in Elasticsearch', exc_info=True)
+            raise ValueNotFoundError
 
     def delete_workflowlevel2(self, wf):
         if self.es is None:
@@ -128,6 +134,10 @@ class ElasticsearchIndexer:
                 self.es.delete(index=self.prefix + org_uuid + "_workflow_level2", id=wf.level2_uuid, doc_type='workflow')
         except RequestError:
             logger.error('Error deleting workflowlevel2 from index', exc_info=True)
+            pass
+        except NotFoundError:
+            logger.warning('Workflowlevel2 not found in Elasticsearch', exc_info=True)
+            raise ValueNotFoundError
 
     def index_collecteddata(self, d):
         if self.es is None:

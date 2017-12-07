@@ -10,6 +10,8 @@ from simple_history.models import HistoricalRecords
 from search.exceptions import ValueNotFoundError
 from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser,\
     Organization
+from search.tasks import async_index_indicator, async_index_collecteddata,\
+    async_delete_collecteddata, async_delete_indicator
 
 
 class TolaTable(models.Model):
@@ -317,10 +319,8 @@ class IndicatorManager(models.Manager):
     def get_queryset(self):
         return super(IndicatorManager, self).get_queryset().prefetch_related('workflowlevel1').select_related('sector')
 
-from tola.security import SecurityModel
-from search.utils import ElasticsearchIndexer
 
-class Indicator(models.Model): # TODO change back to SecurityModel
+class Indicator(models.Model):
     indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ForeignKey(Level, null=True, blank=True, on_delete=models.SET_NULL)
@@ -377,15 +377,11 @@ class Indicator(models.Model): # TODO change back to SecurityModel
 
         super(Indicator, self).save(*args, **kwargs)
 
-        ei = ElasticsearchIndexer()
-        ei.index_indicator(self)
+        async_index_indicator.delay(self)
 
     def delete(self, *args, **kwargs):
-        ei = ElasticsearchIndexer()
-        try:
-            ei.delete_indicator(self)
-        except ValueNotFoundError:
-            pass
+        async_delete_indicator.delay(self)
+
         super(Indicator, self).delete(*args, **kwargs)
 
     @property
@@ -487,14 +483,12 @@ class CollectedData(models.Model):
         self.edit_date = timezone.now()
         super(CollectedData, self).save(*args, **kwargs)
 
-        ei = ElasticsearchIndexer()
-        ei.index_collecteddata(self)
+        async_index_collecteddata.delay(self)
 
     def delete(self, *args, **kwargs):
+        async_delete_collecteddata.delay(self)
         super(CollectedData, self).delete(*args, **kwargs)
 
-        ei = ElasticsearchIndexer()
-        ei.delete_collecteddata(self)
 
     #displayed in admin templates
     def __unicode__(self):

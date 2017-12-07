@@ -20,7 +20,8 @@ from django.contrib.sessions.models import Session
 from django.db import migrations
 import requests
 import json
-from search.utils import ElasticsearchIndexer
+from search.tasks import async_index_workflowlevel1, async_index_workflowlevel2,\
+    async_delete_workflowlevel1, async_delete_workflowlevel2
 
 try:
     from django.utils import timezone
@@ -604,14 +605,12 @@ class WorkflowLevel1(models.Model):
 
         super(WorkflowLevel1, self).save()
 
-        ei = ElasticsearchIndexer()
-        ei.index_workflowlevel1(self)
+        async_index_workflowlevel1.delay(self)
 
     def delete(self, *args, **kwargs):
         super(WorkflowLevel1, self).delete(*args, **kwargs)
 
-        ei = ElasticsearchIndexer()
-        ei.delete_workflowlevel1(self)
+        async_delete_workflowlevel1.delay(self)
 
     @property
     def countries(self):
@@ -1194,14 +1193,12 @@ class WorkflowLevel2(models.Model):
 
         super(WorkflowLevel2, self).save(*args, **kwargs)
 
-        ei = ElasticsearchIndexer()
-        ei.index_workflowlevel2(self)
+        async_index_workflowlevel2.delay(self)
 
     def delete(self, *args, **kwargs):
         super(WorkflowLevel2, self).delete(*args, **kwargs)
 
-        ei = ElasticsearchIndexer()
-        ei.delete_workflowlevel2(self)
+        async_delete_workflowlevel2.delay(self)
 
     @property
     def project_name_clean(self):
