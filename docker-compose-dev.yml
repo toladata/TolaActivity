@@ -63,3 +63,4 @@ services:
       - SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL=https://localhost:8000/complete/microsoft-graph
       - TOLA_ACTIVITY_URL=http://tolaactivity.dev.com
       - TOLA_TRACK_URL=http://tolatrack.dev.com
+      - DEFAULT_ORG=TolaData
