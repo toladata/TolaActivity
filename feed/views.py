@@ -705,17 +705,18 @@ class DocumentationViewSet(viewsets.ModelViewSet):
                 values_list('organization_id', flat=True). \
                 get(user=request.user)
             queryset = queryset.filter(
-                workflowlevel2__workflowlevel1__organization_id=organization_id
+                workflowlevel1__organization_id=organization_id
             ).filter(
                 workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
+
         serializer.save(created_by=self.request.user)
 
-    filter_fields = ('workflowlevel2__workflowlevel1__country__country',
-                     'workflowlevel2__workflowlevel1__organization__id')
+    filter_fields = ('workflowlevel1__country__country',
+                     'workflowlevel1__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     permission_classes = (IsOrgMember,)
     queryset = Documentation.objects.all()
