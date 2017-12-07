@@ -8,9 +8,9 @@ try:
             'ENGINE': os.environ["TOLA_DB_ENGINE"],
             'NAME': os.environ["TOLA_DB_NAME"],
             'USER': os.environ["TOLA_DB_USER"],
-            'PASSWORD': os.environ["TOLA_DB_PASS"],
-            'HOST': os.environ["TOLA_DB_HOST"],
-            'PORT': os.environ["TOLA_DB_PORT"],
+            'PASSWORD': os.environ.get("TOLA_DB_PASS"),
+            'HOST': os.environ.get("TOLA_DB_HOST", "localhost"),
+            'PORT': os.environ.get("TOLA_DB_PORT", 5432),
         }
     }
 except KeyError:
@@ -138,3 +138,5 @@ TOLA_TRACK_TOKEN = os.getenv('TOLA_TRACK_TOKEN')
 ELASTICSEARCH_ENABLED = True if os.getenv('ELASTICSEARCH_ENABLED') == 'True' else False
 ELASTICSEARCH_URL = os.getenv('ELASTICSEARCH_URL')
 ELASTICSEARCH_INDEX_PREFIX = os.getenv('ELASTICSEARCH_INDEX_PREFIX')
+
+TOLAUSER_OFUSCATED_NAME = os.getenv('TOLAUSER_OFUSCATED_NAME')

@@ -132,8 +132,9 @@ class AllowTolaRoles(permissions.BasePermission):
                     workflowlevel1__in=wflvl1).values_list(
                     'role__name', flat=True)
 
-                if model_cls in [Contact, Documentation, Indicator, Level,
-                                 CollectedData, Objective, WorkflowLevel2]:
+                if model_cls in [Contact, CustomForm, Documentation, Indicator,
+                                 Level, CollectedData, Objective,
+                                 WorkflowLevel2]:
                     return ((ROLE_VIEW_ONLY not in team_groups or
                              ROLE_ORGANIZATION_ADMIN in user_groups) and
                             all(x.organization == user_org for x in wflvl1))
@@ -220,7 +221,8 @@ class AllowTolaRoles(permissions.BasePermission):
                     return view.action != 'destroy'
                 elif ROLE_VIEW_ONLY in team_groups:
                     return view.action == 'retrieve'
-            elif model_cls in [CollectedData, Level, WorkflowLevel2]:
+            elif model_cls in [CustomForm, CollectedData, Level,
+                               WorkflowLevel2]:
                 team_groups = WorkflowTeam.objects.filter(
                     workflow_user=request.user.tola_user,
                     workflowlevel1=obj.workflowlevel1).values_list(
