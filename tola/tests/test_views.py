@@ -1,8 +1,10 @@
 import json
+import os
 
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
 from django.test import RequestFactory, TestCase, override_settings
+from django.conf import settings
 from django.urls import reverse
 from django.http import HttpRequest
 
@@ -195,6 +197,42 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.organization, self.organization)
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
+
+    @patch('tola.views.requests')
+    def test_post_success_with_default_org(self, mock_requests):
+        mock_requests.post.return_value = Mock(status_code=201)
+        factories.Organization(name=settings.DEFAULT_ORG)
+        os.environ['APP_BRANCH'] = 'demo'
+
+        data = {
+            'first_name': 'John',
+            'last_name': 'Lennon',
+            'email': 'johnlennon@test.com',
+            'username': 'ILoveYoko',
+            'password1': '123456',
+            'password2': '123456',
+            'title': TITLE_CHOICES[0][0],
+            'privacy_disclaimer_accepted': 'on',
+        }
+        request = self.factory.post(reverse('register'), data)
+        self._hotfix_django_bug(request)
+        view = views.RegisterView.as_view()
+        response = view(request)
+        os.environ['APP_BRANCH'] = ''
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('index'), response.url)
+
+        tolauser = TolaUser.objects.select_related('user').get(
+            name='John Lennon')
+        user = tolauser.user
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.last_name, data['last_name'])
+        self.assertEqual(user.email, data['email'])
+        self.assertEqual(tolauser.organization.name, settings.DEFAULT_ORG)
+        self.assertEqual(tolauser.title, data['title'])
+        self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
+
+        os.environ['APP_BRANCH'] = ''
 
 
 class RegisterViewTest(TestCase):

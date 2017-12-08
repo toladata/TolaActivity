@@ -1,8 +1,10 @@
+import os
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
-from crispy_forms.bootstrap import *
-from crispy_forms.layout import Layout, Submit, Reset, Div
+from crispy_forms.layout import Layout, Submit, Reset
 from django import forms
+from django.conf import settings
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from workflow.models import TolaUser, TolaBookmarks, Organization
 from django.contrib.auth.models import User
@@ -17,7 +19,6 @@ class RegistrationForm(UserChangeForm):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         del self.fields['password']
         self.fields['tola_user_uuid'].widget = forms.HiddenInput()
-        #print user['username'].is_superuser
         # if they aren't a super user or User Admin don't let them change countries form field
         if 'User Admin' not in user['username'].groups.values_list('name', flat=True) and not user['username'].is_superuser:
             self.fields['countries'].widget.attrs['disabled'] = "disabled"
@@ -26,7 +27,6 @@ class RegistrationForm(UserChangeForm):
     class Meta:
         model = TolaUser
         fields = '__all__'
-
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -87,6 +87,11 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
 
+        # Set default organization for demo environment
+        if settings.DEFAULT_ORG and os.getenv('APP_BRANCH', '') == 'demo':
+            self.fields['org'] = forms.CharField(
+                initial=settings.DEFAULT_ORG, disabled=True)
+
     helper = FormHelper()
     helper.form_method = 'post'
     helper.form_class = 'form-horizontal'
@@ -101,6 +106,7 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
         Fieldset('Information','title', 'org'),
         Fieldset('Privacy Statement','privacy_disclaimer_accepted',),
     )
+
 
 class BookmarkForm(forms.ModelForm):
     """
