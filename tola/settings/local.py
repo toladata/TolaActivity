@@ -65,6 +65,11 @@ SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_SECR
 SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL')
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['redirect_after_login']
 
+# Whitelist of domains allowed to login via social auths
+# i.e. ['toladata.com', 'humanitec.com','treeaid.org']
+SOCIAL_AUTH_GOOGLE_WHITELISTED_DOMAINS = os.getenv('SOCIAL_AUTH_GOOGLE_WHITELISTED_DOMAINS')
+SOCIAL_AUTH_GOOGLE_MICROSOFT_DOMAINS = os.getenv('SOCIAL_AUTH_GOOGLE_MICROSOFT_DOMAINS')
+
 
 ########## CACHE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#caches
