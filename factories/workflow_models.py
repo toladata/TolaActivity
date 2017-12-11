@@ -32,7 +32,7 @@ from workflow.models import (
     WorkflowLevel2 as WorkflowLevel2M,
     WorkflowLevel2Sort as WorkflowLevel2SortM,
 )
-from .user_models import User, Group
+from .django_models import User, Group, Site
 
 
 class Award(DjangoModelFactory):
@@ -290,6 +290,7 @@ class TolaSites(DjangoModelFactory):
         model = TolaSitesM
 
     name = 'TolaData'
+    site = SubFactory(Site)
 
 
 class WorkflowLevel2Sort(DjangoModelFactory):
