@@ -6,8 +6,10 @@ from crispy_forms.layout import Layout, Submit, Reset
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
-from workflow.models import TolaUser, TolaBookmarks, Organization
 from django.contrib.auth.models import User
+
+from tola import DEMO_BRANCH
+from workflow.models import TolaUser, TolaBookmarks, Organization
 
 
 class RegistrationForm(UserChangeForm):
@@ -88,7 +90,7 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
 
         # Set default organization for demo environment
-        if settings.DEFAULT_ORG and os.getenv('APP_BRANCH', '') == 'demo':
+        if settings.DEFAULT_ORG and os.getenv('APP_BRANCH') == DEMO_BRANCH:
             self.fields['org'] = forms.CharField(
                 initial=settings.DEFAULT_ORG, disabled=True)
 
