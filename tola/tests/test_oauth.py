@@ -2,7 +2,6 @@ from django.test import TestCase
 from django.test import Client
 from django.contrib.sites.shortcuts import get_current_site
 
-from oauth2_provider.models import Application
 from social_core.exceptions import AuthForbidden
 
 from workflow.models import TolaUser
@@ -18,32 +17,33 @@ class OAuthTest(TestCase):
     Test cases for OAuth Provider interface
     """
 
-    fixtures = ['fixtures/users.json','fixtures/oauth_test_data.json']
-
     def setUp(self):
         self.tola_user = factories.TolaUser()
         self.org = factories.Organization()
         self.country = factories.Country()
         self.site = factories.TolaSites(site=get_current_site(None),
                                         whitelisted_domains='testenv.com')
+        self.app = factories.Application(user=self.tola_user.user)
+        self.grant = factories.Grant(application=self.app,
+                                     user=self.tola_user.user)
 
     def test_authorization(self):
         """
         Tests if the simple search responds
-        :return: 
+        :return:
         """
-        c = Client(HTTP_USER_AGENT='Test/1.0')
-        c.login(username='test', password='1234')
+        self.tola_user.user.set_password('1234')
+        self.tola_user.user.save()
 
-        oauth_app = Application.objects.all()[0]
+        c = Client(HTTP_USER_AGENT='Test/1.0')
+        c.login(username=self.tola_user.user.username, password='1234')
 
         # Get Authorization token
         authorize_url = '/oauth/authorize?state=random_state_string' \
-                        '&client_id='+oauth_app.client_id+'' \
-                        '&response_type=code'
+                        '&client_id={}&response_type=code'.format(
+                            self.app.client_id)
 
         response = c.get(authorize_url, follow=True)
-
         self.assertContains(
             response, "value=\"CXGVOGFnTAt5cQW6m5AxbGrRq1lzKNSrou31dWm9\"")
         self.assertEqual(response.status_code, 200)
