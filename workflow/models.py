@@ -220,8 +220,8 @@ class TolaUser(models.Model):
         ordering = ('name',)
 
     def __unicode__(self):
-        if (settings.TOLAUSER_OFUSCATED_NAME and
-                    self.name == settings.TOLAUSER_OFUSCATED_NAME):
+        if (settings.TOLAUSER_OBFUSCATED_NAME and
+                    self.name == settings.TOLAUSER_OBFUSCATED_NAME):
             if self.user.first_name and self.user.last_name:
                 return u'{} {}'.format(self.user.first_name,
                                        self.user.last_name)
@@ -240,8 +240,8 @@ class TolaUser(models.Model):
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
 
-        if settings.TOLAUSER_OFUSCATED_NAME:
-            self.name = settings.TOLAUSER_OFUSCATED_NAME
+        if settings.TOLAUSER_OBFUSCATED_NAME:
+            self.name = settings.TOLAUSER_OBFUSCATED_NAME
 
         super(TolaUser, self).save()
 
