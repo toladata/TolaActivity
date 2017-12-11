@@ -220,7 +220,15 @@ class TolaUser(models.Model):
         ordering = ('name',)
 
     def __unicode__(self):
-        return self.name if self.name is not None else '-'
+        if (settings.TOLAUSER_OFUSCATED_NAME and
+                    self.name == settings.TOLAUSER_OFUSCATED_NAME):
+            if self.user.first_name and self.user.last_name:
+                return u'{} {}'.format(self.user.first_name,
+                                       self.user.last_name)
+            else:
+                return u'-'
+        else:
+            return self.name if self.name else u'-'
 
     @property
     def countries_list(self):
