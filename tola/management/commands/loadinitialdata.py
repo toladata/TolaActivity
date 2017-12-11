@@ -13,6 +13,8 @@ from workflow.models import (
     ROLE_PROGRAM_TEAM)
 
 logger = logging.getLogger(__name__)
+DEFAULT_WORKFLOWLEVEL1_ID = 3
+DEFAULT_WORKFLOWLEVEL1_NAME = 'Humanitarian Response to the Syrian Crisis'
 
 
 class Command(BaseCommand):

@@ -7,11 +7,10 @@ from django.test import RequestFactory, TestCase, override_settings
 from django.conf import settings
 from django.urls import reverse
 from django.http import HttpRequest
-
 from mock import Mock, patch
 
 import factories
-from tola import views
+from tola import views, DEMO_BRANCH
 from workflow.models import TolaUser, TolaSites, ROLE_VIEW_ONLY, TITLE_CHOICES
 
 
@@ -202,7 +201,7 @@ class RegisterViewPostTest(TestCase):
     def test_post_success_with_default_org(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
         factories.Organization(name=settings.DEFAULT_ORG)
-        os.environ['APP_BRANCH'] = 'demo'
+        os.environ['APP_BRANCH'] = DEMO_BRANCH
 
         data = {
             'first_name': 'John',
