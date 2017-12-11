@@ -220,20 +220,27 @@ class TolaUser(models.Model):
         ordering = ('name',)
 
     def __unicode__(self):
-        return self.name if self.name is not None else '-'
+        if (settings.TOLAUSER_OBFUSCATED_NAME and
+                    self.name == settings.TOLAUSER_OBFUSCATED_NAME):
+            if self.user.first_name and self.user.last_name:
+                return u'{} {}'.format(self.user.first_name,
+                                       self.user.last_name)
+            else:
+                return u'-'
+        else:
+            return self.name if self.name else u'-'
 
     @property
     def countries_list(self):
         return ', '.join([x.code for x in self.countries.all()])
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
 
-        if settings.TOLAUSER_OFUSCATED_NAME:
-            self.name = settings.TOLAUSER_OFUSCATED_NAME
+        if settings.TOLAUSER_OBFUSCATED_NAME:
+            self.name = settings.TOLAUSER_OBFUSCATED_NAME
 
         super(TolaUser, self).save()
 

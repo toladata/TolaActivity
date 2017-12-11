@@ -1,8 +1,11 @@
+from cStringIO import StringIO
 import logging
+import os
 import sys
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction, IntegrityError
+from django.db import transaction, IntegrityError, connection
 
 import factories
 from workflow.models import (
@@ -10,6 +13,8 @@ from workflow.models import (
     ROLE_PROGRAM_TEAM)
 
 logger = logging.getLogger(__name__)
+DEFAULT_WORKFLOWLEVEL1_ID = 3
+DEFAULT_WORKFLOWLEVEL1_NAME = 'Humanitarian Response to the Syrian Crisis'
 
 
 class Command(BaseCommand):
@@ -25,6 +30,8 @@ class Command(BaseCommand):
     should be empty. Otherwise the command will exit with an error and no
     new data will be added to the database.
     """
+    APPS = ('workflow', 'formlibrary', 'customdashboard', 'reports', 'gladmap',
+            'search')
 
     def __init__(self):
         # Note: for the lists we fill the first element with an empty value for
@@ -2360,6 +2367,33 @@ class Command(BaseCommand):
             role=self._groups[3],  # 3
         )
 
+    def _reset_sql_sequences(self):
+        """
+        After adding to database all rows using hardcoded IDs, the primary key
+        counter of each table is not autoupdated. This method resets all
+        primary keys for all affected apps.
+        """
+        os.environ['DJANGO_COLORS'] = 'nocolor'
+
+        for app in self.APPS:
+            buf = StringIO()
+            call_command('sqlsequencereset', app, stdout=buf)
+
+            buf.seek(0)
+            sql_commands = buf.getvalue().splitlines()
+
+            sql_commands_clean = []
+            for command in sql_commands:
+                # As we are already inside a transaction thanks to the
+                # transaction.atomic decorator, we don't need
+                # the COMMIT and BEGIN statements. If there was some problem
+                # we are automatically rolling back the transaction.
+                if command not in ('COMMIT;', 'BEGIN;'):
+                    sql_commands_clean.append(command)
+
+            cursor = connection.cursor()
+            cursor.execute("\n".join(sql_commands_clean))
+
     def add_arguments(self, parser):
         parser.add_argument('--demo', action='store_true',
                             help='Loads extra demo data')
@@ -2394,3 +2428,5 @@ class Command(BaseCommand):
                 logger.error(msg)
                 sys.stderr.write("{}\n".format(msg))
                 raise
+
+        self._reset_sql_sequences()

@@ -705,17 +705,18 @@ class DocumentationViewSet(viewsets.ModelViewSet):
                 values_list('organization_id', flat=True). \
                 get(user=request.user)
             queryset = queryset.filter(
-                workflowlevel2__workflowlevel1__organization_id=organization_id
+                workflowlevel1__organization_id=organization_id
             ).filter(
                 workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self, serializer):
+
         serializer.save(created_by=self.request.user)
 
-    filter_fields = ('workflowlevel2__workflowlevel1__country__country',
-                     'workflowlevel2__workflowlevel1__organization__id')
+    filter_fields = ('workflowlevel1__country__country',
+                     'workflowlevel1__organization__id')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     permission_classes = (IsOrgMember,)
     queryset = Documentation.objects.all()
@@ -1028,50 +1029,58 @@ class CustomFormViewSet(viewsets.ModelViewSet):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         form_data = request.data.copy()
+        headers = {
+            'Authorization': 'Token {}'.format(
+                settings.TOLA_TRACK_TOKEN),
+        }
 
+        # Serialize the program
         if request.data.get('workflowlevel1'):
-            tola_user = request.user.tola_user
-            headers = {
-                'Authorization': 'Token {}'.format(
-                    settings.TOLA_TRACK_TOKEN),
-            }
-            # Check if the customform already has a program associated
-            if not instance.workflowlevel1:
-                wflvl1_serializer = self.serializer_class().get_fields()[
-                    'workflowlevel1']
-                wkfl1 = wflvl1_serializer.run_validation(request.data.get(
-                    'workflowlevel1'))
-                silo_data = {'name': form_data.get('name'),
-                             'description': form_data.get('description'),
-                             'fields': form_data.get('fields'),
-                             'level1_uuid': wkfl1.level1_uuid,
-                             'tola_user_uuid': tola_user.tola_user_uuid}
+            wflvl1_serializer = self.serializer_class().get_fields()[
+                'workflowlevel1']
+            wkfl1 = wflvl1_serializer.run_validation(request.data.get(
+                'workflowlevel1'))
+        else:
+            wkfl1 = None
 
-                # Make a POST request to Track to create a table
-                url_subpath = 'api/customform'
+        if instance.workflowlevel1:
+            if wkfl1 and wkfl1 != instance.workflowlevel1:
+                return Response({'detail': 'You cannot change the Program.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # Check if there is already data in the table
+            url_subpath = 'api/customform/%s/has_data' % instance.silo_id
+            url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+            response = requests.get(url, headers=headers)
+            has_data = json.loads(response.content)
+
+            if has_data == 'false':
+                # Update the table info in Track
+                data = {'name': form_data.get('name'),
+                        'description': form_data.get('description'),
+                        'fields': form_data.get('fields')}
+                url_subpath = 'api/customform/%s' % instance.silo_id
                 url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
-                response = requests.post(url, data=silo_data, headers=headers)
-
-                silo_json = json.loads(response.content)
-                form_data['silo_id'] = silo_json.get('id')
+                requests.put(url, data=data, headers=headers)
             else:
-                # Check if there is already data in table
-                url_subpath = 'api/customform/%s/has_data' % instance.silo_id
-                url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
-                response = requests.get(url, headers=headers)
-                has_data = json.loads(response.content)
+                return Response(
+                    {'detail': 'You already have data in the instance.'},
+                    status=status.HTTP_409_CONFLICT
+                )
+        elif wkfl1:
+            tola_user = request.user.tola_user
+            silo_data = {'name': form_data.get('name'),
+                         'description': form_data.get('description'),
+                         'fields': form_data.get('fields'),
+                         'level1_uuid': wkfl1.level1_uuid,
+                         'tola_user_uuid': tola_user.tola_user_uuid}
 
-                if has_data == 'false':
-                    # Update the table info in Track
-                    data = {'name': form_data.get('name'),
-                            'description': form_data.get('description'),
-                            'fields': form_data.get('fields')}
-                    url_subpath = 'api/customform/%s' % instance.silo_id
-                    url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
-                    requests.put(url, data=data, headers=headers)
-                else:
-                    return Response('You already have data in the instance.',
-                                    status=status.HTTP_409_CONFLICT)
+            # Make a POST request to Track to create a table
+            url_subpath = 'api/customform'
+            url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+            response = requests.post(url, data=silo_data, headers=headers)
+
+            silo_json = json.loads(response.content)
+            form_data['silo_id'] = silo_json.get('id')
 
         serializer = self.get_serializer(instance, data=form_data,
                                          partial=partial)

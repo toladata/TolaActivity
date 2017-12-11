@@ -271,10 +271,8 @@ class CustomFormUpdateViewsTest(TestCase):
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
-        wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
         customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=self.tola_user.organization)
+            organization=self.tola_user.organization)
 
         data = {'name': '4W Daily Activity Report'}
         request = self.factory.post('/api/customform/', data)
@@ -285,6 +283,51 @@ class CustomFormUpdateViewsTest(TestCase):
 
         customform = CustomForm.objects.get(pk=response.data['id'])
         self.assertEquals(customform.name, data['name'])
+
+    def test_update_customform_org_admin_json(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        customform = factories.CustomForm(
+            organization=self.tola_user.organization,
+            created_by=self.tola_user.user)
+
+        data = {'name': '4W Daily Activity Report'}
+        request = self.factory.post('/api/customform/', json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = CustomFormViewSet.as_view({'post': 'update'})
+        response = view(request, pk=customform.pk)
+        self.assertEqual(response.status_code, 200)
+
+        customform = CustomForm.objects.get(pk=response.data['id'])
+        self.assertEquals(customform.name, data['name'])
+
+    def test_update_customform_diff_org_admin(self):
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        another_org = factories.Organization(name='Another Org')
+        customform = factories.CustomForm(
+            organization=another_org)
+
+        data = {'name': '4W Daily Activity Report'}
+        request = self.factory.post('/api/customform/', data)
+        request.user = self.tola_user.user
+        view = CustomFormViewSet.as_view({'post': 'update'})
+        response = view(request, pk=customform.pk)
+        self.assertEqual(response.status_code, 403)
+
+    def test_update_customform_no_created_by(self):
+        customform = factories.CustomForm(
+            organization=self.tola_user.organization)
+
+        data = {'name': '4W Daily Activity Report'}
+        request = self.factory.post('/api/customform/', data)
+        request.user = self.tola_user.user
+        view = CustomFormViewSet.as_view({'post': 'update'})
+        response = view(request, pk=customform.pk)
+        self.assertEqual(response.status_code, 403)
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
@@ -362,6 +405,77 @@ class CustomFormUpdateViewsTest(TestCase):
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
     @patch('feed.views.requests')
     def test_update_customform_org_admin_third_wfl1(self, mock_requests):
+        external_response = {'id': 1234}
+        mock_requests.get.return_value = Mock(
+            status_code=200, content=json.dumps('false'))
+        mock_requests.put.return_value = Mock(
+            status_code=200, content=json.dumps(external_response))
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        customform = factories.CustomForm(
+            workflowlevel1=wflvl1,
+            organization=self.tola_user.organization,
+            silo_id=1234)
+
+        data = {'name': '4W Daily Activity Report',
+                'description': 'It is a test',
+                'fields': '[{"name": "name", "type": "text"},'
+                          '{"name": "age", "type": "number"},'
+                          '{"name": "city", "type": "text"}]'}
+        request = self.factory.post('/api/customform/', data)
+        request.user = self.tola_user.user
+        view = CustomFormViewSet.as_view({'post': 'update'})
+        response = view(request, pk=customform.pk)
+        self.assertEqual(response.status_code, 200)
+
+        customform = CustomForm.objects.get(pk=response.data['id'])
+        self.assertEquals(customform.name, data['name'])
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('feed.views.requests')
+    def test_update_customform_org_admin_fourth_wfl1(self, mock_requests):
+        external_response = {'id': 1234}
+        mock_requests.get.return_value = Mock(
+            status_code=200, content=json.dumps('false'))
+        mock_requests.put.return_value = Mock(
+            status_code=200, content=json.dumps(external_response))
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        request = self.factory.post('/api/customform/')
+        wflvl1_1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_2 = factories.WorkflowLevel1()
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1_2.id},
+                             request=request)
+        customform = factories.CustomForm(
+            workflowlevel1=wflvl1_1,
+            organization=self.tola_user.organization,
+            silo_id=1234)
+
+        data = {'name': '4W Daily Activity Report',
+                'description': 'It is a test',
+                'fields': '[{"name": "name", "type": "text"},'
+                          '{"name": "age", "type": "number"},'
+                          '{"name": "city", "type": "text"}]',
+                'workflowlevel1': wflvl1_url}
+        request = self.factory.post('/api/customform/', data)
+        request.user = self.tola_user.user
+        view = CustomFormViewSet.as_view({'post': 'update'})
+        response = view(request, pk=customform.pk)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data['detail'],
+                         'You cannot change the Program.')
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('feed.views.requests')
+    def test_update_customform_org_admin_fifth_wfl1(self, mock_requests):
         mock_requests.get.return_value = Mock(
             status_code=200, content=json.dumps('true'))
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
@@ -389,24 +503,19 @@ class CustomFormUpdateViewsTest(TestCase):
         view = CustomFormViewSet.as_view({'post': 'update'})
         response = view(request, pk=customform.pk)
         self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.data['detail'],
+                         'You already have data in the instance.')
 
-    def test_update_customform_diff_org_admin(self):
-        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
-        self.tola_user.user.groups.add(group_org_admin)
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('feed.views.requests')
+    def test_update_customform_wfl1_program_admin(self, mock_requests):
+        # Mock request
+        external_response = {'id': 1234}
+        mock_requests.post.return_value = Mock(
+            status_code=201, content=json.dumps(external_response))
 
-        another_org = factories.Organization(name='Another Org')
-        wflvl1 = factories.WorkflowLevel1(organization=another_org)
-        customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=another_org)
-
-        data = {'name': '4W Daily Activity Report'}
-        request = self.factory.post('/api/customform/', data)
-        request.user = self.tola_user.user
-        view = CustomFormViewSet.as_view({'post': 'update'})
-        response = view(request, pk=customform.pk)
-        self.assertEqual(response.status_code, 403)
-
-    def test_update_customform_program_admin(self):
+        # Create a program and program team for the user
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
@@ -414,9 +523,17 @@ class CustomFormUpdateViewsTest(TestCase):
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_PROGRAM_ADMIN))
         customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=self.tola_user.organization)
+            organization=self.tola_user.organization,
+            created_by=self.tola_user.user)
 
-        data = {'name': '4W Daily Activity Report'}
+        # Make the request
+        request = self.factory.post('/api/customform/')
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+
+        data = {'name': '4W Daily Activity Report',
+                'workflowlevel1': wflvl1_url}
         request = self.factory.post('/api/customform/', data)
         request.user = self.tola_user.user
         view = CustomFormViewSet.as_view({'post': 'update'})
@@ -426,48 +543,7 @@ class CustomFormUpdateViewsTest(TestCase):
         customform = CustomForm.objects.get(pk=response.data['id'])
         self.assertEquals(customform.name, data['name'])
 
-    def test_update_customform_program_admin_json(self):
-        wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user,
-            workflowlevel1=wflvl1,
-            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
-        customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=self.tola_user.organization)
-
-        data = {'name': '4W Daily Activity Report'}
-        request = self.factory.post('/api/customform/', json.dumps(data),
-                                    content_type='application/json')
-        request.user = self.tola_user.user
-        view = CustomFormViewSet.as_view({'post': 'update'})
-        response = view(request, pk=customform.pk)
-        self.assertEqual(response.status_code, 200)
-
-        customform = CustomForm.objects.get(pk=response.data['id'])
-        self.assertEquals(customform.name, data['name'])
-
-    def test_update_customform_program_team(self):
-        wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user,
-            workflowlevel1=wflvl1,
-            role=factories.Group(name=ROLE_PROGRAM_TEAM))
-        customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=self.tola_user.organization)
-
-        data = {'name': '4W Daily Activity Report'}
-        request = self.factory.post('/api/customform/', data)
-        request.user = self.tola_user.user
-        view = CustomFormViewSet.as_view({'post': 'update'})
-        response = view(request, pk=customform.pk)
-        self.assertEqual(response.status_code, 200)
-
-        customform = CustomForm.objects.get(pk=response.data['id'])
-        self.assertEquals(customform.name, data['name'])
-
-    def test_update_customform_view_only(self):
+    def test_update_customform_wfl1_view_only(self):
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
         WorkflowTeam.objects.create(
@@ -475,9 +551,16 @@ class CustomFormUpdateViewsTest(TestCase):
             workflowlevel1=wflvl1,
             role=factories.Group(name=ROLE_VIEW_ONLY))
         customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=self.tola_user.organization)
+            organization=self.tola_user.organization,
+            created_by=self.tola_user.user)
 
-        data = {'name': '4W Daily Activity Report'}
+        request = self.factory.post('/api/customform/')
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+
+        data = {'name': '4W Daily Activity Report',
+                'workflowlevel1': wflvl1_url}
         request = self.factory.post('/api/customform/', data)
         request.user = self.tola_user.user
         view = CustomFormViewSet.as_view({'post': 'update'})
@@ -535,15 +618,10 @@ class CustomFormDeleteViewsTest(TestCase):
         self.assertEquals(response.status_code, 403)
         CustomForm.objects.get(pk=customform.pk)
 
-    def test_delete_customform_program_admin(self):
-        wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user,
-            workflowlevel1=wflvl1,
-            role=factories.Group(name=ROLE_PROGRAM_ADMIN))
+    def test_delete_customform_created_by(self):
         customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=self.tola_user.organization)
+            organization=self.tola_user.organization,
+            created_by=self.tola_user.user)
 
         request = self.factory.delete('/api/customform/')
         request.user = self.tola_user.user
@@ -554,42 +632,9 @@ class CustomFormDeleteViewsTest(TestCase):
             CustomForm.DoesNotExist,
             CustomForm.objects.get, pk=customform.pk)
 
-    def test_delete_customform_program_team(self):
-        wflvl1 = factories.WorkflowLevel1(
-            organization=self.tola_user.organization)
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user,
-            workflowlevel1=wflvl1,
-            role=factories.Group(name=ROLE_PROGRAM_TEAM))
+    def test_delete_customform_no_created_by(self):
         customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=self.tola_user.organization)
-
-        request = self.factory.delete('/api/customform/')
-        request.user = self.tola_user.user
-        view = CustomFormViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=customform.pk)
-        self.assertEquals(response.status_code, 403)
-        CustomForm.objects.get(pk=customform.pk)
-
-    def test_delete_customform_view_only(self):
-        wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
-        WorkflowTeam.objects.create(
-            workflow_user=self.tola_user,
-            workflowlevel1=wflvl1,
-            role=factories.Group(name=ROLE_VIEW_ONLY))
-        customform = factories.CustomForm(
-            workflowlevel1=wflvl1, organization=self.tola_user.organization)
-
-        request = self.factory.delete('/api/customform/')
-        request.user = self.tola_user.user
-        view = CustomFormViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=customform.pk)
-        self.assertEquals(response.status_code, 403)
-        CustomForm.objects.get(pk=customform.pk)
-
-    def test_delete_customform_normal_user(self):
-        customform = factories.CustomForm()
         request = self.factory.delete('/api/customform/')
         request.user = self.tola_user.user
         view = CustomFormViewSet.as_view({'delete': 'destroy'})
