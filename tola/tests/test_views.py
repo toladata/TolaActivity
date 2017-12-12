@@ -39,10 +39,10 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.context_data['tolaactivity_url'],
                          'https://tolaactivity.com')
         self.assertEqual(response.context_data['tolatrack_url'],
-                         'https://tolatrack.com/login/tola')
+                         'https://tolatrack.com/')
         template_content = response.render().content
         self.assertIn('https://tolaactivity.com', template_content)
-        self.assertIn('https://tolatrack.com/login/tola', template_content)
+        self.assertIn('https://tolatrack.com/', template_content)
 
     @override_settings(TOLA_ACTIVITY_URL='')
     @override_settings(TOLA_TRACK_URL='')
@@ -61,10 +61,10 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.context_data['tolaactivity_url'],
                          'https://tolaactivity.com')
         self.assertEqual(response.context_data['tolatrack_url'],
-                         'https://tolatrack.com/login/tola')
+                         'https://tolatrack.com')
         template_content = response.render().content
         self.assertIn('https://tolaactivity.com', template_content)
-        self.assertIn('https://tolatrack.com/login/tola', template_content)
+        self.assertIn('https://tolatrack.com', template_content)
 
 
 class RegisterViewGetTest(TestCase):
