@@ -1,4 +1,4 @@
-from factory import DjangoModelFactory, post_generation, SubFactory
+from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy
 
 from indicators.models import (
     CollectedData as CollectedDataM,
@@ -8,6 +8,7 @@ from indicators.models import (
     IndicatorType as IndicatorTypeM,
     Level as LevelM,
     Objective as ObjectiveM,
+    PeriodicTarget as PeriodicTargetM,
     StrategicObjective as StrategicObjectiveM,
 )
 from .workflow_models import (Organization, WorkflowLevel1)
@@ -66,8 +67,9 @@ class CollectedData(DjangoModelFactory):
 class IndicatorType(DjangoModelFactory):
     class Meta:
         model = IndicatorTypeM
+        django_get_or_create = ('indicator_type',)
 
-    indicator_type = 'Indicator Type A'
+    indicator_type = fuzzy.FuzzyText()
 
 
 class ExternalService(DjangoModelFactory):
@@ -83,3 +85,8 @@ class StrategicObjective(DjangoModelFactory):
         model = StrategicObjectiveM
 
     name = 'Strategic Objective A'
+
+
+class PeriodicTarget(DjangoModelFactory):
+    class Meta:
+        model = PeriodicTargetM

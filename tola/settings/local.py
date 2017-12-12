@@ -8,9 +8,9 @@ try:
             'ENGINE': os.environ["TOLA_DB_ENGINE"],
             'NAME': os.environ["TOLA_DB_NAME"],
             'USER': os.environ["TOLA_DB_USER"],
-            'PASSWORD': os.environ["TOLA_DB_PASS"],
-            'HOST': os.environ["TOLA_DB_HOST"],
-            'PORT': os.environ["TOLA_DB_PORT"],
+            'PASSWORD': os.environ.get("TOLA_DB_PASS"),
+            'HOST': os.environ.get("TOLA_DB_HOST", "localhost"),
+            'PORT': os.environ.get("TOLA_DB_PORT", 5432),
         }
     }
 except KeyError:
@@ -64,6 +64,13 @@ SOCIAL_AUTH_MICROSOFT_GRAPH_KEY = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_KEY')
 SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET')
 SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL = os.getenv('SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL')
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['redirect_after_login']
+
+# Whitelist of domains allowed to login via social auths
+# i.e. ['toladata.com', 'humanitec.com','treeaid.org']
+if os.getenv('SOCIAL_AUTH_GOOGLE_WHITELISTED_DOMAINS'):
+    SOCIAL_AUTH_GOOGLE_WHITELISTED_DOMAINS = os.getenv('SOCIAL_AUTH_GOOGLE_WHITELISTED_DOMAINS').split(',')
+if os.getenv('SOCIAL_AUTH_MICROSOFT_WHITELISTED_DOMAINS'):
+    SOCIAL_AUTH_GOOGLE_MICROSOFT_DOMAINS = os.getenv('SOCIAL_AUTH_MICROSOFT_WHITELISTED_DOMAINS').split(',')
 
 
 ########## CACHE CONFIGURATION
@@ -132,9 +139,21 @@ LOGGING = {
 
 TOLA_ACTIVITY_URL = os.getenv('TOLA_ACTIVITY_URL')  # frontend URL
 
+########## TRACK CONFIGURATION
+
 TOLA_TRACK_URL = os.getenv('TOLA_TRACK_URL')
 TOLA_TRACK_TOKEN = os.getenv('TOLA_TRACK_TOKEN')
+
+########## END CONFIGURATION
+
+########## ELASTIC SEARCH CONFIGURATION
 
 ELASTICSEARCH_ENABLED = True if os.getenv('ELASTICSEARCH_ENABLED') == 'True' else False
 ELASTICSEARCH_URL = os.getenv('ELASTICSEARCH_URL')
 ELASTICSEARCH_INDEX_PREFIX = os.getenv('ELASTICSEARCH_INDEX_PREFIX')
+
+########## END ELASTIC SEARCH CONFIGURATION
+
+TOLAUSER_OBFUSCATED_NAME = os.getenv('TOLAUSER_OBFUSCATED_NAME')
+
+DEFAULT_ORG = os.getenv('DEFAULT_ORG')

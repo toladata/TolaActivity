@@ -28,6 +28,7 @@ from workflow.models import (
     TolaUser as TolaUserM,
     WorkflowTeam as WorkflowTeamM,
     WorkflowLevel1 as WorkflowLevel1M,
+    WorkflowLevel1Sector as WorkflowLevel1SectorM,
     WorkflowLevel2 as WorkflowLevel2M,
     WorkflowLevel2Sort as WorkflowLevel2SortM,
 )
@@ -59,6 +60,7 @@ class Budget(DjangoModelFactory):
 class Country(DjangoModelFactory):
     class Meta:
         model = CountryM
+        django_get_or_create = ('code',)
 
     country = 'Afghanistan'
     code = 'AF'
@@ -112,12 +114,17 @@ class WorkflowLevel1(DjangoModelFactory):
             # Simple build, do nothing.
             return
 
-        if extracted:
+        if type(extracted) is list:
             # A list of country were passed in, use them
             for country in extracted:
                 self.country.add(country)
         else:
             self.country.add(Country(country='Syria', code='SY'))
+
+
+class WorkflowLevel1Sector(DjangoModelFactory):
+    class Meta:
+        model = WorkflowLevel1SectorM
 
 
 class WorkflowTeam(DjangoModelFactory):
@@ -168,7 +175,7 @@ class Stakeholder(DjangoModelFactory):
             # Simple build, do nothing.
             return
 
-        if extracted:
+        if type(extracted) is list:
             # A list of workflowlevel1 were passed in, use them
             for workflowlevel1 in extracted:
                 self.workflowlevel1.add(workflowlevel1)
@@ -218,7 +225,7 @@ class Portfolio(DjangoModelFactory):
             # Simple build, do nothing.
             return
 
-        if extracted:
+        if type(extracted) is list:
             # A list of country were passed in, use them
             for country in extracted:
                 self.country.add(country)
@@ -247,7 +254,7 @@ class CodedField(DjangoModelFactory):
             # Simple build, do nothing.
             return
 
-        if extracted:
+        if type(extracted) is list:
             # A list of workflowlevel1 were passed in, use them
             for workflowlevel1 in extracted:
                 self.workflowlevel1.add(workflowlevel1)
