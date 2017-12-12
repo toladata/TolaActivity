@@ -22,3 +22,12 @@ class Group(DjangoModelFactory):
         django_get_or_create = ('name',)
 
     name = ROLE_PROGRAM_ADMIN
+
+
+class Site(DjangoModelFactory):
+    class Meta:
+        model = 'sites.Site'
+        django_get_or_create = ('name',)
+
+    name = 'toladata.io'
+    domain = 'toladata.io'

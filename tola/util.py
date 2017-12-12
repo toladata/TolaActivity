@@ -1,6 +1,5 @@
 import unicodedata
 import json
-import sys
 import requests
 
 from workflow.models import (Country, TolaUser, TolaSites, WorkflowTeam,
@@ -94,28 +93,6 @@ def get_table(url, data=None):
     else:
         data = json.loads(response.content)
     return data
-
-
-def redirect_after_login(strategy, *args, **kwargs):
-    #print(strategy.session_get('redirect_after_login'))
-    redirect = strategy.session_get('redirect_after_login')
-    strategy.session_set('next',redirect)
-
-
-def user_to_tola(backend, user, response, *args, **kwargs):
-
-    # Add a google auth user to the tola profile
-    default_country = Country.objects.first()
-    default_organization = Organization.objects.first()
-    userprofile, created = TolaUser.objects.get_or_create(user=user)
-
-    # Do not set default values for existing TolaUser
-    if created:
-        userprofile.country = default_country
-        userprofile.organization = default_organization
-        userprofile.name = response.get('displayName')
-        userprofile.email = response.get('emails["value"]')
-        userprofile.save()
 
 
 def group_excluded(*group_names, **url):
