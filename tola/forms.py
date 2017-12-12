@@ -2,7 +2,6 @@ import os
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
-from crispy_forms.layout import Layout, Submit, Reset
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
@@ -51,7 +50,7 @@ class NewUserRegistrationForm(UserCreationForm):
     """
     class Meta:
         model = User
-        fields = ['first_name', 'last_name','email','username']
+        fields = ['first_name', 'last_name', 'email', 'username']
 
     def __init__(self, *args, **kwargs):
         super(NewUserRegistrationForm, self).__init__(*args, **kwargs)
@@ -87,27 +86,39 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
             return org
 
     def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.form_error_title = 'Form Errors'
+        self.helper.error_text_inline = True
+        self.helper.help_text_inline = True
+        self.helper.html5_required = True
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset('', 'title', 'org',),
+            Fieldset('',
+                     HTML("""
+                        <div id="iframe" class="mt-2">
+                            <h6>Notice/Disclaimer:</h6>
+                            <div class="privacy-policy">
+                                {% if privacy_disclaimer %}
+                                    {{ privacy_disclaimer }}
+                                {% else %}
+                                    {% include "registration/privacy_policy.html" %}
+                                {% endif %}
+                            </div>
+                        </div>
+                     """),
+                     Div('privacy_disclaimer_accepted',
+                         css_class="mt-2")),
+        )
+
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
 
         # Set default organization for demo environment
         if settings.DEFAULT_ORG and os.getenv('APP_BRANCH') == DEMO_BRANCH:
             self.fields['org'] = forms.CharField(
                 initial=settings.DEFAULT_ORG, disabled=True)
-
-    helper = FormHelper()
-    helper.form_method = 'post'
-    helper.form_class = 'form-horizontal'
-    helper.label_class = 'col-sm-2'
-    helper.field_class = 'col-sm-6'
-    helper.form_error_title = 'Form Errors'
-    helper.error_text_inline = True
-    helper.help_text_inline = True
-    helper.html5_required = True
-    helper.form_tag = False
-    helper.layout = Layout(
-        Fieldset('Information','title', 'org'),
-        Fieldset('Privacy Statement','privacy_disclaimer_accepted',),
-    )
 
 
 class BookmarkForm(forms.ModelForm):
