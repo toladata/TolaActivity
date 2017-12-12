@@ -10,9 +10,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic.base import TemplateView, View, ContextMixin
+from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
@@ -35,7 +35,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
         if settings.TOLA_ACTIVITY_URL and settings.TOLA_TRACK_URL:
             extra_context = {
                 'tolaactivity_url': settings.TOLA_ACTIVITY_URL,
-                'tolatrack_url': urljoin(settings.TOLA_TRACK_URL, 'login/tola'),
+                'tolatrack_url': settings.TOLA_TRACK_URL,
             }
         else:  # CE only
             warnings.warn(
@@ -46,8 +46,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
             tola_site = TolaSites.objects.get(name="TolaData")
             extra_context = {
                 'tolaactivity_url': tola_site.front_end_url,
-                'tolatrack_url': urljoin(tola_site.tola_tables_url,
-                                         'login/tola'),
+                'tolatrack_url': tola_site.tola_tables_url,
             }
         context.update(extra_context)
         return context
