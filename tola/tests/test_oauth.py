@@ -106,3 +106,20 @@ class OAuthTest(TestCase):
         self.site.save()
         with self.assertRaises(AuthForbidden):
             auth_pipeline.auth_allowed(backend, details, None)
+
+    def test_auth_allowed_no_whitelist(self):
+        # Fake backend class for the test
+        class BackendTest(object):
+            def __init__(self):
+                self.WHITELISTED_EMAILS = []
+                self.WHITELISTED_DOMAINS = []
+
+            def setting(self, name, default=None):
+                return self.__dict__.get(name, default)
+
+        self.site.whitelisted_domains = None
+        self.site.save()
+
+        backend = BackendTest()
+        details = {'email': self.tola_user.user.email}
+        auth_pipeline.auth_allowed(backend, details, None)
