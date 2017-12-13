@@ -90,6 +90,7 @@ class RegisterViewGetTest(TestCase):
         self.assertEqual(response.status_code, 200)
         template_content = response.content
         self.assertIn('TolaData - Privacy Policy', template_content)
+        self.assertIn('Privacy disclaimer accepted', template_content)
 
 
 class RegisterViewPostTest(TestCase):
