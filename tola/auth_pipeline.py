@@ -31,12 +31,15 @@ def auth_allowed(backend, details, response, *args, **kwargs):
     The same social-core auth_allowed method but fetching and
     adding white-listed domains from TolaSites
     """
-    site = get_current_site(None)
-    tola_site = TolaSites.objects.get(site=site)
-    tola_domains = ','.join(tola_site.whitelisted_domains.split()).split(',')
     emails = backend.setting('WHITELISTED_EMAILS', [])
     domains = backend.setting('WHITELISTED_DOMAINS', [])
-    domains += tola_domains
+
+    site = get_current_site(None)
+    tola_site = TolaSites.objects.get(site=site)
+    if tola_site and tola_site.whitelisted_domains:
+        tola_domains = ','.join(tola_site.whitelisted_domains.split())
+        tola_domains = tola_domains.split(',')
+        domains += tola_domains
     email = details.get('email')
     allowed = True
     if email and (emails or domains):
