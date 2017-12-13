@@ -1,10 +1,10 @@
-from .models import *
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportModelAdmin, ExportMixin
-from tola.util import getCountry
 from admin_report.mixins import ChartReportAdmin
 from simple_history.admin import SimpleHistoryAdmin
+
+from .models import *
 
 
 # Resource for CSV export
@@ -55,8 +55,10 @@ class WorkflowLevel2Admin(ImportExportModelAdmin):
         `self.value()`.
         """
         # Filter by logged in users allowable countries
-        user_countries = getCountry(request.user)
-        return queryset.filter(country__in=user_countries)
+        user_countries = TolaUser.objects.all().filter(
+            user__id=request.user.id).values('countries')
+        countries = Country.objects.all().filter(id__in=user_countries)
+        return queryset.filter(country__in=countries)
 
 
 # Resource for CSV export
@@ -143,7 +145,7 @@ class TolaUserProxyResource(resources.ModelResource):
     email = fields.Field()
 
     def dehydrate_email(self, user):
-            return '%s' % (user.user.email)
+            return '%s' % user.user.email
 
     class Meta:
         model = TolaUserProxy
