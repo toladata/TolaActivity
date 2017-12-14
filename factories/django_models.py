@@ -1,7 +1,7 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute
 
-from feed.views import ROLE_PROGRAM_ADMIN
+from workflow.models import ROLE_PROGRAM_ADMIN
 
 
 class User(DjangoModelFactory):
