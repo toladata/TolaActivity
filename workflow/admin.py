@@ -58,8 +58,6 @@ class WorkflowLevel2Admin(ImportExportModelAdmin):
         user_countries = getCountry(request.user)
         return queryset.filter(country__in=user_countries)
 
-    pass
-
 
 # Resource for CSV export
 class CountryResource(resources.ModelResource):
@@ -96,7 +94,6 @@ class SiteProfileAdmin(ImportExportModelAdmin):
                     'adminleveltwo', 'admin_level_three', 'adminlevelthree')
     list_filter = ('country__country',)
     search_fields = ('office__code', 'country__country')
-    pass
 
 
 class WorkflowLevel1Admin(admin.ModelAdmin):
