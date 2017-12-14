@@ -93,7 +93,6 @@ urlpatterns = [ # rest framework
                 url(r'^api/', include(router.urls)),
                 url(r'^binarytest/(?P<id>\w+)', binary_test),
                 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-                url(r'^api-token-auth/', authtoken_views.obtain_auth_token),
 
                 # index
                 url(r'^$', tola_views.IndexView.as_view(), name='index'),
