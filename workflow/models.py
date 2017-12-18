@@ -1386,11 +1386,28 @@ class Budget(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='budgets', null=True, blank=True)
     history = HistoricalRecords()
+
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
-        if self.create_date == None:
+        if not self.create_date:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
+
+        if self.workflowlevel2:
+            wflvl2 = self.workflowlevel2
+            try:
+                old_budget = self.__class__.objects.get(id=self.id)
+                # Subtract the old values
+                wflvl2.total_estimated_budget -= old_budget.proposed_value
+                wflvl2.actual_cost -= old_budget.actual_value
+            except Budget.DoesNotExist:
+                pass
+            finally:
+                # Sum the new values
+                wflvl2.total_estimated_budget += self.proposed_value
+                wflvl2.actual_cost += self.actual_value
+                wflvl2.save()
+
         super(Budget, self).save()
 
     def __unicode__(self):
