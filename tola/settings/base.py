@@ -272,7 +272,7 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
-    'social_core.pipeline.social_auth.auth_allowed',
+    'tola.auth_pipeline.auth_allowed',
     'social_core.pipeline.social_auth.social_user',
     'social_core.pipeline.social_auth.associate_by_email',
     'social_core.pipeline.user.get_username',
@@ -280,8 +280,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
-    'tola.util.user_to_tola',
-    'tola.util.redirect_after_login',
+    'tola.auth_pipeline.user_to_tola',
+    'tola.auth_pipeline.redirect_after_login',
 )
 
 ############ END OF AUTHENTICATION BACKEND ##############
