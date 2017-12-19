@@ -41,7 +41,7 @@ def auth_allowed(backend, details, response, *args, **kwargs):
         tola_domains = tola_domains.split(',')
         domains += tola_domains
     email = details.get('email')
-    allowed = True
+    allowed = False
     if email and (emails or domains):
         domain = email.split('@', 1)[1]
         allowed = email in emails or domain in domains

@@ -122,4 +122,5 @@ class OAuthTest(TestCase):
 
         backend = BackendTest()
         details = {'email': self.tola_user.user.email}
-        auth_pipeline.auth_allowed(backend, details, None)
+        with self.assertRaises(AuthForbidden):
+            auth_pipeline.auth_allowed(backend, details, None)
