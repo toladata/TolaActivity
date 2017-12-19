@@ -1,10 +1,10 @@
-from .models import *
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ImportExportModelAdmin, ExportMixin
-from tola.util import getCountry
 from admin_report.mixins import ChartReportAdmin
 from simple_history.admin import SimpleHistoryAdmin
+
+from .models import *
 
 
 # Resource for CSV export
@@ -42,25 +42,6 @@ class WorkflowLevel2Resource(resources.ModelResource):
                 }
 
 
-class WorkflowLevel2Admin(ImportExportModelAdmin):
-    resource_class = WorkflowLevel2Resource
-    list_display = ('workflowlevel1', 'name', 'short', 'create_date')
-    list_filter = ('workflowlevel1__country', 'office', 'short')
-    display = 'name'
-
-    def queryset(self, request, queryset):
-        """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
-        `self.value()`.
-        """
-        # Filter by logged in users allowable countries
-        user_countries = getCountry(request.user)
-        return queryset.filter(country__in=user_countries)
-
-    pass
-
-
 # Resource for CSV export
 class CountryResource(resources.ModelResource):
 
@@ -87,24 +68,6 @@ class SiteProfileResource(resources.ModelResource):
         model = SiteProfile
         skip_unchanged = True
         report_skipped = False
-        #import_id_fields = ['id']
-
-
-class SiteProfileAdmin(ImportExportModelAdmin):
-    resource_class = SiteProfileResource
-    list_display = ('name', 'office', 'country', 'adminlevelone',
-                    'adminleveltwo', 'admin_level_three', 'adminlevelthree')
-    list_filter = ('country__country',)
-    search_fields = ('office__code', 'country__country')
-    pass
-
-
-class WorkflowLevel1Admin(admin.ModelAdmin):
-    list_display = ('countries', 'name', 'unique_id', 'description',
-                    'funding_status')
-    search_fields = ('name', 'unique_id')
-    list_filter = ('funding_status', 'country', 'funding_status')
-    display = 'Program'
 
 
 class WorkflowTeamAdmin(admin.ModelAdmin):
@@ -146,7 +109,7 @@ class TolaUserProxyResource(resources.ModelResource):
     email = fields.Field()
 
     def dehydrate_email(self, user):
-            return '%s' % (user.user.email)
+            return '%s' % user.user.email
 
     class Meta:
         model = TolaUserProxy
@@ -209,11 +172,6 @@ class FormGuidanceAdmin(admin.ModelAdmin):
 class ProjectTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'create_date', 'edit_date')
     display = 'Project Type'
-
-
-class SectorAdmin(admin.ModelAdmin):
-    list_display = ('sector', 'create_date', 'edit_date')
-    display = 'Sector'
 
 
 class ContactAdmin(admin.ModelAdmin):
@@ -279,25 +237,9 @@ class OfficeAdmin(admin.ModelAdmin):
     display = 'Office'
 
 
-class ProfileTypeAdmin(admin.ModelAdmin):
-    list_display = ('profile', 'create_date', 'edit_date')
-    display = 'ProfileType'
-
-
-class LandTypeAdmin(admin.ModelAdmin):
-    list_display = ('classify_land', 'create_date', 'edit_date')
-    display = 'Land Type'
-
-
 class WorkflowLevel3Admin(admin.ModelAdmin):
     list_display = ('description', 'create_date', 'edit_date')
     display = 'Workflow Level 3'
-
-
-class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('contributor', 'description_of_contribution',
-                    'proposed_value', 'create_date', 'edit_date')
-    display = 'Budget'
 
 
 class ChecklistAdmin(admin.ModelAdmin):
@@ -313,13 +255,6 @@ class ChecklistItemAdmin(admin.ModelAdmin):
 class WorkflowModulesAdmin(admin.ModelAdmin):
     list_display = ('workflowlevel2',)
     list_filter = ('workflowlevel2',)
-
-
-class StakeholderTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'create_date', 'edit_date')
-    display = 'Stakeholder Types'
-    list_filter = ('create_date',)
-    search_fields = ('name',)
 
 
 class PortfolioAdmin(admin.ModelAdmin):
