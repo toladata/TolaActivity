@@ -4,8 +4,7 @@ from django.db import IntegrityError, connection
 from django.test import TestCase
 
 from indicators.models import IndicatorType
-from tola.management.commands.loadinitialdata import (
-    DEFAULT_WORKFLOWLEVEL1_ID, DEFAULT_WORKFLOWLEVEL1_NAME)
+from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Country, Organization, Sector, ROLE_VIEW_ONLY,
                              ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
                              ROLE_PROGRAM_TEAM, WorkflowLevel1)
@@ -52,8 +51,8 @@ class LoadInitialDataTest(TestCase):
         Country.objects.get(code="AF")
         Sector.objects.get(sector="Agriculture")
         User.objects.get(first_name="Andrew", last_name="Ham")
-        WorkflowLevel1.objects.get(id=DEFAULT_WORKFLOWLEVEL1_ID,
-                                   name=DEFAULT_WORKFLOWLEVEL1_NAME)
+        WorkflowLevel1.objects.get(id=DEFAULT_WORKFLOW_LEVEL_1S[0][0],
+                                   name=DEFAULT_WORKFLOW_LEVEL_1S[0][1])
 
     def test_load_demo_data_check_indices_reset(self):
         args = ['--demo']

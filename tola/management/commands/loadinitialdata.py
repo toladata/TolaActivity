@@ -14,8 +14,10 @@ from workflow.models import (
     ROLE_PROGRAM_TEAM)
 
 logger = logging.getLogger(__name__)
-DEFAULT_WORKFLOWLEVEL1_ID = 3
-DEFAULT_WORKFLOWLEVEL1_NAME = 'Humanitarian Response to the Syrian Crisis'
+DEFAULT_WORKFLOW_LEVEL_1S = [  # tuple (id, name)
+    (3, 'Humanitarian Response to the Syrian Crisis'),
+    (6, u'Bildung für sozial benachteiligte Kinder in Deutschland'),
+]
 
 
 class Command(BaseCommand):

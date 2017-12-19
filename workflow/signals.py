@@ -6,8 +6,7 @@ from django.db.models import signals
 from django.dispatch import receiver
 
 from tola import DEMO_BRANCH
-from tola.management.commands.loadinitialdata import (
-    DEFAULT_WORKFLOWLEVEL1_ID, DEFAULT_WORKFLOWLEVEL1_NAME)
+from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (TolaUser, WorkflowLevel1, WorkflowTeam,
                              ROLE_VIEW_ONLY)
 
@@ -26,14 +25,21 @@ def add_users_to_default_wflvl1(sender, instance, **kwargs):
         return
 
     try:
-        wflvl1 = WorkflowLevel1.objects.get(id=DEFAULT_WORKFLOWLEVEL1_ID,
-                                            name=DEFAULT_WORKFLOWLEVEL1_NAME)
+        wflvl1_0 = WorkflowLevel1.objects.get(
+            id=DEFAULT_WORKFLOW_LEVEL_1S[0][0],
+            name=DEFAULT_WORKFLOW_LEVEL_1S[0][1])
+        wflvl1_1 = WorkflowLevel1.objects.get(
+            id=DEFAULT_WORKFLOW_LEVEL_1S[1][0],
+            name=DEFAULT_WORKFLOW_LEVEL_1S[1][1])
     except WorkflowLevel1.DoesNotExist:
         logger.warning(
-            'Working on branch %s but the default program "#%d: %s" does not '
+            'Working on branch "%s" but any of the default programs does not '
             'exist. Maybe initial data was not loaded with loadinitialdata?',
+            os.environ['APP_BRANCH']
         )
     else:
         role = Group.objects.get(name=ROLE_VIEW_ONLY)
         WorkflowTeam.objects.create(workflow_user=instance, role=role,
-                                    workflowlevel1=wflvl1)
+                                    workflowlevel1=wflvl1_0)
+        WorkflowTeam.objects.create(workflow_user=instance, role=role,
+                                    workflowlevel1=wflvl1_1)
