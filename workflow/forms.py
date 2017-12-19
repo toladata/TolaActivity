@@ -7,7 +7,7 @@ from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
 from .models import ProjectAgreement, ProjectComplete, Program, SiteProfile, Documentation, Benchmarks, Monitor, Budget, Capacity, Evaluate, Office, Checklist, ChecklistItem, Province, Stakeholder, TolaUser, Contact, Sector
-from indicators.models import CollectedData, Indicator
+from indicators.models import CollectedData, Indicator, PeriodicTarget
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
 import ast
@@ -303,9 +303,9 @@ class ProjectAgreementForm(forms.ModelForm):
                                             </tr>
                                             {% for item in getQuantitative %}
                                             <tr>
-                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.periodic_target|default:""}}</td>
                                                 <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/?redirect_uri={{request.path}}#me' data-target="#myModal">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -734,7 +734,7 @@ class ProjectCompleteCreateForm(forms.ModelForm):
             fieldset = Fieldset('Program', 'program2', 'program', 'project_agreement2', 'project_agreement', 'activity_code', 'office', 'sector', 'project_name', 'estimated_budget', 'site','stakeholder',
                     )
         else:
-            fieldset = Fieldset('program', 'program2', 'project_agreement', 'project_agreement2', 'activity_code','account_code','lin_code',\
+            fieldset = Fieldset('Program', 'program2', 'program', 'project_agreement', 'project_agreement2', 'activity_code','account_code','lin_code',\
                              'office', 'sector','project_name', 'project_activity', 'site', 'stakeholder'
                     )
         self.helper.layout = Layout(
@@ -941,10 +941,10 @@ class ProjectCompleteForm(forms.ModelForm):
                                             </tr>
                                             {% for item in getQuantitative %}
                                             <tr>
-                                                <td>{{ item.targeted}}</td>
+                                                <td>{{ item.periodic_target|default:""}}</td>
                                                 <td>{{ item.achieved}}</td>
                                                 <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
+                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/?is_it_project_complete_form=true'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/?redirect_uri={{request.path}}#impact' data-target="#myModal">Delete</a>
                                             </tr>
                                             {% endfor %}
                                           </table>
@@ -1460,6 +1460,7 @@ class DocumentationForm(forms.ModelForm):
 
 
 class QuantitativeOutputsForm(forms.ModelForm):
+    is_it_project_complete_form = forms.CharField(required=False)
 
     class Meta:
         model = CollectedData
@@ -1477,22 +1478,48 @@ class QuantitativeOutputsForm(forms.ModelForm):
         self.helper.help_text_inline = True
         self.helper.html5_required = True
         self.helper.form_tag = False
+        instance = kwargs.get('instance', None)
+        options = ""
+        if instance:
+            pts = PeriodicTarget.objects.filter(indicator=instance.indicator)
+            for pt in pts:
+                if instance.periodic_target:
+                    selected = "selected" if pt.id == instance.periodic_target.id else ""
+                else:
+                    selected = ""
+                options += "<option value=%s %s>%s</option>" % (pt.id, selected, pt.period)
         self.helper.layout = Layout(
-
-                'targeted','achieved','indicator','agreement','complete','program'
-
+            'indicator',
+            'periodic_target',
+            HTML("""
+                <div id="div_id_pt" class="form-group">
+                    <label for="id_pt" class="control-label col-sm-2">Periodic Target</label>
+                     <div class="controls col-sm-6">
+                        <select name="periodic_target_dropdown" class="select form-control" id="id_periodic_target_dropdown">
+                            <option value="">---------</option>
+                            %s
+                        </select>
+                    </div>
+                </div>
+            """ % options),
+            'achieved',
+            'agreement',
+            'complete',
+            'program',
+            'is_it_project_complete_form'
         )
-
         super(QuantitativeOutputsForm, self).__init__(*args, **kwargs)
-
         countries = getCountry(self.request.user)
-
         self.fields['indicator'].queryset = Indicator.objects.filter(program__id=kwargs['initial']['program'])
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
+        #self.fields['periodic_target'].queryset = PeriodicTarget.objects.all()
+        self.fields['periodic_target'].widget = HiddenInput() #forms.NumberInput()
         #self.fields['program'].widget.attrs['disabled'] = "disabled"
         self.fields['program'].widget = HiddenInput()
         self.fields['agreement'].widget = HiddenInput()
         self.fields['complete'].widget = HiddenInput()
+        self.fields['is_it_project_complete_form'].initial = kwargs['initial']['is_it_project_complete_form']
+        self.fields['is_it_project_complete_form'].widget = HiddenInput()
 
 
 

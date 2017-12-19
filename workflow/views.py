@@ -1808,7 +1808,12 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(QuantitativeOutputsCreate, self).get_context_data(**kwargs)
-        getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
+        is_it_project_complete_form = self.request.GET.get('is_it_project_complete_form', None) or \
+            self.request.POST.get('is_it_project_complete_form', None)
+        if is_it_project_complete_form == 'true':
+            getProgram = Program.objects.get(complete__id = self.kwargs['id'])
+        else:
+            getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
         context.update({'id': self.kwargs['id']})
         context.update({'program': getProgram})
         return context
@@ -1819,25 +1824,27 @@ class QuantitativeOutputsCreate(AjaxableResponseMixin, CreateView):
 
     def get_initial(self):
         getProgram = None
+        is_it_project_complete_form = self.request.GET.get('is_it_project_complete_form', None) or \
+            self.request.POST.get('is_it_project_complete_form', None)
 
-        if self.request.GET.get('is_it_project_complete_form', None):
+        if is_it_project_complete_form == 'true':
             getProgram = Program.objects.get(complete__id = self.kwargs['id'])
             initial = {
-                        'complete': self.kwargs['id'],
-                        'program': getProgram.id,
-                      }
+                'complete': self.kwargs['id'],
+                'program': getProgram.id,
+                'is_it_project_complete_form': 'true',
+            }
         else:
             getProgram = Program.objects.get(agreement__id = self.kwargs['id'])
             initial = {
-                        'agreement': self.kwargs['id'],
-                        'program': getProgram.id,
-                      }
+                'agreement': self.kwargs['id'],
+                'program': getProgram.id,
+                'is_it_project_complete_form': 'false',
+            }
         return initial
 
     def form_invalid(self, form):
-
         messages.error(self.request, 'Invalid Form', fail_silently=False)
-
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
@@ -1867,16 +1874,21 @@ class QuantitativeOutputsUpdate(AjaxableResponseMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         return super(QuantitativeOutputsUpdate, self).dispatch(request, *args, **kwargs)
 
+
     def get_initial(self):
         """
         get the program to filter the list and indicators by.. the FK to colelcteddata is i_program
         we should change that name at somepoint as it is very confusing
         """
         getProgram = Program.objects.get(i_program__pk=self.kwargs['pk'])
+        # indicator = Indicator.objects.get(id)
+        is_it_project_complete_form = self.request.GET.get('is_it_project_complete_form', None) or \
+            self.request.POST.get('is_it_project_complete_form', None)
+
         initial = {
             'program': getProgram.id,
+            'is_it_project_complete_form': 'true' if is_it_project_complete_form else 'false',
             }
-
         return initial
 
     def get_context_data(self, **kwargs):
@@ -1902,7 +1914,10 @@ class QuantitativeOutputsDelete(AjaxableResponseMixin, DeleteView):
     QuantitativeOutput Delete
     """
     model = CollectedData
-    success_url = '/'
+    # success_url = '/'
+
+    def get_success_url(self):
+        return self.request.GET.get('redirect_uri', '/')
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):

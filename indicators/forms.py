@@ -53,6 +53,7 @@ class IndicatorForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+        self.helper.form_tag = False
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
@@ -141,12 +142,11 @@ class IndicatorForm(forms.ModelForm):
                   {% endif %}
              """),
 
-            HTML("""<br/>"""),
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Submit('_addanother', 'Save & Add Another >>', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            )
+            # HTML("""<hr/>"""),
+            # FormActions(
+            #     Submit('submit', 'Save', css_class='btn-default'),
+            #     Reset('reset', 'Reset', css_class='btn-default')
+            # )
         )
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
@@ -318,6 +318,7 @@ class CollectedDataForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
+        self.fields['agreement'].label = "Project"
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)

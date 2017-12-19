@@ -39,3 +39,4 @@ error.log
 *.secret.yml
 assets/
 local.py
+templates/links.html

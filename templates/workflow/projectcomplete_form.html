@@ -19,6 +19,12 @@
             $("#id_site").select2();
             //$('#id_program option:not(:selected)').prop('disabled', true);
             //$("#id_project_agreement option:not(:selected)").prop("disabled", true);
+
+            $("#myModal").on('hidden.bs.modal', function () {
+                // destroy the modal content so that it is not cached and
+                $(this).data('bs.modal', null);
+            });
+
         });
     </script>
 

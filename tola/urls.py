@@ -56,6 +56,7 @@ router.register(r'loggedusers', LoggedUserViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
 router.register(r'pindicators', PogramIndicatorReadOnlyViewSet, base_name='pindicators')
+router.register(r'periodictargets', PeriodicTargetReadOnlyViewSet, base_name='periodictargets')
 
 
 urlpatterns = [ # rest framework
@@ -95,7 +96,7 @@ urlpatterns = [ # rest framework
                 url(r'^formlibrary/', include('formlibrary.urls')),
 
                 # app include of configurable dashboard urls
-                url(r'^configurabledashboard/', include('configurabledashboard.urls')),
+                # url(r'^configurabledashboard/', include('configurabledashboard.urls')),
 
                 # local login
                 url(r'^login/$', authviews.login, name='login'),
