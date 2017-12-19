@@ -795,7 +795,6 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = DisaggregationValue.objects.all()
     serializer_class = DisaggregationValueSerializer
-    pagination_class = StandardResultsSetPagination
 
 
 class DisaggregationLabelViewSet(viewsets.ModelViewSet):
@@ -806,7 +805,6 @@ class DisaggregationLabelViewSet(viewsets.ModelViewSet):
 
     queryset = DisaggregationLabel.objects.all()
     serializer_class = DisaggregationLabelSerializer
-    pagination_class = StandardResultsSetPagination
 
 
 class ChecklistViewSet(viewsets.ModelViewSet):
