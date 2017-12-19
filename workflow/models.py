@@ -4,9 +4,7 @@ from django.db import models
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.contrib.sites.models import Site
-from django.utils import timezone
 from decimal import Decimal
-from datetime import datetime
 import uuid
 
 from django.conf import settings
@@ -15,11 +13,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from simple_history.models import HistoricalRecords
 from django.contrib.postgres.fields import JSONField
-from django.contrib.sessions.models import Session
 
-from django.db import migrations
-import requests
-import json
 from search.utils import ElasticsearchIndexer
 
 try:
@@ -54,6 +48,7 @@ class TolaSites(models.Model):
     privacy_disclaimer = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
     updated = models.DateTimeField(auto_now=False, blank=True, null=True)
+    whitelisted_domains = models.TextField("Whitelisted Domains", null=True, blank=True)
 
     class Meta:
         verbose_name = "Tola Site"
