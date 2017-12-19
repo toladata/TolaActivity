@@ -97,4 +97,32 @@
             });
         });
     }
+
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_lop_target", function(e){
+        var lop = $(this);
+        var indicator_form = $("#indicator_update_form")
+        var sbmt = $("input[type=submit]", indicator_form);
+
+        if ($.isNumeric(lop.val())) {
+            $("#div_id_lop_target").removeClass('has-error');
+            sbmt.attr("disabled", false);
+        } else {
+            $("#div_id_lop_target").addClass('has-error');
+            sbmt.attr("disabled", true);
+        }
+    });
+
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_baseline", function(e){
+        var lop = $(this);
+        var indicator_form = $("#indicator_update_form")
+        var sbmt = $("input[type=submit]", indicator_form);
+
+        if ($.isNumeric(lop.val())) {
+            $("#div_id_baseline").removeClass('has-error');
+            sbmt.attr("disabled", false);
+        } else {
+            $("#div_id_baseline").addClass('has-error');
+            sbmt.attr("disabled", true);
+        }
+    });
 </script>
