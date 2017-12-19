@@ -1,6 +1,6 @@
 <script>
 
-    $("#indicator_modal_body, #indicator_form").on("click", ".detelebtn", function(e){
+    $("#indicator_modal_content, #indicator_form").on("click", ".detelebtn", function(e){
         e.preventDefault();
         var url = $(this).attr('href');
         if (url == "#") {
@@ -19,7 +19,7 @@
             });
     });
     // Intercept IndicatorUpdate form submission and then use ajax to submit it.
-    $("#indicator_modal_body, #indicator_form").on("submit", "#indicator_update_form", function(e){
+    $("#indicator_modal_content, #indicator_form").on("submit", "#indicator_update_form", function(e){
         e.preventDefault();
         var submitBtnName = $(this).find("input[type=submit]:focus" );
         var form_url = $(this).attr('action');

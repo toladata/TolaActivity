@@ -53,6 +53,7 @@ class IndicatorForm(forms.ModelForm):
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+        self.helper.form_tag = False
         self.helper.layout = Layout(
 
             HTML("""<br/>"""),
@@ -141,11 +142,11 @@ class IndicatorForm(forms.ModelForm):
                   {% endif %}
              """),
 
-            HTML("""<br/>"""),
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            )
+            # HTML("""<hr/>"""),
+            # FormActions(
+            #     Submit('submit', 'Save', css_class='btn-default'),
+            #     Reset('reset', 'Reset', css_class='btn-default')
+            # )
         )
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
