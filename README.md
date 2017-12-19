@@ -80,6 +80,24 @@ around with Activity:
 docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py loadinitialdata  --demo
 ```
 
+#### Issue with the local environment
+
+If you're getting an error in your local environment, it can be related to 
+the `social-core` library. To solve this issue you need to execute the 
+following step:
+
+- With the container running, go into it with this command:
+  
+  `docker exec -it web bash`
+  
+- Install the `social-core` lib again:
+
+  `pip install -e git://github.com/toladata/social-core#egg=social-core`
+
+- Now, restart the container.
+
+It should solve the problem!
+
 
 ## Deploy locally using virtualenv
 
