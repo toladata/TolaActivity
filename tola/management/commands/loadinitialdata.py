@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from cStringIO import StringIO
 import logging
 import os
@@ -49,6 +50,7 @@ class Command(BaseCommand):
         self._workflowlevel1s = ['']
         self._workflowlevel2s = ['']
         self._levels = ['']
+        self._frequencies = ['']
         self._indicators = ['']
 
     def _create_organization(self):
@@ -900,6 +902,12 @@ class Command(BaseCommand):
             organization=self._organization,
         ))
 
+        self._sectors.append(factories.Sector(
+            id="109",
+            sector="Children's Rights",
+            organization=self._organization,
+        ))
+
     def _create_indicator_types(self):
         factories.IndicatorType(
             id=1,
@@ -987,6 +995,28 @@ class Command(BaseCommand):
             organization=self._organization,
         ))
 
+        self._site_profiles.append(factories.SiteProfile(
+            id=6,
+            name="Paul Schule",
+            contact_leader="Direktor Paul Schule",
+            country=self._country_germany,
+            latitude="50.9692657293000000",
+            longitude="6.9889383750000000",
+            created_by=self._tolauser_ninette.user,
+            organization=self._organization,
+        ))
+
+        self._site_profiles.append(factories.SiteProfile(
+            id=7,
+            name="Peter Schule",
+            contact_leader="Direktor Peter Schule",
+            country=self._country_germany,
+            latitude="49.4507464458000000",
+            longitude="11.0319071250000000",
+            created_by=self._tolauser_ninette.user,
+            organization=self._organization,
+        ))
+
     def _create_stakeholders(self):
         factories.Stakeholder(
             id=1,  # 2
@@ -1028,6 +1058,42 @@ class Command(BaseCommand):
         factories.Milestone(
             id="4",
             name="4. Close Out",
+            milestone_start_date="2017-07-01T10:00:00Z",  # TODO
+            milestone_end_date="2018-05-11T10:00:00Z",  # TODO
+            organization=self._organization,
+            created_by=self._tolauser_ninette.user,  # 11
+        )
+
+        factories.Milestone(
+            id="5",
+            name=u"Auswahl Schulen",
+            milestone_start_date="2017-07-01T10:00:00Z",  # TODO
+            milestone_end_date="2018-05-11T10:00:00Z",  # TODO
+            organization=self._organization,
+            created_by=self._tolauser_ninette.user,  # 11
+        )
+
+        factories.Milestone(
+            id="6",
+            name=u"Durchführung Ideen Workshops",
+            milestone_start_date="2017-07-01T10:00:00Z",  # TODO
+            milestone_end_date="2018-05-11T10:00:00Z",  # TODO
+            organization=self._organization,
+            created_by=self._tolauser_ninette.user,  # 11
+        )
+
+        factories.Milestone(
+            id="7",
+            name=u"Familien Fortbildungen",
+            milestone_start_date="2017-07-01T10:00:00Z",  # TODO
+            milestone_end_date="2018-05-11T10:00:00Z",  # TODO
+            organization=self._organization,
+            created_by=self._tolauser_ninette.user,  # 11
+        )
+
+        factories.Milestone(
+            id="8",
+            name=u"Qualifizierung Lehrer",
             milestone_start_date="2017-07-01T10:00:00Z",  # TODO
             milestone_end_date="2018-05-11T10:00:00Z",  # TODO
             organization=self._organization,
@@ -1085,6 +1151,15 @@ class Command(BaseCommand):
             organization=self._organization,
             start_date="2017-07-01T10:00:00Z",  # TODO
             end_date="2019-06-30T10:00:00Z",  # TODO
+        ))
+
+        self._workflowlevel1s.append(factories.WorkflowLevel1(
+            id=6,
+            name=u'Bildung für sozial benachteiligte Kinder in Deutschland',
+            organization=self._organization,
+            start_date="2017-07-01T10:00:00Z",  # TODO
+            end_date="2019-06-30T10:00:00Z",  # TODO
+            milestone=[5, 6, 7, 8],
         ))
 
     def _create_workflow_2s(self):
@@ -1343,6 +1418,116 @@ class Command(BaseCommand):
             status="green",
         ))
 
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=22,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=0,
+            name=u'Ansprache von 20 Partnerschulen in Berlin',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="closed",
+            status="green",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=23,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=0,
+            name=u'20 Schulen in sozialen Brennpunkten identifizieren',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="closed",
+            status="green",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=24,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=0,
+            name=u'Ideen zur Gestaltung der Schule finden und umstetzen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            on_time=False,
+            progress="tracking",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=25,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=0,
+            name=u'Qualifizierung der Lehrer',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            on_time=False,
+            progress="closed",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=26,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=25,
+            name=u'Lehrer auswählen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="closed",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=27,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=25,
+            name=u'Trainings und Supervision durchführen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="tracking",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=28,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=24,
+            name=u'Ideenworkshops durchführen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="tracking",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=29,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=22,
+            name=u'Direktoren ansprechen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="closed",
+            status="green",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=30,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=24,
+            name=u'Budgets zur Umsetzung finden',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="awaitingapproval",
+            status="red",
+        ))
+
     def _create_levels(self):
         self._levels.append(factories.Level(
             id=1,  # 7
@@ -1430,6 +1615,200 @@ class Command(BaseCommand):
             parent_id="4",  # 10
             workflowlevel1=self._workflowlevel1s[3],  # 15
             sort=3,
+        ))
+
+        self._levels.append(factories.Level(
+            id=9,
+            name=(u"Impact: Verwirklichung des Kinderrechts auf Bildung in "
+                  u"Deutschland"),
+            description=(u"Verwirklichung der Rechte Kindern aus sozial "
+                         u"benachteiligten Bevölkerungsgruppen auf qualitativ "
+                         u"hochwertige Bildung und Entwicklung"),
+            color="red",
+            organization=self._organization,
+            parent_id="0",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=0,
+        ))
+
+        self._levels.append(factories.Level(
+            id=10,
+            name=u"Outcome: Gute Bildung und Lernen ermöglichen",
+            description=(u"Ziel ist es, Kindern unabhängig von ihrem "
+                         u"Hintergrund und ihrer Herkunft die Möglichkeit auf "
+                         u"gute Bildung und erfolgreiches Lernen zu "
+                         u"ermöglichen"),
+            color="blue",
+            organization=self._organization,
+            parent_id="9",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=1,
+        ))
+
+        self._levels.append(factories.Level(
+            id=11,
+            name=u"Outcome: Kooperation zwischen Eltern/Lehrern verbessern",
+            description=(u"Ziel ist es, eine stabile Beziehung zwischen "
+                        u"Eltern und Lehrern zu bauen, Eltern in die "
+                         u"Aktivitäten der Schule einzubeziehen und eine "
+                         u"stabile Kommunikation aufzubauen."),
+            color="blue",
+            organization=self._organization,
+            parent_id="9",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=1,
+        ))
+
+        self._levels.append(factories.Level(
+            id=12,
+            name=u"Outcome: Schulen familienfreundlicher gestalten",
+            description=(u"Ziel ist es, Schulen nicht nur als Raum zum Lernen, "
+                         u"sondern auch zum Leben zu gestalten. Eine offene "
+                         u"und vertrauensvolle Atmosphäre zu kreieren, in dem "
+                         u"die ganze Persönlichkeit gesehen und gefördert "
+                         u"wird."),
+            color="green",
+            organization=self._organization,
+            parent_id="9",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=1,
+        ))
+
+        self._levels.append(factories.Level(
+            id=13,
+            name=u"Output: Schulungen für Familien durchführen",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="10",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=14,
+            name=u"Output: Elternbeteiligung stärken",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="11",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=15,
+            name=u"Output: Partnerschaftliches Verhältnis etablieren",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="11",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=16,
+            name=u"Output: Fortbildungen für Lehrer",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="10",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=17,
+            name=u"Output: Ideen partizipativ entwickeln und umsetzen",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="12",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=18,
+            name=u"Output: Sprachbarrieren abbauen",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="11",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+    def _create_frequencies(self):
+        self._frequencies.append(factories.Frequency(
+            id=1,  # 2
+            frequency="Quarterly",
+            description="Quarterly",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=2,  # 4
+            frequency="Monthly",
+            description="Monthly",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=3,  # 5
+            frequency="Semi Annual",
+            description="Semi Annual",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=4,  # 7
+            frequency="Annual",
+            description="Annual",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=5,  # 8
+            frequency="Baseline, Endline",
+            description="Baseline, Endline",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=6,  # 9
+            frequency="Weekly",
+            description="Weekly",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=7,  # 10
+            frequency="Baseline, midline, endline",
+            description="Baseline, midline, endline",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=8,  # 11
+            frequency="Bi-weekly",
+            description="Bi-weekly",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=9,  # 12
+            frequency="Monthly, Quarterly, Annually",
+            description="Monthly, Quarterly, Annually",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=10,  # 16
+            frequency="End of cycle",
+            description="End of cycle",
+            organization=self._organization,
         ))
 
     def _create_indicators(self):
@@ -1564,6 +1943,66 @@ class Command(BaseCommand):
             key_performance_indicator=True,
             created_by=self._tolauser_ninette.user,  # 11
             workflowlevel1=[self._workflowlevel1s[3]],  # 15
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=13,
+            level=self._levels[9],
+            name=u"Anzahl aktive Initiativen",
+            lop_target=5500,
+            key_performance_indicator=True,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            workflowlevel1=[self._workflowlevel1s[6]],
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=14,
+            level=self._levels[13],
+            name=u"Anzahl Schulungen",
+            number="5000",
+            lop_target=50000,
+            key_performance_indicator=True,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            method_of_analysis="Questionnaire",
+            workflowlevel1=[self._workflowlevel1s[6]],
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=15,
+            level=self._levels[12],
+            name=u"Ideenwerkstätten",
+            lop_target=15000,
+            key_performance_indicator=False,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            workflowlevel1=[self._workflowlevel1s[6]],
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=16,
+            level=self._levels[9],
+            name=u"Anzahl direkt erreichter Kinder",
+            lop_target=250000,
+            key_performance_indicator=True,
+            approval_submitted_by=self._tolauser_andrew,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            workflowlevel1=[self._workflowlevel1s[6]],
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=17,
+            level=self._levels[11],
+            name=u"Mehrsprachige Informationsmaterialien (10 Sprachen)",
+            lop_target=600000,
+            sector=self._sectors[11],
+            key_performance_indicator=False,
+            approval_submitted_by=self._tolauser_andrew,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            workflowlevel1=[self._workflowlevel1s[6]],
         ))
 
     def _create_periodic_targets(self):
@@ -2224,75 +2663,63 @@ class Command(BaseCommand):
             site=[self._site_profiles[2]],  # 6
         )
 
-    def _create_frequencies(self):
-        factories.Frequency(
-            id=1,  # 2
-            frequency="Quarterly",
-            description="Quarterly",
-            organization=self._organization,
+        factories.CollectedData(
+            id=40,
+            achieved="1500.00",
+            indicator=self._indicators[13],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
+            site=[self._site_profiles[6]],
         )
 
-        factories.Frequency(
-            id=2,  # 4
-            frequency="Monthly",
-            description="Monthly",
-            organization=self._organization,
+        factories.CollectedData(
+            id=41,
+            achieved="23000.00",
+            indicator=self._indicators[14],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
         )
 
-        factories.Frequency(
-            id=3,  # 5
-            frequency="Semi Annual",
-            description="Semi Annual",
-            organization=self._organization,
+        factories.CollectedData(
+            id=42,
+            achieved="3700.00",
+            indicator=self._indicators[15],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
         )
 
-        factories.Frequency(
-            id=4,  # 7
-            frequency="Annual",
-            description="Annual",
-            organization=self._organization,
+        factories.CollectedData(
+            id=43,
+            achieved="125000.00",
+            indicator=self._indicators[16],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
         )
 
-        factories.Frequency(
-            id=5,  # 8
-            frequency="Baseline, Endline",
-            description="Baseline, Endline",
-            organization=self._organization,
+        factories.CollectedData(
+            id=44,
+            achieved="500.00",
+            indicator=self._indicators[13],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
+            site=[self._site_profiles[6]],
         )
 
-        factories.Frequency(
-            id=6,  # 9
-            frequency="Weekly",
-            description="Weekly",
-            organization=self._organization,
+        factories.CollectedData(
+            id=45,
+            achieved="2300.00",
+            indicator=self._indicators[13],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
         )
 
-        factories.Frequency(
-            id=7,  # 10
-            frequency="Baseline, midline, endline",
-            description="Baseline, midline, endline",
-            organization=self._organization,
-        )
-
-        factories.Frequency(
-            id=8,  # 11
-            frequency="Bi-weekly",
-            description="Bi-weekly",
-            organization=self._organization,
-        )
-
-        factories.Frequency(
-            id=9,  # 12
-            frequency="Monthly, Quarterly, Annually",
-            description="Monthly, Quarterly, Annually",
-            organization=self._organization,
-        )
-
-        factories.Frequency(
-            id=10,  # 16
-            frequency="End of cycle",
-            description="End of cycle",
-            organization=self._organization,
+        factories.CollectedData(
+            id=46,
+            achieved="700.00",
+            indicator=self._indicators[13],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
+            site=[self._site_profiles[7]],
         )
 
     def _create_workflowlevel1_sectors(self):
@@ -2322,6 +2749,20 @@ class Command(BaseCommand):
             workflowlevel1=self._workflowlevel1s[1],  # 10
             sector=self._sectors[49],  # 178,
             sub_sector=[self._sectors[14]],  # [143]
+        )
+
+        factories.WorkflowLevel1Sector(
+            id=5,
+            workflowlevel1=self._workflowlevel1s[6],
+            sector=self._sectors[31],
+            sub_sector=[self._sectors[36], self._sectors[34], self._sectors[32], self._sectors[33], self._sectors[35]],
+        )
+
+        factories.WorkflowLevel1Sector(
+            id=6,
+            workflowlevel1=self._workflowlevel1s[6],
+            sector=self._sectors[109],
+            sub_sector=[self._sectors[84], self._sectors[98], self._sectors[31]],
         )
 
     def _create_workflowteams(self):
@@ -2415,13 +2856,13 @@ class Command(BaseCommand):
                 self._create_workflow_1s()
                 self._create_workflow_2s()
                 self._create_levels()
+                self._create_frequencies()
                 self._create_indicators()
                 self._create_periodic_targets()
                 self._create_collected_data()
-                self._create_frequencies()
                 self._create_workflowlevel1_sectors()
                 self._create_workflowteams()
-            except IntegrityError as error:
+            except IntegrityError:
                 msg = ("Error: the data could not be populated in the "
                        "database. Check that the affected database tables are "
                        "empty.")
