@@ -98,8 +98,22 @@
         });
     }
 
-    $("#indicator_modal_content, #indicator_form").on("input", "#id_lop_target", function(e){
-        var lop = $(this);
+    function validate_baseline() {
+        var baseline = $("#id_baseline");
+        var indicator_form = $("#indicator_update_form")
+        var sbmt = $("input[type=submit]", indicator_form);
+
+        if ($.isNumeric(baseline.val())) {
+            $("#div_id_baseline").removeClass('has-error');
+            sbmt.attr("disabled", false);
+        } else {
+            $("#div_id_baseline").addClass('has-error');
+            sbmt.attr("disabled", true);
+        }
+    }
+
+    function validate_loptarget() {
+        var lop = $("#id_lop_target");
         var indicator_form = $("#indicator_update_form")
         var sbmt = $("input[type=submit]", indicator_form);
 
@@ -110,19 +124,23 @@
             $("#div_id_lop_target").addClass('has-error');
             sbmt.attr("disabled", true);
         }
+    }
+
+    $("#indicator_modal_content, #indicator_form").on("change", "#indicator_update_form", function() {
+        validate_baseline();
+        validate_loptarget();
+    });
+
+    $("#indicator_modal_content, #indicator_form").on("focus", "#indicator_update_form", function() {
+        validate_baseline();
+        validate_loptarget();
+    });
+
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_lop_target", function(e){
+        validate_loptarget();
     });
 
     $("#indicator_modal_content, #indicator_form").on("input", "#id_baseline", function(e){
-        var lop = $(this);
-        var indicator_form = $("#indicator_update_form")
-        var sbmt = $("input[type=submit]", indicator_form);
-
-        if ($.isNumeric(lop.val())) {
-            $("#div_id_baseline").removeClass('has-error');
-            sbmt.attr("disabled", false);
-        } else {
-            $("#div_id_baseline").addClass('has-error');
-            sbmt.attr("disabled", true);
-        }
+        validate_baseline();
     });
 </script>
