@@ -98,6 +98,8 @@
         });
     }
 
+    var validation_msgs = {};
+
     function validate_baseline() {
         var baseline = $("#id_baseline");
         var indicator_form = $("#indicator_update_form")
@@ -106,9 +108,11 @@
         if ($.isNumeric(baseline.val())) {
             $("#div_id_baseline").removeClass('has-error');
             sbmt.attr("disabled", false);
+            delete validation_msgs['baseline'];
         } else {
             $("#div_id_baseline").addClass('has-error');
             sbmt.attr("disabled", true);
+            validation_msgs['baseline'] = 'Baseline field must have a numeric value';
         }
     }
 
@@ -120,20 +124,50 @@
         if ($.isNumeric(lop.val())) {
             $("#div_id_lop_target").removeClass('has-error');
             sbmt.attr("disabled", false);
+            delete validation_msgs['lop_target'];
         } else {
             $("#div_id_lop_target").addClass('has-error');
             sbmt.attr("disabled", true);
+            validation_msgs['lop_target'] = 'Lop Target field must have a numeric value';
         }
     }
+
+    function validateForEmptyField(fieldName, fieldLabel) {
+        var indicator_form = $("#indicator_update_form")
+        var sbmt = $("input[type=submit]", indicator_form);
+        if ($.isEmptyObject($("#" + fieldName).val())) {
+            $("#div_" + fieldName).addClass('has-error');
+            sbmt.attr("disabled", true);
+            validation_msgs[fieldName] = fieldLabel + ' field is required';
+        } else {
+            $("#div_" + fieldName).removeClass('has-error');
+            sbmt.attr("disabled", false);
+            delete validation_msgs[fieldName];
+        }
+    }
+
+    function showValidations() {
+        var msg = '';
+        $.each(validation_msgs, function(k,v) {
+            msg += '- ' + v + '<br>';
+        });
+        $('#modalmessages').empty();
+        createAlert('danger', msg, false, '#modalmessages');
+        validation_msgs = {};
+    }
+
 
     $("#indicator_modal_content, #indicator_form").on("change", "#indicator_update_form", function() {
         validate_baseline();
         validate_loptarget();
+        validateForEmptyField("id_unit_of_measure", "Unit of Measure");
+        showValidations();
     });
 
     $("#indicator_modal_content, #indicator_form").on("focus", "#indicator_update_form", function() {
         validate_baseline();
         validate_loptarget();
+        validateForEmptyField("id_unit_of_measure", "Unit of Measure");
     });
 
     $("#indicator_modal_content, #indicator_form").on("input", "#id_lop_target", function(e){
