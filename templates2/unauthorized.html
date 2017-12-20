@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="main__panel__top">
+    <a href="{% url 'index' %}" class="text--gray">Go Back</a>
+</div>
 <div class="app-page">
     <img src="{{ STATIC_URL }}v2-assets/src/img/t-shape-colors.svg" alt="" class="mx-auto login__logo">
 
