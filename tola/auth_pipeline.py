@@ -1,6 +1,6 @@
 from django.contrib.sites.shortcuts import get_current_site
 
-from django.shortcuts import render
+from django.shortcuts import render_to_response
 
 from workflow.models import Country, TolaUser, TolaSites, Organization
 
@@ -47,4 +47,4 @@ def auth_allowed(backend, details, response, *args, **kwargs):
         allowed = email in emails or domain in domains
 
     if not allowed:
-        return render(response, 'unauthorized.html')
+        return render_to_response('unauthorized.html')
