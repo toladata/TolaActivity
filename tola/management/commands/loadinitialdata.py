@@ -9,15 +9,24 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction, IntegrityError, connection
 
 import factories
+from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
+                               CollectedData)
 from workflow.models import (
     ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
-    ROLE_PROGRAM_TEAM)
+    ROLE_PROGRAM_TEAM, Organization, Country, TolaUser, Group, Sector,
+    Stakeholder, Milestone, WorkflowLevel1, WorkflowLevel2,
+    WorkflowLevel1Sector, WorkflowTeam)
 
 logger = logging.getLogger(__name__)
 DEFAULT_WORKFLOW_LEVEL_1S = [  # tuple (id, name)
     (3, 'Humanitarian Response to the Syrian Crisis'),
     (6, u'Bildung für sozial benachteiligte Kinder in Deutschland'),
 ]
+DEFAULT_ORG = {
+    'id': 1,
+    'name': 'TolaData',
+}
+DEFAULT_COUNTRY_CODES = ('DE', 'SY')
 
 
 class Command(BaseCommand):
@@ -55,15 +64,72 @@ class Command(BaseCommand):
         self._frequencies = ['']
         self._indicators = ['']
 
+    def _clear_database(self):
+        """
+        Clears all old data except:
+        - Default organization
+        - Default countries
+        - Current registered users
+
+        Before everything happens, current registered users will be reassigned
+        to the default organization and to have residency in Germany.
+        """
+        # Check integrity
+        try:
+            organization = Organization.objects.get(**DEFAULT_ORG)
+        except Organization.DoesNotExist:
+            msg = ("Error: the default organization could not be found in the "
+                   "database. Maybe you are restoring without having run the "
+                   "command a first time?")
+            logger.error(msg)
+            sys.stderr.write("{}\n".format(msg))
+            raise IntegrityError(msg)
+
+        try:
+            country = Country.objects.get(code=DEFAULT_COUNTRY_CODES[0])
+            Country.objects.get(code=DEFAULT_COUNTRY_CODES[1])
+        except Country.DoesNotExist:
+            msg = ("Error: one or both of the default countries %s could not "
+                   "be found in the database. Maybe you are restoring without "
+                   "having run the command a first time?".format(
+                   DEFAULT_COUNTRY_CODES))
+            logger.error(msg)
+            sys.stderr.write("{}\n".format(msg))
+            raise IntegrityError(msg)
+
+        # Reassign organization and country for current registered users
+        TolaUser.objects.all().update(organization=organization,
+                                      country=country)
+
+        # Delete data - Kill 'Em All!
+        Organization.objects.exclude(id=DEFAULT_ORG['id']).delete()
+        Group.objects.all().delete()
+        Country.objects.exclude(code__in=DEFAULT_COUNTRY_CODES).delete()
+        Sector.objects.all().delete()
+        Stakeholder.objects.all().delete()
+        Milestone.objects.all().delete()
+        WorkflowLevel1.objects.all().delete()
+        WorkflowLevel2.objects.all().delete()
+        Level.objects.all().delete()
+        Frequency.objects.all().delete()
+        Indicator.objects.all().delete()
+        PeriodicTarget.objects.all().delete()
+        CollectedData.objects.all().delete()
+        WorkflowLevel1Sector.objects.all().delete()
+        WorkflowTeam.objects.all().delete()
+
     def _create_organization(self):
-        self._organization = factories.Organization(
-            id=1,
-            name="TolaData",
-            organization_url="http://toladata.com",
-            level_2_label="Project",
-            level_3_label="Activity",
-            level_4_label="Component",
-        )
+        try:
+            self._organization = Organization.objects.get(**DEFAULT_ORG)
+        except Organization.DoesNotExist:
+            self._organization = factories.Organization(
+                id=DEFAULT_ORG['id'],
+                name=DEFAULT_ORG['name'],
+                organization_url="http://toladata.com",
+                level_2_label="Project",
+                level_3_label="Activity",
+                level_4_label="Component",
+            )
 
     def _create_groups(self):
         self._groups.append(factories.Group(
@@ -88,7 +154,6 @@ class Command(BaseCommand):
 
     def _create_countries(self):
         factories.Country(
-            id=1,
             country="Afghanistan",
             code="AF",
             latitude="34.5333",
@@ -96,7 +161,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=2,
             country="Pakistan",
             code="PK",
             latitude="33.6667",
@@ -104,7 +168,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=3,
             country="Jordan",
             code="JO",
             latitude="31.9500",
@@ -112,7 +175,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=4,
             country="Lebanon",
             code="LB",
             latitude="33.9000",
@@ -120,7 +182,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=5,
             country="Ethiopia",
             code="ET",
             latitude="9.0167",
@@ -128,7 +189,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=6,
             country="Timor-Leste",
             code="TL",
             latitude="-8.3",
@@ -136,7 +196,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=7,
             country="Kenya",
             code="KE",
             latitude="-1.2833",
@@ -144,7 +203,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=8,
             country="Iraq",
             code="IQ",
             latitude="33.3333",
@@ -152,7 +210,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=9,
             country="Nepal",
             code="NP",
             latitude="26.5333",
@@ -160,7 +217,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=10,
             country="Mali",
             code="ML",
             latitude="17.6500",
@@ -168,7 +224,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=11,
             country="United States",
             code="US",
             latitude="45",
@@ -176,7 +231,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=12,
             country="Turkey",
             code="TR",
             latitude="39.9167",
@@ -184,7 +238,6 @@ class Command(BaseCommand):
         )
 
         self._country_syria = factories.Country(
-            id=13,  # 14
             country="Syrian Arab Republic",
             code="SY",
             latitude="33.5000",
@@ -192,31 +245,26 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=14,
             country="China",
             code="CN",
         )
 
         factories.Country(
-            id=15,
             country="India",
             code="IN",
         )
 
         factories.Country(
-            id=16,
             country="Indonesia",
             code="ID",
         )
 
         factories.Country(
-            id=17,
             country="Mongolia",
             code="MN",
         )
 
         factories.Country(
-            id=18,
             country="Myanmar",
             code="MY",
             latitude="21.9162",
@@ -224,7 +272,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=19,
             country="Palestine",
             code="PS",
             latitude="31.3547",
@@ -232,7 +279,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=20,
             country="South Sudan",
             code="SS",
             latitude="6.8770",
@@ -240,7 +286,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=21,
             country="Uganda",
             code="UG",
             latitude="1.3733",
@@ -248,7 +293,6 @@ class Command(BaseCommand):
         )
 
         self._country_germany = factories.Country(
-            id=22,
             country="Germany",
             code="DE",
             latitude="51.1657",
@@ -1132,7 +1176,7 @@ class Command(BaseCommand):
             funding_status="Funded",
             organization=self._organization,
             description="<p>Newly funded program</p>",
-            country=[13],  # 14
+            country=[self._country_syria],  # 14
             start_date="2017-07-01T10:00:00Z",  # TODO
             end_date="2019-06-30T10:00:00Z",  # TODO
             milestone=[1, 2, 3, 4],
@@ -2837,19 +2881,46 @@ class Command(BaseCommand):
             cursor = connection.cursor()
             cursor.execute("\n".join(sql_commands_clean))
 
+    def _assign_workflowteam_current_users(self):
+        role = Group.objects.get(name=ROLE_VIEW_ONLY)
+        wflvl1_0 = WorkflowLevel1.objects.get(
+            id=DEFAULT_WORKFLOW_LEVEL_1S[0][0])
+        wflvl1_1 = WorkflowLevel1.objects.get(
+            id=DEFAULT_WORKFLOW_LEVEL_1S[1][0])
+        tola_user_ids = TolaUser.objects.values_list('id', flat=True).all()
+
+        wfteams_0 = [
+            WorkflowTeam(workflow_user_id=user_id, role=role,
+                         workflowlevel1=wflvl1_0)
+            for user_id in tola_user_ids
+        ]
+        wfteams_1 = [
+            WorkflowTeam(workflow_user_id=user_id, role=role,
+                         workflowlevel1=wflvl1_1)
+            for user_id in tola_user_ids
+        ]
+        WorkflowTeam.objects.bulk_create(wfteams_0)
+        WorkflowTeam.objects.bulk_create(wfteams_1)
+
     def add_arguments(self, parser):
         parser.add_argument('--demo', action='store_true',
                             help='Loads extra demo data')
+        parser.add_argument('--restore', action='store_true',
+                            help=('Restores back demo data deleting old '
+                                  'previous one (except users)'))
 
     @transaction.atomic
     def handle(self, *args, **options):
+        if options['restore']:
+            self._clear_database()
+
         self._create_organization()
         self._create_groups()
         self._create_countries()
         self._create_sectors()
         self._create_indicator_types()
 
-        if options['demo']:
+        if options['demo'] or options['restore']:
             try:
                 self._create_users()
                 self._create_site_profiles()
@@ -2873,3 +2944,6 @@ class Command(BaseCommand):
                 raise
 
         self._reset_sql_sequences()
+
+        if options['restore']:
+            self._assign_workflowteam_current_users()
