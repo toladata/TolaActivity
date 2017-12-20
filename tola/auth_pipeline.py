@@ -1,6 +1,6 @@
-from social_core.exceptions import AuthForbidden
-
 from django.contrib.sites.shortcuts import get_current_site
+
+from django.shortcuts import render
 
 from workflow.models import Country, TolaUser, TolaSites, Organization
 
@@ -47,4 +47,4 @@ def auth_allowed(backend, details, response, *args, **kwargs):
         allowed = email in emails or domain in domains
 
     if not allowed:
-        raise AuthForbidden(backend)
+        return render(response, 'unauthorized.html')
