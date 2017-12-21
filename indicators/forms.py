@@ -65,12 +65,12 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Performance',
                      Fieldset('Performance',
-                        'name', 'type', 'level', 'number', 'source', 'definition', 'unit_of_measure', 'justification', 'disaggregation','indicator_type',PrependedText('key_performance_indicator','')
+                        'name', 'type', 'level', 'number', 'source', 'definition', 'justification', 'disaggregation','indicator_type',PrependedText('key_performance_indicator','')
                         ),
                 ),
                 Tab('Targets',
                     Fieldset('Targets',
-                             'baseline','lop_target', 'rationale_for_target',
+                             'unit_of_measure', 'baseline','lop_target', 'rationale_for_target'
                              ),
                     Div("",
                         HTML("""<br/>
