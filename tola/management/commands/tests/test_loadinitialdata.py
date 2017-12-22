@@ -1,3 +1,6 @@
+import logging
+import sys
+
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
@@ -16,7 +19,24 @@ from workflow.models import (Country, Organization, Sector, ROLE_VIEW_ONLY,
                              WorkflowLevel2, WorkflowLevel1Sector, WorkflowTeam)
 
 
+class DevNull(object):
+    def write(self, data):
+        pass
+
+
 class LoadInitialDataTest(TestCase):
+    def setUp(self):
+        self.old_stdout = sys.stdout
+        self.old_stderr = sys.stderr
+        sys.stdout = DevNull()
+        sys.stderr = DevNull()
+        logging.disable(logging.ERROR)
+
+    def tearDown(self):
+        sys.stdout = self.old_stdout
+        sys.stderr = self.old_stderr
+        logging.disable(logging.NOTSET)
+
     @override_settings(DEFAULT_ORG='')
     def test_without_default_organization_conf_var(self):
         args = []

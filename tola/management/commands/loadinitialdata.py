@@ -2,7 +2,6 @@
 from cStringIO import StringIO
 import logging
 import os
-import sys
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -47,7 +46,9 @@ class Command(BaseCommand):
     APPS = ('workflow', 'formlibrary', 'customdashboard', 'reports', 'gladmap',
             'search')
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+
         # Note: for the lists we fill the first element with an empty value for
         # development readability (id == position).
         self._organization = None
@@ -84,7 +85,7 @@ class Command(BaseCommand):
                    "database. Maybe you are restoring without having run the "
                    "command a first time?")
             logger.error(msg)
-            sys.stderr.write("{}\n".format(msg))
+            self.stderr.write("{}\n".format(msg))
             raise IntegrityError(msg)
 
         try:
@@ -96,7 +97,7 @@ class Command(BaseCommand):
                    "having run the command a first time?".format(
                    DEFAULT_COUNTRY_CODES))
             logger.error(msg)
-            sys.stderr.write("{}\n".format(msg))
+            self.stderr.write("{}\n".format(msg))
             raise IntegrityError(msg)
 
         # Reassign organization and country for current registered users
@@ -2917,12 +2918,14 @@ class Command(BaseCommand):
             msg = ('A DEFAULT_ORG needs to be set up in the configuration to '
                    'run the script.')
             logger.error(msg)
-            sys.stderr.write("{}\n".format(msg))
+            self.stderr.write("{}\n".format(msg))
             raise ImproperlyConfigured(msg)
 
         if options['restore']:
+            self.stdout.write('Clearing up database')
             self._clear_database()
 
+        self.stdout.write('Creating basic data')
         self._create_organization()
         self._create_groups()
         self._create_countries()
@@ -2930,6 +2933,7 @@ class Command(BaseCommand):
         self._create_indicator_types()
 
         if options['demo'] or options['restore']:
+            self.stdout.write('Creating demo data')
             try:
                 self._create_users()
                 self._create_site_profiles()
@@ -2949,10 +2953,12 @@ class Command(BaseCommand):
                        "database. Check that the affected database tables are "
                        "empty.")
                 logger.error(msg)
-                sys.stderr.write("{}\n".format(msg))
+                self.stderr.write("{}\n".format(msg))
                 raise
 
+        self.stdout.write('Resetting SQL sequences')
         self._reset_sql_sequences()
 
         if options['restore']:
+            self.stdout.write('Assigning current users to created projects')
             self._assign_workflowteam_current_users()
