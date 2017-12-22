@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 from django.contrib.auth.models import User, AnonymousUser
@@ -98,6 +99,10 @@ class RegisterViewPostTest(TestCase):
         self.factory = RequestFactory()
         self.organization = factories.Organization()
         factories.Group(name=ROLE_VIEW_ONLY)
+        logging.disable(logging.ERROR)
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
 
     @staticmethod
     def _hotfix_django_bug(request):
@@ -240,6 +245,10 @@ class RegisterViewTest(TestCase):
         factories.Group()
         self.tola_user = factories.TolaUser(user=factories.User())
         self.factory = RequestFactory()
+        logging.disable(logging.ERROR)
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')

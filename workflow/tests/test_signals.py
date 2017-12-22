@@ -1,3 +1,4 @@
+import logging
 import os
 
 from django.test import TestCase
@@ -9,6 +10,12 @@ from workflow.models import WorkflowTeam, ROLE_VIEW_ONLY
 
 
 class AddUsersToDefaultWorkflowLevel1Test(TestCase):
+    def setUp(self):
+        logging.disable(logging.ERROR)
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
+
     def test_not_demo_env(self):
         factories.TolaUser()  # triggers the signal
         self.assertEqual(WorkflowTeam.objects.all().count(), 0)
