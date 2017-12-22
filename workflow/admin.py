@@ -1,10 +1,22 @@
-from import_export import resources, fields
-from import_export.widgets import ForeignKeyWidget
-from import_export.admin import ImportExportModelAdmin, ExportMixin
 from admin_report.mixins import ChartReportAdmin
+from django.contrib import admin
+from django.contrib.auth.models import User
+from import_export import resources, fields
+from import_export.admin import ImportExportModelAdmin, ExportMixin
+from import_export.widgets import ForeignKeyWidget
 from simple_history.admin import SimpleHistoryAdmin
 
-from .models import *
+from .models import (Country, Documentation, WorkflowLevel2,
+                     Organization, AdminLevelOne, Office, AdminLevelTwo,
+                     AdminLevelThree, AdminLevelFour, WorkflowLevel1, Sector,
+                     WorkflowLevel2, WorkflowLevel2Sort, Documentation,
+                     SiteProfile,  WorkflowLevel3, ProjectType,  Budget,
+                     ProfileType, WorkflowTeam, ChecklistItem, Checklist,
+                     Stakeholder, Contact, StakeholderType, TolaUser, TolaSites,
+                     FormGuidance, TolaUserProxy, TolaBookmarks, Currency,
+                     ApprovalWorkflow, ApprovalType, FundCode, RiskRegister,
+                     IssueRegister, CodedField, WorkflowModules, Milestone,
+                     Portfolio, SectorRelated, WorkflowLevel1Sector)
 
 
 # Resource for CSV export
