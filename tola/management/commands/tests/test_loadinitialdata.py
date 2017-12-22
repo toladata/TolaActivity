@@ -1,7 +1,8 @@
 from django.contrib.auth.models import Group, User
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.db import IntegrityError, connection
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 import factories
 from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
@@ -16,6 +17,14 @@ from workflow.models import (Country, Organization, Sector, ROLE_VIEW_ONLY,
 
 
 class LoadInitialDataTest(TestCase):
+    @override_settings(DEFAULT_ORG='')
+    def test_without_default_organization_conf_var(self):
+        args = []
+        opts = {}
+        with self.assertRaises(ImproperlyConfigured):
+            call_command('loadinitialdata', *args, **opts)
+
+
     def test_load_basic_data(self):
         args = []
         opts = {}

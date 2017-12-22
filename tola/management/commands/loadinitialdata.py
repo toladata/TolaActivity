@@ -4,6 +4,8 @@ import logging
 import os
 import sys
 
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction, IntegrityError, connection
@@ -24,7 +26,7 @@ DEFAULT_WORKFLOW_LEVEL_1S = [  # tuple (id, name)
 ]
 DEFAULT_ORG = {
     'id': 1,
-    'name': 'TolaData',
+    'name': settings.DEFAULT_ORG,
 }
 DEFAULT_COUNTRY_CODES = ('DE', 'SY')
 
@@ -33,7 +35,7 @@ class Command(BaseCommand):
     help="""
     Loads initial factories data.
 
-    By default, a new TolaData organization will be created, plus countries,
+    By default, a new default organization will be created, plus countries,
     groups, sectors and indicator types.
 
     Passing a --demo flag will populate the database with extra sample projects,
@@ -2911,6 +2913,13 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+        if not settings.DEFAULT_ORG:
+            msg = ('A DEFAULT_ORG needs to be set up in the configuration to '
+                   'run the script.')
+            logger.error(msg)
+            sys.stderr.write("{}\n".format(msg))
+            raise ImproperlyConfigured(msg)
+
         if options['restore']:
             self._clear_database()
 
