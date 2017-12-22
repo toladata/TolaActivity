@@ -64,7 +64,7 @@ router.register(r'collecteddata', CollectedDataViewSet)
 router.register(r'periodictarget', PeriodicTargetViewSet)
 router.register(r'tolatable', TolaTableViewSet, base_name='tolatable')
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
-router.register(r'dissagregationlabel', DisaggregationLabelViewSet)
+router.register(r'disaggregationlabel', DisaggregationLabelViewSet)
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
@@ -93,7 +93,6 @@ urlpatterns = [ # rest framework
                 url(r'^api/', include(router.urls)),
                 url(r'^binarytest/(?P<id>\w+)', binary_test),
                 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-                url(r'^api-token-auth/', authtoken_views.obtain_auth_token),
 
                 # index
                 url(r'^$', tola_views.IndexView.as_view(), name='index'),

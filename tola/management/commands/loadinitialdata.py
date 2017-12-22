@@ -1,27 +1,40 @@
+# -*- coding: utf-8 -*-
 from cStringIO import StringIO
 import logging
 import os
-import sys
 
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction, IntegrityError, connection
 
 import factories
+from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
+                               CollectedData)
 from workflow.models import (
     ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
-    ROLE_PROGRAM_TEAM)
+    ROLE_PROGRAM_TEAM, Organization, Country, TolaUser, Group, Sector,
+    Stakeholder, Milestone, WorkflowLevel1, WorkflowLevel2,
+    WorkflowLevel1Sector, WorkflowTeam)
 
 logger = logging.getLogger(__name__)
-DEFAULT_WORKFLOWLEVEL1_ID = 3
-DEFAULT_WORKFLOWLEVEL1_NAME = 'Humanitarian Response to the Syrian Crisis'
+DEFAULT_WORKFLOW_LEVEL_1S = [  # tuple (id, name)
+    (3, 'Humanitarian Response to the Syrian Crisis'),
+    (6, u'Bildung für sozial benachteiligte Kinder in Deutschland'),
+]
+DEFAULT_ORG = {
+    'id': 1,
+    'name': settings.DEFAULT_ORG,
+}
+DEFAULT_COUNTRY_CODES = ('DE', 'SY')
 
 
 class Command(BaseCommand):
     help="""
     Loads initial factories data.
 
-    By default, a new TolaData organization will be created, plus countries,
+    By default, a new default organization will be created, plus countries,
     groups, sectors and indicator types.
 
     Passing a --demo flag will populate the database with extra sample projects,
@@ -33,7 +46,9 @@ class Command(BaseCommand):
     APPS = ('workflow', 'formlibrary', 'customdashboard', 'reports', 'gladmap',
             'search')
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+
         # Note: for the lists we fill the first element with an empty value for
         # development readability (id == position).
         self._organization = None
@@ -49,17 +64,75 @@ class Command(BaseCommand):
         self._workflowlevel1s = ['']
         self._workflowlevel2s = ['']
         self._levels = ['']
+        self._frequencies = ['']
         self._indicators = ['']
 
+    def _clear_database(self):
+        """
+        Clears all old data except:
+        - Default organization
+        - Default countries
+        - Current registered users
+
+        Before everything happens, current registered users will be reassigned
+        to the default organization and to have residency in Germany.
+        """
+        # Check integrity
+        try:
+            organization = Organization.objects.get(**DEFAULT_ORG)
+        except Organization.DoesNotExist:
+            msg = ("Error: the default organization could not be found in the "
+                   "database. Maybe you are restoring without having run the "
+                   "command a first time?")
+            logger.error(msg)
+            self.stderr.write("{}\n".format(msg))
+            raise IntegrityError(msg)
+
+        try:
+            country = Country.objects.get(code=DEFAULT_COUNTRY_CODES[0])
+            Country.objects.get(code=DEFAULT_COUNTRY_CODES[1])
+        except Country.DoesNotExist:
+            msg = ("Error: one or both of the default countries %s could not "
+                   "be found in the database. Maybe you are restoring without "
+                   "having run the command a first time?".format(
+                   DEFAULT_COUNTRY_CODES))
+            logger.error(msg)
+            self.stderr.write("{}\n".format(msg))
+            raise IntegrityError(msg)
+
+        # Reassign organization and country for current registered users
+        TolaUser.objects.all().update(organization=organization,
+                                      country=country)
+
+        # Delete data - Kill 'Em All!
+        Organization.objects.exclude(id=DEFAULT_ORG['id']).delete()
+        Group.objects.all().delete()
+        Country.objects.exclude(code__in=DEFAULT_COUNTRY_CODES).delete()
+        Sector.objects.all().delete()
+        Stakeholder.objects.all().delete()
+        Milestone.objects.all().delete()
+        WorkflowLevel1.objects.all().delete()
+        WorkflowLevel2.objects.all().delete()
+        Level.objects.all().delete()
+        Frequency.objects.all().delete()
+        Indicator.objects.all().delete()
+        PeriodicTarget.objects.all().delete()
+        CollectedData.objects.all().delete()
+        WorkflowLevel1Sector.objects.all().delete()
+        WorkflowTeam.objects.all().delete()
+
     def _create_organization(self):
-        self._organization = factories.Organization(
-            id=1,
-            name="TolaData",
-            organization_url="http://toladata.com",
-            level_2_label="Project",
-            level_3_label="Activity",
-            level_4_label="Component",
-        )
+        try:
+            self._organization = Organization.objects.get(**DEFAULT_ORG)
+        except Organization.DoesNotExist:
+            self._organization = factories.Organization(
+                id=DEFAULT_ORG['id'],
+                name=DEFAULT_ORG['name'],
+                organization_url="http://toladata.com",
+                level_2_label="Project",
+                level_3_label="Activity",
+                level_4_label="Component",
+            )
 
     def _create_groups(self):
         self._groups.append(factories.Group(
@@ -84,7 +157,6 @@ class Command(BaseCommand):
 
     def _create_countries(self):
         factories.Country(
-            id=1,
             country="Afghanistan",
             code="AF",
             latitude="34.5333",
@@ -92,7 +164,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=2,
             country="Pakistan",
             code="PK",
             latitude="33.6667",
@@ -100,7 +171,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=3,
             country="Jordan",
             code="JO",
             latitude="31.9500",
@@ -108,7 +178,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=4,
             country="Lebanon",
             code="LB",
             latitude="33.9000",
@@ -116,7 +185,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=5,
             country="Ethiopia",
             code="ET",
             latitude="9.0167",
@@ -124,7 +192,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=6,
             country="Timor-Leste",
             code="TL",
             latitude="-8.3",
@@ -132,7 +199,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=7,
             country="Kenya",
             code="KE",
             latitude="-1.2833",
@@ -140,7 +206,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=8,
             country="Iraq",
             code="IQ",
             latitude="33.3333",
@@ -148,7 +213,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=9,
             country="Nepal",
             code="NP",
             latitude="26.5333",
@@ -156,7 +220,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=10,
             country="Mali",
             code="ML",
             latitude="17.6500",
@@ -164,7 +227,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=11,
             country="United States",
             code="US",
             latitude="45",
@@ -172,7 +234,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=12,
             country="Turkey",
             code="TR",
             latitude="39.9167",
@@ -180,7 +241,6 @@ class Command(BaseCommand):
         )
 
         self._country_syria = factories.Country(
-            id=13,  # 14
             country="Syrian Arab Republic",
             code="SY",
             latitude="33.5000",
@@ -188,31 +248,26 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=14,
             country="China",
             code="CN",
         )
 
         factories.Country(
-            id=15,
             country="India",
             code="IN",
         )
 
         factories.Country(
-            id=16,
             country="Indonesia",
             code="ID",
         )
 
         factories.Country(
-            id=17,
             country="Mongolia",
             code="MN",
         )
 
         factories.Country(
-            id=18,
             country="Myanmar",
             code="MY",
             latitude="21.9162",
@@ -220,7 +275,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=19,
             country="Palestine",
             code="PS",
             latitude="31.3547",
@@ -228,7 +282,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=20,
             country="South Sudan",
             code="SS",
             latitude="6.8770",
@@ -236,7 +289,6 @@ class Command(BaseCommand):
         )
 
         factories.Country(
-            id=21,
             country="Uganda",
             code="UG",
             latitude="1.3733",
@@ -244,7 +296,6 @@ class Command(BaseCommand):
         )
 
         self._country_germany = factories.Country(
-            id=22,
             country="Germany",
             code="DE",
             latitude="51.1657",
@@ -900,6 +951,12 @@ class Command(BaseCommand):
             organization=self._organization,
         ))
 
+        self._sectors.append(factories.Sector(
+            id="109",
+            sector="Children's Rights",
+            organization=self._organization,
+        ))
+
     def _create_indicator_types(self):
         factories.IndicatorType(
             id=1,
@@ -987,6 +1044,28 @@ class Command(BaseCommand):
             organization=self._organization,
         ))
 
+        self._site_profiles.append(factories.SiteProfile(
+            id=6,
+            name="Paul Schule",
+            contact_leader="Direktor Paul Schule",
+            country=self._country_germany,
+            latitude="50.9692657293000000",
+            longitude="6.9889383750000000",
+            created_by=self._tolauser_ninette.user,
+            organization=self._organization,
+        ))
+
+        self._site_profiles.append(factories.SiteProfile(
+            id=7,
+            name="Peter Schule",
+            contact_leader="Direktor Peter Schule",
+            country=self._country_germany,
+            latitude="49.4507464458000000",
+            longitude="11.0319071250000000",
+            created_by=self._tolauser_ninette.user,
+            organization=self._organization,
+        ))
+
     def _create_stakeholders(self):
         factories.Stakeholder(
             id=1,  # 2
@@ -1034,6 +1113,42 @@ class Command(BaseCommand):
             created_by=self._tolauser_ninette.user,  # 11
         )
 
+        factories.Milestone(
+            id="5",
+            name=u"Auswahl Schulen",
+            milestone_start_date="2017-07-01T10:00:00Z",  # TODO
+            milestone_end_date="2018-05-11T10:00:00Z",  # TODO
+            organization=self._organization,
+            created_by=self._tolauser_ninette.user,  # 11
+        )
+
+        factories.Milestone(
+            id="6",
+            name=u"Durchführung Ideen Workshops",
+            milestone_start_date="2017-07-01T10:00:00Z",  # TODO
+            milestone_end_date="2018-05-11T10:00:00Z",  # TODO
+            organization=self._organization,
+            created_by=self._tolauser_ninette.user,  # 11
+        )
+
+        factories.Milestone(
+            id="7",
+            name=u"Familien Fortbildungen",
+            milestone_start_date="2017-07-01T10:00:00Z",  # TODO
+            milestone_end_date="2018-05-11T10:00:00Z",  # TODO
+            organization=self._organization,
+            created_by=self._tolauser_ninette.user,  # 11
+        )
+
+        factories.Milestone(
+            id="8",
+            name=u"Qualifizierung Lehrer",
+            milestone_start_date="2017-07-01T10:00:00Z",  # TODO
+            milestone_end_date="2018-05-11T10:00:00Z",  # TODO
+            organization=self._organization,
+            created_by=self._tolauser_ninette.user,  # 11
+        )
+
     def _create_workflow_1s(self):
         self._workflowlevel1s.append(factories.WorkflowLevel1(
             id=1,  # 10
@@ -1064,7 +1179,7 @@ class Command(BaseCommand):
             funding_status="Funded",
             organization=self._organization,
             description="<p>Newly funded program</p>",
-            country=[13],  # 14
+            country=[self._country_syria],  # 14
             start_date="2017-07-01T10:00:00Z",  # TODO
             end_date="2019-06-30T10:00:00Z",  # TODO
             milestone=[1, 2, 3, 4],
@@ -1085,6 +1200,15 @@ class Command(BaseCommand):
             organization=self._organization,
             start_date="2017-07-01T10:00:00Z",  # TODO
             end_date="2019-06-30T10:00:00Z",  # TODO
+        ))
+
+        self._workflowlevel1s.append(factories.WorkflowLevel1(
+            id=6,
+            name=u'Bildung für sozial benachteiligte Kinder in Deutschland',
+            organization=self._organization,
+            start_date="2017-07-01T10:00:00Z",  # TODO
+            end_date="2019-06-30T10:00:00Z",  # TODO
+            milestone=[5, 6, 7, 8],
         ))
 
     def _create_workflow_2s(self):
@@ -1343,6 +1467,116 @@ class Command(BaseCommand):
             status="green",
         ))
 
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=22,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=0,
+            name=u'Ansprache von 20 Partnerschulen in Berlin',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="closed",
+            status="green",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=23,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=0,
+            name=u'20 Schulen in sozialen Brennpunkten identifizieren',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="closed",
+            status="green",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=24,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=0,
+            name=u'Ideen zur Gestaltung der Schule finden und umstetzen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            on_time=False,
+            progress="tracking",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=25,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=0,
+            name=u'Qualifizierung der Lehrer',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            on_time=False,
+            progress="closed",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=26,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=25,
+            name=u'Lehrer auswählen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="closed",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=27,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=25,
+            name=u'Trainings und Supervision durchführen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="tracking",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=28,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=24,
+            name=u'Ideenworkshops durchführen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="tracking",
+            status="yellow",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=29,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=22,
+            name=u'Direktoren ansprechen',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="closed",
+            status="green",
+        ))
+
+        self._workflowlevel2s.append(factories.WorkflowLevel2(
+            id=30,
+            workflowlevel1=self._workflowlevel1s[6],
+            parent_workflowlevel2=24,
+            name=u'Budgets zur Umsetzung finden',
+            expected_start_date="2018-10-01T11:00:00Z",  # TODO
+            expected_end_date="2018-09-30T11:00:00Z",  # TODO
+            created_by=self._tolauser_ninette.user,  # 11
+            progress="awaitingapproval",
+            status="red",
+        ))
+
     def _create_levels(self):
         self._levels.append(factories.Level(
             id=1,  # 7
@@ -1430,6 +1664,200 @@ class Command(BaseCommand):
             parent_id="4",  # 10
             workflowlevel1=self._workflowlevel1s[3],  # 15
             sort=3,
+        ))
+
+        self._levels.append(factories.Level(
+            id=9,
+            name=(u"Impact: Verwirklichung des Kinderrechts auf Bildung in "
+                  u"Deutschland"),
+            description=(u"Verwirklichung der Rechte Kindern aus sozial "
+                         u"benachteiligten Bevölkerungsgruppen auf qualitativ "
+                         u"hochwertige Bildung und Entwicklung"),
+            color="red",
+            organization=self._organization,
+            parent_id="0",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=0,
+        ))
+
+        self._levels.append(factories.Level(
+            id=10,
+            name=u"Outcome: Gute Bildung und Lernen ermöglichen",
+            description=(u"Ziel ist es, Kindern unabhängig von ihrem "
+                         u"Hintergrund und ihrer Herkunft die Möglichkeit auf "
+                         u"gute Bildung und erfolgreiches Lernen zu "
+                         u"ermöglichen"),
+            color="blue",
+            organization=self._organization,
+            parent_id="9",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=1,
+        ))
+
+        self._levels.append(factories.Level(
+            id=11,
+            name=u"Outcome: Kooperation zwischen Eltern/Lehrern verbessern",
+            description=(u"Ziel ist es, eine stabile Beziehung zwischen "
+                        u"Eltern und Lehrern zu bauen, Eltern in die "
+                         u"Aktivitäten der Schule einzubeziehen und eine "
+                         u"stabile Kommunikation aufzubauen."),
+            color="blue",
+            organization=self._organization,
+            parent_id="9",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=1,
+        ))
+
+        self._levels.append(factories.Level(
+            id=12,
+            name=u"Outcome: Schulen familienfreundlicher gestalten",
+            description=(u"Ziel ist es, Schulen nicht nur als Raum zum Lernen, "
+                         u"sondern auch zum Leben zu gestalten. Eine offene "
+                         u"und vertrauensvolle Atmosphäre zu kreieren, in dem "
+                         u"die ganze Persönlichkeit gesehen und gefördert "
+                         u"wird."),
+            color="green",
+            organization=self._organization,
+            parent_id="9",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=1,
+        ))
+
+        self._levels.append(factories.Level(
+            id=13,
+            name=u"Output: Schulungen für Familien durchführen",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="10",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=14,
+            name=u"Output: Elternbeteiligung stärken",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="11",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=15,
+            name=u"Output: Partnerschaftliches Verhältnis etablieren",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="11",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=16,
+            name=u"Output: Fortbildungen für Lehrer",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="10",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=17,
+            name=u"Output: Ideen partizipativ entwickeln und umsetzen",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="12",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+        self._levels.append(factories.Level(
+            id=18,
+            name=u"Output: Sprachbarrieren abbauen",
+            description=u"",
+            color="green",
+            organization=self._organization,
+            parent_id="11",
+            workflowlevel1=self._workflowlevel1s[6],
+            sort=2,
+        ))
+
+    def _create_frequencies(self):
+        self._frequencies.append(factories.Frequency(
+            id=1,  # 2
+            frequency="Quarterly",
+            description="Quarterly",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=2,  # 4
+            frequency="Monthly",
+            description="Monthly",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=3,  # 5
+            frequency="Semi Annual",
+            description="Semi Annual",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=4,  # 7
+            frequency="Annual",
+            description="Annual",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=5,  # 8
+            frequency="Baseline, Endline",
+            description="Baseline, Endline",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=6,  # 9
+            frequency="Weekly",
+            description="Weekly",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=7,  # 10
+            frequency="Baseline, midline, endline",
+            description="Baseline, midline, endline",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=8,  # 11
+            frequency="Bi-weekly",
+            description="Bi-weekly",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=9,  # 12
+            frequency="Monthly, Quarterly, Annually",
+            description="Monthly, Quarterly, Annually",
+            organization=self._organization,
+        ))
+
+        self._frequencies.append(factories.Frequency(
+            id=10,  # 16
+            frequency="End of cycle",
+            description="End of cycle",
+            organization=self._organization,
         ))
 
     def _create_indicators(self):
@@ -1564,6 +1992,66 @@ class Command(BaseCommand):
             key_performance_indicator=True,
             created_by=self._tolauser_ninette.user,  # 11
             workflowlevel1=[self._workflowlevel1s[3]],  # 15
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=13,
+            level=self._levels[9],
+            name=u"Anzahl aktive Initiativen",
+            lop_target=5500,
+            key_performance_indicator=True,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            workflowlevel1=[self._workflowlevel1s[6]],
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=14,
+            level=self._levels[13],
+            name=u"Anzahl Schulungen",
+            number="5000",
+            lop_target=50000,
+            key_performance_indicator=True,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            method_of_analysis="Questionnaire",
+            workflowlevel1=[self._workflowlevel1s[6]],
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=15,
+            level=self._levels[12],
+            name=u"Ideenwerkstätten",
+            lop_target=15000,
+            key_performance_indicator=False,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            workflowlevel1=[self._workflowlevel1s[6]],
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=16,
+            level=self._levels[9],
+            name=u"Anzahl direkt erreichter Kinder",
+            lop_target=250000,
+            key_performance_indicator=True,
+            approval_submitted_by=self._tolauser_andrew,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            workflowlevel1=[self._workflowlevel1s[6]],
+        ))
+
+        self._indicators.append(factories.Indicator(
+            id=17,
+            level=self._levels[11],
+            name=u"Mehrsprachige Informationsmaterialien (10 Sprachen)",
+            lop_target=600000,
+            sector=self._sectors[11],
+            key_performance_indicator=False,
+            approval_submitted_by=self._tolauser_andrew,
+            created_by=self._tolauser_ninette.user,
+            reporting_frequency=self._frequencies[9],
+            workflowlevel1=[self._workflowlevel1s[6]],
         ))
 
     def _create_periodic_targets(self):
@@ -2224,75 +2712,63 @@ class Command(BaseCommand):
             site=[self._site_profiles[2]],  # 6
         )
 
-    def _create_frequencies(self):
-        factories.Frequency(
-            id=1,  # 2
-            frequency="Quarterly",
-            description="Quarterly",
-            organization=self._organization,
+        factories.CollectedData(
+            id=40,
+            achieved="1500.00",
+            indicator=self._indicators[13],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
+            site=[self._site_profiles[6]],
         )
 
-        factories.Frequency(
-            id=2,  # 4
-            frequency="Monthly",
-            description="Monthly",
-            organization=self._organization,
+        factories.CollectedData(
+            id=41,
+            achieved="23000.00",
+            indicator=self._indicators[14],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
         )
 
-        factories.Frequency(
-            id=3,  # 5
-            frequency="Semi Annual",
-            description="Semi Annual",
-            organization=self._organization,
+        factories.CollectedData(
+            id=42,
+            achieved="3700.00",
+            indicator=self._indicators[15],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
         )
 
-        factories.Frequency(
-            id=4,  # 7
-            frequency="Annual",
-            description="Annual",
-            organization=self._organization,
+        factories.CollectedData(
+            id=43,
+            achieved="125000.00",
+            indicator=self._indicators[16],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
         )
 
-        factories.Frequency(
-            id=5,  # 8
-            frequency="Baseline, Endline",
-            description="Baseline, Endline",
-            organization=self._organization,
+        factories.CollectedData(
+            id=44,
+            achieved="500.00",
+            indicator=self._indicators[13],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
+            site=[self._site_profiles[6]],
         )
 
-        factories.Frequency(
-            id=6,  # 9
-            frequency="Weekly",
-            description="Weekly",
-            organization=self._organization,
+        factories.CollectedData(
+            id=45,
+            achieved="2300.00",
+            indicator=self._indicators[13],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
         )
 
-        factories.Frequency(
-            id=7,  # 10
-            frequency="Baseline, midline, endline",
-            description="Baseline, midline, endline",
-            organization=self._organization,
-        )
-
-        factories.Frequency(
-            id=8,  # 11
-            frequency="Bi-weekly",
-            description="Bi-weekly",
-            organization=self._organization,
-        )
-
-        factories.Frequency(
-            id=9,  # 12
-            frequency="Monthly, Quarterly, Annually",
-            description="Monthly, Quarterly, Annually",
-            organization=self._organization,
-        )
-
-        factories.Frequency(
-            id=10,  # 16
-            frequency="End of cycle",
-            description="End of cycle",
-            organization=self._organization,
+        factories.CollectedData(
+            id=46,
+            achieved="700.00",
+            indicator=self._indicators[13],
+            workflowlevel1=self._workflowlevel1s[6],
+            created_by=self._tolauser_ninette.user,
+            site=[self._site_profiles[7]],
         )
 
     def _create_workflowlevel1_sectors(self):
@@ -2322,6 +2798,20 @@ class Command(BaseCommand):
             workflowlevel1=self._workflowlevel1s[1],  # 10
             sector=self._sectors[49],  # 178,
             sub_sector=[self._sectors[14]],  # [143]
+        )
+
+        factories.WorkflowLevel1Sector(
+            id=5,
+            workflowlevel1=self._workflowlevel1s[6],
+            sector=self._sectors[31],
+            sub_sector=[self._sectors[36], self._sectors[34], self._sectors[32], self._sectors[33], self._sectors[35]],
+        )
+
+        factories.WorkflowLevel1Sector(
+            id=6,
+            workflowlevel1=self._workflowlevel1s[6],
+            sector=self._sectors[109],
+            sub_sector=[self._sectors[84], self._sectors[98], self._sectors[31]],
         )
 
     def _create_workflowteams(self):
@@ -2394,19 +2884,56 @@ class Command(BaseCommand):
             cursor = connection.cursor()
             cursor.execute("\n".join(sql_commands_clean))
 
+    def _assign_workflowteam_current_users(self):
+        role = Group.objects.get(name=ROLE_VIEW_ONLY)
+        wflvl1_0 = WorkflowLevel1.objects.get(
+            id=DEFAULT_WORKFLOW_LEVEL_1S[0][0])
+        wflvl1_1 = WorkflowLevel1.objects.get(
+            id=DEFAULT_WORKFLOW_LEVEL_1S[1][0])
+        tola_user_ids = TolaUser.objects.values_list('id', flat=True).all()
+
+        wfteams_0 = [
+            WorkflowTeam(workflow_user_id=user_id, role=role,
+                         workflowlevel1=wflvl1_0)
+            for user_id in tola_user_ids
+        ]
+        wfteams_1 = [
+            WorkflowTeam(workflow_user_id=user_id, role=role,
+                         workflowlevel1=wflvl1_1)
+            for user_id in tola_user_ids
+        ]
+        WorkflowTeam.objects.bulk_create(wfteams_0)
+        WorkflowTeam.objects.bulk_create(wfteams_1)
+
     def add_arguments(self, parser):
         parser.add_argument('--demo', action='store_true',
                             help='Loads extra demo data')
+        parser.add_argument('--restore', action='store_true',
+                            help=('Restores back demo data deleting old '
+                                  'previous one (except users)'))
 
     @transaction.atomic
     def handle(self, *args, **options):
+        if not settings.DEFAULT_ORG:
+            msg = ('A DEFAULT_ORG needs to be set up in the configuration to '
+                   'run the script.')
+            logger.error(msg)
+            self.stderr.write("{}\n".format(msg))
+            raise ImproperlyConfigured(msg)
+
+        if options['restore']:
+            self.stdout.write('Clearing up database')
+            self._clear_database()
+
+        self.stdout.write('Creating basic data')
         self._create_organization()
         self._create_groups()
         self._create_countries()
         self._create_sectors()
         self._create_indicator_types()
 
-        if options['demo']:
+        if options['demo'] or options['restore']:
+            self.stdout.write('Creating demo data')
             try:
                 self._create_users()
                 self._create_site_profiles()
@@ -2415,18 +2942,23 @@ class Command(BaseCommand):
                 self._create_workflow_1s()
                 self._create_workflow_2s()
                 self._create_levels()
+                self._create_frequencies()
                 self._create_indicators()
                 self._create_periodic_targets()
                 self._create_collected_data()
-                self._create_frequencies()
                 self._create_workflowlevel1_sectors()
                 self._create_workflowteams()
-            except IntegrityError as error:
+            except IntegrityError:
                 msg = ("Error: the data could not be populated in the "
                        "database. Check that the affected database tables are "
                        "empty.")
                 logger.error(msg)
-                sys.stderr.write("{}\n".format(msg))
+                self.stderr.write("{}\n".format(msg))
                 raise
 
+        self.stdout.write('Resetting SQL sequences')
         self._reset_sql_sequences()
+
+        if options['restore']:
+            self.stdout.write('Assigning current users to created projects')
+            self._assign_workflowteam_current_users()

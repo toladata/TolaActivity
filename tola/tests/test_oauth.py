@@ -104,8 +104,12 @@ class OAuthTest(TestCase):
         details = {'email': self.tola_user.user.email}
         self.site.whitelisted_domains = 'anotherdomain.com'
         self.site.save()
-        with self.assertRaises(AuthForbidden):
-            auth_pipeline.auth_allowed(backend, details, None)
+        response = auth_pipeline.auth_allowed(backend, details, None)
+        template_content = response.content
+        self.assertIn("Your organization doesn't appear to have permissions "
+                      "to access the system.", template_content)
+        self.assertIn("Please check with your organization to have access.",
+                      template_content)
 
     def test_auth_allowed_no_whitelist(self):
         # Fake backend class for the test
@@ -122,4 +126,9 @@ class OAuthTest(TestCase):
 
         backend = BackendTest()
         details = {'email': self.tola_user.user.email}
-        auth_pipeline.auth_allowed(backend, details, None)
+        response = auth_pipeline.auth_allowed(backend, details, None)
+        template_content = response.content
+        self.assertIn("Your organization doesn't appear to have permissions "
+                      "to access the system.", template_content)
+        self.assertIn("Please check with your organization to have access.",
+                      template_content)

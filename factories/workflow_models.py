@@ -94,6 +94,7 @@ class SiteProfile(DjangoModelFactory):
 class TolaUser(DjangoModelFactory):
     class Meta:
         model = TolaUserM
+        django_get_or_create = ('user',)
 
     user = SubFactory(User)
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
