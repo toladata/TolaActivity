@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test import Client
 from django.contrib.sites.shortcuts import get_current_site
 
-from social_core.exceptions import AuthForbidden
+from mock import Mock, patch
 
 from workflow.models import TolaUser
 from tola import auth_pipeline
@@ -48,7 +48,10 @@ class OAuthTest(TestCase):
             response, "value=\"CXGVOGFnTAt5cQW6m5AxbGrRq1lzKNSrou31dWm9\"")
         self.assertEqual(response.status_code, 200)
 
-    def test_user_to_tola(self):
+    @patch('tola.util.requests')
+    def test_user_to_tola(self, mock_requests):
+        mock_requests.post.return_value = Mock(status_code=201)
+
         # TolaUser will be created with default Org
         response = {
             'displayName': 'Foo Bar',
