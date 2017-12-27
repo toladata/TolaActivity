@@ -10,7 +10,6 @@ from django import forms
 from tola.util import getCountry
 from django.db.models import Q
 
-
 class DatePicker(forms.DateInput):
     """
     Use in form to create a Jquery datepicker element
@@ -70,7 +69,7 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Targets',
                     Fieldset('Targets',
-                             'unit_of_measure', 'baseline','lop_target', 'rationale_for_target'
+                             'unit_of_measure', 'lop_target', 'rationale_for_target', 'baseline', 'target_frequency', 'target_frequency_start', 'target_frequency_custom', 'target_frequency_num_periods'
                              ),
                     Div("",
                         HTML("""<br/>
@@ -160,6 +159,13 @@ class IndicatorForm(forms.ModelForm):
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['program'].widget.attrs['readonly'] = "readonly"
+        self.fields['target_frequency_start'].widget = DatePicker.DateInput()
+        if self.instance.target_frequency:
+            self.fields['target_frequency'].widget.attrs['readonly'] = "readonly"
+            self.fields['target_frequency'].widget.attrs['disabled'] = "disabled"
+            self.fields['target_frequency_custom'].widget = forms.HiddenInput()
+            self.fields['target_frequency_start'].widget = forms.HiddenInput()
+            self.fields['target_frequency_num_periods'].widget = forms.HiddenInput()
 
 class CollectedDataForm(forms.ModelForm):
 

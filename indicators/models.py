@@ -244,6 +244,26 @@ class IndicatorManager(models.Manager):
 
 
 class Indicator(models.Model):
+    LOP = 1
+    MID_END = 2
+    ANNUAL = 3
+    SEMI_ANNUAL = 4
+    TRI_ANNUAL = 5
+    QUARTERLY = 6
+    MONTHLY = 7
+    EVENT = 8
+
+    TARGET_FREQUENCIES = (
+        (LOP, 'Life of Program (LoP) only'),
+        (MID_END, 'Midline and endline'),
+        (ANNUAL, 'Annual'),
+        (SEMI_ANNUAL, 'Semi-annual'),
+        (TRI_ANNUAL, 'Tri-annual'),
+        (QUARTERLY, 'Quarterly'),
+        (MONTHLY, 'Monthly'),
+        (EVENT, 'Event')
+    )
+
     indicator_key = models.UUIDField(default=uuid.uuid4, unique=True),
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ManyToManyField(Level, blank=True)
@@ -254,11 +274,15 @@ class Indicator(models.Model):
     source = models.CharField(max_length=255, null=True, blank=True)
     definition = models.TextField(null=True, blank=True)
     justification = models.TextField(max_length=500, null=True, blank=True, verbose_name="Rationale or Justification for Indicator")
-    unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of Measure")
+    unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of Measure*")
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True)
     baseline = models.CharField(max_length=255, null=True, blank=True)
     lop_target = models.CharField("LOP Target",max_length=255, null=True, blank=True)
     rationale_for_target = models.TextField(max_length=255, null=True, blank=True)
+    target_frequency = models.IntegerField(blank=False, null=True, choices=TARGET_FREQUENCIES, verbose_name="Target frequency")
+    target_frequency_custom = models.CharField(null=True, blank=True, max_length=100, verbose_name="First event name*")
+    target_frequency_start = models.DateField(blank=True, null=True, auto_now=False, auto_now_add=False, verbose_name="First target period begins*")
+    target_frequency_num_periods = models.IntegerField(blank=True, null=True, verbose_name="Number of target periods*")
     means_of_verification = models.CharField(max_length=255, null=True, blank=True, verbose_name="Means of Verification / Data Source")
     data_collection_method = models.CharField(max_length=255, null=True, blank=True, verbose_name="Data Collection Method")
     data_collection_frequency = models.ForeignKey(DataCollectionFrequency, null=True, blank=True, verbose_name="Frequency of Data Collection")
@@ -293,6 +317,10 @@ class Indicator(models.Model):
             self.create_date = datetime.now()
         self.edit_date = datetime.now()
         super(Indicator, self).save(*args, **kwargs)
+
+    @property
+    def is_target_frequency_time_aware(self):
+        return self.target_frequency in (self.ANNUAL, self.SEMI_ANNUAL, self.TRI_ANNUAL, self.QUARTERLY, self.MONTHLY)
 
     @property
     def just_created(self):
@@ -337,6 +365,8 @@ class PeriodicTarget(models.Model):
     indicator = models.ForeignKey(Indicator, null=False, blank=False)
     period = models.CharField(max_length=255, null=True, blank=True)
     target = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    start_date = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
+    end_date = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     customsort = models.IntegerField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
