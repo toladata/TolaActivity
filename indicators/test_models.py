@@ -1,9 +1,10 @@
-from django.test import TestCase
+from django.test import TestCase, tag
 
 from indicators.models import Level
 from workflow.models import WorkflowLevel1, Organization
 
 
+@tag('pkg')
 class LevelModelTest(TestCase):
     def test_save_level_org_same_as_wflvl1(self):
         self.wflvl1 = WorkflowLevel1.objects.create(name='WorkflowLevel1')

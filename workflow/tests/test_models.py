@@ -1,9 +1,10 @@
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 import factories
 from workflow.models import TolaUser
 
 
+@tag('pkg')
 class TolaUserTest(TestCase):
     def setUp(self):
         self.organization =  factories.Organization()

@@ -1,13 +1,11 @@
-from django.test import TestCase
-from django.test import Client
 from django.contrib.sites.shortcuts import get_current_site
-
+from django.test import TestCase, Client
 from mock import Mock, patch
-
-from workflow.models import TolaUser
-from tola import auth_pipeline
+from social_core.exceptions import AuthForbidden
 
 import factories
+from tola import auth_pipeline
+from workflow.models import TolaUser
 
 # TODO Extend OAuth tests
 

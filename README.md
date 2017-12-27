@@ -16,7 +16,7 @@ files.
 Location of settings:
 
 * Development: `tola/settings/dev.py`
-* Test runner: `tola/settings/test.py`
+* Test runner: `tola/settings/test.py` and `tola/settings/test_pkg.py`
 * Staging/Production: `tola/settings/local.py`
 
 
@@ -47,6 +47,15 @@ To run the tests:
 
 ```bash
 docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py test # --keepdb to run second time faster
+```
+
+To run the package building tests, follow these steps:
+
+```bash
+docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web bash
+# Now inside the container
+pip freeze | grep -v "^-e" | xargs pip uninstall -y; pip uninstall -y social_auth_core; cat requirements.txt | grep "^Django==\|^psycopg2" | xargs pip install; pip install -r requirements-pkg.txt
+python manage.py test --tag=pkg --keepdb
 ```
 
 To run the webserver with pdb support:
