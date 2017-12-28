@@ -1,4 +1,13 @@
 <script>
+    $( document ).ready(function() {
+        show_hide_frequency_fields();
+    })
+
+    $("#indicator_modal_div").on('shown.bs.tab', function() {
+        show_hide_frequency_fields();
+        $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
+    })
+
 
     $("#indicator_modal_content, #indicator_form").on("click", ".detelebtn", function(e){
         e.preventDefault();
@@ -18,34 +27,28 @@
                 }
             });
     });
-    // Intercept IndicatorUpdate form submission and then use ajax to submit it.
-    $("#indicator_modal_content, #indicator_form").on("submit", "#indicator_update_form", function(e){
-        e.preventDefault();
-        var submitBtnName = $(this).find("input[type=submit]:focus" );
-        var form_url = $(this).attr('action');
-        var form_data = $(this).serialize();
-        var periodic_targets = [];
-        $('#periodic_targets_table tr').each(function () {
-            var $this = $(this);
-            var values = [];
-            $this.find('input[type=text]').each(function (i, input) {
-                if (i == 0) {
-                    values.push($(input).attr('name').split('-')[1]);
-                }
-                values.push($(input).val());
-            });
-            if(values.length > 0) {
-                if ( !$.isNumeric(values[2]) || values[1] == '') {
-                    return;
-                }
-                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
-            }
-        });
-        form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
-        //console.log(JSON.stringify(periodic_targets));
-        submitForm(form_url, form_data);
 
+
+    $("#indicator_form").on("submit", "#indicator_update_form", function(e){
+        e.preventDefault();
+        if (validateForm() == false) {
+            showValidations("#alerts");
+            return;
+        }
+        submitForm(this);
     });
+
+    // Intercept IndicatorUpdate form submission and then use ajax to submit it.
+    $("#indicator_modal_content").on("submit", "#indicator_update_form", function(e){
+        e.preventDefault();
+
+        if (validateForm() == false) {
+            showValidations("#modalmessages");
+            return;
+        }
+        submitForm(this);
+    });
+
 
     function addPeriodicTarget() {
         var markup = `
@@ -60,7 +63,32 @@
         $("#periodic_targets_table tbody").append(markup);
 
     }
-    function submitForm(form_url, form_data) {
+    function submitForm(form) {
+
+        var submitBtnName = $(form).find("input[type=submit]:focus" );
+        var form_url = $(form).attr('action');
+        var form_data = $(form).serialize();
+        var periodic_targets = [];
+        $('#periodic_targets_table tr').each(function () {
+            var $form = $(form);
+            var values = [];
+            $form.find('input[type=text]').each(function (i, input) {
+                if (i == 0) {
+                    values.push($(input).attr('name').split('-')[1]);
+                }
+                values.push($(input).val());
+            });
+            if(values.length > 0) {
+                if ( !$.isNumeric(values[2]) || values[1] == '') {
+                    return;
+                }
+                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
+            }
+        });
+        form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
+        //console.log(JSON.stringify(periodic_targets));
+
+
         $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
         $.ajax({
             method: 'POST',
@@ -98,31 +126,193 @@
         });
     }
 
-    $("#indicator_modal_content, #indicator_form").on("input", "#id_lop_target", function(e){
-        var lop = $(this);
+
+    function show_hide_frequency_fields() {
+        var selected_option = $("#id_target_frequency").find("option:selected").text();
+        if (selected_option == 'Life of Program (LoP) only' ||
+            selected_option == 'Midline and endline' ||
+            selected_option == '---------') {
+            $("#div_id_target_frequency_start").hide();
+            $("#div_id_target_frequency_num_periods").hide();
+            $("#div_id_target_frequency_custom").hide();
+            $("#id_target_frequency_start").val('');
+            // $("#id_target_frequency_start").prop('required', false);
+            $("#id_target_frequency_custom").val('');
+            // $("#id_target_frequency_custom").prop('required', false);
+
+        } else if (selected_option == 'Event') {
+            $("#div_id_target_frequency_start").hide();
+            $("#id_target_frequency_start").val('');
+            // $("#id_target_frequency_start").prop('required', false);
+            $("#div_id_target_frequency_custom").show();
+            $("#div_id_target_frequency_num_periods").show();
+
+            // validateForEmptyField("id_target_frequency_custom", "'First event name'");
+            // validateForEmptyField("id_target_frequency_num_periods", "'Number of target periods'");
+        } else {
+            $("#div_id_target_frequency_start").show();
+            $("#div_id_target_frequency_num_periods").show();
+            $("#div_id_target_frequency_custom").hide();
+            $("#id_target_frequency_custom").val('');
+            // $("#id_target_frequency_custom").prop('required', false);
+
+            // validateForEmptyField("id_target_frequency_start", "'First target period begins'");
+            // validateForEmptyField("id_target_frequency_num_periods", "'Number of target periods'");
+        }
+    }
+    $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
+        show_hide_frequency_fields();
+    });
+
+    var validation_msgs = {};
+
+    function validate_baseline() {
+        var baseline = $("#id_baseline");
+        var indicator_form = $("#indicator_update_form")
+        var sbmt = $("input[type=submit]", indicator_form);
+
+        if ($.isNumeric(baseline.val())) {
+            $("#div_id_baseline").removeClass('has-error');
+            sbmt.attr("disabled", false);
+            delete validation_msgs['baseline'];
+            return true;
+        } else {
+            $("#div_id_baseline").addClass('has-error');
+            sbmt.attr("disabled", true);
+            validation_msgs['baseline'] = 'Baseline field must have a numeric value';
+            return false;
+        }
+    }
+
+    function validate_loptarget() {
+        var lop = $("#id_lop_target");
         var indicator_form = $("#indicator_update_form")
         var sbmt = $("input[type=submit]", indicator_form);
 
         if ($.isNumeric(lop.val())) {
             $("#div_id_lop_target").removeClass('has-error');
             sbmt.attr("disabled", false);
+            delete validation_msgs['lop_target'];
+            return true;
         } else {
             $("#div_id_lop_target").addClass('has-error');
             sbmt.attr("disabled", true);
+            validation_msgs['lop_target'] = 'Lop Target field must have a numeric value';
+            return false;
         }
+    }
+
+    function validateForEmptyField(fieldName, fieldLabel) {
+        var indicator_form = $("#indicator_update_form")
+        var sbmt = $("input[type=submit]", indicator_form);
+        if ($.isEmptyObject($("#" + fieldName).val())) {
+            $("#div_" + fieldName).addClass('has-error');
+            sbmt.attr("disabled", true);
+            validation_msgs[fieldName] = fieldLabel + ' field is required';
+            return false;
+        } else {
+            $("#div_" + fieldName).removeClass('has-error');
+            sbmt.attr("disabled", false);
+            delete validation_msgs[fieldName];
+            return true;
+        }
+    }
+
+    function validateNumPeriods() {
+        var numPeriodsField = $("#id_target_frequency_num_periods");
+        if (numPeriodsField.val() > 12) {
+            $("#div_id_target_frequency_num_periods").addClass('has-error');
+            validation_msgs['numPeriods'] = "You can start with up to 12 targets and add more later.";
+            return false;
+        } else if (!numPeriodsField.val()) {
+            $("#div_id_target_frequency_num_periods").addClass('has-error');
+            validation_msgs['numPeriods'] = "'Number of target periods' is a required field.";
+            return false;
+        } else {
+            $("#div_id_target_frequency_num_periods").removeClass('has-error');
+            delete validation_msgs['numPeriods'];
+            return true;
+        }
+    }
+
+    function showValidations(messagesDiv) {
+        var msg = '';
+        $.each(validation_msgs, function(k,v) {
+            msg += '- ' + v + '<br>';
+        });
+        $(messagesDiv).empty();
+        if (!jQuery.isEmptyObject(validation_msgs)) {
+            createAlert('danger', msg, false, messagesDiv);
+        }
+        validation_msgs = {};
+    }
+
+    function validateForm() {
+        var validations = true;
+        if  (validate_baseline() == false ) {
+            validations = false
+        }
+        if (validate_loptarget() == false ) {
+            validations = false;
+        }
+        if (validateForEmptyField("id_unit_of_measure", "Unit of Measure") == false ) {
+            validations = false;
+        }
+        if ($("#id_target_frequency_custom").is(":visible") && validateForEmptyField("id_target_frequency_custom", "'First event name'") == false) {
+            validations = false;
+        }
+        if ($("#id_target_frequency_start").is(":visible") && validateForEmptyField("id_target_frequency_start", "'First target period begins'") == false) {
+            validations = false;
+        }
+
+        /*
+        if ($("#id_target_frequency_num_periods").is(":visible") && validateForEmptyField("id_target_frequency_num_periods", "'Number of target periods'") == false) {
+            validations = false;
+        }
+        */
+        if (validateNumPeriods() == false) {
+            validations = false;
+        }
+        return validations;
+    }
+
+
+    $("#indicator_modal_content").on("change", "#indicator_update_form", function() {
+        validateForm()
+        showValidations("#modalmessages");
+    });
+
+    $("#indicator_form").on("change", "#indicator_update_form", function() {
+        validateForm()
+        showValidations("#alerts");
+    });
+
+    $("#indicator_modal_content, #indicator_form").on("focus", "#indicator_update_form", function() {
+        validateForm();
+    });
+
+
+    /*
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_lop_target", function(e){
+        validate_loptarget();
     });
 
     $("#indicator_modal_content, #indicator_form").on("input", "#id_baseline", function(e){
-        var lop = $(this);
-        var indicator_form = $("#indicator_update_form")
-        var sbmt = $("input[type=submit]", indicator_form);
-
-        if ($.isNumeric(lop.val())) {
-            $("#div_id_baseline").removeClass('has-error');
-            sbmt.attr("disabled", false);
-        } else {
-            $("#div_id_baseline").addClass('has-error');
-            sbmt.attr("disabled", true);
-        }
+        validate_baseline();
     });
+
+
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_target_frequency_custom", function(e){
+        validateForEmptyField("id_target_frequency_custom", "'First event name'");
+    });
+
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_target_frequency_start", function(e){
+        validateForEmptyField("id_target_frequency_start", "'First target period begins'");
+    });
+
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_target_frequency_num_periods", function(e){
+        validateForEmptyField("id_target_frequency_num_periods", "'Number of target periods'");
+    });
+    */
+
 </script>
