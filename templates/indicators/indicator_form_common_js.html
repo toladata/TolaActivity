@@ -218,6 +218,23 @@
         }
     }
 
+    function validateNumPeriods() {
+        var numPeriodsField = $("#id_target_frequency_num_periods");
+        if (numPeriodsField.val() > 12) {
+            $("#div_id_target_frequency_num_periods").addClass('has-error');
+            validation_msgs['numPeriods'] = "You can start with up to 12 targets and add more later.";
+            return false;
+        } else if (!numPeriodsField.val()) {
+            $("#div_id_target_frequency_num_periods").addClass('has-error');
+            validation_msgs['numPeriods'] = "'Number of target periods' is a required field.";
+            return false;
+        } else {
+            $("#div_id_target_frequency_num_periods").removeClass('has-error');
+            delete validation_msgs['numPeriods'];
+            return true;
+        }
+    }
+
     function showValidations(messagesDiv) {
         var msg = '';
         $.each(validation_msgs, function(k,v) {
@@ -247,7 +264,13 @@
         if ($("#id_target_frequency_start").is(":visible") && validateForEmptyField("id_target_frequency_start", "'First target period begins'") == false) {
             validations = false;
         }
+
+        /*
         if ($("#id_target_frequency_num_periods").is(":visible") && validateForEmptyField("id_target_frequency_num_periods", "'Number of target periods'") == false) {
+            validations = false;
+        }
+        */
+        if (validateNumPeriods() == false) {
             validations = false;
         }
         return validations;
