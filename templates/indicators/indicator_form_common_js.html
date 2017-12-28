@@ -138,26 +138,22 @@
             $("#id_target_frequency_start").val('');
             // $("#id_target_frequency_start").prop('required', false);
             $("#id_target_frequency_custom").val('');
-            // $("#id_target_frequency_custom").prop('required', false);
 
         } else if (selected_option == 'Event') {
             $("#div_id_target_frequency_start").hide();
             $("#id_target_frequency_start").val('');
-            // $("#id_target_frequency_start").prop('required', false);
             $("#div_id_target_frequency_custom").show();
             $("#div_id_target_frequency_num_periods").show();
-
-            // validateForEmptyField("id_target_frequency_custom", "'First event name'");
-            // validateForEmptyField("id_target_frequency_num_periods", "'Number of target periods'");
         } else {
             $("#div_id_target_frequency_start").show();
             $("#div_id_target_frequency_num_periods").show();
             $("#div_id_target_frequency_custom").hide();
             $("#id_target_frequency_custom").val('');
-            // $("#id_target_frequency_custom").prop('required', false);
-
-            // validateForEmptyField("id_target_frequency_start", "'First target period begins'");
-            // validateForEmptyField("id_target_frequency_num_periods", "'Number of target periods'");
+        }
+        if (selected_option != '---------') {
+            $("#id_target_frequency option:not(:selected)").attr("disabled", true);
+        } else {
+            $("#id_target_frequency").attr("disabled", false);
         }
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
@@ -171,16 +167,21 @@
         var indicator_form = $("#indicator_update_form")
         var sbmt = $("input[type=submit]", indicator_form);
 
-        if ($.isNumeric(baseline.val())) {
-            $("#div_id_baseline").removeClass('has-error');
-            sbmt.attr("disabled", false);
-            delete validation_msgs['baseline'];
-            return true;
-        } else {
+        if (!baseline.val()) {
             $("#div_id_baseline").addClass('has-error');
+            $("#hint_id_baseline").text("Please complete this field. An indicator can have a baseline value of zero.");
             sbmt.attr("disabled", true);
-            validation_msgs['baseline'] = 'Baseline field must have a numeric value';
             return false;
+        } else if (!$.isNumeric(baseline.val())) {
+            $("#div_id_baseline").addClass('has-error');
+            $("#hint_id_baseline").text("Please enter a number.");
+            sbmt.attr("disabled", true);
+            return false;
+        } else {
+            $("#div_id_baseline").removeClass('has-error');
+            $("#hint_id_baseline").text(" ");
+            sbmt.attr("disabled", false);
+            return true;
         }
     }
 
@@ -189,16 +190,21 @@
         var indicator_form = $("#indicator_update_form")
         var sbmt = $("input[type=submit]", indicator_form);
 
-        if ($.isNumeric(lop.val())) {
-            $("#div_id_lop_target").removeClass('has-error');
-            sbmt.attr("disabled", false);
-            delete validation_msgs['lop_target'];
-            return true;
-        } else {
+        if (!lop.val()) {
             $("#div_id_lop_target").addClass('has-error');
+            $("#hint_id_lop_target").text("Please complete this field.");
             sbmt.attr("disabled", true);
-            validation_msgs['lop_target'] = 'Lop Target field must have a numeric value';
             return false;
+        } else if (!$.isNumeric(lop.val())) {
+            $("#div_id_lop_target").addClass('has-error');
+            $("#hint_id_lop_target").text("Please enter a number");
+            sbmt.attr("disabled", true);
+            return false;
+        } else {
+            $("#div_id_lop_target").removeClass('has-error');
+            $("#hint_id_lop_target").text(" ");
+            sbmt.attr("disabled", false);
+            return true;
         }
     }
 
@@ -207,38 +213,46 @@
         var sbmt = $("input[type=submit]", indicator_form);
         if ($.isEmptyObject($("#" + fieldName).val())) {
             $("#div_" + fieldName).addClass('has-error');
+            $("#hint_" + fieldName).text("Please complete this field.");
             sbmt.attr("disabled", true);
-            validation_msgs[fieldName] = fieldLabel + ' field is required';
             return false;
         } else {
             $("#div_" + fieldName).removeClass('has-error');
+            $("#hint_" + fieldName).text(" ");
             sbmt.attr("disabled", false);
-            delete validation_msgs[fieldName];
             return true;
         }
     }
 
     function validateNumPeriods() {
+
+        var indicator_form = $("#indicator_update_form")
+        var sbmt = $("input[type=submit]", indicator_form);
         var numPeriodsField = $("#id_target_frequency_num_periods");
-        if (numPeriodsField.val() > 12) {
-            $("#div_id_target_frequency_num_periods").addClass('has-error');
-            validation_msgs['numPeriods'] = "You can start with up to 12 targets and add more later.";
-            return false;
-        } else if (!numPeriodsField.val()) {
-            $("#div_id_target_frequency_num_periods").addClass('has-error');
-            validation_msgs['numPeriods'] = "'Number of target periods' is a required field.";
-            return false;
-        } else {
-            $("#div_id_target_frequency_num_periods").removeClass('has-error');
-            delete validation_msgs['numPeriods'];
-            return true;
+        if (numPeriodsField.is(":visible")) {
+            if (numPeriodsField.val() > 12) {
+                $("#div_id_target_frequency_num_periods").addClass('has-error');
+                $("#hint_id_target_frequency_num_periods").text("You can start with up to 12 targets and add more later.");
+                sbmt.attr("disabled", true);
+                return false;
+            } else if (!numPeriodsField.val()) {
+                $("#div_id_target_frequency_num_periods").addClass('has-error');
+                $("#hint_id_target_frequency_num_periods").text("Please complete this field.");
+                sbmt.attr("disabled", true);
+                return false;
+            } else {
+                $("#div_id_target_frequency_num_periods").removeClass('has-error');
+                $("#hint_id_target_frequency_num_periods").text(" ");
+                sbmt.attr("disabled", false);
+                return true;
+            }
         }
     }
 
     function showValidations(messagesDiv) {
         var msg = '';
         $.each(validation_msgs, function(k,v) {
-            msg += '- ' + v + '<br>';
+            msg += v + '<br>';
         });
         $(messagesDiv).empty();
         if (!jQuery.isEmptyObject(validation_msgs)) {
@@ -265,17 +279,22 @@
             validations = false;
         }
 
-        /*
-        if ($("#id_target_frequency_num_periods").is(":visible") && validateForEmptyField("id_target_frequency_num_periods", "'Number of target periods'") == false) {
-            validations = false;
-        }
-        */
         if (validateNumPeriods() == false) {
             validations = false;
+        }
+        if (validations == false) {
+            validation_msgs['target'] = 'Please complete all required fields in the Targets tab.';
+        } else {
+            delete validation_msgs['target'];
         }
         return validations;
     }
 
+    $("#indicator_modal_content, #indicator_form").on("keypress", "input[type=number]", function(e){
+        if (e.which == 69 || e.which == 101){ //69 = e | 101 = E
+            e.preventDefault();
+        }
+    });
 
     $("#indicator_modal_content").on("change", "#indicator_update_form", function() {
         validateForm()
