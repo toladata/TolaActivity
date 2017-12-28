@@ -150,10 +150,9 @@
             $("#div_id_target_frequency_custom").hide();
             $("#id_target_frequency_custom").val('');
         }
-        if (selected_option != '---------') {
+
+        if ( $('#id_target_frequency').is('[readonly="readonly"]') ) {
             $("#id_target_frequency option:not(:selected)").attr("disabled", true);
-        } else {
-            $("#id_target_frequency").attr("disabled", false);
         }
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
