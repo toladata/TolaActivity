@@ -293,34 +293,45 @@
     }
 
     function validateForm() {
-        var validations = true;
+        var validationsTargetTab = true;
+        var validationsPerformanceTab = true;
         if  (validate_baseline() == false ) {
-            validations = false
+            validationsTargetTab = false
         }
         if (validate_loptarget() == false ) {
-            validations = false;
+            validationsTargetTab = false;
         }
         if (validateForEmptyField("id_unit_of_measure") == false ) {
-            validations = false;
+            validationsTargetTab = false;
         }
         if ($("#id_target_frequency_custom").is(":visible") && validateForEmptyField("id_target_frequency_custom") == false) {
-            validations = false;
+            validationsTargetTab = false;
         }
         if ($("#id_target_frequency_start").is(":visible") && validateForEmptyField("id_target_frequency_start") == false) {
-            validations = false;
+            validationsTargetTab = false;
         }
         if (validateForEmptyField("id_target_frequency") == false) {
-            validations = false;
+            validationsTargetTab = false;
         }
         if (validateNumPeriods() == false) {
-            validations = false;
+            validationsTargetTab = false;
         }
-        if (validations == false) {
+        if (validationsTargetTab == false) {
             validation_msgs['target'] = 'Please complete all required fields in the Targets tab.';
         } else {
             delete validation_msgs['target'];
         }
-        return validations;
+
+        /* validate fields from the performance tab */
+        if (validateForEmptyField("id_name") == false) {
+            validationsPerformanceTab = false
+        }
+        if (validationsPerformanceTab == false) {
+            validation_msgs['performance'] = 'Please complete all required fields in the Performance tab.';
+        } else {
+            delete validation_msgs['performance'];
+        }
+        return (validationsTargetTab && validationsPerformanceTab) ? true: false;
     }
 
     $("#indicator_modal_content, #indicator_form").on("keypress", "input[type=number]", function(e){
@@ -365,13 +376,17 @@
         validateForEmptyField("id_target_frequency_custom");
     });
 
-    $("#indicator_modal_content, #indicator_form").on("blur, input", "#id_target_frequency_start", function(e){
+    $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_start", function(e){
         // validateForEmptyField("id_target_frequency_start");
         validatePeriodStartField();
     });
 
     $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_num_periods", function(e){
         validateNumPeriods();
+    });
+
+    $("#indicator_modal_content, #indicator_form").on("blur", "#id_name", function(e){
+        validateForEmptyField("id_name");
     });
 
 

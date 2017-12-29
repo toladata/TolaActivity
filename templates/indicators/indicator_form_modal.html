@@ -1,5 +1,5 @@
 {% load crispy_forms_tags %}
-<form action="{% url 'indicator_update' indicator.id %}" id="indicator_update_form" class="form-horizontal" method="post">
+<form action="{% url 'indicator_update' indicator.id %}" id="indicator_update_form" class="form-horizontal" method="post" novalidate>
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <span id = "modalmessages"></span>
