@@ -384,7 +384,7 @@
         validateForEmptyField("id_target_frequency_custom");
     });
 
-    $("#indicator_modal_content, #indicator_form").on("blur change", "#id_target_frequency_start", function(e){
+    $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency_start", function(e){
         // validateForEmptyField("id_target_frequency_start");
         validatePeriodStartField();
     });
