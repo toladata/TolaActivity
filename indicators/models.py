@@ -279,7 +279,7 @@ class Indicator(models.Model):
     baseline = models.CharField(verbose_name="Baseline*", max_length=255, null=True, blank=True, help_text=" ")
     lop_target = models.CharField(verbose_name="Life of Program (LoP)*",max_length=255, null=True, blank=True, help_text=" ")
     rationale_for_target = models.TextField(max_length=255, null=True, blank=True, help_text=" ")
-    target_frequency = models.IntegerField(blank=False, null=True, choices=TARGET_FREQUENCIES, verbose_name="Target frequency", help_text=" ")
+    target_frequency = models.IntegerField(blank=False, null=True, choices=TARGET_FREQUENCIES, verbose_name="Target frequency*", help_text=" ")
     target_frequency_custom = models.CharField(null=True, blank=True, max_length=100, verbose_name="First event name*", help_text=" ")
     target_frequency_start = models.DateField(blank=True, null=True, auto_now=False, auto_now_add=False, verbose_name="First target period begins*", help_text=" ")
     target_frequency_num_periods = models.IntegerField(blank=True, null=True, verbose_name="Number of target periods*", help_text=" ")
