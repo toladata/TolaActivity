@@ -46,7 +46,7 @@ class IndicatorForm(forms.ModelForm):
         self.helper.form_action = reverse_lazy('indicator_update', kwargs={'pk': indicator.id})
         self.helper.form_id = 'indicator_update_form'
         self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-3'
+        self.helper.label_class = 'col-sm-4'
         self.helper.field_class = 'col-sm-6'
         self.helper.form_error_title = 'Form Errors'
         self.helper.error_text_inline = True
@@ -160,7 +160,7 @@ class IndicatorForm(forms.ModelForm):
         self.fields['program'].widget.attrs['readonly'] = "readonly"
         self.fields['target_frequency_start'].widget = DatePicker.DateInput()
         self.fields['target_frequency_start'].help_text = 'This field is required'
-        self.fields['target_frequency'].required = False
+        # self.fields['target_frequency'].required = False
         if self.instance.target_frequency:
             self.fields['target_frequency'].widget.attrs['readonly'] = "readonly"
             #self.fields['target_frequency'].widget.attrs['disabled'] = "disabled"
