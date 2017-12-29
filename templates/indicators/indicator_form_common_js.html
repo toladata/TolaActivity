@@ -128,6 +128,9 @@
             var jsondata = $.parseJSON(data);
             //var item = data;
             var indicator = jsondata[0][0];
+            if (indicator['fields']['target_frequency']) {
+                $("#id_target_frequency option:not(:selected)").attr("disabled", true);
+            }
             var pts = jsondata[1];
 
             $("#id_achieved").val(indicator['fields']['achieved']);
@@ -316,6 +319,11 @@
         if (validateNumPeriods() == false) {
             validationsTargetTab = false;
         }
+
+        if ($("#id_target_frequency_start").is(":visible") && validatePeriodStartField() == false ) {
+            validationsTargetTab = false;
+        }
+
         if (validationsTargetTab == false) {
             validation_msgs['target'] = 'Please complete all required fields in the Targets tab.';
         } else {
@@ -376,7 +384,7 @@
         validateForEmptyField("id_target_frequency_custom");
     });
 
-    $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_start", function(e){
+    $("#indicator_modal_content, #indicator_form").on("blur change", "#id_target_frequency_start", function(e){
         // validateForEmptyField("id_target_frequency_start");
         validatePeriodStartField();
     });
