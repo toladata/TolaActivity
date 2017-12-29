@@ -86,9 +86,9 @@
         var form_data = $(form).serialize();
         var periodic_targets = [];
         $('#periodic_targets_table tr').each(function () {
-            var $form = $(form);
+            var $this = $(this);
             var values = [];
-            $form.find('input[type=text]').each(function (i, input) {
+            $this.find('input[type=text]').each(function (i, input) {
                 if (i == 0) {
                     values.push($(input).attr('name').split('-')[1]);
                 }
