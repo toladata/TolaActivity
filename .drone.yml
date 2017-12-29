@@ -21,6 +21,7 @@ pipeline:
     repo: registry.tola.io/toladata/tolaactivity
     file: Dockerfile
     tags:
+      - ${DRONE_COMMIT_BRANCH}
       - ${DRONE_COMMIT_SHA}
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
     when:
