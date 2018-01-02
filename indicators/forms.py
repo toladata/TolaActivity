@@ -71,6 +71,15 @@ class IndicatorForm(forms.ModelForm):
                              'unit_of_measure', 'lop_target', 'rationale_for_target', 'baseline', 'target_frequency', 'target_frequency_start', 'target_frequency_custom', 'target_frequency_num_periods'
                              ),
                     Fieldset('',
+                        HTML("""
+                            <div id="div_id_create_targets_btn" class="form-group">
+                                <div class="controls col-sm-offset-4 col-sm-2">
+                                    <button id="create_targets_btn" class="btn btn-primary">Create targets</button>
+                                </div>
+                            </div>
+                        """)
+                    ),
+                    Fieldset('',
                         HTML("""<br/>
                             <div class='panel panel-default'>
                                 <div class='panel-heading'>

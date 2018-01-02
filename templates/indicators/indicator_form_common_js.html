@@ -21,7 +21,16 @@
 
     $("#indicator_modal_div").on('shown.bs.tab', function() {
         show_hide_frequency_fields();
-        $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
+        $('.datepicker').datepicker({
+            dateFormat: "yy-mm-dd",
+            onClose: function () {
+                this.focus();
+            },
+            onSelect: function () {
+                // The "this" keyword refers to the input (in this case: #someinput)
+                this.focus();
+            }
+        });
     })
 
 
@@ -130,6 +139,7 @@
             var indicator = jsondata[0][0];
             if (indicator['fields']['target_frequency']) {
                 $("#id_target_frequency option:not(:selected)").attr("disabled", true);
+                $("#div_id_create_targets_btn").show();
             }
             var pts = jsondata[1];
 
@@ -147,6 +157,7 @@
 
 
     function show_hide_frequency_fields() {
+        $("#div_id_create_targets_btn").hide();
         var selected_option = $("#id_target_frequency").find("option:selected").text();
         if (selected_option == 'Life of Program (LoP) only' ||
             selected_option == 'Midline and endline' ||
@@ -172,6 +183,7 @@
 
         if ( $('#id_target_frequency').is('[readonly="readonly"]') ) {
             $("#id_target_frequency option:not(:selected)").attr("disabled", true);
+            $("#div_id_create_targets_btn").show();
         }
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
