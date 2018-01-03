@@ -110,7 +110,11 @@
                 periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
             }
         });
-        form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
+        if ($.isEmptyObject(periodic_targets)) {
+            form_data += "&periodic_targets=generateTargets";
+        } else {
+            form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
+        }
         //console.log(JSON.stringify(periodic_targets));
 
 
