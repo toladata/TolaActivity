@@ -18,5 +18,4 @@ psycopg2>=2.7,<=2.8
 django-guardian==1.4.9
 django-cors-headers==2.1.0
 gunicorn==19.7.1
-django-oauth-toolkit==1.0.0
 -r requirements-pkg.txt

@@ -43,8 +43,7 @@ class Command(BaseCommand):
     should be empty. Otherwise the command will exit with an error and no
     new data will be added to the database.
     """
-    APPS = ('workflow', 'formlibrary', 'customdashboard', 'reports', 'gladmap',
-            'search')
+    APPS = ('workflow', 'formlibrary', 'search')
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)

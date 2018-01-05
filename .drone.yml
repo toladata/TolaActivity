@@ -22,6 +22,7 @@ pipeline:
     file: Dockerfile
     tags:
       - ${DRONE_COMMIT_SHA}
+      - ${DRONE_COMMIT_BRANCH}
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
     when:
       event: [push, tag]

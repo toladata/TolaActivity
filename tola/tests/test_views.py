@@ -141,7 +141,7 @@ class RegisterViewPostTest(TestCase):
                    'This field is required.</strong></p>'.format(field))
             self.assertIn(msg, template_content)
 
-    @patch('tola.views.requests')
+    @patch('tola.util.requests')
     def test_post_success_with_full_name(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
 
@@ -173,7 +173,7 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
-    @patch('tola.views.requests')
+    @patch('tola.util.requests')
     def test_post_success_with_first_name(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
 
@@ -203,7 +203,7 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
-    @patch('tola.views.requests')
+    @patch('tola.util.requests')
     def test_post_success_with_default_org(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
         factories.Organization(name=settings.DEFAULT_ORG)
@@ -238,85 +238,6 @@ class RegisterViewPostTest(TestCase):
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
         os.environ['APP_BRANCH'] = ''
-
-
-class RegisterViewTest(TestCase):
-    def setUp(self):
-        factories.Group()
-        self.tola_user = factories.TolaUser(user=factories.User())
-        self.factory = RequestFactory()
-        logging.disable(logging.ERROR)
-
-    def tearDown(self):
-        logging.disable(logging.NOTSET)
-
-    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
-    @override_settings(TOLA_TRACK_TOKEN='TheToken')
-    @patch('tola.views.requests')
-    def test_response_201_create(self, mock_requests):
-        external_response = {
-            'url': 'http://testserver/api/tolauser/2',
-            'tola_user_uuid': 1234567890,
-            'name': 'John Lennon',
-        }
-        mock_requests.post.return_value = Mock(
-            status_code=201, content=json.dumps(external_response))
-
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
-
-        user = factories.User(first_name='John', last_name='Lennon')
-        tolauser = factories.TolaUser(user=user, tola_user_uuid=1234567890)
-        data = {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'username': user.username,
-        }
-        request = HttpRequest()
-        request.POST.update(data)
-
-        response = views.RegisterView().register_in_track(request, tolauser)
-        result = json.loads(response.content)
-
-        self.assertEqual(result['tola_user_uuid'], 1234567890)
-        mock_requests.post.assert_called_once_with(
-            'https://tolatrack.com/accounts/register/',
-            data={'username': 'johnlennon',
-                  'first_name': 'John',
-                  'last_name': 'Lennon',
-                  'tola_user_uuid': tolauser.tola_user_uuid,
-                  'email': 'johnlennon@testenv.com'},
-            headers={'Authorization': 'Token TheToken'})
-
-    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
-    @override_settings(TOLA_TRACK_TOKEN='TheToken')
-    @patch('tola.views.requests')
-    def test_response_403_forbidden(self, mock_requests):
-        mock_requests.post.return_value = Mock(status_code=403)
-
-        user = factories.User(first_name='John', last_name='Lennon')
-        tolauser = factories.TolaUser(user=user)
-        data = {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'username': user.username,
-        }
-        request = HttpRequest()
-        request.POST.update(data)
-        response = views.RegisterView().register_in_track(request, tolauser)
-
-        self.assertTrue(isinstance(response.content, Mock))
-        mock_requests.post.assert_called_once_with(
-            'https://tolatrack.com/accounts/register/',
-            data={'username': 'johnlennon',
-                  'first_name': 'John',
-                  'last_name': 'Lennon',
-                  'tola_user_uuid': tolauser.tola_user_uuid,
-                  'email': 'johnlennon@testenv.com'},
-            headers={'Authorization': 'Token TheToken'})
 
 
 class TolaTrackSiloProxyTest(TestCase):

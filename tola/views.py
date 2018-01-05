@@ -1,7 +1,7 @@
 import json
 from urlparse import urljoin
 import warnings
-import logging
+import requests
 
 from django.conf import settings
 from django.contrib import messages
@@ -16,8 +16,8 @@ from django.views.generic.base import TemplateView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
-import requests
 
+from tola.util import register_in_track
 from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
     CountrySerializer
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
@@ -88,7 +88,9 @@ class RegisterView(View):
             tolauser.organization = form_tolauser.cleaned_data.get('org')
             tolauser.name = ' '.join([user.first_name, user.last_name]).strip()
             tolauser.save()
-            self.register_in_track(request, tolauser)
+            data = request.POST.copy().dict()
+            data.update({'tola_user_uuid': tolauser.tola_user_uuid})
+            register_in_track(data, tolauser)
             messages.error(
                 request,
                 'Thank you, You have been registered as a new user.',
@@ -100,27 +102,6 @@ class RegisterView(View):
             'form_tolauser': form_tolauser,
         })
         return render(request, self.template_name, context)
-
-    def register_in_track(self, request, tolauser):
-        headers = {
-            'Authorization': 'Token {}'.format(settings.TOLA_TRACK_TOKEN),
-        }
-
-        data = request.POST.copy().dict()
-        data.update({'tola_user_uuid': tolauser.tola_user_uuid})
-        url_subpath = 'accounts/register/'
-        url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
-
-        response = requests.post(url, data=data, headers=headers)
-        logger = logging.getLogger(__name__)
-        if response.status_code == 201:
-            logger.info("The TolaUser %s (id=%s) was created successfully in "
-                        "Track." % (tolauser.name, tolauser.id))
-        elif response.status_code in [400, 403]:
-            logger.warning("The TolaUser %s (id=%s) could not be created "
-                           "successfully in Track." %
-                           (tolauser.name, tolauser.id))
-        return response
 
 
 def profile(request):
