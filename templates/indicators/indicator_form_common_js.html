@@ -15,6 +15,29 @@
         return new Date(dateVal) === 'Invalid Date' ? false : true;
     }
 
+    function formatDate(dateString) {
+        try {
+            var dateArray = dateString.split('-');
+            var months = new Array();
+            months[1] = "Jan";
+            months[2] = "Feb";
+            months[3] = "Mar";
+            months[4] = "Apr";
+            months[5] = "May";
+            months[6] = "Jun";
+            months[7] = "Jul";
+            months[8] = "Aug";
+            months[9] = "Sep";
+            months[10] = "Oct";
+            months[11] = "Nov";
+            months[12] = "Dec";
+            return months[parseInt(dateArray[1])] + ' ' + dateArray[2] + ', ' + dateArray[0];
+        } catch (err) {
+            console.log(err);
+            return dateString;
+        }
+    }
+
     $( document ).ready(function() {
         show_hide_frequency_fields();
     })
@@ -98,10 +121,12 @@
             var $this = $(this);
             var values = [];
             $this.find('input[type=text]').each(function (i, input) {
+                console.log(i, input);
                 if (i == 0) {
                     values.push($(input).attr('name').split('-')[1]);
                 }
                 values.push($(input).val());
+                console.log(values);
             });
             if(values.length > 0) {
                 if ( !$.isNumeric(values[2]) || values[1] == '') {
@@ -110,7 +135,9 @@
                 periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
             }
         });
+        console.log(periodic_targets);
         if ($.isEmptyObject(periodic_targets)) {
+            console.log('about to generate targets');
             form_data += "&periodic_targets=generateTargets";
         } else {
             form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
@@ -146,16 +173,40 @@
                 $("#div_id_create_targets_btn").show();
             }
             var pts = jsondata[1];
+            var generateTargets = jsondata[2];
 
             $("#id_achieved").val(indicator['fields']['achieved']);
             $("#periodic_targets_table").find("tr:gt(0)").remove();
 
-            $.each(pts, function(i, pt) {
+            if (generateTargets) {
+                $.each(generateTargets, function(i, pt){
+                    var markup = `
+                        <tr>
+                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: center;">
+                                {% if forloop.last %}
+                                    <a href="/indicators/periodic_target_delete/${pt.pk}/" id="deleteLastPT" class="detelebtn" style="color:red; display:none">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                {% endif %}
+                                <strong>${pt.name }</strong><br />
+                                <small>${formatDate(pt.start_date)} - ${formatDate(pt.end_date)}</small>
+                            </td>
+                            <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: center;">
+                                <input type="number" name="${pt.period}" placeholder="Enter target" value="" class="form-control" style="width: 50%;">
+                            </td>
+                        </tr>
+                    `;
+                    // console.log(markup);
+                    $("#periodic_targets_table tbody").append(markup);
+                });
+            } else {
+                $.each(pts, function(i, pt) {
+                    var markup = '<tr id=' + pt.pk + '"><td><input type="text" name="period-' + pt.pk + '" value="' + pt.fields.period +'" class="textinput textInput form-control"></td><td><input type="text" name="target-' + pt.pk + '" value="' + pt.fields.target +'" class="textinput textInput form-control"></td><td style="vertical-align:middle"> <a href="/indicators/periodic_target_delete/' + pt.pk + '/" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a></td></tr>';
 
-                var markup = '<tr id=' + pt.pk + '"><td><input type="text" name="period-' + pt.pk + '" value="' + pt.fields.period +'" class="textinput textInput form-control"></td><td><input type="text" name="target-' + pt.pk + '" value="' + pt.fields.target +'" class="textinput textInput form-control"></td><td style="vertical-align:middle"> <a href="/indicators/periodic_target_delete/' + pt.pk + '/" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a></td></tr>';
+                    $("#periodic_targets_table tbody").append(markup);
+                });
+            }
 
-                $("#periodic_targets_table tbody").append(markup);
-            });
         });
     }
 

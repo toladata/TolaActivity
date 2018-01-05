@@ -80,32 +80,35 @@ class IndicatorForm(forms.ModelForm):
                         """)
                     ),
                     Fieldset('',
-                        HTML("""<br/>
-                            <div class='panel panel-default'>
-                                <div class='panel-heading'>
-                                    Periodic Targets
-                                    <a class="pull-right" href="#" onclick="addPeriodicTarget()";>Add new Periodic Target</a>
+                        HTML("""
+                            <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
+                                <div class="row">
+                                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
+                                        <h4>Periodic Targets</h4>
+                                    </div>
                                 </div>
-                                <table class="table" id="periodic_targets_table">
-                                    <thead>
-                                        <tr>
-                                            <th>Period</th>
-                                            <th>Target</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for item in periodic_targets %}
-                                            <tr id="{{item.id}}">
-                                                <td><input type="text" name="period-{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
-                                                <td><input type="text" name="target-{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
-                                                <td style="vertical-align:middle">
-                                                <a href="{% url 'pt_delete' item.id %}" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                <div class="row">
+                                    <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:20px;">
+                                        <table class="table table-condensed" id="periodic_targets_table">
+                                            <tbody>
+                                                {% for pt in periodic_targets %}
+                                                    <tr id="{{pt.pk}}">
+                                                        <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: center;">
+                                                            {% if forloop.last %}
+                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; display:none"><span class="glyphicon glyphicon-trash"></span></a>
+                                                            {% endif %}
+                                                            <strong>{{ pt.period }}</strong><br />
+                                                            <small>{{ pt.start_date }} - {{ pt.end_date }}</small>
+                                                        </td>
+                                                        <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: center;">
+                                                            <input type="number" name = "{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         """),
                     ),
