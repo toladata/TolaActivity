@@ -366,7 +366,8 @@ class IndicatorUpdate(UpdateView):
                 if pk == 0: pk = None
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
-                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.now() })
+                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), \
+                            'start_date': pt.get('start_date', None), 'end_date': pt.get('end_date', None), 'edit_date': timezone.now() })
                 #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
                     periodic_target.create_date = timezone.now()

@@ -124,18 +124,14 @@
             var $this = $(this);
             var values = [];
             $this.find('input[type=number]').each(function (i, input) {
-                try {
-                    values.push($(input).attr('id').split('-')[1]);
-                } catch (err) {
-                    console.log(err);
-                    values.push('');
-                }
-
+                values.push($(input).attr('id').split('-')[1]);
                 values.push($(input).attr('name'));
                 values.push($(input).val());
+                values.push($(input).data("startDate"));
+                values.push($(input).data("endDate"));
             });
             if(values.length > 0) {
-                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
+                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2], 'start_date': values[3], 'end_date': values[4] } );
             }
         });
         if ($.isEmptyObject(periodic_targets)) {
@@ -144,7 +140,7 @@
         } else {
             console.log('saving periodic targets');
             // console.log(JSON.stringify(periodic_targets));
-            form_data += "&periodic_targets=" // + JSON.stringify(periodic_targets);
+            form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
         }
         //console.log(JSON.stringify(periodic_targets));
 
@@ -190,7 +186,7 @@
                                 <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} - ${formatDate(pt.end_date)}</small></div>
                             </td>
                             <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                <input type="number" name="${pt.name}" placeholder="Enter target" class="form-control" style="width: 50%;">
+                                <input type="number" id="pt-0" data-start-date="${pt.start_date}" data-end-date="${pt.end_date}" name="${pt.name}" placeholder="Enter target" class="form-control" style="width: 50%;">
                             </td>
                         </tr>
                     `;
@@ -205,7 +201,7 @@
                         var markup = `
                             <tr id="${pt.pk}">
                                 <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                    ${(isLastIteration) ? '<a href="/indicators/periodic_target_delete/'+ pt.pk +'/" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove"></span></a>' : ''}
+                                    ${(isLastIteration) ? '<a href="/indicators/periodic_target_delete/'+ pt.pk +'/" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove-circle"></span></a>' : ''}
                                 </td>
                                 <td style="padding:10px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                     <div style="line-height:1;"><strong>${pt.fields.period }</strong></div>
