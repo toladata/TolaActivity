@@ -225,6 +225,7 @@ class FundCodeSerializer(serializers.HyperlinkedModelSerializer):
 
 class DisaggregationTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
+    disaggregation_type = serializers.CharField(max_length=135)
 
     class Meta:
         model = DisaggregationType
