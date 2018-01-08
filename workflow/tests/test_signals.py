@@ -1,7 +1,7 @@
 import logging
 import os
 
-from django.test import TestCase
+from django.test import TestCase, tag
 
 import factories
 from tola import DEMO_BRANCH
@@ -9,6 +9,7 @@ from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import WorkflowTeam, ROLE_VIEW_ONLY
 
 
+@tag('pkg')
 class AddUsersToDefaultWorkflowLevel1Test(TestCase):
     def setUp(self):
         logging.disable(logging.ERROR)
