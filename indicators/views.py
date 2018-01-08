@@ -338,7 +338,8 @@ class IndicatorUpdate(UpdateView):
                 Indicator.QUARTERLY: lambda **params: {"name": "Quarter %s" % params.get('i'), \
                     "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*3))).strftime('%Y-%m-%d'), \
                     "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i')*3)))+ relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-                Indicator.MONTHLY: lambda **params: {"name": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%B"), \
+                Indicator.MONTHLY: lambda **params: {"name": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%B") \
+                    + " " + (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%Y"), \
                     "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
                     "end_date": ( (params.get('s') + relativedelta(months=+params.get('i' ))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
             }
@@ -380,9 +381,8 @@ class IndicatorUpdate(UpdateView):
             if generatedTargets:
                 generatedTargets = json.dumps(generatedTargets, cls=DjangoJSONEncoder)
             else:
-                generatedTargets = ""
-            print(".............................%s............................" % generatedTargets )
-            print(".............................%s............................" % pts )
+                generatedTargets = "[]"
+
             #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
             return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "]")
         else:

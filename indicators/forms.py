@@ -93,15 +93,17 @@ class IndicatorForm(forms.ModelForm):
                                             <tbody>
                                                 {% for pt in periodic_targets %}
                                                     <tr id="{{pt.pk}}">
-                                                        <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: center;">
+                                                        <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                                             {% if forloop.last %}
-                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; display:none"><span class="glyphicon glyphicon-trash"></span></a>
+                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove"></span></a>
                                                             {% endif %}
-                                                            <strong>{{ pt.period }}</strong><br />
-                                                            <small>{{ pt.start_date }} - {{ pt.end_date }}</small>
                                                         </td>
-                                                        <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: center;">
-                                                            <input type="number" name = "{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
+                                                        <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                            <strong>{{ pt.period }}</strong><br style="line-height: 1px;">
+                                                            <small>{{ pt.start_date }} - {{ pt.end_date}}</small>
+                                                        </td>
+                                                        <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                            <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
