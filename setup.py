@@ -3,20 +3,27 @@ import os
 from os.path import join, dirname, abspath
 from pkgutil import extend_path
 from setuptools import find_packages, setup
+from setuptools.command.install import install
 import shutil
-
-with open(join(os.path.dirname(__file__), 'README.md')) as readme:
-    README = readme.read()
 
 # Allow setup.py to be run from any path
 os.chdir(os.path.normpath(join(abspath(__file__), os.pardir)))
 
 
+class InstallCommand(install):
+    def run(self):
+        shutil.copy('__init__.py', '__init__.py.bak')
+        shutil.copy('__init__.lib.py', '__init__.py')
+        install.run(self)
+        shutil.move('__init__.py.bak', '__init__.py')
+
+
+with open(join(os.path.dirname(__file__), 'README.md')) as readme:
+    README = readme.read()
+
 def load_requirements():
     return open(join(dirname(__file__), 'requirements-pkg.txt')).readlines()
 
-shutil.copy('__init__.py', '__init__.py.bak')
-shutil.copy('__init__.lib.py', '__init__.py')
 
 setup(
     name='tola_activity',
@@ -58,6 +65,9 @@ setup(
         'workflow.models',
         'workflow.signals',
     ],
+    cmdclass={
+        'install': InstallCommand,
+    },
     description=('Workflow, visualizations and data services for managing NGO '
                  'projects and programs.'),
     url='https://github.com/toladata/TolaActivity',
@@ -65,5 +75,3 @@ setup(
     author=u'Rafael Muñoz Cárdenas',
     author_email='rafael@humanitec.com',
 )
-
-shutil.move('__init__.py.bak', '__init__.py')
