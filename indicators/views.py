@@ -398,7 +398,9 @@ class IndicatorUpdate(UpdateView):
             else:
                 generatedTargets = "[]"
             #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
-            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(self.get_context_data()['targets_sum']) + "]")
+            targets_sum = self.get_context_data().get('targets_sum')
+            if targets_sum == None: targets_sum = "0"
+            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(targets_sum) + "]")
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
         return self.render_to_response(self.get_context_data(form=form))
