@@ -190,6 +190,7 @@
             }
             var pts = jsondata[1];
             var generateTargets = jsondata[2];
+            var targets_sum = jsondata[3];
 
             $("#id_achieved").val(indicator['fields']['achieved']);
 
@@ -227,12 +228,26 @@
                                     <div style="line-height:0.8;"><small>${formatDate(pt.fields.start_date)} ${ pt.fields.start_date ? '-' : ''} ${formatDate(pt.fields.end_date)}</small></div>
                                 </td>
                                 <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                    <input type="number" id="pt-${pt.pk}" name="${pt.fields.period}" placeholder="Enter target" value="${pt.fields.target}" class="form-control" style="width: 50%;">
+                                    <div class="controls">
+                                        <input type="number" id="pt-${pt.pk}" name="${pt.fields.period}" placeholder="Enter target" value="${pt.fields.target}" class="form-control" style="width: 50%;">
+                                        <span id="hint_id_pt_${pt.pk}" style="margin:0px;" class="help-block"> </span>
+                                    </div>
                                 </td>
                             </tr>
                         `;
                         $("#periodic_targets_table tbody").append(markup);
                     });
+                    markup = `
+                        <tr id="pt_sum_targets">
+                            <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                <strong>Sum of targets</strong>
+                            </td>
+                            <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                <strong>${targets_sum}</strong>
+                            </td>
+                        </tr>
+                    `;
+                    $("#periodic_targets_table tbody").append(markup);
                 }
             }
         });
@@ -453,7 +468,6 @@
     });
 
     $("#indicator_modal_content").on("input", "input[type=number]", function(e){
-        console.log("something is happening........");
         if ($(this).attr('id').substr(0, 2) == "pt" ) {
             if ($(this).val()) {
                 $(this).parent().removeClass('has-error');

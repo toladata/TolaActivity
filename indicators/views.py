@@ -294,6 +294,7 @@ class IndicatorUpdate(UpdateView):
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
         context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
+        context['targets_sum'] = PeriodicTarget.objects.filter(indicator=getIndicator).aggregate(Sum('target'))['target__sum']
 
         #get external service data if any
         try:
@@ -396,9 +397,8 @@ class IndicatorUpdate(UpdateView):
                 generatedTargets = json.dumps(generatedTargets, cls=DjangoJSONEncoder)
             else:
                 generatedTargets = "[]"
-
             #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
-            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "]")
+            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(self.get_context_data()['targets_sum']) + "]")
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
         return self.render_to_response(self.get_context_data(form=form))

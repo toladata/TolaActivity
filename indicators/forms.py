@@ -38,6 +38,7 @@ class IndicatorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
+        #print(".............................%s............................" % kwargs.get('targets_sum', 'no targets sum found!!!!') )
         indicator = kwargs.get('instance', None)
         self.request = kwargs.pop('request')
         self.program = kwargs.pop('program')
@@ -89,7 +90,7 @@ class IndicatorForm(forms.ModelForm):
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
-                                        <table class="table table-condensed" id="periodic_targets_table">
+                                        <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
                                             <tbody>
                                                 {% for pt in periodic_targets %}
                                                     <tr id="{{pt.pk}}">
@@ -103,12 +104,33 @@ class IndicatorForm(forms.ModelForm):
                                                             <div style="line-height:0.8;"><small>{{ pt.start_date|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|default:'' }}</small></div>
                                                         </td>
                                                         <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                                            <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
+                                                            <div class="controls">
+                                                                <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
+                                                                <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
+                                                            </div>
                                                         </td>
                                                     </tr>
+                                                    {% if forloop.last %}
+                                                        <tr id="pt_sum_targets">
+                                                            <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                                                <strong>Sum of targets</strong>
+                                                            </td>
+                                                            <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                                                <strong>{{targets_sum}}</strong>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
                                                 {% endfor %}
                                             </tbody>
                                         </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
+                                        <strong>Life of Program (LoP) Target</strong>
+                                    </div>
+                                    <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
+                                        <strong>{{indicator.lop_target}}</strong>
                                     </div>
                                 </div>
                                 <div class="row">
