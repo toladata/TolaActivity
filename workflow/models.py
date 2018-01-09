@@ -324,6 +324,75 @@ class TolaBookmarks(models.Model):
         self.edit_date = timezone.now()
         super(TolaBookmarks, self).save()
 
+"""
+dashboard = { user_id: string (link to tola user endpoint) name: string (name of the dashboard)
+(required widgets: Array of widgets (link to widget endpoint) share: Array of tola user url (link to tola user endpoint) }
+
+
+widget = { w: number, h: number, x: number, y: number, xSm: number, ySm: number, 
+xMd: number, yMd: number, xLg: number, yLg: number, xXl: number, yXl: number, dragAndDrop: boolean, resizable: boolean, title: string (required), type: string (required), data: JSON Object }
+
+"""
+
+
+class Widget(models.Model):
+    w = models.IntegerField(default=0)
+    h = models.IntegerField(default=0)
+    x = models.IntegerField(default=0)
+    y = models.IntegerField(default=0)
+    xSm = models.IntegerField(default=0)
+    ySm = models.IntegerField(default=0)
+    xMd = models.IntegerField(default=0)
+    yMd = models.IntegerField(default=0)
+    xLg = models.IntegerField(default=0)
+    yLg = models.IntegerField(default=0)
+    xXl = models.IntegerField(default=0)
+    yXl = models.IntegerField(default=0)
+    drag_and_drop = models.BooleanField(default=0)
+    resizable = models.BooleanField(default=0)
+    title = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
+    data = JSONField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('title',)
+        verbose_name_plural = "Widgets"
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
+        super(Widget, self).save()
+
+
+class Dashboard(models.Model):
+    user = models.ForeignKey(TolaUser, related_name='toladashboard')
+    name = models.CharField(blank=True, null=True, max_length=255)
+    widgets = models.ManyToManyField(Widget, blank=True)
+    share = models.ManyToManyField(TolaUser, blank=True)
+    public_in_org = models.BooleanField(default=0)
+    public_all = models.BooleanField(default=0)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name_plural = "Dashboards"
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
+        super(Dashboard, self).save()
+
 
 class TolaUserFilter(models.Model):
     user = models.ForeignKey(TolaUser, related_name="filter_user")

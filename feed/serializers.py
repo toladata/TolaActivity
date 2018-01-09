@@ -587,6 +587,38 @@ class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
+class PublicDashboardSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Dashboard
+        fields = '__all__'
+
+
+class PublicOrgDashboardSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Dashboard
+        fields = '__all__'
+
+
+class DashboardSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Dashboard
+        fields = '__all__'
+
+
+class WidgetSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Widget
+        fields = '__all__'
+
+
 class SectorRelatedSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
 

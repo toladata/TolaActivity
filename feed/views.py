@@ -1336,6 +1336,63 @@ class PortfolioViewSet(viewsets.ModelViewSet):
     serializer_class = PortfolioSerializer
 
 
+class PublicDashboardViewSet(viewsets.ModelViewSet):
+
+    queryset = Dashboard.objects.all().filter(public_all=True)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = PublicDashboardSerializer
+
+
+class PublicOrgDashboardViewSet(viewsets.ModelViewSet):
+
+    def list(self, request):
+        # Use this queryset or the django-filters lib will not work
+        queryset = self.filter_queryset(self.get_queryset())
+        if not request.user.is_superuser:
+            organization_id = TolaUser.objects. \
+                values_list('organization_id', flat=True). \
+                get(user=request.user)
+            queryset = queryset.filter(organization_id=organization_id)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    queryset = Dashboard.objects.all().filter(public_in_org=True)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = PublicOrgDashboardSerializer
+
+
+class DashboardViewSet(viewsets.ModelViewSet):
+
+    def list(self, request):
+        # Use this queryset or the django-filters lib will not work
+        queryset = self.filter_queryset(self.get_queryset())
+        if not request.user.is_superuser:
+            queryset = queryset.filter(Q(user=request.user) | Q(share__contains=request.user))
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    filter_fields = ('user', 'share',)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
+    queryset = Dashboard.objects.all()
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = DashboardSerializer
+
+
+class WidgetViewSet(viewsets.ModelViewSet):
+    def list(self, request):
+        # Use this queryset or the django-filters lib will not work
+        queryset = self.filter_queryset(self.get_queryset())
+        if not request.user.is_superuser:
+            queryset = queryset.filter(user=request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('dashboard',)
+    permission_classes = (AllowTolaRoles, IsOrgMember)
+    queryset = Widget.objects.all()
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = WidgetSerializer
+
+
 class SectorRelatedViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('sector', 'organization__id',)
@@ -1350,3 +1407,5 @@ class WorkflowLevel1SectorViewSet(viewsets.ModelViewSet):
     filter_fields = ('sector', 'workflowlevel1',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = WorkflowLevel1SectorSerializer
+
+
