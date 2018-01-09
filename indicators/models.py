@@ -317,10 +317,9 @@ class IndicatorManager(models.Manager):
     def get_queryset(self):
         return super(IndicatorManager, self).get_queryset().prefetch_related('workflowlevel1').select_related('sector')
 
-from tola.security import SecurityModel
 from search.utils import ElasticsearchIndexer
 
-class Indicator(models.Model): # TODO change back to SecurityModel
+class Indicator(models.Model):
     indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True)
     level = models.ForeignKey(Level, null=True, blank=True, on_delete=models.SET_NULL)

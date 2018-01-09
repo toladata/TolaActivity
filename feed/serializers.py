@@ -225,6 +225,7 @@ class FundCodeSerializer(serializers.HyperlinkedModelSerializer):
 
 class DisaggregationTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
+    disaggregation_type = serializers.CharField(max_length=135)
 
     class Meta:
         model = DisaggregationType
@@ -583,6 +584,38 @@ class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Portfolio
+        fields = '__all__'
+
+
+class PublicDashboardSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Dashboard
+        fields = '__all__'
+
+
+class PublicOrgDashboardSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Dashboard
+        fields = '__all__'
+
+
+class DashboardSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Dashboard
+        fields = '__all__'
+
+
+class WidgetSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Widget
         fields = '__all__'
 
 

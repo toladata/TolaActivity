@@ -1,25 +1,15 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.contrib.sites.models import Site
-from django.utils import timezone
 from decimal import Decimal
-from datetime import datetime
 import uuid
 
 from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
 from simple_history.models import HistoricalRecords
 from django.contrib.postgres.fields import JSONField
-from django.contrib.sessions.models import Session
 
-from django.db import migrations
-import requests
-import json
 from search.utils import ElasticsearchIndexer
 
 try:
@@ -32,13 +22,6 @@ ROLE_ORGANIZATION_ADMIN = 'OrgAdmin'
 ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
 ROLE_PROGRAM_TEAM = 'ProgramTeam'
 ROLE_VIEW_ONLY = 'ViewOnly'
-
-
-# New user created generate a token
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
 
 
 class TolaSites(models.Model):
@@ -54,6 +37,7 @@ class TolaSites(models.Model):
     privacy_disclaimer = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now=False, blank=True, null=True)
     updated = models.DateTimeField(auto_now=False, blank=True, null=True)
+    whitelisted_domains = models.TextField("Whitelisted Domains", null=True, blank=True)
 
     class Meta:
         verbose_name = "Tola Site"
@@ -63,7 +47,6 @@ class TolaSites(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        ''' On save, update timestamps as appropriate '''
         if kwargs.pop('new_entry', True):
             self.created = timezone.now()
         else:
@@ -82,14 +65,12 @@ class Industry(models.Model):
         verbose_name_plural = "Organizations"
         app_label = 'workflow'
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Industry, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -106,14 +87,12 @@ class Sector(models.Model):
     class Meta:
         ordering = ('sector',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Sector, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.sector
 
@@ -148,14 +127,12 @@ class Organization(models.Model):
         verbose_name_plural = "Organizations"
         app_label = 'workflow'
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Organization, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -175,14 +152,12 @@ class Country(models.Model):
         verbose_name_plural = "Countries"
         app_label = 'workflow'
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Country, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.country
 
@@ -220,20 +195,27 @@ class TolaUser(models.Model):
         ordering = ('name',)
 
     def __unicode__(self):
-        return self.name if self.name is not None else '-'
+        if (settings.TOLAUSER_OBFUSCATED_NAME and
+                    self.name == settings.TOLAUSER_OBFUSCATED_NAME):
+            if self.user.first_name and self.user.last_name:
+                return u'{} {}'.format(self.user.first_name,
+                                       self.user.last_name)
+            else:
+                return u'-'
+        else:
+            return self.name if self.name else u'-'
 
     @property
     def countries_list(self):
         return ', '.join([x.code for x in self.countries.all()])
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
 
-        if settings.TOLAUSER_OFUSCATED_NAME:
-            self.name = settings.TOLAUSER_OFUSCATED_NAME
+        if settings.TOLAUSER_OBFUSCATED_NAME:
+            self.name = settings.TOLAUSER_OBFUSCATED_NAME
 
         super(TolaUser, self).save()
 
@@ -250,14 +232,12 @@ class Currency(models.Model):
         ordering = ('source_currency',)
         verbose_name_plural = "Currencies"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Currency, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.source_currency
 
@@ -296,7 +276,6 @@ class Award(models.Model):
     def countries_list(self):
         return ', '.join([x.code for x in self.countries.all()])
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -316,7 +295,6 @@ class Internationalization(models.Model):
     def __unicode__(self):
         return self.language
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -340,12 +318,80 @@ class TolaBookmarks(models.Model):
     def __unicode__(self):
         return self.name
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(TolaBookmarks, self).save()
+
+"""
+dashboard = { user_id: string (link to tola user endpoint) name: string (name of the dashboard)
+(required widgets: Array of widgets (link to widget endpoint) share: Array of tola user url (link to tola user endpoint) }
+
+
+widget = { w: number, h: number, x: number, y: number, xSm: number, ySm: number, 
+xMd: number, yMd: number, xLg: number, yLg: number, xXl: number, yXl: number, dragAndDrop: boolean, resizable: boolean, title: string (required), type: string (required), data: JSON Object }
+
+"""
+
+
+class Widget(models.Model):
+    w = models.IntegerField(default=0)
+    h = models.IntegerField(default=0)
+    x = models.IntegerField(default=0)
+    y = models.IntegerField(default=0)
+    xSm = models.IntegerField(default=0)
+    ySm = models.IntegerField(default=0)
+    xMd = models.IntegerField(default=0)
+    yMd = models.IntegerField(default=0)
+    xLg = models.IntegerField(default=0)
+    yLg = models.IntegerField(default=0)
+    xXl = models.IntegerField(default=0)
+    yXl = models.IntegerField(default=0)
+    drag_and_drop = models.BooleanField(default=0)
+    resizable = models.BooleanField(default=0)
+    title = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
+    data = JSONField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('title',)
+        verbose_name_plural = "Widgets"
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
+        super(Widget, self).save()
+
+
+class Dashboard(models.Model):
+    user = models.ForeignKey(TolaUser, related_name='toladashboard')
+    name = models.CharField(blank=True, null=True, max_length=255)
+    widgets = models.ManyToManyField(Widget, blank=True)
+    share = models.ManyToManyField(TolaUser, blank=True)
+    public_in_org = models.BooleanField(default=0)
+    public_all = models.BooleanField(default=0)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name',)
+        verbose_name_plural = "Dashboards"
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
+        super(Dashboard, self).save()
 
 
 class TolaUserFilter(models.Model):
@@ -365,7 +411,6 @@ class TolaUserFilter(models.Model):
     def __unicode__(self):
         return self.user
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -409,7 +454,6 @@ class ProjectType(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -433,14 +477,12 @@ class FundCode(models.Model):
     class Meta:
         ordering = ('name',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(FundCode, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -455,14 +497,12 @@ class ApprovalType(models.Model):
     class Meta:
         ordering = ('name','organization')
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(ApprovalType, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -508,14 +548,12 @@ class ApprovalWorkflow(models.Model):
     class Meta:
         ordering = ('approval_type',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(ApprovalWorkflow, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.approval_type)
 
@@ -532,14 +570,12 @@ class Portfolio(models.Model):
     class Meta:
         ordering = ('name',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Portfolio, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.name)
 
@@ -558,14 +594,12 @@ class Milestone(models.Model):
     class Meta:
         ordering = ('name',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Milestone, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.name)
 
@@ -598,7 +632,6 @@ class WorkflowLevel1(models.Model):
         verbose_name = "Workflow Level 1"
         verbose_name_plural = "Workflow Level 1"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if not 'force_insert' in kwargs:
             kwargs['force_insert'] = False
@@ -621,7 +654,6 @@ class WorkflowLevel1(models.Model):
     def countries(self):
         return ', '.join([x.country for x in self.country.all()])
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -639,7 +671,6 @@ class WorkflowLevel1Sector(models.Model):
         verbose_name = "Workflow Level 1 Sector"
         verbose_name_plural = "Workflow Level 1 Sectors"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if not 'force_insert' in kwargs:
             kwargs['force_insert'] = False
@@ -652,7 +683,6 @@ class WorkflowLevel1Sector(models.Model):
     def sub_sectors(self):
         return ', '.join([x.sub_sector for x in self.sub_sector.all()])
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.workflowlevel1.name
 
@@ -677,14 +707,12 @@ class WorkflowTeam(models.Model):
         verbose_name = "Workflow Team"
         verbose_name_plural = "Workflow Teams"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(WorkflowTeam, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.workflow_user.user.first_name + " " + self.workflow_user.user.last_name
 
@@ -700,14 +728,12 @@ class AdminLevelOne(models.Model):
         verbose_name = "Admin Boundary 1"
         verbose_name_plural = "Admin Boundary 1"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(AdminLevelOne, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -723,14 +749,12 @@ class AdminLevelTwo(models.Model):
         verbose_name = "Admin Boundary 2"
         verbose_name_plural = "Admin Boundary 2"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(AdminLevelTwo, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -746,14 +770,12 @@ class AdminLevelThree(models.Model):
         verbose_name = "Admin Boundary 3"
         verbose_name_plural = "Admin Boundary 3"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(AdminLevelThree, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -770,14 +792,12 @@ class AdminLevelFour(models.Model):
         verbose_name = "Admin Boundary 4"
         verbose_name_plural = "Admin Boundary 4"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(AdminLevelFour, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -792,14 +812,12 @@ class Office(models.Model):
     class Meta:
         ordering = ('name',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Office, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
         return new_name
@@ -815,14 +833,12 @@ class ProfileType(models.Model):
     class Meta:
         ordering = ('profile',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(ProfileType, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.profile
 
@@ -837,14 +853,12 @@ class LandType(models.Model):
     class Meta:
         ordering = ('classify_land',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(LandType, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.classify_land
 
@@ -904,7 +918,6 @@ class SiteProfile(models.Model):
         ordering = ('name',)
         verbose_name_plural = "Site Profiles"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
 
         # Check if a create date has been specified. If not, display today's date in create_date and edit_date
@@ -914,7 +927,6 @@ class SiteProfile(models.Model):
 
         super(SiteProfile, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         new_name = self.name
         return new_name
@@ -949,7 +961,6 @@ class Contact(models.Model):
         self.edit_date = timezone.now()
         super(Contact, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name + ", " + self.title
 
@@ -965,14 +976,12 @@ class StakeholderType(models.Model):
         ordering = ('name',)
         verbose_name_plural = "Stakeholder Types"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(StakeholderType, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.name
 
@@ -1021,14 +1030,12 @@ class Stakeholder(models.Model):
         ordering = ('country','name','type')
         verbose_name_plural = "Stakeholders"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Stakeholder, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.name)
 
@@ -1050,14 +1057,12 @@ class Partner(models.Model):
         ordering = ('country','name','type')
         verbose_name_plural = "Partners"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Partner, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.name)
 
@@ -1182,7 +1187,6 @@ class WorkflowLevel2(models.Model):
             ("can_approve", "Can approve initiation"),
         )
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -1219,7 +1223,6 @@ class WorkflowLevel2(models.Model):
     def stakeholders(self):
         return ', '.join([x.name for x in self.stakeholder.all()])
 
-    # displayed in admin templates
     def __unicode__(self):
         new_name = unicode(self.office) + unicode(" - ") + unicode(self.name)
         return new_name
@@ -1238,14 +1241,12 @@ class WorkflowLevel2Sort(models.Model):
         verbose_name = "Workflow Level 2 Sort"
         verbose_name_plural = "Workflow Level 2 Sort"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(WorkflowLevel2Sort, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.workflowlevel1)
 
@@ -1269,14 +1270,12 @@ class CodedField(models.Model):
         ordering = ('name', 'type')
         verbose_name_plural = "CodedFields"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(CodedField, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.name)
 
@@ -1292,14 +1291,12 @@ class CodedFieldValues(models.Model):
         ordering = ('value', 'coded_field', 'workflowlevel2__name')
         verbose_name_plural = "CodedFields"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(CodedFieldValues, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.value)
 
@@ -1317,7 +1314,6 @@ class Documentation(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='documentation', null=True, blank=True)
 
-     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -1357,14 +1353,12 @@ class WorkflowLevel3(models.Model):
         verbose_name = "Workflow Level 3"
         verbose_name_plural = "Workflow Level 3"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(WorkflowLevel3, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return self.description
 
@@ -1384,11 +1378,27 @@ class Budget(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='budgets', null=True, blank=True)
     history = HistoricalRecords()
-    # on save add create date or update edit date
+
     def save(self, *args, **kwargs):
-        if self.create_date == None:
+        if not self.create_date:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
+
+        if self.workflowlevel2:
+            wflvl2 = self.workflowlevel2
+            try:
+                old_budget = self.__class__.objects.get(id=self.id)
+                # Subtract the old values
+                wflvl2.total_estimated_budget -= old_budget.proposed_value
+                wflvl2.actual_cost -= old_budget.actual_value
+            except Budget.DoesNotExist:
+                pass
+            finally:
+                # Sum the new values
+                wflvl2.total_estimated_budget += self.proposed_value
+                wflvl2.actual_cost += self.actual_value
+                wflvl2.save()
+
         super(Budget, self).save()
 
     def __unicode__(self):
@@ -1416,7 +1426,6 @@ class RiskRegister(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
     history = HistoricalRecords()
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -1446,7 +1455,6 @@ class IssueRegister(models.Model):
     organization = models.ForeignKey(Organization, null=True, blank=True)
     history = HistoricalRecords()
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -1471,14 +1479,12 @@ class Checklist(models.Model):
     class Meta:
         ordering = ('workflowlevel2',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(Checklist, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.workflowlevel2)
 
@@ -1496,14 +1502,12 @@ class ChecklistItem(models.Model):
     class Meta:
         ordering = ('item',)
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(ChecklistItem, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.item)
 
@@ -1532,16 +1536,11 @@ class WorkflowModules(models.Model):
         ordering = ('modules',)
         verbose_name_plural = "Workflow Modules"
 
-    # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(WorkflowModules, self).save()
 
-    # displayed in admin templates
     def __unicode__(self):
         return unicode(self.workflowlevel2)
-
-
-

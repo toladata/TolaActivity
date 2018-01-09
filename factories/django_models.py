@@ -1,7 +1,7 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute
 
-from feed.views import ROLE_PROGRAM_ADMIN
+from workflow.models import ROLE_PROGRAM_ADMIN
 
 
 class User(DjangoModelFactory):
@@ -22,3 +22,12 @@ class Group(DjangoModelFactory):
         django_get_or_create = ('name',)
 
     name = ROLE_PROGRAM_ADMIN
+
+
+class Site(DjangoModelFactory):
+    class Meta:
+        model = 'sites.Site'
+        django_get_or_create = ('name',)
+
+    name = 'toladata.io'
+    domain = 'toladata.io'

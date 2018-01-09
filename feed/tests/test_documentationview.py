@@ -37,10 +37,9 @@ class DocumentationListViewTest(TestCase):
         request = self.factory.get('/api/documentation/')
         wflvl1 = factories.WorkflowLevel1(
             organization=self.tola_user.organization)
-        wflvl2 = factories.WorkflowLevel2(workflowlevel1=wflvl1)
         WorkflowTeam.objects.create(workflow_user=self.tola_user,
                                     workflowlevel1=wflvl1)
-        factories.Documentation(workflowlevel1=wflvl1, workflowlevel2=wflvl2)
+        factories.Documentation(workflowlevel1=wflvl1)
 
         request.user = self.tola_user.user
         view = DocumentationViewSet.as_view({'get': 'list'})
@@ -233,26 +232,22 @@ class DocumentationFilterViewTest(TestCase):
         wflvl1_1 = factories.WorkflowLevel1(
             name='WorkflowLevel1_1',
             organization=self.tola_user.organization)
-        wflvl2_1 = factories.WorkflowLevel2(workflowlevel1=wflvl1_1)
         WorkflowTeam.objects.create(workflow_user=self.tola_user,
                                     workflowlevel1=wflvl1_1)
         documentation1 = factories.Documentation(name='Document 1',
-                                                 workflowlevel1=wflvl1_1,
-                                                 workflowlevel2=wflvl2_1)
+                                                 workflowlevel1=wflvl1_1)
 
         another_org = factories.Organization(name='Another Org')
         wflvl1_2 = factories.WorkflowLevel1(
             name='WorkflowLevel1_2',
             organization=another_org)
-        wflvl2_2 = factories.WorkflowLevel2(workflowlevel1=wflvl1_2)
         WorkflowTeam.objects.create(workflow_user=self.tola_user,
                                     workflowlevel1=wflvl1_2)
-        factories.Documentation(name='Document 2', workflowlevel1=wflvl1_2,
-                                workflowlevel2=wflvl2_2)
+        factories.Documentation(name='Document 2', workflowlevel1=wflvl1_2)
 
         request = self.factory.get(
             '/api/documentation'
-            '/?workflowlevel2__workflowlevel1__organization__id=%s' %
+            '/?workflowlevel1__organization__id=%s' %
             self.tola_user.organization.pk)
         request.user = self.tola_user.user
         view = DocumentationViewSet.as_view({'get': 'list'})
@@ -270,27 +265,23 @@ class DocumentationFilterViewTest(TestCase):
             name='WorkflowLevel1_1',
             country=[country1],
             organization=self.tola_user.organization)
-        wflvl2_1 = factories.WorkflowLevel2(workflowlevel1=wflvl1_1)
         WorkflowTeam.objects.create(workflow_user=self.tola_user,
                                     workflowlevel1=wflvl1_1)
         documentation1 = factories.Documentation(name='Document 1',
-                                                 workflowlevel1=wflvl1_1,
-                                                 workflowlevel2=wflvl2_1)
+                                                 workflowlevel1=wflvl1_1)
 
         country2 = factories.Country(country='Brazil', code='BR')
         wflvl1_2 = factories.WorkflowLevel1(
             name='WorkflowLevel1_2',
             country=[country2],
             organization=self.tola_user.organization)
-        wflvl2_2 = factories.WorkflowLevel2(workflowlevel1=wflvl1_2)
         WorkflowTeam.objects.create(workflow_user=self.tola_user,
                                     workflowlevel1=wflvl1_2)
-        factories.Documentation(name='Document 2', workflowlevel1=wflvl1_2,
-                                workflowlevel2=wflvl2_2)
+        factories.Documentation(name='Document 2', workflowlevel1=wflvl1_2)
 
         request = self.factory.get(
             '/api/documentation'
-            '/?workflowlevel2__workflowlevel1__country__country=%s' %
+            '/?workflowlevel1__country__country=%s' %
             country1.country)
         request.user = self.tola_user.user
         view = DocumentationViewSet.as_view({'get': 'list'})
