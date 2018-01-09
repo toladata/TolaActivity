@@ -439,6 +439,12 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def perform_create(self, serializer):
+        organization_id = TolaUser.objects. \
+            values_list('organization_id', flat=True). \
+            get(user=self.request.user)
+        serializer.save(organization_id=organization_id)
+
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     permission_classes = (IsOrgMember,)
     queryset = DisaggregationType.objects.all()
