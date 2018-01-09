@@ -100,7 +100,7 @@ class IndicatorForm(forms.ModelForm):
                                                         </td>
                                                         <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                                             <div style="line-height:1;"><strong>{{ pt.period }}</strong></div>
-                                                            <div style="line-height:0.8;"><small>{{ pt.start_date }} - {{ pt.end_date}}</small></div>
+                                                            <div style="line-height:0.8;"><small>{{ pt.start_date|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|default:'' }}</small></div>
                                                         </td>
                                                         <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                                             <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">

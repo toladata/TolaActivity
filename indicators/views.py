@@ -271,6 +271,15 @@ class IndicatorUpdate(UpdateView):
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
+
+        if request.method == 'GET':
+            indicator = self.get_object()
+            if indicator.target_frequency and not indicator.periodictarget_set.count():
+                indicator.target_frequency = None
+                indicator.target_frequency_start = None
+                indicator.target_frequency_num_periods = 1
+                indicator.save()
+
         try:
             self.guidance = FormGuidance.objects.get(form="Indicator")
         except FormGuidance.DoesNotExist:
@@ -364,10 +373,14 @@ class IndicatorUpdate(UpdateView):
             for pt in pt_json:
                 pk = int(pt.get('id'))
                 if pk == 0: pk = None
+                start_date = pt.get('start_date', None)
+                if start_date == 'undefined': start_date = None
+                end_date = pt.get('end_date', None)
+                if end_date == 'undefined': end_date = None
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
                     defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), \
-                            'start_date': pt.get('start_date', None), 'end_date': pt.get('end_date', None), 'edit_date': timezone.now() })
+                            'start_date': start_date, 'end_date': end_date, 'edit_date': timezone.now() })
                 #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
                     periodic_target.create_date = timezone.now()
