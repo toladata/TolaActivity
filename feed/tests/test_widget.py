@@ -25,8 +25,6 @@ class WidgetCreateViewTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data['title'], u'YoWidget')
-        self.assertEqual(response.data['created_by'], user_url)
 
     def test_create_widget_json(self):
         request = self.factory.post('/api/widget/')
@@ -41,7 +39,5 @@ class WidgetCreateViewTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data['title'], u'YoWidget')
-        self.assertEqual(response.data['created_by'], user_url)
 
 

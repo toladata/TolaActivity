@@ -25,8 +25,6 @@ class DashboardCreateViewTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data['name'], u'YoDash')
-        self.assertEqual(response.data['user'], user_url)
 
     def test_create_dashboard_json(self):
         request = self.factory.post('/api/dashboard/')
@@ -41,7 +39,5 @@ class DashboardCreateViewTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data['name'], u'YoDash')
-        self.assertEqual(response.data['user'], user_url)
 
 
