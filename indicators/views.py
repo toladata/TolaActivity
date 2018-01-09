@@ -37,6 +37,8 @@ from export import IndicatorResource, CollectedDataResource
 from weasyprint import HTML, CSS
 from django.template.loader import get_template
 from django.http import HttpResponse
+import datetime
+from dateutil.relativedelta import relativedelta
 
 
 
@@ -269,6 +271,15 @@ class IndicatorUpdate(UpdateView):
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
+
+        if request.method == 'GET':
+            indicator = self.get_object()
+            if indicator.target_frequency and not indicator.periodictarget_set.count():
+                indicator.target_frequency = None
+                indicator.target_frequency_start = None
+                indicator.target_frequency_num_periods = 1
+                indicator.save()
+
         try:
             self.guidance = FormGuidance.objects.get(form="Indicator")
         except FormGuidance.DoesNotExist:
@@ -283,6 +294,7 @@ class IndicatorUpdate(UpdateView):
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
         context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
+        context['targets_sum'] = PeriodicTarget.objects.filter(indicator=getIndicator).aggregate(Sum('target'))['target__sum']
 
         #get external service data if any
         try:
@@ -295,7 +307,7 @@ class IndicatorUpdate(UpdateView):
 
     def get_initial(self):
         initial = {
-            'target_frequency_num_periods': 1,
+            'target_frequency_num_periods': self.get_object().target_frequency_num_periods
         }
 
         return initial
@@ -313,17 +325,63 @@ class IndicatorUpdate(UpdateView):
         print(".............................%s............................" % form.errors )
         return self.render_to_response(self.get_context_data(form=form))
 
-    def form_valid(self, form):
+
+    def form_valid(self, form, **kwargs):
         periodic_targets = self.request.POST.get('periodic_targets', None)
         indicatr = Indicator.objects.get(pk=self.kwargs.get('pk'))
-        if periodic_targets:
+        generatedTargets = []
+
+        if periodic_targets == 'generateTargets':
+            periodic_target = {
+                Indicator.LOP: lambda **params: {"name": Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]},
+                Indicator.MID_END: lambda **params: [{"name": "Midline"}, {"name": "Endline"}],
+                Indicator.EVENT: lambda **params: {"name": params.get('n')},
+                Indicator.ANNUAL: lambda **params: {"name": "Year %s" % params.get('i'), \
+                    "start_date": (params.get('s') + relativedelta(years=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
+                    "end_date": ( params.get('s') + relativedelta(years=+(params.get('i')*1)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+                Indicator.SEMI_ANNUAL: lambda **params: {"name": "Semi-annual period %s" % params.get('i'), \
+                    "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*6))).strftime('%Y-%m-%d'), \
+                    "end_date": ( params.get('s') + relativedelta(months=+( params.get('i')*6)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+                Indicator.TRI_ANNUAL: lambda **params: {"name": "Tri-annual period %s" % params.get('i'), \
+                    "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*4))).strftime('%Y-%m-%d'), \
+                    "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i' )*4))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+                Indicator.QUARTERLY: lambda **params: {"name": "Quarter %s" % params.get('i'), \
+                    "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*3))).strftime('%Y-%m-%d'), \
+                    "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i')*3)))+ relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+                Indicator.MONTHLY: lambda **params: {"name": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%B") \
+                    + " " + (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%Y"), \
+                    "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
+                    "end_date": ( (params.get('s') + relativedelta(months=+params.get('i' ))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+            }
+
+            params = {
+                's': form.cleaned_data.get('target_frequency_start', None),
+                'n': form.cleaned_data.get('target_frequency_custom', None)
+            }
+            for i in range(0, form.cleaned_data.get('target_frequency_num_periods', 0)):
+                params['i'] = i + 1
+                target_frequency = form.cleaned_data.get('target_frequency', None)
+                pt = periodic_target[target_frequency](**params)
+                if isinstance(pt, list):
+                    generatedTargets = generatedTargets + pt
+                else:
+                    generatedTargets.append(pt)
+
+            # print(".............................%s............................" % generatedTargets )
+
+        if periodic_targets and periodic_targets != 'generateTargets':
             pt_json = json.loads(periodic_targets)
             for pt in pt_json:
                 pk = int(pt.get('id'))
                 if pk == 0: pk = None
+                start_date = pt.get('start_date', None)
+                if start_date == 'undefined': start_date = None
+                end_date = pt.get('end_date', None)
+                if end_date == 'undefined': end_date = None
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
-                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.now() })
+                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), \
+                            'start_date': start_date, 'end_date': end_date, 'edit_date': timezone.now() })
                 #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
                     periodic_target.create_date = timezone.now()
@@ -335,8 +393,12 @@ class IndicatorUpdate(UpdateView):
         if self.request.is_ajax():
             data = serializers.serialize('json', [self.object])
             pts = serializers.serialize('json', periodic_targets)
+            if generatedTargets:
+                generatedTargets = json.dumps(generatedTargets, cls=DjangoJSONEncoder)
+            else:
+                generatedTargets = "[]"
             #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
-            return HttpResponse("[" + data + "," + pts + "]")
+            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(self.get_context_data()['targets_sum']) + "]")
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
         return self.render_to_response(self.get_context_data(form=form))

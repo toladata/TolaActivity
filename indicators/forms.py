@@ -38,6 +38,7 @@ class IndicatorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         #get the user object to check permissions with
+        #print(".............................%s............................" % kwargs.get('targets_sum', 'no targets sum found!!!!') )
         indicator = kwargs.get('instance', None)
         self.request = kwargs.pop('request')
         self.program = kwargs.pop('program')
@@ -71,32 +72,72 @@ class IndicatorForm(forms.ModelForm):
                              'unit_of_measure', 'lop_target', 'rationale_for_target', 'baseline', 'target_frequency', 'target_frequency_start', 'target_frequency_custom', 'target_frequency_num_periods'
                              ),
                     Fieldset('',
-                        HTML("""<br/>
-                            <div class='panel panel-default'>
-                                <div class='panel-heading'>
-                                    Periodic Targets
-                                    <a class="pull-right" href="#" onclick="addPeriodicTarget()";>Add new Periodic Target</a>
+                        HTML("""
+                            <div id="div_id_create_targets_btn" class="form-group">
+                                <div class="controls col-sm-offset-4 col-sm-2">
+                                    <button id="create_targets_btn" class="btn btn-primary">Create targets</button>
                                 </div>
-                                <table class="table" id="periodic_targets_table">
-                                    <thead>
-                                        <tr>
-                                            <th>Period</th>
-                                            <th>Target</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for item in periodic_targets %}
-                                            <tr id="{{item.id}}">
-                                                <td><input type="text" name="period-{{ item.id }}" value="{{ item.period }}" class="textinput textInput form-control"></td>
-                                                <td><input type="text" name="target-{{ item.id }}" value="{{ item.target }}" class="textinput textInput form-control"></td>
-                                                <td style="vertical-align:middle">
-                                                <a href="{% url 'pt_delete' item.id %}" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                            </div>
+                        """)
+                    ),
+                    Fieldset('',
+                        HTML("""
+                            <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
+                                <div class="row">
+                                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
+                                        <h4>Periodic Targets</h4>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
+                                        <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
+                                            <tbody>
+                                                {% for pt in periodic_targets %}
+                                                    <tr id="{{pt.pk}}">
+                                                        <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                            {% if forloop.last %}
+                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove-circle"></span></a>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                            <div style="line-height:1;"><strong>{{ pt.period }}</strong></div>
+                                                            <div style="line-height:0.8;"><small>{{ pt.start_date|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|default:'' }}</small></div>
+                                                        </td>
+                                                        <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                            <div class="controls">
+                                                                <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
+                                                                <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {% if forloop.last %}
+                                                        <tr id="pt_sum_targets">
+                                                            <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                                                <strong>Sum of targets</strong>
+                                                            </td>
+                                                            <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                                                <strong>{{targets_sum}}</strong>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
+                                        <strong>Life of Program (LoP) Target</strong>
+                                    </div>
+                                    <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
+                                        <strong>{{indicator.lop_target}}</strong>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
+                                        <a href="#" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                                    </div>
+                                </div>
                             </div>
                         """),
                     ),

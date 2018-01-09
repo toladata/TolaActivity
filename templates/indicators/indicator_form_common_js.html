@@ -1,4 +1,5 @@
 <script>
+    var validation_msgs = {};
 
     function isDate(dateVal) {
         var pattern = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -15,13 +16,48 @@
         return new Date(dateVal) === 'Invalid Date' ? false : true;
     }
 
+    function formatDate(dateString) {
+        try {
+            var dateArray = dateString.split('-');
+            var months = new Array();
+            months[1] = "Jan";
+            months[2] = "Feb";
+            months[3] = "Mar";
+            months[4] = "Apr";
+            months[5] = "May";
+            months[6] = "Jun";
+            months[7] = "Jul";
+            months[8] = "Aug";
+            months[9] = "Sep";
+            months[10] = "Oct";
+            months[11] = "Nov";
+            months[12] = "Dec";
+            return months[parseInt(dateArray[1])] + ' ' + dateArray[2] + ', ' + dateArray[0];
+        } catch (err) {
+            console.log(err);
+            if (dateString == null){
+                dateString = '';
+            }
+            return dateString;
+        }
+    }
+
     $( document ).ready(function() {
         show_hide_frequency_fields();
     })
 
     $("#indicator_modal_div").on('shown.bs.tab', function() {
         show_hide_frequency_fields();
-        $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
+        $('.datepicker').datepicker({
+            dateFormat: "yy-mm-dd",
+            onClose: function () {
+                this.focus();
+            },
+            onSelect: function () {
+                // The "this" keyword refers to the input (in this case: #someinput)
+                this.focus();
+            }
+        });
     })
 
 
@@ -65,6 +101,16 @@
         submitForm(this);
     });
 
+    $("#div_id_create_targets_btn").on("click", "#create_targets_btn", function(e) {
+        e.preventDefault();
+
+        if (validateForm() == false) {
+            showValidations("#modalmessages");
+            return;
+        }
+        submitForm(this);
+    });
+
 
     function addPeriodicTarget() {
         var markup = `
@@ -79,6 +125,7 @@
         $("#periodic_targets_table tbody").append(markup);
 
     }
+
     function submitForm(form) {
 
         var submitBtnName = $(form).find("input[type=submit]:focus" );
@@ -88,22 +135,31 @@
         $('#periodic_targets_table tr').each(function () {
             var $this = $(this);
             var values = [];
-            $this.find('input[type=text]').each(function (i, input) {
-                if (i == 0) {
-                    values.push($(input).attr('name').split('-')[1]);
+            $this.find('input[type=number]').each(function (i, input) {
+                try {
+                    values.push($(input).attr('id').split('-')[1]);
+                } catch (err) {
+                    values.push(0);
                 }
+                values.push($(input).attr('name'));
                 values.push($(input).val());
+                if (!$(input).val()) {
+                    $(input).parent().addClass('has-error');
+                    $(input).next('span:first').text('Please complete this field.');
+                }
+                values.push($(input).data("startDate"));
+                values.push($(input).data("endDate"));
             });
             if(values.length > 0) {
-                if ( !$.isNumeric(values[2]) || values[1] == '') {
-                    return;
-                }
-                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2] } );
+                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2], 'start_date': values[3], 'end_date': values[4] } );
             }
         });
-        form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
-        //console.log(JSON.stringify(periodic_targets));
 
+        if ($.isEmptyObject(periodic_targets)) {
+            form_data += "&periodic_targets=generateTargets";
+        } else {
+            form_data += "&periodic_targets=" // + JSON.stringify(periodic_targets);
+        }
 
         $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
         $.ajax({
@@ -130,23 +186,76 @@
             var indicator = jsondata[0][0];
             if (indicator['fields']['target_frequency']) {
                 $("#id_target_frequency option:not(:selected)").attr("disabled", true);
+                $("#div_id_create_targets_btn").show();
             }
             var pts = jsondata[1];
+            var generateTargets = jsondata[2];
+            var targets_sum = jsondata[3];
 
             $("#id_achieved").val(indicator['fields']['achieved']);
-            $("#periodic_targets_table").find("tr:gt(0)").remove();
 
-            $.each(pts, function(i, pt) {
-
-                var markup = '<tr id=' + pt.pk + '"><td><input type="text" name="period-' + pt.pk + '" value="' + pt.fields.period +'" class="textinput textInput form-control"></td><td><input type="text" name="target-' + pt.pk + '" value="' + pt.fields.target +'" class="textinput textInput form-control"></td><td style="vertical-align:middle"> <a href="/indicators/periodic_target_delete/' + pt.pk + '/" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a></td></tr>';
-
-                $("#periodic_targets_table tbody").append(markup);
-            });
+            if (!$.isEmptyObject(generateTargets)) {
+                $.each(generateTargets, function(i, pt){
+                    var markup = `
+                        <tr>
+                            <td style="padding:10px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                <div style="line-height:1;"><strong>${pt.name }</strong></div>
+                                <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>
+                            </td>
+                            <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                <div class="controls">
+                                    <input type="number" id="pt${i}" data-start-date="${pt.start_date}" data-end-date="${pt.end_date}" name="${pt.name}" placeholder="Enter target" class="form-control" style="width: 50%;">
+                                    <span id="hint_id_pt_${i}" style="margin:0px;" class="help-block"> </span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    $("#periodic_targets_table tbody").append(markup);
+                });
+            } else {
+                if (!$.isEmptyObject(pts)) {
+                // $("#periodic_targets_table").find("tr:gte(0)").remove();
+                $("#periodic_targets_table").find("tr").remove();
+                    $.each(pts, function(i, pt){
+                        var isLastIteration = i == pts.length -1;
+                        var markup = `
+                            <tr id="${pt.pk}">
+                                <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                    ${(isLastIteration) ? '<a href="/indicators/periodic_target_delete/'+ pt.pk +'/" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove-circle"></span></a>' : ''}
+                                </td>
+                                <td style="padding:10px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                    <div style="line-height:1;"><strong>${pt.fields.period }</strong></div>
+                                    <div style="line-height:0.8;"><small>${formatDate(pt.fields.start_date)} ${ pt.fields.start_date ? '-' : ''} ${formatDate(pt.fields.end_date)}</small></div>
+                                </td>
+                                <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                    <div class="controls">
+                                        <input type="number" id="pt-${pt.pk}" name="${pt.fields.period}" placeholder="Enter target" value="${pt.fields.target}" class="form-control" style="width: 50%;">
+                                        <span id="hint_id_pt_${pt.pk}" style="margin:0px;" class="help-block"> </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        $("#periodic_targets_table tbody").append(markup);
+                    });
+                    markup = `
+                        <tr id="pt_sum_targets">
+                            <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                <strong>Sum of targets</strong>
+                            </td>
+                            <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                <strong>${targets_sum}</strong>
+                            </td>
+                        </tr>
+                    `;
+                    $("#periodic_targets_table tbody").append(markup);
+                }
+            }
         });
     }
 
 
     function show_hide_frequency_fields() {
+        $("#div_id_create_targets_btn").hide();
         var selected_option = $("#id_target_frequency").find("option:selected").text();
         if (selected_option == 'Life of Program (LoP) only' ||
             selected_option == 'Midline and endline' ||
@@ -173,12 +282,17 @@
         if ( $('#id_target_frequency').is('[readonly="readonly"]') ) {
             $("#id_target_frequency option:not(:selected)").attr("disabled", true);
         }
+
+        if (selected_option != '---------' ) {
+            if ($('#div_id_target_frequency_start').is(':visible') && $("#div_id_target_frequency_num_periods").is(':visible')) {
+                $("#div_id_create_targets_btn").show();
+            }
+        }
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
         show_hide_frequency_fields();
     });
 
-    var validation_msgs = {};
 
     function validate_baseline() {
         var baseline = $("#id_baseline");
@@ -296,6 +410,7 @@
     }
 
     function validateForm() {
+        console.log('validatin form');
         var validationsTargetTab = true;
         var validationsPerformanceTab = true;
         if  (validate_baseline() == false ) {
@@ -324,6 +439,10 @@
             validationsTargetTab = false;
         }
 
+        if ($("#periodic_targets_table input").parent().hasClass('has-error')) {
+            validationsTargetTab = false;
+        }
+
         if (validationsTargetTab == false) {
             validation_msgs['target'] = 'Please complete all required fields in the Targets tab.';
         } else {
@@ -348,18 +467,16 @@
         }
     });
 
-    $("#indicator_modal_content").on("submit", "#indicator_update_form", function() {
-        validateForm()
-        showValidations("#modalmessages");
-    });
-
-    $("#indicator_form").on("submit", "#indicator_update_form", function() {
-        validateForm()
-        showValidations("#alerts");
-    });
-
-    $("#indicator_modal_content, #indicator_form").on("focus", "#indicator_update_form", function() {
-        // validateForm();
+    $("#indicator_modal_content").on("input", "input[type=number]", function(e){
+        if ($(this).attr('id').substr(0, 2) == "pt" ) {
+            if ($(this).val()) {
+                $(this).parent().removeClass('has-error');
+                $(this).next('span:first').text('');
+            } else {
+                $(this).parent().addClass('has-error');
+                $(this).next('span:first').text('Please complete this field.');
+            }
+        }
     });
 
 
