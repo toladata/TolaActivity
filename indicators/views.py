@@ -293,7 +293,7 @@ class IndicatorUpdate(UpdateView):
 
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
-        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
+        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator).order_by('customsort', 'create_date', 'period')
         context['targets_sum'] = PeriodicTarget.objects.filter(indicator=getIndicator).aggregate(Sum('target'))['target__sum']
 
         #get external service data if any
@@ -388,7 +388,7 @@ class IndicatorUpdate(UpdateView):
                     periodic_target.save()
 
         self.object = form.save()
-        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('create_date')
+        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [self.object])
@@ -400,6 +400,7 @@ class IndicatorUpdate(UpdateView):
             #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
             targets_sum = self.get_context_data().get('targets_sum')
             if targets_sum == None: targets_sum = "0"
+            # res = {"data": data, "periodic_targets": pts, "gneratedTargets": generatedTargets, "targets_sum": str(targets_sum)}
             return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(targets_sum) + "]")
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
