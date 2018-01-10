@@ -75,69 +75,80 @@ class IndicatorForm(forms.ModelForm):
                         HTML("""
                             <div id="div_id_create_targets_btn" class="form-group">
                                 <div class="controls col-sm-offset-4 col-sm-2">
-                                    <button id="create_targets_btn" class="btn btn-primary">Create targets</button>
+                                    <button type="button" id="create_targets_btn" class="btn btn-primary">Create targets</button>
                                 </div>
                             </div>
                         """)
                     ),
                     Fieldset('',
                         HTML("""
-                            <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
-                                <div class="row">
-                                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
-                                        <h4>Periodic Targets</h4>
+                            <div id="id_div_periodic_tables_placeholder">
+                            {% if periodic_targets and indicator.target_frequency != 1%}
+                                <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
+                                    <div class="row">
+                                        <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
+                                            <h4>Periodic Targets</h4>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
-                                        <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
-                                            <tbody>
-                                                {% for pt in periodic_targets %}
-                                                    <tr id="{{pt.pk}}">
-                                                        <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                                            {% if forloop.last %}
-                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove-circle"></span></a>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                                            <div style="line-height:1;"><strong>{{ pt.period }}</strong></div>
-                                                            <div style="line-height:0.8;"><small>{{ pt.start_date|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|default:'' }}</small></div>
-                                                        </td>
-                                                        <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                                            <div class="controls">
-                                                                <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
-                                                                <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    {% if forloop.last %}
-                                                        <tr id="pt_sum_targets">
-                                                            <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
-                                                                <strong>Sum of targets</strong>
+                                    <div class="row">
+                                        <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
+                                            <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
+                                                <tbody>
+                                                    {% for pt in periodic_targets %}
+                                                        <tr id="{{pt.pk}}">
+                                                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                                {% if forloop.last and indicator.target_frequency != 2 %}
+                                                                    <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove-circle"></span></a>
+                                                                {% endif %}
                                                             </td>
-                                                            <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
-                                                                <strong>{{targets_sum}}</strong>
+                                                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                                {% if indicator.target_frequency == 8 %}
+                                                                    <div class="controls">
+                                                                        <input type="text" name="{{ pt.period }}" value="{{ pt.period }}" class="form-control">
+                                                                        <span style="margin:0px;" class="help-block"> </span>
+                                                                    </div>
+                                                                {% else %}
+                                                                    <div style="line-height:1;"><strong>{{ pt.period }}</strong></div>
+                                                                    <div style="line-height:0.8;"><small>{{ pt.start_date|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|default:'' }}</small></div>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                                <div class="controls">
+                                                                    <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
+                                                                    <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
+                                                                </div>
                                                             </td>
                                                         </tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                                                        {% if forloop.last %}
+                                                            <tr id="pt_sum_targets">
+                                                                <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                                                    <strong>Sum of targets</strong>
+                                                                </td>
+                                                                <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                                                    <strong>{{targets_sum}}</strong>
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
+                                            <strong>Life of Program (LoP) Target</strong>
+                                        </div>
+                                        <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
+                                            <strong>{{indicator.lop_target}}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
+                                            <a href="#" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
-                                        <strong>Life of Program (LoP) Target</strong>
-                                    </div>
-                                    <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
-                                        <strong>{{indicator.lop_target}}</strong>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
-                                        <a href="#" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
-                                    </div>
-                                </div>
+                            {% endif %}
                             </div>
                         """),
                     ),
