@@ -445,8 +445,11 @@ class PeriodicTargetDeleteView(DeleteView):
         if collecteddata_count > 0:
             return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
         #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
+        indicator = self.get_object().indicator
         self.get_object().delete()
-        return JsonResponse({"status": "success", "msg": "Periodic Target deleted successfully."})
+        targets_sum = PeriodicTarget.objects.filter(indicator=indicator).aggregate(Sum('target'))['target__sum']
+        indicator = None
+        return JsonResponse({"status": "success", "msg": "Periodic Target deleted successfully.", "targets_sum": targets_sum})
 
 class CollectedDataCreate(CreateView):
     """

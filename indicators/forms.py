@@ -97,9 +97,9 @@ class IndicatorForm(forms.ModelForm):
                                                     {% for pt in periodic_targets %}
                                                         <tr id="{{pt.pk}}">
                                                             <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                                                {% if forloop.last and indicator.target_frequency != 2 %}
-                                                                    <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove-circle"></span></a>
-                                                                {% endif %}
+                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; display:{% if forloop.last and indicator.target_frequency != 2 %}block{% else %}none{% endif %}">
+                                                                    <span class=" glyphicon glyphicon-remove-circle"></span>
+                                                                </a>
                                                             </td>
                                                             <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                                                 {% if indicator.target_frequency == 8 %}
@@ -125,7 +125,7 @@ class IndicatorForm(forms.ModelForm):
                                                                     <strong>Sum of targets</strong>
                                                                 </td>
                                                                 <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
-                                                                    <strong>{{targets_sum}}</strong>
+                                                                    <strong><span id="id_span_targets_sum">{{targets_sum}}</span></strong>
                                                                 </td>
                                                             </tr>
                                                         {% endif %}

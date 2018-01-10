@@ -61,18 +61,30 @@
     })
 
 
-    $("#indicator_modal_content, #indicator_form").on("click", ".detelebtn", function(e){
+    $("#indicator_modal_content, #indicator_form").on("click", "a.detelebtn", function(e){
         e.preventDefault();
+         $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
         var url = $(this).attr('href');
+        var currnentRow = $(e.target).closest("tr");
+        var prevDeleteBtn = currnentRow.prev("tr").find("a");
+        if (prevDeleteBtn.length == 0) {
+            $("#id_div_periodic_tables_placeholder").empty();
+        }
         if (url == "#") {
-            $(e.target).closest("tr").remove();
+            currnentRow.remove();
+            prevDeleteBtn.show();
             return;
         }
 
         $.post(url)
             .done(function(data, textStatus, jqXHR){
                 if (data.status == "success") {
-                    $(e.target).closest("tr").remove();
+                    currnentRow.remove();
+                    prevDeleteBtn.show();
+                    var targets_sum = data['targets_sum'];
+                    if (targets_sum != 0 && targets_sum != "None" && targets_sum != '' && targets_sum != 'undefined') {
+                        $("#id_span_targets_sum").text(targets_sum);
+                    }
                 } else {
                     createAlert("danger", data.msg, true, "#modalmessages");
                     $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
@@ -145,7 +157,9 @@
                     var markup = `
                         <tr>
                             <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                ${(isLastIteration && indicator.fields.target_frequency != 2) ? '<a href="#" id="deleteLastPT" class="detelebtn" style="color:red;"><span class=" glyphicon glyphicon-remove"></span></a>': ''}
+                                <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; display: ${(isLastIteration && indicator.fields.target_frequency != 2) ? 'block' : 'none'}">
+                                    <span class=" glyphicon glyphicon-remove"></span>
+                                </a>
                             </td>
                             <td style="padding:10px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                 ${(indicator.fields.target_frequency != 8) ? `
