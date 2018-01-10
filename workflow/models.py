@@ -336,18 +336,18 @@ xMd: number, yMd: number, xLg: number, yLg: number, xXl: number, yXl: number, dr
 
 
 class Widget(models.Model):
-    w = models.IntegerField(default=0,null=True, blank=True)
-    h = models.IntegerField(default=0,null=True, blank=True)
-    x = models.IntegerField(default=0,null=True, blank=True)
-    y = models.IntegerField(default=0,null=True, blank=True)
-    xSm = models.IntegerField(default=0,null=True, blank=True)
-    ySm = models.IntegerField(default=0,null=True, blank=True)
-    xMd = models.IntegerField(default=0,null=True, blank=True)
-    yMd = models.IntegerField(default=0,null=True, blank=True)
-    xLg = models.IntegerField(default=0,null=True, blank=True)
-    yLg = models.IntegerField(default=0,null=True, blank=True)
-    xXl = models.IntegerField(default=0,null=True, blank=True)
-    yXl = models.IntegerField(default=0,null=True, blank=True)
+    w = models.IntegerField(default=0, null=True, blank=True)
+    h = models.IntegerField(default=0, null=True, blank=True)
+    x = models.IntegerField(default=0, null=True, blank=True)
+    y = models.IntegerField(default=0, null=True, blank=True)
+    xSm = models.IntegerField(default=0, null=True, blank=True)
+    ySm = models.IntegerField(default=0, null=True, blank=True)
+    xMd = models.IntegerField(default=0, null=True, blank=True)
+    yMd = models.IntegerField(default=0, null=True, blank=True)
+    xLg = models.IntegerField(default=0, null=True, blank=True)
+    yLg = models.IntegerField(default=0, null=True, blank=True)
+    xXl = models.IntegerField(default=0, null=True, blank=True)
+    yXl = models.IntegerField(default=0, null=True, blank=True)
     drag_and_drop = models.BooleanField(default=0)
     resizable = models.BooleanField(default=0)
     title = models.CharField(max_length=255)
@@ -361,7 +361,7 @@ class Widget(models.Model):
         verbose_name_plural = "Widgets"
 
     def __unicode__(self):
-        return self.name
+        return self.title
 
     def save(self, *args, **kwargs):
         if self.create_date == None:
