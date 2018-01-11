@@ -1,3 +1,8 @@
+<!-- <style>
+    .hide-calendar .ui-datepicker-calendar {
+        display: none;
+    }
+</style> -->
 <script>
     var validation_msgs = {};
 
@@ -44,19 +49,36 @@
 
     $( document ).ready(function() {
         show_hide_frequency_fields();
+
     })
 
     $("#indicator_modal_div").on('shown.bs.tab', function() {
         show_hide_frequency_fields();
-        $('.datepicker').datepicker({
+        $('.monthPicker').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
             dateFormat: "yy-mm-dd",
+            // dateFormat: 'M yy',
             onClose: function () {
+                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).datepicker('setDate', new Date(year, month, 1));
                 this.focus();
             },
             onSelect: function () {
                 // The "this" keyword refers to the input (in this case: #someinput)
                 this.focus();
             }
+        });
+
+        $(".monthPicker").focus(function () {
+            $(".ui-datepicker-calendar").hide();
+            $("#ui-datepicker-div").position({
+                my: "center top",
+                at: "center bottom",
+                of: $(this)
+            });
         });
     })
 
@@ -65,12 +87,13 @@
         e.preventDefault();
          $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
         var url = $(this).attr('href');
+        var id = url.split('/')[url.split('/').length - 2];
         var currnentRow = $(e.target).closest("tr");
         var prevDeleteBtn = currnentRow.prev("tr").find("a");
         if (prevDeleteBtn.length == 0) {
             $("#id_div_periodic_tables_placeholder").empty();
         }
-        if (url == "#") {
+        if (id == 'undefined') {
             currnentRow.remove();
             prevDeleteBtn.show();
             return;
@@ -167,14 +190,14 @@
                                     <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>`
                                     :
                                     `<div class="controls">
-                                        <input type="text" id="ptname${i}" name="${pt.period}" placeholder="Enter event name" value="${pt.period}" class="form-control">
+                                        <input type="text" id="ptname-${i}" name="${pt.period}" placeholder="Enter event name" value="${pt.period}" class="form-control">
                                         <span style="margin:0px;" class="help-block"> </span>
                                     </div>`
                                 }
                             </td>
                             <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                 <div class="controls">
-                                    <input type="number" id="pt${i}" value="${pt.target}" data-start-date="${pt.start_date}" data-end-date="${pt.end_date}" name="${pt.period}" placeholder="Enter target" class="form-control" style="width: 50%;">
+                                    <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${pt.start_date}" data-end-date="${pt.end_date}" name="${pt.period}" placeholder="Enter target" class="form-control" style="width: 50%;">
                                     <span id="hint_id_pt_${i}" style="margin:0px;" class="help-block"> </span>
                                 </div>
                             </td>
@@ -231,7 +254,7 @@
             $this.find('input[type=number]').each(function (i, input) {
                 try {
                     var id = $(input).attr('id').split('-')[1];
-                    values.push(id == undefined ? 0 : id);
+                    values.push(id == 'undefined' ? 0 : id);
                 } catch (err) {
                     values.push(0);
                 }
@@ -283,6 +306,9 @@
             if (indicator['fields']['target_frequency']) {
                 $("#id_target_frequency option:not(:selected)").attr("disabled", true);
                 // $("#div_id_create_targets_btn").show();
+                $("#div_id_target_frequency_start").hide();
+                $("#div_id_target_frequency_num_periods").hide();
+                $("#div_id_target_frequency_custom").hide();
             }
             var pts = jsondata[1];
             var generateTargets = jsondata[2];
