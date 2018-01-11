@@ -213,6 +213,7 @@ class IndicatorForm(forms.ModelForm):
         self.fields['target_frequency_start'].widget = DatePicker.DateInput()
         # self.fields['target_frequency_start'].help_text = 'This field is required'
         # self.fields['target_frequency'].required = False
+        self.fields['target_frequency_start'].widget.attrs['class'] = 'monthPicker'
         if self.instance.target_frequency:
             self.fields['target_frequency'].widget.attrs['readonly'] = "readonly"
             #self.fields['target_frequency'].widget.attrs['disabled'] = "disabled"
