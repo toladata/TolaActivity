@@ -1372,7 +1372,7 @@ class DashboardViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     filter_fields = ('user', 'share',)
-    permission_classes = (AllowTolaRoles, IsOrgMember)
+    permission_classes = (IsOrgMember)
     queryset = Dashboard.objects.all()
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = DashboardSerializer
@@ -1386,7 +1386,7 @@ class WidgetViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     filter_fields = ('dashboard',)
-    permission_classes = (AllowTolaRoles, IsOrgMember)
+    permission_classes = (IsOrgMember)
     queryset = Widget.objects.all()
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = WidgetSerializer
