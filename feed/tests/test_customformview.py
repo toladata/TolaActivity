@@ -366,6 +366,41 @@ class CustomFormUpdateViewsTest(TestCase):
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
     @patch('feed.views.requests')
+    def test_update_customform_org_admin_wfl1_json(self, mock_requests):
+        external_response = {'id': 1234}
+        mock_requests.post.return_value = Mock(
+            status_code=201, content=json.dumps(external_response))
+        group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.tola_user.user.groups.add(group_org_admin)
+
+        request = self.factory.post('/api/customform/')
+        wflvl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wflvl1_url = reverse('workflowlevel1-detail',
+                             kwargs={'pk': wflvl1.id},
+                             request=request)
+        customform = factories.CustomForm(
+            organization=self.tola_user.organization)
+
+        data = {'name': '4W Daily Activity Report',
+                'description': 'It is a test',
+                'fields': '[{"name": "name", "type": "text"},'
+                          '{"name": "age", "type": "number"},'
+                          '{"name": "city", "type": "text"}]',
+                'workflowlevel1': wflvl1_url}
+        request = self.factory.post('/api/customform/', json.dumps(data),
+                                    content_type='application/json')
+        request.user = self.tola_user.user
+        view = CustomFormViewSet.as_view({'post': 'update'})
+        response = view(request, pk=customform.pk)
+        self.assertEqual(response.status_code, 200)
+
+        customform = CustomForm.objects.get(pk=response.data['id'])
+        self.assertEquals(customform.name, data['name'])
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('feed.views.requests')
     def test_update_customform_org_admin_second_wfl1(self, mock_requests):
         external_response = {'id': 1234}
         mock_requests.get.return_value = Mock(
