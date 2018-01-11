@@ -47,13 +47,7 @@
         }
     }
 
-    $( document ).ready(function() {
-        show_hide_frequency_fields();
-
-    })
-
-    $("#indicator_modal_div").on('shown.bs.tab', function() {
-        show_hide_frequency_fields();
+    function setupPopupCalendar() {
         $('.monthPicker').datepicker({
             changeMonth: true,
             changeYear: true,
@@ -75,11 +69,20 @@
         $(".monthPicker").focus(function () {
             $(".ui-datepicker-calendar").hide();
             $("#ui-datepicker-div").position({
-                my: "center top",
-                at: "center bottom",
+                my: "left top",
+                at: "left bottom",
                 of: $(this)
             });
         });
+    }
+    $( document ).ready(function() {
+        show_hide_frequency_fields();
+        setupPopupCalendar();
+    })
+
+    $("#indicator_modal_div").on('shown.bs.tab', function() {
+        show_hide_frequency_fields();
+        setupPopupCalendar();
     })
 
 
@@ -148,6 +151,49 @@
     });
 
 
+    //addNewPeriodicTarget
+    $("#indicator_modal_content, #indicator_form").on("click", "#addNewPeriodicTarget", function(e) {
+        e.preventDefault();
+        // console.log($("#id_target_frequency").find("option:selected").text());
+        var numTargets = $("#periodic_targets_table tbody tr").length;
+        $.get('/indicators/periodic_target_generate/3495/?numTargets=' + numTargets, function(data){
+
+            var pt = $.parseJSON(data);
+            var isLastIteration = true;
+            var target_frequency = $("#id_target_frequency").val();
+            var markup = `
+                <tr>
+                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                        <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; display: ${(isLastIteration && target_frequency != 2) ? 'block' : 'none'}">
+                            <span class=" glyphicon glyphicon-remove"></span>
+                        </a>
+                    </td>
+
+                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                        ${(target_frequency != 8) ? `
+                            <div style="line-height:1;"><strong>${pt.period }</strong></div>
+                            <div style="line-height:0.8;"><small>${pt.start_date} ${ pt.start_date ? '-' : ''} ${pt.end_date}</small></div>`
+                            :
+                            `<div class="controls">
+                                <input type="text" id="ptname-${pt.period}" name="${pt.period}" placeholder="Enter event name" value="${pt.period}" class="form-control">
+                                <span style="margin:0px;" class="help-block"> </span>
+                            </div>`
+                        }
+                    </td>
+
+                    <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                        <div class="controls">
+                            <input type="number" id="pt-${pt.period}" value="${pt.target}" data-start-date="${pt.start_date}" data-end-date="${pt.end_date}" name="${pt.period}" placeholder="Enter target" class="form-control" style="width: 50%;">
+                            <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            $("#periodic_targets_table tbody tr:nth-last-child(2)").find("a").hide();
+            $("#periodic_targets_table tbody tr:last").before(markup);
+        });
+
+    });
 
     function addPeriodicTarget() {
         var markup = `
@@ -184,7 +230,7 @@
                                     <span class=" glyphicon glyphicon-remove"></span>
                                 </a>
                             </td>
-                            <td style="padding:10px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                 ${(indicator.fields.target_frequency != 8) ? `
                                     <div style="line-height:1;"><strong>${pt.period }</strong></div>
                                     <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>`
@@ -231,16 +277,13 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
-                            <a href="#" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                            <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
                         </div>
                     </div>
                 </div>
                 `
         return htmlString;
     }
-
-
-
 
     function submitForm(form) {
         $("#create_targets_btn").attr("disabled", true);
@@ -262,7 +305,7 @@
                 values.push($(input).val());
                 if (!$(input).val()) {
                     $(input).parent().addClass('has-error');
-                    $(input).next('span:first').text('Please complete this field.');
+                    $(input).next('span:first').html('<small>Please enter a target value for every period.</small>');
                 }
                 values.push($(input).data("startDate"));
                 values.push($(input).data("endDate"));
@@ -552,7 +595,7 @@
                 $(this).next('span:first').text('');
             } else {
                 $(this).parent().addClass('has-error');
-                $(this).next('span:first').text('Please complete this field.');
+                $(this).next('span:first').html('<small>Please enter a target value for every period.</small>');
             }
         }
     });

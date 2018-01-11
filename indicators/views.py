@@ -15,7 +15,7 @@ from django_tables2 import RequestConfig
 from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
 
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Max
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -38,10 +38,30 @@ from weasyprint import HTML, CSS
 from django.template.loader import get_template
 from django.http import HttpResponse
 import datetime
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta #('%Y-%m-%d')
 from feed.serializers import FlatJsonSerializer
 
-
+_PERIODICTARGET_DEFINITION = {
+    Indicator.LOP: lambda **params: {"period": Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]},
+    Indicator.MID_END: lambda **params: [{"period": "Midline"}, {"period": "Endline"}],
+    Indicator.EVENT: lambda **params: {"period": params.get('n')},
+    Indicator.ANNUAL: lambda **params: {"period": "Year %s" % params.get('i'), \
+        "start_date": (params.get('s') + relativedelta(years=+( (params.get('i') -1 )*1))).strftime('%b %d, %Y'), \
+        "end_date": ( params.get('s') + relativedelta(years=+(params.get('i')*1)) + relativedelta(days=-1) ).strftime('%b %d, %Y')},
+    Indicator.SEMI_ANNUAL: lambda **params: {"period": "Semi-annual period %s" % params.get('i'), \
+        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*6))).strftime('%b %d, %Y'), \
+        "end_date": ( params.get('s') + relativedelta(months=+( params.get('i')*6)) + relativedelta(days=-1) ).strftime('%b %d, %Y')},
+    Indicator.TRI_ANNUAL: lambda **params: {"period": "Tri-annual period %s" % params.get('i'), \
+        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*4))).strftime('%b %d, %Y'), \
+        "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i' )*4))) + relativedelta(days=-1) ).strftime('%b %d, %Y')},
+    Indicator.QUARTERLY: lambda **params: {"period": "Quarter %s" % params.get('i'), \
+        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*3))).strftime('%b %d, %Y'), \
+        "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i')*3)))+ relativedelta(days=-1) ).strftime('%b %d, %Y')},
+    Indicator.MONTHLY: lambda **params: {"period": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%B") \
+        + " " + (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%Y"), \
+        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime('%b %d, %Y'), \
+        "end_date": ( (params.get('s') + relativedelta(months=+params.get('i' ))) + relativedelta(days=-1) ).strftime('%b %d, %Y')},
+}
 
 def group_excluded(*group_names, **url):
     """
@@ -259,11 +279,32 @@ class IndicatorCreate(CreateView):
     form_class = IndicatorForm
 
 
+class PeriodicTargetView(View):
+    model = PeriodicTarget
+
+    def get(self, request, *args, **kwargs):
+        indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
+        try:
+            numTargets = int(request.GET.get('numTargets', None))
+        except Exception as e:
+            numTargets = PeriodicTarget.objects.filter(indicator=indicator).count() + 1
+        params = {
+            's': indicator.target_frequency_start,
+            'n': '',
+            'i': numTargets
+        }
+        pt_generated = _PERIODICTARGET_DEFINITION[indicator.target_frequency](**params)
+        pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
+        return HttpResponse(pt_generated_json)
+
+
+
 class IndicatorUpdate(UpdateView):
     """
     Update and Edit Indicators.
     """
     model = Indicator
+
     #template_name = 'indicators/indicator_form.html'
     def get_template_names(self):
         if self.request.GET.get('modal'):
@@ -328,32 +369,13 @@ class IndicatorUpdate(UpdateView):
 
 
     def form_valid(self, form, **kwargs):
+
         periodic_targets = self.request.POST.get('periodic_targets', None)
         indicatr = Indicator.objects.get(pk=self.kwargs.get('pk'))
         generatedTargets = []
 
         if periodic_targets == 'generateTargets':
-            periodic_target = {
-                Indicator.LOP: lambda **params: {"period": Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]},
-                Indicator.MID_END: lambda **params: [{"period": "Midline"}, {"period": "Endline"}],
-                Indicator.EVENT: lambda **params: {"period": params.get('n')},
-                Indicator.ANNUAL: lambda **params: {"period": "Year %s" % params.get('i'), \
-                    "start_date": (params.get('s') + relativedelta(years=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
-                    "end_date": ( params.get('s') + relativedelta(years=+(params.get('i')*1)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-                Indicator.SEMI_ANNUAL: lambda **params: {"period": "Semi-annual period %s" % params.get('i'), \
-                    "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*6))).strftime('%Y-%m-%d'), \
-                    "end_date": ( params.get('s') + relativedelta(months=+( params.get('i')*6)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-                Indicator.TRI_ANNUAL: lambda **params: {"period": "Tri-annual period %s" % params.get('i'), \
-                    "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*4))).strftime('%Y-%m-%d'), \
-                    "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i' )*4))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-                Indicator.QUARTERLY: lambda **params: {"period": "Quarter %s" % params.get('i'), \
-                    "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*3))).strftime('%Y-%m-%d'), \
-                    "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i')*3)))+ relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-                Indicator.MONTHLY: lambda **params: {"period": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%B") \
-                    + " " + (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%Y"), \
-                    "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
-                    "end_date": ( (params.get('s') + relativedelta(months=+params.get('i' ))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-            }
+
 
             params = {
                 's': form.cleaned_data.get('target_frequency_start', None),
@@ -362,7 +384,8 @@ class IndicatorUpdate(UpdateView):
             for i in range(0, form.cleaned_data.get('target_frequency_num_periods', 0)):
                 params['i'] = i + 1
                 target_frequency = form.cleaned_data.get('target_frequency', None)
-                pt = periodic_target[target_frequency](**params)
+
+                pt = _PERIODICTARGET_DEFINITION[target_frequency](**params)
                 if isinstance(pt, list):
                     generatedTargets = generatedTargets + pt
                 else:
