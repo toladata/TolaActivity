@@ -350,6 +350,7 @@ class Widget(models.Model):
     yXl = models.IntegerField(default=0, null=True, blank=True)
     drag_and_drop = models.BooleanField(default=0)
     resizable = models.BooleanField(default=0)
+    changed = models.BooleanField(default=0)
     title = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
     data = JSONField(null=True, blank=True)
