@@ -1,13 +1,14 @@
 import json
 import logging
 import os
+from urlparse import urljoin
 
+from django.contrib import auth
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
-from django.test import RequestFactory, TestCase, override_settings
+from django.test import Client, RequestFactory, TestCase, override_settings
 from django.conf import settings
 from django.urls import reverse
-from django.http import HttpRequest
 from mock import Mock, patch
 
 import factories
@@ -356,3 +357,36 @@ class TolaTrackSiloDataProxyTest(TestCase):
         request = Mock(user=self.tola_user.user)
         response = views.TolaTrackSiloDataProxy().get(request, '288')
         self.assertEqual(response.status_code, 502)
+
+
+class LogoutViewTest(TestCase):
+    def setUp(self):
+        self.user = factories.User()
+        self.user.set_password(12345)
+        self.user.save()
+        self.tola_user = factories.TolaUser(user=self.user)
+        self.factory = RequestFactory()
+
+    def test_logout_redirect_to_track(self):
+        c = Client()
+        c.post('/accounts/login/', {'username': self.user.username,
+                                    'password': '12345'})
+        self.user = auth.get_user(c)
+        self.assertEqual(self.user.is_authenticated(), True)
+
+        response = c.post('/accounts/logout/')
+        self.user = auth.get_user(c)
+        self.assertEqual(self.user.is_authenticated(), False)
+        self.assertEqual(response.status_code, 302)
+
+        url_subpath = 'accounts/logout/'
+        redirect_url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+        self.assertEqual(response.url, redirect_url)
+
+    def test_logout_redirect_to_index(self):
+        c = Client()
+        response = c.post('/accounts/logout/')
+        self.user = auth.get_user(c)
+        self.assertEqual(self.user.is_authenticated(), False)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/')

@@ -4,9 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.views.generic import TemplateView
 from rest_framework import routers
-from rest_framework.authtoken import views as authtoken_views
 
 from formlibrary.views import BinaryFieldViewSet, binary_test
 from tola import views as tola_views
@@ -125,7 +123,7 @@ urlpatterns = [ # rest framework
 
                 # local login
                 url(r'^accounts/login/$', auth_views.login, name='login'),
-                url(r'^accounts/logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
+                url(r'^accounts/logout/$', tola_views.logout_view, name='logout'),
 
                 # accounts
                 url(r'^accounts/profile/$', tola_views.profile, name='profile'),

@@ -5,6 +5,7 @@ import requests
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
@@ -250,18 +251,17 @@ class BookmarkDelete(DeleteView):
 
 def logout_view(request):
     """
-    Logout a user
+    Logout a user in activity and track
     """
-    logout(request)
-    # Redirect to a success page.
+    # Redirect to track, so the user will
+    # be logged out there as well
+    if request.user.is_authenticated:
+        logout(request)
+        url_subpath = 'accounts/logout/'
+        url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+        return HttpResponseRedirect(url)
+
     return HttpResponseRedirect("/")
-
-from django.contrib.auth import logout
-from django.shortcuts import redirect
-
-def logout_view(request):
-    logout(request)
-    return redirect('home')
 
 
 def check_view(request):
