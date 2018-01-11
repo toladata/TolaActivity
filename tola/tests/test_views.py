@@ -137,7 +137,8 @@ class RegisterViewPostTest(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         template_content = response.content
-        for field in ('username', 'password1', 'password2'):
+        for field in ('username', 'password1', 'password2',
+                      'privacy_disclaimer_accepted'):
             msg = ('<p id="error_1_id_{}" class="help-block"><strong>'
                    'This field is required.</strong></p>'.format(field))
             self.assertIn(msg, template_content)
