@@ -120,6 +120,8 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
             self.fields['org'] = forms.CharField(
                 initial=settings.DEFAULT_ORG, disabled=True)
 
+        self.fields['privacy_disclaimer_accepted'].required = True
+
 
 class BookmarkForm(forms.ModelForm):
     """
