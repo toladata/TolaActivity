@@ -91,7 +91,7 @@ class RegisterViewGetTest(TestCase):
         response = views.RegisterView.as_view()(request)
         self.assertEqual(response.status_code, 200)
         template_content = response.content
-        self.assertIn('TolaData - Privacy Policy', template_content)
+        self.assertIn('Humanitec - Privacy Policy', template_content)
         self.assertIn('Privacy disclaimer accepted', template_content)
 
 
