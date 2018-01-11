@@ -1382,8 +1382,6 @@ class WidgetViewSet(viewsets.ModelViewSet):
     def list(self, request):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
-        if not request.user.is_superuser:
-            queryset = queryset.filter(user=request.user)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
