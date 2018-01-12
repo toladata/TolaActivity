@@ -122,7 +122,10 @@ urlpatterns = [ # rest framework
                 url(r'^formlibrary/', include('formlibrary.urls')),
 
                 # local login
-                url(r'^accounts/login/$', auth_views.login, name='login'),
+                url(r'^accounts/login/$', auth_views.LoginView.as_view(
+                    extra_context={'chargebee_signup_org_url':
+                                   settings.CHARGEBEE_SIGNUP_ORG_URL}),
+                    name='login'),
                 url(r'^accounts/logout/$', tola_views.logout_view, name='logout'),
 
                 # accounts

@@ -1,11 +1,14 @@
+from importlib import import_module
 import json
 import logging
 import os
+import sys
 from urlparse import urljoin
 
 from django.contrib import auth
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
+from django.core.urlresolvers import clear_url_caches
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.conf import settings
 from django.urls import reverse
@@ -67,6 +70,35 @@ class IndexViewTest(TestCase):
         template_content = response.render().content
         self.assertIn('https://tolaactivity.com', template_content)
         self.assertIn('https://tolatrack.com', template_content)
+
+
+class LoginViewTest(TestCase):
+    def test_org_signup_link(self):
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertIn(
+            ('<a href="#" data-toggle="modal" data-target="#exampleModal">'
+             'Register Your Organization with TolaData</a>'),
+            template_content)
+
+    def _reload_urlconf(self):
+        clear_url_caches()
+        if settings.ROOT_URLCONF in sys.modules:
+            reload(sys.modules[settings.ROOT_URLCONF])
+        return import_module(settings.ROOT_URLCONF)
+
+    @override_settings(CHARGEBEE_SIGNUP_ORG_URL='https://chargebee.com/123')
+    def test_org_signup_link_chargebee(self):
+        # As the url_patterns are cached when python load the module, also the
+        # settings are cached there. As we want to override a setting, we need
+        # to reload also the urls in order to catch the new value.
+        self._reload_urlconf()
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertIn(
+            ('<a href="https://chargebee.com/123">'
+             'Register Your Organization with TolaData</a>'),
+            template_content)
 
 
 class RegisterViewGetTest(TestCase):
