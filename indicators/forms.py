@@ -142,11 +142,13 @@ class IndicatorForm(forms.ModelForm):
                                             <strong>{{indicator.lop_target}}</strong>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
-                                            <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                                    {% if indicator.target_frequency != 2 %}
+                                        <div class="row">
+                                            <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
+                                                <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    {% endif %}
                                 </div>
                             {% endif %}
                             </div>
