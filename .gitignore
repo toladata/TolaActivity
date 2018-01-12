@@ -20,6 +20,10 @@ build
 # Logs:
 *.log
 
+# NodeJS modules
+node_modules
+package-lock.json
+
 #allvritualenv
 venv/
 venv-ta/
