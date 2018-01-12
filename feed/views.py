@@ -1033,10 +1033,14 @@ class CustomFormViewSet(viewsets.ModelViewSet):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         form_data = request.data.copy()
+        fields = form_data.get('fields')
         headers = {
             'Authorization': 'Token {}'.format(
                 settings.TOLA_TRACK_TOKEN),
         }
+
+        if isinstance(fields, list):
+            fields = json.dumps(fields)
 
         # Serialize the program
         if request.data.get('workflowlevel1'):
@@ -1061,7 +1065,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
                 # Update the table info in Track
                 data = {'name': form_data.get('name'),
                         'description': form_data.get('description'),
-                        'fields': form_data.get('fields')}
+                        'fields': fields}
                 url_subpath = 'api/customform/%s' % instance.silo_id
                 url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
                 requests.put(url, data=data, headers=headers)
@@ -1074,7 +1078,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
             tola_user = request.user.tola_user
             silo_data = {'name': form_data.get('name'),
                          'description': form_data.get('description'),
-                         'fields': form_data.get('fields'),
+                         'fields': fields,
                          'level1_uuid': wkfl1.level1_uuid,
                          'tola_user_uuid': tola_user.tola_user_uuid}
 
