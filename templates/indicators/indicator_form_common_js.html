@@ -151,7 +151,7 @@
     });
 
 
-    function createPeriodicTargetRow(pt, target_frequency, isLastIteration) {
+    function createPeriodicTargetRow(pt, target_frequency, isLastIteration, rowNum) {
         var markup = `
                 <tr>
                     <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
@@ -166,7 +166,7 @@
                             <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>`
                             :
                             `<div class="controls">
-                                <input type="text" id="ptname-${pt.period}" name="${pt.period}" placeholder="Enter event name" value="${pt.period}" class="form-control">
+                                <input type="text" id="ptname-${pt.period}" name="${pt.period}" placeholder="Enter event name" value="${(rowNum==0) ? pt.period : ''}" class="form-control">
                                 <span style="margin:0px;" class="help-block"> </span>
                             </div>`
                         }
@@ -216,8 +216,9 @@
 
         // Add table rows
         $.each(periodic_targets, function(i, pt){
+            console.log(i);
             isLastIteration = i == periodic_targets.length -1;
-            markup = createPeriodicTargetRow(pt, indicator.fields.target_frequency, isLastIteration);
+            markup = createPeriodicTargetRow(pt, indicator.fields.target_frequency, isLastIteration, i);
             htmlString += markup;
         });
 
