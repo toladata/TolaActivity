@@ -182,6 +182,14 @@
             `;
         return markup;
     }
+
+    //addNewPeriodicTarget
+    $("#indicator_modal_content, #indicator_form").on("click", "#delete_targets_btn", function(e) {
+        e.preventDefault();
+        // console.log($("#id_target_frequency").find("option:selected").text());
+       alert("Not yet implemented!");
+    });
+
     //addNewPeriodicTarget
     $("#indicator_modal_content, #indicator_form").on("click", "#addNewPeriodicTarget", function(e) {
         e.preventDefault();
@@ -340,7 +348,7 @@
 
 
     function show_hide_frequency_fields() {
-        $("#div_id_create_targets_btn").hide();
+        // $("#div_id_create_targets_btn").hide();
         var selected_option = $("#id_target_frequency").find("option:selected").text();
         if (selected_option == 'Life of Program (LoP) only' ||
             selected_option == 'Midline and endline' ||

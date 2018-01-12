@@ -74,8 +74,9 @@ class IndicatorForm(forms.ModelForm):
                     Fieldset('',
                         HTML("""
                             <div id="div_id_create_targets_btn" class="form-group">
-                                <div class="controls col-sm-offset-4 col-sm-2">
+                                <div class="controls col-sm-offset-4 col-sm-6">
                                     <button type="button" id="create_targets_btn" class="btn btn-primary">Create targets</button>
+                                    <button type="button" id="delete_targets_btn" class="btn btn-link">Remove all targets</button>
                                 </div>
                             </div>
                         """)
