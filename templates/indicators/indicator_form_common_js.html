@@ -241,7 +241,7 @@
                     <strong>${indicator.fields.lop_target}</strong>
                 </div>
             </div>
-            ${(target_frequency != 2) ? `
+            ${(indicator.fields.target_frequency != 2) ? `
                 <div class="row">
                     <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
                         <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
@@ -371,7 +371,8 @@
 
         if (selected_option != '---------' ) {
             if ( ($('#div_id_target_frequency_start').is(':visible') || $("#div_id_target_frequency_custom").is(":visible") )
-                    && $("#div_id_target_frequency_num_periods").is(':visible')) {
+                    && $("#div_id_target_frequency_num_periods").is(':visible')
+                    || selected_option == 'Midline and endline') {
                 $("#div_id_create_targets_btn").show();
             }
         }
