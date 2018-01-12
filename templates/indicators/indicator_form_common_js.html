@@ -151,17 +151,8 @@
     });
 
 
-    //addNewPeriodicTarget
-    $("#indicator_modal_content, #indicator_form").on("click", "#addNewPeriodicTarget", function(e) {
-        e.preventDefault();
-        // console.log($("#id_target_frequency").find("option:selected").text());
-        var numTargets = $("#periodic_targets_table tbody tr").length;
-        $.get('/indicators/periodic_target_generate/3495/?numTargets=' + numTargets, function(data){
-
-            var pt = $.parseJSON(data);
-            var isLastIteration = true;
-            var target_frequency = $("#id_target_frequency").val();
-            var markup = `
+    function createPeriodicTargetRow(pt, target_frequency, isLastIteration) {
+        var markup = `
                 <tr>
                     <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                         <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; display: ${(isLastIteration && target_frequency != 2) ? 'block' : 'none'}">
@@ -172,7 +163,7 @@
                     <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                         ${(target_frequency != 8) ? `
                             <div style="line-height:1;"><strong>${pt.period }</strong></div>
-                            <div style="line-height:0.8;"><small>${pt.start_date} ${ pt.start_date ? '-' : ''} ${pt.end_date}</small></div>`
+                            <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>`
                             :
                             `<div class="controls">
                                 <input type="text" id="ptname-${pt.period}" name="${pt.period}" placeholder="Enter event name" value="${pt.period}" class="form-control">
@@ -183,105 +174,79 @@
 
                     <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                         <div class="controls">
-                            <input type="number" id="pt-${pt.period}" value="${pt.target}" data-start-date="${pt.start_date}" data-end-date="${pt.end_date}" name="${pt.period}" placeholder="Enter target" class="form-control" style="width: 50%;">
+                            <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control" style="width: 50%;">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
                         </div>
                     </td>
                 </tr>
             `;
+        return markup;
+    }
+    //addNewPeriodicTarget
+    $("#indicator_modal_content, #indicator_form").on("click", "#addNewPeriodicTarget", function(e) {
+        e.preventDefault();
+        // console.log($("#id_target_frequency").find("option:selected").text());
+        var numTargets = $("#periodic_targets_table tbody tr").length;
+        $.get('/indicators/periodic_target_generate/3495/?numTargets=' + numTargets, function(data){
+
+            var pt = $.parseJSON(data);
+            var isLastIteration = true;
+            var target_frequency = $("#id_target_frequency").val();
+            var markup = createPeriodicTargetRow(pt, target_frequency, isLastIteration);
             $("#periodic_targets_table tbody tr:nth-last-child(2)").find("a").hide();
             $("#periodic_targets_table tbody tr:last").before(markup);
         });
 
     });
 
-    function addPeriodicTarget() {
-        var markup = `
-            <tr id="0">
-                <td><input type="text" name="period-0" class="textinput textInput form-control"></td>
-                <td><input type="text" name="target-0" class="textinput textInput form-control"></td>
-                <td style="vertical-align:middle">
-                    <a href="#" class="detelebtn" style="color:red;"><span class="glyphicon glyphicon-trash"></span></a>
-                </td>
-            </tr>`;
-
-        $("#periodic_targets_table tbody").append(markup);
-
-    }
-
     function createPeriodTargetsHTML(periodic_targets, indicator, targets_sum) {
+        var markup;
+        var isLastIteration
         var htmlString = `
-                    <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
-                        <div class="row">
-                            <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
-                                <h4>Periodic Targets</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
-                                <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
-                                    <tbody>`;
-                $.each(periodic_targets, function(i, pt){
-                    var isLastIteration = i == periodic_targets.length -1;
-                    var markup = `
-                        <tr>
-                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; display: ${(isLastIteration && indicator.fields.target_frequency != 2) ? 'block' : 'none'}">
-                                    <span class=" glyphicon glyphicon-remove"></span>
-                                </a>
-                            </td>
-                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                ${(indicator.fields.target_frequency != 8) ? `
-                                    <div style="line-height:1;"><strong>${pt.period }</strong></div>
-                                    <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>`
-                                    :
-                                    `<div class="controls">
-                                        <input type="text" id="ptname-${i}" name="${pt.period}" placeholder="Enter event name" value="${pt.period}" class="form-control">
-                                        <span style="margin:0px;" class="help-block"> </span>
-                                    </div>`
-                                }
-                            </td>
-                            <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                <div class="controls">
-                                    <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${pt.start_date}" data-end-date="${pt.end_date}" name="${pt.period}" placeholder="Enter target" class="form-control" style="width: 50%;">
-                                    <span id="hint_id_pt_${i}" style="margin:0px;" class="help-block"> </span>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    //$("#periodic_targets_table tbody").append(markup);
-                    htmlString += markup;
-                });
-                markup = `
-                    <tr id="pt_sum_targets">
-                        <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
-                            <strong>Sum of targets</strong>
-                        </td>
-                        <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
-                            <strong><span id="id_span_targets_sum">${targets_sum}</span></strong>
-                        </td>
-                    </tr>
-                `;
-                htmlString += markup;
-                htmlString += `</tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
-                            <strong>Life of Program (LoP) Target</strong>
-                        </div>
-                        <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
-                            <strong>${indicator.fields.lop_target}</strong>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
-                            <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
-                        </div>
-                    </div>
+        <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
+            <div class="row">
+                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
+                    <h4>Periodic Targets</h4>
                 </div>
-                `
+            </div>
+            <div class="row">
+                <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
+                    <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
+                        <tbody>`;
+
+        // Add table rows
+        $.each(periodic_targets, function(i, pt){
+            isLastIteration = i == periodic_targets.length -1;
+            markup = createPeriodicTargetRow(pt, indicator.fields.target_frequency, isLastIteration);
+            htmlString += markup;
+        });
+
+        htmlString +=       `<tr id="pt_sum_targets">
+                                <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                    <strong>Sum of targets</strong>
+                                </td>
+                                <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                    <strong><span id="id_span_targets_sum">${targets_sum}</span></strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
+                    <strong>Life of Program (LoP) Target</strong>
+                </div>
+                <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
+                    <strong>${indicator.fields.lop_target}</strong>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
+                    <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                </div>
+            </div>
+        </div>`;
         return htmlString;
     }
 
@@ -297,7 +262,7 @@
             $this.find('input[type=number]').each(function (i, input) {
                 try {
                     var id = $(input).attr('id').split('-')[1];
-                    values.push(id == 'undefined' ? 0 : id);
+                    values.push($.isNumeric(id) ? id : 0);
                 } catch (err) {
                     values.push(0);
                 }

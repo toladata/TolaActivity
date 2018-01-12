@@ -374,6 +374,18 @@ class PeriodicTarget(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.period, self.target)
 
+    @property
+    def start_date_formatted(self):
+        if self.start_date:
+            return self.start_date.strftime('%b %m, %Y')
+        return self.start_date
+
+    @property
+    def end_date_formatted(self):
+        if self.end_date:
+            return self.end_date.strftime('%b %m, %Y')
+        return self.end_date
+
 
 class PeriodicTargetAdmin(admin.ModelAdmin):
     list_display = ('period', 'target', 'customsort',)
