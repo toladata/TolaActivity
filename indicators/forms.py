@@ -98,7 +98,7 @@ class IndicatorForm(forms.ModelForm):
                                                         <tr id="{{pt.pk}}">
                                                             <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                                                 <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; display:{% if forloop.last and indicator.target_frequency != 2 %}block{% else %}none{% endif %}">
-                                                                    <span class=" glyphicon glyphicon-remove-circle"></span>
+                                                                    <span class=" glyphicon glyphicon-remove"></span>
                                                                 </a>
                                                             </td>
                                                             <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
@@ -109,12 +109,12 @@ class IndicatorForm(forms.ModelForm):
                                                                     </div>
                                                                 {% else %}
                                                                     <div style="line-height:1;"><strong>{{ pt.period }}</strong></div>
-                                                                    <div style="line-height:0.8;"><small>{{ pt.start_date|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|default:'' }}</small></div>
+                                                                    <div style="line-height:0.8;"><small>{{ pt.start_date|date:"M d, Y"|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|date:"M d, Y"|default:'' }}</small></div>
                                                                 {% endif %}
                                                             </td>
                                                             <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                                                 <div class="controls">
-                                                                    <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" class="form-control" style="width: 50%;">
+                                                                    <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" data-start-date="{{pt.start_date_formatted}}" data-end-date="{{pt.end_date_formatted}}" placeholder="Enter target" class="form-control" style="width: 50%;">
                                                                     <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
                                                                 </div>
                                                             </td>
@@ -142,11 +142,13 @@ class IndicatorForm(forms.ModelForm):
                                             <strong>{{indicator.lop_target}}</strong>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
-                                            <a href="#" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                                    {% if indicator.target_frequency != 2 %}
+                                        <div class="row">
+                                            <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
+                                                <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    {% endif %}
                                 </div>
                             {% endif %}
                             </div>
