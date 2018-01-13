@@ -22,7 +22,8 @@ build
 
 # NodeJS modules
 node_modules
-package-lock.json
+chromedriver
+geckodriver
 
 #allvritualenv
 venv/

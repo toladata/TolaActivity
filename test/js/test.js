@@ -23,12 +23,18 @@ var webdriver = require('selenium-webdriver');
 var test = require('selenium-webdriver/testing');
 var assert = require('chai').assert;
 var expect = require('chai').expect;
+var fs = require('fs');
 let el;
 
-username = readConfig('username');
-password = readConfig('password');
-baseurl = readConfig('baseurl');
-browser = readConfig('browser');
+function readConfig() {
+  let data = fs.readFileSync('config.json');
+  return JSON.parse(data);
+};
+let parms = readConfig();
+var username = parms.username;
+var password = parms.password;
+var baseurl = parms.baseurl;
+var browser = parms.browser;
 
 var driver = new webdriver.Builder()
   .forBrowser(browser)

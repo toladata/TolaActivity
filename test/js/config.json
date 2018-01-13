@@ -2,5 +2,5 @@
 	"username": "username@example.com",
 	"password": "sekrit_word",
 	"baseurl": "https://url.of.tola-activity.server",
-	"browser": "browser"
+	"browser": "browser_name"
 }
