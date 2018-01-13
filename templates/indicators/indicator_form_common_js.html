@@ -39,7 +39,6 @@
             months[12] = "Dec";
             return months[parseInt(dateArray[1])] + ' ' + dateArray[2] + ', ' + dateArray[0];
         } catch (err) {
-            console.log(err);
             if (dateString == null){
                 dateString = '';
             }
@@ -151,9 +150,9 @@
     });
 
 
-    function createPeriodicTargetRow(pt, target_frequency, isLastIteration) {
+    function createPeriodicTargetRow(pt, target_frequency, isLastIteration, rowNum) {
         var markup = `
-                <tr>
+                <tr class="periodic-target">
                     <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                         <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; display: ${(isLastIteration && target_frequency != 2) ? 'block' : 'none'}">
                             <span class=" glyphicon glyphicon-remove"></span>
@@ -166,7 +165,7 @@
                             <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>`
                             :
                             `<div class="controls">
-                                <input type="text" id="ptname-${pt.period}" name="${pt.period}" placeholder="Enter event name" value="${pt.period}" class="form-control">
+                                <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control">
                                 <span style="margin:0px;" class="help-block"> </span>
                             </div>`
                         }
@@ -182,6 +181,14 @@
             `;
         return markup;
     }
+
+    //addNewPeriodicTarget
+    $("#indicator_modal_content, #indicator_form").on("click", "#delete_targets_btn", function(e) {
+        e.preventDefault();
+        // console.log($("#id_target_frequency").find("option:selected").text());
+       alert("Not yet implemented!");
+    });
+
     //addNewPeriodicTarget
     $("#indicator_modal_content, #indicator_form").on("click", "#addNewPeriodicTarget", function(e) {
         e.preventDefault();
@@ -217,7 +224,7 @@
         // Add table rows
         $.each(periodic_targets, function(i, pt){
             isLastIteration = i == periodic_targets.length -1;
-            markup = createPeriodicTargetRow(pt, indicator.fields.target_frequency, isLastIteration);
+            markup = createPeriodicTargetRow(pt, indicator.fields.target_frequency, isLastIteration, i);
             htmlString += markup;
         });
 
@@ -252,15 +259,43 @@
     }
 
     function submitForm(form) {
-        $("#create_targets_btn").attr("disabled", true);
+        show_hide_frequency_fields(true);
+        // $("#create_targets_btn").attr("disabled", true);
         var submitBtnName = $(form).find("input[type=submit]:focus" );
         var form_url = $(form).attr('action');
         var form_data = $(form).serialize();
         var periodic_targets = [];
-        $('#periodic_targets_table tr').each(function () {
+        $('#periodic_targets_table tr.periodic-target').each(function () {
             var $this = $(this);
             var values = [];
+            var eventNameElement = $($this.find('input[type=text]'));
+            var targetValueSelector = $($this.find('input[type=number]'));
+
+            var pt_id;
+            var pt_name;
+            try {
+                pt_id = parseInt(targetValueSelector.attr('id').split('-')[1]);
+                if (!$.isNumeric(pt_id)) { pt_id = 0; }
+            } catch (err) {
+                pt_id = 0;
+            }
+
+            if (eventNameElement.length > 0) {
+                pt_name = eventNameElement.val();
+            } else {
+                pt_name = targetValueSelector.attr('name');
+            }
+
+            var pt_value = targetValueSelector.val();
+            var start_date = targetValueSelector.data("startDate");
+            var end_date = targetValueSelector.data("endDate");
+
+            periodic_targets.push({'id': pt_id, 'period': pt_name, 'target': pt_value, 'start_date': start_date, 'end_date': end_date } );
+
+
+            /*
             $this.find('input[type=number]').each(function (i, input) {
+                console.log('input type number = ', i);
                 try {
                     var id = $(input).attr('id').split('-')[1];
                     values.push($.isNumeric(id) ? id : 0);
@@ -276,9 +311,10 @@
                 values.push($(input).data("startDate"));
                 values.push($(input).data("endDate"));
             });
-            if(values.length > 0) {
-                periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2], 'start_date': values[3], 'end_date': values[4] } );
-            }
+            */
+            // if(values.length > 0) {
+            //     periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2], 'start_date': values[3], 'end_date': values[4] } );
+            // }
         });
         // if there are errors in periodic targets then do not submit the form
         if ($("#id_div_periodic_tables_placeholder input").parent().hasClass('has-error')) { return; }
@@ -310,20 +346,12 @@
             $(alertsElement).html('');
             createAlert("success", "Success, form data saved.", true, alertsElement);
             var jsondata = $.parseJSON(data);
-            //var item = data;
             var indicator = jsondata[0][0];
-            if (indicator['fields']['target_frequency']) {
-                $("#id_target_frequency option:not(:selected)").attr("disabled", true);
-                // $("#div_id_create_targets_btn").show();
-                $("#div_id_target_frequency_start").hide();
-                $("#div_id_target_frequency_num_periods").hide();
-                $("#div_id_target_frequency_custom").hide();
-            }
             var pts = jsondata[1];
             var generateTargets = jsondata[2];
             var targets_sum = jsondata[3];
 
-            $("#id_achieved").val(indicator['fields']['achieved']);
+            // $("#id_achieved").val(indicator['fields']['achieved']);
 
             if (!$.isEmptyObject(generateTargets) && indicator.fields.target_frequency != 1) {
                 var htmlString = createPeriodTargetsHTML(generateTargets, indicator, targets_sum);
@@ -338,44 +366,63 @@
     }
 
 
-    function show_hide_frequency_fields() {
-        $("#div_id_create_targets_btn").hide();
+    function show_hide_frequency_fields(lock = false) {
         var selected_option = $("#id_target_frequency").find("option:selected").text();
-        if (selected_option == 'Life of Program (LoP) only' ||
-            selected_option == 'Midline and endline' ||
-            selected_option == '---------') {
+        if (lock == true || $('#id_target_frequency').is('[readonly="readonly"]')) {
+            $("#id_target_frequency option:not(:selected)").attr("disabled", true);
+            $("#id_target_frequency").attr("readonly", true);
+            $("#create_targets_btn").attr("disabled", true);
             $("#div_id_target_frequency_start").hide();
             $("#div_id_target_frequency_num_periods").hide();
             $("#div_id_target_frequency_custom").hide();
-            $("#id_target_frequency_start").val('');
-            // $("#id_target_frequency_start").prop('required', false);
-            $("#id_target_frequency_custom").val('');
-
-        } else if (selected_option == 'Event') {
-            $("#div_id_target_frequency_start").hide();
-            $("#id_target_frequency_start").val('');
-            $("#div_id_target_frequency_custom").show();
-            $("#div_id_target_frequency_num_periods").show();
-        } else {
-            $("#div_id_target_frequency_start").show();
-            $("#div_id_target_frequency_num_periods").show();
-            $("#div_id_target_frequency_custom").hide();
-            $("#id_target_frequency_custom").val('');
+            lock = true;
+        }
+        if (selected_option == 'Life of Program (LoP) only') {
+            $("#div_id_create_targets_btn").hide();
         }
 
-        if ( $('#id_target_frequency').is('[readonly="readonly"]') ) {
-            $("#id_target_frequency option:not(:selected)").attr("disabled", true);
-            // $("#div_id_create_targets_btn").show();
-            $("#create_targets_btn").attr("disabled", true);
-        }
+        // if (selected_option == 'Life of Program (LoP) only') {
+        //     $("#id_target_frequency option:not(:selected)").attr("disabled", false);
+        //     $("#id_target_frequency").attr("readonly", false);
+        // }
 
-        if (selected_option != '---------' ) {
-            if ( ($('#div_id_target_frequency_start').is(':visible') || $("#div_id_target_frequency_custom").is(":visible") )
-                    && $("#div_id_target_frequency_num_periods").is(':visible')
-                    || selected_option == 'Midline and endline') {
-                $("#div_id_create_targets_btn").show();
+        if (lock == false) {
+            if (selected_option == 'Life of Program (LoP) only' ||
+                selected_option == 'Midline and endline' ||
+                selected_option == '---------') {
+                $("#div_id_target_frequency_start").hide();
+                $("#div_id_target_frequency_num_periods").hide();
+                $("#div_id_target_frequency_custom").hide();
+                $("#id_target_frequency_start").val('');
+                // $("#id_target_frequency_start").prop('required', false);
+                $("#id_target_frequency_custom").val('');
+
+            } else if (selected_option == 'Event') {
+                $("#div_id_target_frequency_start").hide();
+                $("#id_target_frequency_start").val('');
+                $("#div_id_target_frequency_custom").show();
+                $("#div_id_target_frequency_num_periods").show();
+            } else {
+                $("#div_id_target_frequency_start").show();
+                $("#div_id_target_frequency_num_periods").show();
+                $("#div_id_target_frequency_custom").hide();
+                $("#id_target_frequency_custom").val('');
             }
         }
+
+        // if ( $('#id_target_frequency').is('[readonly="readonly"]') ) {
+        //     $("#id_target_frequency option:not(:selected)").attr("disabled", true);
+        //     // $("#div_id_create_targets_btn").show();
+        //     $("#create_targets_btn").attr("disabled", true);
+        // }
+
+        // if (selected_option != '---------' ) {
+        //     if ( ($('#div_id_target_frequency_start').is(':visible') || $("#div_id_target_frequency_custom").is(":visible") )
+        //             && $("#div_id_target_frequency_num_periods").is(':visible')
+        //             || selected_option == 'Midline and endline') {
+        //         $("#div_id_create_targets_btn").show();
+        //     }
+        // }
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
         show_hide_frequency_fields();
