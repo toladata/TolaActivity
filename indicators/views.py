@@ -294,7 +294,7 @@ class PeriodicTargetView(View):
             'n': '',
             'i': numTargets
         }
-        pt_generated = _PERIODICTARGET_DEFINITION[indicator.target_frequency](**params)
+        pt_generated = _PERIODICTARGET_DEFINITION[indicator.target_frequency-1](**params)
         pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
         return HttpResponse(pt_generated_json)
 
@@ -317,7 +317,9 @@ class IndicatorUpdate(UpdateView):
 
         if request.method == 'GET':
             indicator = self.get_object()
-            if indicator.target_frequency and not indicator.periodictarget_set.count():
+            if indicator.target_frequency and \
+                    indicator.target_frequency != 1 and \
+                    not indicator.periodictarget_set.count():
                 indicator.target_frequency = None
                 indicator.target_frequency_start = None
                 indicator.target_frequency_num_periods = 1

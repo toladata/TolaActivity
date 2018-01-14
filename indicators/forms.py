@@ -88,7 +88,7 @@ class IndicatorForm(forms.ModelForm):
                                 <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
                                     <div class="row">
                                         <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
-                                            <h4>Periodic Targets</h4>
+                                            <h4>{{ indicator.get_target_frequency_label }} targets</h4>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -132,12 +132,17 @@ class IndicatorForm(forms.ModelForm):
                                                         {% endif %}
                                                     {% endfor %}
                                                 </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="3" style="color:red;" id="id_pt_errors"></td>
+                                                    </tr>
+                                                </tfoot>
                                             </table>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
-                                            <strong>Life of Program (LoP) Target</strong>
+                                            <strong>Life of Program (LoP) target</strong>
                                         </div>
                                         <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
                                             <strong>{{indicator.lop_target}}</strong>

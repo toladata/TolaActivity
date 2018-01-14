@@ -213,7 +213,7 @@
         <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
             <div class="row">
                 <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
-                    <h4>Periodic Targets</h4>
+                    <h4>${$("#id_target_frequency").find("option:selected").text()} targets</h4>
                 </div>
             </div>
             <div class="row">
@@ -237,12 +237,17 @@
                                 </td>
                             </tr>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" style="color:red;" id="id_pt_errors"></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
-                    <strong>Life of Program (LoP) Target</strong>
+                    <strong>Life of Program (LoP) target</strong>
                 </div>
                 <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
                     <strong>${indicator.fields.lop_target}</strong>
@@ -265,7 +270,7 @@
         var form_url = $(form).attr('action');
         var form_data = $(form).serialize();
         var periodic_targets = [];
-        $('#periodic_targets_table tr.periodic-target').each(function () {
+        $('#periodic_targets_table tbody tr.periodic-target').each(function () {
             var $this = $(this);
             var values = [];
             var eventNameElement = $($this.find('input[type=text]'));
@@ -352,15 +357,17 @@
             var targets_sum = jsondata[3];
 
             // $("#id_achieved").val(indicator['fields']['achieved']);
-
-            if (!$.isEmptyObject(generateTargets) && indicator.fields.target_frequency != 1) {
-                var htmlString = createPeriodTargetsHTML(generateTargets, indicator, targets_sum);
-                $("#id_div_periodic_tables_placeholder").append(htmlString);
-            } else {
-                var htmlString = createPeriodTargetsHTML(pts, indicator, targets_sum);
-                $("#id_div_periodic_tables_placeholder").empty();
-                $("#id_div_periodic_tables_placeholder").append(htmlString);
-                $("#id_span_targets_sum").text(targets_sum);
+            var htmlString = '';
+            if ($("#id_target_frequency").val() != 1) {
+                if (!$.isEmptyObject(generateTargets)) {
+                    htmlString = createPeriodTargetsHTML(generateTargets, indicator, targets_sum);
+                    $("#id_div_periodic_tables_placeholder").append(htmlString);
+                } else {
+                    htmlString = createPeriodTargetsHTML(pts, indicator, targets_sum);
+                    $("#id_div_periodic_tables_placeholder").empty();
+                    $("#id_div_periodic_tables_placeholder").append(htmlString);
+                    $("#id_span_targets_sum").text(targets_sum);
+                }
             }
         });
     }
@@ -368,7 +375,8 @@
 
     function show_hide_frequency_fields(lock = false) {
         var selected_option = $("#id_target_frequency").find("option:selected").text();
-        if (lock == true || $('#id_target_frequency').is('[readonly="readonly"]')) {
+        if ( (lock == true || $('#id_target_frequency').is('[readonly="readonly"]'))
+                 && selected_option != 'Life of Program (LoP) only') {
             $("#id_target_frequency option:not(:selected)").attr("disabled", true);
             $("#id_target_frequency").attr("readonly", true);
             $("#create_targets_btn").attr("disabled", true);
@@ -462,9 +470,9 @@
             $("#hint_id_lop_target").text("Please complete this field.");
             // sbmt.attr("disabled", true);
             return false;
-        } else if (!$.isNumeric(lop.val())) {
+        } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please enter a number");
+            $("#hint_id_lop_target").text("Please enter a number larger than zero.");
             // sbmt.attr("disabled", true);
             return false;
         } else {
@@ -606,10 +614,12 @@
         if ($(this).attr('id').substr(0, 2) == "pt" ) {
             if ($(this).val()) {
                 $(this).parent().removeClass('has-error');
-                $(this).next('span:first').text('');
+                // $(this).next('span:first').text('');
+                $("#id_pt_errors").text('');
             } else {
                 $(this).parent().addClass('has-error');
-                $(this).next('span:first').html('<small>Please enter a target value for every period.</small>');
+                // $(this).next('span:first').html('<small>Please enter a target value. Your target value can be zero.</small>');
+                $("#id_pt_errors").html('<small>Please enter a target value. Your target value can be zero.</small>');
             }
         }
     });
