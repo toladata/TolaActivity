@@ -132,6 +132,11 @@ class IndicatorForm(forms.ModelForm):
                                                         {% endif %}
                                                     {% endfor %}
                                                 </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="3" style="color:red;" id="id_pt_errors"></td>
+                                                    </tr>
+                                                </tfoot>
                                             </table>
                                         </div>
                                     </div>

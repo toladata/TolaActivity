@@ -294,7 +294,7 @@ class PeriodicTargetView(View):
             'n': '',
             'i': numTargets
         }
-        pt_generated = _PERIODICTARGET_DEFINITION[indicator.target_frequency](**params)
+        pt_generated = _PERIODICTARGET_DEFINITION[indicator.target_frequency-1](**params)
         pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
         return HttpResponse(pt_generated_json)
 
