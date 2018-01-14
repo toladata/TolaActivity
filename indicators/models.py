@@ -356,6 +356,12 @@ class Indicator(models.Model):
     def disaggregations(self):
         return ', '.join([x.disaggregation_type for x in self.disaggregation.all()])
 
+    @property
+    def get_target_frequency_label(self):
+        if self.target_frequency:
+            return Indicator.TARGET_FREQUENCIES[self.target_frequency-1][1]
+        return None
+
     def __unicode__(self):
         return self.name
 
