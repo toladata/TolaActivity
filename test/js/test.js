@@ -18,11 +18,10 @@
 // TODO: Focus testing on the platform(s) most used by Tola users.
 // What browsers and what are their priorities?
 
-// Ugh, globals
 var webdriver = require('selenium-webdriver');
 var test = require('selenium-webdriver/testing');
 var assert = require('chai').assert;
-var expect = require('chai').expect;
+var expect = require('chai').should;
 var fs = require('fs');
 let el;
 
@@ -30,19 +29,15 @@ function readConfig() {
   let data = fs.readFileSync('config.json');
   return JSON.parse(data);
 };
-let parms = readConfig();
-var username = parms.username;
-var password = parms.password;
-var baseurl = parms.baseurl;
-var browser = parms.browser;
+var parms = readConfig();
 
 var driver = new webdriver.Builder()
-  .forBrowser(browser)
+  .forBrowser(parms.browser)
   .build();
 
-test.describe('TolaActivity Test Suite', function() {
+test.describe('TolaActivity', function() {
   test.before(function() {
-    driver.get(baseurl);
+    driver.get(parms.baseurl);
   });
 
   test.after(function() {
@@ -56,23 +51,25 @@ test.describe('TolaActivity Test Suite', function() {
       });
     });
 
-
     test.it('should have a login field', function() {
-      el = driver.findElement({name: 'login'}).then(function(el) {
-        el.sendKeys(username);
-      });
+      el = driver.findElement({name: 'login'})
+        .then(function(el) {
+          el.sendKeys(parms.username);
+        });
     });
 
     test.it('should have a password field', function() {
-      el = driver.findElement({name: 'password'}).then(function(el) {
-        el.sendKeys(password);
-      });
+      el = driver.findElement({name: 'password'})
+        .then(function(el) {
+          el.sendKeys(parms.password);
+        });
     });
 
     test.it('should have a Log In button', function() {
-      el = driver.findElement({className: 'inputsub'}).then(function(el) {
-        el.click();
-      });
+      el = driver.findElement({className: 'inputsub'})
+        .then(function(el) {
+          el.click();
+        });
     });
 
     test.it('should not permit access if username is invalid');
@@ -80,75 +77,85 @@ test.describe('TolaActivity Test Suite', function() {
 
   }); // end login screen tests
 
-  test.describe('Tola-Activity Dashboard', function() {
+  test.describe('TolaActivity Dashboard', function() {
     test.it('should have a page title', function() {
-      return el = driver.getTitle().then(function(el) {
+      el = driver.getTitle().then(function(el) {
         assert.equal(el, 'TolaActivity', el);
       });
     });
 
     test.it('should have a TolaActivity link', function() {
-      const xp = '/html/body/nav/div/div[1]/a/img';
-      return el = driver.findElement({xpath: xp}).then(function(el) {
+      let xp = '/html/body/nav/div/div[1]/a/img';
+      el = driver.findElement({xpath: xp}).then(function(el) {
         assert(el.click());
       });
     });
-
-    test.it('should have a Workflow link', function() {
-      const xp = '/html/body/nav/div/div[2]/ul[1]/li[2]/a' 
-      return el = driver.findElement({xpath: xp}).then(function(el) {
-        assert.notEqual(el.getText(), '', el.getText());
-      });
-    });
-
-    test.it('should have a Form Library link', function() {
-      return el = driver.findElement({linkText: 'Form Library'}).then(function(el) {
-        assert.notEqual(el.getText(), '', el.getText());
-      });
-    });
-
-    test.it('should have a Reports link', function() {
-      return el = driver.findElement({linkText: 'Reports'}).then(function(el) {
-        assert.notEqual(el.getText(), '', el.getText());
-      });
-    });
-
-    test.it.skip('should have a Profile link', function() {
-      return el = driver.findElement({className: 'glyphicon-user'}).then(function(el) {
-        el.click();
-      });
-    });
-
-    test.it('should have a Bookmarks link', function() {
-      return el = driver.findElement({id: 'bookmarks'}).then(function(el) {
-        assert.notEqual(el.getText(), '', el.getText());
-      });
-    });
-
+    
     // TODO: file enhancement request about the id dropdownMenu1
-    test.it('should have a Country Dashboard link', function() {
-      return el = driver.findElement({id: 'dropdownMenu1'}).then(function(el) {
-        assert.notEqual(el.getText(), '', el.getText());
-      });
+    test.it('should have a Country Dashboard dropdown', function() {
+      let xp = '/html/body/div[1]/div[3]/div/div/div[2]/div/div[1]';
+      el = driver.findElement({xpath: xp})
+        .then(function(el) {
+          assert(el.click());
+        });
     });
 
     // TODO: file enhancement request about the id dropdownMenu3
     test.it('should have a Filter by Program link', function() {
-      return el = driver.findElement({id: 'dropdownMenu3'}).then(function(el) {
-        assert.notEqual(el.getText(), '', el.getText());
+      let xp = '/html/body/div[1]/div[3]/div/div/div[2]/div/div[2]';
+      el = driver.findElement({xpath: xp})
+        .then(function(el) {
+          assert(el.click());
+        });
+    });
+
+    test.it('should have a Workflow dropdown', function() {
+      let xp = '/html/body/nav/div/div[2]/ul[1]/li[1]/a';
+      el = driver.findElement({xpath: xp}).then(function(el) {
+        assert(el.click());
       });
     });
 
+    test.it('should have a Form Library dropdown', function() {
+      el = driver.findElement({linkText: 'Form Library'})
+        .then(function(el) {
+          assert(el.click());
+        });
+    });
+    
+    test.it('should have a Reports link', function() {
+      el = driver.findElement({linkText: 'Reports'})
+        .then(function(el) {
+          assert(el.click());
+        });
+    });
+
+    test.it.skip('should have a Profile link', function() {
+      let xp = '/html/body/nav/div/div[2]/ul[2]/li[1]/a';
+      el = driver.findElement({xpath: xp})
+        .then(function(el) {
+          assert(el.click());
+        });
+    });
+
+    test.it('should have a Bookmarks link', function() {
+      let xp = '/html/body/nav/div/div[2]/ul[2]/li[2]/a';
+      el = driver.findElement({xpath: xp})
+        .then(function(el) {
+          assert(el.click());
+        });
+    });
+
     test.describe('Indicator Evidence panel', function() {
-		test.it('should have an Indicator evidence table');
+      test.it('should exist');
     }); // end indicator evidence panel tests
 
     test.describe('Strategic Objectives panel', function() {
-        test.it('should have a Strategic Objectives table');
+      test.it('should exist');
     }); // end strategic objectives panel tests
 
     test.describe('Sites panel', function() {
-      test.it('should have a Site map');
+      test.it('should exist');
       test.it('should show map of country selected in Country Dashboard dropdown');
       test.it('should be able to zoom in on the map');
       test.it('should be able to zoom out on the map');
@@ -156,54 +163,78 @@ test.describe('TolaActivity Test Suite', function() {
     }); // end sites panel tests
 
     test.describe('Program Projects by Status panel', function() {
+      test.it('should exist');
       test.it('should have a project status chart');
     }); // end program projects by status tests
 
     test.describe('Indicators performance panel', function() {
+      test.it('should exist');
       test.it('should have a KPI status chart');
     }); // end indicators performance panel tests
-  }); // end tola-activity dashboard tests
+  }); // end TolaActivity dashboard tests
 
-  test.describe('Program Indicators page', function() {
-    test.it('should highlight indicators with no evidence');
-    test.it('should increase indicator count for a given program after adding a new indicator');
-    test.it('should decrease indicator count for a given program after deleting an indicator');
-    test.it('should be able to toggle table expansion by clicking the Indicators button');
-    test.it('should disable the Indicators button if a given program has no indicators');
+  test.describe('Program Indicators (PI) page', function() {
+    test.it('should exist');
+    test.it('should have an Indicators link', function() {
+      // First let's find the link
+      let xp = '/html/body/nav/div/div[2]/ul[1]/li[2]';
+      el = driver.findElement({xpath: xp})
+        .then(function(el) {
+          assert(el.click());
+        });
+    });
+
+    // Using setTimeout() suggested by https://goo.gl/GP2hLF. Test
+    // was executing before the page was loaded and failed because
+    // the element wasn't visible or the DOM wasn't fully populated.
+    test.it('should open PI page after clicking link', function() {
+      setTimeout(function() {
+        el = driver.findElement({css: 'h2'})
+          .then(function(el) {
+            assert.equal(el.getText(), 'Program Indicators');
+          });
+      }, 5000);
+    });
+    
+    // These are enhancements
+    test.it('should highlight PIs with no evidence');
+    test.it('should disable Indicators button if program has no indicators');
     test.it('should be able to sort table by clicking a column header');
-    test.it('should be able to view an indicator by clicking its name in the Indicator Name column');
-    test.it('should not be able to edit an indicator by clicking its name in the Indicator Name column');
-    test.it('should be able to edit an indicator by clicking the Edit button on its table row');
-    test.it('should be able to view indicator evidence by clicking the indicator\'s Data button');
-    test.it('should have data evidence count button match evidence count in the evidence table');
-    test.it('should increase data evidence count when evidence added from a program indicator');
-    test.it('should decrease data evidence count when evidence deleted from a program indicator');
-    test.it('should be able to delete an indicator by clicking its Delete button');
-    test.it('should reduce the indicator count for each indicator deleted');
-    test.it('should have a Programs dropdown');
-    test.it('should have an Indicators dropdown');
-    test.it('should have an Indicator Type dropdown');
-      
+
+    test.it('should toggle PIs table by clicking PI Indicators button');
+    test.it('should increase PI count after adding new indicator');
+    test.it('should decrease PI count after deleting indicator');
+    test.it('should view a PI by clicking its name in Indicator Name column');
+    test.it('should be able to edit a PI by clicking its Edit button');
+    test.it('should be able to view PI evidence table by clicking its Data button');
+    test.it('should have matching counts between Data button and evidence table');
+    test.it('should increase evidence count when PI evidence added');
+    test.it('should decrease evidence count when PI evidence deleted');
+    test.it('should be able to delete a PI by clicking its Delete button');
+    
     test.describe('Programs dropdown', function() {
+      test.it('should exist');
       test.it('should have at least one entry');
       test.it('should default to showing all programs');
-      test.it('should be able to select a program and see only the corresponding Indicators');
-      test.it('should be able to select a program and see only the corresponding Indicator Types');
+      test.it('should be able to filter PIs by Program');
+      test.it('should be able to filter Programs by PI');
+      test.it('should have same item count as Programs table');
+      test.it('should have same items as Programs table');
     }); // end programs dropdown tests
-  
+    
     test.describe('Indicators dropdown', function() {
-      test.it('should default to showing all Indicators for a given program');
-      test.it('should be able to filter the resultset by Indicator');
-      test.it('should only show programs that use a selected Indicator');
+      test.it('should exist');
+      test.it('should default to showing all PIs for a program');
+      test.it('should be able to filter resultset by PI');
     }); // end indicators dropdown tests
-  
+    
     test.describe('Indicator Type dropdown', function() {
-      test.it('should default to showing all Indicator Types for a given program');
+      test.it('should exist');
+      test.it('should default to showing all Indicator Types for a program');
       test.it('should be able to filter the resultset by Indicator Type');
-      test.it('should only show programs that use a selected Indicator Type');
     }); // end indicator type dropdown tests
-  
-    test.describe('Program Indicators list', function() {
+    
+    test.describe('Program Indicators table', function() {
       test.it('should open the Create an Indicator form when New Indicator button is clicked');
       test.it('should open the Grid/Print Report page when button is clicked');
       test.it('should highlight invalid data');
@@ -258,32 +289,34 @@ test.describe('TolaActivity Test Suite', function() {
           });
 
           test.describe('Summary tab', function() {
+            test.it('should exist');
             test.it('should have Program field matching input data')
           }); // end summary tab tests
 
           test.describe('Performance tab', function() {
-            test.it('should have a Performance tab');
+            test.it('should exist');
           }); // end performance tab tests
 
           test.describe('Targets tab', function() {
-            test.it('should have a Targets tab');
+            test.it('should exist');
           }); // end targets tab tests
 
           test.describe('Data Acquisition tab', function() {
-            test.it('should have a Data Acquisition tab');
+            test.it('should exist');
           }); // end data acquistion tab tests
 
           test.describe('Analysis and Reporting tab', function() {
-            test.it('should have an Analysis and Reporting tab');
+            test.it('should exist');
           }); // end analysis tab tests
 
           test.describe('Approval tab', function() {
-            test.it('should have an Approval tab');
+            test.it('should exist');
           }); // end approval tab tests
         }); // end create indicator detail page tests
       }); // end create new indicator form tests
 
       test.describe('Grid/Print Report page', function() {
+        test.it('should exist');
         test.it('should have an Export All button');
         test.it('should export all report entries when Export All button is clicked');
       });
@@ -300,6 +333,7 @@ test.describe('TolaActivity Test Suite', function() {
       });
 
       test.describe('Collected Data form', function() {
+        test.it('should exist');
         test.it('should require required fields');
         test.it('should not require optional fields');
         test.it('should have a Save button');
