@@ -201,23 +201,15 @@ test.describe('TolaActivity', function() {
     test.it('should disable Indicators button if program has no indicators');
     test.it('should be able to sort table by clicking a column header');
 
-    test.it('should toggle PIs table by clicking PI Indicators button', function() {
-      setTimeout(function() {
-        el = driver.findElement({css: 'a'})
-          .then(function(el) {
-            let s = el.getAttribute('data-target');
-            assert.isNotNull(s);
-          });
-      }, 5000);
-    });
+    test.it('should toggle PIs table by clicking PI Indicators button');
     test.it('should increase PI count after adding new indicator');
     test.it('should decrease PI count after deleting indicator');
     test.it('should view a PI by clicking its name in Indicator Name column');
     test.it('should be able to edit a PI by clicking its Edit button');
-    test.it('should be able to view a PI evidence table by clicking its Data button');
+    test.it('should be able to view PI evidence table by clicking its Data button');
     test.it('should have matching counts between Data button and evidence table');
-    test.it('should increase evidence count when evidence added for a PI');
-    test.it('should decrease evidence count when evidence deleted for a PI');
+    test.it('should increase evidence count when PI evidence added');
+    test.it('should decrease evidence count when PI evidence deleted');
     test.it('should be able to delete a PI by clicking its Delete button');
     
     test.describe('Programs dropdown', function() {
