@@ -352,15 +352,17 @@
             var targets_sum = jsondata[3];
 
             // $("#id_achieved").val(indicator['fields']['achieved']);
-
-            if (!$.isEmptyObject(generateTargets) && indicator.fields.target_frequency != 1) {
-                var htmlString = createPeriodTargetsHTML(generateTargets, indicator, targets_sum);
-                $("#id_div_periodic_tables_placeholder").append(htmlString);
-            } else {
-                var htmlString = createPeriodTargetsHTML(pts, indicator, targets_sum);
-                $("#id_div_periodic_tables_placeholder").empty();
-                $("#id_div_periodic_tables_placeholder").append(htmlString);
-                $("#id_span_targets_sum").text(targets_sum);
+            var htmlString = '';
+            if ($("#id_target_frequency").val() != 1) {
+                if (!$.isEmptyObject(generateTargets)) {
+                    htmlString = createPeriodTargetsHTML(generateTargets, indicator, targets_sum);
+                    $("#id_div_periodic_tables_placeholder").append(htmlString);
+                } else {
+                    htmlString = createPeriodTargetsHTML(pts, indicator, targets_sum);
+                    $("#id_div_periodic_tables_placeholder").empty();
+                    $("#id_div_periodic_tables_placeholder").append(htmlString);
+                    $("#id_span_targets_sum").text(targets_sum);
+                }
             }
         });
     }
@@ -368,7 +370,8 @@
 
     function show_hide_frequency_fields(lock = false) {
         var selected_option = $("#id_target_frequency").find("option:selected").text();
-        if (lock == true || $('#id_target_frequency').is('[readonly="readonly"]')) {
+        if ( (lock == true || $('#id_target_frequency').is('[readonly="readonly"]'))
+                 && selected_option != 'Life of Program (LoP) only') {
             $("#id_target_frequency option:not(:selected)").attr("disabled", true);
             $("#id_target_frequency").attr("readonly", true);
             $("#create_targets_btn").attr("disabled", true);
