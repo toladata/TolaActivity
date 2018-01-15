@@ -387,12 +387,14 @@
             $("#div_id_target_frequency_custom").hide();
             lock = true;
         }
-        if (selected_option == 'Life of Program (LoP) only') {
+        if (selected_option == 'Life of Program (LoP) only' || selected_option == '---------') {
             $("#div_id_create_targets_btn").hide();
         } else if (selected_option == 'Event') {
             $("#div_id_target_frequency_num_periods label").text("Number of events*");
+            $("#div_id_create_targets_btn").show();
         } else {
             $("#div_id_target_frequency_num_periods label").text("Number of target periods*");
+            $("#div_id_create_targets_btn").show();
         }
 
         // if (selected_option == 'Life of Program (LoP) only') {
