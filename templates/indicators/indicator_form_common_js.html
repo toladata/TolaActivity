@@ -474,7 +474,7 @@
             return false;
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please enter a number larger than zero.");
+            $("#hint_id_lop_target").text("Please enter a number larger than zero. If your target is a percentage, describe it in the unit of measure field.");
             // sbmt.attr("disabled", true);
             return false;
         } else {
