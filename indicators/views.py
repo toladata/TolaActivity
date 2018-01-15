@@ -381,7 +381,10 @@ class IndicatorUpdate(UpdateView):
                 's': form.cleaned_data.get('target_frequency_start', None),
                 'n': form.cleaned_data.get('target_frequency_custom', None)
             }
-            for i in range(0, form.cleaned_data.get('target_frequency_num_periods', 0)):
+
+            target_frequency_num_periods = form.cleaned_data.get('target_frequency_num_periods', 0)
+            if target_frequency_num_periods == None: target_frequency_num_periods = 0
+            for i in range(0, target_frequency_num_periods):
                 params['i'] = i + 1
                 target_frequency = form.cleaned_data.get('target_frequency', None)
 
