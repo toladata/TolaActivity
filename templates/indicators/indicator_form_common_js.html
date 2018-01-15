@@ -389,6 +389,10 @@
         }
         if (selected_option == 'Life of Program (LoP) only') {
             $("#div_id_create_targets_btn").hide();
+        } else if (selected_option == 'Event') {
+            $("#div_id_target_frequency_num_periods label").text("Number of events*");
+        } else {
+            $("#div_id_target_frequency_num_periods label").text("Number of target periods*");
         }
 
         // if (selected_option == 'Life of Program (LoP) only') {
