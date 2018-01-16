@@ -38,8 +38,9 @@ services:
     image: web
     volumes:
       - .:/code
-    ports:
-      - "8080:8080"
+      - static-content:/static
+    expose:
+      - "8080"
     depends_on:
       - postgres
       - elasticsearch
@@ -47,7 +48,7 @@ services:
       - DJANGO_SETTINGS_MODULE=tola.settings.dev
       - TOLA_DEBUG=True
       - TOLA_ERROR_LOG=error.log
-      - TOLA_HOSTNAME=127.0.0.1,localhost
+      - TOLA_HOSTNAME=127.0.0.1,localhost,web
       - TOLA_DB_ENGINE=django.db.backends.postgresql_psycopg2
       - TOLA_DB_NAME=tola_activity
       - TOLA_DB_USER=root
@@ -64,3 +65,16 @@ services:
       - TOLA_ACTIVITY_URL=http://tolaactivity.dev.com
       - TOLA_TRACK_URL=http://tolatrack.dev.com
       - DEFAULT_ORG=TolaData
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/code
+      - ./config/nginx:/etc/nginx/conf.d
+      - static-content:/static
+    depends_on:
+      - web
+volumes:
+  static-content:

@@ -1,23 +1,15 @@
 from local import *
 
 
-DEV_APPS = (
-    'debug_toolbar',
-)
+########## STATIC FILE CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = '/static'
 
-INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-url
+STATIC_URL = '/static/'
+########## END STATIC FILE CONFIGURATION
 
-DEV_MIDDLEWARE = (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
-
-MIDDLEWARE = MIDDLEWARE + DEV_MIDDLEWARE
-
-DEBUG_TOOLBAR_CONFIG = {
-    "SHOW_TOOLBAR_CALLBACK": lambda request: True,
-}
-
-DEBUG = True
+DEBUG = False
 
 OFFLINE_MODE = True
 INTERNAL_IPS = ('127.0.0.1',)
