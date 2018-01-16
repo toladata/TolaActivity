@@ -316,6 +316,7 @@ class IndicatorUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
 
         if request.method == 'GET':
+            # If target_frequency is set but not targets are saved then unset target_frequency too.
             indicator = self.get_object()
             if indicator.target_frequency and \
                     indicator.target_frequency != 1 and \
@@ -376,17 +377,26 @@ class IndicatorUpdate(UpdateView):
         indicatr = Indicator.objects.get(pk=self.kwargs.get('pk'))
         generatedTargets = []
 
+        target_frequency = form.cleaned_data.get('target_frequency', None)
+
         if periodic_targets == 'generateTargets':
             params = {
                 's': form.cleaned_data.get('target_frequency_start', None),
                 'n': form.cleaned_data.get('target_frequency_custom', None)
             }
 
+            if indicatr.target_frequency != Indicator.LOP and target_frequency == Indicator.LOP:
+                lop_pt = PeriodicTarget.objects.create(indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1], target=indicatr.lop_target, create_date = timezone.now())
+                CollectedData.objects.filter(indicator=indicatr).update(periodic_target=lop_pt)
+
+            if indicatr.target_frequency == Indicator.LOP and target_frequency != Indicator.LOP:
+                CollectedData.objects.filter(indicator=indicatr).update(periodic_target=None)
+                PeriodicTarget.objects.filter(indicator=indicatr).delete()
+
             target_frequency_num_periods = form.cleaned_data.get('target_frequency_num_periods', 0)
             if target_frequency_num_periods == None: target_frequency_num_periods = 0
             for i in range(0, target_frequency_num_periods):
                 params['i'] = i + 1
-                target_frequency = form.cleaned_data.get('target_frequency', None)
 
                 pt = _PERIODICTARGET_DEFINITION[target_frequency](**params)
                 if isinstance(pt, list):
@@ -395,6 +405,11 @@ class IndicatorUpdate(UpdateView):
                     generatedTargets.append(pt)
 
         if periodic_targets and periodic_targets != 'generateTargets':
+            # If the stored target_frequency is LOP and the target_frequency value
+            # in form submission is different than LOP then disassociate DataCollected records
+            # with the LOP periodic_target for this indicator and then delete the LOP periodic target
+
+            # now create/update periodic targets
             pt_json = json.loads(periodic_targets)
             for pt in pt_json:
                 pk = int(pt.get('id'))
