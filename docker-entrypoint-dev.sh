@@ -13,4 +13,4 @@ echo "Loading basic initial data"
 python manage.py loadinitialdata
 
 echo "Running the server"
-PYTHONUNBUFFERED=1 gunicorn tola.wsgi -b 0.0.0.0:8080
+PYTHONUNBUFFERED=1 python manage.py runserver 0.0.0.0:8080
