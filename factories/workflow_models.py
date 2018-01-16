@@ -321,6 +321,7 @@ class Milestone(DjangoModelFactory):
 class TolaSites(DjangoModelFactory):
     class Meta:
         model = TolaSitesM
+        django_get_or_create = ('name',)
 
     name = 'TolaData'
     site = SubFactory(Site)

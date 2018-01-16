@@ -56,6 +56,7 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200/
       - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=1090285679254-ep8e9kh2p2juqq8u169fqr5ijfnuaihm.apps.googleusercontent.com
       - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=kfy1DGJ3POZYtWMGX0l1yoMi
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS=toladata.com,humanitec.com,treeaid.org,gmail.com
       - SOCIAL_AUTH_LOGIN_REDIRECT_URL=http://dev-v2.tolaactivity.app.tola.io/
       - SOCIAL_AUTH_MICROSOFT_GRAPH_KEY=63783b55-0c15-4e94-8ceb-4de040fea71d
       - SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET=w8zgk5dz5JVErCNzc8Jz7EM
