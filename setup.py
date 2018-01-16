@@ -22,7 +22,7 @@ with open(join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
 def load_requirements():
-    return open(join(dirname(__file__), 'requirements-pkg.txt')).readlines()
+    return open(join(dirname(__file__), 'requirements/pkg.txt')).readlines()
 
 
 setup(

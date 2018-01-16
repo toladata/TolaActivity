@@ -8,7 +8,7 @@ RUN apt-get update && \
 
 ADD docker/etc/nginx/tola.conf /etc/nginx/conf.d/tola.conf
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements/production.txt
 
 EXPOSE 8080
 
