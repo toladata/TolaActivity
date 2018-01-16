@@ -74,8 +74,9 @@ class IndicatorForm(forms.ModelForm):
                     Fieldset('',
                         HTML("""
                             <div id="div_id_create_targets_btn" class="form-group">
-                                <div class="controls col-sm-offset-4 col-sm-2">
+                                <div class="controls col-sm-offset-4 col-sm-6">
                                     <button type="button" id="create_targets_btn" class="btn btn-primary">Create targets</button>
+                                    <button type="button" id="delete_targets_btn" class="btn btn-link">Remove all targets</button>
                                 </div>
                             </div>
                         """)
@@ -87,7 +88,7 @@ class IndicatorForm(forms.ModelForm):
                                 <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
                                     <div class="row">
                                         <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
-                                            <h4>Periodic Targets</h4>
+                                            <h4>{{ indicator.get_target_frequency_label }} targets</h4>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -95,7 +96,7 @@ class IndicatorForm(forms.ModelForm):
                                             <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
                                                 <tbody>
                                                     {% for pt in periodic_targets %}
-                                                        <tr id="{{pt.pk}}">
+                                                        <tr id="{{pt.pk}}" class="periodic-target">
                                                             <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                                                 <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; display:{% if forloop.last and indicator.target_frequency != 2 %}block{% else %}none{% endif %}">
                                                                     <span class=" glyphicon glyphicon-remove"></span>
@@ -131,12 +132,17 @@ class IndicatorForm(forms.ModelForm):
                                                         {% endif %}
                                                     {% endfor %}
                                                 </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="3" style="color:red;" id="id_pt_errors"></td>
+                                                    </tr>
+                                                </tfoot>
                                             </table>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
-                                            <strong>Life of Program (LoP) Target</strong>
+                                            <strong>Life of Program (LoP) target</strong>
                                         </div>
                                         <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
                                             <strong>{{indicator.lop_target}}</strong>
@@ -216,12 +222,12 @@ class IndicatorForm(forms.ModelForm):
         # self.fields['target_frequency_start'].help_text = 'This field is required'
         # self.fields['target_frequency'].required = False
         self.fields['target_frequency_start'].widget.attrs['class'] = 'monthPicker'
-        if self.instance.target_frequency:
+        if self.instance.target_frequency and self.instance.target_frequency != Indicator.LOP:
             self.fields['target_frequency'].widget.attrs['readonly'] = "readonly"
             #self.fields['target_frequency'].widget.attrs['disabled'] = "disabled"
-            self.fields['target_frequency_custom'].widget = forms.HiddenInput()
-            self.fields['target_frequency_start'].widget = forms.HiddenInput()
-            self.fields['target_frequency_num_periods'].widget = forms.HiddenInput()
+            # self.fields['target_frequency_custom'].widget = forms.HiddenInput()
+            # self.fields['target_frequency_start'].widget = forms.HiddenInput()
+            # self.fields['target_frequency_num_periods'].widget = forms.HiddenInput()
 
 class CollectedDataForm(forms.ModelForm):
 
