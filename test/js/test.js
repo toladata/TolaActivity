@@ -22,6 +22,7 @@ var webdriver = require('selenium-webdriver');
 var test = require('selenium-webdriver/testing');
 var assert = require('chai').assert;
 var expect = require('chai').should;
+var async = require('async').async;
 var fs = require('fs');
 let el;
 
@@ -90,7 +91,7 @@ test.describe('TolaActivity', function() {
         assert(el.click());
       });
     });
-    
+
     // TODO: file enhancement request about the id dropdownMenu1
     test.it('should have a Country Dashboard dropdown', function() {
       let xp = '/html/body/div[1]/div[3]/div/div/div[2]/div/div[1]';
@@ -122,7 +123,7 @@ test.describe('TolaActivity', function() {
           assert(el.click());
         });
     });
-    
+
     test.it('should have a Reports link', function() {
       el = driver.findElement({linkText: 'Reports'})
         .then(function(el) {
@@ -174,20 +175,15 @@ test.describe('TolaActivity', function() {
   }); // end TolaActivity dashboard tests
 
   test.describe('Program Indicators (PI) page', function() {
-    test.it('should exist');
     test.it('should have an Indicators link', function() {
-      // First let's find the link
       let xp = '/html/body/nav/div/div[2]/ul[1]/li[2]';
       el = driver.findElement({xpath: xp})
         .then(function(el) {
-          assert(el.click());
+          el.click();
         });
     });
 
-    // Using setTimeout() suggested by https://goo.gl/GP2hLF. Test
-    // was executing before the page was loaded and failed because
-    // the element wasn't visible or the DOM wasn't fully populated.
-    test.it('should open PI page after clicking link', function() {
+    test.it('should open after clicking Indicators link', function() {
       setTimeout(function() {
         el = driver.findElement({css: 'h2'})
           .then(function(el) {
@@ -195,23 +191,22 @@ test.describe('TolaActivity', function() {
           });
       }, 5000);
     });
-    
+
     // These are enhancements
     test.it('should highlight PIs with no evidence');
     test.it('should disable Indicators button if program has no indicators');
     test.it('should be able to sort table by clicking a column header');
-
-    test.it('should toggle PIs table by clicking PI Indicators button');
+    test.it('should show PI table by clicking its Indicators button');
+    test.it('should be same row count as shown on Indicators button');
+    test.it('should view PI by clicking its name in Indicator Name column');
+    test.it('should have matching counts between Data button and evidence table');
     test.it('should increase PI count after adding new indicator');
     test.it('should decrease PI count after deleting indicator');
-    test.it('should view a PI by clicking its name in Indicator Name column');
     test.it('should be able to edit a PI by clicking its Edit button');
     test.it('should be able to view PI evidence table by clicking its Data button');
-    test.it('should have matching counts between Data button and evidence table');
     test.it('should increase evidence count when PI evidence added');
     test.it('should decrease evidence count when PI evidence deleted');
     test.it('should be able to delete a PI by clicking its Delete button');
-    
     test.describe('Programs dropdown', function() {
       test.it('should exist');
       test.it('should have at least one entry');
@@ -221,26 +216,26 @@ test.describe('TolaActivity', function() {
       test.it('should have same item count as Programs table');
       test.it('should have same items as Programs table');
     }); // end programs dropdown tests
-    
+
     test.describe('Indicators dropdown', function() {
       test.it('should exist');
       test.it('should default to showing all PIs for a program');
       test.it('should be able to filter resultset by PI');
     }); // end indicators dropdown tests
-    
+
     test.describe('Indicator Type dropdown', function() {
       test.it('should exist');
       test.it('should default to showing all Indicator Types for a program');
       test.it('should be able to filter the resultset by Indicator Type');
     }); // end indicator type dropdown tests
-    
+
     test.describe('Program Indicators table', function() {
       test.it('should open the Create an Indicator form when New Indicator button is clicked');
       test.it('should open the Grid/Print Report page when button is clicked');
       test.it('should highlight invalid data');
       test.it('should return to previous screen if Cancel button clicked');
       test.it('should clear form when Clear button clicked');
-      
+
       test.describe('Create an Indicator form', function() {
         test.it('should show context-sensitve help by clicking Form Help/Guidance button');
         test.it('should have an Indicator Service Templates dropdown');
@@ -290,7 +285,7 @@ test.describe('TolaActivity', function() {
 
           test.describe('Summary tab', function() {
             test.it('should exist');
-            test.it('should have Program field matching input data')
+            test.it('should have Program field matching input data');
           }); // end summary tab tests
 
           test.describe('Performance tab', function() {
@@ -321,7 +316,7 @@ test.describe('TolaActivity', function() {
         test.it('should export all report entries when Export All button is clicked');
       });
 
-      test.describe('Indicator evidence dropdown', function() { 
+      test.describe('Indicator evidence dropdown', function() {
         test.it("should toggle indicator's evidence dropdown by clicking its Data button");
         test.it('should have the same row count as evidence count on Data button');
         test.it('should be able to edit evidence line item by clicking its Edit button');
@@ -346,7 +341,7 @@ test.describe('TolaActivity', function() {
         test.it('should restore the form defaults by clicking the Reset button');
         test.it('should pull data from Tola Tables by clicking the Import Evidence From Tola Tables link');
         test.it('should open the Indicator edit form by clicking the Add a Disaggregation link');
-        test.it('should only accept numerica values in the disaggregations Actuals fields');
+        test.it('should only accept numeric values in the disaggregations Actuals fields');
         test.it('should have a cancel button');
         test.it('should be able to close the firm by clicking the Cancel button');
       });
