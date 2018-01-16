@@ -394,7 +394,7 @@ class IndicatorUpdate(UpdateView):
                 PeriodicTarget.objects.filter(indicator=indicatr).delete()
 
             target_frequency_num_periods = form.cleaned_data.get('target_frequency_num_periods', 0)
-            if target_frequency_num_periods == None: target_frequency_num_periods = 0
+            if target_frequency_num_periods == None: target_frequency_num_periods = 1
             for i in range(0, target_frequency_num_periods):
                 params['i'] = i + 1
 

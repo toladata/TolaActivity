@@ -389,11 +389,6 @@
             $("#div_id_create_targets_btn").show();
         }
 
-        // if (selected_option == 'Life of Program (LoP) only') {
-        //     $("#id_target_frequency option:not(:selected)").attr("disabled", false);
-        //     $("#id_target_frequency").attr("readonly", false);
-        // }
-
         if (lock == false) {
             if (selected_option == 'Life of Program (LoP) only' ||
                 selected_option == 'Midline and endline' ||
@@ -417,20 +412,6 @@
                 $("#id_target_frequency_custom").val('');
             }
         }
-
-        // if ( $('#id_target_frequency').is('[readonly="readonly"]') ) {
-        //     $("#id_target_frequency option:not(:selected)").attr("disabled", true);
-        //     // $("#div_id_create_targets_btn").show();
-        //     $("#create_targets_btn").attr("disabled", true);
-        // }
-
-        // if (selected_option != '---------' ) {
-        //     if ( ($('#div_id_target_frequency_start').is(':visible') || $("#div_id_target_frequency_custom").is(":visible") )
-        //             && $("#div_id_target_frequency_num_periods").is(':visible')
-        //             || selected_option == 'Midline and endline') {
-        //         $("#div_id_create_targets_btn").show();
-        //     }
-        // }
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
         show_hide_frequency_fields();
