@@ -46,6 +46,32 @@
         }
     }
 
+    /*
+    var modalConfirm = function(callback){
+        // $("#btn-confirm").on("click", function(){
+            $("#conform_modal_div").modal('show');
+        // });
+
+        $("#modal-btn-si").on("click", function(){
+            callback(true);
+            $("#conform_modal_div").modal('hide');
+        });
+
+        $("#modal-btn-no").on("click", function(){
+            callback(false);
+            $("#conform_modal_div").modal('hide');
+        });
+    };
+    */
+
+    // modalConfirm(function(confirm){
+    //     if (confirm) {
+    //         $("#result").html("CONFIRMADO");
+    //     } else {
+    //         $("#result").html("NO CONFIRMADO");
+    //     }
+    // });
+
     function setupPopupCalendar() {
         $('.monthPicker').datepicker({
             changeMonth: true,
@@ -272,7 +298,17 @@
         // console.log("numDataPoints: ", numDataPoints, " initalTargetFrequency: ", initalTargetFrequency, " target_Frequency: ", target_frequency);
 
         if (numDataPoints > 0 && initalTargetFrequency == 1 && target_frequency != 1) {
-            if (!confirm('If we make these changes, n data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?')) {
+
+            /*
+            modalConfirm(function(confirm){
+                alert(confirm);
+                if (!confirm) {
+                    console.log("haha");
+                }
+            });
+            return;
+            */
+            if (!confirm(`Warning: If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
                 initalTargetFrequency = undefined;
                 return;
             }
