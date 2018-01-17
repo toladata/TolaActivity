@@ -10,44 +10,37 @@ function readConfig() {
   let data = fs.readFileSync('config.json');
   return JSON.parse(data);
 };
-var parms = readConfig();
 
-var driver = new webdriver.Builder()
+async function newTolaSession(parms) {
+  driver = new webdriver.Builder()
   .forBrowser(parms.browser)
   .build();
+  await driver.get(parms.baseurl);
+  el = await driver.getTitle();
+  assert.equal(el, 'Mercy Corps Sign-On', el);
+}
 
-test.describe('TolaActivity Indicators Page', function() {
-  test.before(function() {
-    driver.get(parms.baseurl + '/indicators/home/0/0/0');
-  });
+async function newTolaLogin(parms) {
+    el = await driver.findElement({name: 'login'});
+    await el.sendKeys(parms.username);
 
-//  test.after(function() {
-//    driver.quit();
-//  });
+    el = await driver.findElement({name: 'password'});
+    await el.sendKeys(parms.password);
 
-  test.it('should require user to authenticate', function() {
-    el = driver.getTitle().then(function(el) {
-      assert.equal(el, 'Mercy Corps Sign-On', el);
-    });
-  });
-
-  test.it('should have a login field', function() {
-    el = driver.findElement({name: 'login'})
-      .then(function(el) {
-        el.sendKeys(parms.username);
-      });
-  });
-
-  test.it('should have a password field', function() {
-    el = driver.findElement({name: 'password'})
-      .then(function(el) {
-        el.sendKeys(parms.password);
-      });
-  });
-
-  test.it('should have a Log In button', async function() {
-    el = await driver.findElement({className: 'inputsub'});
+    el = await driver.findElement({className: 'inputsub'})
     await el.click();
+}
+test.describe('TolaActivity Indicators Page', function() {
+
+  var parms = readConfig();
+  
+  test.before(async function() {
+    await newTolaSession(parms);
+    await newTolaLogin(parms);
+  });
+
+  test.after(async function() {
+    await driver.quit();
   });
 
   test.it('should exist', async function() {
