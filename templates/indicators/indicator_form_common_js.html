@@ -478,7 +478,7 @@
             return false;
         } else if (!$.isNumeric(baseline.val())) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please enter a number.");
+            $("#hint_id_baseline").text("Please enter a number with no special characters.");
             // sbmt.attr("disabled", true);
             return false;
         } else {
@@ -501,7 +501,7 @@
             return false;
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please enter a number larger than zero. If your target is a percentage, describe it in the unit of measure field.");
+            $("#hint_id_lop_target").text("Please enter a number larger than zero with no special characters. If your target is a percentage, describe it in the unit of measure field.");
             // sbmt.attr("disabled", true);
             return false;
         } else {
