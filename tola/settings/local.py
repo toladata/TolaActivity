@@ -82,6 +82,12 @@ CACHES = {
 }
 ########## END CACHE CONFIGURATION
 
+
+########## STATIC FILE CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = '/static'
+########## END STATIC FILE CONFIGURATION
+
 ######## If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = False
 OFFLINE_MODE = False
