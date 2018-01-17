@@ -339,7 +339,7 @@ class IndicatorUpdate(UpdateView):
 
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
-        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator).order_by('customsort', 'create_date', 'period')
+        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
         context['targets_sum'] = PeriodicTarget.objects.filter(indicator=getIndicator).aggregate(Sum('target'))['target__sum']
 
         #get external service data if any
@@ -385,10 +385,14 @@ class IndicatorUpdate(UpdateView):
                 'n': form.cleaned_data.get('target_frequency_custom', None)
             }
 
+            # If the user sets target_frequency to LOP then create a LOP periodic_target and associate all
+            # collected data for this indicator with this single LOP periodic_target
             if indicatr.target_frequency != Indicator.LOP and target_frequency == Indicator.LOP:
                 lop_pt = PeriodicTarget.objects.create(indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1], target=indicatr.lop_target, create_date = timezone.now())
                 CollectedData.objects.filter(indicator=indicatr).update(periodic_target=lop_pt)
 
+            # If the target_frequency is changed from LOP to something else then disassociate all
+            # collected_data from the LOP periodic_target and then delete the LOP periodic_target
             if indicatr.target_frequency == Indicator.LOP and target_frequency != Indicator.LOP:
                 CollectedData.objects.filter(indicator=indicatr).update(periodic_target=None)
                 PeriodicTarget.objects.filter(indicator=indicatr).delete()
@@ -405,10 +409,6 @@ class IndicatorUpdate(UpdateView):
                     generatedTargets.append(pt)
 
         if periodic_targets and periodic_targets != 'generateTargets':
-            # If the stored target_frequency is LOP and the target_frequency value
-            # in form submission is different than LOP then disassociate DataCollected records
-            # with the LOP periodic_target for this indicator and then delete the LOP periodic target
-
             # now create/update periodic targets
             pt_json = json.loads(periodic_targets)
             for pt in pt_json:
@@ -438,7 +438,8 @@ class IndicatorUpdate(UpdateView):
                     periodic_target.save()
 
         self.object = form.save()
-        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
+        #periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
+        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [self.object])
@@ -490,7 +491,9 @@ class PeriodicTargetDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         collecteddata_count = self.get_object().collecteddata_set.count()
         if collecteddata_count > 0:
-            return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
+            self.get_object().collecteddata_set.all().update(periodic_target=None)
+            # self.get_object().delete()
+            # return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
         #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
         indicator = self.get_object().indicator
         self.get_object().delete()
