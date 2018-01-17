@@ -4,6 +4,7 @@ from rest_framework.reverse import reverse
 
 import factories
 from feed.views import BudgetViewSet
+from workflow.models import Budget
 
 
 class BudgetListViewTest(TestCase):
@@ -49,20 +50,107 @@ class BudgetListViewTest(TestCase):
 
 class BudgetCreateViewTest(TestCase):
     def setUp(self):
-        self.user = factories.User(is_superuser=True, is_staff=True)
-        factory = APIRequestFactory()
-        self.request = factory.post('/api/budget/')
+        self.tola_user = factories.TolaUser()
+        self.factory = APIRequestFactory()
 
     def test_create_budget(self):
-        user_url = reverse('user-detail', kwargs={'pk': self.user.id},
-                           request=self.request)
+        request = self.factory.post('/api/budget/')
 
-        self.request.user = self.user
+        wflvl1 = factories.WorkflowLevel1(
+            name='WorkflowLevel1', organization=self.tola_user.organization)
+        wflvl2 = factories.WorkflowLevel2(
+            name='WorkflowLevel2', actual_cost=0, total_estimated_budget=0,
+            workflowlevel1=wflvl1)
+        wflvl2_url = reverse('workflowlevel2-detail',
+                             kwargs={'pk': wflvl2.id},
+                             request=request)
+        user_url = reverse('user-detail', kwargs={'pk': self.tola_user.user.id},
+                           request=request)
+
+        data = {'proposed_value': 5678,
+                'actual_value': 1234,
+                'workflowlevel2': wflvl2_url}
+        request = self.factory.post('/api/budget/', data)
+        request.user = self.tola_user.user
         view = BudgetViewSet.as_view({'post': 'create'})
-        response = view(self.request)
+        response = view(request)
 
         self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['proposed_value'],
+                         data['proposed_value'])
+        self.assertEqual(response.data['actual_value'], data['actual_value'])
         self.assertEqual(response.data['created_by'], user_url)
+
+        # Check WorkflowLevel2
+        budget = Budget.objects.get(pk=response.data['id'])
+        wkfl2 = budget.workflowlevel2
+        self.assertEquals(wkfl2.total_estimated_budget, data['proposed_value'])
+        self.assertEquals(wkfl2.actual_cost, data['actual_value'])
+
+    def test_create_budget_without_wkfl2(self):
+        request = self.factory.post('/api/budget/')
+
+        user_url = reverse('user-detail', kwargs={'pk': self.tola_user.user.id},
+                           request=request)
+
+        data = {'proposed_value': 5678,
+                'actual_value': 1234}
+        request = self.factory.post('/api/budget/', data)
+        request.user = self.tola_user.user
+        view = BudgetViewSet.as_view({'post': 'create'})
+        response = view(request)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['proposed_value'],
+                         data['proposed_value'])
+        self.assertEqual(response.data['actual_value'], data['actual_value'])
+        self.assertEqual(response.data['created_by'], user_url)
+
+
+class BudgetUpdateViewTest(TestCase):
+    def setUp(self):
+        self.tola_user = factories.TolaUser()
+        self.factory = APIRequestFactory()
+
+    def test_update_budget(self):
+        wflvl1 = factories.WorkflowLevel1(
+            name='WorkflowLevel1', organization=self.tola_user.organization)
+        wflvl2 = factories.WorkflowLevel2(
+            name='WorkflowLevel2', actual_cost=0, total_estimated_budget=0,
+            workflowlevel1=wflvl1)
+        budget = factories.Budget(workflowlevel2=wflvl2)
+
+        data = {'proposed_value': 5678,
+                'actual_value': 1234}
+        request = self.factory.post('/api/budget/', data)
+        request.user = self.tola_user.user
+        view = BudgetViewSet.as_view({'post': 'update'})
+        response = view(request, pk=budget.pk)
+
+        budget = Budget.objects.get(pk=response.data['id'])
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['proposed_value'], budget.proposed_value)
+        self.assertEqual(response.data['actual_value'], budget.actual_value)
+
+        # Check WorkflowLevel2
+        wkfl2 = budget.workflowlevel2
+        self.assertEquals(wkfl2.total_estimated_budget, data['proposed_value'])
+        self.assertEquals(wkfl2.actual_cost, data['actual_value'])
+
+    def test_update_budget_without_wkfl2(self):
+        budget = factories.Budget()
+
+        data = {'proposed_value': 5678,
+                'actual_value': 1234}
+        request = self.factory.post('/api/budget/', data)
+        request.user = self.tola_user.user
+        view = BudgetViewSet.as_view({'post': 'create'})
+        response = view(request, pk=budget.pk)
+
+        budget = Budget.objects.get(pk=response.data['id'])
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['proposed_value'], budget.proposed_value)
+        self.assertEqual(response.data['actual_value'], budget.actual_value)
 
 
 class BudgetFilterViewTest(TestCase):

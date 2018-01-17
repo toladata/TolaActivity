@@ -1,24 +1,28 @@
+import logging
 from unittest import skipIf
-import factories
 
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, tag
 
+import factories
 from indicators.models import Indicator
-from workflow.models import Organization, WorkflowLevel1, WorkflowLevel2
 from search.exceptions import ValueNotFoundError
 from search.utils import ElasticsearchIndexer
+from workflow.models import Organization, WorkflowLevel1, WorkflowLevel2
 
 
+@tag('pkg')
 @skipIf(not settings.ELASTICSEARCH_URL, "Elasticsearch config not found")
 class ElasticsearchIndexerTest(TestCase):
     indexer = None
 
     def setUp(self):
+        logging.disable(logging.ERROR)
         settings.ELASTICSEARCH_ENABLED = True
         self.indexer = ElasticsearchIndexer()
 
     def tearDown(self):
+        logging.disable(logging.NOTSET)
         settings.ELASTICSEARCH_ENABLED = False
 
     def test_es_connection(self):

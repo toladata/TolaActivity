@@ -31,8 +31,10 @@ from workflow.models import (
     WorkflowLevel1Sector as WorkflowLevel1SectorM,
     WorkflowLevel2 as WorkflowLevel2M,
     WorkflowLevel2Sort as WorkflowLevel2SortM,
+    Dashboard as DashboardM,
+    Widget as WidgetM,
 )
-from .user_models import User, Group
+from .django_models import User, Group, Site
 
 
 class Award(DjangoModelFactory):
@@ -94,6 +96,37 @@ class SiteProfile(DjangoModelFactory):
 class TolaUser(DjangoModelFactory):
     class Meta:
         model = TolaUserM
+        django_get_or_create = ('user',)
+
+    user = SubFactory(User)
+    name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
+    organization = SubFactory(Organization)
+    position_description = 'Chief of Operations'
+    country = SubFactory(Country, country='Germany', code='DE')
+
+
+class Dashboard(DjangoModelFactory):
+    class Meta:
+        model = DashboardM
+        django_get_or_create = ('user',)
+
+    user = SubFactory(User)
+    name = "My crazy Dashboard"
+
+
+class Widget(DjangoModelFactory):
+    class Meta:
+        model = WidgetM
+        django_get_or_create = ('dashboard',)
+
+    dashboard = SubFactory(Dashboard)
+    name = "My Crazy Widget"
+
+
+class TolaUser(DjangoModelFactory):
+    class Meta:
+        model = TolaUserM
+        django_get_or_create = ('user',)
 
     user = SubFactory(User)
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
@@ -290,6 +323,7 @@ class TolaSites(DjangoModelFactory):
         model = TolaSitesM
 
     name = 'TolaData'
+    site = SubFactory(Site)
 
 
 class WorkflowLevel2Sort(DjangoModelFactory):

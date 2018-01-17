@@ -1,11 +1,13 @@
 import unicodedata
 import json
-import sys
 import requests
+import logging
+from urlparse import urljoin
 
 from workflow.models import (Country, TolaUser, TolaSites, WorkflowTeam,
                              WorkflowLevel1, Organization)
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.mail import mail_admins, EmailMessage
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
@@ -96,28 +98,6 @@ def get_table(url, data=None):
     return data
 
 
-def redirect_after_login(strategy, *args, **kwargs):
-    #print(strategy.session_get('redirect_after_login'))
-    redirect = strategy.session_get('redirect_after_login')
-    strategy.session_set('next',redirect)
-
-
-def user_to_tola(backend, user, response, *args, **kwargs):
-
-    # Add a google auth user to the tola profile
-    default_country = Country.objects.first()
-    default_organization = Organization.objects.first()
-    userprofile, created = TolaUser.objects.get_or_create(user=user)
-
-    # Do not set default values for existing TolaUser
-    if created:
-        userprofile.country = default_country
-        userprofile.organization = default_organization
-        userprofile.name = response.get('displayName')
-        userprofile.email = response.get('emails["value"]')
-        userprofile.save()
-
-
 def group_excluded(*group_names, **url):
     # If user is in the group passed in permission denied
     def in_groups(u):
@@ -139,3 +119,23 @@ def group_required(*group_names, **url):
             raise PermissionDenied
         return False
     return user_passes_test(in_groups)
+
+
+def register_in_track(data, tolauser):
+        headers = {
+            'Authorization': 'Token {}'.format(settings.TOLA_TRACK_TOKEN),
+        }
+
+        url_subpath = 'accounts/register/'
+        url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+
+        response = requests.post(url, data=data, headers=headers)
+        logger = logging.getLogger(__name__)
+        if response.status_code == 201:
+            logger.info("The TolaUser %s (id=%s) was created successfully in "
+                        "Track." % (tolauser.name, tolauser.id))
+        elif response.status_code in [400, 403]:
+            logger.warning("The TolaUser %s (id=%s) could not be created "
+                           "successfully in Track." %
+                           (tolauser.name, tolauser.id))
+        return response

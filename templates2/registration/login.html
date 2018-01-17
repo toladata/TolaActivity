@@ -30,7 +30,11 @@
           </p>
         </form>
         <p class="mt-4 text-center">
-          <a href="#" data-toggle="modal" data-target="#exampleModal">Register Your Organization with TolaData</a>
+          {% if chargebee_signup_org_url %}
+            <a href="{{ chargebee_signup_org_url }}">Register Your Organization with TolaData</a>
+          {% else %}
+            <a href="#" data-toggle="modal" data-target="#exampleModal">Register Your Organization with TolaData</a>
+          {% endif %}
         </p>
 
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
