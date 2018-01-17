@@ -444,7 +444,6 @@ class IndicatorUpdate(UpdateView):
         if self.request.is_ajax():
             data = serializers.serialize('json', [self.object])
             pts = FlatJsonSerializer().serialize(periodic_targets)
-            print(".............................%s............................" % pts )
             if generatedTargets:
                 generatedTargets = json.dumps(generatedTargets, cls=DjangoJSONEncoder)
             else:
@@ -492,7 +491,9 @@ class PeriodicTargetDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         collecteddata_count = self.get_object().collecteddata_set.count()
         if collecteddata_count > 0:
-            return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
+            self.get_object().collecteddata_set.all().update(periodic_target=None)
+            # self.get_object().delete()
+            # return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
         #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
         indicator = self.get_object().indicator
         self.get_object().delete()

@@ -143,6 +143,10 @@
                     var targets_sum = data['targets_sum'];
                     if (targets_sum != 0 && targets_sum != "None" && targets_sum != '' && targets_sum != 'undefined') {
                         $("#id_span_targets_sum").text(targets_sum);
+                        $("#id_target_frequency option:not(:selected)").attr("disabled", false);
+                        $("#id_target_frequency").val('');
+                        $("#id_target_frequency").attr("readonly", false);
+                        $("#create_targets_btn").attr("disabled", false);
                     }
                 } else {
                     createAlert("danger", data.msg, true, "#modalmessages");
