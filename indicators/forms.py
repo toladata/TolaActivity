@@ -96,7 +96,7 @@ class IndicatorForm(forms.ModelForm):
                                             <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
                                                 <tbody>
                                                     {% for pt in periodic_targets %}
-                                                        <tr id="{{pt.pk}}" class="periodic-target">
+                                                        <tr id="{{pt.pk}}" data-collected-count="{{pt.num_data}}" class="periodic-target">
                                                             <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
                                                                 <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; display:{% if forloop.last and indicator.target_frequency != 2 %}block{% else %}none{% endif %}">
                                                                     <span class=" glyphicon glyphicon-remove"></span>

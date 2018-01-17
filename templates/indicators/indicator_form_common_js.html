@@ -46,7 +46,7 @@
         }
     }
 
-    /*
+
     var modalConfirm = function(callback){
         // $("#btn-confirm").on("click", function(){
             $("#conform_modal_div").modal('show');
@@ -62,7 +62,7 @@
             $("#conform_modal_div").modal('hide');
         });
     };
-    */
+
 
     // modalConfirm(function(confirm){
     //     if (confirm) {
@@ -113,10 +113,18 @@
 
     $("#indicator_modal_content, #indicator_form").on("click", "a.detelebtn", function(e){
         e.preventDefault();
-         $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
+        // $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
         var url = $(this).attr('href');
         var id = url.split('/')[url.split('/').length - 2];
         var currnentRow = $(e.target).closest("tr");
+        var dataCount = parseInt(currnentRow.data("collectedCount"));
+
+        if ( dataCount != NaN && dataCount > 0) {
+            if (!confirm(`Warning: Removing this target means that ${dataCount} data record/s will no longer have targets associated with them. \n\nProceed anyway?`)) {
+                dataCount = NaN;
+                return;
+            }
+        }
         var prevDeleteBtn = currnentRow.prev("tr").find("a");
         if (prevDeleteBtn.length == 0) {
             $("#id_div_periodic_tables_placeholder").empty();
