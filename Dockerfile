@@ -10,6 +10,6 @@ ADD docker/etc/nginx/tola.conf /etc/nginx/conf.d/tola.conf
 
 RUN pip install -r requirements.txt
 
-EXPOSE 8000
+EXPOSE 8080
 
 ENTRYPOINT ["/code/docker-entrypoint.sh"]
