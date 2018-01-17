@@ -4,6 +4,8 @@ import logging
 import os
 
 from django.conf import settings
+from django.contrib.sites.models import Site
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
@@ -132,6 +134,14 @@ class Command(BaseCommand):
                 level_3_label="Activity",
                 level_4_label="Component",
             )
+
+    def _create_site(self):
+        site = Site.objects.get(id=1)
+        site.domain='toladata.io'
+        site.name = 'API'
+        site.save()
+
+        factories.TolaSites(site=get_current_site(None))
 
     def _create_groups(self):
         self._groups.append(factories.Group(
@@ -2926,6 +2936,7 @@ class Command(BaseCommand):
 
         self.stdout.write('Creating basic data')
         self._create_organization()
+        self._create_site()
         self._create_groups()
         self._create_countries()
         self._create_sectors()
