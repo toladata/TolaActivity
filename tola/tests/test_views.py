@@ -1,12 +1,17 @@
+from importlib import import_module
 import json
+import logging
 import os
+import sys
+from urlparse import urljoin
 
+from django.contrib import auth
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
-from django.test import RequestFactory, TestCase, override_settings
+from django.core.urlresolvers import clear_url_caches
+from django.test import Client, RequestFactory, TestCase, override_settings
 from django.conf import settings
 from django.urls import reverse
-from django.http import HttpRequest
 from mock import Mock, patch
 
 import factories
@@ -67,6 +72,35 @@ class IndexViewTest(TestCase):
         self.assertIn('https://tolatrack.com', template_content)
 
 
+class LoginViewTest(TestCase):
+    def test_org_signup_link(self):
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertIn(
+            ('<a href="#" data-toggle="modal" data-target="#exampleModal">'
+             'Register Your Organization with TolaData</a>'),
+            template_content)
+
+    def _reload_urlconf(self):
+        clear_url_caches()
+        if settings.ROOT_URLCONF in sys.modules:
+            reload(sys.modules[settings.ROOT_URLCONF])
+        return import_module(settings.ROOT_URLCONF)
+
+    @override_settings(CHARGEBEE_SIGNUP_ORG_URL='https://chargebee.com/123')
+    def test_org_signup_link_chargebee(self):
+        # As the url_patterns are cached when python load the module, also the
+        # settings are cached there. As we want to override a setting, we need
+        # to reload also the urls in order to catch the new value.
+        self._reload_urlconf()
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertIn(
+            ('<a href="https://chargebee.com/123">'
+             'Register Your Organization with TolaData</a>'),
+            template_content)
+
+
 class RegisterViewGetTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -89,7 +123,7 @@ class RegisterViewGetTest(TestCase):
         response = views.RegisterView.as_view()(request)
         self.assertEqual(response.status_code, 200)
         template_content = response.content
-        self.assertIn('TolaData - Privacy Policy', template_content)
+        self.assertIn('Humanitec - Privacy Policy', template_content)
         self.assertIn('Privacy disclaimer accepted', template_content)
 
 
@@ -98,6 +132,10 @@ class RegisterViewPostTest(TestCase):
         self.factory = RequestFactory()
         self.organization = factories.Organization()
         factories.Group(name=ROLE_VIEW_ONLY)
+        logging.disable(logging.ERROR)
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
 
     @staticmethod
     def _hotfix_django_bug(request):
@@ -131,12 +169,13 @@ class RegisterViewPostTest(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
         template_content = response.content
-        for field in ('username', 'password1', 'password2'):
+        for field in ('username', 'password1', 'password2',
+                      'privacy_disclaimer_accepted'):
             msg = ('<p id="error_1_id_{}" class="help-block"><strong>'
                    'This field is required.</strong></p>'.format(field))
             self.assertIn(msg, template_content)
 
-    @patch('tola.views.requests')
+    @patch('tola.util.requests')
     def test_post_success_with_full_name(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
 
@@ -168,7 +207,7 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
-    @patch('tola.views.requests')
+    @patch('tola.util.requests')
     def test_post_success_with_first_name(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
 
@@ -198,7 +237,7 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
-    @patch('tola.views.requests')
+    @patch('tola.util.requests')
     def test_post_success_with_default_org(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
         factories.Organization(name=settings.DEFAULT_ORG)
@@ -233,81 +272,6 @@ class RegisterViewPostTest(TestCase):
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
         os.environ['APP_BRANCH'] = ''
-
-
-class RegisterViewTest(TestCase):
-    def setUp(self):
-        factories.Group()
-        self.tola_user = factories.TolaUser(user=factories.User())
-        self.factory = RequestFactory()
-
-    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
-    @override_settings(TOLA_TRACK_TOKEN='TheToken')
-    @patch('tola.views.requests')
-    def test_response_201_create(self, mock_requests):
-        external_response = {
-            'url': 'http://testserver/api/tolauser/2',
-            'tola_user_uuid': 1234567890,
-            'name': 'John Lennon',
-        }
-        mock_requests.post.return_value = Mock(
-            status_code=201, content=json.dumps(external_response))
-
-        self.tola_user.user.is_staff = True
-        self.tola_user.user.is_superuser = True
-        self.tola_user.user.save()
-
-        user = factories.User(first_name='John', last_name='Lennon')
-        tolauser = factories.TolaUser(user=user, tola_user_uuid=1234567890)
-        data = {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'username': user.username,
-        }
-        request = HttpRequest()
-        request.POST.update(data)
-
-        response = views.RegisterView().register_in_track(request, tolauser)
-        result = json.loads(response.content)
-
-        self.assertEqual(result['tola_user_uuid'], 1234567890)
-        mock_requests.post.assert_called_once_with(
-            'https://tolatrack.com/accounts/register/',
-            data={'username': 'johnlennon',
-                  'first_name': 'John',
-                  'last_name': 'Lennon',
-                  'tola_user_uuid': tolauser.tola_user_uuid,
-                  'email': 'johnlennon@testenv.com'},
-            headers={'Authorization': 'Token TheToken'})
-
-    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
-    @override_settings(TOLA_TRACK_TOKEN='TheToken')
-    @patch('tola.views.requests')
-    def test_response_403_forbidden(self, mock_requests):
-        mock_requests.post.return_value = Mock(status_code=403)
-
-        user = factories.User(first_name='John', last_name='Lennon')
-        tolauser = factories.TolaUser(user=user)
-        data = {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'username': user.username,
-        }
-        request = HttpRequest()
-        request.POST.update(data)
-        response = views.RegisterView().register_in_track(request, tolauser)
-
-        self.assertTrue(isinstance(response.content, Mock))
-        mock_requests.post.assert_called_once_with(
-            'https://tolatrack.com/accounts/register/',
-            data={'username': 'johnlennon',
-                  'first_name': 'John',
-                  'last_name': 'Lennon',
-                  'tola_user_uuid': tolauser.tola_user_uuid,
-                  'email': 'johnlennon@testenv.com'},
-            headers={'Authorization': 'Token TheToken'})
 
 
 class TolaTrackSiloProxyTest(TestCase):
@@ -426,3 +390,36 @@ class TolaTrackSiloDataProxyTest(TestCase):
         request = Mock(user=self.tola_user.user)
         response = views.TolaTrackSiloDataProxy().get(request, '288')
         self.assertEqual(response.status_code, 502)
+
+
+class LogoutViewTest(TestCase):
+    def setUp(self):
+        self.user = factories.User()
+        self.user.set_password(12345)
+        self.user.save()
+        self.tola_user = factories.TolaUser(user=self.user)
+        self.factory = RequestFactory()
+
+    def test_logout_redirect_to_track(self):
+        c = Client()
+        c.post('/accounts/login/', {'username': self.user.username,
+                                    'password': '12345'})
+        self.user = auth.get_user(c)
+        self.assertEqual(self.user.is_authenticated(), True)
+
+        response = c.post('/accounts/logout/')
+        self.user = auth.get_user(c)
+        self.assertEqual(self.user.is_authenticated(), False)
+        self.assertEqual(response.status_code, 302)
+
+        url_subpath = 'accounts/logout/'
+        redirect_url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
+        self.assertEqual(response.url, redirect_url)
+
+    def test_logout_redirect_to_index(self):
+        c = Client()
+        response = c.post('/accounts/logout/')
+        self.user = auth.get_user(c)
+        self.assertEqual(self.user.is_authenticated(), False)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/')

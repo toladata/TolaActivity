@@ -4,9 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.views.generic import TemplateView
 from rest_framework import routers
-from rest_framework.authtoken import views as authtoken_views
 
 from formlibrary.views import BinaryFieldViewSet, binary_test
 from tola import views as tola_views
@@ -64,7 +62,7 @@ router.register(r'collecteddata', CollectedDataViewSet)
 router.register(r'periodictarget', PeriodicTargetViewSet)
 router.register(r'tolatable', TolaTableViewSet, base_name='tolatable')
 router.register(r'disaggregationtype', DisaggregationTypeViewSet)
-router.register(r'dissagregationlabel', DisaggregationLabelViewSet)
+router.register(r'disaggregationlabel', DisaggregationLabelViewSet)
 router.register(r'disaggregationvalue', DisaggregationValueViewSet)
 router.register(r'checklist', ChecklistViewSet)
 router.register(r'organization', OrganizationViewSet)
@@ -79,6 +77,10 @@ router.register(r'codedfield', CodedFieldViewSet)
 router.register(r'codedfieldvalues', CodedFieldValuesViewSet)
 router.register(r'landtype', LandTypeViewSet)
 router.register(r'internationalization', InternationalizationViewSet)
+router.register(r'dashboard', DashboardViewSet)
+#router.register(r'public_dashboard', PublicDashboardViewSet)
+#router.register(r'org_dashboard', PublicOrgDashboardViewSet)
+router.register(r'widget', WidgetViewSet)
 router.register(r'portfolio', PortfolioViewSet)
 router.register(r'sectorrelated', SectorRelatedViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
@@ -93,7 +95,6 @@ urlpatterns = [ # rest framework
                 url(r'^api/', include(router.urls)),
                 url(r'^binarytest/(?P<id>\w+)', binary_test),
                 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-                url(r'^api-token-auth/', authtoken_views.obtain_auth_token),
 
                 # index
                 url(r'^$', tola_views.IndexView.as_view(), name='index'),
@@ -121,8 +122,11 @@ urlpatterns = [ # rest framework
                 url(r'^formlibrary/', include('formlibrary.urls')),
 
                 # local login
-                url(r'^accounts/login/$', auth_views.login, name='login'),
-                url(r'^accounts/logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
+                url(r'^accounts/login/$', auth_views.LoginView.as_view(
+                    extra_context={'chargebee_signup_org_url':
+                                   settings.CHARGEBEE_SIGNUP_ORG_URL}),
+                    name='login'),
+                url(r'^accounts/logout/$', tola_views.logout_view, name='logout'),
 
                 # accounts
                 url(r'^accounts/profile/$', tola_views.profile, name='profile'),

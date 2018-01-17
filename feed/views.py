@@ -439,6 +439,12 @@ class DisaggregationTypeViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    def perform_create(self, serializer):
+        organization_id = TolaUser.objects. \
+            values_list('organization_id', flat=True). \
+            get(user=self.request.user)
+        serializer.save(organization_id=organization_id)
+
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     permission_classes = (IsOrgMember,)
     queryset = DisaggregationType.objects.all()
@@ -795,7 +801,6 @@ class DisaggregationValueViewSet(viewsets.ModelViewSet):
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     queryset = DisaggregationValue.objects.all()
     serializer_class = DisaggregationValueSerializer
-    pagination_class = StandardResultsSetPagination
 
 
 class DisaggregationLabelViewSet(viewsets.ModelViewSet):
@@ -806,7 +811,6 @@ class DisaggregationLabelViewSet(viewsets.ModelViewSet):
 
     queryset = DisaggregationLabel.objects.all()
     serializer_class = DisaggregationLabelSerializer
-    pagination_class = StandardResultsSetPagination
 
 
 class ChecklistViewSet(viewsets.ModelViewSet):
@@ -1029,10 +1033,14 @@ class CustomFormViewSet(viewsets.ModelViewSet):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         form_data = request.data.copy()
+        fields = form_data.get('fields')
         headers = {
             'Authorization': 'Token {}'.format(
                 settings.TOLA_TRACK_TOKEN),
         }
+
+        if isinstance(fields, list):
+            fields = json.dumps(fields)
 
         # Serialize the program
         if request.data.get('workflowlevel1'):
@@ -1057,7 +1065,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
                 # Update the table info in Track
                 data = {'name': form_data.get('name'),
                         'description': form_data.get('description'),
-                        'fields': form_data.get('fields')}
+                        'fields': fields}
                 url_subpath = 'api/customform/%s' % instance.silo_id
                 url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
                 requests.put(url, data=data, headers=headers)
@@ -1070,7 +1078,7 @@ class CustomFormViewSet(viewsets.ModelViewSet):
             tola_user = request.user.tola_user
             silo_data = {'name': form_data.get('name'),
                          'description': form_data.get('description'),
-                         'fields': form_data.get('fields'),
+                         'fields': fields,
                          'level1_uuid': wkfl1.level1_uuid,
                          'tola_user_uuid': tola_user.tola_user_uuid}
 
@@ -1332,6 +1340,60 @@ class PortfolioViewSet(viewsets.ModelViewSet):
     serializer_class = PortfolioSerializer
 
 
+class PublicDashboardViewSet(viewsets.ModelViewSet):
+
+    queryset = Dashboard.objects.all().filter(public_all=True)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = PublicDashboardSerializer
+
+
+class PublicOrgDashboardViewSet(viewsets.ModelViewSet):
+
+    def list(self, request):
+        # Use this queryset or the django-filters lib will not work
+        queryset = self.filter_queryset(self.get_queryset())
+        if not request.user.is_superuser:
+            organization_id = TolaUser.objects. \
+                values_list('organization_id', flat=True). \
+                get(user=request.user)
+            queryset = queryset.filter(organization_id=organization_id)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    queryset = Dashboard.objects.all().filter(public_in_org=True)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = PublicOrgDashboardSerializer
+
+
+class DashboardViewSet(viewsets.ModelViewSet):
+
+    def list(self, request):
+        # Use this queryset or the django-filters lib will not work
+        queryset = self.filter_queryset(self.get_queryset())
+        if not request.user.is_superuser:
+            get_user = TolaUser.objects.get(user=request.user)
+            queryset = queryset.filter(Q(user=get_user) | Q(share=get_user))
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    filter_fields = ('user', 'share',)
+    queryset = Dashboard.objects.all()
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = DashboardSerializer
+
+
+class WidgetViewSet(viewsets.ModelViewSet):
+    def list(self, request):
+        # Use this queryset or the django-filters lib will not work
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    filter_fields = ('dashboard',)
+    queryset = Widget.objects.all()
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    serializer_class = WidgetSerializer
+
+
 class SectorRelatedViewSet(viewsets.ModelViewSet):
 
     filter_fields = ('sector', 'organization__id',)
@@ -1346,3 +1408,5 @@ class WorkflowLevel1SectorViewSet(viewsets.ModelViewSet):
     filter_fields = ('sector', 'workflowlevel1',)
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     serializer_class = WorkflowLevel1SectorSerializer
+
+

@@ -1,13 +1,11 @@
-from django.test import TestCase
-from django.test import Client
 from django.contrib.sites.shortcuts import get_current_site
-
+from django.test import TestCase, Client
+from mock import Mock, patch
 from social_core.exceptions import AuthForbidden
 
-from workflow.models import TolaUser
-from tola import auth_pipeline
-
 import factories
+from tola import auth_pipeline
+from workflow.models import TolaUser
 
 # TODO Extend OAuth tests
 
@@ -48,7 +46,10 @@ class OAuthTest(TestCase):
             response, "value=\"CXGVOGFnTAt5cQW6m5AxbGrRq1lzKNSrou31dWm9\"")
         self.assertEqual(response.status_code, 200)
 
-    def test_user_to_tola(self):
+    @patch('tola.util.requests')
+    def test_user_to_tola(self, mock_requests):
+        mock_requests.post.return_value = Mock(status_code=201)
+
         # TolaUser will be created with default Org
         response = {
             'displayName': 'Foo Bar',
@@ -104,8 +105,12 @@ class OAuthTest(TestCase):
         details = {'email': self.tola_user.user.email}
         self.site.whitelisted_domains = 'anotherdomain.com'
         self.site.save()
-        with self.assertRaises(AuthForbidden):
-            auth_pipeline.auth_allowed(backend, details, None)
+        response = auth_pipeline.auth_allowed(backend, details, None)
+        template_content = response.content
+        self.assertIn("Your organization doesn't appear to have permissions "
+                      "to access the system.", template_content)
+        self.assertIn("Please check with your organization to have access.",
+                      template_content)
 
     def test_auth_allowed_no_whitelist(self):
         # Fake backend class for the test
@@ -122,4 +127,9 @@ class OAuthTest(TestCase):
 
         backend = BackendTest()
         details = {'email': self.tola_user.user.email}
-        auth_pipeline.auth_allowed(backend, details, None)
+        response = auth_pipeline.auth_allowed(backend, details, None)
+        template_content = response.content
+        self.assertIn("Your organization doesn't appear to have permissions "
+                      "to access the system.", template_content)
+        self.assertIn("Please check with your organization to have access.",
+                      template_content)
