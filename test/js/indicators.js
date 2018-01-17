@@ -36,23 +36,26 @@ test.describe('TolaActivity Indicators Page', function() {
   
   test.before(async function() {
     await newTolaSession(parms);
-    await newTolaLogin(parms);
   });
 
   test.after(async function() {
     await driver.quit();
   });
 
+  test.it('should login', async function() {
+    await newTolaLogin(parms);
+  });
+
   test.it('should exist', async function() {
     //await driver.wait(until.elementLocated({css: 'h2'}));
-    await driver.wait(until.urlIs('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/'));
-    let head = await driver.wait(until.elementTextIs('Program Indicators'));
-    try {
-      assert(head.getText() == 'Program Indicators');
-    }
-    catch(e) {
-      throw(e);
-    }
+    await driver.get('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/');
+    await driver.wait(until.elementLocated({css: 'h2'}));
+//    try {
+//      assert(head.getText() == 'Program Indicators');
+//    }
+//    catch(e) {
+//      throw(e);
+//    }
   });
 
 /*
