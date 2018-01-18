@@ -30,8 +30,8 @@ async function newTolaLogin(parms) {
     el = await driver.findElement({className: 'inputsub'})
     await el.click();
 }
-test.describe('TolaActivity Indicators Page', function() {
 
+test.describe('TolaActivity Indicators Page', function() {
   var parms = readConfig();
   
   test.before(async function() {
@@ -42,20 +42,15 @@ test.describe('TolaActivity Indicators Page', function() {
     await driver.quit();
   });
 
-  test.it('should login', async function() {
+  test.it('should require login authentiction', async function() {
     await newTolaLogin(parms);
   });
 
   test.it('should exist', async function() {
-    //await driver.wait(until.elementLocated({css: 'h2'}));
     await driver.get('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/');
-    await driver.wait(until.elementLocated({css: 'h2'}));
-//    try {
-//      assert(head.getText() == 'Program Indicators');
-//    }
-//    catch(e) {
-//      throw(e);
-//    }
+    await driver.wait(until.elementLocated({css: 'h2'}), 10000);
+    el = driver.findElement({css: 'h2'});
+    assert.equal(await el.getText(), 'Program Indicators');
   });
 
 /*
