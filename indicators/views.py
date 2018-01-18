@@ -304,7 +304,7 @@ class PeriodicTargetView(View):
     def post(self, request, *args, **kwargs):
         indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
         deleteall = self.kwargs.get('deleteall', None)
-        if deleteall == 'false':
+        if deleteall == 'true':
             periodic_targets = PeriodicTarget.objects.filter(indicator=indicator)
             for pt in periodic_targets:
                 pt.collecteddata_set.all().update(periodic_target=None)
