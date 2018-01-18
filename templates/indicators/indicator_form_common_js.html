@@ -125,11 +125,19 @@
             }
         }
         var prevDeleteBtn = currnentRow.prev("tr").find("a");
+        /*
         if (prevDeleteBtn.length == 0) {
             $("#id_div_periodic_tables_placeholder").empty();
+            reset_frequency_fields();
         }
+        */
+
         if (id == 'undefined') {
             currnentRow.remove();
+            if ($('#periodic_targets_table tbody tr.periodic-target').length == 0) {
+                $("#id_div_periodic_tables_placeholder").empty();
+                reset_frequency_fields();
+            }
             prevDeleteBtn.show();
             return;
         }
@@ -144,6 +152,7 @@
                         $("#id_span_targets_sum").text(targets_sum);
                     }
                     if ($('#periodic_targets_table tbody tr.periodic-target').length == 0) {
+                        $("#id_div_periodic_tables_placeholder").empty();
                         reset_frequency_fields();
                     }
                 } else {
