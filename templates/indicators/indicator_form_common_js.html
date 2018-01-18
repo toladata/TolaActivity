@@ -143,10 +143,13 @@
                     var targets_sum = data['targets_sum'];
                     if (targets_sum != 0 && targets_sum != "None" && targets_sum != '' && targets_sum != 'undefined') {
                         $("#id_span_targets_sum").text(targets_sum);
-                        $("#id_target_frequency option:not(:selected)").attr("disabled", false);
-                        $("#id_target_frequency").val('');
-                        $("#id_target_frequency").attr("readonly", false);
-                        $("#create_targets_btn").attr("disabled", false);
+                    }
+                    if (prevDeleteBtn.length == 0){
+                        reset_frequency_fields();
+                        // $("#id_target_frequency option:not(:selected)").attr("disabled", false);
+                        // $("#id_target_frequency").val('');
+                        // $("#id_target_frequency").attr("readonly", false);
+                        // $("#create_targets_btn").attr("disabled", false);
                     }
                 } else {
                     createAlert("danger", data.msg, true, "#modalmessages");
@@ -224,7 +227,20 @@
     $("#indicator_modal_content, #indicator_form").on("click", "#delete_targets_btn", function(e) {
         e.preventDefault();
         // console.log($("#id_target_frequency").find("option:selected").text());
-       alert("Not yet implemented!");
+        var form_url = $("#indicator_update_form").attr('action');
+        var indicator_id = form_url.split('/').slice(-2, -1)[0];
+        if (!confirm('Warning: This action cannot be undone. Any data records assigned to a target will need to be reassigned.\n\n Are you sure you want to remove all targets?')){
+            return;
+        }
+        $.post('/indicators/periodic_target_deleteall/' + indicator_id + '/true/', function(data){
+            var res = $.parseJSON(data);
+            if (res['status'] == 'success') {
+                console.log(res['status']);
+                $("#id_div_periodic_tables_placeholder").empty();
+                reset_frequency_fields();
+            }
+
+        });
     });
 
     // add new periodic target
@@ -412,6 +428,14 @@
                 }
             }
         });
+    }
+
+
+    function reset_frequency_fields() {
+        $("#id_target_frequency option:not(:selected)").attr("disabled", false);
+        $("#id_target_frequency").val('');
+        $("#id_target_frequency").attr("readonly", false);
+        $("#create_targets_btn").attr("disabled", false);
     }
 
 
