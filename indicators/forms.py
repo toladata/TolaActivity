@@ -92,8 +92,8 @@ class IndicatorForm(forms.ModelForm):
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
-                                            <table id="periodic_targets_table" style="margin-bottom: 1px;">
+                                        <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px;">
+                                            <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
                                                 <tbody>
                                                     {% for pt in periodic_targets %}
                                                         <tr id="{{pt.pk}}" data-collected-count="{{pt.num_data}}" class="periodic-target">
@@ -102,7 +102,7 @@ class IndicatorForm(forms.ModelForm):
                                                                     <span class=" glyphicon glyphicon-remove"></span>
                                                                 </a>
                                                             </td>
-                                                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                            <td style="padding:1px; border:none; vertical-align:middle;">
                                                                 {% if indicator.target_frequency == 8 %}
                                                                     <div class="controls">
                                                                         <input type="text" name="{{ pt.period }}" value="{{ pt.period }}" class="form-control">
@@ -110,10 +110,10 @@ class IndicatorForm(forms.ModelForm):
                                                                     </div>
                                                                 {% else %}
                                                                     <div style="line-height:1;"><strong>{{ pt.period }}</strong></div>
-                                                                    <div style="line-height:0.8;"><small>{{ pt.start_date|date:"M d, Y"|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|date:"M d, Y"|default:'' }}</small></div>
+                                                                    <div style="line-height:1; margin-top:3px;">{{ pt.start_date|date:"M d, Y"|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|date:"M d, Y"|default:'' }}</div>
                                                                 {% endif %}
                                                             </td>
-                                                            <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                                                            <td align="right" style="padding:1px; border:none; vertical-align: middle;">
                                                                 <div class="controls">
                                                                     <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" data-start-date="{{pt.start_date_formatted}}" data-end-date="{{pt.end_date_formatted}}" placeholder="Enter target" class="form-control" style="width: 50%;">
                                                                     <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
@@ -122,10 +122,12 @@ class IndicatorForm(forms.ModelForm):
                                                         </tr>
                                                         {% if forloop.last %}
                                                             <tr id="pt_sum_targets">
-                                                                <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                                                <td class="pt-delete-row" style="border: none;">
+                                                                </td>
+                                                                <td align="left" style="padding-left:0px; border:none; vertical-align: middle;">
                                                                     <strong>Sum of targets</strong>
                                                                 </td>
-                                                                <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                                                <td align="right" style="border:none; vertical-align: middle;">
                                                                     <strong><span id="id_span_targets_sum">{{targets_sum}}</span></strong>
                                                                 </td>
                                                             </tr>
@@ -134,17 +136,17 @@ class IndicatorForm(forms.ModelForm):
                                                 </tbody>
                                                 <tfoot>
                                                     <tr>
-                                                        <td colspan="3" style="color:red;" id="id_pt_errors"></td>
+                                                        <td colspan="3" style="color:red; padding: 0px" id="id_pt_errors"></td>
                                                     </tr>
                                                 </tfoot>
                                             </table>
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
+                                        <div class="lop-display col-sm-offset-2 col-sm-6" style="padding-left: 25px;">
                                             <strong>Life of Program (LoP) target</strong>
                                         </div>
-                                        <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
+                                        <div class="lop-display col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
                                             <strong>{{indicator.lop_target}}</strong>
                                         </div>
                                     </div>
