@@ -112,7 +112,6 @@ test.describe('TolaActivity Dashboard', function() {
   // TODO: Unable to reliably select this element
   test.describe('Indicator Evidence panel', function() {
     test.it.skip('should be present on dashboard');
-		})
   }); // end indicator evidence panel tests
 
   // TODO: Unable to reliably select this element
