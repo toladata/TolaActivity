@@ -260,7 +260,7 @@
                 </div>
             </div>
             <div class="row">
-                <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
+                <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px;">
                     <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
                         <tbody>`;
 
@@ -598,7 +598,7 @@
                 }
             }
             if ($("#id_div_periodic_tables_placeholder input[type=number]").parent().hasClass("has-error") ) {
-                $("#id_pt_errors").html('<small>Please enter a target value. Your target value can be zero.</small>');
+                $("#id_pt_errors").html('<span class="target-value-error"><small>Please enter a target value. Your target value can be zero.</small></span>');
             }
         });
     }
@@ -687,7 +687,7 @@
                 $(this).parent().addClass('has-error');
             }
             if ($("#id_div_periodic_tables_placeholder input[type=number]").parent().hasClass("has-error") ) {
-                $("#id_pt_errors").html('<small>Please enter a target value. Your target value can be zero.</small>');
+                $("#id_pt_errors").html('<span class="target-value-error"><small>Please enter a target value. Your target value can be zero.</small></span>');
             }
         }
     });
