@@ -46,6 +46,32 @@
         }
     }
 
+
+    var modalConfirm = function(callback){
+        // $("#btn-confirm").on("click", function(){
+            $("#conform_modal_div").modal('show');
+        // });
+
+        $("#modal-btn-si").on("click", function(){
+            callback(true);
+            $("#conform_modal_div").modal('hide');
+        });
+
+        $("#modal-btn-no").on("click", function(){
+            callback(false);
+            $("#conform_modal_div").modal('hide');
+        });
+    };
+
+
+    // modalConfirm(function(confirm){
+    //     if (confirm) {
+    //         $("#result").html("CONFIRMADO");
+    //     } else {
+    //         $("#result").html("NO CONFIRMADO");
+    //     }
+    // });
+
     function setupPopupCalendar() {
         $('.monthPicker').datepicker({
             changeMonth: true,
@@ -87,10 +113,18 @@
 
     $("#indicator_modal_content, #indicator_form").on("click", "a.detelebtn", function(e){
         e.preventDefault();
-         $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
+        // $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
         var url = $(this).attr('href');
         var id = url.split('/')[url.split('/').length - 2];
         var currnentRow = $(e.target).closest("tr");
+        var dataCount = parseInt(currnentRow.data("collectedCount"));
+
+        if ( dataCount != NaN && dataCount > 0) {
+            if (!confirm(`Warning: Removing this target means that ${dataCount} data record/s will no longer have targets associated with them. \n\nProceed anyway?`)) {
+                dataCount = NaN;
+                return;
+            }
+        }
         var prevDeleteBtn = currnentRow.prev("tr").find("a");
         if (prevDeleteBtn.length == 0) {
             $("#id_div_periodic_tables_placeholder").empty();
@@ -109,6 +143,10 @@
                     var targets_sum = data['targets_sum'];
                     if (targets_sum != 0 && targets_sum != "None" && targets_sum != '' && targets_sum != 'undefined') {
                         $("#id_span_targets_sum").text(targets_sum);
+                        $("#id_target_frequency option:not(:selected)").attr("disabled", false);
+                        $("#id_target_frequency").val('');
+                        $("#id_target_frequency").attr("readonly", false);
+                        $("#create_targets_btn").attr("disabled", false);
                     }
                 } else {
                     createAlert("danger", data.msg, true, "#modalmessages");
@@ -182,14 +220,14 @@
         return markup;
     }
 
-    //addNewPeriodicTarget
+    // delete periodic_target
     $("#indicator_modal_content, #indicator_form").on("click", "#delete_targets_btn", function(e) {
         e.preventDefault();
         // console.log($("#id_target_frequency").find("option:selected").text());
        alert("Not yet implemented!");
     });
 
-    //addNewPeriodicTarget
+    // add new periodic target
     $("#indicator_modal_content, #indicator_form").on("click", "#addNewPeriodicTarget", function(e) {
         e.preventDefault();
         // console.log($("#id_target_frequency").find("option:selected").text());
@@ -266,12 +304,36 @@
     }
 
     function submitForm(form) {
+        var numDataPoints = parseInt($("#numDataPoints").text());
+        var initalTargetFrequency = parseInt($("#initialTargetFrequencyValue").text());
+        var target_frequency = $("#id_target_frequency").val();
+        // console.log("numDataPoints: ", numDataPoints, " initalTargetFrequency: ", initalTargetFrequency, " target_Frequency: ", target_frequency);
+
+        if (numDataPoints > 0 && initalTargetFrequency == 1 && target_frequency != 1) {
+
+            /*
+            modalConfirm(function(confirm){
+                alert(confirm);
+                if (!confirm) {
+                    console.log("haha");
+                }
+            });
+            return;
+            */
+            if (!confirm(`Warning: If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
+                initalTargetFrequency = undefined;
+                return;
+            }
+        }
         show_hide_frequency_fields(true);
         // $("#create_targets_btn").attr("disabled", true);
         var submitBtnName = $(form).find("input[type=submit]:focus" );
         var form_url = $(form).attr('action');
         var form_data = $(form).serialize();
+
         var periodic_targets = [];
+
+        // Collect all existing periodic_targets into an array.
         $('#periodic_targets_table tbody tr.periodic-target').each(function () {
             var $this = $(this);
             var values = [];
@@ -298,34 +360,11 @@
             var end_date = targetValueSelector.data("endDate");
 
             periodic_targets.push({'id': pt_id, 'period': pt_name, 'target': pt_value, 'start_date': start_date, 'end_date': end_date } );
-
-
-            /*
-            $this.find('input[type=number]').each(function (i, input) {
-                console.log('input type number = ', i);
-                try {
-                    var id = $(input).attr('id').split('-')[1];
-                    values.push($.isNumeric(id) ? id : 0);
-                } catch (err) {
-                    values.push(0);
-                }
-                values.push($(input).attr('name'));
-                values.push($(input).val());
-                if (!$(input).val()) {
-                    $(input).parent().addClass('has-error');
-                    $(input).next('span:first').html('<small>Please enter a target value for every period.</small>');
-                }
-                values.push($(input).data("startDate"));
-                values.push($(input).data("endDate"));
-            });
-            */
-            // if(values.length > 0) {
-            //     periodic_targets.push({'id': values[0], 'period': values[1], 'target': values[2], 'start_date': values[3], 'end_date': values[4] } );
-            // }
         });
         // if there are errors in periodic targets then do not submit the form
         if ($("#id_div_periodic_tables_placeholder input").parent().hasClass('has-error')) { return; }
 
+        // If there aren't any existing periodic_targets then set the flag to generate them.
         if ($.isEmptyObject(periodic_targets)) {
             form_data += "&periodic_targets=generateTargets";
         } else {
@@ -357,6 +396,7 @@
             var pts = jsondata[1];
             var generateTargets = jsondata[2];
             var targets_sum = jsondata[3];
+            $("#initialTargetFrequencyValue").text(indicator.fields.target_frequency);
 
             // $("#id_achieved").val(indicator['fields']['achieved']);
             var htmlString = '';
@@ -397,11 +437,6 @@
             $("#div_id_create_targets_btn").show();
         }
 
-        // if (selected_option == 'Life of Program (LoP) only') {
-        //     $("#id_target_frequency option:not(:selected)").attr("disabled", false);
-        //     $("#id_target_frequency").attr("readonly", false);
-        // }
-
         if (lock == false) {
             if (selected_option == 'Life of Program (LoP) only' ||
                 selected_option == 'Midline and endline' ||
@@ -425,20 +460,6 @@
                 $("#id_target_frequency_custom").val('');
             }
         }
-
-        // if ( $('#id_target_frequency').is('[readonly="readonly"]') ) {
-        //     $("#id_target_frequency option:not(:selected)").attr("disabled", true);
-        //     // $("#div_id_create_targets_btn").show();
-        //     $("#create_targets_btn").attr("disabled", true);
-        // }
-
-        // if (selected_option != '---------' ) {
-        //     if ( ($('#div_id_target_frequency_start').is(':visible') || $("#div_id_target_frequency_custom").is(":visible") )
-        //             && $("#div_id_target_frequency_num_periods").is(':visible')
-        //             || selected_option == 'Midline and endline') {
-        //         $("#div_id_create_targets_btn").show();
-        //     }
-        // }
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
         show_hide_frequency_fields();
@@ -457,7 +478,7 @@
             return false;
         } else if (!$.isNumeric(baseline.val())) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please enter a number.");
+            $("#hint_id_baseline").text("Please enter a number with no special characters.");
             // sbmt.attr("disabled", true);
             return false;
         } else {
@@ -480,7 +501,7 @@
             return false;
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please enter a number larger than zero. If your target is a percentage, describe it in the unit of measure field.");
+            $("#hint_id_lop_target").text("Please enter a number larger than zero with no special characters. If your target is a percentage, describe it in the unit of measure field.");
             // sbmt.attr("disabled", true);
             return false;
         } else {

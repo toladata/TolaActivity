@@ -8,6 +8,8 @@
 {% block page_title %}Indicator{% endblock %}
 
 {% block content %}
+    <div id="numDataPoints" style="display: none;">{{ object.collecteddata_set.all.count }}</div>
+    <div id="initialTargetFrequencyValue" style="display:none;">{{ object.target_frequency }}</div>
     {% if i_name %}
     <h4>(<a href="/indicators/home/0/0/0/">{{i_name}}</a>)</h4>
     {% endif %}
