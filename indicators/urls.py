@@ -24,6 +24,7 @@ urlpatterns = [
 
     url(r'^periodic_target_delete/(?P<pk>\w+)/$', PeriodicTargetDeleteView.as_view(), name='pt_delete'),
     url(r'^periodic_target_generate/(?P<indicator>\w+)/$', PeriodicTargetView.as_view(), name='pt_generate'),
+    url(r'^periodic_target_deleteall/(?P<indicator>\w+)/(?P<deleteall>\w+)/$', PeriodicTargetView.as_view(), name='pt_deleteall'),
 
     # Collected Data List
     url(r'^collecteddata/(?P<program>\w+)/(?P<indicator>\w+)/(?P<type>\w+)/$', CollectedDataList.as_view(), name='collecteddata_list'),

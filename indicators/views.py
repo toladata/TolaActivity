@@ -281,6 +281,9 @@ class IndicatorCreate(CreateView):
 
 
 class PeriodicTargetView(View):
+    """
+    This view is responsible for generating periodic targets or deleting them (via POST)
+    """
     model = PeriodicTarget
 
     def get(self, request, *args, **kwargs):
@@ -298,6 +301,15 @@ class PeriodicTargetView(View):
         pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
         return HttpResponse(pt_generated_json)
 
+    def post(self, request, *args, **kwargs):
+        indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
+        deleteall = self.kwargs.get('deleteall', None)
+        if deleteall == 'true':
+            periodic_targets = PeriodicTarget.objects.filter(indicator=indicator)
+            for pt in periodic_targets:
+                pt.collecteddata_set.all().update(periodic_target=None)
+                pt.delete()
+        return HttpResponse('{"status": "success", "message": "Request processed successfully!"}')
 
 
 class IndicatorUpdate(UpdateView):
@@ -492,8 +504,7 @@ class PeriodicTargetDeleteView(DeleteView):
         collecteddata_count = self.get_object().collecteddata_set.count()
         if collecteddata_count > 0:
             self.get_object().collecteddata_set.all().update(periodic_target=None)
-            # self.get_object().delete()
-            # return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
+
         #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
         indicator = self.get_object().indicator
         self.get_object().delete()

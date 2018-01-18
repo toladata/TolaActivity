@@ -1,0 +1,45 @@
+
+
+
+#periodic-targets-tablediv {
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-bottom: 0px
+}
+
+.periodic-target, #pt_sum_targets {
+  border-bottom: 1px solid #DBDCDE;
+  border-top: 1px solid #DBDCDE;
+}
+
+#periodic-targets-tablediv .pt-delete-row {
+  padding: 1px 0px 1px 10px;
+  vertical-align: middle;
+  border: none;
+}
+
+.periodic-target .controls input {
+  margin: 10px 10px;
+  padding-right: 2px;
+  text-align: right;
+  width: 50%;
+  border: 1px solid #DBDCDE;
+  box-shadow: none;
+}
+
+.periodic-target .controls input::placeholder {
+  color: #DBDCDE;
+}
+
+.lop-display {
+  padding: 0px 15px 10px 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #DBDCDE;
+}
+
+.target-value-error {
+  margin: 5px;
+  float: right;
+  margin-right: 10px;
+}

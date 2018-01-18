@@ -92,13 +92,13 @@ class IndicatorForm(forms.ModelForm):
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
-                                            <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
+                                        <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
+                                            <table id="periodic_targets_table" style="margin-bottom: 1px;">
                                                 <tbody>
                                                     {% for pt in periodic_targets %}
                                                         <tr id="{{pt.pk}}" data-collected-count="{{pt.num_data}}" class="periodic-target">
                                                             <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; display:{% if forloop.last and indicator.target_frequency != 2 %}block{% else %}none{% endif %}">
+                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; display:{% if forloop.last and indicator.target_frequency != 2 or indicator.target_frequency == 8 %}block{% else %}none{% endif %}">
                                                                     <span class=" glyphicon glyphicon-remove"></span>
                                                                 </a>
                                                             </td>
@@ -417,4 +417,3 @@ class CollectedDataForm(forms.ModelForm):
 
         #self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
         self.fields['tola_table'].queryset = TolaTable.objects.filter(Q(owner=self.request.user) | Q(id=self.tola_table))
-
