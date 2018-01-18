@@ -54,7 +54,7 @@ To run the package building tests, follow these steps:
 ```bash
 docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web bash
 # Now inside the container
-pip freeze | grep -v "^-e" | xargs pip uninstall -y; pip uninstall -y social_auth_core; cat requirements.txt | grep "^Django==\|^psycopg2" | xargs pip install; pip install -r requirements-pkg.txt
+pip freeze | grep -v "^-e" | xargs pip uninstall -y; pip uninstall -y social_auth_core; cat requirements/base.txt | grep "^Django==\|^psycopg2" | xargs pip install; pip install -r requirements/pkg.txt
 python manage.py test --tag=pkg --keepdb
 ```
 
@@ -139,7 +139,7 @@ source venv/bin/activate
 Install requirements:
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -r requirements/dev.txt
 ```
 
 Set up database:
