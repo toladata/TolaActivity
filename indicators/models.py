@@ -277,6 +277,7 @@ class Indicator(models.Model):
     unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of measure*", help_text=" ")
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True, help_text=" ")
     baseline = models.CharField(verbose_name="Baseline*", max_length=255, null=True, blank=True, help_text=" ")
+    baseline_na = models.BooleanField(verbose_name="Not applicable", default=False, help_text=" ")
     lop_target = models.CharField(verbose_name="Life of Program (LoP) target*",max_length=255, null=True, blank=True, help_text=" ")
     rationale_for_target = models.TextField(max_length=255, null=True, blank=True, help_text=" ")
     target_frequency = models.IntegerField(blank=False, null=True, choices=TARGET_FREQUENCIES, verbose_name="Target frequency", help_text=" ")

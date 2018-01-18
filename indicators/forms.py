@@ -4,7 +4,7 @@ from workflow.models import Program, SiteProfile, Documentation, ProjectAgreemen
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
-from crispy_forms.layout import Layout, Submit, Reset
+from crispy_forms.layout import Layout, Submit, Reset, Div
 from functools import partial
 from django import forms
 from tola.util import getCountry
@@ -20,7 +20,6 @@ class DatePicker(forms.DateInput):
 
 
 class IndicatorForm(forms.ModelForm):
-
     class Meta:
         model = Indicator
         exclude = ['create_date','edit_date']
@@ -69,8 +68,13 @@ class IndicatorForm(forms.ModelForm):
                 ),
                 Tab('Targets',
                     Fieldset('',
-                             'unit_of_measure', 'lop_target', 'rationale_for_target', 'baseline', 'target_frequency', 'target_frequency_start', 'target_frequency_custom', 'target_frequency_num_periods'
-                             ),
+                            'unit_of_measure', 'lop_target', 'rationale_for_target',
+                            Div(
+                                Field('baseline', template="baselinetemplate.html"),
+                                Field('baseline_na', template="baselinetemplate.html"),
+                                css_class = 'row form-group',
+                            ),
+                            'target_frequency', 'target_frequency_start', 'target_frequency_custom', 'target_frequency_num_periods'),
                     Fieldset('',
                         HTML("""
                             <div id="div_id_create_targets_btn" class="form-group">
