@@ -53,12 +53,39 @@ test.describe('TolaActivity Indicators Page', function() {
     assert.equal(await el.getText(), 'Program Indicators');
   });
 
-/*
-  // These are enhancements
-  test.it('should highlight PIs with no evidence');
-  test.it('should disable Indicators button if program has no indicators');
-  test.it('should be able to sort table by clicking a column header');
+  test.describe('Programs dropdown', function() {
+    test.it('should exist', async function() {
+      el = await driver.findElement({id: 'dropdownProgram'});
+      assert.equal(await el.getText(), 'Programs');
+    });
 
+    test.it('should have at least one entry');
+    test.it('should default to showing all programs');
+    test.it('should be able to filter PIs by Program');
+    test.it('should be able to filter Programs by PI');
+    test.it('should have same item count as Programs table');
+    test.it('should have same items as Programs table');
+  }); // end programs dropdown tests
+  
+  test.describe('Indicators dropdown', function() {
+    test.it('should exist', async function() {
+      el = await driver.findElement({id: 'dropdownIndicator'});
+      assert.equal(await el.getText(), 'Indicators');
+    });
+    test.it('should default to showing all PIs for a program');
+    test.it('should be able to filter resultset by PI');
+  }); // end indicators dropdown tests
+  
+  test.describe('Indicator Type dropdown', function() {
+    test.it('should exist', async function() {
+      el = await driver.findElement({id: 'dropdownIndicatorType'});
+      assert.equal(await el.getText(), 'Indicator Type');
+    });
+    test.it('should default to showing all Indicator Types for a program');
+    test.it('should be able to filter the resultset by Indicator Type');
+  }); // end indicator type dropdown tests
+
+/*
   test.it('should toggle PIs table by clicking PI Indicators button');
   test.it('should increase PI count after adding new indicator');
   test.it('should decrease PI count after deleting indicator');
@@ -69,28 +96,6 @@ test.describe('TolaActivity Indicators Page', function() {
   test.it('should increase evidence count when PI evidence added');
   test.it('should decrease evidence count when PI evidence deleted');
   test.it('should be able to delete a PI by clicking its Delete button');
-  
-  test.describe('Programs dropdown', function() {
-    test.it('should exist');
-    test.it('should have at least one entry');
-    test.it('should default to showing all programs');
-    test.it('should be able to filter PIs by Program');
-    test.it('should be able to filter Programs by PI');
-    test.it('should have same item count as Programs table');
-    test.it('should have same items as Programs table');
-  }); // end programs dropdown tests
-  
-  test.describe('Indicators dropdown', function() {
-    test.it('should exist');
-    test.it('should default to showing all PIs for a program');
-    test.it('should be able to filter resultset by PI');
-  }); // end indicators dropdown tests
-  
-  test.describe('Indicator Type dropdown', function() {
-    test.it('should exist');
-    test.it('should default to showing all Indicator Types for a program');
-    test.it('should be able to filter the resultset by Indicator Type');
-  }); // end indicator type dropdown tests
   
   test.describe('Program Indicators table', function() {
     test.it('should open the Create an Indicator form when New Indicator button is clicked');
@@ -221,6 +226,12 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should have a Grid/Print Report button');
     test.it('should open a report page when the Grid/Print Report button is clicked');
   });
+
+  // These are enhancements
+  test.it('should highlight PIs with no evidence');
+  test.it('should disable Indicators button if program has no indicators');
+  test.it('should be able to sort table by clicking a column header');
+
 }); // end indicators page tests
 */
 });
