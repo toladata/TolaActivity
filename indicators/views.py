@@ -312,6 +312,28 @@ class PeriodicTargetView(View):
         return HttpResponse('{"status": "success", "message": "Request processed successfully!"}')
 
 
+def handleDataCollectedRecords(indicatr, existing_target_frequency, new_target_frequency, generated_pt_ids=[]):
+    # If the target_frequency is changed from LOP to something else then disassociate all
+    # collected_data from the LOP periodic_target and then delete the LOP periodic_target
+    # if existing_target_frequency == Indicator.LOP and new_target_frequency != Indicator.LOP:
+    if existing_target_frequency != new_target_frequency:
+        print(".............................%s............................" % "removing periodic targets" )
+        CollectedData.objects.filter(indicator=indicatr).update(periodic_target=None)
+        PeriodicTarget.objects.filter(indicator=indicatr).delete()
+
+    # If the user sets target_frequency to LOP then create a LOP periodic_target and associate all
+    # collected data for this indicator with this single LOP periodic_target
+    if existing_target_frequency != Indicator.LOP and new_target_frequency == Indicator.LOP:
+        print(".............................%s............................" % "creating lop_target" )
+        lop_pt = PeriodicTarget.objects.create(indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1], target=indicatr.lop_target, create_date = timezone.now())
+        CollectedData.objects.filter(indicator=indicatr).update(periodic_target=lop_pt)
+
+    if generated_pt_ids:
+        pts = PeriodicTarget.objects.filter(indicator=indicatr, pk__in=generated_pt_ids)
+        for pt in pts:
+            print(".............................%s............................" % pt.start_date )
+            CollectedData.objects.filter(indicator=indicatr, date_collected__range=[pt.start_date, pt.end_date]).update(periodic_target=pt)
+
 class IndicatorUpdate(UpdateView):
     """
     Update and Edit Indicators.
@@ -388,8 +410,8 @@ class IndicatorUpdate(UpdateView):
         periodic_targets = self.request.POST.get('periodic_targets', None)
         indicatr = Indicator.objects.get(pk=self.kwargs.get('pk'))
         generatedTargets = []
-
-        target_frequency = form.cleaned_data.get('target_frequency', None)
+        existing_target_frequency = indicatr.target_frequency
+        new_target_frequency = form.cleaned_data.get('target_frequency', None)
 
         if periodic_targets == 'generateTargets':
             params = {
@@ -397,24 +419,15 @@ class IndicatorUpdate(UpdateView):
                 'n': form.cleaned_data.get('target_frequency_custom', None)
             }
 
-            # If the user sets target_frequency to LOP then create a LOP periodic_target and associate all
-            # collected data for this indicator with this single LOP periodic_target
-            if indicatr.target_frequency != Indicator.LOP and target_frequency == Indicator.LOP:
-                lop_pt = PeriodicTarget.objects.create(indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1], target=indicatr.lop_target, create_date = timezone.now())
-                CollectedData.objects.filter(indicator=indicatr).update(periodic_target=lop_pt)
-
-            # If the target_frequency is changed from LOP to something else then disassociate all
-            # collected_data from the LOP periodic_target and then delete the LOP periodic_target
-            if indicatr.target_frequency == Indicator.LOP and target_frequency != Indicator.LOP:
-                CollectedData.objects.filter(indicator=indicatr).update(periodic_target=None)
-                PeriodicTarget.objects.filter(indicator=indicatr).delete()
+            # handle (delete) association of colelcted data records if necessary
+            handleDataCollectedRecords(indicatr, existing_target_frequency, new_target_frequency)
 
             target_frequency_num_periods = form.cleaned_data.get('target_frequency_num_periods', 0)
             if target_frequency_num_periods == None: target_frequency_num_periods = 1
             for i in range(0, target_frequency_num_periods):
                 params['i'] = i + 1
 
-                pt = _PERIODICTARGET_DEFINITION[target_frequency](**params)
+                pt = _PERIODICTARGET_DEFINITION[new_target_frequency](**params)
                 if isinstance(pt, list):
                     generatedTargets = generatedTargets + pt
                 else:
@@ -423,6 +436,7 @@ class IndicatorUpdate(UpdateView):
         if periodic_targets and periodic_targets != 'generateTargets':
             # now create/update periodic targets
             pt_json = json.loads(periodic_targets)
+            generated_pt_ids = []
             for pt in pt_json:
                 pk = int(pt.get('id'))
                 if pk == 0: pk = None
@@ -448,6 +462,10 @@ class IndicatorUpdate(UpdateView):
                 if created:
                     periodic_target.create_date = timezone.now()
                     periodic_target.save()
+                    generated_pt_ids.append(periodic_target.id)
+
+            # handle related collected_data records for the new periodic targets
+            handleDataCollectedRecords(indicatr, existing_target_frequency, new_target_frequency, generated_pt_ids)
 
         self.object = form.save()
         #periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
