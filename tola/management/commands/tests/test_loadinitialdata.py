@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group, User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.db import IntegrityError, connection
-from django.test import TestCase, override_settings
+from django.test import TestCase, override_settings, tag
 
 import factories
 from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
@@ -25,6 +25,7 @@ class DevNull(object):
         pass
 
 
+@tag('pkg')
 class LoadInitialDataTest(TestCase):
     def setUp(self):
         self.old_stdout = sys.stdout
