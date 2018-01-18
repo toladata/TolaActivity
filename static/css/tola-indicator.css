@@ -19,10 +19,23 @@
 }
 
 .periodic-target .controls input {
-  margin: 5px 10px;
+  margin: 10px 10px;
   padding-right: 2px;
   text-align: right;
   width: 50%;
+  border: 1px solid #DBDCDE;
+  box-shadow: none;
+}
+
+.periodic-target .controls input::placeholder {
+  color: #DBDCDE;
+}
+
+.lop-display {
+  padding: 0px 15px 10px 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #DBDCDE;
 }
 
 .target-value-error {
@@ -30,13 +43,3 @@
   float: right;
   margin-right: 10px;
 }
-
-/* .pt-input {
-  margin-right: 10px;
-  padding-right: 10px;
-  border: 1px;
-}
-
-.lop-target-row {
-  border-bottom: 2px solid #DBDCDE;
-} */

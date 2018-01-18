@@ -191,7 +191,7 @@
                     <td style="padding:1px; vertical-align: middle; border: none;">
                         ${(target_frequency != 8) ? `
                             <div style="line-height:1;"><strong>${pt.period }</strong></div>
-                            <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>`
+                            <div style="line-height:1; margin-top:3px;">${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</div>`
                             :
                             `<div class="controls">
                                 <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control">
@@ -293,10 +293,10 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-offset-2 col-sm-6" style="padding-left: 1px;">
+                <div class="lop-display col-sm-offset-2 col-sm-6" style="padding-left: 25px;">
                     <strong>Life of Program (LoP) target</strong>
                 </div>
-                <div class="col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
+                <div class="lop-display col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
                     <strong>${indicator.fields.lop_target}</strong>
                 </div>
             </div>
