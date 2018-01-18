@@ -13,7 +13,7 @@ from django.db import transaction, IntegrityError, connection
 
 import factories
 from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
-                               CollectedData)
+                               CollectedData, SiteProfile)
 from workflow.models import (
     ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
     ROLE_PROGRAM_TEAM, Organization, Country, TolaUser, Group, Sector,
@@ -110,14 +110,19 @@ class Command(BaseCommand):
         Group.objects.all().delete()
         Country.objects.exclude(code__in=DEFAULT_COUNTRY_CODES).delete()
         Sector.objects.all().delete()
+        SiteProfile.history.all().delete()
+        SiteProfile.objects.all().delete()
         Stakeholder.objects.all().delete()
         Milestone.objects.all().delete()
         WorkflowLevel1.objects.all().delete()
+        WorkflowLevel2.history.all().delete()
         WorkflowLevel2.objects.all().delete()
         Level.objects.all().delete()
         Frequency.objects.all().delete()
+        Indicator.history.all().delete()
         Indicator.objects.all().delete()
         PeriodicTarget.objects.all().delete()
+        CollectedData.history.all().delete()
         CollectedData.objects.all().delete()
         WorkflowLevel1Sector.objects.all().delete()
         WorkflowTeam.objects.all().delete()
