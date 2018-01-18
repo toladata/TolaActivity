@@ -1,0 +1,35 @@
+
+
+
+#periodic-targets-tablediv {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.periodic-target  {
+  border-bottom: 1px solid #DBDCDE;
+  border-top: 1px solid #DBDCDE;
+}
+
+#periodic-targets-tablediv .pt-delete-row {
+  padding: 1px 0px 1px 10px;
+  vertical-align: middle;
+  border: none;
+}
+
+.periodic-target .controls input {
+  margin: 5px 10px;
+  padding-right: 2px;
+  text-align: right;
+  width: 50%;
+}
+
+/* .pt-input {
+  margin-right: 10px;
+  padding-right: 10px;
+  border: 1px;
+}
+
+.lop-target-row {
+  border-bottom: 2px solid #DBDCDE;
+} */

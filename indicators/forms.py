@@ -92,8 +92,8 @@ class IndicatorForm(forms.ModelForm):
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
-                                            <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
+                                        <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
+                                            <table id="periodic_targets_table" style="margin-bottom: 1px;">
                                                 <tbody>
                                                     {% for pt in periodic_targets %}
                                                         <tr id="{{pt.pk}}" data-collected-count="{{pt.num_data}}" class="periodic-target">
@@ -417,4 +417,3 @@ class CollectedDataForm(forms.ModelForm):
 
         #self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
         self.fields['tola_table'].queryset = TolaTable.objects.filter(Q(owner=self.request.user) | Q(id=self.tola_table))
-

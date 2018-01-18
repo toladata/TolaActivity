@@ -46,7 +46,7 @@
         }
     }
 
-
+    /*
     var modalConfirm = function(callback){
         // $("#btn-confirm").on("click", function(){
             $("#conform_modal_div").modal('show');
@@ -62,7 +62,7 @@
             $("#conform_modal_div").modal('hide');
         });
     };
-
+    */
 
     // modalConfirm(function(confirm){
     //     if (confirm) {
@@ -113,18 +113,10 @@
 
     $("#indicator_modal_content, #indicator_form").on("click", "a.detelebtn", function(e){
         e.preventDefault();
-        // $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
+         $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
         var url = $(this).attr('href');
         var id = url.split('/')[url.split('/').length - 2];
         var currnentRow = $(e.target).closest("tr");
-        var dataCount = parseInt(currnentRow.data("collectedCount"));
-
-        if ( dataCount != NaN && dataCount > 0) {
-            if (!confirm(`Warning: Removing this target means that ${dataCount} data record/s will no longer have targets associated with them. \n\nProceed anyway?`)) {
-                dataCount = NaN;
-                return;
-            }
-        }
         var prevDeleteBtn = currnentRow.prev("tr").find("a");
         if (prevDeleteBtn.length == 0) {
             $("#id_div_periodic_tables_placeholder").empty();
@@ -196,7 +188,7 @@
                         </a>
                     </td>
 
-                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                    <td style="padding:1px; vertical-align: middle; border: none;">
                         ${(target_frequency != 8) ? `
                             <div style="line-height:1;"><strong>${pt.period }</strong></div>
                             <div style="line-height:0.8;"><small>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</small></div>`
@@ -208,9 +200,9 @@
                         }
                     </td>
 
-                    <td align="right" style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
+                    <td align="right" style="padding:1px; vertical-align: middle; border: none;">
                         <div class="controls">
-                            <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control" style="width: 50%;">
+                            <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
                         </div>
                     </td>
@@ -268,7 +260,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
+                <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px; margin-bottom:5px;">
                     <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
                         <tbody>`;
 
@@ -280,17 +272,21 @@
         });
 
         htmlString +=       `<tr id="pt_sum_targets">
-                                <td align="left" colspan="2" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
+                                <td class="pt-delete-row" style="border: none;">
+                                </td>
+                                <td align="left" style="padding-left: 0px; border: none; vertical-align: middle;">
                                     <strong>Sum of targets</strong>
                                 </td>
-                                <td align="right" style="border-top: 0px; border-bottom: 0px; vertical-align: middle;">
-                                    <strong><span id="id_span_targets_sum">${targets_sum}</span></strong>
+                                <td align="right" style="vertical-align: middle; border: none;">
+                                    <div style="margin: 5px 10px;">
+                                        <strong><span id="id_span_targets_sum">${targets_sum}</span></strong>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" style="color:red;" id="id_pt_errors"></td>
+                                <td colspan="3" style="color:red; padding: 0px;" id="id_pt_errors"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -497,7 +493,7 @@
             return false;
         } else if (!$.isNumeric(baseline.val())) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please enter a number with no special characters.");
+            $("#hint_id_baseline").text("Please enter a number.");
             // sbmt.attr("disabled", true);
             return false;
         } else {
@@ -520,7 +516,7 @@
             return false;
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please enter a number larger than zero with no special characters. If your target is a percentage, describe it in the unit of measure field.");
+            $("#hint_id_lop_target").text("Please enter a number larger than zero. If your target is a percentage, describe it in the unit of measure field.");
             // sbmt.attr("disabled", true);
             return false;
         } else {
