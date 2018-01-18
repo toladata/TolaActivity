@@ -691,7 +691,8 @@
                 $("#id_pt_errors").text('');
             } else {
                 $(this).parent().addClass('has-error');
-                // $(this).next('span:first').html('<small>Please enter a target value. Your target value can be zero.</small>');
+            }
+            if ($("#id_div_periodic_tables_placeholder input[type=number]").parent().hasClass("has-error") ) {
                 $("#id_pt_errors").html('<small>Please enter a target value. Your target value can be zero.</small>');
             }
         }
