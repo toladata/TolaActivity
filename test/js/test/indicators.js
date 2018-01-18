@@ -48,7 +48,7 @@ test.describe('TolaActivity Indicators Page', function() {
 
   test.it('should exist', async function() {
     await driver.get('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/');
-    await driver.wait(until.elementLocated({css: 'h2'}), 10000);
+    driver.wait(until.elementLocated({css: 'h2'}), 10000);
     el = driver.findElement({css: 'h2'});
     assert.equal(await el.getText(), 'Program Indicators');
   });
@@ -57,9 +57,18 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should exist', async function() {
       el = await driver.findElement({id: 'dropdownProgram'});
       assert.equal(await el.getText(), 'Programs');
+			assert(el.click());
     });
 
-    test.it('should have at least one entry');
+    test.it('should have at least one entry', function() {
+			let progList = driver.findElement({id: 'dropdownProgram'});
+			let items = Array(progList.findElements({css: 'a.role'}));
+			assert(items.length > 0);
+			for(item in items) {
+				item.click();
+			}
+		});
+
     test.it('should default to showing all programs');
     test.it('should be able to filter PIs by Program');
     test.it('should be able to filter Programs by PI');
@@ -68,24 +77,35 @@ test.describe('TolaActivity Indicators Page', function() {
   }); // end programs dropdown tests
   
   test.describe('Indicators dropdown', function() {
-    test.it('should exist', async function() {
-      el = await driver.findElement({id: 'dropdownIndicator'});
-      assert.equal(await el.getText(), 'Indicators');
+    test.it('should exist', function() {
+      el = driver.findElement({id: 'dropdownIndicator'});
+			assert(el.click());
     });
+
+		test.it('should have at least one entry', function() {
+			let items = Array(driver.findElements({id: 'dropdownIndicator'}));
+			assert(items.length > 0);
+		});
+
     test.it('should default to showing all PIs for a program');
     test.it('should be able to filter resultset by PI');
   }); // end indicators dropdown tests
   
   test.describe('Indicator Type dropdown', function() {
-    test.it('should exist', async function() {
-      el = await driver.findElement({id: 'dropdownIndicatorType'});
-      assert.equal(await el.getText(), 'Indicator Type');
+    test.it('should exist', function() {
+      el = driver.findElement({id: 'dropdownIndicatorType'});
+			assert(el.click());
     });
+
+		test.it('should have at least one entry', function() {
+			let items = Array(driver.findElements({id: 'dropdownIndicatorType'}));
+			assert(items.length > 0);
+		});
+
     test.it('should default to showing all Indicator Types for a program');
     test.it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
-
-
+/*
   test.it('should toggle PIs table by clicking PI Indicators button');
   test.it('should increase PI count after adding new indicator');
   test.it('should decrease PI count after deleting indicator');
@@ -226,7 +246,7 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should have a Grid/Print Report button');
     test.it('should open a report page when the Grid/Print Report button is clicked');
   });
-
+*/
   // These are enhancements
   test.it('should highlight PIs with no evidence');
   test.it('should disable Indicators button if program has no indicators');
