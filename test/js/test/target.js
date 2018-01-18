@@ -54,7 +54,7 @@ test.describe('Create new indicator dialog', function() {
 	test.it('should save data when Save changes screen clicked');
 });
 
-// Test cases lifted from Github #21, #24, #30, #33, #35, #37, #42
+// Test cases lifted from Github #21, #24, #30, #33, #35, #37, #42, #43
 test.describe('Targets tab', function() {
 	test.it('should require Unit of measure');
 	test.it('should require Life of Program (LoP) target');
@@ -106,6 +106,5 @@ test.describe('Targets tab', function() {
 	test.it('should not permit edting saved targets except for LoP');
 	test.it('should disable the Target frequency menu after changes saved');
 	test.it('should enable only Remove all targets after targets saved');
-	test.it('should test #43');
 	test.it('should test #25');
 });
