@@ -71,7 +71,6 @@ test.describe('TolaActivity Dashboard', async function() {
     assert(await el.click());
   });
 
-/*  
   test.it('should have a Workflow dropdown', async function() {
     let xp = '/html/body/nav/div/div[2]/ul[1]/li[1]/a';
     el = driver.findElement({xpath: xp}).then(function(el) {
@@ -109,8 +108,8 @@ test.describe('TolaActivity Dashboard', async function() {
       });
   });
 
-  test.describe('Indicator Evidence panel', async function() {
-    test.it('should be present on dashboard', async function() {
+  test.describe.skip('Indicator Evidence panel', async function() {
+    test.it.skip('should be present on dashboard', async function() {
       el = await driver.findElement({linkText: 'Indicator Evidence'});
       return el;
     });
@@ -137,5 +136,4 @@ test.describe('TolaActivity Dashboard', async function() {
     test.it('should exist');
     test.it('should have a KPI status chart');
   }); // end indicators performance panel tests
-*/
 });

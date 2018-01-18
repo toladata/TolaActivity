@@ -21,11 +21,10 @@ async function newTolaSession(parms) {
   assert.equal(el, 'Mercy Corps Sign-On', el);
 }
 
-test.describe('TolaActivity invalid login', function() {
-
+test.describe('TolaActivity invalid username login', function() {
   var parms = readConfig();
-  // inject bogus password
-  parms.password = 'thisbetterfail';
+  // inject bogus username
+  parms.username = 'bubba';
 
   test.before(async function() {
     await newTolaSession(parms);
@@ -53,7 +52,7 @@ test.describe('TolaActivity invalid login', function() {
     await el.click();
   });
 
-  test.it('should deny access if password is invalid', async function() {
+  test.it('should deny access if username is invalid', async function() {
     el = await driver.wait(until.elementLocated({id: 'error'}));
     assert(el != undefined);
     s = await el.getText();

@@ -85,7 +85,7 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
 
-/*
+
   test.it('should toggle PIs table by clicking PI Indicators button');
   test.it('should increase PI count after adding new indicator');
   test.it('should decrease PI count after deleting indicator');
@@ -231,7 +231,4 @@ test.describe('TolaActivity Indicators Page', function() {
   test.it('should highlight PIs with no evidence');
   test.it('should disable Indicators button if program has no indicators');
   test.it('should be able to sort table by clicking a column header');
-
-}); // end indicators page tests
-*/
 });
