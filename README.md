@@ -89,6 +89,13 @@ around with Activity:
 docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py loadinitialdata  --demo
 ```
 
+(Be careful using this, only on demo!) If the database is already populated and
+you want to restore the default data:
+
+```bash
+docker-compose -f docker-compose-dev.yml run --entrypoint '/usr/bin/env' --rm web python manage.py loadinitialdata  --restore
+```
+
 #### Issue with the local environment
 
 If you're getting an error in your local environment, it can be related to 
