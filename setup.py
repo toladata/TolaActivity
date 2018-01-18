@@ -33,6 +33,7 @@ setup(
         'factories',
         'formlibrary.migrations',
         'indicators.migrations',
+        'search.migrations',
         'workflow.migrations',
     ],
     py_modules=[
