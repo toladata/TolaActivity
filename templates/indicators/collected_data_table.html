@@ -11,7 +11,7 @@
         {% for item in collecteddata %}
         <tr>
             <td>
-                <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">{{ item.date_collected|date:"m-d-Y" }}</a>
+                <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">{{ item.date_collected|date:"M d, Y" }}</a>
             </td>
 
             <td>{{item.agreement}}</td>
