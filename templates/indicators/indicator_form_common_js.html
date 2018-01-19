@@ -516,7 +516,7 @@
         if (!baseline.val()) {
             $("#div_id_baseline").addClass('has-error');
             $("#div_id_baseline_na").addClass('has-error');
-            $("#hint_id_baseline_na").html("<small>Please complete this field. An indicator can have a baseline value of zero.</small>");
+            $("#hint_id_baseline_na").html("<small>Please complete this field. Your baseline can be zero.</small>");
             // sbmt.attr("disabled", true);
             return false;
         } else if (!$.isNumeric(baseline.val())) {
