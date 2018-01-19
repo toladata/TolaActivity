@@ -34,19 +34,3 @@ class AjaxableResponseMixin(object):
             return JsonResponse(data)
         else:
             return response
-
-#API Mixin
-class APIDefaultsMixin(object):   
-    """Default settings for view authentication, permissions,   
-     filtering and pagination."""   
-
-    authentication_classes = (
-         authentication.BasicAuthentication,        
-         authentication.TokenAuthentication,
-    )   
-    permission_classes = (
-         permissions.IsAuthenticated,
-    )   
-    paginate_by = 20    
-    paginate_by_param = 'page_size'    
-    max_paginate_by = 50
