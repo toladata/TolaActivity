@@ -88,7 +88,6 @@ router.register(r'binary', BinaryFieldViewSet, base_name='binary')
 urlpatterns = [
     # Rest framework
     url(r'^check', tola_views.check_view),
-    url(r'^dev_loader', tola_views.dev_view),
     url(r'^api/', include(router.urls)),
     url(r'^binarytest/(?P<id>\w+)', binary_test),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
