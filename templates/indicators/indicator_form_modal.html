@@ -23,12 +23,12 @@
 
         {% crispy form %}
     </div> <!-- modal body -->
-    <div class="modal-footer" style="background-color: #cccccc;">
-        <div class="pull-left">
+    <div class="modal-footer" style="background-color: #d7d7d7;">
+        <div class="pull-left" style="margin-left:20px">
             <!-- <input type="submit" class="btn btn-primary" value="Save changes"> -->
             <input type="submit" name="submit" value="Save changes" class="btn btn-primary btn-default" id="submit-id-submit">
-            <input type="reset" style="background-color: #ddd;" class="btn btn-default" value="Reset">
+            <input type="reset" style="background-color:#d7d7d7; border-color:#B8BABD; color:#888888" class="btn btn-default" value="Reset">
         </div>
-        <div class="text-muted">{% include "form_guidance.html" %}</div>
+        <div class="text-muted" style="margin-right:20px">{% include "form_guidance.html" %}</div>
     </div>
 </form>
