@@ -1,16 +1,20 @@
-from rest_framework import serializers
-
-from workflow.models import *
-from indicators.models import *
-from formlibrary.models import *
 from django.contrib.auth.models import User, Group
+from rest_framework import serializers
 from rest_framework.reverse import reverse
+
+from formlibrary.models import (Distribution, CustomForm, Beneficiary,
+                                CustomFormField, FieldType)
+from indicators.models import (
+    Indicator, IndicatorType, Level, Frequency, Objective, DisaggregationType,
+    ExternalService, ExternalServiceRecord, StrategicObjective, PeriodicTarget,
+    CollectedData, TolaTable, DisaggregationValue, DisaggregationLabel)
+from workflow import models as wfm
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User
+        model = wfm.User
         fields = '__all__'
 
 
@@ -22,7 +26,7 @@ class GroupSerializer(serializers.ModelSerializer):
         return reverse('group-detail', kwargs={'pk': obj.id}, request=request)
 
     class Meta:
-        model = Group
+        model = wfm.Group
         fields = '__all__'
 
 
@@ -35,7 +39,8 @@ class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
     difference = serializers.SerializerMethodField()
 
     def get_status(self, obj):
-        get_projects = WorkflowLevel2.objects.all().filter(workflowlevel1=obj)
+        get_projects = wfm.WorkflowLevel2.objects.all().filter(
+            workflowlevel1=obj)
         score = []
         red = ""
         yellow = ""
@@ -65,7 +70,7 @@ class WorkflowLevel1Serializer(serializers.HyperlinkedModelSerializer):
             return None
 
     class Meta:
-        model = WorkflowLevel1
+        model = wfm.WorkflowLevel1
         fields = '__all__'
 
 
@@ -73,7 +78,7 @@ class SectorSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Sector
+        model = wfm.Sector
         fields = '__all__'
 
 
@@ -81,7 +86,7 @@ class ProjectTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = ProjectType
+        model = wfm.ProjectType
         fields = '__all__'
 
 
@@ -89,7 +94,7 @@ class OfficeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Office
+        model = wfm.Office
         fields = '__all__'
 
 
@@ -97,7 +102,7 @@ class BudgetSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Budget
+        model = wfm.Budget
         fields = '__all__'
 
 
@@ -106,7 +111,7 @@ class SiteProfileSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = SiteProfile
+        model = wfm.SiteProfile
         fields = '__all__'
 
 
@@ -115,7 +120,7 @@ class WorkflowLevel2Serializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = WorkflowLevel2
+        model = wfm.WorkflowLevel2
         fields = '__all__'
 
 
@@ -123,7 +128,7 @@ class CountrySerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Country
+        model = wfm.Country
         fields = '__all__'
 
 
@@ -178,7 +183,7 @@ class ProgramIndicatorSerializer(serializers.ModelSerializer):
         return obj.indicator_set.count()
 
     class Meta:
-        model = WorkflowLevel1
+        model = wfm.WorkflowLevel1
         fields = ('id', 'name', 'indicators_count', 'indicator_set')
 
 
@@ -194,7 +199,7 @@ class TolaUserSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = TolaUser
+        model = wfm.TolaUser
         fields = '__all__'
         depth = 1
 
@@ -219,7 +224,7 @@ class FundCodeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = FundCode
+        model = wfm.FundCode
         fields = '__all__'
 
 
@@ -244,7 +249,7 @@ class StakeholderSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Stakeholder
+        model = wfm.Stakeholder
         fields = '__all__'
 
 
@@ -276,7 +281,7 @@ class StakeholderTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = StakeholderType
+        model = wfm.StakeholderType
         fields = '__all__'
 
 
@@ -284,7 +289,7 @@ class ProfileTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = ProfileType
+        model = wfm.ProfileType
         fields = '__all__'
 
 
@@ -292,7 +297,7 @@ class ProvinceSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = AdminLevelOne
+        model = wfm.AdminLevelOne
         fields = '__all__'
 
 
@@ -300,7 +305,7 @@ class DistrictSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = AdminLevelTwo
+        model = wfm.AdminLevelTwo
         fields = '__all__'
 
 
@@ -308,7 +313,7 @@ class AdminLevelThreeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = AdminLevelThree
+        model = wfm.AdminLevelThree
         fields = '__all__'
 
 
@@ -316,7 +321,7 @@ class VillageSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = AdminLevelFour
+        model = wfm.AdminLevelFour
         fields = '__all__'
 
 
@@ -324,7 +329,7 @@ class ContactSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Contact
+        model = wfm.Contact
         fields = '__all__'
 
 
@@ -332,7 +337,7 @@ class DocumentationSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Documentation
+        model = wfm.Documentation
         fields = '__all__'
 
 
@@ -381,7 +386,7 @@ class ChecklistSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Checklist
+        model = wfm.Checklist
         fields = '__all__'
 
 
@@ -389,7 +394,7 @@ class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Organization
+        model = wfm.Organization
         fields = '__all__'
 
 
@@ -397,7 +402,7 @@ class WorkflowModulesSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = WorkflowModules
+        model = wfm.WorkflowModules
         fields = '__all__'
 
 
@@ -405,7 +410,7 @@ class CurrencySerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Currency
+        model = wfm.Currency
         fields = '__all__'
 
 
@@ -413,7 +418,7 @@ class ApprovalTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = ApprovalType
+        model = wfm.ApprovalType
         fields = '__all__'
 
 
@@ -421,7 +426,7 @@ class ApprovalWorkflowSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = ApprovalWorkflow
+        model = wfm.ApprovalWorkflow
         fields = '__all__'
 
 
@@ -445,7 +450,7 @@ class RiskRegisterSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = RiskRegister
+        model = wfm.RiskRegister
         fields = '__all__'
 
 
@@ -453,7 +458,7 @@ class IssueRegisterSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = IssueRegister
+        model = wfm.IssueRegister
         fields = '__all__'
 
 
@@ -477,7 +482,7 @@ class CodedFieldSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = CodedField
+        model = wfm.CodedField
         fields = '__all__'
 
 
@@ -485,7 +490,7 @@ class CodedFieldValuesSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = CodedFieldValues
+        model = wfm.CodedFieldValues
         fields = '__all__'
 
 
@@ -501,7 +506,7 @@ class LandTypeSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = LandType
+        model = wfm.LandType
         fields = '__all__'
 
 
@@ -509,7 +514,7 @@ class InternationalizationSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Internationalization
+        model = wfm.Internationalization
         fields = '__all__'
 
 
@@ -517,7 +522,7 @@ class TolaUserFilterSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = TolaUserFilter
+        model = wfm.TolaUserFilter
         fields = '__all__'
 
 
@@ -529,7 +534,7 @@ class StakeholderFullSerializer(serializers.HyperlinkedModelSerializer):
     approval = ApprovalTypeSerializer(read_only=True, many=True)
 
     class Meta:
-        model = Stakeholder
+        model = wfm.Stakeholder
         fields = '__all__'
 
 
@@ -543,7 +548,7 @@ class WorkflowLevel2FullSerializer(serializers.HyperlinkedModelSerializer):
     budget = BudgetSerializer(read_only=True)
 
     class Meta:
-        model = WorkflowLevel2
+        model = wfm.WorkflowLevel2
         fields = '__all__'
 
 
@@ -551,7 +556,7 @@ class WorkflowLevel2SortSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = WorkflowLevel2Sort
+        model = wfm.WorkflowLevel2Sort
         fields = '__all__'
 
 
@@ -559,7 +564,7 @@ class AwardSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Award
+        model = wfm.Award
         fields = '__all__'
 
 
@@ -567,7 +572,7 @@ class WorkflowTeamSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = WorkflowTeam
+        model = wfm.WorkflowTeam
         fields = '__all__'
 
 
@@ -575,7 +580,7 @@ class MilestoneSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Milestone
+        model = wfm.Milestone
         fields = '__all__'
 
 
@@ -583,7 +588,7 @@ class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Portfolio
+        model = wfm.Portfolio
         fields = '__all__'
 
 
@@ -591,7 +596,7 @@ class PublicDashboardSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Dashboard
+        model = wfm.Dashboard
         fields = '__all__'
 
 
@@ -599,7 +604,7 @@ class PublicOrgDashboardSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Dashboard
+        model = wfm.Dashboard
         fields = '__all__'
 
 
@@ -607,7 +612,7 @@ class DashboardSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Dashboard
+        model = wfm.Dashboard
         fields = '__all__'
 
 
@@ -615,7 +620,7 @@ class WidgetSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = Widget
+        model = wfm.Widget
         fields = '__all__'
 
 
@@ -623,7 +628,7 @@ class SectorRelatedSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = SectorRelated
+        model = wfm.SectorRelated
         fields = '__all__'
 
 
@@ -631,5 +636,5 @@ class WorkflowLevel1SectorSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField()
 
     class Meta:
-        model = WorkflowLevel1Sector
+        model = wfm.WorkflowLevel1Sector
         fields = '__all__'

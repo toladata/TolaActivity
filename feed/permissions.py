@@ -3,9 +3,17 @@ from rest_framework.relations import ManyRelatedField
 
 from django.http import QueryDict
 
-from workflow.models import *
-from indicators.models import *
-from formlibrary.models import *
+from formlibrary.models import Distribution, CustomForm, Beneficiary
+from indicators.models import (
+    Frequency, DisaggregationType, Level, ExternalService, StrategicObjective,
+    Objective, Indicator, CollectedData)
+from workflow.models import (
+    ROLE_ORGANIZATION_ADMIN, ROLE_VIEW_ONLY, ROLE_PROGRAM_ADMIN,
+    ROLE_PROGRAM_TEAM, WorkflowTeam, ProjectType, Sector, SiteProfile, FundCode,
+    StakeholderType, ProfileType, Checklist, Budget, Contact, ApprovalType,
+    CodedField, IssueRegister, RiskRegister, Organization, Award, Milestone,
+    Portfolio, WorkflowLevel1, WorkflowLevel2, WorkflowLevel2Sort,
+    Documentation)
 
 
 class IsSuperUserBrowseableAPI(permissions.BasePermission):
