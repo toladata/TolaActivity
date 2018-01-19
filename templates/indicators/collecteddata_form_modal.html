@@ -4,6 +4,43 @@
 
 
     <script type="text/javascript">
+
+        function setPeriodicTargetValue() {
+            //   \(    : match an opening parentheses
+            //   (     : begin capturing group
+            //   [^)]+ : match one or more non ) characters
+            //   )     : end capturing group
+            //   \)    : match closing parentheses
+            var regExp = /\(([^)]+)\)/;
+            $("#id_periodic_target option").each(function() {
+                var pt_date_range = regExp.exec(this.text);
+                if (!pt_date_range || pt_date_range == null || pt_date_range == 'null'){
+                    return;
+                }
+                pt_date_range = pt_date_range[1].split('-');
+                try {
+                    var start_date = new Date(pt_date_range[0].trim());
+                    var end_date = new Date(pt_date_range[1].trim());
+                    var collected_date = new Date($("#id_date_collected").val().trim());
+                    if (collected_date > start_date && collected_date < end_date) {
+                        // make the selected option NO DISABLED and other options DISABLED
+                        $("#id_periodic_target").val(this.value);
+                        $("#id_periodic_target option:not(:selected)").attr("disabled", true);
+                        $("#id_periodic_target option:selected").attr("disabled", false);
+                        return false;
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+
+            });
+        }
+
+        function lockPeriodicTargetDropdown(){
+            $("#id_periodic_target option:not(:selected)").attr("disabled", true);
+            $("#id_periodic_target").attr("readonly", true);
+        }
+
         //Searchable select option for service indicator
         $(document).ready(function() {
             $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
@@ -20,13 +57,43 @@
                             .attr("value", sel.val())
                             .text(sel.text()));
             });
+
+            var target_frequency = parseInt(`{{object.indicator.target_frequency|safe}}`);
+            var indicator = `{{object.indicator.id|safe}}`;
+            var ptlen = `{{object.indicator.periodictarget_set.all.count|safe}}`;
+            var collectedRecordId = parseInt(`{{object.id|safe}}`);
+
+            // if collectedRecordId is not defined then it must be a new CollectedData record
+            if (isNaN(collectedRecordId)) {
+                var target_frequency = parseInt(`{{ indicator.target_frequency|safe}}`);
+                if (!isNaN(target_frequency) && target_frequency == 1) {
+                    // if target_frequency is 1 (LOP_Only) then there has to be exactly one periodic_target
+                    var pt_id = parseInt(`{{ indicator.periodictarget_set.all.0.id|safe}}`);
+                    // set the periodic_target to the only value that is "LOP Only"
+                    $("#id_periodic_target").val(pt_id);
+                }
+                lockPeriodicTargetDropdown();
+            } else {
+                // disable the periodic_target dropdown unless it is set to MIDLINE_ENDLINE or EVENT
+                if (!isNaN(target_frequency) && target_frequency != 2 && target_frequency != 8) {
+                    lockPeriodicTargetDropdown();
+                } else {
+                    $("#id_periodic_target option:not(:selected)").attr("disabled", false);
+                    $("#id_periodic_target").attr("readonly", false);
+                }
+            }
         });
+
+        $("#indicator_modal_body, #collecteddata_update_form").on("change", "#id_date_collected", function(e){
+            setPeriodicTargetValue();
+        });
+
 
         $(document).on('hidden.bs.modal', '.modal', function () {
             $('.modal:visible').length && $(document.body).addClass('modal-open');
         });
     </script>
-
+    {{ object }}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}
