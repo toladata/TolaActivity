@@ -199,7 +199,7 @@
         var markup = `
                 <tr class="periodic-target">
                     <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                        <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
+                        <a align="right" href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
                             <span class=" glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
@@ -309,7 +309,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="lop-display col-sm-offset-2 col-sm-6" style="padding-left: 25px;">
+                <div class="lop-display col-sm-offset-2 col-sm-6" style="padding-left: 50px;">
                     <strong>Life of Program (LoP) target</strong>
                 </div>
                 <div class="lop-display col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
