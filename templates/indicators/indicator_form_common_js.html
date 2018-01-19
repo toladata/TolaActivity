@@ -497,24 +497,36 @@
     });
 
 
+    function reset_baseline_errors(){
+        $("#div_id_baseline").removeClass('has-error');
+        $("#div_id_baseline_na").removeClass('has-error');
+        $("#hint_id_baseline_na").html("");
+    }
+
     function validate_baseline() {
         var baseline = $("#id_baseline");
+        var baseline_na = $("#id_baseline_na");
+        if (baseline_na.is(':checked') == true) {
+            reset_baseline_errors();
+            return true;
+        }
         // var indicator_form = $("#indicator_update_form")
         // var sbmt = $("input[type=submit]", indicator_form);
 
         if (!baseline.val()) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please complete this field. An indicator can have a baseline value of zero.");
+            $("#div_id_baseline_na").addClass('has-error');
+            $("#hint_id_baseline_na").html("<small>Please complete this field. An indicator can have a baseline value of zero.</small>");
             // sbmt.attr("disabled", true);
             return false;
         } else if (!$.isNumeric(baseline.val())) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please enter a number with no special characters.");
+            $("#div_id_baseline_na").addClass('has-error');
+            $("#hint_id_baseline_na").html("<small>Please enter a number with no special characters.<small>");
             // sbmt.attr("disabled", true);
             return false;
         } else {
-            $("#div_id_baseline").removeClass('has-error');
-            $("#hint_id_baseline").text(" ");
+            reset_baseline_errors();
             // sbmt.attr("disabled", false);
             return true;
         }
@@ -721,9 +733,22 @@
     });
 
     $("#indicator_modal_content, #indicator_form").on("blur", "#id_baseline", function(e){
+        $("#id_baseline_na").prop('checked', false);
         validate_baseline();
     });
 
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_baseline", function(e){
+        $("#id_baseline_na").prop('checked', false);
+    });
+
+    $("#indicator_modal_content, #indicator_form").on("change", "#id_baseline_na", function(e){
+        $("#id_baseline").val('');
+        if (!$(this).is(':checked')){
+            validate_baseline()
+        } else {
+            reset_baseline_errors();
+        }
+    });
 
     $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_custom", function(e){
         validateForEmptyField("id_target_frequency_custom");
