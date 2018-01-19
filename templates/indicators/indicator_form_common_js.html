@@ -204,7 +204,7 @@
                         </a>
                     </td>
 
-                    <td style="padding:1px; vertical-align: middle; border: none;">
+                    <td style="padding:1px; border: none; vertical-align: middle;">
                         ${(target_frequency != 8) ? `
                             <div style="line-height:1;"><strong>${pt.period }</strong></div>
                             <div style="line-height:1; margin-top:3px;">${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</div>`
@@ -216,7 +216,7 @@
                         }
                     </td>
 
-                    <td align="right" style="padding:1px; vertical-align: middle; border: none;">
+                    <td align="right" style="padding:1px; border:none; vertical-align:middle;">
                         <div class="controls">
                             <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
@@ -497,24 +497,36 @@
     });
 
 
+    function reset_baseline_errors(){
+        $("#div_id_baseline").removeClass('has-error');
+        $("#div_id_baseline_na").removeClass('has-error');
+        $("#hint_id_baseline_na").html("");
+    }
+
     function validate_baseline() {
         var baseline = $("#id_baseline");
+        var baseline_na = $("#id_baseline_na");
+        if (baseline_na.is(':checked') == true) {
+            reset_baseline_errors();
+            return true;
+        }
         // var indicator_form = $("#indicator_update_form")
         // var sbmt = $("input[type=submit]", indicator_form);
 
         if (!baseline.val()) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please complete this field. An indicator can have a baseline value of zero.");
+            $("#div_id_baseline_na").addClass('has-error');
+            $("#hint_id_baseline_na").html("<small>Please complete this field. An indicator can have a baseline value of zero.</small>");
             // sbmt.attr("disabled", true);
             return false;
         } else if (!$.isNumeric(baseline.val())) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please enter a number with no special characters.");
+            $("#div_id_baseline_na").addClass('has-error');
+            $("#hint_id_baseline_na").html("<small>Please enter a number with no special characters.<small>");
             // sbmt.attr("disabled", true);
             return false;
         } else {
-            $("#div_id_baseline").removeClass('has-error');
-            $("#hint_id_baseline").text(" ");
+            reset_baseline_errors();
             // sbmt.attr("disabled", false);
             return true;
         }
@@ -721,9 +733,14 @@
     });
 
     $("#indicator_modal_content, #indicator_form").on("blur", "#id_baseline", function(e){
+        $("#id_baseline_na").prop('checked', false);
         validate_baseline();
     });
 
+    $("#indicator_modal_content, #indicator_form").on("change", "#id_baseline_na", function(e){
+        $("#id_baseline").val('');
+        reset_baseline_errors();
+    });
 
     $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_custom", function(e){
         validateForEmptyField("id_target_frequency_custom");

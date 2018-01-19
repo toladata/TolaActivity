@@ -317,21 +317,18 @@ def handleDataCollectedRecords(indicatr, existing_target_frequency, new_target_f
     # collected_data from the LOP periodic_target and then delete the LOP periodic_target
     # if existing_target_frequency == Indicator.LOP and new_target_frequency != Indicator.LOP:
     if existing_target_frequency != new_target_frequency:
-        print(".............................%s............................" % "removing periodic targets" )
         CollectedData.objects.filter(indicator=indicatr).update(periodic_target=None)
         PeriodicTarget.objects.filter(indicator=indicatr).delete()
 
     # If the user sets target_frequency to LOP then create a LOP periodic_target and associate all
     # collected data for this indicator with this single LOP periodic_target
     if existing_target_frequency != Indicator.LOP and new_target_frequency == Indicator.LOP:
-        print(".............................%s............................" % "creating lop_target" )
         lop_pt = PeriodicTarget.objects.create(indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1], target=indicatr.lop_target, create_date = timezone.now())
         CollectedData.objects.filter(indicator=indicatr).update(periodic_target=lop_pt)
 
     if generated_pt_ids:
         pts = PeriodicTarget.objects.filter(indicator=indicatr, pk__in=generated_pt_ids)
         for pt in pts:
-            print(".............................%s............................" % pt.start_date )
             CollectedData.objects.filter(indicator=indicatr, date_collected__range=[pt.start_date, pt.end_date]).update(periodic_target=pt)
 
 class IndicatorUpdate(UpdateView):
