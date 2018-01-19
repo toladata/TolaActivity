@@ -504,17 +504,20 @@
 
         if (!baseline.val()) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please complete this field. An indicator can have a baseline value of zero.");
+            $("#div_id_baseline_na").addClass('has-error');
+            $("#hint_id_baseline_na").html("<small>Please complete this field. An indicator can have a baseline value of zero.</small>");
             // sbmt.attr("disabled", true);
             return false;
         } else if (!$.isNumeric(baseline.val())) {
             $("#div_id_baseline").addClass('has-error');
-            $("#hint_id_baseline").text("Please enter a number with no special characters.");
+            $("#div_id_baseline_na").addClass('has-error');
+            $("#hint_id_baseline_na").html("<small>Please enter a number with no special characters.<small>");
             // sbmt.attr("disabled", true);
             return false;
         } else {
             $("#div_id_baseline").removeClass('has-error');
-            $("#hint_id_baseline").text(" ");
+            $("#div_id_baseline_na").removeClass('has-error');
+            $("#hint_id_baseline_na").html("");
             // sbmt.attr("disabled", false);
             return true;
         }
