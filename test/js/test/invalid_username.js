@@ -1,10 +1,12 @@
+'use strict';
 var webdriver = require('selenium-webdriver');
 var until = require('selenium-webdriver').until;
 var test = require('selenium-webdriver/testing');
 var assert = require('chai').assert;
 var expect = require('chai').should;
 var fs = require('fs');
-var el;
+let el;
+var driver;
 
 // basic auth and session information
 function readConfig() {
@@ -30,9 +32,9 @@ test.describe('TolaActivity invalid username login', function() {
     await newTolaSession(parms);
   });
 
-  test.after(async function() {
-    await driver.quit();
-  });
+//  test.after(async function() {
+//    await driver.quit();
+//  });
 
   test.it('should have a Username field', async function() {
     el = await driver.findElement({name: 'login'});
@@ -55,7 +57,8 @@ test.describe('TolaActivity invalid username login', function() {
   test.it('should deny access if username is invalid', async function() {
     el = await driver.wait(until.elementLocated({id: 'error'}));
     assert(el != undefined);
-    s = await el.getText();
+    //var s = await driver.wait(until.elementTextContains(el, 'Login failed'));
+		var s = await el.getText();
     assert(s.startsWith('Login failed'));
   });
 });

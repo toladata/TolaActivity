@@ -1,3 +1,4 @@
+'use strict';
 var webdriver = require('selenium-webdriver');
 var until = require('selenium-webdriver').until;
 var logging = require('selenium-webdriver').logging;
@@ -6,6 +7,7 @@ var assert = require('chai').assert;
 var expect = require('chai').should;
 var fs = require('fs');
 let el;
+var driver;
 
 function readConfig() {
   let data = fs.readFileSync('config.json');
@@ -49,42 +51,39 @@ test.describe('TolaActivity Indicators Page', function() {
 
   test.it('should exist', async function() {
     await driver.get('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/');
-    await driver.wait(until.elementLocated({css: 'h2'}));
-    el = await driver.findElement({css: 'h2'});
+    el = await driver.wait(until.elementLocated({css: 'h2'}));
     assert.equal(await el.getText(), 'Program Indicators');
   });
 
-  // TODO: Unable to extract the label with .getText()
-  // Part of the challenge is that these aren't actual dropdowns
-  // but buttons and lists. This requires hand-crafted codes
-  // to find and extract data and assumes a lot of internal
-  // familiarity with the underlying code
   test.describe('Programs dropdown', function() {
-    test.it('should be present on page', function() {
-      driver.wait(until.elementLocated({id: 'dropdownProgram'}));
-      el = driver.findElement({id: 'dropdownProgram'});
-      driver.wait(until.elementTextContains(el, 'Programs'));
-			assert(el.click());
-    });
-
-    // TODO: Having difficulty working with this element; the non-standard
-    // dropdown construction complicates it.
-    test.it('should have at least one entry');
-    test.it('should default to showing all programs');
-    test.it('should be able to filter PIs by Program');
-    test.it('should be able to filter Programs by PI');
-    test.it('should have same item count as Programs table');
-    test.it('should have same items as Programs table');
-  }); // end programs dropdown tests
+  	// TODO: Unable to extract the label with .getText()
+  	// Part of the challenge is that these aren't actual dropdowns
+  	// but buttons and lists. This requires hand-crafted codes
+  	// to find and extract data and assumes a lot of internal
+  	// familiarity with the underlying code
+  	// TODO: Having difficulty working with this element; the non-standard
+  	// dropdown construction complicates it.
+    test.it('should be present on page', async function() {
+      el = await driver.findElement({id: 'dropdownProgram'});
+      var button = await driver.wait(until.elementTextContains(el, 'Programs'));
+			assert(button.click());
+		});
+	  test.it('should have at least one entry');
+	  test.it('should default to showing all programs');
+	  test.it('should be able to filter PIs by Program');
+	  test.it('should be able to filter Programs by PI');
+	  test.it('should have same item count as Programs table');
+	  test.it('should have same items as Programs table');
+ 	}); // end programs dropdown tests
   
   // TODO: Having difficulty working with this element; the non-standard
   // dropdown construction complicates it.
   test.describe('Indicators dropdown', function() {
-    test.it('should be present on page', function() {
-      el = driver.wait(until.elementLocated({id: 'dropdownIndicator'}));
-			assert(el.click());
-      driver.wait(until.elementTextContains(el, 'Indicator'));
-			assert(el.click());
+    test.it('should be present on page', async function() {
+      el = await driver.wait(until.elementLocated({id: 'dropdownIndicator'}));
+			await assert(el.click());
+      var button = await driver.wait(until.elementTextContains(el, 'Indicators'));
+			await assert(button.click());
     });
 
 		test.it('should have at least one entry');
@@ -105,7 +104,6 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should default to showing all Indicator Types for a program');
     test.it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
-
   test.it('should toggle PIs table by clicking PI Indicators button');
   test.it('should increase PI count after adding new indicator');
   test.it('should decrease PI count after deleting indicator');

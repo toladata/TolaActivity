@@ -1,3 +1,4 @@
+'use strict';
 var webdriver = require('selenium-webdriver');
 var until = require('selenium-webdriver').until;
 var test = require('selenium-webdriver/testing');
@@ -5,6 +6,7 @@ var assert = require('chai').assert;
 var expect = require('chai').should;
 var fs = require('fs');
 let el;
+var driver;
 
 function readConfig() {
   let data = fs.readFileSync('config.json');

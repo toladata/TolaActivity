@@ -1,3 +1,4 @@
+'use strict';
 var webdriver = require('selenium-webdriver');
 var test = require('selenium-webdriver/testing');
 var until = require('selenium-webdriver').until;
@@ -21,32 +22,28 @@ test.describe('TolaActivity Login screen', function() {
     driver.get(parms.baseurl);
   });
 
- test.after(function() {
-   driver.quit();
- });
+  test.after(function() {
+    driver.quit();
+  });
 
   test.it('should require user to authenticate', async function() {
     el = await driver.getTitle().then(function(el) {
       assert.equal(el, 'Mercy Corps Sign-On', el);
     });
-    return;
   });
 
   test.it('should have a login field', async function() {
     el = await driver.findElement({name: 'login'});
     el.sendKeys(parms.username);
-    return;
   });
 
   test.it('should have a password field', async function() {
     el = await driver.findElement({name: 'password'});
     el.sendKeys(parms.password);
-    return;
   });
 
   test.it('should have a Log In button', async function() {
     el = await driver.findElement({className: 'inputsub'});
     await el.click();
-    return;
   });
 }); // end login screen

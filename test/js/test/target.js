@@ -1,3 +1,4 @@
+'use strict';
 var webdriver = require('selenium-webdriver');
 var until = require('selenium-webdriver').until;
 var test = require('selenium-webdriver/testing');
