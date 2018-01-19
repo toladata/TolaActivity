@@ -379,7 +379,7 @@ class PeriodicTarget(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return "%s %s" % (self.period, self.target)
+        return "%s (%s - %s)" % (self.period, self.start_date.strftime('%b %d, %Y'), self.end_date.strftime('%b %d, %Y'))
 
     @property
     def start_date_formatted(self):

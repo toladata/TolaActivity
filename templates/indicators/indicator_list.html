@@ -147,7 +147,13 @@ function loadIndicators(program,indicator,type){
         e.preventDefault();
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
-        submitForm(form_url, form_data);
+        $.post(form_url, form_data,
+               function(response, status, jqXHR) { // success callback
+                    createAlert("success", "Success, form data saved.", true, "#modalmessages");
+                })
+            .fail(function(error){
+                createAlert("danger", "Could not save form. "  + error, true, "#modalmessages");
+            });
         $('#indicator_collecteddata_div').animate({ scrollTop: 0 }, 'slow');
     });
 
