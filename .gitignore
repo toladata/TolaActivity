@@ -20,6 +20,11 @@ build
 # Logs:
 *.log
 
+# NodeJS modules
+node_modules
+chromedriver
+geckodriver
+
 #allvritualenv
 venv/
 venv-ta/
