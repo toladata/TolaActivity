@@ -27,26 +27,6 @@ class IsSuperUserBrowseableAPI(permissions.BasePermission):
         return False
 
 
-class UserIsOwnerOrAdmin(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        if view.action == 'list':
-            return request.user.is_authenticated()
-        elif view.action == 'create':
-            return True
-        elif view.action in ['retrieve', 'update', 'partial_update', 'destroy']:
-            return True
-        else:
-            return False
-
-    def check_object_permission(self, user, obj):
-        return (user and user.is_authenticated() and
-                (user.is_staff or obj == user))
-
-    def has_object_permission(self, request, view, obj):
-        return self.check_object_permission(request.user, obj)
-
-
 class IsOrgMember(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.user.is_superuser:
