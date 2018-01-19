@@ -204,7 +204,7 @@
                         </a>
                     </td>
 
-                    <td style="padding:1px; vertical-align: middle; border: none;">
+                    <td style="padding:1px; border: none; vertical-align: middle;">
                         ${(target_frequency != 8) ? `
                             <div style="line-height:1;"><strong>${pt.period }</strong></div>
                             <div style="line-height:1; margin-top:3px;">${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</div>`
@@ -216,7 +216,7 @@
                         }
                     </td>
 
-                    <td align="right" style="padding:1px; vertical-align: middle; border: none;">
+                    <td align="right" style="padding:1px; border:none; vertical-align:middle;">
                         <div class="controls">
                             <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
