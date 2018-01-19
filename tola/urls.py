@@ -84,11 +84,9 @@ router.register(r'widget', WidgetViewSet)
 router.register(r'portfolio', PortfolioViewSet)
 router.register(r'sectorrelated', SectorRelatedViewSet)
 router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
-
 # router.register(r'search', SearchView, base_name='search')
-
 router.register(r'binary', BinaryFieldViewSet, base_name='binary')
-router.register(r'pindicators', ProgramIndicatorReadOnlyViewSet, base_name='pindicators')
+
 urlpatterns = [ # rest framework
                 url(r'^check', tola_views.check_view),
                 url(r'^dev_loader', tola_views.dev_view),

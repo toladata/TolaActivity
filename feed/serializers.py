@@ -152,7 +152,7 @@ class IndicatorLevelLightSerializer(serializers.ModelSerializer):
 class IndicatorLightSerializer(serializers.ModelSerializer):
     sector = serializers.SerializerMethodField()
     indicator_type = IndicatorTypeLightSerializer(many=True, read_only=True)
-    level = IndicatorLevelLightSerializer(many=True, read_only=True)
+    level = IndicatorLevelLightSerializer(read_only=True)
     datacount = serializers.SerializerMethodField()
 
     def get_datacount(self, obj):
