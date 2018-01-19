@@ -1,5 +1,6 @@
 var webdriver = require('selenium-webdriver');
 var until = require('selenium-webdriver').until;
+var logging = require('selenium-webdriver').logging;
 var test = require('selenium-webdriver/testing');
 var assert = require('chai').assert;
 var expect = require('chai').should;
@@ -48,27 +49,27 @@ test.describe('TolaActivity Indicators Page', function() {
 
   test.it('should exist', async function() {
     await driver.get('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/');
-    driver.wait(until.elementLocated({css: 'h2'}), 10000);
-    el = driver.findElement({css: 'h2'});
+    await driver.wait(until.elementLocated({css: 'h2'}));
+    el = await driver.findElement({css: 'h2'});
     assert.equal(await el.getText(), 'Program Indicators');
   });
 
+  // TODO: Unable to extract the label with .getText()
+  // Part of the challenge is that these aren't actual dropdowns
+  // but buttons and lists. This requires hand-crafted codes
+  // to find and extract data and assumes a lot of internal
+  // familiarity with the underlying code
   test.describe('Programs dropdown', function() {
-    test.it('should exist', async function() {
-      el = await driver.findElement({id: 'dropdownProgram'});
-      assert.equal(await el.getText(), 'Programs');
+    test.it('should be present on page', function() {
+      driver.wait(until.elementLocated({id: 'dropdownProgram'}));
+      el = driver.findElement({id: 'dropdownProgram'});
+      driver.wait(until.elementTextContains(el, 'Programs'));
 			assert(el.click());
     });
 
-    test.it('should have at least one entry', function() {
-			let progList = driver.findElement({id: 'dropdownProgram'});
-			let items = Array(progList.findElements({css: 'a.role'}));
-			assert(items.length > 0);
-			for(item in items) {
-				item.click();
-			}
-		});
-
+    // TODO: Having difficulty working with this element; the non-standard
+    // dropdown construction complicates it.
+    test.it('should have at least one entry');
     test.it('should default to showing all programs');
     test.it('should be able to filter PIs by Program');
     test.it('should be able to filter Programs by PI');
@@ -76,32 +77,31 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should have same items as Programs table');
   }); // end programs dropdown tests
   
+  // TODO: Having difficulty working with this element; the non-standard
+  // dropdown construction complicates it.
   test.describe('Indicators dropdown', function() {
-    test.it('should exist', function() {
-      el = driver.findElement({id: 'dropdownIndicator'});
+    test.it('should be present on page', function() {
+      el = driver.wait(until.elementLocated({id: 'dropdownIndicator'}));
+			assert(el.click());
+      driver.wait(until.elementTextContains(el, 'Indicator'));
 			assert(el.click());
     });
 
-		test.it('should have at least one entry', function() {
-			let items = Array(driver.findElements({id: 'dropdownIndicator'}));
-			assert(items.length > 0);
-		});
-
+		test.it('should have at least one entry');
     test.it('should default to showing all PIs for a program');
-    test.it('should be able to filter resultset by PI');
+    test.it('should be able to select any/all list items');
   }); // end indicators dropdown tests
-  
+     
+  // TODO: Having difficulty working with this element; the non-standard
+  // dropdown construction complicates it.
   test.describe('Indicator Type dropdown', function() {
-    test.it('should exist', function() {
+    test.it('should be present on page', function() {
       el = driver.findElement({id: 'dropdownIndicatorType'});
+      driver.wait(until.elementTextContains(el, 'Indicator Type'));
 			assert(el.click());
     });
 
-		test.it('should have at least one entry', function() {
-			let items = Array(driver.findElements({id: 'dropdownIndicatorType'}));
-			assert(items.length > 0);
-		});
-
+		test.it('should have at least one entry');
     test.it('should default to showing all Indicator Types for a program');
     test.it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
