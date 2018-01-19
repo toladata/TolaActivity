@@ -32,9 +32,9 @@ test.describe('TolaActivity invalid username login', function() {
     await newTolaSession(parms);
   });
 
-//  test.after(async function() {
-//    await driver.quit();
-//  });
+  test.after(async function() {
+    await driver.quit();
+  });
 
   test.it('should have a Username field', async function() {
     el = await driver.findElement({name: 'login'});
