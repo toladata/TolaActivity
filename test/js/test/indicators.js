@@ -105,7 +105,7 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should default to showing all Indicator Types for a program');
     test.it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
-/*
+
   test.it('should toggle PIs table by clicking PI Indicators button');
   test.it('should increase PI count after adding new indicator');
   test.it('should decrease PI count after deleting indicator');
@@ -246,7 +246,7 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should have a Grid/Print Report button');
     test.it('should open a report page when the Grid/Print Report button is clicked');
   });
-*/
+
   // These are enhancements
   test.it('should highlight PIs with no evidence');
   test.it('should disable Indicators button if program has no indicators');
