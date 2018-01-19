@@ -1,8 +1,8 @@
-import random
+import sys
+import time
 
-from indicators.models import Indicator, IndicatorType
-from workflow.models import *
-import time, sys
+from workflow.models import WorkflowLevel1
+
 
 def run():
     print("Starting Database test")

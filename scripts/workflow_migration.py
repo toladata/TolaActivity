@@ -1,5 +1,4 @@
 from django.apps import apps
-from django import db
 from django.db import connection
 
 
@@ -60,7 +59,7 @@ def run():
             with connection.cursor() as cursor:
                 cursor.execute("RENAME TABLE activitydb_beneficiary TO formlibrary_beneficiary")
                 cursor.execute("RENAME TABLE activitydb_beneficiary_distribution TO formlibrary_beneficiary_distribution")
-                cursor.execute("RENAME TABLE activitydb_beneficiary_program TO formlibrary_beneficiary_program")
+                cursor.execute("RENAME TABLE activitydb_beneficiary_program TO fwormlibrary_beneficiary_program")
                 cursor.execute("RENAME TABLE activitydb_beneficiary_training TO formlibrary_beneficiary_training")
                 cursor.execute("RENAME TABLE activitydb_trainingattendance TO formlibrary_trainingattendance")
                 cursor.execute("RENAME TABLE activitydb_distribution TO formlibrary_distribution")

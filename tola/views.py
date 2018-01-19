@@ -24,7 +24,7 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
     NewTolaUserRegistrationForm, BookmarkForm
 from workflow.models import (TolaUser, TolaBookmarks, FormGuidance,
-                             Organization, ROLE_VIEW_ONLY, TolaSites)
+                             ROLE_VIEW_ONLY, TolaSites)
 
 
 @method_decorator(login_required, name='dispatch')

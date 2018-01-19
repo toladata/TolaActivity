@@ -4,8 +4,7 @@ import requests
 import logging
 from urlparse import urljoin
 
-from workflow.models import (Country, TolaUser, TolaSites, WorkflowTeam,
-                             WorkflowLevel1, Organization)
+from workflow.models import Country, TolaUser, TolaSites, WorkflowTeam
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.mail import mail_admins, EmailMessage

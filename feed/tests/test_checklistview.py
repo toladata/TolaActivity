@@ -4,7 +4,7 @@ from rest_framework.test import APIRequestFactory
 import factories
 from feed.views import ChecklistViewSet
 from workflow.models import Checklist, WorkflowLevel1, WorkflowLevel2, \
-    WorkflowTeam, ROLE_ORGANIZATION_ADMIN
+    ROLE_ORGANIZATION_ADMIN
 
 
 class ChecklistListViewTest(TestCase):

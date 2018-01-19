@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
-from rest_framework import authentication, permissions, viewsets
 
 
 class LoggedInMixin(object):

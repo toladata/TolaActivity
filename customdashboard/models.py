@@ -1,6 +1,4 @@
 from django.db import models
-from django.contrib import admin
-
 from workflow.models import WorkflowLevel1
 
 
@@ -17,5 +15,4 @@ class JupyterNotebooks(models.Model):
         verbose_name_plural = "Jupyter Notebooks"
 
     def __unicode__(self):
-
         return self.name

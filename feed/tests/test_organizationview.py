@@ -3,7 +3,6 @@ from rest_framework.test import APIRequestFactory
 
 import factories
 from feed.views import OrganizationViewSet
-from workflow.models import Organization
 
 
 class OrganizationViewTest(TestCase):

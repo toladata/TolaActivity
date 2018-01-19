@@ -2,7 +2,7 @@ import json
 from urlparse import urljoin
 
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -14,13 +14,13 @@ from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
 from formlibrary.models import (
-    Beneficiary, Distribution, CustomForm, CustomFormField, FieldType)
+    Beneficiary, CustomForm, CustomFormField, FieldType)
 from indicators.models import (
     Indicator, Frequency, IndicatorType, Objective, DisaggregationType,
     Level, ExternalService, ExternalServiceRecord, StrategicObjective,
     PeriodicTarget, CollectedData, TolaTable, DisaggregationValue,
-    DisaggregationLabel, DisaggregationLabel)
-from tola.util import getCountry, get_programs_user
+    DisaggregationLabel)
+from tola.util import get_programs_user
 from workflow import models as wfm
 from .permissions import IsOrgMember, AllowTolaRoles
 from . import serializers
