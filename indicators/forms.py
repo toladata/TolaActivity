@@ -132,7 +132,9 @@ class IndicatorForm(forms.ModelForm):
                                                                     <strong>Sum of targets</strong>
                                                                 </td>
                                                                 <td align="right" style="border:none; vertical-align: middle;">
-                                                                    <strong><span id="id_span_targets_sum">{{targets_sum}}</span></strong>
+                                                                    <div style="margin: 5px 10px;">
+                                                                        <strong><span id="id_span_targets_sum">{{targets_sum}}</span></strong>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         {% endif %}
