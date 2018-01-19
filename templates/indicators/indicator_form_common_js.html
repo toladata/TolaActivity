@@ -737,9 +737,17 @@
         validate_baseline();
     });
 
+    $("#indicator_modal_content, #indicator_form").on("input", "#id_baseline", function(e){
+        $("#id_baseline_na").prop('checked', false);
+    });
+
     $("#indicator_modal_content, #indicator_form").on("change", "#id_baseline_na", function(e){
         $("#id_baseline").val('');
-        reset_baseline_errors();
+        if (!$(this).is(':checked')){
+            validate_baseline()
+        } else {
+            reset_baseline_errors();
+        }
     });
 
     $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_custom", function(e){
