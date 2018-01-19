@@ -68,15 +68,25 @@ function loadIndicators(program,indicator,type){
 
 <div id="indicator_modal_div" class="modal fade" role="dialog" aria-labelledby="myLargeModalLabel">
     <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="indicator_modal_content">
+
+        </div> <!-- modal content -->
+    </div>
+</div>
+
+
+<div id="indicator_collecteddata_div" class="modal fade" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-body" id="indicator_modal_body">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <span id = "modalmessages"></span>
-                <div id="indicator_modal_content"></div>
+                <div id="indicator_collected_data_modal_content"></div>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="tolatablemodal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -109,8 +119,8 @@ function loadIndicators(program,indicator,type){
         $("#indicator_modal_content").empty();
         $("#modalmessages").empty();
 
-        $("#indicator_modal_content").load(url+"/?modal=1");
-        $("#indicator_modal_div").modal('show');
+        $("#indicator_collected_data_modal_content").load(url+"/?modal=1");
+        $("#indicator_collecteddata_div").modal('show');
 
     });
 
@@ -120,7 +130,7 @@ function loadIndicators(program,indicator,type){
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
         submitForm(form_url, form_data);
-        $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
+        $('#indicator_collecteddata_div').animate({ scrollTop: 0 }, 'slow');
     });
 
 

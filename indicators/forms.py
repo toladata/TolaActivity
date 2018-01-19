@@ -10,7 +10,6 @@ from django import forms
 from tola.util import getCountry
 from django.db.models import Q
 
-
 class DatePicker(forms.DateInput):
     """
     Use in form to create a Jquery datepicker element
@@ -47,31 +46,31 @@ class IndicatorForm(forms.ModelForm):
         self.helper.form_action = reverse_lazy('indicator_update', kwargs={'pk': indicator.id})
         self.helper.form_id = 'indicator_update_form'
         self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
+        self.helper.label_class = 'col-sm-4'
         self.helper.field_class = 'col-sm-6'
         self.helper.form_error_title = 'Form Errors'
         self.helper.error_text_inline = True
         self.helper.help_text_inline = True
         self.helper.html5_required = True
+        self.helper.form_tag = False
         self.helper.layout = Layout(
 
-            HTML("""<br/>"""),
             TabHolder(
                 Tab('Summary',
                      Fieldset('',
-                        'program','sector','objectives','strategic_objectives', 'country',
+                        'program','sector','objectives','strategic_objectives',
                         ),
                 ),
                 Tab('Performance',
-                     Fieldset('Performance',
-                        'name', 'type', 'level', 'number', 'source', 'definition', 'unit_of_measure', 'justification', 'disaggregation','indicator_type',PrependedText('key_performance_indicator','')
+                     Fieldset('',
+                        'name', 'level', 'number', 'source', 'definition', 'justification', 'disaggregation','indicator_type',PrependedText('key_performance_indicator', False)
                         ),
                 ),
                 Tab('Targets',
-                    Fieldset('Targets',
-                             'baseline','lop_target', 'rationale_for_target',
+                    Fieldset('',
+                             'unit_of_measure', 'lop_target', 'rationale_for_target', 'baseline', 'target_frequency', 'target_frequency_start', 'target_frequency_custom', 'target_frequency_num_periods'
                              ),
-                    Div("",
+                    Fieldset('',
                         HTML("""<br/>
                             <div class='panel panel-default'>
                                 <div class='panel-heading'>
@@ -103,18 +102,18 @@ class IndicatorForm(forms.ModelForm):
                     ),
                 ),
                 Tab('Data Acquisition',
-                    Fieldset('Data Acquisition',
+                    Fieldset('',
                         'means_of_verification','data_collection_method', 'data_collection_frequency', 'data_points', 'responsible_person',
                         ),
                 ),
                 Tab('Analysis and Reporting',
-                    Fieldset('Analysis and Reporting',
+                    Fieldset('',
                         'method_of_analysis','information_use', 'reporting_frequency', 'quality_assurance', 'data_issues', 'indicator_changes', 'comments','notes'
                     ),
                 ),
                 Tab('Approval',
-                    Fieldset('Approval',
-                        'approval', 'approval_submitted_by', 'approved_by',
+                    Fieldset('',
+                        'approval_submitted_by', 'approved_by',
                     ),
                 ),
             ),
@@ -141,12 +140,11 @@ class IndicatorForm(forms.ModelForm):
                   {% endif %}
              """),
 
-            HTML("""<br/>"""),
-            FormActions(
-                Submit('submit', 'Save', css_class='btn-default'),
-                Submit('_addanother', 'Save & Add Another >>', css_class='btn-default'),
-                Reset('reset', 'Reset', css_class='btn-warning')
-            )
+            # HTML("""<hr/>"""),
+            # FormActions(
+            #     Submit('submit', 'Save', css_class='btn-default'),
+            #     Reset('reset', 'Reset', css_class='btn-default')
+            # )
         )
 
         super(IndicatorForm, self).__init__(*args, **kwargs)
@@ -160,6 +158,15 @@ class IndicatorForm(forms.ModelForm):
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['program'].widget.attrs['readonly'] = "readonly"
+        self.fields['target_frequency_start'].widget = DatePicker.DateInput()
+        # self.fields['target_frequency_start'].help_text = 'This field is required'
+        # self.fields['target_frequency'].required = False
+        if self.instance.target_frequency:
+            self.fields['target_frequency'].widget.attrs['readonly'] = "readonly"
+            #self.fields['target_frequency'].widget.attrs['disabled'] = "disabled"
+            self.fields['target_frequency_custom'].widget = forms.HiddenInput()
+            self.fields['target_frequency_start'].widget = forms.HiddenInput()
+            self.fields['target_frequency_num_periods'].widget = forms.HiddenInput()
 
 class CollectedDataForm(forms.ModelForm):
 
