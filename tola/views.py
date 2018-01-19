@@ -265,15 +265,14 @@ def logout_view(request):
 
 
 def check_view(request):
-    return HttpResponse("Hostname "+request.get_host())
+    return HttpResponse("Hostname " + request.get_host())
 
 
 def oauth_user_view(request):
     return HttpResponse("Hostname "+request.get_host())
 
 
-class OAuth_User_Endpoint(ProtectedResourceView):
-
+class OAuthUserEndpoint(ProtectedResourceView):
     def get(self, request, *args, **kwargs):
         user = request.user
         body = {
