@@ -19,9 +19,3 @@ class JupyterNotebooks(models.Model):
     def __unicode__(self):
 
         return self.name
-
-
-class JupyterNotebooksAdmin(admin.ModelAdmin):
-    list_display = ('name','workflowlevel1','very_custom_dashboard','create_date','edit_date')
-    display = 'Jupyter Notebooks'
-
