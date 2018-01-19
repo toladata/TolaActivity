@@ -994,25 +994,6 @@ class BeneficiaryViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.BeneficiarySerializer
 
 
-class DistributionViewSet(viewsets.ModelViewSet):
-    def list(self, request):
-        # Use this queryset or the django-filters lib will not work
-        queryset = self.filter_queryset(self.get_queryset())
-        if not request.user.is_superuser:
-            organization_id = wfm.TolaUser.objects. \
-                values_list('organization_id', flat=True). \
-                get(user=request.user)
-            queryset = queryset.filter(organization_id=organization_id)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    filter_fields = ('organization__id',)
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    permission_classes = (IsOrgMember,)
-    queryset = Distribution.objects.all()
-    serializer_class = serializers.DistributionSerializer
-
-
 class CustomFormViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
