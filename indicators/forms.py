@@ -94,7 +94,7 @@ class IndicatorForm(forms.ModelForm):
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px;">
+                                        <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8">
                                             <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
                                                 <tbody>
                                                     {% for pt in periodic_targets %}
@@ -137,26 +137,30 @@ class IndicatorForm(forms.ModelForm):
                                                             </tr>
                                                         {% endif %}
                                                     {% endfor %}
+                                                    <tr style="background-color:#F5F5F5">
+                                                        <td class="pt-delete-row" style="border: none;">
+                                                        </td>
+                                                        <td align="left" style="padding-left:0px; border:none; vertical-align: middle;">
+                                                            <strong>Life of Program (LoP) target</strong>
+                                                        </td>
+                                                        <td align="right" style="border:none; vertical-align: middle;">
+                                                            <div style="margin: 5px 10px;">
+                                                                <strong>{{indicator.lop_target}}</strong>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 </tbody>
                                                 <tfoot>
-                                                    <tr>
+                                                    <tr style="background-color:#F5F5F5">
                                                         <td colspan="3" style="color:red; padding: 0px" id="id_pt_errors"></td>
                                                     </tr>
                                                 </tfoot>
                                             </table>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="lop-display col-sm-offset-2 col-sm-6" style="padding-left: 70px;">
-                                            <strong>Life of Program (LoP) target</strong>
-                                        </div>
-                                        <div class="lop-display col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
-                                            <strong>{{indicator.lop_target}}</strong>
-                                        </div>
-                                    </div>
                                     {% if indicator.target_frequency != 2 %}
                                         <div class="row">
-                                            <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
+                                            <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top:10px; margin-bottom:40px;">
                                                 <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
                                             </div>
                                         </div>
