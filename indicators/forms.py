@@ -18,6 +18,11 @@ class DatePicker(forms.DateInput):
 
     DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 
+class IndicatorTargetsTabForm(forms.ModelForm):
+    class Meta:
+        model = Indicator
+        fields = ['unit_of_measure', 'lop_target', 'rationale_for_target', 'baseline', 'target_frequency', 'target_frequency_custom', 'target_frequency_start', 'target_frequency_num_periods']
+
 
 class IndicatorForm(forms.ModelForm):
     class Meta:
@@ -238,6 +243,9 @@ class CollectedDataForm(forms.ModelForm):
     class Meta:
         model = CollectedData
         exclude = ['create_date', 'edit_date']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows':4}),
+        }
 
     program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Program'}) )
     indicator2 = forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Indicator'}) )
@@ -262,16 +270,11 @@ class CollectedDataForm(forms.ModelForm):
         self.helper.html5_required = True
         self.helper.form_tag = True
         self.helper.layout = Layout(
-
             HTML("""<br/>"""),
-
             Fieldset('Collected Data',
                 'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
 
             ),
-
-            HTML("""<br/>"""),
-
             Fieldset('Evidence',
                 'agreement', 'evidence','tola_table','update_count_tola_table',
                 HTML("""<a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>"""),
@@ -421,7 +424,7 @@ class CollectedDataForm(forms.ModelForm):
 
         #self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
         self.fields['tola_table'].queryset = TolaTable.objects.filter(Q(owner=self.request.user) | Q(id=self.tola_table))
-        self.fields['periodic_target'].label = 'Measure against target'
+        self.fields['periodic_target'].label = 'Measure against target*'
         self.fields['achieved'].label = 'Actual value'
         self.fields['date_collected'].help_text = ' '
 
