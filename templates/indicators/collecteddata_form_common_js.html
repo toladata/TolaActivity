@@ -1,19 +1,20 @@
 <script>
+    // target_frequency setup as a global variable, which is set on document.ready
+    var target_frequency;
+
     $(document).ready(function() {
         $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
-
-        var target_frequency = parseInt(`{{object.indicator.target_frequency|safe}}`);
+        target_frequency = parseInt(`{{object.indicator.target_frequency|safe}}`);
         var indicator = `{{object.indicator.id|safe}}`;
         var ptlen = `{{object.indicator.periodictarget_set.all.count|safe}}`;
         var collectedRecordId = parseInt(`{{object.id|safe}}`);
 
-        // if collectedRecordId is not defined then it must be a new CollectedData record
+        // if it is a new record and target_frequency is LOP_ONLY then set periodic_target to LOP_ONLY
         if (isNaN(collectedRecordId)) {
-            var target_frequency = parseInt(`{{ indicator.target_frequency|safe}}`);
+            target_frequency = parseInt(`{{ indicator.target_frequency|safe}}`);
             if (!isNaN(target_frequency) && target_frequency == 1) {
                 // if target_frequency is 1 (LOP_Only) then there has to be exactly one periodic_target
                 var pt_id = parseInt(`{{ indicator.periodictarget_set.all.0.id|safe}}`);
-                // set the periodic_target to the only value that is "LOP Only"
                 $("#id_periodic_target").val(pt_id);
             }
             lockPeriodicTargetDropdown();
@@ -30,8 +31,9 @@
 
     // Intercept CollectedDataUpdate form submission and then use ajax to submit it.
     $("#indicator_modal_body").on("submit", "#collecteddata_update_form", function(e){
+        $("#modalmessages").empty();
         e.preventDefault();
-        setPeriodicTargetValue();
+        validatePeriodicTarget();
         validateDateCollected();
         if ($("#collecteddata_update_form div").hasClass('has-error')) {
             createAlert("danger", "Please complete all required.", true, "#modalmessages");
@@ -42,6 +44,8 @@
         var form_data = $(this).serialize();
         $.post(form_url, form_data,
                function(response, status, jqXHR) { // success callback
+                    console.log('messaging');
+                    $("#modalmessages").empty();
                     createAlert("success", "Success, form data saved.", true, "#modalmessages");
                 })
             .fail(function(error){
@@ -52,14 +56,29 @@
 
 
     $("#collecteddata_update_form").on("change", "#id_date_collected", function(e){
-        setPeriodicTargetValue();
-    });
-
-    $("#collecteddata_update_form").on("blur", "#id_date_collected", function(e){
+        validatePeriodicTarget();
         validateDateCollected();
     });
 
+    $("#collecteddata_update_form").on("change", "#id_periodic_target", function(e){
+        validatePeriodicTarget();
+    });
 
+    function validatePeriodicTarget() {
+        if ($("#id_periodic_target").val() == '') {
+            $("#hint_id_periodic_target").html("<small>Pleae complete this field.</small>");
+            $("#div_id_periodic_target").addClass('has-error');
+            return false;
+        }
+        if (setPeriodicTargetValue() == false) {
+            $("#id_periodic_target").val('');
+            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a href='#'><strong>create</strong></a> additional target periods.</small>");
+            $("#div_id_periodic_target").addClass('has-error');
+        } else {
+            $("#hint_id_periodic_target").html("");
+            $("#div_id_periodic_target").removeClass('has-error');
+        }
+    }
     function validateDateCollected(){
         var field = $("#id_date_collected").val();
         if ($.isEmptyObject(field)) {
@@ -84,6 +103,10 @@
         //   \)    : match closing parentheses
         var regExp = /\(([^)]+)\)/;
         var matchFound = false
+
+        if (target_frequency == 1 || target_frequency == 2 || target_frequency == 8) {
+            return true;
+        }
         $("#id_periodic_target option").each(function() {
             var pt_date_range = regExp.exec(this.text);
             if (!pt_date_range || pt_date_range == null || pt_date_range == 'null'){
@@ -106,14 +129,6 @@
                 console.log(error);
             }
         });
-        if (matchFound == false) {
-            $("#id_periodic_target").val('');
-            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a href='#'><strong>create</strong></a> additional target periods.</small>");
-            $("#div_id_periodic_target").addClass('has-error');
-        } else {
-            $("#hint_id_periodic_target").html("");
-            $("#div_id_periodic_target").removeClass('has-error');
-        }
         return matchFound;
     }
 
