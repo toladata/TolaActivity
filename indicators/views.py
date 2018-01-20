@@ -288,6 +288,10 @@ class PeriodicTargetView(View):
 
     def get(self, request, *args, **kwargs):
         indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
+        if request.GET.get('existingTargetsOnly'):
+            pts = FlatJsonSerializer().serialize(indicator.periodictarget_set.all())
+            print(".............................%s............................" % 'onlyexistingtargets' )
+            return HttpResponse(pts)
         try:
             numTargets = int(request.GET.get('numTargets', None))
         except Exception as e:
@@ -379,6 +383,8 @@ class IndicatorUpdate(UpdateView):
         except ExternalServiceRecord.DoesNotExist:
             getExternalServiceRecord = None
         context.update({'getExternalServiceRecord': getExternalServiceRecord})
+        if self.request.GET.get('targetsonly') == 'true':
+            context['targetsonly'] = True
 
         return context
 

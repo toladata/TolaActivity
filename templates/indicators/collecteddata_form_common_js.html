@@ -1,11 +1,12 @@
 <script>
     // target_frequency setup as a global variable, which is set on document.ready
     var target_frequency;
+    var indicator_id
 
     $(document).ready(function() {
         $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
         target_frequency = parseInt(`{{object.indicator.target_frequency|safe}}`);
-        var indicator = `{{object.indicator.id|safe}}`;
+        indicator_id = `{{object.indicator.id|safe}}`;
         var ptlen = `{{object.indicator.periodictarget_set.all.count|safe}}`;
         var collectedRecordId = parseInt(`{{object.id|safe}}`);
 
@@ -33,14 +34,12 @@
     $("#indicator_modal_body").on("submit", "#collecteddata_update_form", function(e){
         e.preventDefault();
         var isFormValid = true;
-        console.log('submitting form');
         $("#modalmessages").empty();
         isFormValid = validatePeriodicTarget();
         isFormValid = validateDateCollected();
         if (isFormValid == false) {
             return false;
         }
-        console.log("actually submitting form now");
         if ($("#collecteddata_update_form div").hasClass('has-error')) {
             createAlert("danger", "Please complete all required.", true, "#modalmessages");
             $('#indicator_collecteddata_div').animate({ scrollTop: 0 }, 'slow');
@@ -69,10 +68,12 @@
         validatePeriodicTarget();
     });
 
+
+
     function validatePeriodicTarget() {
         if (setPeriodicTargetValue() == false) {
             // $("#id_periodic_target").val('');
-            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a href='#'><strong>create</strong></a> additional target periods.</small>");
+            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + indicator_id + "/'><strong>create</strong></a> additional target periods.</small>");
             $("#div_id_periodic_target").addClass('has-error');
         } else if ($("#id_periodic_target").val() == '') {
             $("#hint_id_periodic_target").html("<small>Pleae complete this field.</small>");

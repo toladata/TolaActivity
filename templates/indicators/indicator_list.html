@@ -168,6 +168,33 @@ function loadIndicators(program,indicator,type){
             return dateString;
         }
     }
+
+    $("#indicator_collecteddata_div").on("click", "#targetsTabLink", function(e){
+        e.preventDefault();
+        var url = $(e.target).parent().attr('href');
+        $("#indicator_collecteddata_div").modal('hide');
+        $("#indicator_modal_content").load(url+"?modal=1&targetsonly=true");
+        $("#indicator_modal_div").modal('show');
+    });
+
+    $("#indicator_modal_div").on("click", "#backToCollectedDataLink", function(e){
+        e.preventDefault();
+        $("#indicator_modal_div").modal('hide');
+        $("#indicator_collecteddata_div").modal('show');
+        // var url = '/indicators/periodic_target_generate/2470/?existingTargetsOnly=true';
+        var url = $(e.target).attr('href') + '?existingTargetsOnly=true';
+        $.getJSON(url, function( data ) {
+            $("#id_periodic_target").children('option:not(:first)').remove();
+            $.each(data, function(index, pt) {
+                $("#id_periodic_target")
+                    .append($("<option></option>")
+                    .attr("value", pt.id)
+                    .text(pt.period + " (" + formatDate(pt.start_date) + " - " +  formatDate(pt.end_date) + ")"));
+            });
+            $("#id_periodic_target").trigger('change');
+        });
+    });
+
     // Open the CollectDataUpdate form in a modal
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
         e.preventDefault();

@@ -18,6 +18,11 @@ class DatePicker(forms.DateInput):
 
     DateInput = partial(forms.DateInput, {'class': 'datepicker'})
 
+class IndicatorTargetsTabForm(forms.ModelForm):
+    class Meta:
+        model = Indicator
+        fields = ['unit_of_measure', 'lop_target', 'rationale_for_target', 'baseline', 'target_frequency', 'target_frequency_custom', 'target_frequency_start', 'target_frequency_num_periods']
+
 
 class IndicatorForm(forms.ModelForm):
     class Meta:
