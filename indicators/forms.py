@@ -421,3 +421,7 @@ class CollectedDataForm(forms.ModelForm):
 
         #self.fields['indicator'].queryset = Indicator.objects.filter(name__isnull=False, program__country__in=countries)
         self.fields['tola_table'].queryset = TolaTable.objects.filter(Q(owner=self.request.user) | Q(id=self.tola_table))
+        self.fields['periodic_target'].label = 'Measure against target'
+        self.fields['achieved'].label = 'Actual value'
+        self.fields['date_collected'].help_text = ' '
+
