@@ -383,8 +383,9 @@ class PeriodicTarget(models.Model):
             or self.indicator.target_frequency == Indicator.EVENT \
             or self.indicator.target_frequency == Indicator.MID_END:
                 return self.period
-
-        return "%s (%s - %s)" % (self.period, self.start_date.strftime('%b %d, %Y'), self.end_date.strftime('%b %d, %Y'))
+        if self.start_date and self.end_date:
+            return "%s (%s - %s)" % (self.period, self.start_date.strftime('%b %d, %Y'), self.end_date.strftime('%b %d, %Y'))
+        return self.period
 
     @property
     def start_date_formatted(self):
