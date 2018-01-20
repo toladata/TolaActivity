@@ -22,7 +22,7 @@
             // target_frequency is defined in the indicator_list.html file
             target_frequency = parseInt(`{{object.indicator.target_frequency|safe}}`);
             // indicator_id is defined in the indicator_list.html file.
-            indicator_id = `{{object.indicator.id|safe}}`;
+            indicator_id = `{{indicator.id|safe}}`;
             var ptlen = `{{object.indicator.periodictarget_set.all.count|safe}}`;
             var collectedRecordId = parseInt(`{{object.id|safe}}`);
 
