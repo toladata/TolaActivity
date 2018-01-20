@@ -171,6 +171,8 @@ function loadIndicators(program,indicator,type){
 
     $("#indicator_collecteddata_div").on("click", "#targetsTabLink", function(e){
         e.preventDefault();
+        $("#indicator_modal_content").empty();
+        $("#modalmessages").empty();
         var url = $(e.target).parent().attr('href');
         $("#indicator_collecteddata_div").modal('hide');
         $("#indicator_modal_content").load(url+"?modal=1&targetsonly=true");
@@ -180,6 +182,8 @@ function loadIndicators(program,indicator,type){
     $("#indicator_modal_div").on("click", "#backToCollectedDataLink", function(e){
         e.preventDefault();
         $("#indicator_modal_div").modal('hide');
+        $("#indicator_modal_content").empty();
+        $("#modalmessages").empty();
         $("#indicator_collecteddata_div").modal('show');
         // var url = '/indicators/periodic_target_generate/2470/?existingTargetsOnly=true';
         var url = $(e.target).attr('href') + '?existingTargetsOnly=true';
@@ -234,4 +238,6 @@ function loadIndicators(program,indicator,type){
     }
 
  </script>
+{% include 'indicators/indicator_form_common_js.html' %}
+{% include 'indicators/collecteddata_form_common_js.html' %}
 {% endblock content %}
