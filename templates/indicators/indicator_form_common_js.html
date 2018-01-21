@@ -155,6 +155,11 @@
 
 
     function createPeriodicTargetRow(pt, target_frequency, isLastIteration, rowNum) {
+        console.log(pt);
+        console.log('target_frequency', target_frequency);
+        console.log(isLastIteration);
+        console.log('runNum', rowNum);
+
         var markup = `
                 <tr class="periodic-target">
                     <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
@@ -218,15 +223,17 @@
             var isLastIteration = true;
             var target_frequency = $("#id_target_frequency").val();
             var markup = createPeriodicTargetRow(pt, target_frequency, isLastIteration);
-            $("#periodic_targets_table tbody tr:nth-last-child(3)").find("a").hide();
+
+            // if target_frequency is not "EVENT" then hide the delete button
+            if (target_frequency != 8) {
+                $("#periodic_targets_table tbody tr:nth-last-child(3)").find("a").hide();
+            }
             $("#periodic_targets_table tbody tr:nth-last-child(2)").before(markup);
         });
 
     });
 
     function createPeriodTargetsHTML(periodic_targets, indicator, targets_sum) {
-        console.log('generating periodic table');
-        console.log('-------------------------------------------------------------');
         var markup;
         var isLastIteration
         var htmlString = `
@@ -308,7 +315,7 @@
             });
             return;
             */
-            if (!confirm(`Warning: If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
+            if (!confirm(`Warning: This action cannot be undone. If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
                 initalTargetFrequency = undefined;
                 return;
             }
