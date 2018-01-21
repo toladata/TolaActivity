@@ -157,8 +157,8 @@
     function createPeriodicTargetRow(pt, target_frequency, isLastIteration, rowNum) {
         var markup = `
                 <tr class="periodic-target">
-                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                        <a align="right" href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
+                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle; text-align: right;">
+                        <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
                             <span class=" glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
