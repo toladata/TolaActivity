@@ -169,14 +169,14 @@
                             <div style="line-height:1; margin-top:3px;">${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</div>`
                             :
                             `<div class="controls">
-                                <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control">
+                                <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control" style="text-align: left;">
                                 <span style="margin:0px;" class="help-block"> </span>
                             </div>`
                         }
                     </td>
 
                     <td align="right" style="padding:1px; border:none; vertical-align:middle;">
-                        <div class="controls">
+                        <div class="controls has-data">
                             <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
                         </div>
@@ -232,7 +232,7 @@
         var htmlString = `
         <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
             <div class="row">
-                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
+                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top: 30px;">
                     <h4>${$("#id_target_frequency").find("option:selected").text()} targets</h4>
                 </div>
             </div>
@@ -582,10 +582,12 @@
             if ($(this).attr('id').substr(0, 2) == "pt" ) {
                 if ($(this).val()) {
                     $(this).parent().removeClass('has-error');
+                    $(this).parent().addClass('has-data');
                     // $(this).next('span:first').text('');
                     $("#id_pt_errors").text('');
                 } else {
                     $(this).parent().addClass('has-error');
+                    $(this).parent().removeClass('has-data');
                     // $(this).next('span:first').html('<small>Please enter a target value. Your target value can be zero.</small>');
                     // $("#id_pt_errors").html('<small>Please enter a target value. Your target value can be zero.</small>');
                 }
