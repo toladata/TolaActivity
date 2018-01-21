@@ -290,7 +290,6 @@ class PeriodicTargetView(View):
         indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
         if request.GET.get('existingTargetsOnly'):
             pts = FlatJsonSerializer().serialize(indicator.periodictarget_set.all())
-            print(".............................%s............................" % 'onlyexistingtargets' )
             return HttpResponse(pts)
         try:
             numTargets = int(request.GET.get('numTargets', None))
@@ -697,6 +696,8 @@ class CollectedDataUpdate(UpdateView):
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
         context.update({'indicator_id': getIndicator.indicator_id})
+        context.update({'indicator': getIndicator})
+
 
         return context
 
@@ -886,7 +887,6 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
     :param program:
     :return: List of CollectedData entries and sum of there achieved & Targets as well as related indicator and program
     """
-
     template_name = 'indicators/collected_data_table.html'
     collecteddata = CollectedData.objects.all().filter(indicator=indicator).prefetch_related('evidence')
 
