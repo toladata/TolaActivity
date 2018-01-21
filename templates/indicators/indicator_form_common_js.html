@@ -158,7 +158,7 @@
         var markup = `
                 <tr class="periodic-target">
                     <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                        <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
+                        <a align="right" href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
                             <span class=" glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
@@ -209,7 +209,7 @@
     $("#indicator_modal_content, #indicator_form").on("click", "#addNewPeriodicTarget", function(e) {
         e.preventDefault();
         // console.log($("#id_target_frequency").find("option:selected").text());
-        var numTargets = $("#periodic_targets_table tbody tr").length;
+        var numTargets = $("#periodic_targets_table tbody tr").length-1;
         var form_url = $("#indicator_update_form").attr('action');
         var indicator_id = form_url.split('/').slice(-2, -1)[0]
         $.get('/indicators/periodic_target_generate/' + indicator_id + '/?numTargets=' + numTargets, function(data){
@@ -218,8 +218,8 @@
             var isLastIteration = true;
             var target_frequency = $("#id_target_frequency").val();
             var markup = createPeriodicTargetRow(pt, target_frequency, isLastIteration);
-            $("#periodic_targets_table tbody tr:nth-last-child(2)").find("a").hide();
-            $("#periodic_targets_table tbody tr:last").before(markup);
+            $("#periodic_targets_table tbody tr:nth-last-child(3)").find("a").hide();
+            $("#periodic_targets_table tbody tr:nth-last-child(2)").before(markup);
         });
 
     });
@@ -237,7 +237,7 @@
                 </div>
             </div>
             <div class="row">
-                <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8" style="background-color: #FFFFFF; margin-top:1px;">
+                <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8">
                     <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
                         <tbody>`;
 
@@ -260,26 +260,30 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr style="background-color:#F5F5F5">
+                                <td class="pt-delete-row" style="border: none;">
+                                </td>
+                                <td align="left" style="padding-left: 0px; border: none; vertical-align: middle;">
+                                    <strong>Life of Program (LOP) target</strong>
+                                </td>
+                                <td align="right" style="vertical-align: middle; border: none;">
+                                    <div style="margin: 5px 10px;">
+                                        <strong><span id="id_span_targets_sum">${indicator.fields.lop_target}</span></strong>
+                                    </div>
+                                </td>
+                          </tr>
                         </tbody>
                         <tfoot>
-                            <tr>
+                            <tr style="background-color:#F5F5F5">
                                 <td colspan="3" style="color:red; padding: 0px;" id="id_pt_errors"></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
             </div>
-            <div class="row">
-                <div class="lop-display col-sm-offset-2 col-sm-6" style="padding-left: 25px;">
-                    <strong>Life of Program (LoP) target</strong>
-                </div>
-                <div class="lop-display col-sm-2" align="right" style="padding-left: 1px; margin-bottom:20px;">
-                    <strong>${indicator.fields.lop_target}</strong>
-                </div>
-            </div>
             ${(indicator.fields.target_frequency != 2) ? `
                 <div class="row">
-                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-bottom:20px;">
+                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top:20px; margin-bottom:20px;">
                         <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
                     </div>
                 </div>` : ''}
