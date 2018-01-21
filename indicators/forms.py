@@ -99,8 +99,8 @@ class IndicatorForm(forms.ModelForm):
                                                 <tbody>
                                                     {% for pt in periodic_targets %}
                                                         <tr id="{{pt.pk}}" data-collected-count="{{pt.num_data}}" class="periodic-target">
-                                                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                                                                <a align="right" href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display:{% if forloop.last and indicator.target_frequency != 2 or indicator.target_frequency == 8 %}block{% else %}none{% endif %}">
+                                                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle; text-align: right;">
+                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display:{% if forloop.last and indicator.target_frequency != 2 or indicator.target_frequency == 8 %}block{% else %}none{% endif %}">
                                                                     <span class=" glyphicon glyphicon-remove"></span>
                                                                 </a>
                                                             </td>
@@ -116,7 +116,7 @@ class IndicatorForm(forms.ModelForm):
                                                                 {% endif %}
                                                             </td>
                                                             <td align="right" style="padding:1px; border:none; vertical-align: middle;">
-                                                                <div class="controls has-data">
+                                                                <div class="controls border-1px">
                                                                     <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" data-start-date="{{pt.start_date_formatted}}" data-end-date="{{pt.end_date_formatted}}" placeholder="Enter target" class="form-control" style="width: 50%;">
                                                                     <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
                                                                 </div>

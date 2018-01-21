@@ -157,8 +157,8 @@
     function createPeriodicTargetRow(pt, target_frequency, isLastIteration, rowNum) {
         var markup = `
                 <tr class="periodic-target">
-                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                        <a align="right" href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
+                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle; text-align: right;">
+                        <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
                             <span class=" glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
@@ -176,7 +176,7 @@
                     </td>
 
                     <td align="right" style="padding:1px; border:none; vertical-align:middle;">
-                        <div class="controls has-data">
+                        <div class="controls border-1px">
                             <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
                         </div>
@@ -596,12 +596,12 @@
             if ($(this).attr('id').substr(0, 2) == "pt" ) {
                 if ($(this).val()) {
                     $(this).parent().removeClass('has-error');
-                    $(this).parent().addClass('has-data');
+                    $(this).parent().addClass('border-1px');
                     // $(this).next('span:first').text('');
                     $("#id_pt_errors").text('');
                 } else {
                     $(this).parent().addClass('has-error');
-                    $(this).parent().removeClass('has-data');
+                    $(this).parent().removeClass('border-1px');
                     // $(this).next('span:first').html('<small>Please enter a target value. Your target value can be zero.</small>');
                     // $("#id_pt_errors").html('<small>Please enter a target value. Your target value can be zero.</small>');
                 }
