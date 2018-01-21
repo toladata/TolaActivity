@@ -169,7 +169,7 @@
                             <div style="line-height:1; margin-top:3px;">${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</div>`
                             :
                             `<div class="controls">
-                                <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control">
+                                <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control" style="text-align: left;">
                                 <span style="margin:0px;" class="help-block"> </span>
                             </div>`
                         }
@@ -232,7 +232,7 @@
         var htmlString = `
         <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
             <div class="row">
-                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
+                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top: 30px;">
                     <h4>${$("#id_target_frequency").find("option:selected").text()} targets</h4>
                 </div>
             </div>

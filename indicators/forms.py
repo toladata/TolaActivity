@@ -89,7 +89,7 @@ class IndicatorForm(forms.ModelForm):
                             {% if periodic_targets and indicator.target_frequency != 1%}
                                 <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
                                     <div class="row">
-                                        <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
+                                        <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top: 30px;">
                                             <h4>{{ indicator.get_target_frequency_label }} targets</h4>
                                         </div>
                                     </div>
@@ -107,7 +107,7 @@ class IndicatorForm(forms.ModelForm):
                                                             <td style="padding:1px; border:none; vertical-align:middle;">
                                                                 {% if indicator.target_frequency == 8 %}
                                                                     <div class="controls">
-                                                                        <input type="text" name="{{ pt.period }}" value="{{ pt.period }}" class="form-control">
+                                                                        <input type="text" name="{{ pt.period }}" value="{{ pt.period }}" class="form-control" style="text-align: left;">
                                                                         <span style="margin:0px;" class="help-block"> </span>
                                                                     </div>
                                                                 {% else %}
