@@ -388,8 +388,11 @@ class IndicatorUpdate(UpdateView):
         return context
 
     def get_initial(self):
+        target_frequency_num_periods = self.get_object().target_frequency_num_periods
+        if not target_frequency_num_periods:
+            target_frequency_num_periods = 1
         initial = {
-            'target_frequency_num_periods': self.get_object().target_frequency_num_periods
+            'target_frequency_num_periods': target_frequency_num_periods
         }
 
         return initial
@@ -878,17 +881,12 @@ def service_json(request,service):
     return HttpResponse(service_indicators, content_type="application/json")
 
 
-def collected_data_json(AjaxableResponseMixin, indicator,program):
-    """
-    Displayed on the Indicator home page as a table of collected data entries related to an indicator
-    Called from Indicator "data" button onClick
-    :param AjaxableResponseMixin:
-    :param indicator:
-    :param program:
-    :return: List of CollectedData entries and sum of there achieved & Targets as well as related indicator and program
-    """
+def collected_data_json(AjaxableResponseMixin, indicator, program):
+    ind = Indicator.objects.get(pk=indicator)
     template_name = 'indicators/collected_data_table.html'
-    collecteddata = CollectedData.objects.all().filter(indicator=indicator).prefetch_related('evidence')
+
+    collecteddata = CollectedData.objects\
+        .filter(indicator=indicator).prefetch_related('evidence')
 
     detail_url = ''
     try:
@@ -898,9 +896,16 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
     except Exception, e:
         pass
 
-    collected_sum = CollectedData.objects.select_related('periodic_target').filter(indicator=indicator).aggregate(Sum('periodic_target__target'),Sum('achieved'))
-    return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum,
-                                              'indicator_id': indicator, 'program_id': program})
+    collected_sum = CollectedData.objects\
+        .select_related('periodic_target')\
+        .filter(indicator=indicator)\
+        .aggregate(Sum('periodic_target__target'),Sum('achieved'))
+
+    return render_to_response(template_name, {
+                'collecteddata': collecteddata,
+                'collected_sum': collected_sum,
+                'indicator': ind,
+                'program_id': program})
 
 
 def program_indicators_json(AjaxableResponseMixin,program,indicator,type):
