@@ -371,6 +371,6 @@ select.listoption_filters
   margin-right: 10px;
 }
 
-.has-data input{
+.border-1px input{
   border: 1px solid #DBDCDE;
 }

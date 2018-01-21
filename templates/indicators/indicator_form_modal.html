@@ -5,7 +5,7 @@
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <span id = "modalmessages"></span>
-        <div id="indicator_modal_header" style="padding-top: 10px;"><h3> {{ indicator.name }} </h3></div>
+        <div id="indicator_modal_header" style="padding-top: 10px;"><h3> {{ indicator.name|truncatechars:70 }} </h3></div>
     </div>
     <div class="modal-body" id="indicator_modal_body">
         <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
