@@ -2,10 +2,12 @@
 <div id="numDataPoints" style="display: none;">{{ object.collecteddata_set.all.count }}</div>
 <div id="initialTargetFrequencyValue" style="display:none;">{{ object.target_frequency }}</div>
 <form action="{% url 'indicator_update' indicator.id %}" id="indicator_update_form" class="form-horizontal" method="post" novalidate>
-    <div class="modal-header">
+    <div class="modal-header" style="border-bottom:none;">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <span id = "modalmessages"></span>
-        <div id="indicator_modal_header" style="padding-top: 10px;"><h3> {{ indicator.name }} </h3></div>
+        <div id="indicator_modal_header" style="padding-top: 10px; margin-top: 5px; margin-left: 15px">
+            <h3 style="font-size:21px; color:#94979c"> {{ indicator.name|truncatechars:70 }} </h3>
+        </div>
     </div>
     <div class="modal-body" id="indicator_modal_body">
         <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>

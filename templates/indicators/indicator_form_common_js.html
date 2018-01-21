@@ -78,7 +78,7 @@
         var currnentRow = $(e.target).closest("tr");
         var dataCount = parseInt(currnentRow.data("collectedCount"));
         if ( dataCount != NaN && dataCount > 0) {
-            if (!confirm(`Warning: Removing this target means that ${dataCount} data record/s will no longer have targets associated with them. \n\nProceed anyway?`)) {
+            if (!confirm(`Warning: This action cannot be undone. Removing this target means that ${dataCount} data record/s will no longer have targets associated with them. \n\nProceed anyway?`)) {
                 dataCount = NaN;
                 return;
             }
@@ -157,8 +157,8 @@
     function createPeriodicTargetRow(pt, target_frequency, isLastIteration, rowNum) {
         var markup = `
                 <tr class="periodic-target">
-                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle;">
-                        <a align="right" href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
+                    <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle; text-align: right;">
+                        <a href="/indicators/periodic_target_delete/${pt.id}/" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
                             <span class=" glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
@@ -169,14 +169,14 @@
                             <div style="line-height:1; margin-top:3px;">${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</div>`
                             :
                             `<div class="controls">
-                                <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control">
+                                <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control" style="text-align: left;">
                                 <span style="margin:0px;" class="help-block"> </span>
                             </div>`
                         }
                     </td>
 
                     <td align="right" style="padding:1px; border:none; vertical-align:middle;">
-                        <div class="controls">
+                        <div class="controls border-1px">
                             <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
                         </div>
@@ -192,9 +192,18 @@
         // console.log($("#id_target_frequency").find("option:selected").text());
         var form_url = $("#indicator_update_form").attr('action');
         var indicator_id = form_url.split('/').slice(-2, -1)[0];
-        if (!confirm('Warning: This action cannot be undone. Any data records assigned to a target will need to be reassigned.\n\n Are you sure you want to remove all targets?')){
+        var dataCountAttribute = $("#periodic_targets_table tr").attr("data-collected-count");
+        var msg = '';
+
+        if (typeof dataCountAttribute !== typeof undefined && dataCountAttribute !== false) {
+            msg = 'Warning: This action cannot be undone. Any data records assigned to a target will need to be reassigned.\n\n Are you sure you want to remove all targets?';
+        } else {
+            msg = 'Warning: This action cannot be undone. Are you sure you want to remove all targets?';
+        }
+        if (!confirm(msg)){
             return;
         }
+
         $.post('/indicators/periodic_target_deleteall/' + indicator_id + '/true/', function(data){
             var res = $.parseJSON(data);
             if (res['status'] == 'success') {
@@ -218,21 +227,23 @@
             var isLastIteration = true;
             var target_frequency = $("#id_target_frequency").val();
             var markup = createPeriodicTargetRow(pt, target_frequency, isLastIteration);
-            $("#periodic_targets_table tbody tr:nth-last-child(3)").find("a").hide();
+
+            // if target_frequency is not "EVENT" then hide the delete button
+            if (target_frequency != 8) {
+                $("#periodic_targets_table tbody tr:nth-last-child(3)").find("a").hide();
+            }
             $("#periodic_targets_table tbody tr:nth-last-child(2)").before(markup);
         });
 
     });
 
     function createPeriodTargetsHTML(periodic_targets, indicator, targets_sum) {
-        console.log('generating periodic table');
-        console.log('-------------------------------------------------------------');
         var markup;
         var isLastIteration
         var htmlString = `
         <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
             <div class="row">
-                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px;">
+                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top: 30px;">
                     <h4>${$("#id_target_frequency").find("option:selected").text()} targets</h4>
                 </div>
             </div>
@@ -308,7 +319,7 @@
             });
             return;
             */
-            if (!confirm(`Warning: If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
+            if (!confirm(`Warning: This action cannot be undone. If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
                 initalTargetFrequency = undefined;
                 return;
             }
@@ -404,10 +415,13 @@
 
 
     function reset_frequency_fields() {
-        $("#id_target_frequency option:not(:selected)").attr("disabled", false);
         $("#id_target_frequency").val('');
+        $("#id_target_frequency option:not(:selected)").attr("disabled", false);
         $("#id_target_frequency").attr("readonly", false);
         $("#create_targets_btn").attr("disabled", false);
+        $("#id_target_frequency_start").val('');
+        $("#id_target_frequency_num_periods").val(1);
+        $("#id_target_frequency_custom").val('');
     }
 
 
@@ -582,10 +596,12 @@
             if ($(this).attr('id').substr(0, 2) == "pt" ) {
                 if ($(this).val()) {
                     $(this).parent().removeClass('has-error');
+                    $(this).parent().addClass('border-1px');
                     // $(this).next('span:first').text('');
                     $("#id_pt_errors").text('');
                 } else {
                     $(this).parent().addClass('has-error');
+                    $(this).parent().removeClass('border-1px');
                     // $(this).next('span:first').html('<small>Please enter a target value. Your target value can be zero.</small>');
                     // $("#id_pt_errors").html('<small>Please enter a target value. Your target value can be zero.</small>');
                 }
