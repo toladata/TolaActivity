@@ -261,7 +261,7 @@ class CollectedDataForm(forms.ModelForm):
         self.tola_table = kwargs.pop('tola_table')
         self.helper.form_method = 'post'
         self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
+        self.helper.label_class = 'col-sm-4'
         self.helper.field_class = 'col-sm-6'
         self.helper.form_error_title = 'Form Errors'
         self.helper.form_action = reverse_lazy('collecteddata_update' if instance else 'collecteddata_add', kwargs={'pk': instance.id} if instance else {'program': self.program, 'indicator': self.indicator})
