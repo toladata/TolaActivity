@@ -443,7 +443,7 @@ class IndicatorUpdate(UpdateView):
             # now create/update periodic targets
             pt_json = json.loads(periodic_targets)
             generated_pt_ids = []
-            for pt in pt_json:
+            for i, pt in enumerate(pt_json):
                 pk = int(pt.get('id'))
                 if pk == 0: pk = None
                 try:
@@ -462,7 +462,7 @@ class IndicatorUpdate(UpdateView):
 
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
-                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), \
+                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'customsort': i,\
                             'start_date': start_date, 'end_date': end_date, 'edit_date': timezone.now() })
                 #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
