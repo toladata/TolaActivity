@@ -351,7 +351,6 @@ select.listoption_filters
   padding-right: 2px;
   text-align: right;
   width: 50%;
-  border: 1px solid #DBDCDE;
   box-shadow: none;
 }
 
@@ -370,4 +369,8 @@ select.listoption_filters
   margin: 5px;
   float: right;
   margin-right: 10px;
+}
+
+.has-data input{
+  border: 1px solid #DBDCDE;
 }
