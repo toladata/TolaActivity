@@ -9,6 +9,7 @@ from functools import partial
 from django import forms
 from tola.util import getCountry
 from django.db.models import Q
+from datetime import datetime
 
 class DatePicker(forms.DateInput):
     """
@@ -247,6 +248,10 @@ class CollectedDataForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'rows':4}),
         }
+    def clean_date_collected(self):
+        date_collected = self.cleaned_data['date_collected']
+        date_collected = datetime.strftime(date_collected, '%Y-%m-%d')
+        return date_collected
 
     program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Program'}) )
     indicator2 = forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Indicator'}) )

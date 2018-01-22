@@ -18,7 +18,11 @@
             });
 
 
-            $('.datepicker').datepicker({dateFormat: "yy-mm-dd"});
+            $('.datepicker').datepicker({dateFormat: "M d, yy"});
+            var id_date_collected = $("#id_date_collected");
+            if (id_date_collected.val() != '') {
+                id_date_collected.val(formatDate(id_date_collected.val()));
+            }
             // target_frequency is defined in the indicator_list.html file
             target_frequency = parseInt(`{{object.indicator.target_frequency|safe}}`);
             // indicator_id is defined in the indicator_list.html file.

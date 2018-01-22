@@ -18,6 +18,12 @@
             $('#indicator_collecteddata_div').animate({ scrollTop: 0 }, 'slow');
             return;
         }
+        /*
+        var date_collected = new Date($(this.date_collected).val());
+        var date_collected_db_format = date_collected.getFullYear() + '-' + (parseInt(date_collected.getMonth()) + 1) + '-' + date_collected.getDate();
+        $(this.date_collected).val(date_collected_db_format);
+        */
+
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
         $.post(form_url, form_data,
@@ -44,7 +50,6 @@
 
 
     function validatePeriodicTarget() {
-        console.log("triggering periodic target validation");
         if (setPeriodicTargetValue() == false) {
             // $("#id_periodic_target").val('');
             $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + indicator_id + "/'><strong>create additional target periods.</strong></a></small>");

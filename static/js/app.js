@@ -13,6 +13,7 @@ $( document )
     });
 
 function isDate(dateVal) {
+    /*
     var pattern = /^(\d{4})-(\d{2})-(\d{2})$/;
     var dateArray = dateVal.match(pattern);
     if (dateArray == null) return false;
@@ -25,6 +26,16 @@ function isDate(dateVal) {
     if (month < 1 || month > 12) return false;
     if (day < 1 || day > 31) return false;
     return new Date(dateVal) === 'Invalid Date' ? false : true;
+    */
+    var date = new Date(dateVal);
+    if (date === 'Invalid Date') {
+        return false;
+    }
+    var currentYear = (new Date).getFullYear();
+    if (date.getFullYear() > currentYear + 100 || date.getFullYear() < 1980 ) {
+        return false;
+    }
+    return true;
 }
 
 function formatDate(dateString) {
