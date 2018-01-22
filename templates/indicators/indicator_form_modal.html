@@ -6,7 +6,12 @@
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <span id = "modalmessages"></span>
         <div id="indicator_modal_header" style="padding-top: 10px; margin-top: 5px; margin-left: 15px">
-            <h3 style="font-size:21px; color:#94979c"> {{ indicator.name|truncatechars:70 }} </h3>
+            <h3 style="font-size:21px; color:#94979c">
+                {% if indicator.level.all %}
+                    {{ indicator.level.all|join:", " }}:
+                {% endif %}
+                {{ indicator.name|truncatechars:300 }}
+            </h3>
         </div>
     </div>
     <div class="modal-body" id="indicator_modal_body">
@@ -38,12 +43,12 @@
 
         {% crispy form %}
     </div> <!-- modal body -->
-    <div class="modal-footer" style="background-color: #d7d7d7;">
-        <div class="pull-left" style="margin-left:20px">
+    <div class="modal-footer" style="background-color: #d7d7d7; padding-right: 6px;">
+        <div class="pull-left" style="margin-left:5px">
             <!-- <input type="submit" class="btn btn-primary" value="Save changes"> -->
             <input type="submit" name="submit" value="Save changes" class="btn btn-primary btn-default" id="submit-id-submit">
             <input type="reset" style="background-color:#d7d7d7; border-color:#B8BABD; color:#888888" class="btn btn-default" value="Reset">
         </div>
-        <div class="text-muted" style="margin-right:20px">{% include "form_guidance.html" %}</div>
+        <div class="text-muted">{% include "form_guidance.html" %}</div>
     </div>
 </form>
