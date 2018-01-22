@@ -2,6 +2,7 @@ import json
 from urlparse import urljoin
 import warnings
 import requests
+import logging
 
 from django.conf import settings
 from django.contrib import messages
@@ -18,13 +19,16 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
 
+from chargebee import InvalidRequestError, Subscription
 from tola.util import register_in_track
 from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
     CountrySerializer
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
     NewTolaUserRegistrationForm, BookmarkForm
-from workflow.models import (TolaUser, TolaBookmarks, FormGuidance,
-                             ROLE_VIEW_ONLY, TolaSites)
+from workflow.models import (Organization, TolaUser, TolaBookmarks,
+                             FormGuidance, ROLE_VIEW_ONLY, TolaSites)
+
+logger = logging.getLogger(__name__)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -68,11 +72,44 @@ class RegisterView(View):
             context.update(kwargs)
         return context
 
+    def _get_chargebee_data(self, query_params, **kwargs):
+        context = {}
+
+        context.update(kwargs)
+        first_name = query_params.get('cus_fname', '')
+        last_name = query_params.get('cus_lname', '')
+        email = query_params.get('cus_email', '')
+        org_name = query_params.get('cus_company', '')
+        sub_id = query_params.get('sub_id', '')
+
+        # Check subscription id and
+        # Create an organization defined on ChargeBee
+        try:
+            result = Subscription.retrieve(sub_id)
+        except InvalidRequestError:
+            logger.info('The given subscription id ({}) is not valid.'.format(
+                sub_id))
+        else:
+            subscription = result.subscription
+            if subscription.status in ['active', 'in_trial']:
+                org = Organization.objects.get_or_create(name=org_name)[0]
+                org.chargebee_subscription_id = sub_id
+                org.save()
+
+        # Auto fill some fields for the user
+        context['form_user'] = NewUserRegistrationForm(
+            first_name=first_name, last_name=last_name, email=email)
+        context['form_tolauser'] = NewTolaUserRegistrationForm(org=org_name)
+        return context
+
     def get(self, request, *args, **kwargs):
         extra_context = {
             'form_user': NewUserRegistrationForm(),
             'form_tolauser': NewTolaUserRegistrationForm(),
         }
+        if len(request.GET.values()) and request.GET.get('sub_id'):
+            extra_context = self._get_chargebee_data(
+                request.GET, **extra_context)
         context = self._get_context_data(**extra_context)
         return render(request, self.template_name, context)
 

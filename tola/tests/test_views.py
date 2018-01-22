@@ -5,6 +5,8 @@ import os
 import sys
 from urlparse import urljoin
 
+from chargebee import InvalidRequestError, Subscription
+
 from django.contrib import auth
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
@@ -16,7 +18,8 @@ from mock import Mock, patch
 
 import factories
 from tola import views, DEMO_BRANCH
-from workflow.models import TolaUser, TolaSites, ROLE_VIEW_ONLY, TITLE_CHOICES
+from workflow.models import (Organization, TolaUser, TolaSites, ROLE_VIEW_ONLY,
+                             TITLE_CHOICES)
 
 
 # TODO Extend View tests
@@ -125,6 +128,81 @@ class RegisterViewGetTest(TestCase):
         template_content = response.content
         self.assertIn('Humanitec - Privacy Policy', template_content)
         self.assertIn('Privacy disclaimer accepted', template_content)
+
+    def test_get_with_chargebee_active_sub_in_template(self):
+        class ExternalResponse:
+            def __init__(self, values):
+                self.subscription = Subscription(values)
+                self.subscription.status = 'active'
+
+        external_response = ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        query_params = '?cus_fname={}&cus_lname={}&cus_email={}&cus_company={}'\
+                       '&sub_id={}'.format('John', 'Lennon',
+                                           'johnlennon@test.com', 'The Beatles',
+                                           '1234567890')
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        template_content = response.content
+
+        self.assertIn(
+            ('<input type="text" name="first_name" value="John" '
+             'id="id_first_name" class="textinput textInput '
+             'form-control" maxlength="30" />'),
+            template_content)
+        self.assertIn(
+            ('<input type="text" name="last_name" value="Lennon" '
+             'id="id_last_name" class="textinput textInput '
+             'form-control" maxlength="30" />'),
+            template_content)
+        self.assertIn(
+            ('<input type="email" name="email" value="johnlennon@test.com" '
+             'id="id_email" class="emailinput form-control" '
+             'maxlength="254" />'),
+            template_content)
+        self.assertIn(
+            ('<input type="text" name="org" value="The Beatles" required '
+             'class="textinput textInput form-control" id="id_org" />'),
+            template_content)
+        org = Organization.objects.get(name='The Beatles')
+        self.assertEqual(org.chargebee_subscription_id, '1234567890')
+
+    def test_get_with_chargebee_cancel_sub_in_template(self):
+        class ExternalResponse:
+            def __init__(self, values):
+                self.subscription = Subscription(values)
+                self.subscription.status = 'cancelled'
+
+        external_response = ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        query_params = '?cus_fname={}&cus_lname={}&cus_email={}&cus_company={}'\
+                       '&sub_id={}'.format('John', 'Lennon',
+                                           'johnlennon@test.com', 'The Beatles',
+                                           '1234567890')
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertRaises(
+            Organization.DoesNotExist,
+            Organization.objects.get, name='The Beatles')
+
+    def test_get_with_chargebee_without_sub_in_template(self):
+        json_obj = {
+            'message': "Sorry, we couldn't find that resource",
+            'error_code': 500
+        }
+        external_response = InvalidRequestError(500, json_obj)
+        Subscription.retrieve = Mock(return_value=external_response)
+        query_params = '?cus_fname={}&cus_lname={}&cus_email={}&cus_company=' \
+                       '{}'.format('John', 'Lennon', 'johnlennon@test.com',
+                                   'The Beatles')
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertRaises(
+            Organization.DoesNotExist,
+            Organization.objects.get, name='The Beatles')
 
 
 class RegisterViewPostTest(TestCase):
