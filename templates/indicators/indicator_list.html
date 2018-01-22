@@ -8,9 +8,11 @@
 *  Load the collected data for an indicator on the results page
 */
 function loadCollected(indicator,program){
-    var indicator;
-    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
-        $('#hidden-' + indicator).html(data);
+    var url = '/indicators/collected_data_table/' + indicator + '/' + program + '/';
+    var div_name = '#hidden-' + indicator;
+    $(div_name).empty();
+    $.get(url, function(data){
+        $(div_name).html(data);
     });
 };
 
@@ -157,6 +159,14 @@ function loadIndicators(program,indicator,type){
             $("#id_periodic_target").trigger('change');
         });
     });
+
+
+    $('#indicator_modal_div').on('hidden.bs.modal', function (e) {
+        var program_id = parseInt($(this).find('form #id_program').val()[0]);
+        var form_action = $(this).find('form').attr('action').split('/');
+        var indicator_id = parseInt(form_action[form_action.length -2]);
+        loadCollected(indicator_id, program_id);
+    })
 
     // Open the CollectDataUpdate form in a modal
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
