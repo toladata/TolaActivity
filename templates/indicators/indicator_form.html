@@ -5,15 +5,17 @@
   <li class="active">Indicator Form</li>
 </ol>
 {% endblock %}
-{% block page_title %}Indicator{% endblock %}
 
 {% block content %}
     <div id="numDataPoints" style="display: none;">{{ object.collecteddata_set.all.count }}</div>
     <div id="initialTargetFrequencyValue" style="display:none;">{{ object.target_frequency }}</div>
     {% if i_name %}
-    <h4>(<a href="/indicators/home/0/0/0/">
+    <h4 style="font-size:21px; color:#94979c; margin-bottom: 38px; margin-left: 17px;">
+        {% if indicator.level.all %}
+            {{ indicator.level.all|join:', ' }}:
+        {% endif %}
         {{i_name|truncatechars:300}}
-    </a>)</h4>
+    </h4>
     {% endif %}
     {% include "form_guidance.html" %}
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
