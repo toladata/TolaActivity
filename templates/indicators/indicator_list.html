@@ -162,10 +162,11 @@ function loadIndicators(program,indicator,type){
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
+        url += "/?modal=1";
         $("#indicator_modal_content").empty();
         $("#modalmessages").empty();
 
-        $("#indicator_collected_data_modal_content").load(url+"/?modal=1");
+        $("#indicator_collected_data_modal_content").load(url);
         $("#indicator_collecteddata_div").modal('show');
     });
 
@@ -174,10 +175,15 @@ function loadIndicators(program,indicator,type){
     $("#toplevel_div").on("click", ".indicator-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
+        url += "/?modal=1";
+        var tab = $(this).data("tab");
+        if (tab != '') {
+            url += "&targetsactive=true";
+        }
         $("#indicator_modal_content").empty();
         $("#modalmessages").empty();
 
-        $("#indicator_modal_content").load(url+"/?modal=1");
+        $("#indicator_modal_content").load(url);
         $("#indicator_modal_div").modal('show');
 
     });
