@@ -162,13 +162,18 @@ function loadIndicators(program,indicator,type){
 
 
     $('#indicator_modal_div').on('hide.bs.modal', function (e) {
-        var program_id = parseInt($(this).find('form #id_program').val()[0]);
-        var form_action = $(this).find('form').attr('action').split('/');
-        var indicator_id = parseInt(form_action[form_action.length -2]);
-        var targetsactive = $(this).find("#indicator_modal_body").data("targetsactive");
-        if (targetsactive == 'true') {
-            loadCollected(indicator_id, program_id);
+        try {
+            var program_id = parseInt($(this).find('form #id_program').val()[0]);
+            var form_action = $(this).find('form').attr('action').split('/');
+            var indicator_id = parseInt(form_action[form_action.length -2]);
+            var targetsactive = $(this).find("#indicator_modal_body").data("targetsactive");
+            if (targetsactive == 'true') {
+                loadCollected(indicator_id, program_id);
+            }
+        } catch (err){
+            console.log(err);
         }
+
     })
 
     // Open the CollectDataUpdate form in a modal
