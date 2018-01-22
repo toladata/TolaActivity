@@ -60,7 +60,26 @@ class IndicatorForm(forms.ModelForm):
                 Tab('Summary',
                      Fieldset('',
                         'program','sector','objectives','strategic_objectives',
-                        ),
+                    ),
+                    HTML("""
+                        {% if getExternalServiceRecord %}
+                            <div class='panel panel-default'>
+                            <div class='panel-heading'>External Indicator Service</div>
+                                <table class="table">
+                                    <tr>
+                                        <th>Service Name</th>
+                                        <th>View Guidance</th>
+                                    </tr>
+                                    {% for item in getExternalServiceRecord %}
+                                        <tr>
+                                            <td>{{ item.external_service.name }}</td>
+                                            <td><a target="_new" href='{{ item.full_url }}'>View</a>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        {% endif %}
+                    """),
                 ),
                 Tab('Performance',
                      Fieldset('',
@@ -188,28 +207,6 @@ class IndicatorForm(forms.ModelForm):
                     ),
                 ),
             ),
-            HTML("""
-                  {% if getExternalServiceRecord %}
-                      <br/>
-                      <div class='panel panel-default'>
-                      <!-- Default panel contents -->
-                      <div class='panel-heading'>External Indicator Service</div>
-                          <!-- Table -->
-                          <table class="table">
-                           <tr>
-                             <th>Service Name</th>
-                             <th>View Guidance</th>
-                           </tr>
-                        {% for item in getExternalServiceRecord %}
-                           <tr>
-                            <td>{{ item.external_service.name }}</td>
-                            <td><a target="_new" href='{{ item.full_url }}'>View</a>
-                           </tr>
-                        {% endfor %}
-                         </table>
-                      </div>
-                  {% endif %}
-             """),
 
             # HTML("""<hr/>"""),
             # FormActions(
