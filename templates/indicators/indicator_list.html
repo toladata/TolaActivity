@@ -8,9 +8,11 @@
 *  Load the collected data for an indicator on the results page
 */
 function loadCollected(indicator,program){
-    var indicator;
-    $.get('/indicators/collected_data_table/' + indicator + '/' + program + '/', function(data){
-        $('#hidden-' + indicator).html(data);
+    var url = '/indicators/collected_data_table/' + indicator + '/' + program + '/';
+    var div_name = '#hidden-' + indicator;
+    $(div_name).empty();
+    $.get(url, function(data){
+        $(div_name).html(data);
     });
 };
 
@@ -158,14 +160,23 @@ function loadIndicators(program,indicator,type){
         });
     });
 
+
+    $('#indicator_modal_div').on('hidden.bs.modal', function (e) {
+        var program_id = parseInt($(this).find('form #id_program').val()[0]);
+        var form_action = $(this).find('form').attr('action').split('/');
+        var indicator_id = parseInt(form_action[form_action.length -2]);
+        loadCollected(indicator_id, program_id);
+    })
+
     // Open the CollectDataUpdate form in a modal
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
+        url += "/?modal=1";
         $("#indicator_modal_content").empty();
         $("#modalmessages").empty();
 
-        $("#indicator_collected_data_modal_content").load(url+"/?modal=1");
+        $("#indicator_collected_data_modal_content").load(url);
         $("#indicator_collecteddata_div").modal('show');
     });
 
@@ -174,10 +185,15 @@ function loadIndicators(program,indicator,type){
     $("#toplevel_div").on("click", ".indicator-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
+        url += "/?modal=1";
+        var tab = $(this).data("tab");
+        if (tab != '') {
+            url += "&targetsactive=true";
+        }
         $("#indicator_modal_content").empty();
         $("#modalmessages").empty();
 
-        $("#indicator_modal_content").load(url+"/?modal=1");
+        $("#indicator_modal_content").load(url);
         $("#indicator_modal_div").modal('show');
 
     });

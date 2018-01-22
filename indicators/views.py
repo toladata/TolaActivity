@@ -384,6 +384,8 @@ class IndicatorUpdate(UpdateView):
         context.update({'getExternalServiceRecord': getExternalServiceRecord})
         if self.request.GET.get('targetsonly') == 'true':
             context['targetsonly'] = True
+        elif self.request.GET.get('targetsactive') == 'true':
+            context['targetsactive'] = True
 
         return context
 
