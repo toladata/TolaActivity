@@ -34,7 +34,9 @@
                     var pt_id = parseInt(`{{ indicator.periodictarget_set.all.0.id|safe}}`);
                     $("#id_periodic_target").val(pt_id);
                 }
-                lockPeriodicTargetDropdown();
+                if (target_frequency != 1 && target_frequency != 2 && target_frequency != 8) {
+                    lockPeriodicTargetDropdown();
+                }
             } else {
                 // disable the periodic_target dropdown unless it is set to MIDLINE_ENDLINE or EVENT
                 if (!isNaN(target_frequency) && target_frequency != 2 && target_frequency != 8) {

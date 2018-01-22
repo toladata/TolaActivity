@@ -405,7 +405,7 @@ class CollectedDataForm(forms.ModelForm):
         except TypeError:
             pass
 
-        self.fields['periodic_target'].queryset = PeriodicTarget.objects.filter(indicator=self.indicator)
+        self.fields['periodic_target'].queryset = PeriodicTarget.objects.filter(indicator=self.indicator).order_by('customsort','create_date', 'period')
 
         self.fields['program2'].initial = self.program
         self.fields['program2'].label = "Program"
