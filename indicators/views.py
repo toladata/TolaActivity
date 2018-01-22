@@ -289,7 +289,7 @@ class PeriodicTargetView(View):
     def get(self, request, *args, **kwargs):
         indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
         if request.GET.get('existingTargetsOnly'):
-            pts = FlatJsonSerializer().serialize(indicator.periodictarget_set.all())
+            pts = FlatJsonSerializer().serialize(indicator.periodictarget_set.all().order_by('customsort','create_date', 'period'))
             return HttpResponse(pts)
         try:
             numTargets = int(request.GET.get('numTargets', None))

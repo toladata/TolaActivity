@@ -44,9 +44,10 @@
 
 
     function validatePeriodicTarget() {
+        console.log("triggering periodic target validation");
         if (setPeriodicTargetValue() == false) {
             // $("#id_periodic_target").val('');
-            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + indicator_id + "/'><strong>create</strong></a> additional target periods.</small>");
+            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + indicator_id + "/'><strong>create additional target periods.</strong></a></small>");
             $("#div_id_periodic_target").addClass('has-error');
         } else if ($("#id_periodic_target").val() == '') {
             $("#hint_id_periodic_target").html("<small>Pleae complete this field.</small>");
