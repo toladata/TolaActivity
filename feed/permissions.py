@@ -3,9 +3,17 @@ from rest_framework.relations import ManyRelatedField
 
 from django.http import QueryDict
 
-from workflow.models import *
-from indicators.models import *
-from formlibrary.models import *
+from formlibrary.models import Distribution, CustomForm, Beneficiary
+from indicators.models import (
+    Frequency, DisaggregationType, Level, ExternalService, StrategicObjective,
+    Objective, Indicator, CollectedData)
+from workflow.models import (
+    ROLE_ORGANIZATION_ADMIN, ROLE_VIEW_ONLY, ROLE_PROGRAM_ADMIN,
+    ROLE_PROGRAM_TEAM, WorkflowTeam, ProjectType, Sector, SiteProfile, FundCode,
+    StakeholderType, ProfileType, Checklist, Budget, Contact, ApprovalType,
+    CodedField, IssueRegister, RiskRegister, Organization, Award, Milestone,
+    Portfolio, WorkflowLevel1, WorkflowLevel2, WorkflowLevel2Sort,
+    Documentation)
 
 
 class IsSuperUserBrowseableAPI(permissions.BasePermission):
@@ -17,26 +25,6 @@ class IsSuperUserBrowseableAPI(permissions.BasePermission):
             else:
                 return True
         return False
-
-
-class UserIsOwnerOrAdmin(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        if view.action == 'list':
-            return request.user.is_authenticated()
-        elif view.action == 'create':
-            return True
-        elif view.action in ['retrieve', 'update', 'partial_update', 'destroy']:
-            return True
-        else:
-            return False
-
-    def check_object_permission(self, user, obj):
-        return (user and user.is_authenticated() and
-                (user.is_staff or obj == user))
-
-    def has_object_permission(self, request, view, obj):
-        return self.check_object_permission(request.user, obj)
 
 
 class IsOrgMember(permissions.BasePermission):

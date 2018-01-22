@@ -6,9 +6,8 @@ import json
 import factories
 from feed.views import LevelViewSet
 from indicators.models import Level
-from workflow.models import WorkflowLevel1, WorkflowTeam, \
-    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
-    ROLE_VIEW_ONLY
+from workflow.models import WorkflowTeam, ROLE_ORGANIZATION_ADMIN, \
+    ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, ROLE_VIEW_ONLY
 
 
 class LevelListViewsTest(TestCase):

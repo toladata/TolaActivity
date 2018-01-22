@@ -3,9 +3,8 @@ from rest_framework.test import APIRequestFactory
 
 import factories
 from feed.views import ApprovalTypeViewSet
-from workflow.models import WorkflowLevel1, WorkflowTeam, \
-    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
-    ROLE_VIEW_ONLY
+from workflow.models import WorkflowTeam, ROLE_ORGANIZATION_ADMIN, \
+    ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, ROLE_VIEW_ONLY
 
 
 class ApprovalTypeListViewsTest(TestCase):

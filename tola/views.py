@@ -24,7 +24,7 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
     NewTolaUserRegistrationForm, BookmarkForm
 from workflow.models import (TolaUser, TolaBookmarks, FormGuidance,
-                             Organization, ROLE_VIEW_ONLY, TolaSites)
+                             ROLE_VIEW_ONLY, TolaSites)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -265,53 +265,14 @@ def logout_view(request):
 
 
 def check_view(request):
-    return HttpResponse("Hostname "+request.get_host())
-
-
-def dev_view(request):
-    """
-    For DEV only update Tables with Activity data
-    URL /dev_loader
-    :param request:
-    :return:
-    """
-    if request.user.is_authenticated() and request.user.username == "tola" and request.user.is_staff:
-        from tola.tables_sync import update_level1, update_level2
-        # update TolaTables with WorkflowLevel1 and WorkflowLevel2 data
-        message = {"attempt": "Running Tables Loader"}
-
-        print "Running Script..."
-
-        try:
-            update_level1()
-            message['level1'] = "Level1 Success"
-        except Exception as e:
-            print '%s (%s)' % (e.message, type(e))
-            message['level1'] = '%s (%s)' % (e.message, type(e))
-
-        try:
-            update_level2()
-            message['level2'] = "Level2 Success"
-        except Exception as e:
-            print '%s (%s)' % (e.message, type(e))
-            message['level2'] = '%s (%s)' % (e.message, type(e))
-
-        return render(request, "dev.html", {'message': message})
-    else:
-        # log person
-        print request.user.is_authenticated()
-        print request.user.username
-        print request.user.is_staff
-        redirect_url = '/'
-        return HttpResponseRedirect(redirect_url)
+    return HttpResponse("Hostname " + request.get_host())
 
 
 def oauth_user_view(request):
     return HttpResponse("Hostname "+request.get_host())
 
 
-class OAuth_User_Endpoint(ProtectedResourceView):
-
+class OAuthUserEndpoint(ProtectedResourceView):
     def get(self, request, *args, **kwargs):
         user = request.user
         body = {

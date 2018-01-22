@@ -1,11 +1,10 @@
 import random
+import traceback
 
 from model_mommy import mommy
-from model_mommy.recipe import Recipe, foreign_key
 
 from indicators.models import Indicator, IndicatorType
 from workflow.models import *
-import traceback
 
 
 def run():

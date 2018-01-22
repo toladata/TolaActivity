@@ -2,12 +2,10 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
-import json
 import factories
 from feed.views import WorkflowLevel2SortViewSet
-from workflow.models import WorkflowLevel1, WorkflowLevel2Sort, WorkflowTeam, \
-    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
-    ROLE_VIEW_ONLY
+from workflow.models import WorkflowLevel2Sort, WorkflowTeam, \
+    ROLE_ORGANIZATION_ADMIN
 
 
 class WorkflowLevel2SortListViewsTest(TestCase):

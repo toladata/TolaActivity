@@ -1,14 +1,14 @@
 from django.contrib import admin
-from .models import *
-from workflow.models import Sector, Country, WorkflowLevel1
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export.admin import ImportExportModelAdmin
 from simple_history.admin import SimpleHistoryAdmin
 
+from .models import *
+from workflow.models import Sector, WorkflowLevel1
+
 
 class IndicatorResource(resources.ModelResource):
-
     indicator_type = ManyToManyWidget(IndicatorType, separator=" | ", field="indicator_type")
     objective = ManyToManyWidget(Objective, separator=" | ", field="objective"),
     strategic_objective = ManyToManyWidget(StrategicObjective, separator=" | ", field="strategic_objective")

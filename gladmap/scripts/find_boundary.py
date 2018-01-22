@@ -1,17 +1,11 @@
-'''
+"""
 converts all .shp in ./tmp/ to geojson and places it in data directory
 Example command - ogr2ogr -f "GeoJSON" ../../AFG_adm2.json AFG_adm2.shp
-'''
-import os
-from dircache import listdir
-
-from gladmap.models import Boundary
+"""
 import django.db
+from gladmap.models import Boundary
 
 cursor = django.db.connection.cursor()
-import csv
-from workflow.models import Country, Province, District, AdminLevelThree, Village
-
 geo_data_dir = "/home/leon/projects/Pycharm/TolaActivity/gladmap/tmp/"
 ## {0} -> destination geojson {1} - source shape
 cmd_template = 'ogr2ogr -f "GeoJSON" {0} {1}'

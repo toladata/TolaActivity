@@ -4,7 +4,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import WorkflowLevel1, Country, AdminLevelOne, AdminLevelThree, AdminLevelTwo, WorkflowLevel2, SiteProfile, \
-    Documentation, WorkflowLevel3, Budget, WorkflowTeam, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
+    Documentation, WorkflowLevel3, Budget, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
     TolaBookmarks, TolaUser, ApprovalWorkflow, CodedField
 from formlibrary.models import TrainingAttendance, Distribution
 from indicators.models import CollectedData, ExternalService

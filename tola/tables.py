@@ -1,9 +1,10 @@
 import django_tables2 as tables
-from indicators.models import Indicator, CollectedData
 from django_tables2.utils import A
 
-class IndicatorDataTable(tables.Table):
+from indicators.models import CollectedData
 
+
+class IndicatorDataTable(tables.Table):
     indicator__name = tables.LinkColumn('indicator_data_report', args=[A('indicator__id'), A('indicator__program__id'), 0])
 
     class Meta:
@@ -14,7 +15,6 @@ class IndicatorDataTable(tables.Table):
 
 
 class CollectedDataTable(tables.Table):
-
     agreement = tables.LinkColumn('projectagreement_update', args=[A('agreement_id')])
 
     class Meta:

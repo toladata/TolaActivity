@@ -3,7 +3,7 @@ from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 from import_export import fields
 
 from .models import WorkflowLevel2, WorkflowLevel1, SiteProfile, Documentation,\
-    Stakeholder, Sector, ProjectType, Office, TolaUser, Country, Contact, StakeholderType, TolaUserProxy
+    Stakeholder, Sector, ProjectType, Office, TolaUser, Country, Contact, StakeholderType
 
 
 class ProjectAgreementResource(resources.ModelResource):
