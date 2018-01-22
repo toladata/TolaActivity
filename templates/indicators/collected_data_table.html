@@ -53,12 +53,12 @@
         {% endif %}
     </table>
 {% else %}
-    <table border='0' align="center">
+    <table border='0' vertical-align="top" align="center" height="150">
         <tr>
-            <td style="padding:2px;">
+            <td valign="top" style="padding:2px;">
                 <img src="/static/img/target.png" class="img-responsive center-block" height="85" width="85">
             </td>
-            <td valign="middle" style="padding:10px; font-size: 21px; color: #54585A;">
+            <td valign="top" style="padding-left:10px; padding-top: 38px; font-size: 21px; color: #54585A;">
                 Organize your data for this indicator. <a href="/indicators/indicator_update/{{ indicator.id }}" data-tab="#targets" class="indicator-link">Set a target frequency.</a>
             </td>
         </tr>
