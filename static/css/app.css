@@ -346,12 +346,25 @@ select.listoption_filters
   border: none;
 }
 
-.periodic-target .controls input {
-  margin: 10px 10px;
+/* Don't define border property here.  Assigning here prevents red border
+from being applied when there is no value */
+.periodic-target .input-value {
+  margin: 10px 10px 10px 6px;
   padding-right: 2px;
   text-align: right;
-  width: 50%;
+  width: 150px;
   box-shadow: none;
+  display: table-cell;
+
+}
+
+/* Don't define border property here.  Assigning here prevents red border
+from being applied when there is no value */
+.periodic-target .input-text {
+  padding-right: 2px;
+  text-align: left;
+  box-shadow: none;
+  display: table-cell;
 }
 
 .periodic-target .controls input::placeholder {
@@ -371,6 +384,7 @@ select.listoption_filters
   margin-right: 10px;
 }
 
+/* Used for turning red borders off for input fields with errors */
 .border-1px input{
   border: 1px solid #DBDCDE;
 }
