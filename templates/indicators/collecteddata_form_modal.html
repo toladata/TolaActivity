@@ -50,6 +50,8 @@
                     $("#id_periodic_target").attr("readonly", false);
                 }
             }
+            // validate upon loading modal
+            validatePeriodicTarget();
         });
 
         $(document).on('hidden.bs.modal', '.modal', function () {
