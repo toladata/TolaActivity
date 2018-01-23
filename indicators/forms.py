@@ -184,6 +184,8 @@ class IndicatorForm(forms.ModelForm):
                                                 <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
                                             </div>
                                         </div>
+                                    {% else %}
+                                        <div class="row" style="height: 30px; margin-bottom: 15px"></div>
                                     {% endif %}
                                 </div>
                             {% endif %}
