@@ -1,29 +1,47 @@
+<style>
+@keyframes invalid {
+  from { background-color: #f5f5f5; }
+  to { background-color: inherit; }
+}
+.invalid {
+  animation:         invalid 1s infinite;
+}
 
+</style>
 {% if collecteddata.count > 0 or indicator.target_frequency and indicator.periodictarget_set.all.count > 0 %}
     <table class="table table-bordered">
         <tr>
-            <th width="130">Date Collected</th>
-            <th style="vertical-align:bottom;">Project</th>
-            <th style="vertical-align:bottom;">Evidence</th>
+            <th style="vertical-align:bottom; min-width:180px;">Periodic Target</th>
             <th style="vertical-align:bottom;">Target</th>
+            <th style="vertical-align:bottom;">Date Collected</th>
             <th style="vertical-align:bottom;">Actual</th>
-            <th width="70">% Met</th>
-            <th>&nbsp;</th>
+            <th style="vertical-align:bottom;" width="65">% Met</th>
+            <th style="vertical-align:bottom;">Evidence</th>
+            <th style="vertical-align:bottom;">Project</th>
+            <th style="vertical-align:bottom;" width="50"></th>
         </tr>
-        {% if collecteddata %}
-            {% for item in collecteddata %}
+        {% for item in collecteddata %}
             <tr>
+                {% ifchanged item.periodic_target %}
+                    <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" min-width="170" style="vertical-align:middle;">
+                        <strong>{{ item.periodic_target.period }}</strong><br>
+                        <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
+                    </td>
+                    <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" align="right" style="vertical-align:middle;">
+                        {{ item.periodic_target.target }}
+                    </td>
+                {% endifchanged %}
                 <td>
                     <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">{{ item.date_collected|date:"M d, Y" }}</a>
                 </td>
-
-                <td>{{item.agreement}}</td>
+                <td align="right"> {{ item.achieved|floatformat }} </td>
+                <td align="right"> {% widthratio item.achieved item.periodic_target.target 100 %}%</td>
                 <td>
                     {% if item.evidence %}
                         {% if item.evidence.url%}
                             <a href="{{item.evidence.url}}" target="_blank">
                         {% endif %}
-                        {{ item.evidence }}
+                        {{ item.evidence|default_if_none:"" }}
                         {% if item.evidence.url%}
                             </a>
                         {% endif %}
@@ -32,28 +50,24 @@
                         <a href="{{ item.tola_table.detail_url }}" target="_blank">{{ item.tola_table }}</a>
                     {% endif %}
                 </td>
-                <td> — </td>
-                <td>{{ item.achieved }}</td>
-                <td> — </td>
-                <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info collecteddata-link">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
+                <td>{{ item.agreement|default_if_none:"" }}</td>
+                <td align="right">
+                    <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link"><span alt="Edit" class="glyphicon glyphicon-edit"></span></a>
+                    <a href="/indicators/collecteddata_delete/{{ item.id }}" style="color:red;"><span alt="Delete" class="glyphicon glyphicon-remove"></span></a>
+                </td>
             </tr>
-            {% endfor %}
-            <tr>
-                <td colspan="3"><span style="float: right;"><strong>Life of Program</strong></span></td>
-                <td align="right"><strong>{{ indicator.lop_target }}</strong><!-- {{ collected_sum.periodic_target__target__sum }} --></td>
-                <td align="right"><strong>{{ collected_sum.achieved__sum }}</strong></td>
-                <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %} %</strong></td>
-                <td width="100"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">No Data Collected</td>
-                <td align="right"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
-            </tr>
-        {% endif %}
+        {% endfor %}
+        <tr class="invalid" style="background-color: yellow;">
+            <td><strong>Life of Program</strong></td>
+            <td align="right"><strong>{{ indicator.lop_target|floatformat }}</strong></td><!-- {{ collected_sum.periodic_target__target__sum }} -->
+            <td></td>
+            <td align="right"><strong>{{ collected_sum.achieved__sum|floatformat }}</strong></td>
+            <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %}%</strong></td>
+            <td colspan="3" align="right"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
+        </tr>
     </table>
 {% else %}
-    <table border='0' vertical-align="top" align="center" height="150">
+    <table border='0' vertical-align="top" align="center" height="130">
         <tr>
             <td valign="top" style="padding:2px;">
                 <img src="/static/img/target.png" class="img-responsive center-block" height="85" width="85">

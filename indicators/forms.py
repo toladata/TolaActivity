@@ -119,15 +119,15 @@ class IndicatorForm(forms.ModelForm):
                                                 <tbody>
                                                     {% for pt in periodic_targets %}
                                                         <tr id="{{pt.pk}}" data-collected-count="{{pt.num_data}}" class="periodic-target">
-                                                            <td style="padding:1px; border-top: 0px; border-bottom: 1px solid #ddd; vertical-align: middle; text-align: right;">
-                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color:red; margin-left:10px; margin-right:10px; display:{% if forloop.last and indicator.target_frequency != 2 or indicator.target_frequency == 8 %}block{% else %}none{% endif %}">
-                                                                    <span class=" glyphicon glyphicon-remove"></span>
+                                                            <td style="width:50px; vertical-align: middle; border: none;">
+                                                                <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="text-align: center; margin: 3px 10px 0px 10px; color:red; display:{% if forloop.last and indicator.target_frequency != 2 or indicator.target_frequency == 8 %}block{% else %}none{% endif %}">
+                                                                    <span class="glyphicon glyphicon-remove"></span>
                                                                 </a>
                                                             </td>
                                                             <td style="padding:1px; border:none; vertical-align:middle;">
                                                                 {% if indicator.target_frequency == 8 %}
-                                                                    <div class="controls">
-                                                                        <input type="text" name="{{ pt.period }}" value="{{ pt.period }}" class="form-control" style="text-align: left;">
+                                                                    <div class="controls border-1px">
+                                                                        <input type="text" name="{{ pt.period }}" value="{{ pt.period }}" class="form-control input-text">
                                                                         <span style="margin:0px;" class="help-block"> </span>
                                                                     </div>
                                                                 {% else %}
@@ -135,11 +135,11 @@ class IndicatorForm(forms.ModelForm):
                                                                     <div style="line-height:1; margin-top:3px;">{{ pt.start_date|date:"M d, Y"|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|date:"M d, Y"|default:'' }}</div>
                                                                 {% endif %}
                                                             </td>
-                                                            <td align="right" style="padding:1px; border:none; vertical-align: middle;">
-                                                                <div class="controls border-1px">
-                                                                    <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" data-start-date="{{pt.start_date_formatted}}" data-end-date="{{pt.end_date_formatted}}" placeholder="Enter target" class="form-control" style="width: 50%;">
-                                                                    <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
-                                                                </div>
+                                                            <td align="right" style="padding:1px; border:none; vertical-align: middle; width: 150px">
+                                                                    <div class="controls border-1px">
+                                                                        <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target }}" data-start-date="{{pt.start_date_formatted}}" data-end-date="{{pt.end_date_formatted}}" placeholder="Enter target" class="form-control input-value">
+                                                                        <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
+                                                                    </div>
                                                             </td>
                                                         </tr>
                                                         {% if forloop.last %}
@@ -252,6 +252,7 @@ class CollectedDataForm(forms.ModelForm):
 
     program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Program'}) )
     indicator2 = forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Indicator'}) )
+    target_frequency = forms.CharField()
     date_collected = forms.DateField(widget=DatePicker.DateInput(), required=True)
 
     def __init__(self, *args, **kwargs):
@@ -275,7 +276,7 @@ class CollectedDataForm(forms.ModelForm):
         self.helper.layout = Layout(
             HTML("""<br/>"""),
             Fieldset('Collected Data',
-                'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
+                'program', 'program2', 'indicator', 'indicator2', 'target_frequency', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
 
             ),
             Fieldset('Evidence',
@@ -415,13 +416,14 @@ class CollectedDataForm(forms.ModelForm):
         try:
             int(self.indicator)
             self.indicator = Indicator.objects.get(id=self.indicator)
-        except TypeError:
+        except TypeError as e:
             pass
 
-        self.fields['indicator2'].initial = self.indicator
+        self.fields['indicator2'].initial = self.indicator.name
         self.fields['indicator2'].label = "Indicator"
         self.fields['program'].widget = forms.HiddenInput()
         self.fields['indicator'].widget = forms.HiddenInput()
+        self.fields['target_frequency'].initial = self.indicator.target_frequency
         #override the program queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 

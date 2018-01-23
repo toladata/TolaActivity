@@ -24,9 +24,9 @@
                 id_date_collected.val(formatDate(id_date_collected.val()));
             }
             // target_frequency is defined in the indicator_list.html file
-            target_frequency = parseInt(`{{object.indicator.target_frequency|safe}}`);
+            var target_frequency = parseInt(`{{object.indicator.target_frequency|safe}}`);
             // indicator_id is defined in the indicator_list.html file.
-            indicator_id = `{{indicator.id|safe}}`;
+            // indicator_id = `{{indicator.id|safe}}`;
             var ptlen = `{{object.indicator.periodictarget_set.all.count|safe}}`;
             var collectedRecordId = parseInt(`{{object.id|safe}}`);
 
@@ -50,6 +50,8 @@
                     $("#id_periodic_target").attr("readonly", false);
                 }
             }
+            // validate upon loading modal
+            validatePeriodicTarget();
         });
 
         $(document).on('hidden.bs.modal', '.modal', function () {

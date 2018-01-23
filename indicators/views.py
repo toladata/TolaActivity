@@ -888,7 +888,7 @@ def collected_data_json(AjaxableResponseMixin, indicator, program):
     template_name = 'indicators/collected_data_table.html'
 
     collecteddata = CollectedData.objects\
-        .filter(indicator=indicator).prefetch_related('evidence')
+        .filter(indicator=indicator).prefetch_related('evidence', 'periodic_target')
 
     detail_url = ''
     try:
