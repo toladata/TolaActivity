@@ -4,21 +4,18 @@ from django.test import RequestFactory, TestCase, override_settings
 from mock import Mock, patch
 
 import factories
-from tola.util import register_in_track
+from tola.track_sync import register_user
 
 
-# TODO Extend Util tests
-
-
-class RegisterInTrackTest(TestCase):
+class RegisterUserTest(TestCase):
     def setUp(self):
         factories.Group()
-        self.tola_user = factories.TolaUser(user=factories.User())
+        self.tola_user = factories.TolaUser()
         self.factory = RequestFactory()
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
-    @patch('tola.util.requests')
+    @patch('tola.track_sync.requests')
     def test_response_201_create(self, mock_requests):
         external_response = {
             'url': 'http://testserver/api/tolauser/2',
@@ -42,7 +39,7 @@ class RegisterInTrackTest(TestCase):
             'tola_user_uuid': tolauser.tola_user_uuid
         }
 
-        response = register_in_track(data, tolauser)
+        response = register_user(data, tolauser)
         result = json.loads(response.content)
 
         self.assertEqual(result['tola_user_uuid'], 1234567890)
@@ -57,7 +54,7 @@ class RegisterInTrackTest(TestCase):
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
-    @patch('tola.util.requests')
+    @patch('tola.track_sync.requests')
     def test_response_403_forbidden(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=403)
 
@@ -71,7 +68,7 @@ class RegisterInTrackTest(TestCase):
             'tola_user_uuid': tolauser.tola_user_uuid
         }
 
-        response = register_in_track(data, tolauser)
+        response = register_user(data, tolauser)
 
         self.assertTrue(isinstance(response.content, Mock))
         mock_requests.post.assert_called_once_with(

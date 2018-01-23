@@ -20,7 +20,7 @@ from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
 
 from chargebee import InvalidRequestError, Subscription
-from tola.util import register_in_track
+from tola.track_sync import register_user
 from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
     CountrySerializer
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
@@ -128,7 +128,7 @@ class RegisterView(View):
             tolauser.save()
             data = request.POST.copy().dict()
             data.update({'tola_user_uuid': tolauser.tola_user_uuid})
-            register_in_track(data, tolauser)
+            register_user(data, tolauser)
             messages.error(
                 request,
                 'Thank you, You have been registered as a new user.',
