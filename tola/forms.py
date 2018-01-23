@@ -53,7 +53,14 @@ class NewUserRegistrationForm(UserCreationForm):
         fields = ['first_name', 'last_name', 'email', 'username']
 
     def __init__(self, *args, **kwargs):
+        fname = kwargs.pop('first_name', None)
+        lname = kwargs.pop('last_name', None)
+        email = kwargs.pop('email', None)
         super(NewUserRegistrationForm, self).__init__(*args, **kwargs)
+
+        self.fields['first_name'].initial = fname
+        self.fields['last_name'].initial = lname
+        self.fields['email'].initial = email
 
     helper = FormHelper()
     helper.form_method = 'post'
@@ -112,13 +119,15 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
                      Div('privacy_disclaimer_accepted',
                          css_class="mt-2")),
         )
-
+        organization = kwargs.pop('org', None)
         super(NewTolaUserRegistrationForm, self).__init__(*args, **kwargs)
 
         # Set default organization for demo environment
         if settings.DEFAULT_ORG and os.getenv('APP_BRANCH') == DEMO_BRANCH:
             self.fields['org'] = forms.CharField(
                 initial=settings.DEFAULT_ORG, disabled=True)
+        else:
+            self.fields['org'].initial = organization
 
         self.fields['privacy_disclaimer_accepted'].required = True
 

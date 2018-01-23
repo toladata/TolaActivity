@@ -121,6 +121,8 @@ class Organization(models.Model):
     level_4_label = models.CharField("Project/Program Organization Level 4 label", default="Activity", max_length=255, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    chargebee_subscription_id = models.CharField(blank=True, null=True, max_length=50)
+    chargebee_used_seats = models.IntegerField(blank=True, null=True, default=0)
 
     class Meta:
         ordering = ('name',)
