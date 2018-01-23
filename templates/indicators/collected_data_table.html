@@ -32,9 +32,9 @@
                         <a href="{{ item.tola_table.detail_url }}" target="_blank">{{ item.tola_table }}</a>
                     {% endif %}
                 </td>
-                <td> — </td>
-                <td>{{ item.achieved|floatformat }}</td>
-                <td> — </td>
+                <td align="right"> — </td>
+                <td align="right">{{ item.achieved|floatformat }}</td>
+                <td align="right"> — </td>
                 <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info collecteddata-link">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
             </tr>
             {% endfor %}
@@ -42,7 +42,7 @@
                 <td colspan="3"><span style="float: right;"><strong>Life of Program</strong></span></td>
                 <td align="right"><strong>{{ indicator.lop_target|floatformat }}</strong><!-- {{ collected_sum.periodic_target__target__sum }} --></td>
                 <td align="right"><strong>{{ collected_sum.achieved__sum|floatformat }}</strong></td>
-                <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %} %</strong></td>
+                <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %}%</strong></td>
                 <td width="100"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
             </tr>
         {% else %}
