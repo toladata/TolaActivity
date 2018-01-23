@@ -23,6 +23,7 @@
 
         var form_url = $(this).attr('action');
         var form_data = $(this).serialize();
+        $(this).data('recordchanged', true);
         $.post(form_url, form_data,
                function(response, status, jqXHR) { // success callback
                     $("#modalmessages").empty();
