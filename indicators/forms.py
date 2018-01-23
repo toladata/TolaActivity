@@ -137,7 +137,7 @@ class IndicatorForm(forms.ModelForm):
                                                             </td>
                                                             <td align="right" style="padding:1px; border:none; vertical-align: middle; width: 150px">
                                                                     <div class="controls border-1px">
-                                                                        <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target|floatformat }}" data-start-date="{{pt.start_date_formatted}}" data-end-date="{{pt.end_date_formatted}}" placeholder="Enter target" class="form-control input-value">
+                                                                        <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target|floatformat:"-2" }}" data-start-date="{{pt.start_date_formatted}}" data-end-date="{{pt.end_date_formatted}}" placeholder="Enter target" class="form-control input-value">
                                                                         <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
                                                                     </div>
                                                             </td>
@@ -151,7 +151,7 @@ class IndicatorForm(forms.ModelForm):
                                                                 </td>
                                                                 <td align="right" style="border:none; vertical-align: middle;">
                                                                     <div style="margin: 5px 10px;">
-                                                                        <strong><span id="id_span_targets_sum">{{targets_sum|floatformat}}</span></strong>
+                                                                        <strong><span id="id_span_targets_sum">{{targets_sum|floatformat:"-2"}}</span></strong>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -165,7 +165,7 @@ class IndicatorForm(forms.ModelForm):
                                                         </td>
                                                         <td align="right" style="border:none; vertical-align: middle;">
                                                             <div style="margin: 5px 10px;">
-                                                                <strong>{{indicator.lop_target|floatformat}}</strong>
+                                                                <strong>{{indicator.lop_target|floatformat:"-2"}}</strong>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -184,6 +184,8 @@ class IndicatorForm(forms.ModelForm):
                                                 <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
                                             </div>
                                         </div>
+                                    {% else %}
+                                        <div class="row" style="height: 30px; margin-bottom: 15px"></div>
                                     {% endif %}
                                 </div>
                             {% endif %}
@@ -424,6 +426,7 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['program'].widget = forms.HiddenInput()
         self.fields['indicator'].widget = forms.HiddenInput()
         self.fields['target_frequency'].initial = self.indicator.target_frequency
+        self.fields['target_frequency'].widget = forms.HiddenInput()
         #override the program queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 

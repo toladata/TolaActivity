@@ -176,6 +176,15 @@ function loadIndicators(program,indicator,type){
 
     })
 
+    $('#indicator_collecteddata_div').on('hide.bs.modal', function (e) {
+        var recordchanged = $(this).find('form').data('recordchanged');
+        if (recordchanged == true) {
+            var program_id = $(this).find('form #id_program').val();
+            var indicator_id = $(this).find('form #id_indicator').val();
+            loadCollected(indicator_id, program_id);
+        }
+    })
+
     // Open the CollectDataUpdate form in a modal
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
         e.preventDefault();
