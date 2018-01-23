@@ -177,7 +177,7 @@
 
                     <td align="right" style="padding:1px; border:none; vertical-align:middle; width: 150px;">
                         <div class="controls border-1px">
-                            <input type="number" id="pt-${pt.id}" value="${pt.target}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control input-value">
+                            <input type="number" id="pt-${pt.id}" value="${parseFloat(pt.target)}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control input-value">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
                         </div>
                     </td>
