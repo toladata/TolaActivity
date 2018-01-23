@@ -1,14 +1,19 @@
+<style>
+.haserror {
+    border: 1px solid #ff0000;
+}
+</style>
 {% if collecteddata.count > 0 or indicator.target_frequency and indicator.periodictarget_set.all.count > 0 %}
     <table class="table table-bordered">
         <tr>
-            <th style="vertical-align:bottom; min-width:180px;">Periodic Target</th>
-            <th style="vertical-align:bottom;">Target</th>
+            <th style="vertical-align:bottom; min-width:180px;">Target Period</th>
+            <th style="vertical-align:bottom;" align="right">Target</th>
             <th style="vertical-align:bottom; min-width: 125px;">Date Collected</th>
             <th style="vertical-align:bottom;">Actual</th>
             <th style="vertical-align:bottom;" width="65">% Met</th>
             <th style="vertical-align:bottom;">Evidence</th>
             <th style="vertical-align:bottom;">Project</th>
-            <th style="vertical-align:bottom;" width="60"></th>
+            <th style="vertical-align:bottom;" width="80"></th>
         </tr>
         {% for item in collecteddata %}
             <tr>
@@ -19,22 +24,24 @@
                             <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
                         </td>
                         <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" align="right" style="vertical-align:middle;">
-                            {{ item.periodic_target.target|floatformat }}
+                            {{ item.periodic_target.target|floatformat:"-2" }}
                         </td>
                     {% endifchanged %}
                 {% else %}
-                    <td min-width="170" style="vertical-align:middle;">
+                    <td style="vertical-align:middle;">
                         <strong>{{ item.periodic_target.period }}</strong><br>
                         <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
                     </td>
                     <td align="right" style="vertical-align:middle;">
-                        {{ item.periodic_target.target|floatformat }}
+                        {{ item.periodic_target.target|floatformat:"-2" }}
                     </td>
                 {% endif %}
-                <td>
-                    <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">{{ item.date_collected|date:"M d, Y" }}</a>
+                <td {% if item.periodic_target == None %} style="border: 3px solid red;" {% endif %}>
+                    <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link" id="collected-{{item.id}}">
+                        {{ item.date_collected|date:"M d, Y" }}
+                    </a>
                 </td>
-                <td align="right"> {{ item.achieved|floatformat }} </td>
+                <td align="right"> {{ item.achieved|floatformat:"-2" }} </td>
                 <td align="right"> {% widthratio item.achieved item.periodic_target.target 100 %}%</td>
                 <td>
                     {% if item.evidence %}
@@ -52,25 +59,49 @@
                 </td>
                 <td>{{ item.agreement|default_if_none:"" }}</td>
                 <td align="right">
-                    <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link" style="padding-right: 10px;">
-                        <span alt="Edit" class="glyphicon glyphicon-edit"></span>
-                    </a>
-                    <a href="/indicators/collecteddata_delete/{{ item.id }}" style="color:red;">
+                    <a href="/indicators/collecteddata_delete/{{ item.id }}" style="color:red; vertical-align: middle;">
                         <span alt="Delete" class="glyphicon glyphicon-remove"></span>
+                    </a>
+                    <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link" style="padding-left: 30px; vertical-align: middle">
+                        <span alt="Edit" class="glyphicon glyphicon-edit"></span>
                     </a>
                 </td>
             </tr>
+            {% if forloop.last %}
+                <tr style="background-color: #f5f5f5;">
+                    <td><strong>Life of Program</strong></td>
+                    <td align="right"><strong>{{ indicator.lop_target|floatformat:"-2" }}</strong></td><!-- {{ collected_sum.periodic_target__target__sum }} -->
+                    <td></td>
+                    <td align="right"><strong>{{ collected_sum.achieved__sum|floatformat:"-2" }}</strong></td>
+                    <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %}%</strong></td>
+                    <td colspan="3" align="right">
+                        <a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a>
+                    </td>
+                </tr>
+
+                {% if not item.periodic_target %}
+                    <tr>
+                        <td colspan="8" style="color:red;">
+                            {% if indicator.target_frequency == None %}
+                                There are not targets setup for this indicator. Start by selecting a target frequency.
+                            {% elif indicator.target_frequency == 2 or indicator.target_frequency == 8 %}
+                                 This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
+                            {% else %}
+                                This date falls outside the range of your target periods. You can change the date or create additional target periods.
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+
+            {% empty %}
+                <tr style="background-color: #f5f5f5;">
+                    <td colspan="6">There are no data records to display.</td>
+                    <td colspan="2"align="right">
+                        <a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a>
+                    </td>
+                </tr>
         {% endfor %}
-        <tr style="background-color: #f5f5f5;">
-            <td><strong>Life of Program</strong></td>
-            <td align="right"><strong>{{ indicator.lop_target|floatformat }}</strong></td><!-- {{ collected_sum.periodic_target__target__sum }} -->
-            <td></td>
-            <td align="right"><strong>{{ collected_sum.achieved__sum|floatformat }}</strong></td>
-            <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %}%</strong></td>
-            <td colspan="3" align="right">
-                <a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a>
-            </td>
-        </tr>
     </table>
 {% else %}
     <table border='0' vertical-align="top" align="center" height="130">
