@@ -3,24 +3,34 @@
         <tr>
             <th style="vertical-align:bottom; min-width:180px;">Periodic Target</th>
             <th style="vertical-align:bottom;">Target</th>
-            <th style="vertical-align:bottom;">Date Collected</th>
+            <th style="vertical-align:bottom; min-width: 105px;">Date Collected</th>
             <th style="vertical-align:bottom;">Actual</th>
             <th style="vertical-align:bottom;" width="65">% Met</th>
             <th style="vertical-align:bottom;">Evidence</th>
             <th style="vertical-align:bottom;">Project</th>
-            <th style="vertical-align:bottom;" width="50"></th>
+            <th style="vertical-align:bottom;" width="60"></th>
         </tr>
         {% for item in collecteddata %}
             <tr>
-                {% ifchanged item.periodic_target %}
-                    <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" min-width="170" style="vertical-align:middle;">
+                {% if item.periodic_target %}
+                    {% ifchanged item.periodic_target %}
+                        <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" min-width="170" style="vertical-align:middle;">
+                            <strong>{{ item.periodic_target.period }}</strong><br>
+                            <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
+                        </td>
+                        <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" align="right" style="vertical-align:middle;">
+                            {{ item.periodic_target.target|floatformat }}
+                        </td>
+                    {% endifchanged %}
+                {% else %}
+                    <td min-width="170" style="vertical-align:middle;">
                         <strong>{{ item.periodic_target.period }}</strong><br>
                         <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
                     </td>
-                    <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" align="right" style="vertical-align:middle;">
-                        {{ item.periodic_target.target }}
+                    <td align="right" style="vertical-align:middle;">
+                        {{ item.periodic_target.target|floatformat }}
                     </td>
-                {% endifchanged %}
+                {% endif %}
                 <td>
                     <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">{{ item.date_collected|date:"M d, Y" }}</a>
                 </td>
@@ -42,7 +52,7 @@
                 </td>
                 <td>{{ item.agreement|default_if_none:"" }}</td>
                 <td align="right">
-                    <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">
+                    <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link" style="padding-right: 10px;">
                         <span alt="Edit" class="glyphicon glyphicon-edit"></span>
                     </a>
                     <a href="/indicators/collecteddata_delete/{{ item.id }}" style="color:red;">
