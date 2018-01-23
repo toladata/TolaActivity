@@ -424,6 +424,7 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['program'].widget = forms.HiddenInput()
         self.fields['indicator'].widget = forms.HiddenInput()
         self.fields['target_frequency'].initial = self.indicator.target_frequency
+        self.fields['target_frequency'].widget = forms.HiddenInput()
         #override the program queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 
