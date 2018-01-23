@@ -1,7 +1,4 @@
 <script>
-    // target_frequency setup as a global variable, which is set on document.ready
-    var target_frequency;
-    var indicator_id
 
     // Intercept CollectedDataUpdate form submission and then use ajax to submit it.
     $("#indicator_collecteddata_div").on("submit", "#collecteddata_update_form", function(e){
@@ -52,7 +49,7 @@
     function validatePeriodicTarget() {
         if (setPeriodicTargetValue() == false) {
             // $("#id_periodic_target").val('');
-            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + indicator_id + "/'><strong>create additional target periods.</strong></a></small>");
+            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>create additional target periods.</strong></a></small>");
             $("#div_id_periodic_target").addClass('has-error');
         } else if ($("#id_periodic_target").val() == '') {
             $("#hint_id_periodic_target").html("<small>Pleae complete this field.</small>");
@@ -89,6 +86,7 @@
         //   \)    : match closing parentheses
         var regExp = /\(([^)]+)\)/;
         var matchFound = false
+        var target_frequency = $("#id_target_frequency").val();
 
         if (target_frequency == 1 || target_frequency == 2 || target_frequency == 8) {
             return true;

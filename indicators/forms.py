@@ -252,6 +252,7 @@ class CollectedDataForm(forms.ModelForm):
 
     program2 =  forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Program'}) )
     indicator2 = forms.CharField( widget=forms.TextInput(attrs={'readonly':'readonly', 'label': 'Indicator'}) )
+    target_frequency = forms.CharField()
     date_collected = forms.DateField(widget=DatePicker.DateInput(), required=True)
 
     def __init__(self, *args, **kwargs):
@@ -275,7 +276,7 @@ class CollectedDataForm(forms.ModelForm):
         self.helper.layout = Layout(
             HTML("""<br/>"""),
             Fieldset('Collected Data',
-                'program', 'program2', 'indicator', 'indicator2', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
+                'program', 'program2', 'indicator', 'indicator2', 'target_frequency', 'site', 'date_collected', 'periodic_target', 'achieved', 'description',
 
             ),
             Fieldset('Evidence',
@@ -415,13 +416,14 @@ class CollectedDataForm(forms.ModelForm):
         try:
             int(self.indicator)
             self.indicator = Indicator.objects.get(id=self.indicator)
-        except TypeError:
+        except TypeError as e:
             pass
 
-        self.fields['indicator2'].initial = self.indicator
+        self.fields['indicator2'].initial = self.indicator.name
         self.fields['indicator2'].label = "Indicator"
         self.fields['program'].widget = forms.HiddenInput()
         self.fields['indicator'].widget = forms.HiddenInput()
+        self.fields['target_frequency'].initial = self.indicator.target_frequency
         #override the program queryset to use request.user for country
         self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
 

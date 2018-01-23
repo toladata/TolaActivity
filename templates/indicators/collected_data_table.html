@@ -33,15 +33,15 @@
                     {% endif %}
                 </td>
                 <td> — </td>
-                <td>{{ item.achieved }}</td>
+                <td>{{ item.achieved|floatformat }}</td>
                 <td> — </td>
                 <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info collecteddata-link">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
             </tr>
             {% endfor %}
             <tr>
                 <td colspan="3"><span style="float: right;"><strong>Life of Program</strong></span></td>
-                <td align="right"><strong>{{ indicator.lop_target }}</strong><!-- {{ collected_sum.periodic_target__target__sum }} --></td>
-                <td align="right"><strong>{{ collected_sum.achieved__sum }}</strong></td>
+                <td align="right"><strong>{{ indicator.lop_target|floatformat }}</strong><!-- {{ collected_sum.periodic_target__target__sum }} --></td>
+                <td align="right"><strong>{{ collected_sum.achieved__sum|floatformat }}</strong></td>
                 <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %} %</strong></td>
                 <td width="100"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
             </tr>
@@ -53,7 +53,7 @@
         {% endif %}
     </table>
 {% else %}
-    <table border='0' vertical-align="top" align="center" height="150">
+    <table border='0' vertical-align="top" align="center" height="130">
         <tr>
             <td valign="top" style="padding:2px;">
                 <img src="/static/img/target.png" class="img-responsive center-block" height="85" width="85">
