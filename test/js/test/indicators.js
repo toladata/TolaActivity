@@ -24,14 +24,14 @@ async function newTolaSession(parms) {
 }
 
 async function newTolaLogin(parms) {
-    el = await driver.findElement({name: 'login'});
-    await el.sendKeys(parms.username);
+  el = await driver.findElement({name: 'login'});
+  await el.sendKeys(parms.username);
 
-    el = await driver.findElement({name: 'password'});
-    await el.sendKeys(parms.password);
+  el = await driver.findElement({name: 'password'});
+  await el.sendKeys(parms.password);
 
-    el = await driver.findElement({className: 'inputsub'})
-    await el.click();
+  el = await driver.findElement({className: 'inputsub'})
+  await el.click();
 }
 
 test.describe('TolaActivity Indicators Page', function() {
@@ -55,38 +55,31 @@ test.describe('TolaActivity Indicators Page', function() {
     assert.equal(await el.getText(), 'Program Indicators');
   });
 
+   // TODO: Having difficulty working with this element; the non-standard
+   // dropdown construction complicates it.
   test.describe('Programs dropdown', function() {
-  	// TODO: Unable to extract the label with .getText()
-  	// Part of the challenge is that these aren't actual dropdowns
-  	// but buttons and lists. This requires hand-crafted codes
-  	// to find and extract data and assumes a lot of internal
-  	// familiarity with the underlying code
-  	// TODO: Having difficulty working with this element; the non-standard
-  	// dropdown construction complicates it.
     test.it('should be present on page', async function() {
       el = await driver.findElement({id: 'dropdownProgram'});
-      var button = await driver.wait(until.elementTextContains(el, 'Programs'));
-			assert(button.click());
-		});
-	  test.it('should have at least one entry');
-	  test.it('should default to showing all programs');
-	  test.it('should be able to filter PIs by Program');
-	  test.it('should be able to filter Programs by PI');
-	  test.it('should have same item count as Programs table');
-	  test.it('should have same items as Programs table');
- 	}); // end programs dropdown tests
+      assert(el.click());
+      assert.equal(await el.getText(), 'Programs');
+    });
+    test.it('should have at least one entry');
+    test.it('should default to showing all programs');
+    test.it('should be able to filter PIs by Program');
+    test.it('should be able to filter Programs by PI');
+    test.it('should have same item count as Programs table');
+    test.it('should have same items as Programs table');
+   }); // end programs dropdown tests
   
   // TODO: Having difficulty working with this element; the non-standard
   // dropdown construction complicates it.
   test.describe('Indicators dropdown', function() {
     test.it('should be present on page', async function() {
       el = await driver.wait(until.elementLocated({id: 'dropdownIndicator'}));
-			await assert(el.click());
-      var button = await driver.wait(until.elementTextContains(el, 'Indicators'));
-			await assert(button.click());
+      assert(el.click());
+      assert.equal(await el.getText(), 'Indicators');
     });
-
-		test.it('should have at least one entry');
+    test.it('should have at least one entry');
     test.it('should default to showing all PIs for a program');
     test.it('should be able to select any/all list items');
   }); // end indicators dropdown tests
@@ -94,13 +87,12 @@ test.describe('TolaActivity Indicators Page', function() {
   // TODO: Having difficulty working with this element; the non-standard
   // dropdown construction complicates it.
   test.describe('Indicator Type dropdown', function() {
-    test.it('should be present on page', function() {
-      el = driver.findElement({id: 'dropdownIndicatorType'});
-      driver.wait(until.elementTextContains(el, 'Indicator Type'));
-			assert(el.click());
+    test.it('should be present on page', async function() {
+      el = await driver.wait(until.elementLocated({id: 'dropdownIndicatorType'}));
+      assert(el.click());
+      assert.equal(await el.getText(), 'Indicator Type');
     });
-
-		test.it('should have at least one entry');
+    test.it('should have at least one entry');
     test.it('should default to showing all Indicator Types for a program');
     test.it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
@@ -146,11 +138,7 @@ test.describe('TolaActivity Indicators Page', function() {
       test.it('should have a Analysis and Reporting tab');
       test.it('should have an Approval tab');
       test.it('should have a Help link');
-      // TODO: Save changes button complains required fields on the Targets
-      // tab aren't filled out when they in fact are
       test.it('should have a Save Changes button');
-      // TODO: Reset button does not clear Summary > Country Strategic Objective field
-      // if it has been changed
       test.it('should have a Reset button');
       test.it('should have a Cancel button');
       test.it('should trigger cancel action by pressing Escape key');
