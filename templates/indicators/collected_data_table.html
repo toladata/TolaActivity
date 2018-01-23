@@ -1,8 +1,3 @@
-<style>
-.haserror {
-    border: 1px solid #ff0000;
-}
-</style>
 {% if collecteddata.count > 0 or indicator.target_frequency and indicator.periodictarget_set.all.count > 0 %}
     <table class="table table-bordered">
         <tr>
@@ -75,7 +70,9 @@
                     <td align="right"><strong>{{ collected_sum.achieved__sum|floatformat:"-2" }}</strong></td>
                     <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %}%</strong></td>
                     <td colspan="3" align="right">
-                        <a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a>
+                        {% if indicator.target_frequency != None %}
+                            <a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator.id }}" class="btn-sm btn-info collecteddata-link">New Data</a>
+                        {% endif %}
                     </td>
                 </tr>
 
@@ -83,11 +80,11 @@
                     <tr>
                         <td colspan="8" style="color:red;">
                             {% if indicator.target_frequency == None %}
-                                There are not targets setup for this indicator. Start by selecting a target frequency.
+                                There are not targets setup for this indicator. <a href="#" onclick="alert('not yet implemented');">Start by selecting a target frequency.</a>
                             {% elif indicator.target_frequency == 2 or indicator.target_frequency == 8 %}
                                  This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
                             {% else %}
-                                This date falls outside the range of your target periods. You can change the date or create additional target periods.
+                                This date falls outside the range of your target periods. You can change the date or <a href="#" onclidk="alert('not yet implemented');">create additional target periods.</a>
                             {% endif %}
                         </td>
                     </tr>
