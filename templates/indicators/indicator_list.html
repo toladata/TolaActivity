@@ -191,7 +191,7 @@ function loadIndicators(program,indicator,type){
     $("#toplevel_div").on("click", ".collecteddata-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
-        url += "/?modal=1";
+        url += "?modal=1";
         $("#indicator_modal_content").empty();
         $("#modalmessages").empty();
 
@@ -204,7 +204,7 @@ function loadIndicators(program,indicator,type){
     $("#toplevel_div").on("click", ".indicator-link", function(e) {
         e.preventDefault();
         var url = $(this).attr("href");
-        url += "/?modal=1";
+        url += "?modal=1";
         var tab = $(this).data("tab");
         if (tab && tab != '' && tab != undefined && tab != 'undefined') {
             url += "&targetsactive=true";

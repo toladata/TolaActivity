@@ -415,7 +415,11 @@
                     $("#id_span_targets_sum").text(targets_sum);
                 }
             }
+            // for the modal version;
             $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
+            // for the non-modal version;
+            $("html, body").animate({ scrollTop: 0 }, "slow");
+            // window.scrollTo(0, 0);
         });
     }
 
