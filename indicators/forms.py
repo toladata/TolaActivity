@@ -107,7 +107,7 @@ class IndicatorForm(forms.ModelForm):
                         HTML("""
                             <div id="id_div_periodic_tables_placeholder">
                             {% if periodic_targets and indicator.target_frequency != 1%}
-                                <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
+                                <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px 0px -30px;">
                                     <div class="row">
                                         <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top: 30px;">
                                             <h4>{{ indicator.get_target_frequency_label }} targets</h4>
