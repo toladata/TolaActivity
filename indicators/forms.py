@@ -228,7 +228,7 @@ class IndicatorForm(forms.ModelForm):
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['program'].widget.attrs['readonly'] = "readonly"
-        self.fields['target_frequency_start'].widget = DatePicker.DateInput()
+        #self.fields['target_frequency_start'].widget = DatePicker.DateInput()
         # self.fields['target_frequency_start'].help_text = 'This field is required'
         # self.fields['target_frequency'].required = False
         self.fields['target_frequency_start'].widget.attrs['class'] = 'monthPicker'
