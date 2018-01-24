@@ -36,18 +36,30 @@
             changeMonth: true,
             changeYear: true,
             showButtonPanel: true,
-            dateFormat: "yy-mm-dd",
-            // dateFormat: 'M yy',
-            onClose: function () {
-                var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
-                $(this).datepicker('setDate', new Date(year, month, 1));
+            dateFormat: 'M d, yy',
+            /*
+            beforeShowDay: function(date) {
+                if (date.getDate() == 1) {
+                    return [true, ''];
+                }
+                return [false, ''];
+            },
+            */
+            beforeShow(input, inst){
+
+                // $(this).datepicker('setDate', $.datepicker.formatDate('M yy', new Date(2018, 3)));
+                // $(this).datepicker( "option", "defaultDate",$.datepicker.formatDate('M yy', new Date(2018, 3)));
+                // $(this).datepicker( "option", "defaultDate", "+1m");
+                // $(this).datepicker( "option", "defaultDate", "Mar 2018");
+                // $("#ui-datepicker-div .ui-datepicker-month").val(5);
+            },
+            onClose: function (dateText, inst) {
+                // var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                // var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).datepicker("setDate", new Date(inst.selectedYear, inst.selectedMonth, 1));
+                $(this).datepicker("widget").find(".ui-datepicker-calendar").hide();
                 this.focus();
             },
-            onSelect: function () {
-                // The "this" keyword refers to the input (in this case: #someinput)
-                this.focus();
-            }
         });
 
         $(".monthPicker").focus(function () {
@@ -58,6 +70,7 @@
                 of: $(this)
             });
         });
+
     }
     $( document ).ready(function() {
         show_hide_frequency_fields();
