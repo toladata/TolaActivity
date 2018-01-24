@@ -253,7 +253,7 @@ class RegisterViewPostTest(TestCase):
                    'This field is required.</strong></p>'.format(field))
             self.assertIn(msg, template_content)
 
-    @patch('tola.util.requests')
+    @patch('tola.track_sync.requests')
     def test_post_success_with_full_name(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
 
@@ -285,7 +285,7 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
-    @patch('tola.util.requests')
+    @patch('tola.track_sync.requests')
     def test_post_success_with_first_name(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
 
@@ -315,7 +315,7 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
-    @patch('tola.util.requests')
+    @patch('tola.track_sync.requests')
     def test_post_success_with_default_org(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
         factories.Organization(name=settings.DEFAULT_ORG)

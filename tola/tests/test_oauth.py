@@ -46,9 +46,9 @@ class OAuthTest(TestCase):
             response, "value=\"CXGVOGFnTAt5cQW6m5AxbGrRq1lzKNSrou31dWm9\"")
         self.assertEqual(response.status_code, 200)
 
-    @patch('tola.util.requests')
-    def test_user_to_tola(self, mock_requests):
-        mock_requests.post.return_value = Mock(status_code=201)
+    @patch('tola.auth_pipeline.register_user')
+    def test_user_to_tola(self, mock_register_user):
+        mock_register_user.return_value = Mock()
 
         # TolaUser will be created with default Org
         response = {

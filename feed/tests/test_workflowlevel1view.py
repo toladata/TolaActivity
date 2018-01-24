@@ -2,6 +2,8 @@ from django.test import TestCase
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
+from mock import Mock, patch
+
 import json
 import factories
 from feed.views import WorkflowLevel1ViewSet
@@ -159,7 +161,9 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         self.tola_user = factories.TolaUser()
         factories.Group()
 
-    def test_create_workflowlevel1_superuser(self):
+    @patch('feed.views.tsync')
+    def test_create_workflowlevel1_superuser(self, mock_tsync):
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         self.tola_user.user.is_staff = True
         self.tola_user.user.is_superuser = True
         self.tola_user.user.save()
@@ -185,7 +189,9 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         self.assertEqual(wflvl1.user_access.all().count(), 1)
         self.assertEqual(wflvl1.user_access.first(), self.tola_user)
 
-    def test_create_workflowlevel1_org_admin(self):
+    @patch('feed.views.tsync')
+    def test_create_workflowlevel1_org_admin(self, mock_tsync):
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.tola_user.user.groups.add(group_org_admin)
 
@@ -207,11 +213,13 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         self.assertEqual(wflvl1.user_access.all().count(), 1)
         self.assertEqual(wflvl1.user_access.first(), self.tola_user)
 
-    def test_create_workflowlevel1_program_admin(self):
+    @patch('feed.views.tsync')
+    def test_create_workflowlevel1_program_admin(self, mock_tsync):
         """
         A ProgramAdmin member of any other program can create a new program
         in the same organization.
         """
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         organization_url = reverse(
             'organization-detail',
             kwargs={'pk': self.tola_user.organization.pk})
@@ -240,11 +248,13 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         self.assertEqual(wflvl1.user_access.all().count(), 1)
         self.assertEqual(wflvl1.user_access.first(), self.tola_user)
 
-    def test_create_workflowlevel1_program_admin_json(self):
+    @patch('feed.views.tsync')
+    def test_create_workflowlevel1_program_admin_json(self, mock_tsync):
         """
         A ProgramAdmin member of any other program can create a new program
         in the same organization.
         """
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=factories.WorkflowLevel1(
@@ -270,11 +280,13 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         self.assertEqual(wflvl1.user_access.all().count(), 1)
         self.assertEqual(wflvl1.user_access.first(), self.tola_user)
 
-    def test_create_workflowlevel1_program_team(self):
+    @patch('feed.views.tsync')
+    def test_create_workflowlevel1_program_team(self, mock_tsync):
         """
         A ProgramTeam member of any other program can create a new program in
         the same organization.
         """
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             workflowlevel1=factories.WorkflowLevel1(
@@ -299,7 +311,9 @@ class WorkflowLevel1CreateViewsTest(TestCase):
         self.assertEqual(wflvl1.user_access.all().count(), 1)
         self.assertEqual(wflvl1.user_access.first(), self.tola_user)
 
-    def test_create_workflowlevel1_normal_user(self):
+    @patch('feed.views.tsync')
+    def test_create_workflowlevel1_normal_user(self, mock_tsync):
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         data = {'name': 'Save the Children'}
         request = self.factory.post('/api/workflowlevel1/', data)
         request.user = self.tola_user.user
@@ -371,7 +385,9 @@ class WorkflowLevel1UpdateViewsTest(TestCase):
         response = view(request, pk=wflvl1.pk)
         self.assertEqual(response.status_code, 403)
 
-    def test_update_workflowlevel1_program_admin(self):
+    @patch('feed.views.tsync')
+    def test_update_workflowlevel1_program_admin(self, mock_tsync):
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         data = {'name': 'Save the Children'}
         request = self.factory.post('/api/workflowlevel1/', data)
         request.user = self.tola_user.user
@@ -388,7 +404,9 @@ class WorkflowLevel1UpdateViewsTest(TestCase):
         wflvl1 = WorkflowLevel1.objects.get(pk=response.data['id'])
         self.assertEquals(wflvl1.name, data['name'])
 
-    def test_update_workflowlevel1_program_admin_json(self):
+    @patch('feed.views.tsync')
+    def test_update_workflowlevel1_program_admin_json(self, mock_tsync):
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         data = {'name': 'Save the Children'}
         request = self.factory.post('/api/workflowlevel1/', json.dumps(data),
                                     content_type='application/json')
@@ -497,7 +515,9 @@ class WorkflowLevel1DeleteViewsTest(TestCase):
         self.assertEquals(response.status_code, 403)
         WorkflowLevel1.objects.get(pk=wflvl1.pk)
 
-    def test_delete_workflowlevel1_program_admin(self):
+    @patch('feed.views.tsync')
+    def test_delete_workflowlevel1_program_admin(self, mock_tsync):
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         WorkflowTeam.objects.create(
             workflow_user=self.tola_user,
             partner_org=self.tola_user.organization,
@@ -541,7 +561,9 @@ class WorkflowLevel1DeleteViewsTest(TestCase):
         self.assertEquals(response.status_code, 403)
         WorkflowLevel1.objects.get(pk=wflvl1.pk)
 
-    def test_delete_workflowlevel1_program_admin_just_one(self):
+    @patch('feed.views.tsync')
+    def test_delete_workflowlevel1_program_admin_just_one(self, mock_tsync):
+        mock_tsync.create_workflowlevel1.return_value = Mock(status_code=201)
         # Create a program
         data = {'name': 'Save the Pandas'}
         request = self.factory.post('/api/workflowlevel1/', data)
