@@ -4,7 +4,6 @@
         <th>Indicator Level</th>
         <th>Indicator Name</th>
         <th>Indicator Number</th>
-        <th>LOP Target</th>
         <th>Sector</th>
         <th>&nbsp;</th>
     </tr>
@@ -20,9 +19,8 @@
                 <span class="badge">KPI</span>
             {% endif %}
         </td>
-        <td>{{ indicator.number}}</td>
-        <td>{{ indicator.lop_target}}</td>
-        <td>{{ indicator.sector}}</td>
+        <td>{{ indicator.number|default_if_none:''}}</td>
+        <td>{{ indicator.sector|default_if_none:''}}</td>
         <td width="150"><span class="btn-group" role="group">
 
             <a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info indicator-link">Edit</a>

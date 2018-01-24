@@ -1,3 +1,5 @@
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework import serializers
 from workflow.models import Program, Sector, ProjectType, Office, SiteProfile, Country, ProjectComplete, \
     ProjectAgreement, Stakeholder, Capacity, Evaluate, ProfileType, \
@@ -6,8 +8,38 @@ from indicators.models import Indicator, ReportingFrequency, TolaUser, Indicator
     Level, ExternalService, ExternalServiceRecord, StrategicObjective, CollectedData, TolaTable, DisaggregationValue,\
     PeriodicTarget
 from django.contrib.auth.models import User
+from django.core.serializers.python import Serializer as PythonSerializer
 
 
+class FlatJsonSerializer(PythonSerializer):
+    """
+    Take a look at the django implementation as a reference if you need further customization:
+    https://github.com/django/django/blob/master/django/core/serializers/json.py
+    Usage:
+        serializer = FlatJsonSerializer()
+        json_data = serializer.serialize(<queryset>, <optional>fields=('field1', 'field2'))
+    """
+    def get_dump_object(self, obj):
+        data = self._current
+        if not self.selected_fields or 'id' in self.selected_fields:
+            data['id'] = obj.id
+        return data
+
+    def end_object(self, obj):
+        if not self.first:
+            self.stream.write(', ')
+        json.dump(self.get_dump_object(obj), self.stream,
+                  cls=DjangoJSONEncoder)
+        self._current = None
+
+    def start_serialization(self):
+        self.stream.write("[")
+
+    def end_serialization(self):
+        self.stream.write("]")
+
+    def getvalue(self):
+        return super(PythonSerializer, self).getvalue()
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

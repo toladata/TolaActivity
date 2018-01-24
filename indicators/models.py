@@ -277,6 +277,7 @@ class Indicator(models.Model):
     unit_of_measure = models.CharField(max_length=135, null=True, blank=True, verbose_name="Unit of measure*", help_text=" ")
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True, help_text=" ")
     baseline = models.CharField(verbose_name="Baseline*", max_length=255, null=True, blank=True, help_text=" ")
+    baseline_na = models.BooleanField(verbose_name="Not applicable", default=False, help_text=" ")
     lop_target = models.CharField(verbose_name="Life of Program (LoP) target*",max_length=255, null=True, blank=True, help_text=" ")
     rationale_for_target = models.TextField(max_length=255, null=True, blank=True, help_text=" ")
     target_frequency = models.IntegerField(blank=False, null=True, choices=TARGET_FREQUENCIES, verbose_name="Target frequency", help_text=" ")
@@ -356,6 +357,12 @@ class Indicator(models.Model):
     def disaggregations(self):
         return ', '.join([x.disaggregation_type for x in self.disaggregation.all()])
 
+    @property
+    def get_target_frequency_label(self):
+        if self.target_frequency:
+            return Indicator.TARGET_FREQUENCIES[self.target_frequency-1][1]
+        return None
+
     def __unicode__(self):
         return self.name
 
@@ -372,7 +379,25 @@ class PeriodicTarget(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return "%s %s" % (self.period, self.target)
+        if self.indicator.target_frequency == Indicator.LOP \
+            or self.indicator.target_frequency == Indicator.EVENT \
+            or self.indicator.target_frequency == Indicator.MID_END:
+                return self.period
+        if self.start_date and self.end_date:
+            return "%s (%s - %s)" % (self.period, self.start_date.strftime('%b %d, %Y'), self.end_date.strftime('%b %d, %Y'))
+        return self.period
+
+    @property
+    def start_date_formatted(self):
+        if self.start_date:
+            return self.start_date.strftime('%b %m, %Y')
+        return self.start_date
+
+    @property
+    def end_date_formatted(self):
+        if self.end_date:
+            return self.end_date.strftime('%b %m, %Y')
+        return self.end_date
 
 
 class PeriodicTargetAdmin(admin.ModelAdmin):
@@ -387,25 +412,25 @@ class CollectedDataManager(models.Manager):
 
 
 class CollectedData(models.Model):
-    data_key = models.UUIDField(default=uuid.uuid4, unique=True),
-    periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True)
+    data_key = models.UUIDField(default=uuid.uuid4, unique=True, help_text = " "),
+    periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True, help_text = " ")
     #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
-    achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2)
-    disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True)
-    description = models.TextField("Remarks/comments", blank=True, null=True)
-    indicator = models.ForeignKey(Indicator)
-    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation")
-    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL)
-    program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program")
-    date_collected = models.DateTimeField(null=True, blank=True)
-    comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
-    evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link")
-    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data")
-    tola_table = models.ForeignKey(TolaTable, blank=True, null=True)
-    update_count_tola_table = models.BooleanField("Would you like to update the achieved total with the row count from TolaTables?",default=False)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-    site = models.ManyToManyField(SiteProfile, blank=True)
+    achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, help_text = " ")
+    disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True, help_text = " ")
+    description = models.TextField("Remarks/comments", blank=True, null=True, help_text = " ")
+    indicator = models.ForeignKey(Indicator, help_text = " ")
+    agreement = models.ForeignKey(ProjectAgreement, blank=True, null=True, related_name="q_agreement2", verbose_name="Project Initiation", help_text = " ")
+    complete = models.ForeignKey(ProjectComplete, blank=True, null=True, related_name="q_complete2",on_delete=models.SET_NULL, help_text = " ")
+    program = models.ForeignKey(Program, blank=True, null=True, related_name="i_program", help_text = " ")
+    date_collected = models.DateTimeField(null=True, blank=True, help_text = " ")
+    comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True, help_text = " ")
+    evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link", help_text = " ")
+    approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Originated By", related_name="approving_data", help_text = " ")
+    tola_table = models.ForeignKey(TolaTable, blank=True, null=True, help_text = " ")
+    update_count_tola_table = models.BooleanField("Would you like to update the achieved total with the row count from TolaTables?",default=False, help_text = " ")
+    create_date = models.DateTimeField(null=True, blank=True, help_text = " ")
+    edit_date = models.DateTimeField(null=True, blank=True, help_text = " ")
+    site = models.ManyToManyField(SiteProfile, blank=True, help_text = " ")
     history = HistoricalRecords()
     objects = CollectedDataManager()
 

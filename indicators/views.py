@@ -15,7 +15,7 @@ from django_tables2 import RequestConfig
 from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
 
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Max
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -37,8 +37,32 @@ from export import IndicatorResource, CollectedDataResource
 from weasyprint import HTML, CSS
 from django.template.loader import get_template
 from django.http import HttpResponse
+from datetime import datetime
+from dateutil.relativedelta import relativedelta #('%Y-%m-%d') %b %d, %Y
+from feed.serializers import FlatJsonSerializer
+import dateutil.parser
 
-
+_PERIODICTARGET_DEFINITION = {
+    Indicator.LOP: lambda **params: {"period": Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]},
+    Indicator.MID_END: lambda **params: [{"period": "Midline"}, {"period": "Endline"}],
+    Indicator.EVENT: lambda **params: {"period": params.get('n')},
+    Indicator.ANNUAL: lambda **params: {"period": "Year %s" % params.get('i'), \
+        "start_date": (params.get('s') + relativedelta(years=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
+        "end_date": ( params.get('s') + relativedelta(years=+(params.get('i')*1)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+    Indicator.SEMI_ANNUAL: lambda **params: {"period": "Semi-annual period %s" % params.get('i'), \
+        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*6))).strftime('%Y-%m-%d'), \
+        "end_date": ( params.get('s') + relativedelta(months=+( params.get('i')*6)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+    Indicator.TRI_ANNUAL: lambda **params: {"period": "Tri-annual period %s" % params.get('i'), \
+        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*4))).strftime('%Y-%m-%d'), \
+        "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i' )*4))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+    Indicator.QUARTERLY: lambda **params: {"period": "Quarter %s" % params.get('i'), \
+        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*3))).strftime('%Y-%m-%d'), \
+        "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i')*3)))+ relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+    Indicator.MONTHLY: lambda **params: {"period": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%B") \
+        + " " + (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%Y"), \
+        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
+        "end_date": ( (params.get('s') + relativedelta(months=+params.get('i' ))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
+}
 
 def group_excluded(*group_names, **url):
     """
@@ -256,11 +280,66 @@ class IndicatorCreate(CreateView):
     form_class = IndicatorForm
 
 
+class PeriodicTargetView(View):
+    """
+    This view is responsible for generating periodic targets or deleting them (via POST)
+    """
+    model = PeriodicTarget
+
+    def get(self, request, *args, **kwargs):
+        indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
+        if request.GET.get('existingTargetsOnly'):
+            pts = FlatJsonSerializer().serialize(indicator.periodictarget_set.all().order_by('customsort','create_date', 'period'))
+            return HttpResponse(pts)
+        try:
+            numTargets = int(request.GET.get('numTargets', None))
+        except Exception as e:
+            numTargets = PeriodicTarget.objects.filter(indicator=indicator).count() + 1
+        params = {
+            's': indicator.target_frequency_start,
+            'n': '',
+            'i': numTargets
+        }
+        pt_generated = _PERIODICTARGET_DEFINITION[indicator.target_frequency](**params)
+        pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
+        return HttpResponse(pt_generated_json)
+
+    def post(self, request, *args, **kwargs):
+        indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
+        deleteall = self.kwargs.get('deleteall', None)
+        if deleteall == 'true':
+            periodic_targets = PeriodicTarget.objects.filter(indicator=indicator)
+            for pt in periodic_targets:
+                pt.collecteddata_set.all().update(periodic_target=None)
+                pt.delete()
+        return HttpResponse('{"status": "success", "message": "Request processed successfully!"}')
+
+
+def handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency, generated_pt_ids=[]):
+    # If the target_frequency is changed from LOP to something else then disassociate all
+    # collected_data from the LOP periodic_target and then delete the LOP periodic_target
+    # if existing_target_frequency == Indicator.LOP and new_target_frequency != Indicator.LOP:
+    if existing_target_frequency != new_target_frequency:
+        CollectedData.objects.filter(indicator=indicatr).update(periodic_target=None)
+        PeriodicTarget.objects.filter(indicator=indicatr).delete()
+
+    # If the user sets target_frequency to LOP then create a LOP periodic_target and associate all
+    # collected data for this indicator with this single LOP periodic_target
+    if existing_target_frequency != Indicator.LOP and new_target_frequency == Indicator.LOP:
+        lop_pt = PeriodicTarget.objects.create(indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1], target=lop, create_date = timezone.now())
+        CollectedData.objects.filter(indicator=indicatr).update(periodic_target=lop_pt)
+
+    if generated_pt_ids:
+        pts = PeriodicTarget.objects.filter(indicator=indicatr, pk__in=generated_pt_ids)
+        for pt in pts:
+            CollectedData.objects.filter(indicator=indicatr, date_collected__range=[pt.start_date, pt.end_date]).update(periodic_target=pt)
+
 class IndicatorUpdate(UpdateView):
     """
     Update and Edit Indicators.
     """
     model = Indicator
+
     #template_name = 'indicators/indicator_form.html'
     def get_template_names(self):
         if self.request.GET.get('modal'):
@@ -269,6 +348,18 @@ class IndicatorUpdate(UpdateView):
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
+
+        if request.method == 'GET':
+            # If target_frequency is set but not targets are saved then unset target_frequency too.
+            indicator = self.get_object()
+            if indicator.target_frequency and \
+                    indicator.target_frequency != 1 and \
+                    not indicator.periodictarget_set.count():
+                indicator.target_frequency = None
+                indicator.target_frequency_start = None
+                indicator.target_frequency_num_periods = 1
+                indicator.save()
+
         try:
             self.guidance = FormGuidance.objects.get(form="Indicator")
         except FormGuidance.DoesNotExist:
@@ -282,7 +373,8 @@ class IndicatorUpdate(UpdateView):
 
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
-        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator)
+        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
+        context['targets_sum'] = PeriodicTarget.objects.filter(indicator=getIndicator).aggregate(Sum('target'))['target__sum']
 
         #get external service data if any
         try:
@@ -290,12 +382,19 @@ class IndicatorUpdate(UpdateView):
         except ExternalServiceRecord.DoesNotExist:
             getExternalServiceRecord = None
         context.update({'getExternalServiceRecord': getExternalServiceRecord})
+        if self.request.GET.get('targetsonly') == 'true':
+            context['targetsonly'] = True
+        elif self.request.GET.get('targetsactive') == 'true':
+            context['targetsactive'] = True
 
         return context
 
     def get_initial(self):
+        target_frequency_num_periods = self.get_object().target_frequency_num_periods
+        if not target_frequency_num_periods:
+            target_frequency_num_periods = 1
         initial = {
-            'target_frequency_num_periods': 1,
+            'target_frequency_num_periods': target_frequency_num_periods
         }
 
         return initial
@@ -313,34 +412,87 @@ class IndicatorUpdate(UpdateView):
         print(".............................%s............................" % form.errors )
         return self.render_to_response(self.get_context_data(form=form))
 
-    def form_valid(self, form):
+
+    def form_valid(self, form, **kwargs):
         periodic_targets = self.request.POST.get('periodic_targets', None)
         indicatr = Indicator.objects.get(pk=self.kwargs.get('pk'))
-        if periodic_targets:
+        generatedTargets = []
+        existing_target_frequency = indicatr.target_frequency
+        new_target_frequency = form.cleaned_data.get('target_frequency', None)
+        lop = form.cleaned_data.get('lop_target', None)
+
+        if periodic_targets == 'generateTargets':
+            params = {
+                's': form.cleaned_data.get('target_frequency_start', None),
+                'n': form.cleaned_data.get('target_frequency_custom', None)
+            }
+
+            # handle (delete) association of colelcted data records if necessary
+            handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency)
+
+            target_frequency_num_periods = form.cleaned_data.get('target_frequency_num_periods', 0)
+            if target_frequency_num_periods == None: target_frequency_num_periods = 1
+            for i in range(0, target_frequency_num_periods):
+                params['i'] = i + 1
+
+                pt = _PERIODICTARGET_DEFINITION[new_target_frequency](**params)
+                if isinstance(pt, list):
+                    generatedTargets = generatedTargets + pt
+                else:
+                    generatedTargets.append(pt)
+
+        if periodic_targets and periodic_targets != 'generateTargets':
+            # now create/update periodic targets
             pt_json = json.loads(periodic_targets)
-            for pt in pt_json:
+            generated_pt_ids = []
+            for i, pt in enumerate(pt_json):
                 pk = int(pt.get('id'))
                 if pk == 0: pk = None
+                try:
+                    start_date = dateutil.parser.parse(pt.get('start_date', None))
+                    start_date = datetime.strftime(start_date, '%Y-%m-%d')
+                except ValueError:
+                    # raise ValueError("Incorrect data value")
+                    start_date = None
+
+                try:
+                    end_date = dateutil.parser.parse(pt.get('end_date', None))
+                    end_date = datetime.strftime(end_date, '%Y-%m-%d')
+                except ValueError:
+                    #raise ValueError("Incorrect data value")
+                    end_date = None
+
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
-                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'edit_date': timezone.now() })
+                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'customsort': i,\
+                            'start_date': start_date, 'end_date': end_date, 'edit_date': timezone.now() })
                 #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
                     periodic_target.create_date = timezone.now()
                     periodic_target.save()
+                    generated_pt_ids.append(periodic_target.id)
+
+            # handle related collected_data records for the new periodic targets
+            handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency, generated_pt_ids)
 
         self.object = form.save()
-        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('create_date')
+        #periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
+        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
 
         if self.request.is_ajax():
             data = serializers.serialize('json', [self.object])
-            pts = serializers.serialize('json', periodic_targets)
-            #return JsonResponse({"indicator": json.loads(data), "pts": json.loads(pts)})
-            return HttpResponse("[" + data + "," + pts + "]")
+            pts = FlatJsonSerializer().serialize(periodic_targets)
+            if generatedTargets:
+                generatedTargets = json.dumps(generatedTargets, cls=DjangoJSONEncoder)
+            else:
+                generatedTargets = "[]"
+
+            targets_sum = self.get_context_data().get('targets_sum')
+            if targets_sum == None: targets_sum = "0"
+            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(targets_sum) + "]")
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
         return self.render_to_response(self.get_context_data(form=form))
-
     form_class = IndicatorForm
 
 
@@ -377,10 +529,14 @@ class PeriodicTargetDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         collecteddata_count = self.get_object().collecteddata_set.count()
         if collecteddata_count > 0:
-            return JsonResponse({"status": "error", "msg": "Periodic Target with data reported against it cannot be deleted."})
+            self.get_object().collecteddata_set.all().update(periodic_target=None)
+
         #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
+        indicator = self.get_object().indicator
         self.get_object().delete()
-        return JsonResponse({"status": "success", "msg": "Periodic Target deleted successfully."})
+        targets_sum = PeriodicTarget.objects.filter(indicator=indicator).aggregate(Sum('target'))['target__sum']
+        indicator = None
+        return JsonResponse({"status": "success", "msg": "Periodic Target deleted successfully.", "targets_sum": targets_sum})
 
 class CollectedDataCreate(CreateView):
     """
@@ -414,11 +570,13 @@ class CollectedDataCreate(CreateView):
 
         #set values to None so the form doesn't display empty fields for previous entries
         getDisaggregationValue = None
+        indicator = Indicator.objects.get(pk=self.kwargs.get('indicator'))
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'getDisaggregationLabelStandard': getDisaggregationLabelStandard})
         context.update({'indicator_id': self.kwargs['indicator']})
+        context.update({'indicator': indicator})
         context.update({'program_id': self.kwargs['program']})
 
         return context
@@ -543,6 +701,8 @@ class CollectedDataUpdate(UpdateView):
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'id': self.kwargs['pk']})
         context.update({'indicator_id': getIndicator.indicator_id})
+        context.update({'indicator': getIndicator})
+
 
         return context
 
@@ -723,18 +883,13 @@ def service_json(request,service):
     return HttpResponse(service_indicators, content_type="application/json")
 
 
-def collected_data_json(AjaxableResponseMixin, indicator,program):
-    """
-    Displayed on the Indicator home page as a table of collected data entries related to an indicator
-    Called from Indicator "data" button onClick
-    :param AjaxableResponseMixin:
-    :param indicator:
-    :param program:
-    :return: List of CollectedData entries and sum of there achieved & Targets as well as related indicator and program
-    """
-
+def collected_data_json(AjaxableResponseMixin, indicator, program):
+    ind = Indicator.objects.get(pk=indicator)
     template_name = 'indicators/collected_data_table.html'
-    collecteddata = CollectedData.objects.all().filter(indicator=indicator).prefetch_related('evidence')
+
+    collecteddata = CollectedData.objects\
+        .filter(indicator=indicator).prefetch_related('evidence', 'periodic_target')\
+        .order_by('periodic_target__customsort', 'date_collected')
 
     detail_url = ''
     try:
@@ -744,9 +899,16 @@ def collected_data_json(AjaxableResponseMixin, indicator,program):
     except Exception, e:
         pass
 
-    collected_sum = CollectedData.objects.select_related('periodic_target').filter(indicator=indicator).aggregate(Sum('periodic_target__target'),Sum('achieved'))
-    return render_to_response(template_name, {'collecteddata': collecteddata, 'collected_sum': collected_sum,
-                                              'indicator_id': indicator, 'program_id': program})
+    collected_sum = CollectedData.objects\
+        .select_related('periodic_target')\
+        .filter(indicator=indicator)\
+        .aggregate(Sum('periodic_target__target'),Sum('achieved'))
+
+    return render_to_response(template_name, {
+                'collecteddata': collecteddata,
+                'collected_sum': collected_sum,
+                'indicator': ind,
+                'program_id': program})
 
 
 def program_indicators_json(AjaxableResponseMixin,program,indicator,type):

@@ -12,6 +12,57 @@ $( document )
          $('#ajaxloading').hide();
     });
 
+function isDate(dateVal) {
+    /*
+    var pattern = /^(\d{4})-(\d{2})-(\d{2})$/;
+    var dateArray = dateVal.match(pattern);
+    if (dateArray == null) return false;
+
+    var currentYear = (new Date).getFullYear();
+    var year = dateArray[1];
+    var month = dateArray[2];
+    var day = dateArray[3];
+    if (year < 2010 || year > (currentYear+3)) return false;
+    if (month < 1 || month > 12) return false;
+    if (day < 1 || day > 31) return false;
+    return new Date(dateVal) === 'Invalid Date' ? false : true;
+    */
+    var date = new Date(dateVal);
+    if (date === 'Invalid Date') {
+        return false;
+    }
+    var currentYear = (new Date).getFullYear();
+    if (date.getFullYear() > currentYear + 100 || date.getFullYear() < 1980 ) {
+        return false;
+    }
+    return true;
+}
+
+function formatDate(dateString) {
+    try {
+        var dateArray = dateString.split('-');
+        var months = new Array();
+        months[1] = "Jan";
+        months[2] = "Feb";
+        months[3] = "Mar";
+        months[4] = "Apr";
+        months[5] = "May";
+        months[6] = "Jun";
+        months[7] = "Jul";
+        months[8] = "Aug";
+        months[9] = "Sep";
+        months[10] = "Oct";
+        months[11] = "Nov";
+        months[12] = "Dec";
+        return months[parseInt(dateArray[1])] + ' ' + dateArray[2] + ', ' + dateArray[0];
+    } catch (err) {
+        if (dateString == null){
+            dateString = '';
+        }
+        return dateString;
+    }
+}
+
 
 $(function() {
      // Javascript to enable link to tab
