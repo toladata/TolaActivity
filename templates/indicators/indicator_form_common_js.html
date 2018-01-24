@@ -62,12 +62,12 @@
     $( document ).ready(function() {
         show_hide_frequency_fields();
         setupPopupCalendar();
-    })
+    });
 
     $("#indicator_modal_div").on('shown.bs.tab', function() {
         show_hide_frequency_fields();
         setupPopupCalendar();
-    })
+    });
 
 
     $("#indicator_modal_content, #indicator_form").on("click", "a.detelebtn", function(e){
@@ -142,9 +142,9 @@
     });
 
 
-    $("#indicator_modal_content, #indicator_form").on("click", "#create_targets_btn", function(e) {
+    $("#indicator_modal_content, #indicator_form").on("click", "#id_create_targets_btn", function(e) {
         e.preventDefault();
-
+        $(this).attr("disabled", true);
         if (validateForm() == false) {
             showValidations("#modalmessages");
             return;
@@ -187,7 +187,7 @@
     }
 
     // delete periodic_target
-    $("#indicator_modal_content, #indicator_form").on("click", "#delete_targets_btn", function(e) {
+    $("#indicator_modal_content, #indicator_form").on("click", "#id_delete_targets_btn", function(e) {
         e.preventDefault();
         // console.log($("#id_target_frequency").find("option:selected").text());
         var form_url = $("#indicator_update_form").attr('action');
@@ -209,6 +209,7 @@
             if (res['status'] == 'success') {
                 $("#id_div_periodic_tables_placeholder").empty();
                 reset_frequency_fields();
+                show_hide_frequency_fields();
             }
 
         });
@@ -327,8 +328,7 @@
                 return;
             }
         }
-        show_hide_frequency_fields(true);
-        // $("#create_targets_btn").attr("disabled", true);
+        // $("#id_create_targets_btn").attr("disabled", true);
         var submitBtnName = $(form).find("input[type=submit]:focus" );
         var form_url = $(form).attr('action');
         var form_data = $(form).serialize();
@@ -420,6 +420,7 @@
             // for the non-modal version;
             $("html, body").animate({ scrollTop: 0 }, "slow");
             // window.scrollTo(0, 0);
+            show_hide_frequency_fields(true);
         });
     }
 
@@ -428,7 +429,7 @@
         $("#id_target_frequency").val('');
         $("#id_target_frequency option:not(:selected)").attr("disabled", false);
         $("#id_target_frequency").attr("readonly", false);
-        $("#create_targets_btn").attr("disabled", false);
+        $("#id_create_targets_btn").attr("disabled", false);
         $("#id_target_frequency_start").val('');
         $("#id_target_frequency_num_periods").val(1);
         $("#id_target_frequency_custom").val('');
@@ -441,7 +442,7 @@
                  && selected_option != 'Life of Program (LoP) only') {
             $("#id_target_frequency option:not(:selected)").attr("disabled", true);
             $("#id_target_frequency").attr("readonly", true);
-            $("#create_targets_btn").attr("disabled", true);
+            $("#id_create_targets_btn").attr("disabled", true);
             $("#div_id_target_frequency_start").hide();
             $("#div_id_target_frequency_num_periods").hide();
             $("#div_id_target_frequency_custom").hide();
@@ -449,13 +450,23 @@
         }
         if (selected_option == 'Life of Program (LoP) only' || selected_option == '---------') {
             $("#div_id_create_targets_btn").hide();
-        } else if (selected_option == 'Event') {
-            $("#div_id_target_frequency_num_periods label").text("Number of events*");
-            $("#div_id_create_targets_btn").show();
         } else {
-            $("#div_id_target_frequency_num_periods label").text("Number of target periods*");
-            $("#div_id_create_targets_btn").show();
+            if ($("#id_div_periodic_tables_placeholder").children().length > 0) {
+                $("#id_delete_targets_btn").show();
+            } else {
+                $("#id_delete_targets_btn").hide();
+            }
+
+            if (selected_option == 'Event') {
+                $("#div_id_target_frequency_num_periods label").text("Number of events*");
+                $("#div_id_create_targets_btn").show();
+            } else {
+                $("#div_id_target_frequency_num_periods label").text("Number of target periods*");
+                $("#div_id_create_targets_btn").show();
+            }
         }
+
+
 
         if (lock == false) {
             if (selected_option == 'Life of Program (LoP) only' ||
@@ -481,6 +492,8 @@
             }
         }
     }
+
+
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
         show_hide_frequency_fields();
     });
