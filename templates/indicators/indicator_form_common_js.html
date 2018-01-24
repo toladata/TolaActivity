@@ -241,7 +241,7 @@
         var markup;
         var isLastIteration
         var htmlString = `
-        <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px -32px -30px;">
+        <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px 0px -30px;">
             <div class="row">
                 <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top: 30px;">
                     <h4>${$("#id_target_frequency").find("option:selected").text()} targets</h4>
@@ -294,12 +294,12 @@
             </div>
             ${(indicator.fields.target_frequency != 2) ? `
                 <div class="row">
-                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top:20px; margin-bottom:20px;">
+                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top:20px; margin-bottom:30px;">
                         <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
                     </div>
                 </div>`
                 :
-                `<div class="row" style="height:30px; margin-bottom:15px"></div>`
+                `<div class="row" style="height:30px;"></div>`
               }
         </div>`;
         return htmlString;
@@ -332,6 +332,8 @@
         var submitBtnName = $(form).find("input[type=submit]:focus" );
         var form_url = $(form).attr('action');
         var form_data = $(form).serialize();
+        // mark that the form data has changed so that when the modal is closed the list view can be updated
+        $(form).data('indicatorchanged', true);
 
         var periodic_targets = [];
 

@@ -324,7 +324,14 @@ select.listoption_filters
   -moz-appearance: none;
 }
 
-/* Indicator periodic targt creation */
+/* Indicator periodic target creation */
+
+#indicator_form .tab-content.panel-body,
+#indicator_modal_body .tab-content.panel-body,
+#indicator_modal_body
+{
+  padding-bottom: 0px;
+}
 
 #periodic-targets-tablediv {
   padding-left: 0px;
