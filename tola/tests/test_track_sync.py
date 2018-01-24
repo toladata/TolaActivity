@@ -1,17 +1,22 @@
 import json
+import logging
 
 from django.test import RequestFactory, TestCase, override_settings
 from mock import Mock, patch
 
 import factories
-from tola.track_sync import register_user
+from tola.track_sync import register_user, create_workflowlevel1
 
 
 class RegisterUserTest(TestCase):
     def setUp(self):
+        logging.disable(logging.WARNING)
         factories.Group()
         self.tola_user = factories.TolaUser()
         self.factory = RequestFactory()
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
@@ -79,3 +84,57 @@ class RegisterUserTest(TestCase):
                   'tola_user_uuid': tolauser.tola_user_uuid,
                   'email': 'johnlennon@testenv.com'},
             headers={'Authorization': 'Token TheToken'})
+
+
+class CreateWFL1Test(TestCase):
+    def setUp(self):
+        logging.disable(logging.WARNING)
+        factories.Group()
+        self.tola_user = factories.TolaUser()
+        self.factory = RequestFactory()
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.requests')
+    def test_response_201_create(self, mock_requests):
+        external_response = [{
+            'id': self.tola_user.organization.id,
+        }]
+        mock_requests.get.return_value = Mock(
+            status_code=200, content=json.dumps(external_response))
+        mock_requests.post.return_value = Mock(status_code=201)
+
+        wfl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+
+        response = create_workflowlevel1(wfl1)
+        self.assertEqual(response.status_code, 201)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.requests')
+    def test_response_no_organization(self, mock_requests):
+        mock_requests.get.return_value = Mock(
+            status_code=200, content='[]')
+
+        wfl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+
+        response = create_workflowlevel1(wfl1)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, '[]')
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.requests')
+    def test_response_bad_request(self, mock_requests):
+        mock_requests.get.return_value = Mock(status_code=400)
+
+        wfl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+
+        response = create_workflowlevel1(wfl1)
+        self.assertEqual(response.status_code, 400)
