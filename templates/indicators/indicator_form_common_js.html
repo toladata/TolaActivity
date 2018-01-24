@@ -332,6 +332,8 @@
         var submitBtnName = $(form).find("input[type=submit]:focus" );
         var form_url = $(form).attr('action');
         var form_data = $(form).serialize();
+        // mark that the form data has changed so that when the modal is closed the list view can be updated
+        $(form).data('indicatorchanged', true);
 
         var periodic_targets = [];
 
