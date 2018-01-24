@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block page_title %}Program Indicators{% endblock %}
 
 {% block content %}
@@ -171,6 +170,8 @@ function loadIndicators(program,indicator,type){
             var indicatorchanged = form.data('indicatorchanged');
             if (targetsactive == 'true' || indicatorchanged == true) {
                 loadCollected(indicator_id, program_id);
+                // for some reason scrolling gets disabled sometimes, perhaps a bug in bootstrap
+                $("body").css({"overflow":"visible"});
             }
         } catch (err){
             console.log(err);
@@ -184,6 +185,8 @@ function loadIndicators(program,indicator,type){
             var program_id = $(this).find('form #id_program').val();
             var indicator_id = $(this).find('form #id_indicator').val();
             loadCollected(indicator_id, program_id);
+            // for some reason scrolling gets disabled sometimes, perhaps a bug in bootstrap
+            $("body").css({"overflow":"visible"});
         }
     })
 
