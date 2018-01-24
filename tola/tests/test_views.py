@@ -187,6 +187,25 @@ class RegisterViewGetTest(TestCase):
             Organization.DoesNotExist,
             Organization.objects.get, name='The Beatles')
 
+    def test_get_with_chargebee_demo(self):
+        class ExternalResponse:
+            def __init__(self, values):
+                self.subscription = Subscription(values)
+                self.subscription.status = 'active'
+
+        os.environ['APP_BRANCH'] = DEMO_BRANCH
+        query_params = '?cus_fname={}&cus_lname={}&cus_email={}&cus_company={}'\
+                       '&sub_id={}'.format('John', 'Lennon',
+                                           'johnlennon@test.com', 'The Beatles',
+                                           '1234567890')
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertRaises(
+            Organization.DoesNotExist,
+            Organization.objects.get, name='The Beatles')
+        os.environ['APP_BRANCH'] = ''
+
     def test_get_with_chargebee_without_sub_in_template(self):
         json_obj = {
             'message': "Sorry, we couldn't find that resource",

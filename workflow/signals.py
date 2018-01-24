@@ -9,7 +9,7 @@ from django.contrib.auth.models import Group
 from django.db.models import signals
 from django.dispatch import receiver
 
-from tola import DEMO_BRANCH, PRODUCTION_BRANCH
+from tola import DEMO_BRANCH
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (TolaUser, WorkflowLevel1, WorkflowTeam,
                              ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
@@ -64,7 +64,7 @@ def check_seats_save_team(sender, instance, **kwargs):
     Validate, increase or decrease the amount of used seats
     based on the roles
     """
-    if os.getenv('APP_BRANCH') != PRODUCTION_BRANCH:
+    if os.getenv('APP_BRANCH') == DEMO_BRANCH:
         return
 
     user = instance.workflow_user.user
@@ -113,7 +113,7 @@ def check_seats_delete_team(sender, instance, **kwargs):
     Validate, increase or decrease the amount of used seats
     based on the roles
     """
-    if os.getenv('APP_BRANCH') != PRODUCTION_BRANCH:
+    if os.getenv('APP_BRANCH') == DEMO_BRANCH:
         return
 
     user = instance.workflow_user.user
@@ -142,7 +142,7 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
     """
     if kwargs['model'] != Group or kwargs['action'] != 'post_add':
         return
-    if os.getenv('APP_BRANCH') != PRODUCTION_BRANCH:
+    if os.getenv('APP_BRANCH') == DEMO_BRANCH:
         return
 
     try:

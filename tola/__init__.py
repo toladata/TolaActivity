@@ -1,2 +1,1 @@
 DEMO_BRANCH = 'demo'
-PRODUCTION_BRANCH = 'master'
