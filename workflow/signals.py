@@ -206,3 +206,19 @@ def sync_save_track_organization(sender, instance, **kwargs):
 def sync_delete_track_organization(sender, instance, **kwargs):
     if os.getenv('APP_BRANCH'):
         tsync.delete_instance(instance)
+
+
+# WORKFLOWLEVEL1 SIGNALS
+@receiver(signals.post_save, sender=WorkflowLevel1)
+def sync_save_track_workflowlevel1(sender, instance, **kwargs):
+    if os.getenv('APP_BRANCH'):
+        if kwargs.get('created'):
+            tsync.create_instance(instance)
+        else:
+            tsync.update_instance(instance)
+
+
+@receiver(signals.post_delete, sender=WorkflowLevel1)
+def sync_delete_track_workflowlevel1(sender, instance, **kwargs):
+    if os.getenv('APP_BRANCH'):
+        tsync.delete_instance(instance)

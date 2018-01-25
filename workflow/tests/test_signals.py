@@ -395,7 +395,10 @@ class SignalSyncTrackTest(TestCase):
         mock_tsync.create_instance.return_value = Mock()
 
         org = factories.Organization()
-        mock_tsync.create_instance.assert_called_once_with(org)
+        mock_tsync.create_instance.assert_called_with(org)
+
+        wfl1 = factories.WorkflowLevel1()
+        mock_tsync.create_instance.assert_called_with(wfl1)
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
@@ -405,12 +408,19 @@ class SignalSyncTrackTest(TestCase):
         mock_tsync.update_instance.return_value = Mock()
 
         org = factories.Organization()
-        mock_tsync.create_instance.assert_called_once_with(org)
+        mock_tsync.create_instance.assert_called_with(org)
+
+        wfl1 = factories.WorkflowLevel1()
+        mock_tsync.create_instance.assert_called_with(wfl1)
 
         org.name = 'Another Org'
         org.description = 'The Org name was changed'
         org.save()
-        mock_tsync.update_instance.assert_called_once_with(org)
+        mock_tsync.update_instance.assert_called_with(org)
+
+        wfl1.name = 'Another Program'
+        wfl1.save()
+        mock_tsync.update_instance.assert_called_with(wfl1)
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
@@ -420,7 +430,13 @@ class SignalSyncTrackTest(TestCase):
         mock_tsync.delete_instance.return_value = Mock()
 
         org = factories.Organization()
-        mock_tsync.create_instance.assert_called_once_with(org)
+        mock_tsync.create_instance.assert_called_with(org)
+
+        wfl1 = factories.WorkflowLevel1()
+        mock_tsync.create_instance.assert_called_with(wfl1)
 
         org.delete()
-        mock_tsync.delete_instance.assert_called_once_with(org)
+        mock_tsync.delete_instance.assert_called_with(org)
+
+        wfl1.delete()
+        mock_tsync.delete_instance.assert_called_with(wfl1)
