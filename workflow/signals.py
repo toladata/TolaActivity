@@ -9,11 +9,12 @@ from django.contrib.auth.models import Group
 from django.db.models import signals
 from django.dispatch import receiver
 
-from tola import DEMO_BRANCH
+from tola import DEMO_BRANCH, track_sync as tsync
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
-from workflow.models import (TolaUser, WorkflowLevel1, WorkflowTeam,
-                             ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
-                             ROLE_PROGRAM_TEAM, ROLE_VIEW_ONLY)
+from workflow.models import (Organization, TolaUser, WorkflowLevel1,
+                             WorkflowTeam, ROLE_ORGANIZATION_ADMIN,
+                             ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM,
+                             ROLE_VIEW_ONLY)
 
 logger = logging.getLogger(__name__)
 
@@ -186,3 +187,18 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
             if available_seats < org.chargebee_used_seats:
                 # TODO: Notify the Org admin
                 pass
+
+
+@receiver(signals.post_save, sender=Organization)
+def sync_save_track_organization(sender, instance, **kwargs):
+    if os.getenv('APP_BRANCH'):
+        if kwargs.get('created'):
+            tsync.create_organization(instance)
+        else:
+            tsync.update_organization(instance)
+
+
+@receiver(signals.post_delete, sender=Organization)
+def sync_delete_track_organization(sender, instance, **kwargs):
+    if os.getenv('APP_BRANCH'):
+        tsync.delete_organization(instance)
