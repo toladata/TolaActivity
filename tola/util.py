@@ -9,21 +9,6 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
 
-# CREATE NEW DATA DICTIONARY OBJECT
-def siloToDict(silo):
-    parsed_data = {}
-    key_value = 1
-    for d in silo:
-        label = unicodedata.normalize('NFKD', d.field.name).encode('ascii','ignore')
-        value = unicodedata.normalize('NFKD', d.char_store).encode('ascii','ignore')
-        row = unicodedata.normalize('NFKD', d.row_number).encode('ascii','ignore')
-        parsed_data[key_value] = {label : value}
-
-        key_value += 1
-
-    return parsed_data
-
-
 def getCountry(user):
         """
         Returns the object the view is displaying.
@@ -34,16 +19,6 @@ def getCountry(user):
         get_countries = Country.objects.all().filter(id__in=user_countries)
 
         return get_countries
-
-
-def get_programs_user(user):
-    """
-    Returns a list of Programs (WorkflowLevel1) ID's where the user has access
-    to.
-    """
-    # get user
-    return WorkflowTeam.objects.filter(
-        workflow_user__user=user).values_list('workflowlevel1__id', flat=True)
 
 
 def emailGroup(country, group, link, subject, message, submiter=None):
