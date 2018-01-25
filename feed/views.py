@@ -21,7 +21,7 @@ from indicators.models import (
     Level, ExternalService, ExternalServiceRecord, StrategicObjective,
     PeriodicTarget, CollectedData, TolaTable, DisaggregationValue,
     DisaggregationLabel)
-from tola.util import get_programs_user
+
 from tola import track_sync as tsync
 from workflow import models as wfm
 from .permissions import IsOrgMember, AllowTolaRoles
@@ -96,7 +96,9 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
                     get(user=request.user)
                 queryset = queryset.filter(organization_id=organization_id)
             else:
-                wflvl1_ids = get_programs_user(request.user)
+                wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+                    workflow_user__user=request.user).values_list(
+                    'workflowlevel1__id', flat=True)
                 queryset = queryset.filter(id__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -271,7 +273,9 @@ class IndicatorViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(
                     workflowlevel1__organization_id=organization_id)
             else:
-                wflvl1_ids = get_programs_user(request.user)
+                wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+                    workflow_user__user=request.user).values_list(
+                    'workflowlevel1__id', flat=True)
                 queryset = queryset.filter(
                     workflowlevel1__in=wflvl1_ids).annotate(
                     actuals=Sum('collecteddata__achieved'))
@@ -493,7 +497,9 @@ class StakeholderViewSet(viewsets.ModelViewSet):
     def list(self, request):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
-        wflvl1_ids = get_programs_user(request.user)
+        wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+            workflow_user__user=request.user).values_list(
+            'workflowlevel1__id', flat=True)
         queryset = queryset.filter(workflowlevel1__in=wflvl1_ids).distinct()
 
         nested = request.GET.get('nested_models')
@@ -686,7 +692,9 @@ class ContactViewSet(viewsets.ModelViewSet):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
         if not request.user.is_superuser:
-            wflvl1_ids = get_programs_user(request.user)
+            wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+                workflow_user__user=request.user).values_list(
+                'workflowlevel1__id', flat=True)
             organization_id = wfm.TolaUser.objects. \
                 values_list('organization_id', flat=True). \
                 get(user=request.user)
@@ -712,7 +720,9 @@ class DocumentationViewSet(viewsets.ModelViewSet):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
         if not request.user.is_superuser:
-            wflvl1_ids = get_programs_user(request.user)
+            wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+                workflow_user__user=request.user).values_list(
+                'workflowlevel1__id', flat=True)
             organization_id = wfm.TolaUser.objects. \
                 values_list('organization_id', flat=True). \
                 get(user=request.user)
@@ -755,7 +765,9 @@ class CollectedDataViewSet(viewsets.ModelViewSet):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
         if not request.user.is_superuser:
-            wflvl1_ids = get_programs_user(request.user)
+            wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+                workflow_user__user=request.user).values_list(
+                'workflowlevel1__id', flat=True)
             queryset = queryset.filter(indicator__workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -780,7 +792,9 @@ class TolaTableViewSet(viewsets.ModelViewSet):
     """
 
     def get_queryset(self):
-        wflvl1_ids = get_programs_user(self.request.user)
+        wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+            workflow_user__user=self.request.user).values_list(
+            'workflowlevel1__id', flat=True)
         queryset = TolaTable.objects.filter(workflowlevel1__in=wflvl1_ids)
         table_id = self.request.query_params.get('table_id', None)
         if table_id is not None:
@@ -889,7 +903,9 @@ class WorkflowLevel2ViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(
                     workflowlevel1__organization_id=organization_id)
             else:
-                wflvl1_ids = get_programs_user(request.user)
+                wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+                    workflow_user__user=request.user).values_list(
+                    'workflowlevel1__id', flat=True)
                 queryset = queryset.filter(
                     workflowlevel1__organization_id=organization_id,
                     workflowlevel1__in=wflvl1_ids)
@@ -936,7 +952,9 @@ class WorkflowLevel2SortViewSet(viewsets.ModelViewSet):
         # Use this queryset or the django-filters lib will not work
         queryset = self.filter_queryset(self.get_queryset())
         if not request.user.is_superuser:
-            wflvl1_ids = get_programs_user(request.user)
+            wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+                workflow_user__user=request.user).values_list(
+                'workflowlevel1__id', flat=True)
             queryset = queryset.filter(workflowlevel1__in=wflvl1_ids)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -1262,7 +1280,9 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(
                     workflow_user__organization_id=organization_id)
             else:
-                wflvl1_ids = get_programs_user(request.user)
+                wflvl1_ids = wfm.WorkflowTeam.objects.filter(
+                    workflow_user__user=request.user).values_list(
+                    'workflowlevel1__id', flat=True)
                 queryset = queryset.filter(workflowlevel1__in=wflvl1_ids)
 
         serializer = self.get_serializer(queryset, many=True)

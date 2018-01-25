@@ -36,16 +36,6 @@ def getCountry(user):
         return get_countries
 
 
-def get_programs_user(user):
-    """
-    Returns a list of Programs (WorkflowLevel1) ID's where the user has access
-    to.
-    """
-    # get user
-    return WorkflowTeam.objects.filter(
-        workflow_user__user=user).values_list('workflowlevel1__id', flat=True)
-
-
 def emailGroup(country, group, link, subject, message, submiter=None):
         # email incident to admins in each country assoicated with the
         # projects program
