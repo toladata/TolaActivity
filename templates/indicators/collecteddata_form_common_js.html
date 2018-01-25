@@ -110,7 +110,7 @@
                 var start_date = new Date(pt_date_range[0].trim());
                 var end_date = new Date(pt_date_range[1].trim());
                 var collected_date = new Date($("#id_date_collected").val().trim());
-                if (collected_date > start_date && collected_date < end_date) {
+                if (collected_date >= start_date && collected_date <= end_date) {
                     // deselect the currently selected option
                     $("#id_periodic_target option:selected").attr("selected", false);
                     // select the correct value
