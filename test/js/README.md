@@ -31,11 +31,11 @@ the top-level of your local repo because it is gitignored.
 [Node Package Manager](https://www.npmjos.com), or _npm_ to install
 other JavaScript packages.
 1. Finally, use `npm` to install the JavaScript language bindings
-for Selenium, the Mocha test framework, and the Chai plugin for
-Mocha:
+for Selenium, the Mocha test framework, the Chai plugin for
+Mocha, and WebDriverIO:
 
 ```
-$ npm install selenium-webdriver mocha chai
+$ npm install selenium-webdriver mocha chai webdriverio
 [...]
 ```
 
