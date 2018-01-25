@@ -312,6 +312,11 @@ class PeriodicTargetView(View):
             for pt in periodic_targets:
                 pt.collecteddata_set.all().update(periodic_target=None)
                 pt.delete()
+            indicator.target_frequency = None
+            indicator.target_frequency_num_periods = 1
+            indicator.target_frequency_start = None
+            indicator.target_frequency_custom = None
+            indicator.save()
         return HttpResponse('{"status": "success", "message": "Request processed successfully!"}')
 
 
@@ -534,6 +539,12 @@ class PeriodicTargetDeleteView(DeleteView):
         #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
         indicator = self.get_object().indicator
         self.get_object().delete()
+        if indicator.periodictarget_set.count() == 0:
+            indicator.target_frequency = None
+            indicator.target_frequency_num_periods = 1
+            indicator.target_frequency_start = None
+            indicator.target_frequency_custom = None
+            indicator.save()
         targets_sum = PeriodicTarget.objects.filter(indicator=indicator).aggregate(Sum('target'))['target__sum']
         indicator = None
         return JsonResponse({"status": "success", "msg": "Periodic Target deleted successfully.", "targets_sum": targets_sum})

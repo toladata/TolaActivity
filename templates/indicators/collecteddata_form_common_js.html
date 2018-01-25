@@ -54,7 +54,7 @@
             $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>create additional target periods.</strong></a></small>");
             $("#div_id_periodic_target").addClass('has-error');
         } else if ($("#id_periodic_target").val() == '') {
-            $("#hint_id_periodic_target").html("<small>Pleae complete this field.</small>");
+            $("#hint_id_periodic_target").html("<small>Pleae select a target.</small>");
             $("#div_id_periodic_target").addClass('has-error');
             return false;
         } else {

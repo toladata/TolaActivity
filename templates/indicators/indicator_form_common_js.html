@@ -119,6 +119,7 @@
                 if (data.status == "success") {
                     currnentRow.remove();
                     prevDeleteBtn.show();
+                    $("#indicator_update_form").data('indicatorchanged', true);
                     var targets_sum = data['targets_sum'];
                     if (targets_sum != 0 && targets_sum != "None" && targets_sum != '' && targets_sum != 'undefined') {
                         $("#id_span_targets_sum").text(targets_sum);
@@ -157,11 +158,11 @@
 
     $("#indicator_modal_content, #indicator_form").on("click", "#id_create_targets_btn", function(e) {
         e.preventDefault();
-        $(this).attr("disabled", true);
         if (validateForm() == false) {
             showValidations("#modalmessages");
             return;
         }
+        $(this).attr("disabled", true);
         submitForm($("#indicator_update_form"));
 
     });
@@ -223,6 +224,7 @@
                 $("#id_div_periodic_tables_placeholder").empty();
                 reset_frequency_fields();
                 show_hide_frequency_fields();
+                $("#indicator_update_form").data('indicatorchanged', true);
             }
 
         });
@@ -554,7 +556,7 @@
 
         if (!lop.val()) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please complete this field.");
+            $("#hint_id_lop_target").text("Please select a target.");
             // sbmt.attr("disabled", true);
             return false;
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
