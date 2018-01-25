@@ -9,21 +9,6 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
 
 
-# CREATE NEW DATA DICTIONARY OBJECT
-def siloToDict(silo):
-    parsed_data = {}
-    key_value = 1
-    for d in silo:
-        label = unicodedata.normalize('NFKD', d.field.name).encode('ascii','ignore')
-        value = unicodedata.normalize('NFKD', d.char_store).encode('ascii','ignore')
-        row = unicodedata.normalize('NFKD', d.row_number).encode('ascii','ignore')
-        parsed_data[key_value] = {label : value}
-
-        key_value += 1
-
-    return parsed_data
-
-
 def getCountry(user):
         """
         Returns the object the view is displaying.
