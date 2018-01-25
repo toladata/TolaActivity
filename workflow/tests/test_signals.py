@@ -5,8 +5,8 @@ try:
     from chargebee import Addon, Subscription
 except ImportError:
     pass
-from django.test import TestCase, tag
-from mock import Mock
+from django.test import TestCase, override_settings, tag
+from mock import Mock, patch
 
 import factories
 from tola import DEMO_BRANCH
@@ -18,6 +18,7 @@ from workflow.models import (Organization, WorkflowTeam, ROLE_PROGRAM_ADMIN,
 @tag('pkg')
 class AddUsersToDefaultWorkflowLevel1Test(TestCase):
     def setUp(self):
+        os.environ['APP_BRANCH'] = ''
         logging.disable(logging.ERROR)
 
     def tearDown(self):
@@ -27,8 +28,10 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
         factories.TolaUser()  # triggers the signal
         self.assertEqual(WorkflowTeam.objects.all().count(), 0)
 
-    def test_demo_env_no_wflvl1_matching(self):
+    @patch('workflow.signals.tsync')
+    def test_demo_env_no_wflvl1_matching(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
+        mock_tsync.create_organization.return_value = Mock()
         factories.WorkflowLevel1(name=DEFAULT_WORKFLOW_LEVEL_1S[0][1])
         factories.TolaUser()  # triggers the signal
         self.assertEqual(WorkflowTeam.objects.all().count(), 0)
@@ -51,10 +54,10 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
         )  # triggers the signal
         self.assertEqual(WorkflowTeam.objects.all().count(), 0)
 
-        os.environ['APP_BRANCH'] = ''
-
-    def test_demo_workflowteam_assignment(self):
+    @patch('workflow.signals.tsync')
+    def test_demo_workflowteam_assignment(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
+        mock_tsync.create_organization.return_value = Mock()
         role = factories.Group(name=ROLE_VIEW_ONLY)
         wflvl1_1 = factories.WorkflowLevel1(
             id=DEFAULT_WORKFLOW_LEVEL_1S[0][0],
@@ -70,10 +73,12 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
             workflow_user=tola_user, role=role, workflowlevel1=wflvl1_1)
         WorkflowTeam.objects.get(
             workflow_user=tola_user, role=role, workflowlevel1=wflvl1_2)
-        os.environ['APP_BRANCH'] = ''
 
-    def test_demo_workflowteam_assignment_not_reassigned_on_update(self):
+    @patch('workflow.signals.tsync')
+    def test_demo_workflowteam_assignment_not_reassigned_on_update(
+            self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
+        mock_tsync.create_organization.return_value = Mock()
         role = factories.Group(name=ROLE_VIEW_ONLY)
         wflvl1_0 = factories.WorkflowLevel1(
             id=DEFAULT_WORKFLOW_LEVEL_1S[0][0],
@@ -81,7 +86,6 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
         wflvl1_1 = factories.WorkflowLevel1(
             id=DEFAULT_WORKFLOW_LEVEL_1S[1][0],
             name=DEFAULT_WORKFLOW_LEVEL_1S[1][1])
-
 
         tola_user = factories.TolaUser(
             user=factories.User(first_name='Ringo', last_name='Starr')
@@ -95,7 +99,6 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
         num_results = WorkflowTeam.objects.filter(
             workflow_user=tola_user, role=role, workflowlevel1=wflvl1_1).count()
         self.assertEqual(num_results, 1)
-        os.environ['APP_BRANCH'] = ''
 
 
 class CheckSeatsSaveWFTeamsTest(TestCase):
@@ -110,6 +113,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
             self.subscription.addons = [addon]
 
     def setUp(self):
+        os.environ['APP_BRANCH'] = ''
         logging.disable(logging.ERROR)
         self.group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.group_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
@@ -182,8 +186,10 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
 
-    def test_check_seats_save_team_demo(self):
+    @patch('workflow.signals.tsync')
+    def test_check_seats_save_team_demo(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
+        mock_tsync.create_organization.return_value = Mock()
         self.tola_user.organization = factories.Organization()
         wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
         factories.WorkflowTeam(workflow_user=self.tola_user,
@@ -192,7 +198,6 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
 
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
-        os.environ['APP_BRANCH'] = ''
 
     def test_check_seats_save_team_org_admin(self):
         # When a user is an org admin, the seat has to be updated with the
@@ -224,6 +229,7 @@ class CheckSeatsDeleteWFTeamsTest(TestCase):
             self.subscription.addons = [addon]
 
     def setUp(self):
+        os.environ['APP_BRANCH'] = ''
         logging.disable(logging.ERROR)
         self.group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.group_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
@@ -264,8 +270,10 @@ class CheckSeatsDeleteWFTeamsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 1)
 
-    def test_check_seats_save_team_demo(self):
+    @patch('workflow.signals.tsync')
+    def test_check_seats_save_team_demo(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
+        mock_tsync.create_organization.return_value = Mock()
         self.tola_user.organization = factories.Organization()
         wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
         factories.WorkflowTeam(workflow_user=self.tola_user,
@@ -274,7 +282,6 @@ class CheckSeatsDeleteWFTeamsTest(TestCase):
 
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
-        os.environ['APP_BRANCH'] = ''
 
     def test_check_seats_save_team_org_admin(self):
         external_response = self.ExternalResponse(None)
@@ -307,6 +314,7 @@ class CheckSeatsSaveUserGroupTest(TestCase):
             self.subscription.addons = [addon]
 
     def setUp(self):
+        os.environ['APP_BRANCH'] = ''
         logging.disable(logging.ERROR)
         self.group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.group_view_only = factories.Group(name=ROLE_VIEW_ONLY)
@@ -356,8 +364,10 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
 
-    def test_check_seats_save_user_groups_demo(self):
+    @patch('workflow.signals.tsync')
+    def test_check_seats_save_user_groups_demo(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
+        mock_tsync.create_organization.return_value = Mock()
         self.tola_user.organization = factories.Organization()
         self.tola_user.save()
 
@@ -367,4 +377,50 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         # It should have only one seat because of the Org Admin role
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
+
+
+class SyncSaveTrackOrganizationTest(TestCase):
+    def setUp(self):
+        factories.Group()
+        self.tola_user = factories.TolaUser()
+        os.environ['APP_BRANCH'] = 'Test'
+
+    def tearDown(self):
         os.environ['APP_BRANCH'] = ''
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('workflow.signals.tsync')
+    def test_sync_save_create(self, mock_tsync):
+        mock_tsync.create_organization.return_value = Mock()
+
+        org = factories.Organization()
+        mock_tsync.create_organization.assert_called_once_with(org)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('workflow.signals.tsync')
+    def test_sync_save_update(self, mock_tsync):
+        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.update_organization.return_value = Mock()
+
+        org = factories.Organization()
+        mock_tsync.create_organization.assert_called_once_with(org)
+
+        org.name = 'Another Org'
+        org.description = 'The Org name was changed'
+        org.save()
+        mock_tsync.update_organization.assert_called_once_with(org)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('workflow.signals.tsync')
+    def test_sync_save_delete(self, mock_tsync):
+        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.delete_organization.return_value = Mock()
+
+        org = factories.Organization()
+        mock_tsync.create_organization.assert_called_once_with(org)
+
+        org.delete()
+        mock_tsync.delete_organization.assert_called_once_with(org)
