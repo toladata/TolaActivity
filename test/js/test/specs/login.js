@@ -10,7 +10,7 @@ var parms = readConfig();
 describe('TolaActivity Login screen', function() {
 
   it('should require user to authenticate', function() {
-    browser.url('https://tola-activity-demo.mercycorps.org');
+    browser.url(parms.baseurl);
     var title = browser.getTitle();
     assert.equal(title, 'Mercy Corps Sign-On');
   });
