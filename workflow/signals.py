@@ -27,6 +27,7 @@ def get_addon_by_id(addon_id, addons):
     return None
 
 
+# TOLA USER SIGNALS
 @receiver(signals.post_save, sender=TolaUser)
 def add_users_to_default_wflvl1(sender, instance, **kwargs):
     """
@@ -59,6 +60,7 @@ def add_users_to_default_wflvl1(sender, instance, **kwargs):
                                     workflowlevel1=wflvl1_1)
 
 
+# WORKFLOWTEAM SIGNALS
 @receiver(signals.pre_save, sender=WorkflowTeam)
 def check_seats_save_team(sender, instance, **kwargs):
     """
@@ -135,6 +137,7 @@ def check_seats_delete_team(sender, instance, **kwargs):
         org.save()
 
 
+# M2M SIGNALS
 @receiver(signals.m2m_changed)
 def check_seats_save_user_groups(sender, instance, **kwargs):
     """
@@ -189,16 +192,17 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
                 pass
 
 
+# ORGANIZATION SIGNALS
 @receiver(signals.post_save, sender=Organization)
 def sync_save_track_organization(sender, instance, **kwargs):
     if os.getenv('APP_BRANCH'):
         if kwargs.get('created'):
-            tsync.create_organization(instance)
+            tsync.create_instance(instance)
         else:
-            tsync.update_organization(instance)
+            tsync.update_instance(instance)
 
 
 @receiver(signals.post_delete, sender=Organization)
 def sync_delete_track_organization(sender, instance, **kwargs):
     if os.getenv('APP_BRANCH'):
-        tsync.delete_organization(instance)
+        tsync.delete_instance(instance)

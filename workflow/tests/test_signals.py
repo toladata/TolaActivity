@@ -31,7 +31,7 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
     @patch('workflow.signals.tsync')
     def test_demo_env_no_wflvl1_matching(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
-        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
         factories.WorkflowLevel1(name=DEFAULT_WORKFLOW_LEVEL_1S[0][1])
         factories.TolaUser()  # triggers the signal
         self.assertEqual(WorkflowTeam.objects.all().count(), 0)
@@ -57,7 +57,7 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
     @patch('workflow.signals.tsync')
     def test_demo_workflowteam_assignment(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
-        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
         role = factories.Group(name=ROLE_VIEW_ONLY)
         wflvl1_1 = factories.WorkflowLevel1(
             id=DEFAULT_WORKFLOW_LEVEL_1S[0][0],
@@ -78,7 +78,7 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
     def test_demo_workflowteam_assignment_not_reassigned_on_update(
             self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
-        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
         role = factories.Group(name=ROLE_VIEW_ONLY)
         wflvl1_0 = factories.WorkflowLevel1(
             id=DEFAULT_WORKFLOW_LEVEL_1S[0][0],
@@ -189,7 +189,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
     @patch('workflow.signals.tsync')
     def test_check_seats_save_team_demo(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
-        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
         self.tola_user.organization = factories.Organization()
         wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
         factories.WorkflowTeam(workflow_user=self.tola_user,
@@ -273,7 +273,7 @@ class CheckSeatsDeleteWFTeamsTest(TestCase):
     @patch('workflow.signals.tsync')
     def test_check_seats_save_team_demo(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
-        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
         self.tola_user.organization = factories.Organization()
         wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
         factories.WorkflowTeam(workflow_user=self.tola_user,
@@ -367,7 +367,7 @@ class CheckSeatsSaveUserGroupTest(TestCase):
     @patch('workflow.signals.tsync')
     def test_check_seats_save_user_groups_demo(self, mock_tsync):
         os.environ['APP_BRANCH'] = DEMO_BRANCH
-        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
         self.tola_user.organization = factories.Organization()
         self.tola_user.save()
 
@@ -379,7 +379,7 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         self.assertEqual(organization.chargebee_used_seats, 0)
 
 
-class SyncSaveTrackOrganizationTest(TestCase):
+class SignalSyncTrackTest(TestCase):
     def setUp(self):
         factories.Group()
         self.tola_user = factories.TolaUser()
@@ -392,35 +392,35 @@ class SyncSaveTrackOrganizationTest(TestCase):
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
     @patch('workflow.signals.tsync')
     def test_sync_save_create(self, mock_tsync):
-        mock_tsync.create_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
 
         org = factories.Organization()
-        mock_tsync.create_organization.assert_called_once_with(org)
+        mock_tsync.create_instance.assert_called_once_with(org)
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
     @patch('workflow.signals.tsync')
     def test_sync_save_update(self, mock_tsync):
-        mock_tsync.create_organization.return_value = Mock()
-        mock_tsync.update_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
+        mock_tsync.update_instance.return_value = Mock()
 
         org = factories.Organization()
-        mock_tsync.create_organization.assert_called_once_with(org)
+        mock_tsync.create_instance.assert_called_once_with(org)
 
         org.name = 'Another Org'
         org.description = 'The Org name was changed'
         org.save()
-        mock_tsync.update_organization.assert_called_once_with(org)
+        mock_tsync.update_instance.assert_called_once_with(org)
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
     @patch('workflow.signals.tsync')
     def test_sync_save_delete(self, mock_tsync):
-        mock_tsync.create_organization.return_value = Mock()
-        mock_tsync.delete_organization.return_value = Mock()
+        mock_tsync.create_instance.return_value = Mock()
+        mock_tsync.delete_instance.return_value = Mock()
 
         org = factories.Organization()
-        mock_tsync.create_organization.assert_called_once_with(org)
+        mock_tsync.create_instance.assert_called_once_with(org)
 
         org.delete()
-        mock_tsync.delete_organization.assert_called_once_with(org)
+        mock_tsync.delete_instance.assert_called_once_with(org)

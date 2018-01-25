@@ -54,62 +54,71 @@ def _build_org_form(obj):
     }
 
 
-# FUNCTIONS TO SYNC MODELS
-# Sync Tola Users
-def register_user(data, tolauser):
-    url_subpath = 'accounts/register/'
-    response = track_request('post', url_subpath, data)
-    validate_response(response, tolauser)
-    return response
-
-
-# Sync Programs/WorkflowLevel1
-def create_workflowlevel1(obj):
+def _build_wfl1_form(obj):
     url_subpath = 'api/organization?name={}'.format(obj.organization.name)
     response = track_request('get', url_subpath)
     if response.status_code in [400, 403, 500]:
         logger.warn('The Organization {} (id={}) could not be '
                     'successfully fetched from Track.'.format(
                      obj.organization.name, obj.organization.id))
-        return response
+        return None
 
     content = json.loads(response.content)
     if response.status_code == 200 and len(content) == 0:
         logger.info('The organization {} (id={}) was not found on Track'.format(
             obj.organization.name, obj.organization.id))
-        return response
+        return None
 
     org = content[0]
-    data = {
+    return {
         'level1_uuid': obj.level1_uuid,
         'name': obj.name,
         'country': None,
-        'organization': org['id']
+        'organization': org['id'],
+        'create_date': obj.create_date,
+        'edit_date': obj.edit_date
     }
 
-    response = track_request('post', 'api/workflowlevel1', data)
-    if response.status_code == 201:
-        logger.info('The Program {} (id={}) was created successfully on '
-                    'Track.'.format(obj.name, obj.id))
-    return response
 
-
-# Sync Organizations
-def create_organization(obj):
-    data = _build_org_form(obj)
-    response = track_request('post', 'api/organization', data)
+# FUNCTIONS TO SYNC MODELS
+# Sync Silo models in the API
+def create_instance(obj):
+    model_name = obj.__class__.__name__.lower()
+    url_subpath = 'api/{}'.format(model_name)
+    data = {}
+    if obj.__class__.__name__ == 'Organization':
+        data = _build_org_form(obj)
+    elif obj.__class__.__name__ == 'WorkflowLeve1':
+        data = _build_wfl1_form(obj)
+    response = track_request('post', url_subpath, data)
     validate_response(response, obj)
     return response
 
 
-def update_organization(obj):
-    data = _build_org_form(obj)
-    response = track_request('put', 'api/organization', data)
+def update_instance(obj):
+    model_name = obj.__class__.__name__.lower()
+    url_subpath = 'api/{}'.format(model_name)
+    data = {}
+    if obj.__class__.__name__ == 'Organization':
+        data = _build_org_form(obj)
+    elif obj.__class__.__name__ == 'WorkflowLeve1':
+        data = _build_wfl1_form(obj)
+    response = track_request('put', url_subpath, data)
     validate_response(response, obj)
     return response
 
 
-def delete_organization(obj):
-    response = track_request('delete', 'api/organization/{}'.format(obj.id))
+def delete_instance(obj):
+    model_name = obj.__class__.__name__.lower()
+    url_subpath = 'api/{}/{}'.format(model_name, obj.id)
+    response = track_request('delete', url_subpath)
     validate_response(response, obj)
+    return response
+
+
+# Sync Tola Users
+def register_user(data, tolauser):
+    url_subpath = 'accounts/register/'
+    response = track_request('post', url_subpath, data)
+    validate_response(response, tolauser)
     return response
