@@ -16,8 +16,8 @@ function readConfig() {
 
 async function newTolaSession(parms) {
   driver = new webdriver.Builder()
-  .forBrowser(parms.browser)
-  .build();
+    .forBrowser(parms.browser)
+    .build();
   await driver.get(parms.baseurl);
   el = await driver.getTitle();
   assert.equal(el, 'Mercy Corps Sign-On', el);
@@ -34,7 +34,7 @@ async function newTolaLogin(parms) {
   await el.click();
 }
 
-test.describe('TolaActivity Indicators Page', function() {
+test.describe('TolaActivity Program Indicators page', function() {
   var parms = readConfig();
   
   test.before(async function() {
@@ -59,18 +59,13 @@ test.describe('TolaActivity Indicators Page', function() {
    // dropdown construction complicates it.
   test.describe('Programs dropdown', function() {
     test.it('should be present on page', async function() {
-      el = await driver.findElement({id: 'dropdownProgram'});
+      el = await driver.wait(until.elementLocated({id: 'dropdownProgram'}));
       assert(el.click());
-      assert.equal(await el.getText(), 'Programs');
     });
-    test.it('should have at least one entry');
-    test.it('should default to showing all programs');
-    test.it('should be able to filter PIs by Program');
-    test.it('should be able to filter Programs by PI');
     test.it('should have same item count as Programs table');
     test.it('should have same items as Programs table');
    }); // end programs dropdown tests
-  
+
   // TODO: Having difficulty working with this element; the non-standard
   // dropdown construction complicates it.
   test.describe('Indicators dropdown', function() {
@@ -96,7 +91,9 @@ test.describe('TolaActivity Indicators Page', function() {
     test.it('should default to showing all Indicator Types for a program');
     test.it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
-  test.it('should toggle PIs table by clicking PI Indicators button');
+
+  test.it('should toggle PIs table by clicking PI Indicators button', function() {
+  });
   test.it('should increase PI count after adding new indicator');
   test.it('should decrease PI count after deleting indicator');
   test.it('should view a PI by clicking its name in Indicator Name column');
@@ -237,4 +234,5 @@ test.describe('TolaActivity Indicators Page', function() {
   test.it('should highlight PIs with no evidence');
   test.it('should disable Indicators button if program has no indicators');
   test.it('should be able to sort table by clicking a column header');
+
 });

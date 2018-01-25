@@ -5,7 +5,7 @@ var test = require('selenium-webdriver/testing');
 var assert = require('chai').assert;
 var expect = require('chai').should;
 var fs = require('fs');
-let el;
+var el;
 var driver;
 
 function readConfig() {
@@ -15,8 +15,8 @@ function readConfig() {
     
 async function newTolaSession(parms) {
   driver = new webdriver.Builder()
-  .forBrowser(parms.browser)
-  .build();
+    .forBrowser(parms.browser)
+    .build();
   await driver.get(parms.baseurl);
   el = await driver.getTitle();
   assert.equal(el, 'Mercy Corps Sign-On', el);
@@ -40,8 +40,8 @@ test.describe('TolaActivity Dashboard', function() {
     await newTolaSession(parms);
   });
 
-  test.after(function() {
-    driver.quit();
+  test.after(async function() {
+    await driver.quit();
   });
 
   test.it('should require login authentication', async function() {
@@ -81,61 +81,56 @@ test.describe('TolaActivity Dashboard', function() {
     assert(el.click());
   });
 
-  test.it('should have a Form Library dropdown', async function() {
-    el = await driver.findElement({linkText: 'Form Library'})
-      .then(function(el) {
-        assert(el.click());
-      });
+  test.it('should have a Form Library dropdown', function() {
+    el = driver.wait(until.elementLocated({linkText: 'Form Library'}));
+    assert(el.click());
   });
   
-  test.it('should have a Reports link', async function() {
-    el = await driver.findElement({linkText: 'Reports'})
-      .then(function(el) {
-        assert(el.click());
-      });
+  test.it('should have a Reports link', function() {
+    el = driver.wait(until.elementLocated({linkText: 'Reports'}));
+    assert(el.click());
   });
 
-  test.it('should have a Profile link', async function() {
+  test.it('should have a Profile link', function() {
     let xp = '/html/body/nav/div/div[2]/ul[2]/li[1]/a';
-    el = await driver.findElement({xpath: xp})
-      .then(function(el) {
-        assert(el.click());
-      });
+    el = driver.wait(until.elementLocated({xpath: xp}));
+    assert(el.click());
   });
 
-  test.it('should have a Bookmarks link', async function() {
+  test.it('should have a Bookmarks link', function() {
     let xp = '/html/body/nav/div/div[2]/ul[2]/li[2]/a';
-    el = await driver.findElement({xpath: xp})
-      .then(function(el) {
-        assert(el.click());
-      });
+    el = driver.wait(until.elementLocated({xpath: xp}));
+    assert(el.click());
   });
 
   // TODO: Unable to reliably select this element
   test.describe('Indicator Evidence panel', function() {
-    test.it.skip('should be present on dashboard');
+    test.it('should be present on dashboard');
   }); // end indicator evidence panel tests
 
   // TODO: Unable to reliably select this element
   test.describe('Strategic Objectives panel', function() {
-    test.it.skip('should be present on dashboard');
+    test.it('should be present on dashboard');
   }); // end strategic objectives panel tests
 
+  // TODO: Unable to reliably select this element
   test.describe('Sites panel', async function() {
-    test.it.skip('should be present on dashboard');
-    test.it.skip('should show map of country selected in Country Dashboard dropdown');
-    test.it.skip('should be able to zoom in on the map');
-    test.it.skip('should be able to zoom out on the map');
-    test.it.skip('should display data points on the Sites map');
+    test.it('should be present on dashboard');
+    test.it('should show map of country selected in Country Dashboard dropdown');
+    test.it('should be able to zoom in on the map');
+    test.it('should be able to zoom out on the map');
+    test.it('should display data points on the Sites map');
   }); // end sites panel tests
 
+  // TODO: Unable to reliably select this element
   test.describe('Program Projects by Status panel', async function() {
-    test.it.skip('should be present on dashboard');
-    test.it.skip('should have a project status chart');
+    test.it('should be present on dashboard');
+    test.it('should have a project status chart');
   }); // end program projects by status tests
 
+  // TODO: Unable to reliably select this element
   test.describe('Indicators performance panel', async function() {
-    test.it.skip('should be present on dashboard');
-    test.it.skip('should have a KPI status chart');
+    test.it('should be present on dashboard');
+    test.it('should have a KPI status chart');
   }); // end indicators performance panel tests
 });
