@@ -757,7 +757,7 @@
             $(this).parent().addClass('has-error');
             $(this).parent().removeClass('border-1px');
         }
-        if ($("#id_div_periodic_tables_placeholder input[type=number]").parent().hasClass("has-error") ) {
+        if ($("#id_div_periodic_tables_placeholder input[type=number], input[type=text]").parent().hasClass("has-error") ) {
             $("#id_pt_errors").html(`<span class="target-value-error"><small>${getPTMessage()}</small></span>`);
         }
     });
@@ -771,7 +771,7 @@
             $(this).parent().addClass('has-error');
             $(this).parent().removeClass('border-1px');
         }
-        if ($("#id_div_periodic_tables_placeholder input[type=text]").parent().hasClass("has-error") ) {
+        if ($("#id_div_periodic_tables_placeholder input[type=text], input[type=number]").parent().hasClass("has-error") ) {
             $("#id_pt_errors").html(`<span class="target-value-error"><small>${getPTMessage()}</small></span>`);
         }
     });
