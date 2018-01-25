@@ -5,7 +5,9 @@ from django.test import RequestFactory, TestCase, override_settings
 from mock import Mock, patch
 
 import factories
-from tola.track_sync import register_user, create_workflowlevel1
+from tola.track_sync import (register_user, create_workflowlevel1,
+                             create_organization, update_organization,
+                             delete_organization)
 
 
 class RegisterUserTest(TestCase):
@@ -138,3 +140,109 @@ class CreateWFL1Test(TestCase):
 
         response = create_workflowlevel1(wfl1)
         self.assertEqual(response.status_code, 400)
+
+
+class TrackOrganizationTest(TestCase):
+    def setUp(self):
+        logging.disable(logging.WARNING)
+        factories.Group()
+        self.tola_user = factories.TolaUser()
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.logger')
+    @patch('tola.track_sync.requests')
+    def test_response_201_create(self, mock_requests, mock_logger):
+        mock_requests.post.return_value = Mock(status_code=201)
+
+        org = factories.Organization()
+
+        response = create_organization(org)
+        self.assertEqual(response.status_code, 201)
+        mock_logger.info.assert_called_once_with(
+            'The request for {} (id={}, model={}) was successfully executed '
+            'on Track.'.format(org.name, org.id, 'Organization'))
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.logger')
+    @patch('tola.track_sync.requests')
+    def test_response_forbidden(self, mock_requests, mock_logger):
+        mock_requests.post.return_value = Mock(status_code=403)
+
+        org = factories.Organization()
+
+        response = create_organization(org)
+        self.assertEqual(response.status_code, 403)
+        mock_logger.warning.assert_called_once_with(
+            '{} (id={}, model={}) could not be created/fetched successfully '
+            'on/from Track.'.format(org.name, org.id, 'Organization'))
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.logger')
+    @patch('tola.track_sync.requests')
+    def test_response_200_update(self, mock_requests, mock_logger):
+        mock_requests.put.return_value = Mock(status_code=200)
+
+        org = factories.Organization()
+        org.name = 'Another Org'
+        org.description = 'The Org name was changed'
+        org.save()
+
+        response = update_organization(org)
+        self.assertEqual(response.status_code, 201)
+        mock_logger.info.assert_called_once_with(
+            'The request for {} (id={}, model={}) was successfully executed '
+            'on Track.'.format(org.name, org.id, 'Organization'))
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.logger')
+    @patch('tola.track_sync.requests')
+    def test_response_forbidden(self, mock_requests, mock_logger):
+        mock_requests.put.return_value = Mock(status_code=403)
+
+        org = factories.Organization()
+        org.name = 'Another Org'
+        org.description = 'The Org name was changed'
+        org.save()
+
+        response = update_organization(org)
+        self.assertEqual(response.status_code, 403)
+        mock_logger.warning.assert_called_once_with(
+            '{} (id={}, model={}) could not be created/fetched successfully '
+            'on/from Track.'.format(org.name, org.id, 'Organization'))
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.logger')
+    @patch('tola.track_sync.requests')
+    def test_response_200_update(self, mock_requests, mock_logger):
+        mock_requests.delete.return_value = Mock(status_code=200)
+
+        org = factories.Organization()
+
+        response = delete_organization(org)
+        self.assertEqual(response.status_code, 200)
+        mock_logger.info.assert_called_once_with(
+            'The request for {} (id={}, model={}) was successfully executed '
+            'on Track.'.format(org.name, org.id, 'Organization'))
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.logger')
+    @patch('tola.track_sync.requests')
+    def test_response_forbidden(self, mock_requests, mock_logger):
+        mock_requests.delete.return_value = Mock(status_code=403)
+
+        org = factories.Organization()
+
+        response = delete_organization(org)
+        self.assertEqual(response.status_code, 403)
+        mock_logger.warning.assert_called_once_with(
+            '{} (id={}, model={}) could not be created/fetched successfully '
+            'on/from Track.'.format(org.name, org.id, 'Organization'))
