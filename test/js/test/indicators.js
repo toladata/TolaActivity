@@ -1,4 +1,5 @@
 'use strict';
+
 var webdriver = require('selenium-webdriver');
 var until = require('selenium-webdriver').until;
 var logging = require('selenium-webdriver').logging;
@@ -7,7 +8,7 @@ var assert = require('chai').assert;
 var expect = require('chai').should;
 var fs = require('fs');
 let el;
-var driver;
+let driver;
 
 function readConfig() {
   let data = fs.readFileSync('config.json');
@@ -45,7 +46,7 @@ test.describe('TolaActivity Program Indicators page', function() {
     await driver.quit();
   });
 
-  test.it('should require login authentiction', async function() {
+  test.it('should require login authentication', async function() {
     await newTolaLogin(parms);
   });
 
@@ -69,10 +70,11 @@ test.describe('TolaActivity Program Indicators page', function() {
   // TODO: Having difficulty working with this element; the non-standard
   // dropdown construction complicates it.
   test.describe('Indicators dropdown', function() {
-    test.it('should be present on page', async function() {
+    test.it('should be present on page', async function(done) {
       el = await driver.wait(until.elementLocated({id: 'dropdownIndicator'}));
-      assert(el.click());
       assert.equal(await el.getText(), 'Indicators');
+      assert(el.click());
+      done();
     });
     test.it('should have at least one entry');
     test.it('should default to showing all PIs for a program');
@@ -82,10 +84,11 @@ test.describe('TolaActivity Program Indicators page', function() {
   // TODO: Having difficulty working with this element; the non-standard
   // dropdown construction complicates it.
   test.describe('Indicator Type dropdown', function() {
-    test.it('should be present on page', async function() {
+    test.it('should be present on page', async function(done) {
       el = await driver.wait(until.elementLocated({id: 'dropdownIndicatorType'}));
-      assert(el.click());
       assert.equal(await el.getText(), 'Indicator Type');
+      assert(el.click());
+      done();
     });
     test.it('should have at least one entry');
     test.it('should default to showing all Indicator Types for a program');
@@ -103,7 +106,7 @@ test.describe('TolaActivity Program Indicators page', function() {
   test.it('should increase evidence count when PI evidence added');
   test.it('should decrease evidence count when PI evidence deleted');
   test.it('should be able to delete a PI by clicking its Delete button');
-  
+
   test.describe('Program Indicators table', function() {
     test.it('should open the Create an Indicator form when New Indicator button is clicked');
     test.it('should open the Grid/Print Report page when button is clicked');
@@ -234,5 +237,4 @@ test.describe('TolaActivity Program Indicators page', function() {
   test.it('should highlight PIs with no evidence');
   test.it('should disable Indicators button if program has no indicators');
   test.it('should be able to sort table by clicking a column header');
-
 });
