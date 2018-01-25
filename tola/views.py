@@ -1,4 +1,5 @@
 import json
+import os
 from urlparse import urljoin
 import warnings
 import requests
@@ -19,7 +20,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
 
-from chargebee import InvalidRequestError, Subscription
+from chargebee import APIError, InvalidRequestError, Subscription
+from tola import DEMO_BRANCH
 from tola.track_sync import register_user
 from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
     CountrySerializer
@@ -89,6 +91,8 @@ class RegisterView(View):
         except InvalidRequestError:
             logger.info('The given subscription id ({}) is not valid.'.format(
                 sub_id))
+        except APIError as e:
+            logger.warn(e)
         else:
             subscription = result.subscription
             if subscription.status in ['active', 'in_trial']:
@@ -107,7 +111,8 @@ class RegisterView(View):
             'form_user': NewUserRegistrationForm(),
             'form_tolauser': NewTolaUserRegistrationForm(),
         }
-        if len(request.GET.values()) and request.GET.get('sub_id'):
+        if len(request.GET.values()) and request.GET.get('sub_id') and \
+                os.getenv('APP_BRANCH') != DEMO_BRANCH:
             extra_context = self._get_chargebee_data(
                 request.GET, **extra_context)
         context = self._get_context_data(**extra_context)

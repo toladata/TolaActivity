@@ -9,7 +9,7 @@ from django.test import TestCase, tag
 from mock import Mock
 
 import factories
-from tola import DEMO_BRANCH, PRODUCTION_BRANCH
+from tola import DEMO_BRANCH
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Organization, WorkflowTeam, ROLE_PROGRAM_ADMIN,
                              ROLE_ORGANIZATION_ADMIN, ROLE_VIEW_ONLY)
@@ -98,7 +98,7 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
         os.environ['APP_BRANCH'] = ''
 
 
-class CheckSeatsTest(TestCase):
+class CheckSeatsSaveWFTeamsTest(TestCase):
     class ExternalResponse:
         def __init__(self, values):
             self.subscription = Subscription(values)
@@ -111,15 +111,11 @@ class CheckSeatsTest(TestCase):
 
     def setUp(self):
         logging.disable(logging.ERROR)
-        os.environ['APP_BRANCH'] = PRODUCTION_BRANCH
         self.group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.group_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
         self.group_view_only = factories.Group(name=ROLE_VIEW_ONLY)
         self.org = factories.Organization(chargebee_subscription_id='12345')
         self.tola_user = factories.TolaUser(organization=self.org)
-
-    def tearDown(self):
-        os.environ['APP_BRANCH'] = ''
 
     def test_check_seats_save_team_increase(self):
         external_response = self.ExternalResponse(None)
@@ -186,6 +182,18 @@ class CheckSeatsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
 
+    def test_check_seats_save_team_demo(self):
+        os.environ['APP_BRANCH'] = DEMO_BRANCH
+        self.tola_user.organization = factories.Organization()
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
+        factories.WorkflowTeam(workflow_user=self.tola_user,
+                               workflowlevel1=wflvl1,
+                               role=self.group_program_admin)
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 0)
+        os.environ['APP_BRANCH'] = ''
+
     def test_check_seats_save_team_org_admin(self):
         # When a user is an org admin, the seat has to be updated with the
         # user groups signal, that's why it shouldn't be changed in this case.
@@ -202,6 +210,108 @@ class CheckSeatsTest(TestCase):
         # It should have only one seat because of the Org Admin role
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 1)
+
+
+class CheckSeatsDeleteWFTeamsTest(TestCase):
+    class ExternalResponse:
+        def __init__(self, values):
+            self.subscription = Subscription(values)
+            self.subscription.status = 'active'
+
+            addon = Addon(values)
+            addon.id = 'user'
+            addon.quantity = 0
+            self.subscription.addons = [addon]
+
+    def setUp(self):
+        logging.disable(logging.ERROR)
+        self.group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.group_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        self.org = factories.Organization(chargebee_subscription_id='12345')
+        self.tola_user = factories.TolaUser(organization=self.org)
+
+    def test_check_seats_delete_team_decrease(self):
+        external_response = self.ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
+        wfteam = factories.WorkflowTeam(workflow_user=self.tola_user,
+                                        workflowlevel1=wflvl1,
+                                        role=self.group_program_admin)
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 1)
+
+        wfteam.delete()
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 0)
+
+    def test_check_seats_save_team_not_decrease(self):
+        external_response = self.ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        wflvl1_1 = factories.WorkflowLevel1(name='WorkflowLevel1_1')
+        wflvl1_2 = factories.WorkflowLevel1(name='WorkflowLevel1_2')
+        wfteam1_1 = factories.WorkflowTeam(workflow_user=self.tola_user,
+                                           workflowlevel1=wflvl1_1,
+                                           role=self.group_program_admin)
+        factories.WorkflowTeam(workflow_user=self.tola_user,
+                               workflowlevel1=wflvl1_2,
+                               role=self.group_program_admin)
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 1)
+
+        wfteam1_1.delete()
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 1)
+
+    def test_check_seats_save_team_demo(self):
+        os.environ['APP_BRANCH'] = DEMO_BRANCH
+        self.tola_user.organization = factories.Organization()
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
+        factories.WorkflowTeam(workflow_user=self.tola_user,
+                               workflowlevel1=wflvl1,
+                               role=self.group_program_admin)
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 0)
+        os.environ['APP_BRANCH'] = ''
+
+    def test_check_seats_save_team_org_admin(self):
+        external_response = self.ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        self.tola_user.user.groups.add(self.group_org_admin)
+        self.tola_user.user.save()
+
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
+        wfteam = factories.WorkflowTeam(workflow_user=self.tola_user,
+                                        workflowlevel1=wflvl1,
+                                        role=self.group_program_admin)
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 1)
+
+        wfteam.delete()
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 1)
+
+
+class CheckSeatsSaveUserGroupTest(TestCase):
+    class ExternalResponse:
+        def __init__(self, values):
+            self.subscription = Subscription(values)
+            self.subscription.status = 'active'
+
+            addon = Addon(values)
+            addon.id = 'user'
+            addon.quantity = 0
+            self.subscription.addons = [addon]
+
+    def setUp(self):
+        logging.disable(logging.ERROR)
+        self.group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
+        self.group_view_only = factories.Group(name=ROLE_VIEW_ONLY)
+        self.org = factories.Organization(chargebee_subscription_id='12345')
+        self.tola_user = factories.TolaUser(organization=self.org)
 
     def test_check_seats_save_user_groups_increase(self):
         external_response = self.ExternalResponse(None)
@@ -245,3 +355,16 @@ class CheckSeatsTest(TestCase):
         # It should have only one seat because of the Org Admin role
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
+
+    def test_check_seats_save_user_groups_demo(self):
+        os.environ['APP_BRANCH'] = DEMO_BRANCH
+        self.tola_user.organization = factories.Organization()
+        self.tola_user.save()
+
+        self.tola_user.user.groups.add(self.group_org_admin)
+        self.tola_user.user.save()
+
+        # It should have only one seat because of the Org Admin role
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 0)
+        os.environ['APP_BRANCH'] = ''

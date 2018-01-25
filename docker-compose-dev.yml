@@ -64,3 +64,6 @@ services:
       - TOLA_ACTIVITY_URL=http://tolaactivity.dev.com
       - TOLA_TRACK_URL=http://tolatrack.dev.com
       - DEFAULT_ORG=TolaData
+      - CHARGEBEE_SIGNUP_ORG_URL=https://toladata-test.chargebee.com/hosted_pages/plans/monthly
+      - CHARGEBEE_SITE_API_KEY=test_31lcdE7L3grqdkGcvy24ik3lmlJrnA0Ez
+      - CHARGEBEE_SITE=toladata-test
