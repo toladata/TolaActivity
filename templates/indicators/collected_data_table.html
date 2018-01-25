@@ -102,7 +102,7 @@
                         <td colspan="8" style="color:red; border-color: #f9f9f9; border-left: 0px solid; border-right: 0px solid; border-bottom: 0px solid;">
                             <small>
                                 {% ifequal err 'Error_1' %}
-                                    Targets are not setup for this indicator. <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Start by selecting a target frequency.</a>
+                                    Targets are not set up for this indicator. <strong><a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Start by selecting a target frequency.</a></strong>
                                 {% endifequal %}
 
                                 {% ifequal err 'Error_2' %}
@@ -110,7 +110,7 @@
                                 {% endifequal %}
 
                                 {% ifequal err 'Error_3' %}
-                                    This date falls outside the range of your target periods. You can change the date or <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">create additional target periods.</a>
+                                    This date falls outside the range of your target periods. You can change the date or <strong><a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">create additional target periods.</a></strong>
                                 {% endifequal %}
                             </small>
                         </td>
