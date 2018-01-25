@@ -387,7 +387,7 @@ from being applied when there is no value */
 
 .target-value-error {
   margin: 5px 5px 0px 5px;
-  float: right;
+  float: left;
   margin-right: 10px;
 }
 

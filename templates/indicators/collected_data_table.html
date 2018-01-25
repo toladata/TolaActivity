@@ -8,8 +8,8 @@
     }
 </style>
 {% load assign %}
-{% if collecteddata.count > 0 or indicator.target_frequency and indicator.periodictarget_set.all.count > 0 %}
-    <table class="table table-bordered">
+{% if collecteddata.count > 0 or indicator.target_frequency  %}
+    <table class="table table-bordered" style="border: 0px solid #ddd;">
         <tr>
             <th style="vertical-align:bottom; min-width:180px;">Target Period</th>
             <th style="vertical-align:bottom; text-align: right;">Target</th>
@@ -77,7 +77,7 @@
                 {% if indicator.target_frequency == None %}
                     {% assign err 'Error_1' %}
                 {% elif indicator.target_frequency == 2 or indicator.target_frequency == 8 %}
-                     {% assign err 'Error_2' %}
+                    {% assign err 'Error_2' %}
                 {% else %}
                     {% assign err 'Error_3' %}
                 {% endif %}
@@ -91,26 +91,28 @@
                     <td align="right"><strong>{{ collected_sum.achieved__sum|floatformat:"-2" }}</strong></td>
                     <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %}%</strong></td>
                     <td colspan="3" align="right">
-                        <span class="{% if indicator.target_frequency == None %} disable-span {% endif %}">
+                        <span class="{% if indicator.target_frequency == None or err == 'Error_1' %} disable-span {% endif %}">
                             <a href="{% url 'collecteddata_add' program_id indicator.id %}" class="btn-sm btn-info collecteddata-link"> New Data</a>
                         </span>
                     </td>
                 </tr>
 
                 {% if err %}
-                    <tr>
-                        <td colspan="8" style="color:red;">
-                            {% ifequal err 'Error_1' %}
-                                There are not targets setup for this indicator. <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Start by selecting a target frequency.</a>
-                            {% endifequal %}
+                    <tr style="background-color: #f9f9f9;">
+                        <td colspan="8" style="color:red; border-color: #f9f9f9; border-left: 0px solid; border-right: 0px solid; border-bottom: 0px solid;">
+                            <small>
+                                {% ifequal err 'Error_1' %}
+                                    Targets are not setup for this indicator. <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Start by selecting a target frequency.</a>
+                                {% endifequal %}
 
-                            {% ifequal err 'Error_2' %}
-                                This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
-                            {% endifequal %}
+                                {% ifequal err 'Error_2' %}
+                                    This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
+                                {% endifequal %}
 
-                            {% ifequal err 'Error_3' %}
-                                This date falls outside the range of your target periods. You can change the date or <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">create additional target periods.</a>
-                            {% endifequal %}
+                                {% ifequal err 'Error_3' %}
+                                    This date falls outside the range of your target periods. You can change the date or <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">create additional target periods.</a>
+                                {% endifequal %}
+                            </small>
                         </td>
                     </tr>
                 {% endif %}
