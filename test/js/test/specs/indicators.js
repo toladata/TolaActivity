@@ -32,6 +32,7 @@ describe('TolaActivity Program Indicators page', function() {
   // after all of that, should wind up at the Indicators page
   it('should exist', function() {
     browser.url('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/');
+    browser.waitForText('h2');
     var h2 = $('h2');
     assert.equal(h2.getText(), 'Program Indicators');
   });
@@ -40,18 +41,41 @@ describe('TolaActivity Program Indicators page', function() {
     it('should be present on page', function() {
       var button = $('#dropdownProgram');
       assert(button.getText() == 'Programs');
-      button.click();
     });
 
     it('should have same item count as Programs table', function() {
-      var button = $('#dropdownProgram');
-      var menu = $('.dropdown-menu');
-      var items = menu.$$('li');
-      assert(false);
+      var buttons = $('div.panel').$$('div.btn-group');
+      var programs = buttons[0];
+      // have to click to make the menu visible
+      programs.click();
+      var menu = programs.$('ul.dropdown-menu');
+      var progList = menu.$$('li');
+      console.log(progList);
+      programs.click();
+      
+      var table = $('div#toplevel_div')
+      var tableRows = table.$$('div.panel-heading');
+      assert(progList.length === tableRows.length);
     });
 
-    it('should have same items as Programs table');
-   }); // end programs dropdown tests
+    // TODO: different text between dropdown and table
+    it('should have same items as Programs table', function() {
+      var buttons = $('div.panel').$$('div.btn-group');
+      var programs = buttons[0];
+      // have to click to make the menu visible
+      programs.click();
+      var menu = programs.$('ul.dropdown-menu');
+      var progList = menu.$$('li');
+      programs.click();
+      
+      var table = $('div#toplevel_div')
+      var tableRows = table.$$('div.panel-heading');
+      // TODO, FIXME: dropdown and table have different text for same programs
+      for (let i = 0; i < tableRows.length; i++) {
+        assert.equal(tableRows[i].$('h4').getText(), progList[i].$('a').getText());
+      };
+    });
+  }); // end programs dropdown tests
 
   // TODO: Having difficulty working with this element; the non-standard
   // dropdown construction complicates it.
@@ -59,10 +83,19 @@ describe('TolaActivity Program Indicators page', function() {
     it('should be present on page', function() {
       var button = $('#dropdownIndicator');
       assert(button.getText() == 'Indicators');
-      button.click();
     });
-    it('should have at least one entry');
-    it('should default to showing all PIs for a program');
+
+    it('should have at least one entry', function() {
+      var buttons = $('div.panel').$$('div.btn-group');
+      var indicators = buttons[1];
+
+      // have to click to make the menu visible
+      indicators.click();
+      var menu = indicators.$('ul.dropdown-menu');
+      var indList = menu.$$('li');
+      indicators.click();
+      assert(indList.length > 0);
+    });
     it('should be able to select any/all list items');
   }); // end indicators dropdown tests
      
@@ -74,23 +107,35 @@ describe('TolaActivity Program Indicators page', function() {
       assert(button.getText() == 'Indicator Type');
       button.click();
     });
-    it('should have at least one entry');
+    // TODO, FIXME: Is the indicator type going to be a static list?
+    // if so it needs to be validated
+    it('should have at least one entry', function() {
+      var buttons = $('div.panel').$$('div.btn-group');
+      var indicatorType = buttons[2];
+
+      // have to click to make the menu visible
+      indicatorType.click();
+      var menu = indicatorType.$('ul.dropdown-menu');
+      var indTypeList = menu.$$('li');
+      indicatorType.click();
+      assert(indTypeList.length > 0);
+    });
     it('should default to showing all Indicator Types for a program');
     it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
 
-/*
   it('should toggle PIs table by clicking PI Indicators button');
+  it('should view PI by clicking its name in Indicator Name column');
+  it('should be able to create PI by clicking the New Indicator button');
   it('should increase PI count after adding new indicator');
-  it('should decrease PI count after deleting indicator');
-  it('should view a PI by clicking its name in Indicator Name column');
-  it('should be able to edit a PI by clicking its Edit button');
-  it('should be able to view PI evidence table by clicking its Data button');
-  it('should have matching counts between Data button and evidence table');
   it('should increase evidence count when PI evidence added');
+  it('should be able to delete PI by clicking its Delete button');
+  it('should decrease PI count after deleting indicator');
   it('should decrease evidence count when PI evidence deleted');
-  it('should be able to delete a PI by clicking its Delete button');
-  
+  it('should have matching counts between Data button and evidence table');
+  it('should be able to edit PI by clicking its Edit button');
+  it('should be able to view PI evidence table by clicking its Data button');
+/*
   describe('Program Indicators table', function() {
     it('should open the Create an Indicator form when New Indicator button is clicked');
     it('should open the Grid/Print Report page when button is clicked');
