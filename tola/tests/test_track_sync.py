@@ -100,7 +100,7 @@ class TrackInstanceTest(TestCase):
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
     @patch('tola.track_sync.logger')
     @patch('tola.track_sync.requests')
-    def test_response_201_create(self, mock_requests, mock_logger):
+    def test_response_org_create(self, mock_requests, mock_logger):
         mock_requests.post.return_value = Mock(status_code=201)
 
         org = factories.Organization()
@@ -110,6 +110,31 @@ class TrackInstanceTest(TestCase):
         mock_logger.info.assert_called_once_with(
             'The request for {} (id={}, model={}) was successfully executed '
             'on Track.'.format(org.name, org.id, 'Organization'))
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.logger')
+    @patch('tola.track_sync.requests')
+    def test_response_wfl1_create(self, mock_requests, mock_logger):
+        content = [{'id': self.tola_user.organization.id}]
+        mock_requests.post.return_value = Mock(status_code=201)
+        mock_requests.get.return_value = Mock(status_code=200,
+                                              content=json.dumps(content))
+
+        wfl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+
+        response = create_instance(wfl1)
+        self.assertEqual(response.status_code, 201)
+        mock_logger.info.assert_called_once_with(
+            'The request for {} (id={}, model={}) was successfully executed '
+            'on Track.'.format(wfl1.name, wfl1.id, 'WorkflowLevel1'))
+
+    def test_response_wrong_model_create(self):
+        tola_user = factories.TolaUser()
+
+        with self.assertRaises(ValueError):
+            create_instance(tola_user)
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
@@ -130,7 +155,7 @@ class TrackInstanceTest(TestCase):
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
     @patch('tola.track_sync.logger')
     @patch('tola.track_sync.requests')
-    def test_response_200_update(self, mock_requests, mock_logger):
+    def test_response_org_update(self, mock_requests, mock_logger):
         mock_requests.put.return_value = Mock(status_code=200)
 
         org = factories.Organization()
@@ -143,6 +168,27 @@ class TrackInstanceTest(TestCase):
         mock_logger.info.assert_called_once_with(
             'The request for {} (id={}, model={}) was successfully executed '
             'on Track.'.format(org.name, org.id, 'Organization'))
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @patch('tola.track_sync.logger')
+    @patch('tola.track_sync.requests')
+    def test_response_wfl1_update(self, mock_requests, mock_logger):
+        content = [{'id': self.tola_user.organization.id}]
+        mock_requests.put.return_value = Mock(status_code=200)
+        mock_requests.get.return_value = Mock(status_code=200,
+                                              content=json.dumps(content))
+
+        wfl1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wfl1.name = 'Another Org'
+        wfl1.save()
+
+        response = update_instance(wfl1)
+        self.assertEqual(response.status_code, 200)
+        mock_logger.info.assert_called_once_with(
+            'The request for {} (id={}, model={}) was successfully executed '
+            'on Track.'.format(wfl1.name, wfl1.id, 'WorkflowLevel1'))
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
