@@ -156,6 +156,15 @@
     });
 
 
+    $("#indicator_modal_content, #indicator_form").on("keyup keypress", "#indicator_update_form", function(e){
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13 ){
+            e.preventDefault();
+            return false;
+        }
+
+    });
+
     $("#indicator_modal_content, #indicator_form").on("click", "#id_create_targets_btn", function(e) {
         e.preventDefault();
         if (validateForm() == false) {
@@ -627,10 +636,9 @@
             $("#hint_id_target_frequency_start").text("Please enter a valid date.");
             return false;
         } else {
-            // make sure the day is always set to 1 for this field
-            var date = new Date(field);
-            date.setDate(1);
-            $("#id_target_frequency_start").val(formatDate(date));
+            var val = formatDate(field, 1);
+            $("#id_target_frequency_start").val(val);
+            console.log(val);
             $("#div_id_target_frequency_start").removeClass('has-error');
             $("#hint_id_target_frequency_start").text(" ");
             return true;

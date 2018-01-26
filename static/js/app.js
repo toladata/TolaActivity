@@ -28,7 +28,7 @@ function isDate(dateVal) {
     return new Date(dateVal) === 'Invalid Date' ? false : true;
     */
     var date = new Date(dateVal);
-    if (date === 'Invalid Date') {
+    if (date == 'Invalid Date') {
         return false;
     }
     var currentYear = (new Date).getFullYear();
@@ -38,7 +38,7 @@ function isDate(dateVal) {
     return true;
 }
 
-function formatDate(dateString) {
+function formatDate(dateString, day=0) {
     var months = new Array();
     months[1] = "Jan";
     months[2] = "Feb";
@@ -55,11 +55,17 @@ function formatDate(dateString) {
 
     try {
         var dateval = new Date(dateString);
-        return months[dateString.getMonth()+1] + ' ' + dateString.getDate() + ', ' + dateString.getFullYear();
+        // Add the local timezone offset
+        dateval.setMinutes(dateval.getMinutes() + dateval.getTimezoneOffset());
+        var month = months[(dateval.getMonth() + 1)];
+        var ret = month.concat(' ').concat(day == 0 ? dateval.getDate() : day).concat(', ').concat(dateval.getFullYear());
+        return ret;
     } catch (err) {
+        console.log(err);
         try {
             var dateArray = dateString.split('-');
-            return months[parseInt(dateArray[1])] + ' ' + dateArray[2] + ', ' + dateArray[0];
+            var month = months[parseInt(dateArray[1])]
+            return month.concat(' ').concat(day == 0 ? dateArray[2] : day).concat(', ').concat(dateArray[0]);
         }
         catch (err) {
             return dateString == null ? '' : dateString;
