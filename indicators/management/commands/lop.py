@@ -28,7 +28,8 @@ class Command(BaseCommand):
         for ind in indicators:
             collecteddata_count = ind.collecteddata_set.all().count()
             if collecteddata_count == 0:
-                self.stdout.write(self.style.SUCCESS("%s, skipped becuase data records count is %s" % (ind.id, collecteddata_count)))
+                ind.periodictarget_set.all().delete()
+                self.stdout.write(self.style.SUCCESS("%s, only deleted periodic_targets because data count is %s" % (ind.id, collecteddata_count)))
             else:
                 try:
                     # disassociate collected_data records of this indicator with existing periodic targets
