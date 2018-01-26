@@ -14,12 +14,10 @@ def run():
     try:
         update_level1()
     except Exception as e:
-
         print '%s (%s)' % (e.message, type(e))
 
     try:
         update_level2()
     except Exception as e:
-
         print '%s (%s)' % (e.message, type(e))
 

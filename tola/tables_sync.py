@@ -3,7 +3,7 @@ from workflow.models import Country, TolaUser, TolaSites, Organization, Workflow
 import json
 
 
-def get_headers():
+def _get_headers():
     """
     Authentication for Tables
     Get the header information to send to tables in the request
@@ -20,7 +20,7 @@ def get_headers():
     return headers
 
 
-def send_to_tables(section,payload,id):
+def _send_to_tables(section,payload,id):
     """
     send the requests to individual API endpoint in tables
     with the payload and id
@@ -28,7 +28,7 @@ def send_to_tables(section,payload,id):
     :return: status: success of failure of request
     """
     status = "unknown"
-    headers = get_headers()
+    headers = _get_headers()
 
     # get the table URL
     tables = TolaSites.objects.get(site_id=1)
@@ -54,14 +54,14 @@ def send_to_tables(section,payload,id):
     return status
 
 
-def check_org(org):
+def _check_org(org):
     """
     Get or create the org in Tables
     :param org:
     :return: the org URL in tables
     """
     status = None
-    headers = get_headers()
+    headers = _get_headers()
 
     # get the table URL
     tables = TolaSites.objects.get(site_id=1)
@@ -141,12 +141,12 @@ def update_level1():
         print item.countries
         # check to see if the organization exists on tables first if not it check_org will create it
         get_org = Organization.objects.all().get(country__country=item.countries)
-        org_id = check_org(get_org.name)
+        org_id = _check_org(get_org.name)
         # set payload and deliver
         print org_id
         payload = {'level1_uuid': item.level1_uuid, 'name': item.name, 'organization': org_id}
         print payload
-        send = send_to_tables(section="workflowlevel1", payload=payload, id=item.id)
+        send = _send_to_tables(section="workflowlevel1", payload=payload, id=item.id)
 
         print send
 
@@ -164,12 +164,12 @@ def update_level2():
         print item.workflowlevel1.countries
         # check to see if the organization exists on tables first if not it check_org will create it
         get_org = Organization.objects.all().get(country__country=item.workflowlevel1.countries)
-        org_id = check_org(get_org.name)
+        org_id = _check_org(get_org.name)
 
-        level1_id = check_org(item.workflowlevel1.level1_uuid)
+        level1_id = _check_org(item.workflowlevel1.level1_uuid)
         # set payload and deliver to tables
         payload = {'level2_uuid': item.level2_uuid, 'name': item.name, 'organization': org_id, 'workflowlevel1': level1_id}
-        send = send_to_tables(section="workflowlevel2", payload=payload, id=item.id)
+        send = _send_to_tables(section="workflowlevel2", payload=payload, id=item.id)
 
         print send
 
