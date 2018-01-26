@@ -7,11 +7,21 @@ services:
   - postgresql
 addons:
   postgresql: "9.6"
-before_script:
-  - sleep 10
 install:
+  - python setup.py install
+  - pip install -r requirements/pkgproject.txt
+before_script:
+  - SETTING_FILE=$PWD/tola/settings/test_pkg_project.py
+  - cd ..
+  - django-admin startproject pkgproject
+  - cd pkgproject
+  - cat "$SETTING_FILE" >> pkgproject/settings.py
+  - python manage.py test
+  - cd ..
+  - cd TolaActivity
   - cat requirements/base.txt | grep "^Django==\|^psycopg2" | xargs pip install
   - pip install -r requirements/pkg.txt
+  - sleep 10
 script:
   - python manage.py test --tag=pkg
   - pip install -r requirements/ci.txt
