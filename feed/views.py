@@ -1,4 +1,5 @@
-from django.db.models import Sum
+from django.contrib.auth.models import Group
+from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
