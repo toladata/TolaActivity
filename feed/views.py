@@ -22,7 +22,6 @@ from indicators.models import (
     PeriodicTarget, CollectedData, TolaTable, DisaggregationValue,
     DisaggregationLabel)
 
-from tola import track_sync as tsync
 from workflow import models as wfm
 from .permissions import IsOrgMember, AllowTolaRoles
 from . import serializers
@@ -115,11 +114,6 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
         wfm.WorkflowTeam.objects.create(
             workflow_user=request.user.tola_user, workflowlevel1=wflvl1,
             role=group_program_admin)
-        response = tsync.create_workflowlevel1(wflvl1)
-        if response.status_code != 201:
-            logger.warning('The Program {} (id={}) could not be created '
-                           'successfully on Track.'.format(
-                            wflvl1.name, wflvl1.id))
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED,
