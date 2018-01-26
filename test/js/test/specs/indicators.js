@@ -44,14 +44,33 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should have same item count as Programs table', function() {
-      var button = $('#dropdownProgram');
-      var menu = $('.dropdown-menu');
-      var items = menu.$$('li');
-      assert(false);
+      var buttons = $('div.panel').$$('div.btn-group');
+      var programs = buttons[0];
+      // have to click to make the menu visible
+      programs.click();
+      var menu = programs.$('ul.dropdown-menu');
+      var progList = menu.$$('li');
+      programs.click();
+      
+      var table = $('div#toplevel_div')
+      var rows = table.$$('div.panel.panel-default')
+      assert(progList.length == rows.length);
     });
 
-    it('should have same items as Programs table');
-   }); // end programs dropdown tests
+    it('should have same items as Programs table', function() {
+      var buttons = $('div.panel').$$('div.btn-group');
+      var programs = buttons[0];
+      // have to click to make the menu visible
+      programs.click();
+      var menu = programs.$('ul.dropdown-menu');
+      var progList = menu.$$('li');
+      var table = $('div#toplevel_div')
+      var rows = table.$('div.panel.panel-default').$$('h4');
+      for (let i = 0; i < progList.length; ++i) {
+        assert.equal(rows[i].getText() == progList[i].$('a').getText());
+      }
+    });
+  }); // end programs dropdown tests
 
   // TODO: Having difficulty working with this element; the non-standard
   // dropdown construction complicates it.
