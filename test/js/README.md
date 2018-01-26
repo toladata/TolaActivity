@@ -46,8 +46,8 @@ suit your taste, taste. In particular,
     - `username` and `password` correspond to your MercyCorps SSO login
     - `baseurl` points to the home page of the TolaActivity instance
     you are testing
-    - `browser_name` sets the SUT, and should be either `chrome` or
-    `firefox`.
+    - `browser_name` sets the BUT (_b_rowser _u_nder _t_est), and should
+    be either `chrome` or `firefox`.
 1. From the top of the TolaActivity repo, setup the JS environment for
 the test suite:
 
@@ -56,7 +56,6 @@ $ cd test/js
 $ npm install
 [...]
 ```
-
 1. Execute the test suite. **Note the bare `--`**. They tell `npm`
 to ignore the following arguments and pass them through to Mocha,
 the underlying test framework.
@@ -97,9 +96,11 @@ much, much simpler.
 * First and foremost, the single best practice that helps QA testing
   the most is to **use either the _id_ or _name_ attribute on all UI
   elements which require, which _might_ require, or which you are
-  even thinking about using for user interaction.** These attributes
-  make it easy to select, interact with, and test because they have
-  to be unique per page.
+  even _thinking_ about requiring for user interaction.** These attributes
+  make it easier to write tests quickly because thee have to be unique
+  per-page, so tests can rely on being able to access the page elements
+  they need. They also make element queries fast, because such lookups
+  are Selenium's happy path.
 
   Semantic markup is arguably more correct, too, but the interest here
   is to create code and tests that are easy to maintain, not demonstrate
@@ -108,12 +109,13 @@ much, much simpler.
   people who come after us will thank us for using this small bit of
   semantic markup.
 
-* Similarly, it would be helpful for each page to have its a unique title.
+* Similarly, it would be helpful for each page to have its own unique title.
   Again, this makes programmatic access to page elements much less complicated
-  and reduces verifying that we've loaded the right page to a one line of code.
-  This is less impactful than using _id_ or _name_ attributes consistently.
+  and reduces verifying that we've loaded the right page to a single short,
+  fast expression. This is less impactful than using _id_ or _name_ attributes
+  consistently, so if you can only do of these, use _id_ or _name_ attributes
+  consistently.
 
 * Is there a naming convention at work in the structural and semantic
   markup? I'm curious there is a pattern to the naming that test code
   can exploit.
-
