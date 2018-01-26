@@ -1,4 +1,4 @@
-var assert = require('assert');
+var assert = require('chai').assert;
 var fs = require('fs');
 
 function readConfig() {
@@ -50,7 +50,6 @@ describe('TolaActivity Program Indicators page', function() {
       programs.click();
       var menu = programs.$('ul.dropdown-menu');
       var progList = menu.$$('li');
-      console.log(progList);
       programs.click();
       
       var table = $('div#toplevel_div')
@@ -58,27 +57,28 @@ describe('TolaActivity Program Indicators page', function() {
       assert(progList.length === tableRows.length);
     });
 
-    // TODO: different text between dropdown and table
     it('should have same items as Programs table', function() {
       var buttons = $('div.panel').$$('div.btn-group');
-      var programs = buttons[0];
+      var dropdown = buttons[0];
       // have to click to make the menu visible
-      programs.click();
-      var menu = programs.$('ul.dropdown-menu');
-      var progList = menu.$$('li');
-      programs.click();
-      
+      dropdown.click();
+      var dropdownList = dropdown.$('ul.dropdown-menu').$$('li');
+			var progList = Array();
+      for (let item of dropdownList) {
+        var listitem = item.$('a').getText();
+        progList.push(listitem.split('-')[1].trim());
+      }
+      dropdown.click();
+	
       var table = $('div#toplevel_div')
       var tableRows = table.$$('div.panel-heading');
-      // TODO, FIXME: dropdown and table have different text for same programs
       for (let i = 0; i < tableRows.length; i++) {
-        assert.equal(tableRows[i].$('h4').getText(), progList[i].$('a').getText());
+        let s = tableRows[i].$('h4').getText().split("\n")[0].trim();
+        assert.equal(s, progList[i]);
       };
     });
   }); // end programs dropdown tests
 
-  // TODO: Having difficulty working with this element; the non-standard
-  // dropdown construction complicates it.
   describe('Indicators dropdown', function() {
     it('should be present on page', function() {
       var button = $('#dropdownIndicator');
@@ -91,40 +91,73 @@ describe('TolaActivity Program Indicators page', function() {
 
       // have to click to make the menu visible
       indicators.click();
-      var menu = indicators.$('ul.dropdown-menu');
-      var indList = menu.$$('li');
+      var dropdownList = indicators.$('ul.dropdown-menu').$$('li');
       indicators.click();
-      assert(indList.length > 0);
+      assert(dropdownList.length > 0);
     });
+
     it('should be able to select any/all list items');
   }); // end indicators dropdown tests
      
-  // TODO: Having difficulty working with this element; the non-standard
-  // dropdown construction complicates it.
   describe('Indicator Type dropdown', function() {
     it('should be present on page', function() {
       var button = $('#dropdownIndicatorType');
       assert(button.getText() == 'Indicator Type');
       button.click();
     });
-    // TODO, FIXME: Is the indicator type going to be a static list?
-    // if so it needs to be validated
+  
     it('should have at least one entry', function() {
       var buttons = $('div.panel').$$('div.btn-group');
       var indicatorType = buttons[2];
 
       // have to click to make the menu visible
+			// TODO: Validate the indicator type list as static
       indicatorType.click();
-      var menu = indicatorType.$('ul.dropdown-menu');
-      var indTypeList = menu.$$('li');
+      var dropdownList = indicatorType.$('ul.dropdown-menu').$$('li');
       indicatorType.click();
-      assert(indTypeList.length > 0);
+      assert(dropdownList.length > 0);
     });
     it('should default to showing all Indicator Types for a program');
     it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
 
-  it('should toggle PIs table by clicking PI Indicators button');
+  it('should toggle PIs table by clicking PI Indicators button', function() {
+		progIndTable = $('#toplevel_div');
+		buttons = progIndTable.$$('div.panel-body');
+		for (let button of buttons) {
+			// starts out collapsed
+			var link = button.$('a');
+			var target = link.getAttribute('data-target');
+			state = browser.isVisible('div' + target);
+			assert(!state);
+
+			// open it and verify
+			button.click();
+			state = browser.isVisible('div' + target);
+			assert(!state);
+
+			// close it and verify again
+			button.click();
+			state = browser.isVisible('div' + target);
+			assert(!state);
+		}
+	});
+
+  it('should have matching counts between Data button and evidence table', function() {
+		progIndTable = $('#toplevel_div');
+		buttons = progIndTable.$$('div.panel-body');
+		for (let button of buttons) {
+			// indicator count on button
+			buttonCnt = parseInt(button.$('a').getText());
+			button.click();
+			// indicator count from table
+			target = button.$('a').getAttribute('data-target');
+			tableCnt = $('div' + target).
+			assert(false);
+		}
+	});
+
+/*
   it('should view PI by clicking its name in Indicator Name column');
   it('should be able to create PI by clicking the New Indicator button');
   it('should increase PI count after adding new indicator');
@@ -132,7 +165,6 @@ describe('TolaActivity Program Indicators page', function() {
   it('should be able to delete PI by clicking its Delete button');
   it('should decrease PI count after deleting indicator');
   it('should decrease evidence count when PI evidence deleted');
-  it('should have matching counts between Data button and evidence table');
   it('should be able to edit PI by clicking its Edit button');
   it('should be able to view PI evidence table by clicking its Data button');
 /*
