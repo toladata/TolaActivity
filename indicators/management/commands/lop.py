@@ -23,12 +23,12 @@ class Command(BaseCommand):
         if options['program_id']:
             indicators = Indicator.objects.filter(program__in=options['program_id'])
         else:
-            indicators = Indicator.objects.filter(program = 452)
+            indicators = Indicator.objects.all() #filter(program = 452)
 
         for ind in indicators:
             collecteddata_count = ind.collecteddata_set.all().count()
             if collecteddata_count == 0:
-                self.stdout.write(self.style.SUCCESS("Skipping indicator_id = %s - %s" % (ind.id, ind.collecteddata_set.all().count())))
+                self.stdout.write(self.style.SUCCESS("%s, skipped becuase data records count is %s" % (ind.id, collecteddata_count)))
             else:
                 try:
                     # disassociate collected_data records of this indicator with existing periodic targets
@@ -54,9 +54,9 @@ class Command(BaseCommand):
                     ind.target_frequency = Indicator.LOP
                     ind.save()
 
-                    self.stdout.write(self.style.SUCCESS('Processed indicator_id =, %s' % ind.id))
+                    self.stdout.write(self.style.SUCCESS('%s, Processed successfully.' % ind.id))
                 except ValueError as e:
-                    self.stdout.write(self.style.ERROR('LOP [%s] is not numeric for indicator_id =, %s' % (ind.lop_target, ind.id)))
+                    self.stdout.write(self.style.ERROR('%s, LOP [%s] is missing or not numeric.' % (ind.id, ind.lop_target)))
                 except Exception as e:
-                    self.stdout.write(self.style.ERROR("Error indicator_id =, %s, %s" % (ind.id, e)))
+                    self.stdout.write(self.style.ERROR("%s, Error occured: %s" % (ind.id, e)))
 
