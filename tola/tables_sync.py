@@ -97,37 +97,6 @@ def _check_org(org):
     return org_id
 
 
-def check_level1(level1):
-    """
-    Get or create the org in Tables
-    :param org:
-    :return: the org URL in tables
-    """
-    status = None
-    headers = get_headers()
-
-    # get the table URL
-    tables = TolaSites.objects.get(site_id=1)
-    check_org_url = tables.tola_tables_url + "api/workflowlevel1?format=json&level1_uuid=" + level1
-    check_resp = requests.get(check_org_url, headers=headers, verify=False)
-
-    status = check_resp.content
-    data = json.loads(check_resp.content)
-
-    if not data:
-        # print "COMMENT REPOST TO CREATE LEVEL1 - TODO?"
-        print status
-
-
-    print data[0]
-
-    level1_id = str(data[0]['id'])
-
-    print status
-
-    return level1_id
-
-
 def update_level1():
     """
     Update or create each workflowlevel1 in tables
