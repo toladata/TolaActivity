@@ -627,6 +627,10 @@
             $("#hint_id_target_frequency_start").text("Please enter a valid date.");
             return false;
         } else {
+            // make sure the day is always set to 1 for this field
+            var date = new Date(field);
+            date.setDate(1);
+            $("#id_target_frequency_start").val(formatDate(date));
             $("#div_id_target_frequency_start").removeClass('has-error');
             $("#hint_id_target_frequency_start").text(" ");
             return true;
