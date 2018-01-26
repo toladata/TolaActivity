@@ -32,6 +32,7 @@ describe('TolaActivity Program Indicators page', function() {
   // after all of that, should wind up at the Indicators page
   it('should exist', function() {
     browser.url('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/');
+    browser.waitForText('h2');
     var h2 = $('h2');
     assert.equal(h2.getText(), 'Program Indicators');
   });
@@ -49,6 +50,7 @@ describe('TolaActivity Program Indicators page', function() {
       programs.click();
       var menu = programs.$('ul.dropdown-menu');
       var progList = menu.$$('li');
+      console.log(progList);
       programs.click();
       
       var table = $('div#toplevel_div')
@@ -69,8 +71,8 @@ describe('TolaActivity Program Indicators page', function() {
       var table = $('div#toplevel_div')
       var tableRows = table.$$('div.panel-heading');
       // TODO, FIXME: dropdown and table have different text for same programs
-      for (let row of tableRows) {
-        assert(false);
+      for (let i = 0; i < tableRows.length; i++) {
+        assert.equal(tableRows[i].$('h4').getText(), progList[i].$('a').getText());
       };
     });
   }); // end programs dropdown tests
@@ -133,7 +135,6 @@ describe('TolaActivity Program Indicators page', function() {
   it('should have matching counts between Data button and evidence table');
   it('should be able to edit PI by clicking its Edit button');
   it('should be able to view PI evidence table by clicking its Data button');
-
 /*
   describe('Program Indicators table', function() {
     it('should open the Create an Indicator form when New Indicator button is clicked');
