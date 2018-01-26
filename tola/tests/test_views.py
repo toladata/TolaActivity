@@ -76,19 +76,24 @@ class IndexViewTest(TestCase):
 
 
 class LoginViewTest(TestCase):
+    def _reload_urlconf(self):
+        clear_url_caches()
+        if settings.ROOT_URLCONF in sys.modules:
+            reload(sys.modules[settings.ROOT_URLCONF])
+        return import_module(settings.ROOT_URLCONF)
+
+    @override_settings(CHARGEBEE_SIGNUP_ORG_URL='')
     def test_org_signup_link(self):
+        # As the url_patterns are cached when python load the module, also the
+        # settings are cached there. As we want to override a setting, we need
+        # to reload also the urls in order to catch the new value.
+        self._reload_urlconf()
         response = self.client.get(reverse('login'), follow=True)
         template_content = response.content
         self.assertIn(
             ('<a href="#" data-toggle="modal" data-target="#exampleModal">'
              'Register Your Organization with TolaData</a>'),
             template_content)
-
-    def _reload_urlconf(self):
-        clear_url_caches()
-        if settings.ROOT_URLCONF in sys.modules:
-            reload(sys.modules[settings.ROOT_URLCONF])
-        return import_module(settings.ROOT_URLCONF)
 
     @override_settings(CHARGEBEE_SIGNUP_ORG_URL='https://chargebee.com/123')
     def test_org_signup_link_chargebee(self):

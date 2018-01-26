@@ -120,10 +120,8 @@ class WorkflowLevel1ViewSet(viewsets.ModelViewSet):
                         headers=headers)
 
     def perform_create(self, serializer):
-        organization_id = wfm.TolaUser.objects. \
-            values_list('organization_id', flat=True). \
-            get(user=self.request.user)
-        obj = serializer.save(organization_id=organization_id)
+        organization = self.request.user.tola_user.organization
+        obj = serializer.save(organization=organization)
         obj.user_access.add(self.request.user.tola_user)
 
     def destroy(self, request, pk):

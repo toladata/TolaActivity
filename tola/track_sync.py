@@ -62,7 +62,6 @@ def _build_wfl1_form(obj):
                     'successfully fetched from Track.'.format(
                      obj.organization.name, obj.organization.id))
         return None
-
     content = json.loads(response.content)
     if response.status_code == 200 and len(content) == 0:
         logger.info('The organization {} (id={}) was not found on Track'.format(
@@ -85,11 +84,12 @@ def _build_wfl1_form(obj):
 def create_instance(obj):
     model_name = obj.__class__.__name__.lower()
     url_subpath = 'api/{}'.format(model_name)
-    data = {}
     if obj.__class__.__name__ == 'Organization':
         data = _build_org_form(obj)
-    elif obj.__class__.__name__ == 'WorkflowLeve1':
+    elif obj.__class__.__name__ == 'WorkflowLevel1':
         data = _build_wfl1_form(obj)
+    else:
+        raise ValueError
     response = track_request('post', url_subpath, data)
     validate_response(response, obj)
     return response
@@ -98,11 +98,12 @@ def create_instance(obj):
 def update_instance(obj):
     model_name = obj.__class__.__name__.lower()
     url_subpath = 'api/{}'.format(model_name)
-    data = {}
     if obj.__class__.__name__ == 'Organization':
         data = _build_org_form(obj)
-    elif obj.__class__.__name__ == 'WorkflowLeve1':
+    elif obj.__class__.__name__ == 'WorkflowLevel1':
         data = _build_wfl1_form(obj)
+    else:
+        raise ValueError
     response = track_request('put', url_subpath, data)
     validate_response(response, obj)
     return response
