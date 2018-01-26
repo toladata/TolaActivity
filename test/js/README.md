@@ -113,7 +113,7 @@ much, much simpler.
   Again, this makes programmatic access to page elements much less complicated
   and reduces verifying that we've loaded the right page to a single short,
   fast expression. This is less impactful than using _id_ or _name_ attributes
-  consistently, so if you can only do of these, use _id_ or _name_ attributes
+  consistently, so if you can only do one of these, use _id_ or _name_ attributes
   consistently.
 
 * Is there a naming convention at work in the structural and semantic
