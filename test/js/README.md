@@ -1,24 +1,26 @@
 # Using MochaJS and Selenium WebDriver to Test the TolaActivity UI
 
 This document describes how to set up your system to test TolaActivity
-using the Selenium WebDriver, Javascript, the MochaJS test framework,
-the ChaiJS plugin for MochaJS, and the Chrome and/or Firefox browsers.
+front-end code. TolaActivity using. The tools of choice are:
+
+* Selenium WebDriver for browser automation
+* Selenium Server for remote browsers (think Saucelabs, BrowserStack,
+* WebdriverIO, a test automation framework for NodeJS
+  and so forth)
+* MochaJS test framework with assorted plugins, particularly the Chai
+  JS assertion library
+* Chrome and/or Firefox browsers
 
 ## Install Things
 First, download and install all the bits you'll need. These include
-NodeJS, Firefox, Chrome, Mocha, and Chai. If you are already using
-NPM, you can use it to install mocha and chai, but do not use the
-NPM-packaged Chrome or Firefox webdrivers because they might not be
-current.
+NodeJS, Firefox, Chrome, Selenium, Mocha, and Chai. If you are already
+using NPM, you can use it to install mocha and chai, but do not use
+the NPM-packaged Chrome or Firefox webdrivers because they might not
+be current.
 
 1. Install the latest versions of the
 [Chrome](ttps://www.google.com/chrome/browser/) and
 [Firefox](https://www.mozilla.org/download) browsers.
-1. Download [Selenium language
-bindings](http://www.seleniumhq.org/download/) for the language(s)
-you want to use. We're interested in the JavaScript bindings in
-this document; there are also bindings for Python, Java, Ruby, and C#.
-
 1. Download and install Chrome's Selenium browser driver,
 [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver).
 Place it anywhere in your system $PATH. You can also keep it in
@@ -38,6 +40,8 @@ Mocha, and WebDriverIO:
 $ npm install selenium-webdriver mocha chai webdriverio
 [...]
 ```
+
+The resulting tech stack [looks like this](testing.png)
 
 ## Validate the Installation
 1. Edit the config.json file in the top-level of the TolaActivity repo.
