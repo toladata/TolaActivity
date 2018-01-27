@@ -43,7 +43,7 @@ describe('TolaActivity Program Indicators page', function() {
       assert(button.getText() == 'Programs');
     });
 
-    it('should have same item count as Programs table', function() {
+    it('should have same count on button as in Programs table', function() {
       var buttons = $('div.panel').$$('div.btn-group');
       var programs = buttons[0];
       // have to click to make the menu visible
@@ -63,13 +63,13 @@ describe('TolaActivity Program Indicators page', function() {
       // have to click to make the menu visible
       dropdown.click();
       var dropdownList = dropdown.$('ul.dropdown-menu').$$('li');
-			var progList = Array();
+      var progList = Array();
       for (let item of dropdownList) {
         var listitem = item.$('a').getText();
         progList.push(listitem.split('-')[1].trim());
       }
       dropdown.click();
-	
+  
       var table = $('div#toplevel_div')
       var tableRows = table.$$('div.panel-heading');
       for (let i = 0; i < tableRows.length; i++) {
@@ -111,7 +111,7 @@ describe('TolaActivity Program Indicators page', function() {
       var indicatorType = buttons[2];
 
       // have to click to make the menu visible
-			// TODO: Validate the indicator type list as static
+      // TODO: Validate the indicator type list as static
       indicatorType.click();
       var dropdownList = indicatorType.$('ul.dropdown-menu').$$('li');
       indicatorType.click();
@@ -122,46 +122,48 @@ describe('TolaActivity Program Indicators page', function() {
   }); // end indicator type dropdown tests
 
   it('should toggle PIs table by clicking PI Indicators button', function() {
-		progIndTable = $('#toplevel_div');
-		buttons = progIndTable.$$('div.panel-body');
-		for (let button of buttons) {
-			// starts out collapsed
-			var link = button.$('a');
-			var target = link.getAttribute('data-target');
-			var state = browser.isVisible('div' + target);
-			assert(!state);
+    progIndTable = $('#toplevel_div');
+    buttons = progIndTable.$$('div.panel-body');
+    for (let button of buttons) {
+      // starts out collapsed
+      var link = button.$('a');
+      var target = link.getAttribute('data-target');
+      var state = browser.isVisible('div' + target);
+      assert(!state);
 
-			// open it and verify
-			button.click();
-			state = browser.isVisible('div' + target);
-			assert(!state);
+      // open it and verify
+      button.click();
+      state = browser.isVisible('div' + target);
+      assert(!state);
 
-			// close it and verify again
-			button.click();
-			state = browser.isVisible('div' + target);
-			assert(!state);
-		}
-	});
+      // close it and verify again
+      button.click();
+      state = browser.isVisible('div' + target);
+      assert(!state);
+    }
+  });
 
   it('should have matching indicator counts on data button and in table', function() {
-		progIndTable = $('#toplevel_div');
-		buttons = progIndTable.$$('div.panel-body');
-		for (let button of buttons) {
-			var buttonCnt = parseInt(button.$('a').getText());
+    progIndTable = $('#toplevel_div');
+    buttons = progIndTable.$$('div.panel-body');
+    for (let button of buttons) {
+      var buttonCnt = parseInt(button.$('a').getText());
       var link = button.$('a');
+      // expand the table
       link.click();
 
-			// indicator count from table
-      browser.waitForVisible('.table.table-striped.hiddenTable');
-			var target = link.getAttribute('data-target');
-      var table = $('div' + target).$('table');
-      var tableRows = table.$$('tr>td>a');
+      // indicator count from table
+      var targetDiv = link.getAttribute('data-target');
+      var table = $('div' + targetDiv).$('table');
+      var tableRows = table.$$('tbody>tr>td>a');
       // divide by 2 because each <tr> has a blank <tr> spacer row 
       // beneath it
-			var tableCnt = tableRows.length / 2;
-      assert.equal(buttonCnt, tableCnt, 'evidence count mismatch');
-		}
-	});
+      assert.equal(buttonCnt, (tableRows.length / 2), 'evidence count mismatch');
+
+      // collapse the table
+      link.click();
+    }
+  }, 3); // retry this flaky test 3 times before failing
 
   it('should view PI by clicking its name in Indicator Name column');
   it('should be able to create PI by clicking the New Indicator button');
@@ -172,7 +174,7 @@ describe('TolaActivity Program Indicators page', function() {
   it('should decrease evidence count when PI evidence deleted');
   it('should be able to edit PI by clicking its Edit button');
   it('should be able to view PI evidence table by clicking its Data button');
-/*
+
   describe('Program Indicators table', function() {
     it('should open the Create an Indicator form when New Indicator button is clicked');
     it('should open the Grid/Print Report page when button is clicked');
@@ -303,5 +305,4 @@ describe('TolaActivity Program Indicators page', function() {
   it('should highlight PIs with no evidence');
   it('should disable Indicators button if program has no indicators');
   it('should be able to sort table by clicking a column header');
-*/
 });
