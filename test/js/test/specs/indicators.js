@@ -128,7 +128,7 @@ describe('TolaActivity Program Indicators page', function() {
 			// starts out collapsed
 			var link = button.$('a');
 			var target = link.getAttribute('data-target');
-			state = browser.isVisible('div' + target);
+			var state = browser.isVisible('div' + target);
 			assert(!state);
 
 			// open it and verify
@@ -143,21 +143,26 @@ describe('TolaActivity Program Indicators page', function() {
 		}
 	});
 
-  it('should have matching counts between Data button and evidence table', function() {
+  it('should have matching indicator counts on data button and in table', function() {
 		progIndTable = $('#toplevel_div');
 		buttons = progIndTable.$$('div.panel-body');
 		for (let button of buttons) {
-			// indicator count on button
-			buttonCnt = parseInt(button.$('a').getText());
-			button.click();
+			var buttonCnt = parseInt(button.$('a').getText());
+      var link = button.$('a');
+      link.click();
+
 			// indicator count from table
-			target = button.$('a').getAttribute('data-target');
-			tableCnt = $('div' + target).
-			assert(false);
+      browser.waitForVisible('.table.table-striped.hiddenTable');
+			var target = link.getAttribute('data-target');
+      var table = $('div' + target).$('table');
+      var tableRows = table.$$('tr>td>a');
+      // divide by 2 because each <tr> has a blank <tr> spacer row 
+      // beneath it
+			var tableCnt = tableRows.length / 2;
+      assert.equal(buttonCnt, tableCnt, 'evidence count mismatch');
 		}
 	});
 
-/*
   it('should view PI by clicking its name in Indicator Name column');
   it('should be able to create PI by clicking the New Indicator button');
   it('should increase PI count after adding new indicator');
