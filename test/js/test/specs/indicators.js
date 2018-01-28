@@ -5,9 +5,11 @@ function readConfig() {
   let data = fs.readFileSync('config.json');
   return JSON.parse(data);
 };
-var parms = readConfig();
 
 describe('TolaActivity Program Indicators page', function() {
+  var parms = readConfig();
+
+  // TODO: add test
   it('should require user to authenticate', function() {
     browser.url(parms.baseurl);
     var title = browser.getTitle();
@@ -29,9 +31,8 @@ describe('TolaActivity Program Indicators page', function() {
     button.click();
   });
 
-  // after all of that, should wind up at the Indicators page
   it('should exist', function() {
-    browser.url('https://tola-activity-demo.mercycorps.org/indicators/home/0/0/0/');
+    browser.url(parms.baseurl + '/indicators/home/0/0/0/');
     browser.waitForText('h2');
     var h2 = $('h2');
     assert.equal(h2.getText(), 'Program Indicators');
@@ -77,6 +78,28 @@ describe('TolaActivity Program Indicators page', function() {
         assert.equal(s, progList[i]);
       };
     });
+
+    it('should filter programs table by selected program name', function() {
+      var buttons = $('div.panel').$$('div.btn-group');
+      var dropdown = buttons[0];
+      // have to click to make the menu visible
+      dropdown.click();
+      var dropdownList = dropdown.$('ul.dropdown-menu').$$('li');
+      var item = dropdownList[0];
+      var listitem = item.$('a');
+      var progName = listitem.getText().split('-')[1].trim();
+      item.click();
+
+      // should have a single row in the table
+      browser.waitForText('h4');
+      var table = $('div#toplevel_div')
+      var tableRows = table.$$('div.panel-heading');
+      assert.equal(1, tableRows.length);
+
+      // row should be the one selected from the dropdown
+      s = tableRows[0].$('h4').getText().split("\n")[0].trim();
+      assert.equal(s, progName);
+    });
   }); // end programs dropdown tests
 
   describe('Indicators dropdown', function() {
@@ -117,6 +140,7 @@ describe('TolaActivity Program Indicators page', function() {
       indicatorType.click();
       assert(dropdownList.length > 0);
     });
+
     it('should default to showing all Indicator Types for a program');
     it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
@@ -163,24 +187,20 @@ describe('TolaActivity Program Indicators page', function() {
       // collapse the table
       link.click();
     }
-  }, 3); // retry this flaky test 3 times before failing
-
-  it('should view PI by clicking its name in Indicator Name column');
-  it('should be able to create PI by clicking the New Indicator button');
-  it('should increase PI count after adding new indicator');
-  it('should increase evidence count when PI evidence added');
-  it('should be able to delete PI by clicking its Delete button');
-  it('should decrease PI count after deleting indicator');
-  it('should decrease evidence count when PI evidence deleted');
-  it('should be able to edit PI by clicking its Edit button');
-  it('should be able to view PI evidence table by clicking its Data button');
+  }, 3); // retry this flaky test 2 more times before failing
 
   describe('Program Indicators table', function() {
+    it('should view PI by clicking its name in Indicator Name column');
+    it('should be able to create PI by clicking the New Indicator button');
+    it('should increase PI count after adding new indicator');
+    it('should be able to delete PI by clicking its Delete button');
+    it('should be able to edit PI by clicking its Edit button');
     it('should open the Create an Indicator form when New Indicator button is clicked');
     it('should open the Grid/Print Report page when button is clicked');
     it('should highlight invalid data');
     it('should return to previous screen if Cancel button clicked');
     it('should clear form when Clear button clicked');
+    it('should decrease PI count after deleting indicator');
     
     describe('Create an Indicator form', function() {
       it('should show context-sensitve help by clicking Form Help/Guidance button');
@@ -259,6 +279,9 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     describe('Indicator evidence dropdown', function() { 
+      it('should be able to view PI evidence table by clicking its Data button');
+      it('should decrease evidence count when PI evidence deleted');
+      it('should increase evidence count when PI evidence added');
       it("should toggle indicator's evidence dropdown by clicking its Data button");
       it('should have the same row count as evidence count on Data button');
       it('should be able to edit evidence line item by clicking its Edit button');
