@@ -28,7 +28,7 @@ function isDate(dateVal) {
     return new Date(dateVal) === 'Invalid Date' ? false : true;
     */
     var date = new Date(dateVal);
-    if (date === 'Invalid Date') {
+    if (date == 'Invalid Date') {
         return false;
     }
     var currentYear = (new Date).getFullYear();
@@ -38,28 +38,38 @@ function isDate(dateVal) {
     return true;
 }
 
-function formatDate(dateString) {
+function formatDate(dateString, day=0) {
+    var months = new Array();
+    months[1] = "Jan";
+    months[2] = "Feb";
+    months[3] = "Mar";
+    months[4] = "Apr";
+    months[5] = "May";
+    months[6] = "Jun";
+    months[7] = "Jul";
+    months[8] = "Aug";
+    months[9] = "Sep";
+    months[10] = "Oct";
+    months[11] = "Nov";
+    months[12] = "Dec";
+
     try {
-        var dateArray = dateString.split('-');
-        var months = new Array();
-        months[1] = "Jan";
-        months[2] = "Feb";
-        months[3] = "Mar";
-        months[4] = "Apr";
-        months[5] = "May";
-        months[6] = "Jun";
-        months[7] = "Jul";
-        months[8] = "Aug";
-        months[9] = "Sep";
-        months[10] = "Oct";
-        months[11] = "Nov";
-        months[12] = "Dec";
-        return months[parseInt(dateArray[1])] + ' ' + dateArray[2] + ', ' + dateArray[0];
+        var dateval = new Date(dateString);
+        // Add the local timezone offset
+        dateval.setMinutes(dateval.getMinutes() + dateval.getTimezoneOffset());
+        var month = months[(dateval.getMonth() + 1)];
+        var ret = month.concat(' ').concat(day == 0 ? dateval.getDate() : day).concat(', ').concat(dateval.getFullYear());
+        return ret;
     } catch (err) {
-        if (dateString == null){
-            dateString = '';
+        console.log(err);
+        try {
+            var dateArray = dateString.split('-');
+            var month = months[parseInt(dateArray[1])]
+            return month.concat(' ').concat(day == 0 ? dateArray[2] : day).concat(', ').concat(dateArray[0]);
         }
-        return dateString;
+        catch (err) {
+            return dateString == null ? '' : dateString;
+        }
     }
 }
 

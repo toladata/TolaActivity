@@ -51,10 +51,17 @@
     function validatePeriodicTarget() {
         if (setPeriodicTargetValue() == false) {
             // $("#id_periodic_target").val('');
-            $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>create additional target periods.</strong></a></small>");
+            if ($("#id_periodic_target option").size() <= 1) {
+                $("#hint_id_periodic_target").html("<small>Targets are not set up for this indicator. <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>Start by selecting a target frequency.</strong></a></small>");
+            } else {
+                if ($("#id_date_collected").val().length > 0){
+                $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>create additional target periods.</strong></a></small>");
+                }
+            }
+
             $("#div_id_periodic_target").addClass('has-error');
         } else if ($("#id_periodic_target").val() == '') {
-            $("#hint_id_periodic_target").html("<small>Pleae complete this field.</small>");
+            $("#hint_id_periodic_target").html("<small>Pleae select a target.</small>");
             $("#div_id_periodic_target").addClass('has-error');
             return false;
         } else {
@@ -103,7 +110,7 @@
                 var start_date = new Date(pt_date_range[0].trim());
                 var end_date = new Date(pt_date_range[1].trim());
                 var collected_date = new Date($("#id_date_collected").val().trim());
-                if (collected_date > start_date && collected_date < end_date) {
+                if (collected_date >= start_date && collected_date <= end_date) {
                     // deselect the currently selected option
                     $("#id_periodic_target option:selected").attr("selected", false);
                     // select the correct value

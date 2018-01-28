@@ -119,6 +119,7 @@
                 if (data.status == "success") {
                     currnentRow.remove();
                     prevDeleteBtn.show();
+                    $("#indicator_update_form").data('indicatorchanged', true);
                     var targets_sum = data['targets_sum'];
                     if (targets_sum != 0 && targets_sum != "None" && targets_sum != '' && targets_sum != 'undefined') {
                         $("#id_span_targets_sum").text(targets_sum);
@@ -155,13 +156,22 @@
     });
 
 
+    $("#indicator_modal_content, #indicator_form").on("keyup keypress", "#indicator_update_form", function(e){
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13 ){
+            e.preventDefault();
+            return false;
+        }
+
+    });
+
     $("#indicator_modal_content, #indicator_form").on("click", "#id_create_targets_btn", function(e) {
         e.preventDefault();
-        $(this).attr("disabled", true);
         if (validateForm() == false) {
             showValidations("#modalmessages");
             return;
         }
+        $(this).attr("disabled", true);
         submitForm($("#indicator_update_form"));
 
     });
@@ -223,6 +233,7 @@
                 $("#id_div_periodic_tables_placeholder").empty();
                 reset_frequency_fields();
                 show_hide_frequency_fields();
+                $("#indicator_update_form").data('indicatorchanged', true);
             }
 
         });
@@ -428,10 +439,14 @@
                     $("#id_span_targets_sum").text(targets_sum);
                 }
             }
-            // for the modal version;
-            $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
-            // for the non-modal version;
-            $("html, body").animate({ scrollTop: 0 }, "slow");
+            if ($('#indicator_modal_div').length == 1) {
+                // for the modal version;
+                $('#indicator_modal_div').animate({ scrollTop: 0 }, 'slow');
+            } else {
+                // for the non-modal version;
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+            }
+
             // window.scrollTo(0, 0);
             show_hide_frequency_fields(true);
         });
@@ -537,7 +552,7 @@
         } else if (!$.isNumeric(baseline.val())) {
             $("#div_id_baseline").addClass('has-error');
             $("#div_id_baseline_na").addClass('has-error');
-            $("#hint_id_baseline_na").html("<small>Please enter a number with no special characters.<small>");
+            $("#hint_id_baseline_na").html("<small>Please enter a number with no letters or symbols.<small>");
             // sbmt.attr("disabled", true);
             return false;
         } else {
@@ -554,12 +569,12 @@
 
         if (!lop.val()) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please complete this field.");
+            $("#hint_id_lop_target").text("Please select a target.");
             // sbmt.attr("disabled", true);
             return false;
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please enter a number larger than zero with no special characters. If your target is a percentage, describe it in the unit of measure field.");
+            $("#hint_id_lop_target").text(" Please enter a number larger than zero with no letters or symbols. If your target is a percentage, describe it in the unit of measure field.");
             // sbmt.attr("disabled", true);
             return false;
         } else {
@@ -621,6 +636,9 @@
             $("#hint_id_target_frequency_start").text("Please enter a valid date.");
             return false;
         } else {
+            var val = formatDate(field, 1);
+            $("#id_target_frequency_start").val(val);
+            console.log(val);
             $("#div_id_target_frequency_start").removeClass('has-error');
             $("#hint_id_target_frequency_start").text(" ");
             return true;
@@ -628,22 +646,18 @@
     }
 
     function validatePeriodicTargets(){
+        var errorFlag = false;
         $("#periodic_targets_table input[type=number]").each(function(){
             if ($(this).attr('id').substr(0, 2) == "pt" ) {
                 if ($(this).val()) {
                     $(this).parent().removeClass('has-error');
                     $(this).parent().addClass('border-1px');
                     // $(this).next('span:first').text('');
-                    $("#id_pt_errors").text('');
                 } else {
                     $(this).parent().addClass('has-error');
                     $(this).parent().removeClass('border-1px');
-                    // $(this).next('span:first').html('<small>Please enter a target value. Your target value can be zero.</small>');
-                    // $("#id_pt_errors").html('<small>Please enter a target value. Your target value can be zero.</small>');
+                    errorFlag = true;
                 }
-            }
-            if ($("#id_div_periodic_tables_placeholder input[type=number]").parent().hasClass("has-error") ) {
-                $("#id_pt_errors").html('<span class="target-value-error"><small>Please enter a target value. Your target value can be zero.</small></span>');
             }
         });
 
@@ -652,17 +666,28 @@
                 if ($(this).val()) {
                     $(this).parent().removeClass('has-error');
                     $(this).parent().addClass('border-1px');
-                    $("#id_pt_errors").text('');
                 } else {
                     $(this).parent().addClass('has-error');
                     $(this).parent().removeClass('border-1px');
+                    errorFlag = true;
                 }
-            // }
-            if ($("#id_div_periodic_tables_placeholder input[type=text]").parent().hasClass("has-error") ) {
-                $("#id_pt_errors").html('<span class="target-value-error"><small>Please enter an event name</small></span>');
-            }
         });
+
+        if (errorFlag) {
+            $("#id_pt_errors").html(`<span class="target-value-error"><small>${getPTMessage()}</small></span>`);
+        }
     }
+
+
+    function getPTMessage () {
+        if ($("#periodic_targets_table input[type=text]").length > 0){
+            return ("Please enter a name and target number for every event. Your target value can be zero.");
+        }
+        else {
+            return ("Please enter a target value. Your target value can be zero.");
+        }
+    }
+
 
     function showValidations(messagesDiv) {
         var msg = '';
@@ -738,28 +763,32 @@
         }
     });
 
-    $("#indicator_modal_content").on("input", "#periodic_targets_table input[type=number]", function(e){
+    $("#indicator_modal_content, #indicator_form").on("input", "#periodic_targets_table input[type=number]", function(e){
         if ($(this).val()) {
             $(this).parent().removeClass('has-error');
+            $(this).parent().addClass('border-1px');
             // $(this).next('span:first').text('');
             $("#id_pt_errors").text('');
         } else {
             $(this).parent().addClass('has-error');
+            $(this).parent().removeClass('border-1px');
         }
-        if ($("#id_div_periodic_tables_placeholder input[type=number]").parent().hasClass("has-error") ) {
-            $("#id_pt_errors").html('<span class="target-value-error"><small>Please enter a target value. Your target value can be zero.</small></span>');
+        if ($("#id_div_periodic_tables_placeholder input[type=number], input[type=text]").parent().hasClass("has-error") ) {
+            $("#id_pt_errors").html(`<span class="target-value-error"><small>${getPTMessage()}</small></span>`);
         }
     });
 
-    $("#indicator_modal_content").on("input", "#periodic_targets_table input[type=text]", function(e){
+    $("#indicator_modal_content, #indicator_form").on("input", "#periodic_targets_table input[type=text]", function(e){
         if ($(this).val()) {
             $(this).parent().removeClass('has-error');
+            $(this).parent().addClass('border-1px');
             $("#id_pt_errors").text('');
         } else {
             $(this).parent().addClass('has-error');
+            $(this).parent().removeClass('border-1px');
         }
-        if ($("#id_div_periodic_tables_placeholder input[type=text]").parent().hasClass("has-error") ) {
-            $("#id_pt_errors").html('<span class="target-value-error"><small>Please enter an event name.</small></span>');
+        if ($("#id_div_periodic_tables_placeholder input[type=text], input[type=number]").parent().hasClass("has-error") ) {
+            $("#id_pt_errors").html(`<span class="target-value-error"><small>${getPTMessage()}</small></span>`);
         }
     });
 
