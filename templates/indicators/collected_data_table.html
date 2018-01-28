@@ -1,36 +1,141 @@
-<table class="table table-bordered">
-    <tr>
-        <th>Date Collected</th>
-        <th>Project</th>
-        <th>Evidence</th>
-        <th>Target</th>
-        <th>Actual</th>
-        <th>&nbsp;</th>
-    </tr>
-    {% if collecteddata %}
+<style>
+    .disable-span {
+        cursor: not-allowed;
+        opacity: .65;
+    }
+    .disable-span a {
+        pointer-events: none;
+    }
+</style>
+{% load assign %}
+{% if collecteddata.count > 0 or indicator.target_frequency  %}
+    <table class="table table-bordered" style="border: 0px solid #ddd;">
+        <tr>
+            <th style="vertical-align:bottom; min-width:180px;">Target Period</th>
+            <th style="vertical-align:bottom; text-align: right;">Target</th>
+            <th style="vertical-align:bottom; min-width: 125px;">Date Collected</th>
+            <th style="vertical-align:bottom; text-align: right;"">Actual</th>
+            <th style="vertical-align:bottom; text-align: right;"" width="65">% Met</th>
+            <th style="vertical-align:bottom;">Evidence</th>
+            <th style="vertical-align:bottom;">Project</th>
+            <th style="vertical-align:bottom;" width="80"></th>
+        </tr>
         {% for item in collecteddata %}
-        <tr>
-            <td>
-                <a href="/indicators/collecteddata_update/{{ item.id }}" class="collecteddata-link">{{ item.date_collected|date:"m-d-Y" }}</a>
-            </td>
+            <tr>
+                {% if item.periodic_target %}
+                    {% ifchanged item.periodic_target %}
+                        <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" min-width="170">
+                            <strong>{{ item.periodic_target.period }}</strong><br>
+                            <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
+                        </td>
+                        <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" align="right">
+                            {{ item.periodic_target.target|floatformat:"-2" }}
+                        </td>
+                    {% endifchanged %}
+                {% else %}
+                    <td style="vertical-align:middle;">
+                        <strong>{{ item.periodic_target.period }}</strong><br>
+                        <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
+                    </td>
+                    <td align="right" style="vertical-align:middle;">
+                        {{ item.periodic_target.target|floatformat:"-2" }}
+                    </td>
+                {% endif %}
+                <td {% if item.periodic_target == None %} style="border: 3px solid red;" {% endif %}>
+                    <a href="{% url 'collecteddata_update' item.id %}" class="collecteddata-link" id="collected-{{item.id}}">
+                        {{ item.date_collected|date:"M d, Y" }}
+                    </a>
+                </td>
+                <td align="right"> {{ item.achieved|floatformat:"-2" }} </td>
+                <td align="right"> {% widthratio item.achieved item.periodic_target.target 100 %}%</td>
+                <td>
+                    {% if item.evidence %}
+                        {% if item.evidence.url%}
+                            <a href="{{item.evidence.url}}" target="_blank">
+                        {% endif %}
+                        {{ item.evidence|default_if_none:"" }}
+                        {% if item.evidence.url%}
+                            </a>
+                        {% endif %}
+                    {%endif%}
+                    {% if item.tola_table %}
+                        <a href="{{ item.tola_table.detail_url }}" target="_blank">{{ item.tola_table }}</a>
+                    {% endif %}
+                </td>
+                <td>{{ item.agreement|default_if_none:"" }}</td>
+                <td align="right">
+                    <a href="{% url 'collecteddata_delete' item.id %}" style="color:red; vertical-align: middle;">
+                        <span alt="Delete" class="glyphicon glyphicon-remove"></span>
+                    </a>
+                    <a href="{% url 'collecteddata_update' item.id %}" class="collecteddata-link" style="padding-left: 30px; vertical-align: middle">
+                        <span alt="Edit" class="glyphicon glyphicon-edit"></span>
+                    </a>
+                </td>
+            </tr>
 
-            <td>{{item.agreement}}</td>
-            <td>{% if item.evidence %}{% if item.evidence.url%}<a href="{{item.evidence.url}}" target="_blank">{% endif %}{{ item.evidence }} {% if item.evidence.url%}</a>{% endif %}{%endif%} {% if item.tola_table %} <a href="{{ item.tola_table.detail_url }}" target="_blank">{{ item.tola_table }}</a> {% endif %}</td>
-            <td>{{ item.periodic_target.target }}</td>
-            <td>{{ item.achieved }}</td>
-            <td><a href="/indicators/collecteddata_update/{{ item.id }}" class="btn-xs btn-info collecteddata-link">Edit</a><a href="/indicators/collecteddata_delete/{{ item.id }}" class="btn-xs btn-danger">Delete</a></td>
-        </tr>
+            {% if item.periodic_target == None %}
+                {% if indicator.target_frequency == None %}
+                    {% assign err 'Error_1' %}
+                {% elif indicator.target_frequency == 2 or indicator.target_frequency == 8 %}
+                    {% assign err 'Error_2' %}
+                {% else %}
+                    {% assign err 'Error_3' %}
+                {% endif %}
+            {% endif %}
+
+            {% if forloop.last %}
+                <tr style="background-color: #f5f5f5;">
+                    <td><strong>Life of Program</strong></td>
+                    <td align="right"><strong>{{ indicator.lop_target|floatformat:"-2" }}</strong></td><!-- {{ collected_sum.periodic_target__target__sum }} -->
+                    <td></td>
+                    <td align="right"><strong>{{ collected_sum.achieved__sum|floatformat:"-2" }}</strong></td>
+                    <td align="right"><strong>{% widthratio collected_sum.achieved__sum indicator.lop_target 100 %}%</strong></td>
+                    <td colspan="3" align="right">
+                        <span class="{% if indicator.target_frequency == None or err == 'Error_1' %} disable-span {% endif %}">
+                            <a href="{% url 'collecteddata_add' program_id indicator.id %}" class="btn-sm btn-info collecteddata-link"> New Data</a>
+                        </span>
+                    </td>
+                </tr>
+
+                {% if err %}
+                    <tr style="background-color: #f9f9f9;">
+                        <td colspan="8" style="color:red; border-color: #f9f9f9; border-left: 0px solid; border-right: 0px solid; border-bottom: 0px solid;">
+                            <small>
+                                {% ifequal err 'Error_1' %}
+                                    Targets are not set up for this indicator. <strong><a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Start by selecting a target frequency.</a></strong>
+                                {% endifequal %}
+
+                                {% ifequal err 'Error_2' %}
+                                    This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
+                                {% endifequal %}
+
+                                {% ifequal err 'Error_3' %}
+                                    This date falls outside the range of your target periods. You can change the date or <strong><a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">create additional target periods.</a></strong>
+                                {% endifequal %}
+                            </small>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+
+            {% empty %}
+                <tr style="background-color: #f5f5f5;">
+                    <td colspan="6">There are no data records to display.</td>
+                    <td colspan="2"align="right">
+                        <a href="{% url 'collecteddata_add' program_id indicator.id %}" class="btn-sm btn-info collecteddata-link">New Data</a>
+                    </td>
+                </tr>
         {% endfor %}
+    </table>
+{% else %}
+    <table border='0' vertical-align="top" align="center" height="130">
         <tr>
-            <td colspan="3"><!-- <span style="float: right;">Sum:</span> --></td>
-            <td><!-- {{ collected_sum.periodic_target__target__sum }} --></td>
-            <td><!-- {{ collected_sum.achieved__sum }} --></td>
-            <td width="100"><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
+            <td valign="top" style="padding:2px;">
+                <img src="/static/img/target.png" class="img-responsive center-block" height="85" width="85">
+            </td>
+            <td valign="top" style="padding-left:10px; padding-top: 38px; font-size: 21px; color: #54585A;">
+                Organize your data for this indicator. <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Set a target frequency.</a>
+            </td>
         </tr>
-    {% else %}
-        <tr>
-            <td colspan="5">No Data Collected</td>
-            <td><a href="/indicators/collecteddata_add/{{ program_id }}/{{ indicator_id }}" class="btn-sm btn-info collecteddata-link">New Data</a></td>
-        </tr>
-    {% endif %}
-</table>
+    </table>
+{% endif %}

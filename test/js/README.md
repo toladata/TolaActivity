@@ -27,9 +27,9 @@ the top-level of your local repo because it is gitignored.
 [geckodriver](https://github.com/mozilla/geckodriver/releases).
 Place it anywhere in your system $PATH. You can also keep it in
 the top-level of your local repo because it is gitignored.
-1. Install [NodeJS](https://nodjs.org) so you can use (the 
-[Node Package Manager](https://www.npmjos.com)) to install other 
-JavaScript packages.
+1. Install [NodeJS](https://nodjs.org) so you can use the 
+[Node Package Manager](https://www.npmjos.com), or _npm_ to install
+other JavaScript packages.
 1. Finally, use `npm` to install the JavaScript language bindings
 for Selenium, the Mocha test framework, and the Chai plugin for
 Mocha:
@@ -67,159 +67,157 @@ $ npm test -- --no-timeouts
 > @ test /home/kwall/Work/TolaActivity/test/js
 > mocha "--no-timeouts"
 
-  TolaActivity Test Suite
-    Login Screen
-      ✓ should require user to authenticate
-      ✓ should have a login field (47ms)
-      ✓ should have a password field
-      ✓ should have a Log In button (2294ms)
-      - should not permit access if username is invalid
-      - should not permit access if password is invalid
-    Tola-Activity Dashboard
-      ✓ should have a page title
-      ✓ should have a TolaActivity link (923ms)
-      ✓ should have a Workflow link (90ms)
-      ✓ should have a Form Library link (39ms)
-      ✓ should have a Reports link
-      - should have a Profile link
-      ✓ should have a Bookmarks link
-      ✓ should have a Country Dashboard link
-      ✓ should have a Filter by Program link
-      Indicator Evidence panel
-        - should have an Indicator evidence table
-      Strategic Objectives panel
-        - should have a Strategic Objectives table
-      Sites panel
-        - should have a Site map
-        - should show map of country selected in Country Dashboard dropdown
-        - should be able to zoom in on the map
-        - should be able to zoom out on the map
-        - should display data points on the Sites map
-      Program Projects by Status panel
-        - should have a project status chart
-      Indicators performance panel
-        - should have a KPI status chart
-    Program Indicators page
-      - should highlight indicators with no evidence
-      - should increase indicator count for a given program after adding a new indicator
-      - should decrease indicator count for a given program after deleting an indicator
-      - should be able to toggle table expansion by clicking the Indicators button
-      - should disable the Indicators button if a given program has no indicators
-      - should be able to sort table by clicking a column header
-      - should be able to view an indicator by clicking its name in the Indicator Name column
-      - should not be able to edit an indicator by clicking its name in the Indicator Name column
-      - should be able to edit an indicator by clicking the Edit button on its table row
-      - should be able to view indicator evidence by clicking the indicator's Data button
-      - should have data evidence count button match evidence count in the evidence table
-      - should increase data evidence count when evidence added from a program indicator
-      - should decrease data evidence count when evidence deleted from a program indicator
-      - should be able to delete an indicator by clicking its Delete button
-      - should reduce the indicator count for each indicator deleted
-      - should have a Programs dropdown
-      - should have an Indicators dropdown
-      - should have an Indicator Type dropdown
-      Programs dropdown
-        - should have at least one entry
-        - should default to showing all programs
-        - should be able to select a program and see only the corresponding Indicators
-        - should be able to select a program and see only the corresponding Indicator Types
-      Indicators dropdown
-        - should default to showing all Indicators for a given program
-        - should be able to filter the resultset by Indicator
-        - should only show programs that use a selected Indicator
-      Indicator Type dropdown
-        - should default to showing all Indicator Types for a given program
-        - should be able to filter the resultset by Indicator Type
-        - should only show programs that use a selected Indicator Type
-      Program Indicators list
-        - should open the Create an Indicator form when New Indicator button is clicked
-        - should open the Grid/Print Report page when button is clicked
-        - should highlight invalid data
-        - should return to previous screen if Cancel button clicked
-        - should clear form when Clear button clicked
-        - should close the delete dialog by pressing the Esc key
-        - should have a Cancel button that returns to the previous screen
-        - should identify required fields as such
-        - should not permit read-only fields to be edited
-        - should have a Grid/Print Report button
-        - should open a report page when the Grid/Print Report button is clicked
-        Create an Indicator form
-          - should show context-sensitve help by clicking Form Help/Guidance button
-          - should have an Indicator Service Templates dropdown
-          - should have a Custom entry in the Indicator Service Templates dropdown
-          - should have a Service Indicator dropdown
-          - should have a Country dropdown
-          - should have a Program dropdown
-          - should have a Save button
-          - should validate input data after clicking Save button and before committing it
-          - should not save unvalidated input data
-          - should highlight invalid input data
-          - should save data after validating it
-          - should open Indicator detail form after clicking Save button
-          - should have a Cancel button
-          - should reset and close form when Cancel button clicked
-          - should return to previous screen when Cancel button clicked
-          - should have a Reset button to reset form
-          - should have a Summary tab
-          - should have a Performance tab
-          - should hnve a Targets tab
-          - should have a Data Acquisition tab
-          - should have a Analysis and Reporting tab
-          - should have an Approval tab
-          - should have a Help link
-          - should have a Save Changes button
-          - should have a Reset button
-          - should have a Cancel button
-          - should trigger cancel action by pressing Escape key
-          - should validate input data after clicking Save Changes button
-          - should validate input data before committing it
-          - should restore form to pre-edit state when Reset button is clicked
-          Indicator creation detail form
-            - should confirm indicator created
-            Summary tab
-              - should have Program field matching input data
-            Performance tab
-              - should have a Performance tab
-            Targets tab
-              - should have a Targets tab
-            Data Acquisition tab
-              - should have a Data Acquisition tab
-            Analysis and Reporting tab
-              - should have an Analysis and Reporting tab
-            Approval tab
-              - should have an Approval tab
-        Grid/Print Report page
-          - should have an Export All button
-          - should export all report entries when Export All button is clicked
-        Indicator evidence dropdown
-          - should toggle indicator's evidence dropdown by clicking its Data button
-          - should have the same row count as evidence count on Data button
-          - should be able to edit evidence line item by clicking its Edit button
-          - should be able to edit evidence line item by clicking its Indicator Name
-          - should open Collected Data form when editing evidence line item
-          - should be able to delete evidence line item by clicking its Delete button
-          - should be able to add evidence line item by clicking the New Data button
-          - should open blank Collected Data form when the New Data button is clicked
-        Collected Data form
-          - should require required fields
-          - should not require optional fields
-          - should have a Save button
-          - should validate input data after Save button clicked
-          - should validate input data before committing
-          - should not save invalid input data
-          - should highlight invalid input data
-          - should have a Reset button
-          - should clear the form by clicking the Reset button
-          - should restore the form defaults by clicking the Reset button
-          - should pull data from Tola Tables by clicking the Import Evidence From Tola Tables link
-          - should open the Indicator edit form by clicking the Add a Disaggregation link
-          - should only accept numerica values in the disaggregations Actuals fields
-          - should have a cancel button
-          - should be able to close the firm by clicking the Cancel button
 
 
-  12 passing (4s)
-  113 pending
+  TolaActivity Dashboard
+    ✓ should require login authentication (2886ms)
+    ✓ should have home page link (940ms)
+    ✓ should have page header
+    ✓ should have a TolaActivity link (854ms)
+    ✓ should have a Country Dashboard dropdown (218ms)
+    ✓ should have a Filter by Program link (249ms)
+    ✓ should have a Workflow dropdown (245ms)
+    ✓ should have a Form Library dropdown (468ms)
+    ✓ should have a Reports link (218ms)
+    ✓ should have a Profile link (242ms)
+    ✓ should have a Bookmarks link (237ms)
+    Indicator Evidence panel
+      - should be present on dashboard
+    Strategic Objectives panel
+      - should be present on dashboard
+    Sites panel
+      - should be present on dashboard
+      - should show map of country selected in Country Dashboard dropdown
+      - should be able to zoom in on the map
+      - should be able to zoom out on the map
+      - should display data points on the Sites map
+    Program Projects by Status panel
+      - should be present on dashboard
+      - should have a project status chart
+    Indicators performance panel
+      - should be present on dashboard
+      - should have a KPI status chart
+
+  TolaActivity Indicators Page
+    ✓ should require login authentiction (2796ms)
+    ✓ should exist (5454ms)
+    - should highlight PIs with no evidence
+    - should disable Indicators button if program has no indicators
+    - should be able to sort table by clicking a column header
+    Programs dropdown
+      ✓ should be present on page (232ms)
+      - should have at least one entry
+      - should default to showing all programs
+      - should be able to filter PIs by Program
+      - should be able to filter Programs by PI
+      - should have same item count as Programs table
+      - should have same items as Programs table
+    Indicators dropdown
+      ✓ should be present on page (465ms)
+      - should have at least one entry
+      - should default to showing all PIs for a program
+      - should be able to select any/all list items
+    Indicator Type dropdown
+      ✓ should be present on page (217ms)
+      - should have at least one entry
+      - should default to showing all Indicator Types for a program
+      - should be able to filter the resultset by Indicator Type
+
+  TolaActivity invalid password login
+    ✓ should have a Username field
+    ✓ should have a Password field
+    ✓ should have a Log In button (308ms)
+    ✓ should deny access if password is invalid
+
+  TolaActivity invalid username login
+    ✓ should have a Username field
+    ✓ should have a Password field
+    ✓ should have a Log In button (294ms)
+    ✓ should deny access if username is invalid
+
+  TolaActivity Login screen
+    ✓ should require user to authenticate
+    ✓ should have a login field
+    ✓ should have a password field
+    ✓ should have a Log In button (2957ms)
+
+  Indicators Targets
+    - should open to Summary tab
+    - should be able to select Midline and endline option
+    - should open Create new indicator dialog when New Indicator button is clicked
+    - should save a record and open the Indicator edit page
+    - should clear form when Reset button clicked
+    - should save data when Save changes screen clicked
+
+  Create new indicator dialog
+    - should require selecting program from the Program dropdown
+    - should accept no value for Sector
+    - should accept any value for Sector
+    - should require Program Objective
+    - should require Country Strategic Objection
+    - should have a Save changes button
+    - should have a Reset button
+    - should have a Help button
+    - should open the Targets tab when clicked
+    - should clear form when Reset button clicked
+    - should save data when Save changes screen clicked
+
+  Targets tab
+    - should require Unit of measure
+    - should require Life of Program (LoP) target
+    - should require Rationale for target
+    - should require Baseline for target
+    - should require Target frequency
+    - should clear form when Reset button clicked
+    - should save data when Save changes button clicked
+    - should have Create targets button
+    - should have Remove all targets button
+    - should show Midline and endline targets form after Create targets clicked
+    - should clear Midline and endline targets form after Remove all targets are clicked
+    - should show Midline and endline target table
+    - should require values in Midline target field
+    - should require value in Endline target field
+    - should not permit removing only midline or endline targets
+    - should require removing both targets to remove either one
+    - should permit only numeric values for LoP target
+    - should reject non-numeric values for LoP target
+    - should permit existing non-numeric values for LoP target
+    - should require numeric value if non-numeric field is edited
+    - should require the Life of Program (LoP) target
+    - should require completed required target frequency sub-options before enabling Create targets button
+    - should require name of first event when Target frequency is Event
+    - should require providing number of events when Target frequency is Event
+    - should permit adding up to 12 events
+    - should inform user that only 12 events can be created at once
+    - should create table of event-based targets when Create targets button is clicked
+    - should have autocompletion in the Target frequency selection menu
+    - should require selecting Target frequency
+    - should have 8 options on Target frequency selection menu
+    - should have Life of Program (LoP) target only
+    - should have Midline and Endline target
+    - should require value for Annual target when freq is annual
+    - should require Semi-annual target when freq is semi-annual
+    - should require Tri-annual target when freq is tri-annual
+    - should require Quarterly target when freq is quarterly
+    - should require Monthly target when freq is monthly
+    - should require First target period when periodic indicators
+    - should require Number of target periods when periodic indicators
+    - should require only numeric value for Number of target periods
+    - should default Number of target periods to 1
+    - should prompt user if required field is empty
+    - should require First event name if freq is Event
+    - should require Number of events if freq is Event
+    - should require only numeric value for Number of events
+    - should default Number of events to 1
+    - should limit Number of events between 1 and 12
+    - should not permit edting saved targets except for LoP
+    - should disable the Target frequency menu after changes saved
+    - should enable only Remove all targets after targets saved
+    - should test #25
+
+
+  28 passing (27s)
+  94 pending
 ```
 1. Rejoice!
 

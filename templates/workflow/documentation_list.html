@@ -51,7 +51,7 @@
 
 
             table = $('#documentationtable').DataTable( {
-                 "order": [], 
+                 "order": [],
                  "bFilter": false,
                  'bLengthChange': false,
                  "aoColumnDefs": [
@@ -74,7 +74,7 @@
                         "defaultContent": "<i>Not set</i>"},
                     { title: "Delete/Update",
                         "mRender": function (data, record, row) {
-                                return '<a href="/workflow/documentation_update/'+row.id+'" class="btn btn-xs btn-info">Update</a><a href="/workflow/documentation_delete/'+row.id+'" class="btn btn-xs btn-danger">Delete Document</a>';
+                                return '<a href="/workflow/documentation_update/'+row.id+'" class="btn btn-xs btn-info">Edit</a><a href="/workflow/documentation_delete/'+row.id+'" class="btn btn-xs btn-danger">Delete Document</a>';
                             }
                     }
                     ]
@@ -88,20 +88,20 @@
 
                 if (program_id != 0) {
 
-                    $.getJSON("/workflow/documentation_objects/"+ program_id + "/0/", function(data) {  
-                        show_documentation_table(data['getDocumentation']);                                          
-                    }); 
+                    $.getJSON("/workflow/documentation_objects/"+ program_id + "/0/", function(data) {
+                        show_documentation_table(data['getDocumentation']);
+                    });
 
                 }  else{
 
                     program_id = document.URL.split('/')[5];
                     project_id = document.URL.split('/')[6];
 
-                    $.getJSON("/workflow/documentation_objects/"+program_id+"/"+project_id+"/", function(data) {  
-                        show_documentation_table(data['getDocumentation']);          
-                    });     
+                    $.getJSON("/workflow/documentation_objects/"+program_id+"/"+project_id+"/", function(data) {
+                        show_documentation_table(data['getDocumentation']);
+                    });
                 }
-            } 
+            }
 
 </script>
 

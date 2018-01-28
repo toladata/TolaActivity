@@ -323,3 +323,75 @@ select.listoption_filters
   padding-left: 5px;
   -moz-appearance: none;
 }
+
+/* Indicator periodic target creation */
+
+#indicator_form .tab-content.panel-body,
+#indicator_modal_body .tab-content.panel-body,
+#indicator_modal_body
+{
+  padding-bottom: 0px;
+}
+
+#periodic-targets-tablediv {
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-bottom: 0px;
+  margin-top: 1px
+  background-color: #F5F5F5;
+}
+
+.periodic-target, #pt_sum_targets {
+  border-bottom: 1px solid #DBDCDE;
+  border-top: 1px solid #DBDCDE;
+  background-color: #FFFFFF;
+}
+
+#periodic-targets-tablediv .pt-delete-row {
+  padding: 1px 0px 1px 10px;
+  vertical-align: middle;
+  border: none;
+}
+
+/* Don't define border property here.  Assigning here prevents red border
+from being applied when there is no value */
+.periodic-target .input-value {
+  margin: 10px 10px 10px 6px;
+  padding-right: 2px;
+  text-align: right;
+  width: 150px;
+  box-shadow: none;
+  display: table-cell;
+
+}
+
+/* Don't define border property here.  Assigning here prevents red border
+from being applied when there is no value */
+.periodic-target .input-text {
+  padding-right: 2px;
+  text-align: left;
+  box-shadow: none;
+  display: table-cell;
+}
+
+.periodic-target .controls input::placeholder {
+  color: #b8babd;
+}
+
+.lop-display {
+  padding: 0px 15px 10px 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #DBDCDE;
+}
+
+.target-value-error {
+  margin: 5px 5px 0px 5px;
+  float: left;
+  margin-right: 10px;
+}
+
+/* Used for turning red borders off for input fields with errors */
+.border-1px input{
+  border: 1px solid #DBDCDE;
+}
