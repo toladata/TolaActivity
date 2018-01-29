@@ -78,7 +78,8 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod, target_freq
         month = ( start_date + relativedelta(months =+ i) ).strftime("%B")
         year = ( start_date + relativedelta(months =+ i )).strftime("%Y")
         name = month + " " + year
-        start = ( start_date + relativedelta(months =+ i)).strftime('%Y-%m-%d')
+        start = (( start_date + relativedelta(months =+ i)).replace(day=1)).strftime('%Y-%m-%d')
+        #end =  ( ( start_date + relativedelta(months =+ j)) + relativedelta(day=1, months=+1, days=-1)).strftime('%Y-%m-%d')
         end = ( ( start_date + relativedelta(months =+ j)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
         target_period = {'period': name, 'start_date': start, 'end_date': end }
     return target_period
