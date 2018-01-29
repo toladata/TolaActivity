@@ -182,6 +182,8 @@ Then set up the following environment variables in docker-compose-dev.yml:
 * `SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL=https://<ID>.ngrok.io/complete/microsoft-graph`
 * `TOLA_HOSTNAME=127.0.0.1,localhost,<ID>.ngrok.io`
 
+To perform the Microsoft login you have to access the TolaActivity through the ngrok given URL, e.g., `https://<ID>.ngrok.io` otherwise you'll get an error related to the state (session).
+
 ### Setup Gunicorn and NGINX reverse proxy and static file server
 
 In order to have this stack in development, follow the instructions detailed
