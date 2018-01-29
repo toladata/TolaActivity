@@ -81,6 +81,8 @@
             $("#hint_id_date_collected").html("<small>Please enter a valid date.</small>");
             return false;
         } else {
+            var val = formatDate(field);
+            $("#id_date_collected").val(val);
             $("#div_id_date_collected").removeClass('has-error');
             $("#hint_id_date_collected").text(" ");
             return true;
