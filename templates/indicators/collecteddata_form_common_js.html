@@ -78,9 +78,9 @@
 
     function validate_achieved() {
         var actual = $("#id_achieved");
-        if (!actual.val() || !$.isNumeric(actual.val()) || actual.val() <= 0) {
+        if (!actual.val() || !$.isNumeric(actual.val()) || actual.val() < 0) {
             $("#div_id_achieved").addClass('has-error');
-            $("#hint_id_achieved").text(" Please enter a number larger than zero with no letters or symbols.");
+            $("#hint_id_achieved").text(" Please enter a number with no letters or symbols.");
             return false;
         } else {
             $("#div_id_achieved").removeClass('has-error');
