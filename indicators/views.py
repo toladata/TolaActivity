@@ -52,7 +52,7 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod, target_freq
         lop_target = Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]
         return {'period': lop_target }
     elif tf == Indicator.MID_END:
-        return [ {'period': 'Midline'}, {'period': 'Engline'} ]
+        return [ {'period': 'Midline'}, {'period': 'Endline'} ]
     elif tf == Indicator.EVENT:
         return { 'period': target_frequency_custom }
 
