@@ -48,7 +48,7 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod, target_freq
     j = i + 1
     target_period = ''
 
-    if tf == Indicator.LOP or tf == Indicator.MID_END:
+    if tf == Indicator.LOP:
         lop_target = Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]
         return {'period': lop_target }
     elif tf == Indicator.MID_END:
@@ -58,20 +58,20 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod, target_freq
 
 
     if tf == Indicator.ANNUAL:
-        start = ( start_date + relativedelta(years =+ i) ).strftime('%Y-%m-%d')
+        start = ( (start_date + relativedelta(years =+ i) ).replace(day=1) ).strftime('%Y-%m-%d')
         end = ( (start_date + relativedelta(years =+ j) ) + relativedelta(days =- 1) ).strftime('%Y-%m-%d')
         target_period = {'period': 'Year %s' % j, 'start_date': start, 'end_date': end }
     elif tf == Indicator.SEMI_ANNUAL:
-        start = ( start_date + relativedelta(months =+ (i*6)) ).strftime('%Y-%m-%d')
+        start = ( ( start_date + relativedelta(months =+ (i*6)) ).replace(day=1) ).strftime('%Y-%m-%d')
         end = ( (start_date + relativedelta(months =+ (j*6)) ) + relativedelta(days =- 1) ).strftime('%Y-%m-%d')
         target_period = {'period': 'Semi-annual period %s' % j, 'start_date': start, 'end_date': end }
     elif tf == Indicator.TRI_ANNUAL:
-        start = ( start_date + relativedelta(months =+ (i*4))).strftime('%Y-%m-%d')
+        start = ( ( start_date + relativedelta(months =+ (i*4))).replace(day=1) ).strftime('%Y-%m-%d')
         end = ( (start_date + relativedelta(months =+ (j*4))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
         target_period = {'period': 'Tri-annual period %s' % j, 'start_date': start, 'end_date': end }
 
     elif tf == Indicator.QUARTERLY:
-        start = ( start_date + relativedelta(months =+ (i*3))).strftime('%Y-%m-%d')
+        start = ( (start_date + relativedelta(months =+ (i*3)) ).replace(day=1)).strftime('%Y-%m-%d')
         end = ( ( start_date + relativedelta(months =+ (j*3))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
         target_period = {'period': 'Quarter %s' % j, 'start_date': start, 'end_date': end }
     elif tf == Indicator.MONTHLY:
