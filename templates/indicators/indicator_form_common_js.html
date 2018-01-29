@@ -571,7 +571,7 @@
 
         if (!lop.val()) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please select a target.");
+            $("#hint_id_lop_target").text("Please enter a number larger than zero.");
             // sbmt.attr("disabled", true);
             return false;
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
