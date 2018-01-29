@@ -46,7 +46,9 @@
             },
             */
             beforeShow(input, inst){
-
+                // move date picker popup div inside modal dialog(fix for firefox)
+                $(input).parent().append($('#ui-datepicker-div'));
+                $('#ui-datepicker-div').hide();
                 // $(this).datepicker('setDate', $.datepicker.formatDate('M yy', new Date(2018, 3)));
                 // $(this).datepicker( "option", "defaultDate",$.datepicker.formatDate('M yy', new Date(2018, 3)));
                 // $(this).datepicker( "option", "defaultDate", "+1m");
