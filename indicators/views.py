@@ -491,11 +491,12 @@ class IndicatorUpdate(UpdateView):
                     #raise ValueError("Incorrect data value")
                     end_date = None
 
+                # print("i = %s.......................%s............................" % (i, periodic_targets) )
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
                     defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'customsort': i,\
                             'start_date': start_date, 'end_date': end_date, 'edit_date': timezone.now() })
-                #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
+                # print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
                     periodic_target.create_date = timezone.now()
                     periodic_target.save()
