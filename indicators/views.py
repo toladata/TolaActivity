@@ -47,7 +47,7 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod):
     i = nthTargetPeriod
     j = i + 1
 
-    if tf == Indicator.LOP:
+    if tf == Indicator.LOP or tf == Indicator.MID_END:
         lop_target = Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]
         return {'period': lop_target }
     elif tf == Indicator.MID_END:
