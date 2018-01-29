@@ -551,7 +551,7 @@
             $("#hint_id_baseline_na").html("<small>Please complete this field. Your baseline can be zero.</small>");
             // sbmt.attr("disabled", true);
             return false;
-        } else if (!$.isNumeric(baseline.val())) {
+        } else if (!$.isNumeric(baseline.val()) || baseline.val() < 0 ) {
             $("#div_id_baseline").addClass('has-error');
             $("#div_id_baseline_na").addClass('has-error');
             $("#hint_id_baseline_na").html("<small>Please enter a number with no letters or symbols.<small>");
