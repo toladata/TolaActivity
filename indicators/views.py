@@ -43,15 +43,19 @@ from feed.serializers import FlatJsonSerializer
 import dateutil.parser
 
 
-def generate_periodic_target_single(tf, start_date, nthTargetPeriod):
+def generate_periodic_target_single(tf, start_date, nthTargetPeriod, target_frequency_custom=''):
     i = nthTargetPeriod
     j = i + 1
+    target_period = ''
 
     if tf == Indicator.LOP or tf == Indicator.MID_END:
         lop_target = Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]
         return {'period': lop_target }
     elif tf == Indicator.MID_END:
         return [ {'period': 'Midline'}, {'period': 'Engline'} ]
+    elif tf == Indicator.EVENT:
+        return { 'period': target_frequency_custom }
+
 
     if tf == Indicator.ANNUAL:
         start = ( start_date + relativedelta(years =+ i) ).strftime('%Y-%m-%d')
@@ -80,7 +84,7 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod):
     return target_period
 
 
-def generate_periodic_targets(tf, start_date, numTargets):
+def generate_periodic_targets(tf, start_date, numTargets, target_frequency_custom=''):
     gentargets = []
     target_period = None
 
@@ -90,7 +94,7 @@ def generate_periodic_targets(tf, start_date, numTargets):
 
     for i in range(numTargets):
         j = i + 1
-        target_period = generate_periodic_target_single(tf, start_date, i)
+        target_period = generate_periodic_target_single(tf, start_date, i, target_frequency_custom)
         gentargets.append(target_period)
     return gentargets
 
@@ -327,7 +331,7 @@ class PeriodicTargetView(View):
         except Exception as e:
             numTargets = PeriodicTarget.objects.filter(indicator=indicator).count() + 1
 
-        pt_generated = generate_periodic_target_single(indicator.target_frequency, indicator.target_frequency_start, (numTargets-1))
+        pt_generated = generate_periodic_target_single(indicator.target_frequency, indicator.target_frequency_start, (numTargets-1), '')
         pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
         return HttpResponse(pt_generated_json)
 
@@ -461,8 +465,9 @@ class IndicatorUpdate(UpdateView):
             if target_frequency_num_periods == None:
                 target_frequency_num_periods = 1
 
+            event_name = form.cleaned_data.get('target_frequency_custom', '')
             start_date = form.cleaned_data.get('target_frequency_start', None)
-            generatedTargets = generate_periodic_targets(new_target_frequency, start_date, target_frequency_num_periods)
+            generatedTargets = generate_periodic_targets(new_target_frequency, start_date, target_frequency_num_periods, event_name)
 
         if periodic_targets and periodic_targets != 'generateTargets':
             # now create/update periodic targets
