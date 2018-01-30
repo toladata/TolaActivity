@@ -7,6 +7,8 @@ function readConfig() {
 };
 
 describe('TolaActivity Program Indicators page', function() {
+  // Disable timeouts
+  this.timeout(0);
   var parms = readConfig();
 
   // TODO: add test
@@ -52,7 +54,7 @@ describe('TolaActivity Program Indicators page', function() {
       var menu = programs.$('ul.dropdown-menu');
       var progList = menu.$$('li');
       programs.click();
-      
+
       var table = $('div#toplevel_div')
       var tableRows = table.$$('div.panel-heading');
       assert(progList.length === tableRows.length);
@@ -70,7 +72,7 @@ describe('TolaActivity Program Indicators page', function() {
         progList.push(listitem.split('-')[1].trim());
       }
       dropdown.click();
-  
+
       var table = $('div#toplevel_div')
       var tableRows = table.$$('div.panel-heading');
       for (let i = 0; i < tableRows.length; i++) {
@@ -121,14 +123,14 @@ describe('TolaActivity Program Indicators page', function() {
 
     it('should be able to select any/all list items');
   }); // end indicators dropdown tests
-     
+
   describe('Indicator Type dropdown', function() {
     it('should be present on page', function() {
       var button = $('#dropdownIndicatorType');
       assert(button.getText() == 'Indicator Type');
       button.click();
     });
-  
+
     it('should have at least one entry', function() {
       var buttons = $('div.panel').$$('div.btn-group');
       var indicatorType = buttons[2];
@@ -183,7 +185,7 @@ describe('TolaActivity Program Indicators page', function() {
       var targetDiv = link.getAttribute('data-target');
       var table = $('div' + targetDiv).$('table');
       var tableRows = table.$$('tbody>tr>td>a');
-      // divide by 2 because each <tr> has a blank <tr> spacer row 
+      // divide by 2 because each <tr> has a blank <tr> spacer row
       // beneath it
       assert.equal(buttonCnt, (tableRows.length / 2), 'evidence count mismatch');
 
@@ -198,28 +200,62 @@ describe('TolaActivity Program Indicators page', function() {
       let buttons = $('#toplevel_div').$$('div.panel-body');
       let button = buttons[0];
       let link = button.$('a');
+      let target = link.getAttribute('data-target');
+      let targetDiv = $('div' + target);
       link.click();
+      browser.pause(1500);
 
-      let targetDiv = link.getAttribute('data-target');
-      let table = $('div' + targetDiv).$('table');
+      let table = targetDiv.$('table');
       let tableRows = table.$$('tbody>tr>td>a.indicator-link');
-      let row = tableRows[1];
-      let rowtext = row.getText();
-      row.click();
-      //browser.waitForVisible('div#indicator_modal_div');
-      //browser.waitForVisible('div#indicator_modal_header>h3');
-      let popupText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
-      assert.equal(rowText, popupText, 'indicator name mismatch');
-      /*
-      $('div#indicator_modal_header>h3').getText();
-      $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
-      dialogtext = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
-      assert.equal(rowtext, dialogtext);
-      */
+      let tableRow = tableRows[0];
+      let rowText = tableRow.getText();
+      // FIXME: This is a horrible hack to accomodate a race.
+      // <div id="ajaxloading" class="modal ajax_loading" style="display: block;"></div>
+      // obscures the button we want to click, but how long varies because Internet.,
+      // so hide the div. :-\
+      browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
+      tableRow.click();
+      browser.waitForVisible('div#indicator_modal_header>h3');
+      let dialogText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
+      assert.equal(rowText, dialogText, 'indicator name mismatch');
+      let close = $('div#indicator_modal_div').$('button.close');
+      close.click();
     });
 
-/*
-    it('should be able to create PI by clicking the New Indicator button');
+    it('should be able to create PI by clicking the New Indicator button', function() {
+      let newButtons = $('div#toplevel_div').$('div.panel-heading').$$('h4>span>a');
+      let newButton = newButtons[0];
+      newButton.click();
+      assert.equal('Create an Indicator', $('h2').getText());
+
+      // Go with the defaults
+      let form = $('form');
+      let saveNew = form.$('input.btn.btn-success');
+      saveNew.click();
+      assert.equal('Success, Basic Indicator Created!', $('div.alert.alert-success').getText());
+
+      // Find the Targets tab
+      let tabs = $$('li.tab-pane>a');
+      let targetsTab = tabs[2];
+      assert.equal('Targets', targetsTab.getText());
+      targetsTab.click();
+
+      // Add some values
+      let bucket = $('input#id_units_of_measure');
+      bucket.setValue('Buckets');
+      let lopTarget = $('input#id_lop_target');
+      lopTarget.setValue('10');
+      let baseline = $('input#id_baseline');
+      baseline.setValue('0');
+      let targetFreq = $('select#id_target_frequency');
+      targetFreq.selectByValue(1);
+
+      // Save
+      let saveUpdate = $('input.btn.btn-primary');
+      assert.equal('Save changes', saveUpdate.getText());
+      saveUpdate.click();
+    }, 3);
+
     it('should increase PI count after adding new indicator');
     it('should be able to delete PI by clicking its Delete button');
     it('should be able to edit PI by clicking its Edit button');
@@ -306,7 +342,7 @@ describe('TolaActivity Program Indicators page', function() {
       it('should export all report entries when Export All button is clicked');
     });
 
-    describe('Indicator evidence dropdown', function() { 
+    describe('Indicator evidence dropdown', function() {
       it('should be able to view PI evidence table by clicking its Data button');
       it('should decrease evidence count when PI evidence deleted');
       it('should increase evidence count when PI evidence added');
@@ -350,7 +386,6 @@ describe('TolaActivity Program Indicators page', function() {
     it('should not permit read-only fields to be edited');
     it('should have a Grid/Print Report button');
     it('should open a report page when the Grid/Print Report button is clicked');
-*/
   });
 
   // These are enhancements
