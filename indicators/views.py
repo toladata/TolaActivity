@@ -42,27 +42,63 @@ from dateutil.relativedelta import relativedelta #('%Y-%m-%d') %b %d, %Y
 from feed.serializers import FlatJsonSerializer
 import dateutil.parser
 
-_PERIODICTARGET_DEFINITION = {
-    Indicator.LOP: lambda **params: {"period": Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]},
-    Indicator.MID_END: lambda **params: [{"period": "Midline"}, {"period": "Endline"}],
-    Indicator.EVENT: lambda **params: {"period": params.get('n')},
-    Indicator.ANNUAL: lambda **params: {"period": "Year %s" % params.get('i'), \
-        "start_date": (params.get('s') + relativedelta(years=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
-        "end_date": ( params.get('s') + relativedelta(years=+(params.get('i')*1)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-    Indicator.SEMI_ANNUAL: lambda **params: {"period": "Semi-annual period %s" % params.get('i'), \
-        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*6))).strftime('%Y-%m-%d'), \
-        "end_date": ( params.get('s') + relativedelta(months=+( params.get('i')*6)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-    Indicator.TRI_ANNUAL: lambda **params: {"period": "Tri-annual period %s" % params.get('i'), \
-        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*4))).strftime('%Y-%m-%d'), \
-        "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i' )*4))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-    Indicator.QUARTERLY: lambda **params: {"period": "Quarter %s" % params.get('i'), \
-        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*3))).strftime('%Y-%m-%d'), \
-        "end_date": ( (params.get('s') + relativedelta(months=+( params.get('i')*3)))+ relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-    Indicator.MONTHLY: lambda **params: {"period": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%B") \
-        + " " + (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime("%Y"), \
-        "start_date": (params.get('s') + relativedelta(months=+( (params.get('i') -1 )*1))).strftime('%Y-%m-%d'), \
-        "end_date": ( (params.get('s') + relativedelta(months=+params.get('i' ))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')},
-}
+
+def generate_periodic_target_single(tf, start_date, nthTargetPeriod, target_frequency_custom=''):
+    i = nthTargetPeriod
+    j = i + 1
+    target_period = ''
+
+    if tf == Indicator.LOP:
+        lop_target = Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]
+        return {'period': lop_target }
+    elif tf == Indicator.MID_END:
+        return [ {'period': 'Midline'}, {'period': 'Endline'} ]
+    elif tf == Indicator.EVENT:
+        return { 'period': target_frequency_custom }
+
+
+    if tf == Indicator.ANNUAL:
+        start = ( (start_date + relativedelta(years =+ i) ).replace(day=1) ).strftime('%Y-%m-%d')
+        end = ( (start_date + relativedelta(years =+ j) ) + relativedelta(days =- 1) ).strftime('%Y-%m-%d')
+        target_period = {'period': 'Year %s' % j, 'start_date': start, 'end_date': end }
+    elif tf == Indicator.SEMI_ANNUAL:
+        start = ( ( start_date + relativedelta(months =+ (i*6)) ).replace(day=1) ).strftime('%Y-%m-%d')
+        end = ( (start_date + relativedelta(months =+ (j*6)) ) + relativedelta(days =- 1) ).strftime('%Y-%m-%d')
+        target_period = {'period': 'Semi-annual period %s' % j, 'start_date': start, 'end_date': end }
+    elif tf == Indicator.TRI_ANNUAL:
+        start = ( ( start_date + relativedelta(months =+ (i*4))).replace(day=1) ).strftime('%Y-%m-%d')
+        end = ( (start_date + relativedelta(months =+ (j*4))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
+        target_period = {'period': 'Tri-annual period %s' % j, 'start_date': start, 'end_date': end }
+
+    elif tf == Indicator.QUARTERLY:
+        start = ( (start_date + relativedelta(months =+ (i*3)) ).replace(day=1)).strftime('%Y-%m-%d')
+        end = ( ( start_date + relativedelta(months =+ (j*3))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
+        target_period = {'period': 'Quarter %s' % j, 'start_date': start, 'end_date': end }
+    elif tf == Indicator.MONTHLY:
+        month = ( start_date + relativedelta(months =+ i) ).strftime("%B")
+        year = ( start_date + relativedelta(months =+ i )).strftime("%Y")
+        name = month + " " + year
+        start = (( start_date + relativedelta(months =+ i)).replace(day=1)).strftime('%Y-%m-%d')
+        #end =  ( ( start_date + relativedelta(months =+ j)) + relativedelta(day=1, months=+1, days=-1)).strftime('%Y-%m-%d')
+        end = ( ( start_date + relativedelta(months =+ j)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
+        target_period = {'period': name, 'start_date': start, 'end_date': end }
+    return target_period
+
+
+def generate_periodic_targets(tf, start_date, numTargets, target_frequency_custom=''):
+    gentargets = []
+    target_period = None
+
+    if tf == Indicator.LOP or tf == Indicator.MID_END:
+        target_period = generate_periodic_target_single(tf, start_date, numTargets)
+        return target_period
+
+    for i in range(numTargets):
+        j = i + 1
+        target_period = generate_periodic_target_single(tf, start_date, i, target_frequency_custom)
+        gentargets.append(target_period)
+    return gentargets
+
 
 def group_excluded(*group_names, **url):
     """
@@ -295,12 +331,8 @@ class PeriodicTargetView(View):
             numTargets = int(request.GET.get('numTargets', None))
         except Exception as e:
             numTargets = PeriodicTarget.objects.filter(indicator=indicator).count() + 1
-        params = {
-            's': indicator.target_frequency_start,
-            'n': '',
-            'i': numTargets
-        }
-        pt_generated = _PERIODICTARGET_DEFINITION[indicator.target_frequency](**params)
+
+        pt_generated = generate_periodic_target_single(indicator.target_frequency, indicator.target_frequency_start, (numTargets-1), '')
         pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
         return HttpResponse(pt_generated_json)
 
@@ -427,24 +459,16 @@ class IndicatorUpdate(UpdateView):
         lop = form.cleaned_data.get('lop_target', None)
 
         if periodic_targets == 'generateTargets':
-            params = {
-                's': form.cleaned_data.get('target_frequency_start', None),
-                'n': form.cleaned_data.get('target_frequency_custom', None)
-            }
-
             # handle (delete) association of colelcted data records if necessary
             handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency)
 
             target_frequency_num_periods = form.cleaned_data.get('target_frequency_num_periods', 0)
-            if target_frequency_num_periods == None: target_frequency_num_periods = 1
-            for i in range(0, target_frequency_num_periods):
-                params['i'] = i + 1
+            if target_frequency_num_periods == None:
+                target_frequency_num_periods = 1
 
-                pt = _PERIODICTARGET_DEFINITION[new_target_frequency](**params)
-                if isinstance(pt, list):
-                    generatedTargets = generatedTargets + pt
-                else:
-                    generatedTargets.append(pt)
+            event_name = form.cleaned_data.get('target_frequency_custom', '')
+            start_date = form.cleaned_data.get('target_frequency_start', None)
+            generatedTargets = generate_periodic_targets(new_target_frequency, start_date, target_frequency_num_periods, event_name)
 
         if periodic_targets and periodic_targets != 'generateTargets':
             # now create/update periodic targets
@@ -467,11 +491,12 @@ class IndicatorUpdate(UpdateView):
                     #raise ValueError("Incorrect data value")
                     end_date = None
 
+                # print("i = %s.......................%s............................" % (i, periodic_targets) )
                 periodic_target,created = PeriodicTarget.objects.update_or_create(\
                     indicator=indicatr, id=pk,\
                     defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'customsort': i,\
                             'start_date': start_date, 'end_date': end_date, 'edit_date': timezone.now() })
-                #print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
+                # print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
                 if created:
                     periodic_target.create_date = timezone.now()
                     periodic_target.save()

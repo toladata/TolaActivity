@@ -46,7 +46,9 @@
             },
             */
             beforeShow(input, inst){
-
+                // move date picker popup div inside modal dialog(fix for firefox)
+                $(input).parent().append($('#ui-datepicker-div'));
+                $('#ui-datepicker-div').hide();
                 // $(this).datepicker('setDate', $.datepicker.formatDate('M yy', new Date(2018, 3)));
                 // $(this).datepicker( "option", "defaultDate",$.datepicker.formatDate('M yy', new Date(2018, 3)));
                 // $(this).datepicker( "option", "defaultDate", "+1m");
@@ -549,7 +551,7 @@
             $("#hint_id_baseline_na").html("<small>Please complete this field. Your baseline can be zero.</small>");
             // sbmt.attr("disabled", true);
             return false;
-        } else if (!$.isNumeric(baseline.val())) {
+        } else if (!$.isNumeric(baseline.val()) || baseline.val() < 0 ) {
             $("#div_id_baseline").addClass('has-error');
             $("#div_id_baseline_na").addClass('has-error');
             $("#hint_id_baseline_na").html("<small>Please enter a number with no letters or symbols.<small>");
@@ -569,7 +571,7 @@
 
         if (!lop.val()) {
             $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please select a target.");
+            $("#hint_id_lop_target").text("Please enter a number larger than zero.");
             // sbmt.attr("disabled", true);
             return false;
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
@@ -638,7 +640,6 @@
         } else {
             var val = formatDate(field, 1);
             $("#id_target_frequency_start").val(val);
-            console.log(val);
             $("#div_id_target_frequency_start").removeClass('has-error');
             $("#hint_id_target_frequency_start").text(" ");
             return true;
@@ -659,18 +660,28 @@
                     errorFlag = true;
                 }
             }
+           if ($(this).attr('type') == 'number' && $(this).val() && $(this).val() >= 0) {
+                $(this).parent().removeClass('has-error');
+                $(this).parent().addClass('border-1px');
+                // $(this).next('span:first').text('');
+                $("#id_pt_errors").text('');
+            } else {
+                $(this).parent().addClass('has-error');
+                $(this).parent().removeClass('border-1px');
+                errorFlag = true;
+            }
         });
 
         $("#periodic_targets_table input[type=text]").each(function(){
             // if ($(this).attr('id').substr(0, 2) == "pt" ) {
-                if ($(this).val()) {
-                    $(this).parent().removeClass('has-error');
-                    $(this).parent().addClass('border-1px');
-                } else {
-                    $(this).parent().addClass('has-error');
-                    $(this).parent().removeClass('border-1px');
-                    errorFlag = true;
-                }
+            if ($(this).val()) {
+                $(this).parent().removeClass('has-error');
+                $(this).parent().addClass('border-1px');
+            } else {
+                $(this).parent().addClass('has-error');
+                $(this).parent().removeClass('border-1px');
+                errorFlag = true;
+            }
         });
 
         if (errorFlag) {
@@ -764,7 +775,7 @@
     });
 
     $("#indicator_modal_content, #indicator_form").on("input", "#periodic_targets_table input[type=number]", function(e){
-        if ($(this).val()) {
+        if ($(this).val() && $(this).val() >= 0) {
             $(this).parent().removeClass('has-error');
             $(this).parent().addClass('border-1px');
             // $(this).next('span:first').text('');

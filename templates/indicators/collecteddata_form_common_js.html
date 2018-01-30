@@ -5,11 +5,12 @@
         e.preventDefault();
         var isFormValid = true;
         $("#modalmessages").empty();
-        isFormValid = validatePeriodicTarget();
-        isFormValid = validateDateCollected();
-        if (isFormValid == false) {
-            return false;
-        }
+        pts_valid = validatePeriodicTarget();
+        datecollected_valid = validateDateCollected();
+        achieved_valid = validate_achieved();
+        // if (pts_valid == false || datecollected_valid == false || achieved_valid == false) {
+        //     return false;
+        // }
         if ($("#collecteddata_update_form div").hasClass('has-error')) {
             createAlert("danger", "Please complete all required.", true, "#modalmessages");
             $('#indicator_collecteddata_div').animate({ scrollTop: 0 }, 'slow');
@@ -46,6 +47,9 @@
         validatePeriodicTarget();
     });
 
+    $("#indicator_collecteddata_div").on("change", "#id_achieved", function(e){
+        validate_achieved();
+    });
 
 
     function validatePeriodicTarget() {
@@ -71,6 +75,20 @@
         }
     }
 
+
+    function validate_achieved() {
+        var actual = $("#id_achieved");
+        if (!actual.val() || !$.isNumeric(actual.val()) || actual.val() < 0) {
+            $("#div_id_achieved").addClass('has-error');
+            $("#hint_id_achieved").text(" Please enter a number with no letters or symbols.");
+            return false;
+        } else {
+            $("#div_id_achieved").removeClass('has-error');
+            $("#hint_id_achieved").text(" ");
+            return true;
+        }
+    }
+
     function validateDateCollected(){
         var field = $("#id_date_collected").val();
         if ($.isEmptyObject(field)) {
@@ -81,6 +99,8 @@
             $("#hint_id_date_collected").html("<small>Please enter a valid date.</small>");
             return false;
         } else {
+            var val = formatDate(field);
+            $("#id_date_collected").val(val);
             $("#div_id_date_collected").removeClass('has-error');
             $("#hint_id_date_collected").text(" ");
             return true;
