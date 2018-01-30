@@ -27,6 +27,9 @@ resetdb=
 pythonexe=
 deleteoldbackups=
 
+# Number of days to keep backups
+keep_backups_for=30 #days
+
 while [ "$1" != "" ]; do
     case $1 in
         -u | --user )       shift
@@ -59,6 +62,21 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
+
+# prints a horizontal line
+function hr(){
+  printf '=%.0s' {1..80}
+  printf "\n"
+}
+
+# delete old backups of type sql.gz
+function delete_old_backups() {
+  echo "Deleting $backup_path/*.sql.gz older than $keep_backups_for days"
+  find $backup_path -type f -name "*.sql.gz" -mtime +$keep_backups_for -exec rm {} \;
+  # delete old files of type .sql
+  find $backup_path -type f -name "*.sql" -mtime +$keep_backups_for -exec rm {} \;
+  # find $backup_path/* -mtime +$keep_backups_for -exec rm {} \;
+}
 
 if [ $backup -eq 1 ]
 then
@@ -104,5 +122,7 @@ fi
 # Delete files older than 30 days
 if [ ! -z "$deleteoldbackups" ]
 then
-    find $backup_path/* -mtime +30 -exec rm {} \;
+    hr;
+    delete_old_backups;
 fi
+
