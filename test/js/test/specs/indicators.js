@@ -168,6 +168,8 @@ describe('TolaActivity Program Indicators page', function() {
   });
 
   it('should have matching indicator counts on data button and in table', function() {
+    // FIXME: The hard pauses are a poor WAR for the button we want to click sometimes
+    // being occluded by another element.
     progIndTable = $('#toplevel_div');
     buttons = progIndTable.$$('div.panel-body');
     for (let button of buttons) {
@@ -175,6 +177,7 @@ describe('TolaActivity Program Indicators page', function() {
       var link = button.$('a');
       // expand the table
       link.click();
+      browser.pause(1500);
 
       // indicator count from table
       var targetDiv = link.getAttribute('data-target');
@@ -186,11 +189,36 @@ describe('TolaActivity Program Indicators page', function() {
 
       // collapse the table
       link.click();
+      browser.pause(1500);
     }
   }, 3); // retry this flaky test 2 more times before failing
 
   describe('Program Indicators table', function() {
-    it('should view PI by clicking its name in Indicator Name column');
+    it('should view PI by clicking its name in Indicator Name column', function() {
+      let buttons = $('#toplevel_div').$$('div.panel-body');
+      let button = buttons[0];
+      let link = button.$('a');
+      link.click();
+
+      let targetDiv = link.getAttribute('data-target');
+      let table = $('div' + targetDiv).$('table');
+      let tableRows = table.$$('tbody>tr>td>a.indicator-link');
+      let row = tableRows[1];
+      let rowtext = row.getText();
+      row.click();
+      //browser.waitForVisible('div#indicator_modal_div');
+      //browser.waitForVisible('div#indicator_modal_header>h3');
+      let popupText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
+      assert.equal(rowText, popupText, 'indicator name mismatch');
+      /*
+      $('div#indicator_modal_header>h3').getText();
+      $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
+      dialogtext = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
+      assert.equal(rowtext, dialogtext);
+      */
+    });
+
+/*
     it('should be able to create PI by clicking the New Indicator button');
     it('should increase PI count after adding new indicator');
     it('should be able to delete PI by clicking its Delete button');
@@ -201,7 +229,7 @@ describe('TolaActivity Program Indicators page', function() {
     it('should return to previous screen if Cancel button clicked');
     it('should clear form when Clear button clicked');
     it('should decrease PI count after deleting indicator');
-    
+
     describe('Create an Indicator form', function() {
       it('should show context-sensitve help by clicking Form Help/Guidance button');
       it('should have an Indicator Service Templates dropdown');
@@ -322,6 +350,7 @@ describe('TolaActivity Program Indicators page', function() {
     it('should not permit read-only fields to be edited');
     it('should have a Grid/Print Report button');
     it('should open a report page when the Grid/Print Report button is clicked');
+*/
   });
 
   // These are enhancements
