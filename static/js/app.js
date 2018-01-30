@@ -53,6 +53,9 @@ function formatDate(dateString, day=0) {
     months[11] = "Nov";
     months[12] = "Dec";
 
+    if (dateString == null || dateString == undefined || dateString.length == 0 || dateString == 'undefined' || dateString == 'null' ) {
+        return '';
+    }
     try {
         var dateval = new Date(dateString);
         // Add the local timezone offset

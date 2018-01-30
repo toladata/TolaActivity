@@ -137,7 +137,7 @@ class IndicatorForm(forms.ModelForm):
                                                             </td>
                                                             <td align="right" style="padding:1px; border:none; vertical-align: middle; width: 150px">
                                                                     <div class="controls border-1px">
-                                                                        <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target|floatformat:"-2" }}" data-start-date="{{pt.start_date_formatted}}" data-end-date="{{pt.end_date_formatted}}" placeholder="Enter target" class="form-control input-value">
+                                                                        <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target|floatformat:"-2" }}" data-start-date="{{pt.start_date|date:"M d, Y"|default:''}}" data-end-date="{{pt.end_date|date:"M d, Y"|default:''}}" placeholder="Enter target" class="form-control input-value">
                                                                         <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
                                                                     </div>
                                                             </td>
