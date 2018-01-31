@@ -26,6 +26,7 @@ env:
     - TOLA_DB_USER=postgres
     - TOLA_DB_PASS=
     - TOLA_DB_PORT=5432
+    - TOLA_TRACK_SYNC_ENABLED=False
     - ELASTICSEARCH_URL=http://127.0.0.1:9200/
     - COVERALLS_REPO_TOKEN=e4x1YSoHzZd9c7lmIu880ghTMniH24YLq
     - DEFAULT_ORG=TolaData

@@ -383,13 +383,10 @@ class SignalSyncTrackTest(TestCase):
     def setUp(self):
         factories.Group()
         self.tola_user = factories.TolaUser()
-        os.environ['APP_BRANCH'] = 'Test'
-
-    def tearDown(self):
-        os.environ['APP_BRANCH'] = ''
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @override_settings(TOLA_TRACK_SYNC_ENABLED=True)
     @patch('workflow.signals.tsync')
     def test_sync_save_create(self, mock_tsync):
         mock_tsync.create_instance.return_value = Mock()
@@ -402,16 +399,27 @@ class SignalSyncTrackTest(TestCase):
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @override_settings(TOLA_TRACK_SYNC_ENABLED=False)
+    @patch('workflow.signals.tsync')
+    def test_sync_save_create_disabled(self, mock_tsync):
+        mock_tsync.create_instance.return_value = Mock()
+
+        factories.Organization()
+        self.assertFalse(mock_tsync.create_instance.called)
+
+        factories.WorkflowLevel1()
+        self.assertFalse(mock_tsync.create_instance.called)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @override_settings(TOLA_TRACK_SYNC_ENABLED=True)
     @patch('workflow.signals.tsync')
     def test_sync_save_update(self, mock_tsync):
         mock_tsync.create_instance.return_value = Mock()
         mock_tsync.update_instance.return_value = Mock()
 
         org = factories.Organization()
-        mock_tsync.create_instance.assert_called_with(org)
-
         wfl1 = factories.WorkflowLevel1()
-        mock_tsync.create_instance.assert_called_with(wfl1)
 
         org.name = 'Another Org'
         org.description = 'The Org name was changed'
@@ -424,19 +432,54 @@ class SignalSyncTrackTest(TestCase):
 
     @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
     @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @override_settings(TOLA_TRACK_SYNC_ENABLED=False)
+    @patch('workflow.signals.tsync')
+    def test_sync_save_update_disabled(self, mock_tsync):
+        mock_tsync.create_instance.return_value = Mock()
+        mock_tsync.update_instance.return_value = Mock()
+
+        org = factories.Organization()
+        wfl1 = factories.WorkflowLevel1()
+
+        org.name = 'Another Org'
+        org.description = 'The Org name was changed'
+        org.save()
+        self.assertFalse(mock_tsync.update_instance.called)
+
+        wfl1.name = 'Another Program'
+        wfl1.save()
+        self.assertFalse(mock_tsync.update_instance.called)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @override_settings(TOLA_TRACK_SYNC_ENABLED=True)
     @patch('workflow.signals.tsync')
     def test_sync_save_delete(self, mock_tsync):
         mock_tsync.create_instance.return_value = Mock()
         mock_tsync.delete_instance.return_value = Mock()
 
         org = factories.Organization()
-        mock_tsync.create_instance.assert_called_with(org)
-
         wfl1 = factories.WorkflowLevel1()
-        mock_tsync.create_instance.assert_called_with(wfl1)
 
         org.delete()
         mock_tsync.delete_instance.assert_called_with(org)
 
         wfl1.delete()
         mock_tsync.delete_instance.assert_called_with(wfl1)
+
+    @override_settings(TOLA_TRACK_URL='https://tolatrack.com')
+    @override_settings(TOLA_TRACK_TOKEN='TheToken')
+    @override_settings(TOLA_TRACK_SYNC_ENABLED=False)
+    @patch('workflow.signals.tsync')
+    def test_sync_save_delete_disabled(self, mock_tsync):
+        mock_tsync.create_instance.return_value = Mock()
+        mock_tsync.delete_instance.return_value = Mock()
+
+        org = factories.Organization()
+        wfl1 = factories.WorkflowLevel1()
+
+        org.delete()
+        self.assertFalse(mock_tsync.delete_instance.called)
+
+        wfl1.delete()
+        self.assertFalse(mock_tsync.delete_instance.called)
