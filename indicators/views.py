@@ -15,7 +15,7 @@ from django_tables2 import RequestConfig
 from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
 
-from django.db.models import Count, Sum, Max
+from django.db.models import Count, Sum, Max, Min
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -947,36 +947,21 @@ def collected_data_json(AjaxableResponseMixin, indicator, program):
                 'program_id': program})
 
 
-def program_indicators_json(AjaxableResponseMixin,program,indicator,type):
-    """
-    Displayed on the Indicator home page as a table of indicators related to a Program
-    Called from Program "Indicator" button onClick
-    :param AjaxableResponseMixin:
-    :param program:
-    :return: List of Indicators and the Program they are related to
-    """
+def program_indicators_json(AjaxableResponseMixin, program, indicator, type):
     template_name = 'indicators/program_indicators_table.html'
 
     q = {'program__id__isnull': False}
-    # if we have a program filter active
     if int(program) != 0:
-        q = {
-            'program__id': program,
-        }
-    # if we have an indicator type active
-    if int(type) != 0:
-        r = {
-            'indicator_type__id': type,
-        }
-        q.update(r)
-    # if we have an indicator id append it to the query filter
-    if int(indicator) != 0:
-        s = {
-            'id': indicator,
-        }
-        q.update(s)
+        q['program__id'] = program
 
-    indicators = Indicator.objects.all().filter(**q).annotate(data_count=Count('collecteddata'))
+    if int(type) != 0:
+        q['indicator_type__id'] = type
+
+    if int(indicator) != 0:
+        q['id'] = indicator
+
+        #
+    indicators = Indicator.objects.filter(**q).annotate(data_count=Count('collecteddata'), levelmin=Min('level__id')).order_by('levelmin', 'number')
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
 
 
