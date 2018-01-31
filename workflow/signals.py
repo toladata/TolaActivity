@@ -5,6 +5,7 @@ try:
     from chargebee import Subscription
 except ImportError:
     pass
+from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db.models import signals
 from django.dispatch import receiver
@@ -195,7 +196,7 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
 # ORGANIZATION SIGNALS
 @receiver(signals.post_save, sender=Organization)
 def sync_save_track_organization(sender, instance, **kwargs):
-    if os.getenv('APP_BRANCH'):
+    if settings.TOLA_TRACK_SYNC_ENABLED:
         if kwargs.get('created'):
             tsync.create_instance(instance)
         else:
@@ -204,14 +205,14 @@ def sync_save_track_organization(sender, instance, **kwargs):
 
 @receiver(signals.post_delete, sender=Organization)
 def sync_delete_track_organization(sender, instance, **kwargs):
-    if os.getenv('APP_BRANCH'):
+    if settings.TOLA_TRACK_SYNC_ENABLED:
         tsync.delete_instance(instance)
 
 
 # WORKFLOWLEVEL1 SIGNALS
 @receiver(signals.post_save, sender=WorkflowLevel1)
 def sync_save_track_workflowlevel1(sender, instance, **kwargs):
-    if os.getenv('APP_BRANCH'):
+    if settings.TOLA_TRACK_SYNC_ENABLED:
         if kwargs.get('created'):
             tsync.create_instance(instance)
         else:
@@ -220,5 +221,5 @@ def sync_save_track_workflowlevel1(sender, instance, **kwargs):
 
 @receiver(signals.post_delete, sender=WorkflowLevel1)
 def sync_delete_track_workflowlevel1(sender, instance, **kwargs):
-    if os.getenv('APP_BRANCH'):
+    if settings.TOLA_TRACK_SYNC_ENABLED:
         tsync.delete_instance(instance)
