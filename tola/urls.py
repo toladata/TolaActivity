@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
@@ -9,6 +11,7 @@ from rest_framework import routers
 from formlibrary.views import BinaryFieldViewSet, binary_test
 from tola import views as tola_views
 from feed import views as feed_views
+from tola import DEMO_BRANCH
 
 admin.autodiscover()
 admin.site.site_header = 'TolaActivity administration'
@@ -115,8 +118,10 @@ urlpatterns = [
 
     # Local login
     url(r'^accounts/login/$', auth_views.LoginView.as_view(
-        extra_context={'chargebee_signup_org_url':
-                       settings.CHARGEBEE_SIGNUP_ORG_URL}),
+        extra_context={
+            'chargebee_signup_org_url': settings.CHARGEBEE_SIGNUP_ORG_URL,
+            'is_demo_branch': os.getenv('APP_BRANCH') == DEMO_BRANCH
+        }),
         name='login'),
     url(r'^accounts/logout/$', tola_views.logout_view, name='logout'),
 

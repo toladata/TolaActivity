@@ -27,7 +27,7 @@ from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
     CountrySerializer
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
     NewTolaUserRegistrationForm, BookmarkForm
-from workflow.models import (Organization, TolaUser, TolaBookmarks,
+from workflow.models import (Organization, TolaSites, TolaUser, TolaBookmarks,
                              FormGuidance, ROLE_VIEW_ONLY, TolaSites)
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
                 "TolaSite.front_end_url and TolaSite.tola_tables_url are "
                 "deprecated. Please, set instead TOLA_ACTIVITY_URL and "
                 "TOLA_TRACK_URL values in settings", DeprecationWarning)
-            from workflow.models import TolaSites
             tola_site = TolaSites.objects.get(name="TolaData")
             extra_context = {
                 'tolaactivity_url': tola_site.front_end_url,

@@ -76,6 +76,9 @@ class IndexViewTest(TestCase):
 
 
 class LoginViewTest(TestCase):
+    def tearDown(self):
+        os.environ['APP_BRANCH'] = ''
+
     def _reload_urlconf(self):
         clear_url_caches()
         if settings.ROOT_URLCONF in sys.modules:
@@ -107,6 +110,23 @@ class LoginViewTest(TestCase):
             ('<a href="https://chargebee.com/123">'
              'Register Your Organization with TolaData</a>'),
             template_content)
+
+    def test_with_social_auth_button(self):
+        self._reload_urlconf()
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertIn('<div class="social-buttons row">', template_content)
+        self.assertIn('<i class="icon-google"></i>', template_content)
+        self.assertIn('<i class="icon-microsoft">', template_content)
+
+    def test_without_social_auth_button(self):
+        os.environ['APP_BRANCH'] = DEMO_BRANCH
+        self._reload_urlconf()
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertNotIn('<div class="social-buttons row">', template_content)
+        self.assertNotIn('<i class="icon-google"></i>', template_content)
+        self.assertNotIn('<i class="icon-microsoft">', template_content)
 
 
 class RegisterViewGetTest(TestCase):
