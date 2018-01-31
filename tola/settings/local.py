@@ -1,6 +1,12 @@
 from base import *
 import os
 from os.path import join, normpath
+try:
+    import chargebee
+except ImportError:
+    CHARGEBEE_ENABLED = False
+else:
+    CHARGEBEE_ENABLED = True
 
 try:
     DATABASES = {
@@ -82,6 +88,12 @@ CACHES = {
 }
 ########## END CACHE CONFIGURATION
 
+
+########## STATIC FILE CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = '/static'
+########## END STATIC FILE CONFIGURATION
+
 ######## If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = False
 OFFLINE_MODE = False
@@ -158,4 +170,10 @@ TOLAUSER_OBFUSCATED_NAME = os.getenv('TOLAUSER_OBFUSCATED_NAME')
 
 DEFAULT_ORG = os.getenv('DEFAULT_ORG')
 
-CHARGEBEE_SIGNUP_ORG_URL = os.getenv('CHARGEBEE_SIGNUP_ORG_URL')
+########## CHARGEBEE CONFIGURATION
+
+if CHARGEBEE_ENABLED:
+    CHARGEBEE_SIGNUP_ORG_URL = os.getenv('CHARGEBEE_SIGNUP_ORG_URL')
+    chargebee.configure(os.getenv('CHARGEBEE_SITE_API_KEY'), os.getenv('CHARGEBEE_SITE'))
+
+########## END CHARGEBEE CONFIGURATION

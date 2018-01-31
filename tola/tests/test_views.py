@@ -5,6 +5,8 @@ import os
 import sys
 from urlparse import urljoin
 
+from chargebee import InvalidRequestError, Subscription
+
 from django.contrib import auth
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
@@ -16,7 +18,8 @@ from mock import Mock, patch
 
 import factories
 from tola import views, DEMO_BRANCH
-from workflow.models import TolaUser, TolaSites, ROLE_VIEW_ONLY, TITLE_CHOICES
+from workflow.models import (Organization, TolaUser, TolaSites, ROLE_VIEW_ONLY,
+                             TITLE_CHOICES)
 
 
 # TODO Extend View tests
@@ -73,19 +76,27 @@ class IndexViewTest(TestCase):
 
 
 class LoginViewTest(TestCase):
-    def test_org_signup_link(self):
-        response = self.client.get(reverse('login'), follow=True)
-        template_content = response.content
-        self.assertIn(
-            ('<a href="#" data-toggle="modal" data-target="#exampleModal">'
-             'Register Your Organization with TolaData</a>'),
-            template_content)
+    def tearDown(self):
+        os.environ['APP_BRANCH'] = ''
 
     def _reload_urlconf(self):
         clear_url_caches()
         if settings.ROOT_URLCONF in sys.modules:
             reload(sys.modules[settings.ROOT_URLCONF])
         return import_module(settings.ROOT_URLCONF)
+
+    @override_settings(CHARGEBEE_SIGNUP_ORG_URL='')
+    def test_org_signup_link(self):
+        # As the url_patterns are cached when python load the module, also the
+        # settings are cached there. As we want to override a setting, we need
+        # to reload also the urls in order to catch the new value.
+        self._reload_urlconf()
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertIn(
+            ('<a href="#" data-toggle="modal" data-target="#exampleModal">'
+             'Register Your Organization with TolaData</a>'),
+            template_content)
 
     @override_settings(CHARGEBEE_SIGNUP_ORG_URL='https://chargebee.com/123')
     def test_org_signup_link_chargebee(self):
@@ -99,6 +110,23 @@ class LoginViewTest(TestCase):
             ('<a href="https://chargebee.com/123">'
              'Register Your Organization with TolaData</a>'),
             template_content)
+
+    def test_with_social_auth_button(self):
+        self._reload_urlconf()
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertIn('<div class="social-buttons row">', template_content)
+        self.assertIn('<i class="icon-google"></i>', template_content)
+        self.assertIn('<i class="icon-microsoft">', template_content)
+
+    def test_without_social_auth_button(self):
+        os.environ['APP_BRANCH'] = DEMO_BRANCH
+        self._reload_urlconf()
+        response = self.client.get(reverse('login'), follow=True)
+        template_content = response.content
+        self.assertNotIn('<div class="social-buttons row">', template_content)
+        self.assertNotIn('<i class="icon-google"></i>', template_content)
+        self.assertNotIn('<i class="icon-microsoft">', template_content)
 
 
 class RegisterViewGetTest(TestCase):
@@ -125,6 +153,100 @@ class RegisterViewGetTest(TestCase):
         template_content = response.content
         self.assertIn('Humanitec - Privacy Policy', template_content)
         self.assertIn('Privacy disclaimer accepted', template_content)
+
+    def test_get_with_chargebee_active_sub_in_template(self):
+        class ExternalResponse:
+            def __init__(self, values):
+                self.subscription = Subscription(values)
+                self.subscription.status = 'active'
+
+        external_response = ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        query_params = '?cus_fname={}&cus_lname={}&cus_email={}&cus_company={}'\
+                       '&sub_id={}'.format('John', 'Lennon',
+                                           'johnlennon@test.com', 'The Beatles',
+                                           '1234567890')
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        template_content = response.content
+
+        self.assertIn(
+            ('<input type="text" name="first_name" value="John" '
+             'id="id_first_name" class="textinput textInput '
+             'form-control" maxlength="30" />'),
+            template_content)
+        self.assertIn(
+            ('<input type="text" name="last_name" value="Lennon" '
+             'id="id_last_name" class="textinput textInput '
+             'form-control" maxlength="30" />'),
+            template_content)
+        self.assertIn(
+            ('<input type="email" name="email" value="johnlennon@test.com" '
+             'id="id_email" class="emailinput form-control" '
+             'maxlength="254" />'),
+            template_content)
+        self.assertIn(
+            ('<input type="text" name="org" value="The Beatles" required '
+             'class="textinput textInput form-control" id="id_org" />'),
+            template_content)
+        org = Organization.objects.get(name='The Beatles')
+        self.assertEqual(org.chargebee_subscription_id, '1234567890')
+
+    def test_get_with_chargebee_cancel_sub_in_template(self):
+        class ExternalResponse:
+            def __init__(self, values):
+                self.subscription = Subscription(values)
+                self.subscription.status = 'cancelled'
+
+        external_response = ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        query_params = '?cus_fname={}&cus_lname={}&cus_email={}&cus_company={}'\
+                       '&sub_id={}'.format('John', 'Lennon',
+                                           'johnlennon@test.com', 'The Beatles',
+                                           '1234567890')
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertRaises(
+            Organization.DoesNotExist,
+            Organization.objects.get, name='The Beatles')
+
+    def test_get_with_chargebee_demo(self):
+        class ExternalResponse:
+            def __init__(self, values):
+                self.subscription = Subscription(values)
+                self.subscription.status = 'active'
+
+        os.environ['APP_BRANCH'] = DEMO_BRANCH
+        query_params = '?cus_fname={}&cus_lname={}&cus_email={}&cus_company={}'\
+                       '&sub_id={}'.format('John', 'Lennon',
+                                           'johnlennon@test.com', 'The Beatles',
+                                           '1234567890')
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertRaises(
+            Organization.DoesNotExist,
+            Organization.objects.get, name='The Beatles')
+        os.environ['APP_BRANCH'] = ''
+
+    def test_get_with_chargebee_without_sub_in_template(self):
+        json_obj = {
+            'message': "Sorry, we couldn't find that resource",
+            'error_code': 500
+        }
+        external_response = InvalidRequestError(500, json_obj)
+        Subscription.retrieve = Mock(return_value=external_response)
+        query_params = '?cus_fname={}&cus_lname={}&cus_email={}&cus_company=' \
+                       '{}'.format('John', 'Lennon', 'johnlennon@test.com',
+                                   'The Beatles')
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertRaises(
+            Organization.DoesNotExist,
+            Organization.objects.get, name='The Beatles')
 
 
 class RegisterViewPostTest(TestCase):
@@ -175,7 +297,7 @@ class RegisterViewPostTest(TestCase):
                    'This field is required.</strong></p>'.format(field))
             self.assertIn(msg, template_content)
 
-    @patch('tola.util.requests')
+    @patch('tola.track_sync.requests')
     def test_post_success_with_full_name(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
 
@@ -207,7 +329,7 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
-    @patch('tola.util.requests')
+    @patch('tola.track_sync.requests')
     def test_post_success_with_first_name(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
 
@@ -237,7 +359,7 @@ class RegisterViewPostTest(TestCase):
         self.assertEqual(tolauser.title, data['title'])
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
-    @patch('tola.util.requests')
+    @patch('tola.track_sync.requests')
     def test_post_success_with_default_org(self, mock_requests):
         mock_requests.post.return_value = Mock(status_code=201)
         factories.Organization(name=settings.DEFAULT_ORG)

@@ -1,9 +1,9 @@
 ---
 pipeline:
-  build:
+  test:
     image: python:${PYTHON_VERSION}
     commands:
-      - pip install -r requirements-ci.txt
+      - pip install -r requirements/ci.txt
       - python manage.py test
     when:
       event: [push, tag]
@@ -14,6 +14,7 @@ pipeline:
       - TOLA_DB_PASS=root
       - TOLA_DB_HOST=postgres
       - DEFAULT_ORG=TolaData
+
   build-docker-image:
     image: plugins/docker
     insecure: true

@@ -1,7 +1,9 @@
 import json
+import os
 from urlparse import urljoin
 import warnings
 import requests
+import logging
 
 from django.conf import settings
 from django.contrib import messages
@@ -18,13 +20,17 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
 
-from tola.util import register_in_track
+from chargebee import APIError, InvalidRequestError, Subscription
+from tola import DEMO_BRANCH
+from tola.track_sync import register_user
 from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
     CountrySerializer
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
     NewTolaUserRegistrationForm, BookmarkForm
-from workflow.models import (TolaUser, TolaBookmarks, FormGuidance,
-                             Organization, ROLE_VIEW_ONLY, TolaSites)
+from workflow.models import (Organization, TolaSites, TolaUser, TolaBookmarks,
+                             FormGuidance, ROLE_VIEW_ONLY, TolaSites)
+
+logger = logging.getLogger(__name__)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -43,7 +49,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
                 "TolaSite.front_end_url and TolaSite.tola_tables_url are "
                 "deprecated. Please, set instead TOLA_ACTIVITY_URL and "
                 "TOLA_TRACK_URL values in settings", DeprecationWarning)
-            from workflow.models import TolaSites
             tola_site = TolaSites.objects.get(name="TolaData")
             extra_context = {
                 'tolaactivity_url': tola_site.front_end_url,
@@ -68,11 +73,47 @@ class RegisterView(View):
             context.update(kwargs)
         return context
 
+    def _get_chargebee_data(self, query_params, **kwargs):
+        context = {}
+
+        context.update(kwargs)
+        first_name = query_params.get('cus_fname', '')
+        last_name = query_params.get('cus_lname', '')
+        email = query_params.get('cus_email', '')
+        org_name = query_params.get('cus_company', '')
+        sub_id = query_params.get('sub_id', '')
+
+        # Check subscription id and
+        # Create an organization defined on ChargeBee
+        try:
+            result = Subscription.retrieve(sub_id)
+        except InvalidRequestError:
+            logger.info('The given subscription id ({}) is not valid.'.format(
+                sub_id))
+        except APIError as e:
+            logger.warn(e)
+        else:
+            subscription = result.subscription
+            if subscription.status in ['active', 'in_trial']:
+                org = Organization.objects.get_or_create(name=org_name)[0]
+                org.chargebee_subscription_id = sub_id
+                org.save()
+
+        # Auto fill some fields for the user
+        context['form_user'] = NewUserRegistrationForm(
+            first_name=first_name, last_name=last_name, email=email)
+        context['form_tolauser'] = NewTolaUserRegistrationForm(org=org_name)
+        return context
+
     def get(self, request, *args, **kwargs):
         extra_context = {
             'form_user': NewUserRegistrationForm(),
             'form_tolauser': NewTolaUserRegistrationForm(),
         }
+        if len(request.GET.values()) and request.GET.get('sub_id') and \
+                os.getenv('APP_BRANCH') != DEMO_BRANCH:
+            extra_context = self._get_chargebee_data(
+                request.GET, **extra_context)
         context = self._get_context_data(**extra_context)
         return render(request, self.template_name, context)
 
@@ -91,7 +132,7 @@ class RegisterView(View):
             tolauser.save()
             data = request.POST.copy().dict()
             data.update({'tola_user_uuid': tolauser.tola_user_uuid})
-            register_in_track(data, tolauser)
+            register_user(data, tolauser)
             messages.error(
                 request,
                 'Thank you, You have been registered as a new user.',
@@ -265,53 +306,14 @@ def logout_view(request):
 
 
 def check_view(request):
-    return HttpResponse("Hostname "+request.get_host())
-
-
-def dev_view(request):
-    """
-    For DEV only update Tables with Activity data
-    URL /dev_loader
-    :param request:
-    :return:
-    """
-    if request.user.is_authenticated() and request.user.username == "tola" and request.user.is_staff:
-        from tola.tables_sync import update_level1, update_level2
-        # update TolaTables with WorkflowLevel1 and WorkflowLevel2 data
-        message = {"attempt": "Running Tables Loader"}
-
-        print "Running Script..."
-
-        try:
-            update_level1()
-            message['level1'] = "Level1 Success"
-        except Exception as e:
-            print '%s (%s)' % (e.message, type(e))
-            message['level1'] = '%s (%s)' % (e.message, type(e))
-
-        try:
-            update_level2()
-            message['level2'] = "Level2 Success"
-        except Exception as e:
-            print '%s (%s)' % (e.message, type(e))
-            message['level2'] = '%s (%s)' % (e.message, type(e))
-
-        return render(request, "dev.html", {'message': message})
-    else:
-        # log person
-        print request.user.is_authenticated()
-        print request.user.username
-        print request.user.is_staff
-        redirect_url = '/'
-        return HttpResponseRedirect(redirect_url)
+    return HttpResponse("Hostname " + request.get_host())
 
 
 def oauth_user_view(request):
     return HttpResponse("Hostname "+request.get_host())
 
 
-class OAuth_User_Endpoint(ProtectedResourceView):
-
+class OAuthUserEndpoint(ProtectedResourceView):
     def get(self, request, *args, **kwargs):
         user = request.user
         body = {

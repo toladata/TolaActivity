@@ -5,7 +5,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 
 from workflow.models import Country, TolaUser, TolaSites, Organization
-from tola.util import register_in_track
+from tola.track_sync import register_user
 
 
 def redirect_after_login(strategy, *args, **kwargs):
@@ -25,7 +25,6 @@ def user_to_tola(backend, user, response, *args, **kwargs):
         userprofile.country = default_country
         userprofile.organization = default_organization
         userprofile.name = response.get('displayName')
-        userprofile.email = response.get('emails["value"]')
         userprofile.save()
 
         generated_pass = '%032x' % random.getrandbits(128)
@@ -33,14 +32,14 @@ def user_to_tola(backend, user, response, *args, **kwargs):
             'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
+            'email': user.email,
             'password1': generated_pass,
             'password2': generated_pass,
             'title': userprofile.title,
             'org': userprofile.organization,
-            'email': userprofile.email,
             'tola_user_uuid': userprofile.tola_user_uuid
         }
-        register_in_track(data, userprofile)
+        register_user(data, userprofile)
 
 
 def auth_allowed(backend, details, response, *args, **kwargs):

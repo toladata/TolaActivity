@@ -22,7 +22,7 @@ with open(join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
 def load_requirements():
-    return open(join(dirname(__file__), 'requirements-pkg.txt')).readlines()
+    return open(join(dirname(__file__), 'requirements/pkg.txt')).readlines()
 
 
 setup(
@@ -33,6 +33,7 @@ setup(
         'factories',
         'formlibrary.migrations',
         'indicators.migrations',
+        'search.migrations',
         'workflow.migrations',
     ],
     py_modules=[
@@ -55,6 +56,7 @@ setup(
         'search.management.commands.search-index',
         # tola
         'tola.__init__',
+        'tola.track_sync',
         # tola.management.commands
         'tola.management.__init__',
         'tola.management.commands.__init__',

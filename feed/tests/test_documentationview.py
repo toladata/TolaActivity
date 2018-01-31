@@ -5,9 +5,8 @@ from rest_framework.reverse import reverse
 from feed.views import DocumentationViewSet
 import factories
 import json
-from workflow.models import Documentation, WorkflowLevel1, WorkflowTeam, \
-    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
-    ROLE_VIEW_ONLY
+from workflow.models import Documentation, WorkflowTeam, \
+    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN
 
 
 class DocumentationListViewTest(TestCase):

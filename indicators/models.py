@@ -8,8 +8,9 @@ from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
 from search.exceptions import ValueNotFoundError
-from workflow.models import WorkflowLevel1, Sector, SiteProfile, WorkflowLevel2, Country, Office, Documentation, TolaUser,\
-    Organization
+from workflow.models import (WorkflowLevel1, Sector, SiteProfile,
+                             WorkflowLevel2, Country, Documentation, TolaUser,
+                             Organization)
 
 
 class TolaTable(models.Model):

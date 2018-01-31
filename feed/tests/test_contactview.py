@@ -6,8 +6,7 @@ import json
 from feed.views import ContactViewSet
 import factories
 from workflow.models import Contact, WorkflowLevel1, WorkflowTeam, \
-    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
-    ROLE_VIEW_ONLY
+    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN
 
 
 class ContactListViewTest(TestCase):

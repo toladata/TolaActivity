@@ -6,7 +6,7 @@ if __name__ == "__main__":
     if 'test' in sys.argv and '--tag=pkg' in sys.argv:
         settings = 'tola.settings.test_pkg'
         os.environ['DJANGO_SETTINGS_MODULE'] = settings
-    elif 'test':
+    elif 'test' in sys.argv:
         settings = 'tola.settings.test'
         os.environ['DJANGO_SETTINGS_MODULE'] = settings
     elif os.environ.get("DJANGO_SETTINGS_MODULE"):

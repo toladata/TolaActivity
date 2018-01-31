@@ -1,14 +1,15 @@
+import json
+
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
-import json
 import factories
 from feed.views import IndicatorViewSet
 from indicators.models import Indicator
-from workflow.models import WorkflowLevel1, WorkflowTeam, \
-    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
-    ROLE_VIEW_ONLY
+from workflow.models import (
+    WorkflowTeam, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM,
+    ROLE_PROGRAM_ADMIN, ROLE_VIEW_ONLY)
 
 
 class IndicatorListViewsTest(TestCase):

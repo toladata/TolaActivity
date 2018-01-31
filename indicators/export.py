@@ -1,14 +1,13 @@
-from import_export import resources
-from .models import Indicator, CollectedData, Country, WorkflowLevel1, Sector, DisaggregationValue, Frequency
-from workflow.models import WorkflowLevel2, TolaUser
+from import_export import fields, resources
 from import_export.admin import ImportExportModelAdmin
-from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
-from import_export import fields
+from import_export.widgets import ForeignKeyWidget
+
+from .models import (Indicator, CollectedData, WorkflowLevel1, Sector,
+                     Frequency)
+from workflow.models import WorkflowLevel2, TolaUser
 
 
 class IndicatorResource(resources.ModelResource):
-
-    # country = fields.Field(column_name='country', attribute='country', widget=ManyToManyWidget(Program, field='country'))
     indicator_type = fields.Field(column_name='indicator types', attribute='indicator_types')
     objectives = fields.Field(column_name='objectives', attribute='objectives_list')
     strategic_objectives = fields.Field(column_name='strategic objectives', attribute='strategicobjectives_list')
@@ -30,7 +29,6 @@ class IndicatorAdmin(ImportExportModelAdmin):
 
 
 class CollectedDataResource(resources.ModelResource):
-
     indicator = fields.Field(column_name='indicator', attribute='indicator',  widget=ForeignKeyWidget(Indicator, 'name_clean'))
     indicator_number = fields.Field(column_name='indicator_number', attribute='indicator', widget=ForeignKeyWidget(Indicator, 'number'))
     indicator_level = fields.Field(column_name='indicator_level', attribute='indicator',widget=ForeignKeyWidget(Indicator, 'levels'))
