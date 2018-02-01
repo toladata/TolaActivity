@@ -1,8 +1,10 @@
 var assert = require('chai').assert;
 var LoginPage = require('../../lib/login.page.js');
 var util = require('../../lib/testutil.js');
-    
+
 describe('TolaActivity login screen', function() {
+  this.timeout(0);
+    
   it('should deny access if username is invalid', function() {
     let parms = util.readConfig();
     // inject bogus username

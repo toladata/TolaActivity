@@ -3,6 +3,8 @@ var LoginPage = require('../../lib/login.page.js');
 var util = require('../../lib/testutil.js');
     
 describe('TolaActivity login screen', function() {
+  this.timeout(0);
+
   it('should deny access if password is invalid', function() {
     let parms = util.readConfig();
     // inject bogus password

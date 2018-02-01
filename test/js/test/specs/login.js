@@ -3,6 +3,8 @@ var LoginPage = require('../../lib/login.page.js');
 var util = require('../../lib/testutil.js');
 
 describe('TolaActivity Login screen', function() {
+  this.timeout(0);
+
   it('should require unauthenticated user to authenticate', function() {
     let parms = util.readConfig();
     LoginPage.openLoginPage(parms.baseurl);
