@@ -505,6 +505,13 @@ class IndicatorUpdate(UpdateView):
             # handle related collected_data records for the new periodic targets
             handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency, generated_pt_ids)
 
+        fields_to_watch = set(['indicator_type', 'leve', 'name', 'number', 'sector'])
+        changed_fields = set(form.changed_data)
+        if fields_to_watch.intersection(changed_fields):
+            update_indicator_row = '1'
+        else:
+            update_indicator_row = '0'
+
         self.object = form.save()
         #periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
         periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
@@ -519,7 +526,7 @@ class IndicatorUpdate(UpdateView):
 
             targets_sum = self.get_context_data().get('targets_sum')
             if targets_sum == None: targets_sum = "0"
-            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(targets_sum) + "]")
+            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(targets_sum) +  "," + str(update_indicator_row) + "]")
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
         return self.render_to_response(self.get_context_data(form=form))

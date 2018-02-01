@@ -420,12 +420,16 @@
             }
             //var json = $.parseJSON(jqXHR.responseText);
             $(alertsElement).html('');
+
             createAlert("success", "Success, form data saved.", true, alertsElement);
             var jsondata = $.parseJSON(data);
             var indicator = jsondata[0][0];
             var pts = jsondata[1];
             var generateTargets = jsondata[2];
             var targets_sum = jsondata[3];
+            var update_indicator_row = jsondata[4];
+            $(form).data('update_indicator_row', parseInt(update_indicator_row));
+
             $("#initialTargetFrequencyValue").text(indicator.fields.target_frequency);
 
             // $("#id_achieved").val(indicator['fields']['achieved']);
