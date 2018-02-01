@@ -1,39 +1,21 @@
-var assert = require('assert');
-var fs = require('fs');
-
-function readConfig() {
-  let data = fs.readFileSync('config.json');
-    return JSON.parse(data);
-};
-var parms = readConfig();
+var assert = require('chai').assert;
+var LoginPage = require('../../lib/login.page.js');
+var util = require('../../lib/testutil.js');
     
 describe('TolaActivity Dashboard', function() {
-  it('should require user to authenticate', function() {
-    browser.url(parms.baseurl);
-    var title = browser.getTitle();
-    assert.equal(title, 'Mercy Corps Sign-On');
-  });
-
-  it('should have a login field', function() {
-    var login = $('#login');
-    login.setValue(parms.username);
-  });
-
-  it('should have a password field', function() {
-    var password = $('#password');
-    password.setValue(parms.password);
-  });
-
-  it('should have a Log In button', function() {
-    var button = $('.inputsub');
-    button.click();
+  it('should require unauthenticated users to login', function() {
+    let parms = util.readConfig();
+    LoginPage.openLoginPage(parms.baseurl);
+    LoginPage.setUserName(parms.username);
+    LoginPage.setPassword(parms.password);
+    LoginPage.clickLoginButton();
   });
 
   // after all of that, we should wind up at the dashboard
   it('should have a page header', function() {
     browser.waitForText('h4', 5000)
     var h4 = $('h4');
-    assert(h4.getText() ==  'Tola-Activity Dashboard');
+    assert(h4.getText() == 'Tola-Activity Dashboard');
   });
 
   it('should have a TolaActivity link', function() {

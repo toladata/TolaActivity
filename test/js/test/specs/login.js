@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
-var util = require('../../lib/testutil.js');
 var LoginPage = require('../../lib/login.page.js');
+var util = require('../../lib/testutil.js');
 
 describe('TolaActivity Login screen', function() {
   it('should require unauthenticated user to authenticate', function() {

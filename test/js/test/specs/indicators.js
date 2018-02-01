@@ -1,40 +1,22 @@
 var assert = require('chai').assert;
-var fs = require('fs');
-
-function readConfig() {
-  let data = fs.readFileSync('config.json');
-  return JSON.parse(data);
-};
-
+var LoginPage = require('../../lib/login.page.js');
+var util = require('../../lib/testutil.js');
+    
 describe('TolaActivity Program Indicators page', function() {
   // Disable timeouts
   this.timeout(0);
-  var parms = readConfig();
 
-  // TODO: add test
-  it('should require user to authenticate', function() {
-    browser.url(parms.baseurl);
-    var title = browser.getTitle();
-    assert.equal(title, 'Mercy Corps Sign-On');
-  });
-
-  it('should have a login field', function() {
-    var login = $('#login');
-    login.setValue(parms.username);
-  });
-
-  it('should have a password field', function() {
-    var password = $('#password');
-    password.setValue(parms.password);
-  });
-
-  it('should have a Log In button', function() {
-    button = $('.inputsub');
-    button.click();
+  it('should require unauthenticated users to login', function() {
+    let parms = util.readConfig();
+    LoginPage.openLoginPage(parms.baseurl);
+    LoginPage.setUserName(parms.username);
+    LoginPage.setPassword(parms.password);
+    LoginPage.clickLoginButton();
   });
 
   it('should exist', function() {
-    browser.url(parms.baseurl + '/indicators/home/0/0/0/');
+    let url = browser.getUrl() + '/indicators/home/0/0/0/';
+    browser.url(url);
     browser.waitForText('h2');
     var h2 = $('h2');
     assert.equal(h2.getText(), 'Program Indicators');
