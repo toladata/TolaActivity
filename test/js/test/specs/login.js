@@ -1,34 +1,16 @@
-var assert = require('assert');
-var fs = require('fs');
-
-function readConfig() {
-  let data = fs.readFileSync('config.json');
-  return JSON.parse(data);
-}
-var parms = readConfig();
+var assert = require('chai').assert;
+var util = require('../../lib/testutil.js');
+var LoginPage = require('../../lib/login.page.js');
 
 describe('TolaActivity Login screen', function() {
-
-  it('should require user to authenticate', function() {
-    browser.url(parms.baseurl);
-    var title = browser.getTitle();
-    assert.equal(title, 'Mercy Corps Sign-On');
+  it('should require unauthenticated user to authenticate', function() {
+    let parms = util.readConfig();
+    LoginPage.openLoginPage(parms.baseurl);
+    assert.equal('Mercy Corps Sign-On', browser.getTitle());
+    LoginPage.setUserName(parms.username);
+    LoginPage.setPassword(parms.password);
+    LoginPage.clickLoginButton();
+    // FIXME: Get the WebDriver code out of the test
+    assert.equal('TolaActivity', browser.getTitle());
   });
-
-  it('should have a login field', function() {
-    var login = $('#login');
-    login.setValue(parms.username);
-  });
-
-  it('should have a password field', function() {
-    var password = $('#password');
-    password.setValue(parms.password);
-  });
-
-  it('should have a Log In button', function() {
-    button = $('.inputsub');
-    button.click();
-  });
-
 });
-

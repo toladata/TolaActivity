@@ -33,7 +33,7 @@ describe('TolaActivity invalid username login', function() {
     button.click();
   });
 
-  it('should deny access if password is invalid', function() {
+  it('should deny access if username is invalid', function() {
     browser.waitUntil(function() {
       return browser.getText('#error').startsWith('Login failed:');
       }, 5000, 'expected login failure message');
