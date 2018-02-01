@@ -1,7 +1,6 @@
 from django.contrib.sites.shortcuts import get_current_site
 from django.test import TestCase, Client
 from mock import Mock, patch
-from social_core.exceptions import AuthForbidden
 
 import factories
 from tola import auth_pipeline
