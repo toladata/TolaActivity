@@ -179,7 +179,7 @@ describe('TolaActivity Program Indicators page', function() {
       var link = button.$('a');
       // expand the table
       link.click();
-      browser.pause(1500);
+      browser.pause(500);
 
       // indicator count from table
       var targetDiv = link.getAttribute('data-target');
@@ -191,7 +191,7 @@ describe('TolaActivity Program Indicators page', function() {
 
       // collapse the table
       link.click();
-      browser.pause(1500);
+      browser.pause(500);
     }
   }, 3); // retry this flaky test 2 more times before failing
 
@@ -203,7 +203,7 @@ describe('TolaActivity Program Indicators page', function() {
       let target = link.getAttribute('data-target');
       let targetDiv = $('div' + target);
       link.click();
-      browser.pause(1500);
+      browser.pause(500);
 
       let table = targetDiv.$('table');
       let tableRows = table.$$('tbody>tr>td>a.indicator-link');
@@ -223,6 +223,7 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should be able to create PI by clicking the New Indicator button', function() {
+      browser.pause(500);
       let newButtons = $('div#toplevel_div').$('div.panel-heading').$$('h4>span>a');
       let newButton = newButtons[0];
       newButton.click();
@@ -232,16 +233,25 @@ describe('TolaActivity Program Indicators page', function() {
       let form = $('form');
       let saveNew = form.$('input.btn.btn-success');
       saveNew.click();
-      assert.equal('Success, Basic Indicator Created!', $('div.alert.alert-success').getText());
+      assert.equal('Success, Basic Indicator Created!',
+                   $('div.alert.alert-success').getText());
+
+      // Find the Performance tab
+      let tabs = $$('li.tab-pane>a');
+      let perfTab = tabs[1];
+      let indName = $('input#id_name');
+      assert.equal('Performance', perfTab.getText());
+      perfTab.click();
+      // A name unlikely to clash with real data
+      indName.setValue('===> Delete Me! <===');
 
       // Find the Targets tab
-      let tabs = $$('li.tab-pane>a');
       let targetsTab = tabs[2];
       assert.equal('Targets', targetsTab.getText());
       targetsTab.click();
 
       // Add some values
-      let bucket = $('input#id_units_of_measure');
+      let bucket = $('input#id_unit_of_measure');
       bucket.setValue('Buckets');
       let lopTarget = $('input#id_lop_target');
       lopTarget.setValue('10');
@@ -251,10 +261,10 @@ describe('TolaActivity Program Indicators page', function() {
       targetFreq.selectByValue(1);
 
       // Save
-      let saveUpdate = $('input.btn.btn-primary');
-      assert.equal('Save changes', saveUpdate.getText());
-      saveUpdate.click();
-    }, 3);
+      let saveChanges = $('input.btn.btn-primary');
+      assert.equal('Save changes', saveChanges.getValue());
+      saveChanges.click();
+    });
 
     it('should increase PI count after adding new indicator');
     it('should be able to delete PI by clicking its Delete button');
