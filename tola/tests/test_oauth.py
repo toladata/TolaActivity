@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.test import TestCase, Client
 from mock import Mock, patch
@@ -13,8 +15,7 @@ class OAuthTest(TestCase):
     """
     Test cases for OAuth Provider interface
     """
-
-    # Fake backend class for the test
+    # Fake backend class for testing
     class BackendTest(object):
         def __init__(self):
             self.WHITELISTED_EMAILS = []
@@ -24,6 +25,7 @@ class OAuthTest(TestCase):
             return self.__dict__.get(name, default)
 
     def setUp(self):
+        logging.disable(logging.WARNING)
         self.tola_user = factories.TolaUser()
         self.org = factories.Organization()
         self.country = factories.Country()
@@ -32,6 +34,9 @@ class OAuthTest(TestCase):
         self.app = factories.Application(user=self.tola_user.user)
         self.grant = factories.Grant(application=self.app,
                                      user=self.tola_user.user)
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
 
     def test_authorization(self):
         """
@@ -88,7 +93,8 @@ class OAuthTest(TestCase):
     def test_auth_allowed_in_whitelist(self):
         backend = self.BackendTest()
         details = {'email': self.tola_user.user.email}
-        auth_pipeline.auth_allowed(backend, details, None)
+        result = auth_pipeline.auth_allowed(backend, details, None)
+        self.assertTrue(result)
 
     def test_auth_allowed_not_in_whitelist(self):
         backend = self.BackendTest()
@@ -103,20 +109,17 @@ class OAuthTest(TestCase):
                       template_content)
 
     def test_auth_allowed_no_whitelist(self):
-        # Fake backend class for the test
-        class BackendTest(object):
-            def __init__(self):
-                self.WHITELISTED_EMAILS = []
-                self.WHITELISTED_DOMAINS = []
-
-            def setting(self, name, default=None):
-                return self.__dict__.get(name, default)
-
         self.site.whitelisted_domains = None
         self.site.save()
 
         backend = self.BackendTest()
         details = {'email': self.tola_user.user.email}
+        result = auth_pipeline.auth_allowed(backend, details, None)
+        self.assertTrue(result)
+
+    def test_auth_allowed_no_email(self):
+        backend = self.BackendTest()
+        details = {}
         response = auth_pipeline.auth_allowed(backend, details, None)
         template_content = response.content
         self.assertIn("Your organization doesn't appear to have permissions "
