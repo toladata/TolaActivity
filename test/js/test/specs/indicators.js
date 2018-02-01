@@ -268,13 +268,12 @@ describe('TolaActivity Program Indicators page', function() {
 
     it('should increase PI count after adding new indicator');
     it('should be able to delete PI by clicking its Delete button');
+    it('should decrease PI count after deleting indicator');
     it('should be able to edit PI by clicking its Edit button');
-    it('should open the Create an Indicator form when New Indicator button is clicked');
     it('should open the Grid/Print Report page when button is clicked');
     it('should highlight invalid data');
     it('should return to previous screen if Cancel button clicked');
     it('should clear form when Clear button clicked');
-    it('should decrease PI count after deleting indicator');
 
     describe('Create an Indicator form', function() {
       it('should show context-sensitve help by clicking Form Help/Guidance button');
