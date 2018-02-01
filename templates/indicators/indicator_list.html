@@ -8,10 +8,11 @@
 */
 function loadCollected(indicator,program){
     var url = '/indicators/collected_data_table/' + indicator + '/' + program + '/';
-    var div_name = '#hidden-' + indicator;
+    var div_name = '#hidden-indicator-' + indicator;
     $(div_name).empty();
     $.get(url, function(data){
         $(div_name).html(data);
+        $("body").removeClass("modal-open");
     });
 };
 
@@ -22,6 +23,7 @@ function loadIndicators(program,indicator,type){
     var program;
     $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
         $('#hidden-' + program).html(data);
+        $("body").removeClass("modal-open");
       });
     $('#hidden-' + program).on('shown', function () {
        $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
@@ -170,14 +172,13 @@ function loadIndicators(program,indicator,type){
             var indicatorchanged = form.data('indicatorchanged');
             if (targetsactive == 'true' || indicatorchanged == true) {
                 loadCollected(indicator_id, program_id);
-                // for some reason scrolling gets disabled sometimes, perhaps a bug in bootstrap
-                $("body").css({"overflow":"visible"});
+                // $("#hidden-indicator-"+indicator_id).collapse('show');
             }
         } catch (err){
             console.log(err);
         }
+    });
 
-    })
 
     $('#indicator_collecteddata_div').on('hide.bs.modal', function (e) {
         var recordchanged = $(this).find('form').data('recordchanged');
@@ -185,8 +186,6 @@ function loadIndicators(program,indicator,type){
             var program_id = $(this).find('form #id_program').val();
             var indicator_id = $(this).find('form #id_indicator').val();
             loadCollected(indicator_id, program_id);
-            // for some reason scrolling gets disabled sometimes, perhaps a bug in bootstrap
-            $("body").css({"overflow":"visible"});
         }
     })
 

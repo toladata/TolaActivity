@@ -7,7 +7,7 @@
         <th>Sector</th>
         <th>&nbsp;</th>
     </tr>
-    {% for indicator in indicators|dictsort:"level.all.0.create_date" %}
+    {% for indicator in indicators %}
     <tr {% if indicator.just_created %} style="background-color: lightyellow;" {% endif %} >
         <td>{{ indicator.indicator_types}}</td>
         <td>{{ indicator.levels }}</td>
@@ -25,13 +25,13 @@
 
             <a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info indicator-link">Edit</a>
 
-            <a onclick="loadCollected({{ indicator.id }}, {{ program_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-{{ indicator.id }}">Data {{ indicator.data_count }} </a>
+            <a onclick="loadCollected({{ indicator.id }}, {{ program_id }})" class="btn btn-xs btn-success" data-toggle="collapse" data-target="#hidden-indicator-{{ indicator.id }}">Data {{ indicator.data_count }} </a>
 
             <a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a></span></td>
     </tr>
     <tr class="hiddenRow">
         <td colspan="7">
-            <div id="hidden-{{ indicator.id }}" class="accordian-body collapse">
+            <div id="hidden-indicator-{{ indicator.id }}" class="accordian-body collapse">
                 <!-- Table -->
                 {% include "indicators/collected_data_table.html" %}
             </div>
