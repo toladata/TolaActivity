@@ -20,10 +20,11 @@ build
 # Logs:
 *.log
 
-# NodeJS modules
-node_modules
+# Testing noise
 chromedriver
 geckodriver
+errorShots
+*.jar
 
 #allvritualenv
 venv/
