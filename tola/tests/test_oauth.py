@@ -14,6 +14,15 @@ class OAuthTest(TestCase):
     Test cases for OAuth Provider interface
     """
 
+    # Fake backend class for the test
+    class BackendTest(object):
+        def __init__(self):
+            self.WHITELISTED_EMAILS = []
+            self.WHITELISTED_DOMAINS = []
+
+        def setting(self, name, default=None):
+            return self.__dict__.get(name, default)
+
     def setUp(self):
         self.tola_user = factories.TolaUser()
         self.org = factories.Organization()
@@ -77,30 +86,12 @@ class OAuthTest(TestCase):
         self.assertEqual(tola_user.organization.name, new_org.name)
 
     def test_auth_allowed_in_whitelist(self):
-        # Fake backend class for the test
-        class BackendTest(object):
-            def __init__(self):
-                self.WHITELISTED_EMAILS = []
-                self.WHITELISTED_DOMAINS = []
-
-            def setting(self, name, default=None):
-                return self.__dict__.get(name, default)
-
-        backend = BackendTest()
+        backend = self.BackendTest()
         details = {'email': self.tola_user.user.email}
         auth_pipeline.auth_allowed(backend, details, None)
 
     def test_auth_allowed_not_in_whitelist(self):
-        # Fake backend class for the test
-        class BackendTest(object):
-            def __init__(self):
-                self.WHITELISTED_EMAILS = []
-                self.WHITELISTED_DOMAINS = []
-
-            def setting(self, name, default=None):
-                return self.__dict__.get(name, default)
-
-        backend = BackendTest()
+        backend = self.BackendTest()
         details = {'email': self.tola_user.user.email}
         self.site.whitelisted_domains = 'anotherdomain.com'
         self.site.save()
@@ -124,7 +115,7 @@ class OAuthTest(TestCase):
         self.site.whitelisted_domains = None
         self.site.save()
 
-        backend = BackendTest()
+        backend = self.BackendTest()
         details = {'email': self.tola_user.user.email}
         response = auth_pipeline.auth_allowed(backend, details, None)
         template_content = response.content
