@@ -387,6 +387,9 @@ class PeriodicTarget(models.Model):
             return "%s (%s - %s)" % (self.period, self.start_date.strftime('%b %d, %Y'), self.end_date.strftime('%b %d, %Y'))
         return self.period
 
+    class Meta:
+        ordering = ('customsort', '-create_date')
+
     @property
     def start_date_formatted(self):
         if self.start_date:
