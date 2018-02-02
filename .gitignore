@@ -25,6 +25,7 @@ chromedriver
 geckodriver
 errorShots
 *.jar
+config.json
 
 #allvritualenv
 venv/
