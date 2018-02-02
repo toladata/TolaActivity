@@ -1,43 +1,20 @@
-var assert = require('assert');
-var fs = require('fs');
-
-// basic auth and session information
-function readConfig() {
-  let data = fs.readFileSync('config.json');
-  return JSON.parse(data);
-}
-var parms = readConfig();
-
-describe('TolaActivity invalid password login', function() {
-  // inject bogus password
-  parms.password = 'thisbetterfail';
-
-  it('should require user to authenticate', function() {
-    browser.url(parms.baseurl);
-    var title = browser.getTitle();
-    assert.equal(title, 'Mercy Corps Sign-On');
-  });
-
-  it('should have a login field', function() {
-    var login = $('#login');
-    login.setValue(parms.username);
-  });
-
-  it('should have a password field', function() {
-    var password = $('#password');
-    password.setValue(parms.password);
-  });
-
-  it('should have a Log In button', function() {
-    var button = $('.inputsub');
-    button.click();
-  });
+var assert = require('chai').assert;
+var LoginPage = require('../pages/login.page.js');
+var util = require('../lib/testutil.js');
+    
+describe('TolaActivity login screen', function() {
+  this.timeout(0);
 
   it('should deny access if password is invalid', function() {
-    browser.waitUntil(function() {
-      return browser.getText('#error').startsWith('Login failed:');
-      },
-      5000,
-      'expected login failure message');
+    let parms = util.readConfig();
+    // inject bogus password
+    parms.password = 'ThisBetterFail';
+
+    LoginPage.open(parms.baseurl);
+    LoginPage.setUserName(parms.username);
+    LoginPage.setPassword(parms.password);
+    LoginPage.clickLoginButton();
+    
+    assert(browser.getText('#error').startsWith('Login failed:'));
   });
 });

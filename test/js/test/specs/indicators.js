@@ -1,122 +1,79 @@
 var assert = require('chai').assert;
-var fs = require('fs');
-
-function readConfig() {
-  let data = fs.readFileSync('config.json');
-  return JSON.parse(data);
-};
-
+var LoginPage = require('../pages/login.page.js');
+var IndPage = require('../pages/indicators.page.js');
+var util = require('../lib/testutil.js');
+    
 describe('TolaActivity Program Indicators page', function() {
   // Disable timeouts
   this.timeout(0);
-  var parms = readConfig();
-
-  // TODO: add test
-  it('should require user to authenticate', function() {
-    browser.url(parms.baseurl);
-    var title = browser.getTitle();
-    assert.equal(title, 'Mercy Corps Sign-On');
-  });
-
-  it('should have a login field', function() {
-    var login = $('#login');
-    login.setValue(parms.username);
-  });
-
-  it('should have a password field', function() {
-    var password = $('#password');
-    password.setValue(parms.password);
-  });
-
-  it('should have a Log In button', function() {
-    button = $('.inputsub');
-    button.click();
-  });
 
   it('should exist', function() {
-    browser.url(parms.baseurl + '/indicators/home/0/0/0/');
-    browser.waitForText('h2');
-    var h2 = $('h2');
-    assert.equal(h2.getText(), 'Program Indicators');
+    let parms = util.readConfig();
+    LoginPage.open(parms.baseurl);
+    LoginPage.setUserName(parms.username);
+    LoginPage.setPassword(parms.password);
+    LoginPage.clickLoginButton();
+    IndPage.open();
+    // FIXME: pageName should be a property
+    assert.equal('Program Indicators', IndPage.pageName());
   });
 
   describe('Programs dropdown', function() {
     it('should be present on page', function() {
-      var button = $('#dropdownProgram');
-      assert(button.getText() == 'Programs');
+      IndPage.clickProgramsDropdown();
     });
 
-    it('should have same count on button as in Programs table', function() {
-      var buttons = $('div.panel').$$('div.btn-group');
-      var programs = buttons[0];
-      // have to click to make the menu visible
-      programs.click();
-      var menu = programs.$('ul.dropdown-menu');
-      var progList = menu.$$('li');
-      programs.click();
-
-      var table = $('div#toplevel_div')
-      var tableRows = table.$$('div.panel-heading');
-      assert(progList.length === tableRows.length);
+    it('should have same number of items as the Programs table', function() {
+      IndPage.clickProgramsDropdown();
+      let progList = IndPage.getProgramsList();
+      let progTable = IndPage.getProgramsTable();
+      assert.equal(progList.length, progTable.length, 'row count mismatch');
+      IndPage.clickProgramsDropdown();
     });
 
     it('should have same items as Programs table', function() {
-      var buttons = $('div.panel').$$('div.btn-group');
-      var dropdown = buttons[0];
-      // have to click to make the menu visible
-      dropdown.click();
-      var dropdownList = dropdown.$('ul.dropdown-menu').$$('li');
-      var progList = Array();
-      for (let item of dropdownList) {
-        var listitem = item.$('a').getText();
-        progList.push(listitem.split('-')[1].trim());
+      let progList = IndPage.getProgramsList();
+      let listItems = new Array();
+      for (let prog of progList) {
+        let name = prog.split('-')[1].trim();
+        listItems.push(name);
       }
-      dropdown.click();
 
-      var table = $('div#toplevel_div')
-      var tableRows = table.$$('div.panel-heading');
-      for (let i = 0; i < tableRows.length; i++) {
-        let s = tableRows[i].$('h4').getText().split("\n")[0].trim();
-        assert.equal(s, progList[i]);
+      let progTable = IndPage.getProgramsTable();
+      for (let i = 0; i < progTable.length; i++) {
+        let rowText = progTable[i].split('\n')[0].trim();
+        assert.equal(rowText, listItems[i]);
       };
     });
 
     it('should filter programs table by selected program name', function() {
-      var buttons = $('div.panel').$$('div.btn-group');
-      var dropdown = buttons[0];
-      // have to click to make the menu visible
-      dropdown.click();
-      var dropdownList = dropdown.$('ul.dropdown-menu').$$('li');
-      var item = dropdownList[0];
-      var listitem = item.$('a');
-      var progName = listitem.getText().split('-')[1].trim();
-      item.click();
+      //IndPage.clickProgramsDropdown();
+      let progList = IndPage.getProgramsList();
+      let listItem = progList[0];
+      IndPage.selectProgram(listItem);
 
       // should have a single row in the table
-      browser.waitForText('h4');
-      var table = $('div#toplevel_div')
-      var tableRows = table.$$('div.panel-heading');
-      assert.equal(1, tableRows.length);
-
+      let progTable = IndPage.getProgramsTable();
       // row should be the one selected from the dropdown
-      s = tableRows[0].$('h4').getText().split("\n")[0].trim();
-      assert.equal(s, progName);
+      let rowText = progTable[0].split('\n')[0].trim();
+      let listText = listItem.split('-')[1].trim();
+      assert.equal(rowText, listText, 'program name mismtach');
     });
   }); // end programs dropdown tests
 
   describe('Indicators dropdown', function() {
     it('should be present on page', function() {
-      var button = $('#dropdownIndicator');
+      let button = $('#dropdownIndicator');
       assert(button.getText() == 'Indicators');
     });
 
     it('should have at least one entry', function() {
-      var buttons = $('div.panel').$$('div.btn-group');
-      var indicators = buttons[1];
+      let buttons = $('div.panel').$$('div.btn-group');
+      let indicators = buttons[1];
 
       // have to click to make the menu visible
       indicators.click();
-      var dropdownList = indicators.$('ul.dropdown-menu').$$('li');
+      let dropdownList = indicators.$('ul.dropdown-menu').$$('li');
       indicators.click();
       assert(dropdownList.length > 0);
     });
@@ -126,19 +83,19 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicator Type dropdown', function() {
     it('should be present on page', function() {
-      var button = $('#dropdownIndicatorType');
+      let button = $('#dropdownIndicatorType');
       assert(button.getText() == 'Indicator Type');
       button.click();
     });
 
     it('should have at least one entry', function() {
-      var buttons = $('div.panel').$$('div.btn-group');
-      var indicatorType = buttons[2];
+      let buttons = $('div.panel').$$('div.btn-group');
+      let indicatorType = buttons[2];
 
       // have to click to make the menu visible
       // TODO: Validate the indicator type list as static
       indicatorType.click();
-      var dropdownList = indicatorType.$('ul.dropdown-menu').$$('li');
+      let dropdownList = indicatorType.$('ul.dropdown-menu').$$('li');
       indicatorType.click();
       assert(dropdownList.length > 0);
     });
@@ -148,13 +105,13 @@ describe('TolaActivity Program Indicators page', function() {
   }); // end indicator type dropdown tests
 
   it('should toggle PIs table by clicking PI Indicators button', function() {
-    progIndTable = $('#toplevel_div');
-    buttons = progIndTable.$$('div.panel-body');
+    let progIndTable = $('#toplevel_div');
+    let buttons = progIndTable.$$('div.panel-body');
     for (let button of buttons) {
       // starts out collapsed
-      var link = button.$('a');
-      var target = link.getAttribute('data-target');
-      var state = browser.isVisible('div' + target);
+      let link = button.$('a');
+      let target = link.getAttribute('data-target');
+      let state = browser.isVisible('div' + target);
       assert(!state);
 
       // open it and verify
@@ -172,26 +129,26 @@ describe('TolaActivity Program Indicators page', function() {
   it('should have matching indicator counts on data button and in table', function() {
     // FIXME: The hard pauses are a poor WAR for the button we want to click sometimes
     // being occluded by another element.
-    progIndTable = $('#toplevel_div');
-    buttons = progIndTable.$$('div.panel-body');
+    let progIndTable = $('#toplevel_div');
+    let buttons = progIndTable.$$('div.panel-body');
     for (let button of buttons) {
-      var buttonCnt = parseInt(button.$('a').getText());
-      var link = button.$('a');
+      let buttonCnt = parseInt(button.$('a').getText());
+      let link = button.$('a');
       // expand the table
       link.click();
-      browser.pause(1500);
+      browser.pause(500);
 
       // indicator count from table
-      var targetDiv = link.getAttribute('data-target');
-      var table = $('div' + targetDiv).$('table');
-      var tableRows = table.$$('tbody>tr>td>a');
+      let targetDiv = link.getAttribute('data-target');
+      let table = $('div' + targetDiv).$('table');
+      let tableRows = table.$$('tbody>tr>td>a');
       // divide by 2 because each <tr> has a blank <tr> spacer row
       // beneath it
       assert.equal(buttonCnt, (tableRows.length / 2), 'evidence count mismatch');
 
       // collapse the table
       link.click();
-      browser.pause(1500);
+      browser.pause(500);
     }
   }, 3); // retry this flaky test 2 more times before failing
 
@@ -203,7 +160,7 @@ describe('TolaActivity Program Indicators page', function() {
       let target = link.getAttribute('data-target');
       let targetDiv = $('div' + target);
       link.click();
-      browser.pause(1500);
+      browser.pause(500);
 
       let table = targetDiv.$('table');
       let tableRows = table.$$('tbody>tr>td>a.indicator-link');
@@ -223,6 +180,7 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should be able to create PI by clicking the New Indicator button', function() {
+      browser.pause(500);
       let newButtons = $('div#toplevel_div').$('div.panel-heading').$$('h4>span>a');
       let newButton = newButtons[0];
       newButton.click();
@@ -232,16 +190,25 @@ describe('TolaActivity Program Indicators page', function() {
       let form = $('form');
       let saveNew = form.$('input.btn.btn-success');
       saveNew.click();
-      assert.equal('Success, Basic Indicator Created!', $('div.alert.alert-success').getText());
+      assert.equal('Success, Basic Indicator Created!',
+                   $('div.alert.alert-success').getText());
+
+      // Find the Performance tab
+      let tabs = $$('li.tab-pane>a');
+      let perfTab = tabs[1];
+      let indName = $('input#id_name');
+      assert.equal('Performance', perfTab.getText());
+      perfTab.click();
+      // A name unlikely to clash with real data
+      indName.setValue('===> Delete Me! <===');
 
       // Find the Targets tab
-      let tabs = $$('li.tab-pane>a');
       let targetsTab = tabs[2];
       assert.equal('Targets', targetsTab.getText());
       targetsTab.click();
 
       // Add some values
-      let bucket = $('input#id_units_of_measure');
+      let bucket = $('input#id_unit_of_measure');
       bucket.setValue('Buckets');
       let lopTarget = $('input#id_lop_target');
       lopTarget.setValue('10');
@@ -251,20 +218,19 @@ describe('TolaActivity Program Indicators page', function() {
       targetFreq.selectByValue(1);
 
       // Save
-      let saveUpdate = $('input.btn.btn-primary');
-      assert.equal('Save changes', saveUpdate.getText());
-      saveUpdate.click();
-    }, 3);
+      let saveChanges = $('input.btn.btn-primary');
+      assert.equal('Save changes', saveChanges.getValue());
+      saveChanges.click();
+    });
 
     it('should increase PI count after adding new indicator');
     it('should be able to delete PI by clicking its Delete button');
+    it('should decrease PI count after deleting indicator');
     it('should be able to edit PI by clicking its Edit button');
-    it('should open the Create an Indicator form when New Indicator button is clicked');
     it('should open the Grid/Print Report page when button is clicked');
     it('should highlight invalid data');
     it('should return to previous screen if Cancel button clicked');
     it('should clear form when Clear button clicked');
-    it('should decrease PI count after deleting indicator');
 
     describe('Create an Indicator form', function() {
       it('should show context-sensitve help by clicking Form Help/Guidance button');
