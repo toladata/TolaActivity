@@ -1,25 +1,22 @@
 var assert = require('chai').assert;
-var LoginPage = require('../../lib/login.page.js');
-var util = require('../../lib/testutil.js');
+var LoginPage = require('../pages/login.page.js');
+var IndPage = require('../pages/indicators.page.js');
+var util = require('../lib/testutil.js');
     
 describe('TolaActivity Program Indicators page', function() {
   // Disable timeouts
   this.timeout(0);
 
-  it('should require unauthenticated users to login', function() {
+  it('should exist', function() {
     let parms = util.readConfig();
-    LoginPage.openLoginPage(parms.baseurl);
+    LoginPage.open(parms.baseurl);
     LoginPage.setUserName(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
-  });
-
-  it('should exist', function() {
-    let url = browser.getUrl() + '/indicators/home/0/0/0/';
-    browser.url(url);
+    IndPage.open();
+    // FIXME: Get the WebDriver code out of the test code
     browser.waitForText('h2');
-    var h2 = $('h2');
-    assert.equal(h2.getText(), 'Program Indicators');
+    assert.equal($('h2').getText(), 'Program Indicators');
   });
 
   describe('Programs dropdown', function() {

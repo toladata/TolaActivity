@@ -1,6 +1,6 @@
 // login.page.js -- Page model and methods for login page
 // for use in testing
-function openLoginPage(url) {
+function open(url) {
   browser.url(url);
 }
 
@@ -19,7 +19,7 @@ function clickLoginButton() {
   loginButton.click();
 }
 
-exports.openLoginPage = openLoginPage;
+exports.open = open;
 exports.setUserName = setUserName;
 exports.setPassword = setPassword;
 exports.clickLoginButton = clickLoginButton;

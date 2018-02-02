@@ -1,28 +1,17 @@
-// indicator.page.js -- page object for testing the top-level Program
+// indicators.page.js -- page object for testing the top-level Program
 // Indicators page 
+var util = require('../lib/testutil.js');
 
-function openIndicatorsPage(url) {
+var parms = util.readConfig();
+parms.baseurl += '/indicators/home/0/0/0';
+
+function open(url = parms.baseurl) {
   browser.url(url);
 }
 
+exports.open = open;
 /*
-clickProgramIndicatorsButton() vs expandIndicatorsTable()
-clickNewIndicatorButton() vs addNewIndicator()
-clickSaveNewIndicatorButton() vs saveNewIndicator(0
-clickPerformanceTab() vs viewPerformanceTab()
-setIndicatorName()
-clickTargetsTab() vs fiewTargetsTab()
-setUnitOfMeasure()
-setLoPTarget()
-setBaselineValue()
-selectProgramFromDropdown()
-selectTargetFrequencyFromDropdown()
-clickSaveChangesButton() vs saveChanges()
-clickIndicatorEditButton() vs editIndicator()
-clickIndicatorDataButton() vs viewIndicatorEvidence()
-clickIndicatorDeleteButton() vs deleteIndicator()
-*/
-
+exports.clickProgramsDropdown = clickProgramsDropdown;
 exports.clickIndicatorDataButton = clickIndicatorDataButton;
 exports.clickIndicatorDeleteButton = clickIndicatorDeleteButton;
 exports.clickIndicatorEditButton = clickIndicatorEditButton;
@@ -32,9 +21,9 @@ exports.clickProgramIndicatorsButton = selectProgram;
 exports.clickSaveChangesButton = clickSaveChangeButton;
 exports.clickSaveNewIndicatorButton = clickSaveNewIndicatorButton;
 exports.clickTargetsTab = clickTargetsTab;
-exports.selectProgram = selectProgram;
 exports.selectTargetFrequency = selectTargetFrequency;
 exports.setBaselineValue = setBaselineValue;
 exports.setIndicatorName = setIndicatorName;
 exports.setLoPTarget = setLoPTarget;
 exports.setUnitOfMeasure = setUnitOfMeasure;
+*/
