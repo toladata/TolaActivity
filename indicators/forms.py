@@ -89,11 +89,11 @@ class IndicatorForm(forms.ModelForm):
                 Tab('Targets',
                     Fieldset('',
                         'unit_of_measure', 'lop_target', 'rationale_for_target',
-                        Div(
-                            Field('baseline', template="indicators/crispy.html"),
-                            Div(HTML('<button type="button" id="id_add_evidence_btn" class="btn btn-sm btn-primary">Attach evidence</button>')),
-                            css_class="form-group"
-                        ),
+                        #Div(
+                        Field('baseline', template="indicators/crispy.html"),
+                        #Div(HTML('<button type="button" id="id_add_evidence_btn" class="btn btn-sm btn-primary">Attach evidence</button>')),
+                        #    css_class="form-group"
+                        #),
                         'baseline_na',
                         'target_frequency', 'target_frequency_start', 'target_frequency_custom', 'target_frequency_num_periods'
                     ),
