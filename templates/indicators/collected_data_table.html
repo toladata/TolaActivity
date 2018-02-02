@@ -7,6 +7,9 @@
         pointer-events: none;
     }
 </style>
+<script>
+    $("#id_indicator_data_count_btn_" + `{{indicator.id}}`).text("Data {{ indicator.collecteddata_set.count|default:0 }}" );
+</script>
 {% load assign %}
 {% if collecteddata.count > 0 or indicator.target_frequency  %}
     <table class="table table-bordered" style="border: 0px solid #ddd;">
@@ -26,7 +29,7 @@
                     {% ifchanged item.periodic_target %}
                         <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" min-width="170">
                             <strong>{{ item.periodic_target.period }}</strong><br>
-                            <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
+                            <small>{{ item.periodic_target.start_date_formatted }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date_formatted }}</small>
                         </td>
                         <td rowspan="{{ item.periodic_target.collecteddata_set.count }}" align="right">
                             {{ item.periodic_target.target|floatformat:"-2" }}
@@ -35,7 +38,7 @@
                 {% else %}
                     <td style="vertical-align:middle;">
                         <strong>{{ item.periodic_target.period }}</strong><br>
-                        <small>{{ item.periodic_target.start_date|date:"M d, Y" }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date|date:"M d, Y" }}</small>
+                        <small>{{ item.periodic_target.start_date_formatted }} {% if item.periodic_target.start_date %} - {% endif %} {{ item.periodic_target.end_date_formatted }}</small>
                     </td>
                     <td align="right" style="vertical-align:middle;">
                         {{ item.periodic_target.target|floatformat:"-2" }}
@@ -43,7 +46,7 @@
                 {% endif %}
                 <td {% if item.periodic_target == None %} style="border: 3px solid red;" {% endif %}>
                     <a href="{% url 'collecteddata_update' item.id %}" class="collecteddata-link" id="collected-{{item.id}}">
-                        {{ item.date_collected|date:"M d, Y" }}
+                        {{ item.date_collected_formatted }}
                     </a>
                 </td>
                 <td align="right"> {{ item.achieved|floatformat:"-2" }} </td>
@@ -123,7 +126,7 @@
                     <tr>
                         <td>
                             <strong>{{ tf.period }}</strong><br>
-                            <small>{{ tf.start_date|date:"M d, Y" }} {% if tf.start_date %} - {% endif %} {{ tf.end_date|date:"M d, Y" }}</small>
+                            <small>{{ tf.start_date_formatted }} {% if tf.start_date %} - {% endif %} {{ tf.end_date_formatted }}</small>
                         </td>
                         <td align="right">{{ tf.target }}</td>
                         <td colspan="6">No data collected</td>

@@ -390,13 +390,13 @@ class PeriodicTarget(models.Model):
     @property
     def start_date_formatted(self):
         if self.start_date:
-            return self.start_date.strftime('%b %m, %Y')
+            return self.start_date.strftime('%b %d, %Y').replace(" 0", " ")
         return self.start_date
 
     @property
     def end_date_formatted(self):
         if self.end_date:
-            return self.end_date.strftime('%b %m, %Y')
+            return self.end_date.strftime('%b %d, %Y').replace(" 0", " ")
         return self.end_date
 
 
@@ -452,6 +452,12 @@ class CollectedData(models.Model):
     def achieved_sum(self):
         achieved=CollectedData.targeted.filter(indicator__id=self).sum('achieved')
         return achieved
+
+    @property
+    def date_collected_formatted(self):
+        if self.date_collected:
+            return self.date_collected.strftime('%b %d, %Y').replace(" 0", " ")
+        return self.date_collected
 
     @property
     def disaggregations(self):
