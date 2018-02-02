@@ -41,7 +41,7 @@ $ npm install selenium-webdriver mocha chai webdriverio
 [...]
 ```
 
-The resulting tech stack [looks like this](testing.png)
+The resulting tech stack ![looks like this](./testing_stack.png)
 
 ## Validate the Installation
 1. Edit the config.json file in the top-level of the TolaActivity repo.
