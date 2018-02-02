@@ -47,7 +47,6 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should filter programs table by selected program name', function() {
-      //IndPage.clickProgramsDropdown();
       let progList = IndPage.getProgramsList();
       let listItem = progList[0];
       IndPage.selectProgram(listItem);
@@ -63,19 +62,13 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicators dropdown', function() {
     it('should be present on page', function() {
-      let button = $('#dropdownIndicator');
-      assert(button.getText() == 'Indicators');
+			IndPage.clickIndicatorsDropdown();
     });
 
     it('should have at least one entry', function() {
-      let buttons = $('div.panel').$$('div.btn-group');
-      let indicators = buttons[1];
-
-      // have to click to make the menu visible
-      indicators.click();
-      let dropdownList = indicators.$('ul.dropdown-menu').$$('li');
-      indicators.click();
-      assert(dropdownList.length > 0);
+			let indList = IndPage.getIndicatorsList();
+			assert(indList.length > 0);
+			console.log(indList.length);
     });
 
     it('should be able to select any/all list items');
@@ -83,9 +76,7 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicator Type dropdown', function() {
     it('should be present on page', function() {
-      let button = $('#dropdownIndicatorType');
-      assert(button.getText() == 'Indicator Type');
-      button.click();
+			IndPage.clickIndicatorTypeDropdown();
     });
 
     it('should have at least one entry', function() {
