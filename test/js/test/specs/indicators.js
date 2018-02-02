@@ -14,72 +14,51 @@ describe('TolaActivity Program Indicators page', function() {
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     IndPage.open();
-    // FIXME: Get the WebDriver code out of the test code
-    browser.waitForText('h2');
-    assert.equal($('h2').getText(), 'Program Indicators');
+    // FIXME: make pageName a property, not a function
+    assert.equal(IndPage.pageName(), 'Program Indicators');
   });
 
   describe('Programs dropdown', function() {
+
     it('should be present on page', function() {
-      let button = $('#dropdownProgram');
-      assert(button.getText() == 'Programs');
+      IndPage.clickProgramsDropdown();
     });
 
-    it('should have same count on button as in Programs table', function() {
-      let buttons = $('div.panel').$$('div.btn-group');
-      let programs = buttons[0];
-      // have to click to make the menu visible
-      programs.click();
-      let menu = programs.$('ul.dropdown-menu');
-      let progList = menu.$$('li');
-      programs.click();
-
-      let table = $('div#toplevel_div')
-      let tableRows = table.$$('div.panel-heading');
-      assert(progList.length === tableRows.length);
+    it('should have same number of items as the Programs table', function() {
+      IndPage.clickProgramsDropdown();
+      let progList = IndPage.getProgramsList();
+      let progTable = IndPage.getProgramsTable();
+      assert.equal(progList.length, progTable.length, 'row count mismatch');
+      IndPage.clickProgramsDropdown();
     });
 
     it('should have same items as Programs table', function() {
-      let buttons = $('div.panel').$$('div.btn-group');
-      let dropdown = buttons[0];
-      // have to click to make the menu visible
-      dropdown.click();
-      let dropdownList = dropdown.$('ul.dropdown-menu').$$('li');
-      let progList = Array();
-      for (let item of dropdownList) {
-        let listitem = item.$('a').getText();
-        progList.push(listitem.split('-')[1].trim());
+      let progList = IndPage.getProgramsList();
+      let listItems = new Array();
+      for (let prog of progList) {
+        let name = prog.split('-')[1].trim();
+        listItems.push(name);
       }
-      dropdown.click();
 
-      let table = $('div#toplevel_div')
-      let tableRows = table.$$('div.panel-heading');
-      for (let i = 0; i < tableRows.length; i++) {
-        let s = tableRows[i].$('h4').getText().split("\n")[0].trim();
-        assert.equal(s, progList[i]);
+      let progTable = IndPage.getProgramsTable();
+      for (let i = 0; i < progTable.length; i++) {
+        let rowText = progTable[i].split("\n")[0].trim();
+        assert.equal(rowText, listItems[i]);
       };
     });
 
     it('should filter programs table by selected program name', function() {
-      let buttons = $('div.panel').$$('div.btn-group');
-      let dropdown = buttons[0];
-      // have to click to make the menu visible
-      dropdown.click();
-      let dropdownList = dropdown.$('ul.dropdown-menu').$$('li');
-      let item = dropdownList[0];
-      let listitem = item.$('a');
-      let progName = listitem.getText().split('-')[1].trim();
-      item.click();
+      //IndPage.clickProgramsDropdown();
+      let progList = IndPage.getProgramsList();
+      let listItem = progList[0];
+      IndPage.selectProgram(listItem);
 
       // should have a single row in the table
-      browser.waitForText('h4');
-      let table = $('div#toplevel_div')
-      let tableRows = table.$$('div.panel-heading');
-      assert.equal(1, tableRows.length);
-
+      let progTable = IndPage.getProgramsTable();
       // row should be the one selected from the dropdown
-      let s = tableRows[0].$('h4').getText().split("\n")[0].trim();
-      assert.equal(s, progName);
+      let rowText = progTable[0].split("\n")[0].trim();
+      let listText = listItem.split('-')[1].trim();
+      assert.equal(rowText, listText, 'program name mismtach');
     });
   }); // end programs dropdown tests
 
