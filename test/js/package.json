@@ -1,6 +1,6 @@
 {
 	"scripts": {
-		"test": "mocha --require babel-register"
+		"test": "mocha --require babel-register --es_staging --harmony"
 	},
 	"devDependencies": {
 		"babel-cli": "^6.26.0",

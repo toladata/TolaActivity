@@ -5,11 +5,17 @@ front-end code. TolaActivity using. The tools of choice are:
 
 * Selenium WebDriver for browser automation
 * Selenium Server for remote browsers (think Saucelabs, BrowserStack,
-* WebdriverIO, a test automation framework for NodeJS
-  and so forth)
+* WebdriverIO, a test automation framework for NodeJS with support
+  for synchronous or asynchronous JavaScript
 * MochaJS test framework with assorted plugins, particularly the Chai
   JS assertion library
 * Chrome and/or Firefox browsers
+* Selenium Server for supporting remote testing
+
+If you're reading this, you've already probably cloned the repo. If you
+haven't, do that, then come back here. Commands listed in this document
+assume you're working from the testing directory, `test/js` in the
+TolaActivity repo unless noted otherwise.
 
 ## Install Things
 First, download and install all the bits you'll need. These include
@@ -23,71 +29,71 @@ be current.
 [Firefox](https://www.mozilla.org/download) browsers.
 1. Download and install Chrome's Selenium browser driver,
 [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver).
-Place it anywhere in your system $PATH. You can also keep it in
-the top-level of your local repo because it is gitignored.
+Place it anywhere in your system $PATH. You may also keep it in
+the testing directory (`test/js`) of your local repo because it is 
+gitignored.
 1. Download and install Firefox's Selenium browser driver,
 [geckodriver](https://github.com/mozilla/geckodriver/releases).
 Place it anywhere in your system $PATH. You can also keep it in
-the top-level of your local repo because it is gitignored.
+the testing directory (`test/js`) of your local repo because it is 
+gitignored.
 1. Install [NodeJS](https://nodjs.org) so you can use the
-[Node Package Manager](https://www.npmjos.com), or _npm_ to install
+[Node Package Manager](https://www.npmjos.com), _npm_, to install
 other JavaScript packages.
-1. Finally, use `npm` to install the JavaScript language bindings
-for Selenium, the Mocha test framework, the Chai plugin for
-Mocha, and WebDriverIO:
+1. Download [Selenium Server](https://goo.gl/hvDPsK) and place it
+the testing directory (`test/js`).
+1. Finally, use `npm` to install all of the JavaScript language 
+bindings for Selenium, the Mocha test framework, the Chai plugin for
+Mocha, and WebDriverIO, and all of the other assorted dependencies
+bits:
 
 ```
-$ npm install selenium-webdriver mocha chai webdriverio
+$ npm install 
 [...]
 ```
 
-The resulting tech stack [looks like this](testing.png)
+The resulting tech stack ![looks like this](./testing_stack.png)
 
 ## Validate the Installation
-1. Edit the config.json file in the top-level of the TolaActivity repo.
-Change the `username`, `password`, `baseurl`, and `browser` values to
-suit your taste, taste. In particular,
-    - `username` and `password` correspond to your MercyCorps SSO login
-    - `baseurl` points to the home page of the TolaActivity instance
-    you are testing
-    - `browser_name` sets the BUT (_b_rowser _u_nder _t_est), and should
-    be either `chrome` or `firefox`.
-1. From the top of the TolaActivity repo, setup the JS environment for
-the test suite:
+1. Make a copy the config-example.json file in the testing directory
+(`test/js`) of the TolaActivity repo:
 
 ```
 $ cd test/js
-$ npm install
-[...]
+$ cp config-example.json config.json
 ```
-1. Execute the test suite. **Note the bare `--`**. They tell `npm`
-to ignore the following arguments and pass them through to Mocha,
-the underlying test framework.
+
+Edit `config.json` and change the `username`, `password`, `baseurl`,
+and `browser` values to suit your taste, taste. In particular,
+* `username` and `password` correspond to your MercyCorps SSO login
+* `baseurl` points to the home page of the TolaActivity instance
+  you are testing
+* `browser_name` sets the BUT (browser under test), and should
+  be either `chrome` or `firefox`.
+1. Execute the test suite:
 
 ```
-$ npm test -- --no-timeouts
+$ cd test/js
+$ ./node_modules/.bin/wdio
 
-> @ test /home/kwall/Work/TolaActivity/test/js
-> mocha "--no-timeouts"
-
-  TolaActivity Dashboard
-    ✓ should require login authentication (2886ms)
-    ✓ should have home page link (940ms)
-    ✓ should have page header
-    ✓ should have a TolaActivity link (854ms)
-    ✓ should have a Country Dashboard dropdown (218ms)
+------------------------------------------------------------------
+[chrome #0-0] Session ID: db980c3deae94de17354e7000ee25288
+[chrome #0-0] Spec: /Users/kwall/repos/TolaActivity/test/js/test/specs/dashboard.js
+[chrome #0-0] Running: chrome
+[chrome #0-0]
+[chrome #0-0] TolaActivity Dashboard
+[chrome #0-0]   ✓ should require unauthenticated users to login
+[chrome #0-0]   ✓ should have a page header
+[chrome #0-0]   ✓ should have a TolaActivity link
 
     [...output deleted...]
 
-    - should default Number of events to 1
-    - should limit Number of events between 1 and 12
-    - should not permit edting saved targets except for LoP
-    - should disable the Target frequency menu after changes saved
-    - should enable only Remove all targets after targets saved
+==================================================================
+Number of specs: 6
 
 
-  28 passing (27s)
-  94 pending
+35 passing (42.80s)
+164 skipped
 ```
 1. Rejoice!
 
@@ -113,13 +119,9 @@ much, much simpler.
   people who come after us will thank us for using this small bit of
   semantic markup.
 
-* Similarly, it would be helpful for each page to have its own unique title.
-  Again, this makes programmatic access to page elements much less complicated
-  and reduces verifying that we've loaded the right page to a single short,
-  fast expression. This is less impactful than using _id_ or _name_ attributes
-  consistently, so if you can only do one of these, use _id_ or _name_ attributes
-  consistently.
-
-* Is there a naming convention at work in the structural and semantic
-  markup? I'm curious there is a pattern to the naming that test code
-  can exploit.
+* Similarly, it is helpful for each page to have its own unique
+  title. Again, this makes programmatic access to page elements much
+  less complicated and reduces verifying that we've loaded the right
+  page to a single short, fast expression. This is less impactful
+  than using _id_ or _name_ attributes consistently, so if you can
+  only do one of these, use _id_ or _name_ attributes consistently.
