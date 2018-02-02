@@ -1,0 +1,6 @@
+{
+	"username": "username",
+	"password": "password",
+	"baseurl": "https://tola-activity.example.com",
+	"browser": "chrome"
+}
