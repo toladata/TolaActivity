@@ -14,12 +14,11 @@ describe('TolaActivity Program Indicators page', function() {
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     IndPage.open();
-    // FIXME: make pageName a property, not a function
-    assert.equal(IndPage.pageName(), 'Program Indicators');
+    // FIXME: pageName should be a property
+    assert.equal('Program Indicators', IndPage.pageName());
   });
 
   describe('Programs dropdown', function() {
-
     it('should be present on page', function() {
       IndPage.clickProgramsDropdown();
     });
@@ -42,7 +41,7 @@ describe('TolaActivity Program Indicators page', function() {
 
       let progTable = IndPage.getProgramsTable();
       for (let i = 0; i < progTable.length; i++) {
-        let rowText = progTable[i].split("\n")[0].trim();
+        let rowText = progTable[i].split('\n')[0].trim();
         assert.equal(rowText, listItems[i]);
       };
     });
@@ -56,7 +55,7 @@ describe('TolaActivity Program Indicators page', function() {
       // should have a single row in the table
       let progTable = IndPage.getProgramsTable();
       // row should be the one selected from the dropdown
-      let rowText = progTable[0].split("\n")[0].trim();
+      let rowText = progTable[0].split('\n')[0].trim();
       let listText = listItem.split('-')[1].trim();
       assert.equal(rowText, listText, 'program name mismtach');
     });
