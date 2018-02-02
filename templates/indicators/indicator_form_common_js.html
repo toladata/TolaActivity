@@ -85,6 +85,11 @@
     });
 
 
+    // when a user clicks the 'Attach evidence' button in the indicator from.
+    $("#indicator_modal_content, #indicator_form").on("click", "#id_add_evidence_btn", function(e){
+        alert('Not implemented yet!');
+    });
+
     $("#indicator_modal_content, #indicator_form").on("click", "a.detelebtn", function(e){
         e.preventDefault();
          // $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
@@ -420,12 +425,16 @@
             }
             //var json = $.parseJSON(jqXHR.responseText);
             $(alertsElement).html('');
+
             createAlert("success", "Success, form data saved.", true, alertsElement);
             var jsondata = $.parseJSON(data);
             var indicator = jsondata[0][0];
             var pts = jsondata[1];
             var generateTargets = jsondata[2];
             var targets_sum = jsondata[3];
+            var update_indicator_row = jsondata[4];
+            $(form).data('update_indicator_row', parseInt(update_indicator_row));
+
             $("#initialTargetFrequencyValue").text(indicator.fields.target_frequency);
 
             // $("#id_achieved").val(indicator['fields']['achieved']);

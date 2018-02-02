@@ -89,7 +89,11 @@ class IndicatorForm(forms.ModelForm):
                 Tab('Targets',
                     Fieldset('',
                         'unit_of_measure', 'lop_target', 'rationale_for_target',
-                        Field('baseline', template="indicators/crispy.html"),
+                        Div(
+                            Field('baseline', template="indicators/crispy.html"),
+                            Div(HTML('<button type="button" id="id_add_evidence_btn" class="btn btn-sm btn-primary">Attach evidence</button>')),
+                            css_class="form-group"
+                        ),
                         'baseline_na',
                         'target_frequency', 'target_frequency_start', 'target_frequency_custom', 'target_frequency_num_periods'
                     ),
@@ -132,7 +136,7 @@ class IndicatorForm(forms.ModelForm):
                                                                     </div>
                                                                 {% else %}
                                                                     <div style="line-height:1;"><strong>{{ pt.period }}</strong></div>
-                                                                    <div style="line-height:1; margin-top:3px;">{{ pt.start_date|date:"M d, Y"|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|date:"M d, Y"|default:'' }}</div>
+                                                                    <div style="line-height:1; margin-top:3px;">{{ pt.start_date_formatted }} {% if pt.start_date %} - {% endif %} {{ pt.end_date_formatted }}</div>
                                                                 {% endif %}
                                                             </td>
                                                             <td align="right" style="padding:1px; border:none; vertical-align: middle; width: 150px">
@@ -228,6 +232,7 @@ class IndicatorForm(forms.ModelForm):
         self.fields['approved_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['approval_submitted_by'].queryset = TolaUser.objects.filter(country__in=countries).distinct()
         self.fields['program'].widget.attrs['readonly'] = "readonly"
+        self.fields['baseline'].widget.attrs['class'] = 'col-sm-4'
         #self.fields['target_frequency_start'].widget = DatePicker.DateInput()
         # self.fields['target_frequency_start'].help_text = 'This field is required'
         # self.fields['target_frequency'].required = False

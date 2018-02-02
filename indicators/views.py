@@ -15,7 +15,7 @@ from django_tables2 import RequestConfig
 from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
 
-from django.db.models import Count, Sum, Max
+from django.db.models import Count, Sum, Max, Min
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -505,6 +505,13 @@ class IndicatorUpdate(UpdateView):
             # handle related collected_data records for the new periodic targets
             handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency, generated_pt_ids)
 
+        fields_to_watch = set(['indicator_type', 'leve', 'name', 'number', 'sector'])
+        changed_fields = set(form.changed_data)
+        if fields_to_watch.intersection(changed_fields):
+            update_indicator_row = '1'
+        else:
+            update_indicator_row = '0'
+
         self.object = form.save()
         #periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
         periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
@@ -519,7 +526,7 @@ class IndicatorUpdate(UpdateView):
 
             targets_sum = self.get_context_data().get('targets_sum')
             if targets_sum == None: targets_sum = "0"
-            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(targets_sum) + "]")
+            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(targets_sum) +  "," + str(update_indicator_row) + "]")
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
         return self.render_to_response(self.get_context_data(form=form))
@@ -947,36 +954,21 @@ def collected_data_json(AjaxableResponseMixin, indicator, program):
                 'program_id': program})
 
 
-def program_indicators_json(AjaxableResponseMixin,program,indicator,type):
-    """
-    Displayed on the Indicator home page as a table of indicators related to a Program
-    Called from Program "Indicator" button onClick
-    :param AjaxableResponseMixin:
-    :param program:
-    :return: List of Indicators and the Program they are related to
-    """
+def program_indicators_json(AjaxableResponseMixin, program, indicator, type):
     template_name = 'indicators/program_indicators_table.html'
 
     q = {'program__id__isnull': False}
-    # if we have a program filter active
     if int(program) != 0:
-        q = {
-            'program__id': program,
-        }
-    # if we have an indicator type active
-    if int(type) != 0:
-        r = {
-            'indicator_type__id': type,
-        }
-        q.update(r)
-    # if we have an indicator id append it to the query filter
-    if int(indicator) != 0:
-        s = {
-            'id': indicator,
-        }
-        q.update(s)
+        q['program__id'] = program
 
-    indicators = Indicator.objects.all().filter(**q).annotate(data_count=Count('collecteddata'))
+    if int(type) != 0:
+        q['indicator_type__id'] = type
+
+    if int(indicator) != 0:
+        q['id'] = indicator
+
+        #
+    indicators = Indicator.objects.filter(**q).annotate(data_count=Count('collecteddata'), levelmin=Min('level__id')).order_by('levelmin', 'number')
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
 
 

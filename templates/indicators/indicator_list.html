@@ -2,16 +2,23 @@
 {% block page_title %}Program Indicators{% endblock %}
 
 {% block content %}
+<style>
+#div_id_baseline_na {
+    padding-top: 0;
+    margin-top: -10px;
+}
+</style>
 <script>
 /*
 *  Load the collected data for an indicator on the results page
 */
 function loadCollected(indicator,program){
     var url = '/indicators/collected_data_table/' + indicator + '/' + program + '/';
-    var div_name = '#hidden-' + indicator;
+    var div_name = '#hidden-indicator-' + indicator;
     $(div_name).empty();
     $.get(url, function(data){
         $(div_name).html(data);
+        $("body").removeClass("modal-open");
     });
 };
 
@@ -22,6 +29,7 @@ function loadIndicators(program,indicator,type){
     var program;
     $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
         $('#hidden-' + program).html(data);
+        $("body").removeClass("modal-open");
       });
     $('#hidden-' + program).on('shown', function () {
        $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
@@ -166,18 +174,37 @@ function loadIndicators(program,indicator,type){
             var program_id = parseInt($(this).find('form #id_program').val()[0]);
             var form_action = form.attr('action').split('/');
             var indicator_id = parseInt(form_action[form_action.length -2]);
+
             var targetsactive = $(this).find("#indicator_modal_body").data("targetsactive");
             var indicatorchanged = form.data('indicatorchanged');
+
+
+
+            if (form.data('update_indicator_row') == 1) {
+                var indicator_type = form.find("#id_indicator_type option:selected").text();
+                var indicator_level = '';
+                form.find("#id_level option:selected").each(function() {
+                    indicator_level += $(this).text() + ', ';
+                });
+                var indicator_name = form.find("#id_name").val();
+                var indicator_number = form.find("#id_number").val();
+                var indicator_sector = form.find("#id_sector option:selected").text();
+                $("#id_indicator_type_" + indicator_id).text(indicator_type);
+                $("#id_indicator_level_" + indicator_id).text(indicator_level.trim().slice(0, -1));
+                $("#id_indicator_name_" + indicator_id + " a").text(indicator_name);
+                $("#id_indicator_number_" + indicator_id).text(indicator_number);
+                $("#id_indicator_sector_" + indicator_id).text(indicator_sector);
+            }
+
             if (targetsactive == 'true' || indicatorchanged == true) {
                 loadCollected(indicator_id, program_id);
-                // for some reason scrolling gets disabled sometimes, perhaps a bug in bootstrap
-                $("body").css({"overflow":"visible"});
+                // $("#hidden-indicator-"+indicator_id).collapse('show');
             }
         } catch (err){
             console.log(err);
         }
+    });
 
-    })
 
     $('#indicator_collecteddata_div').on('hide.bs.modal', function (e) {
         var recordchanged = $(this).find('form').data('recordchanged');
@@ -185,8 +212,6 @@ function loadIndicators(program,indicator,type){
             var program_id = $(this).find('form #id_program').val();
             var indicator_id = $(this).find('form #id_indicator').val();
             loadCollected(indicator_id, program_id);
-            // for some reason scrolling gets disabled sometimes, perhaps a bug in bootstrap
-            $("body").css({"overflow":"visible"});
         }
     })
 

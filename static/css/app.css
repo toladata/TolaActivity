@@ -395,3 +395,13 @@ from being applied when there is no value */
 .border-1px input{
   border: 1px solid #DBDCDE;
 }
+
+/* turn off arrows from input[type=number] */
+input[type=number] {
+   -moz-appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

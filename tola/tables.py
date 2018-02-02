@@ -1,10 +1,16 @@
 import django_tables2 as tables
 from indicators.models import Indicator, CollectedData
 from django_tables2.utils import A
+from django.template.defaultfilters import floatformat
+
+class AchievedColumn(tables.Column):
+    def render(self, value):
+        return floatformat(value, -2)
 
 class IndicatorDataTable(tables.Table):
 
     indicator__name = tables.LinkColumn('indicator_data_report', args=[A('indicator__id'), A('indicator__program__id'), 0])
+    actuals = AchievedColumn()
 
     class Meta:
         model = CollectedData

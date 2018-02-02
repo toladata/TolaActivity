@@ -18,6 +18,9 @@
             });
 
 
+            var achieved_formatted_value = parseFloat($("#id_achieved").val()).toFixed(2).replace(/[.,]00$/, "");
+            $("#id_achieved").val(achieved_formatted_value);
+
             $('.datepicker').datepicker({dateFormat: "M d, yy"});
             var id_date_collected = $("#id_date_collected");
             if (id_date_collected.val() != '') {
