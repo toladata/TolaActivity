@@ -26,6 +26,7 @@ geckodriver
 errorShots
 *.jar
 config.json
+test/js/node_modules/
 
 #allvritualenv
 venv/
