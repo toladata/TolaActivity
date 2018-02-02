@@ -505,7 +505,7 @@ class IndicatorUpdate(UpdateView):
             # handle related collected_data records for the new periodic targets
             handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency, generated_pt_ids)
 
-        fields_to_watch = set(['indicator_type', 'leve', 'name', 'number', 'sector'])
+        fields_to_watch = set(['indicator_type', 'level', 'name', 'number', 'sector'])
         changed_fields = set(form.changed_data)
         if fields_to_watch.intersection(changed_fields):
             update_indicator_row = '1'
