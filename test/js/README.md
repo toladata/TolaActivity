@@ -52,7 +52,7 @@ $ npm install
 [...]
 ```
 
-The resulting tech stack ![looks like this](./testing_stack.png)
+The resulting tech stack: ![](./testing_stack.jpg)
 
 ## Validate the Installation
 1. Make a copy the config-example.json file in the testing directory
