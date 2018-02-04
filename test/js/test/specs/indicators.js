@@ -317,19 +317,15 @@ describe('TolaActivity Program Indicators page', function() {
       it('should exist');
       it('should require required fields');
       it('should not require optional fields');
-      it('should have a Save button');
-      it('should validate input data after Save button clicked');
-      it('should validate input data before committing');
+      it('should validate input data before saving it');
       it('should not save invalid input data');
-      it('should highlight invalid input data');
       it('should have a Reset button');
       it('should clear the form by clicking the Reset button');
       it('should restore the form defaults by clicking the Reset button');
-      it('should pull data from Tola Tables by clicking the Import Evidence From Tola Tables link');
       it('should open the Indicator edit form by clicking the Add a Disaggregation link');
-      it('should only accept numerica values in the disaggregations Actuals fields');
+      it('should only accept numeric values in the disaggregations Actuals fields');
       it('should have a cancel button');
-      it('should be able to close the firm by clicking the Cancel button');
+      it('should be able to close the form by clicking the Cancel button');
     });
 
     // TODO: Indicator Delete confirmation page only has a Confirm
