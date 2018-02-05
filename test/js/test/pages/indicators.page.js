@@ -33,15 +33,13 @@ function clickProgramsDropdown() {
 
 function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
   clickNewIndicatorButton();
-
-  // Add some values
+  saveNewIndicator();
   setIndicatorName(name);
   setUnitOfMeasure(unit);
   setLoPTarget(lopTarget);
   setBaseline(baseline);
   setTargetFrequency(frequency);
-
-  saveIndicatorChanges();
+  saveIndicatorChanges();   
 }
 
 function getIndicatorsList() {
