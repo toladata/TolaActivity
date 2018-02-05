@@ -9,6 +9,26 @@ function clickProgramsDropdown() {
   browser.$('#dropdownProgram').click();
 }
 
+function clickIndicatorsDropdown() {
+	browser.$('#dropdownIndicator').click();
+}
+
+function clickIndicatorTypeDropdown() {
+	browser.$('#dropdownIndicatorType').click();
+}
+
+function getIndicatorsList() {
+  let items = browser.$('#dropdownIndicator>div.btn-group').$('ul.dropdown-menu').$$('li>a');
+  let indicators = new Array();
+  for (let item of items) {
+    indicators.push(item.getText());
+	}
+	return indicators;
+}
+
+function getIndicatorTypeList() {
+}
+
 function getProgramsList() {
   let items = browser.$('div.btn-group').$('ul.dropdown-menu').$$('li>a');
   let programs = new Array();
@@ -49,6 +69,9 @@ function selectProgram(program) {
 }
 
 exports.clickProgramsDropdown = clickProgramsDropdown;
+exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
+exports.clickIndicatorTypeDropdown = clickIndicatorTypeDropdown;
+exports.getIndicatorsList = getIndicatorsList;
 exports.getProgramsList = getProgramsList;
 exports.getProgramsTable = getProgramsTable;
 exports.open = open;
@@ -56,7 +79,6 @@ exports.pageName = pageName;
 exports.selectProgram = selectProgram;
 
 /*
-exports.clickProgramsDropdown = clickProgramsDropdown;
 exports.clickIndicatorDataButton = clickIndicatorDataButton;
 exports.clickIndicatorDeleteButton = clickIndicatorDeleteButton;
 exports.clickIndicatorEditButton = clickIndicatorEditButton;
