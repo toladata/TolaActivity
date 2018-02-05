@@ -15,14 +15,15 @@ function clickIndicatorEditButton(indicatorName) {
 }
 
 function clickIndicatorsDropdown() {
-	browser.$('#dropdownIndicator').click();
+  browser.$('#dropdownIndicator').click();
 }
 
 function clickIndicatorTypeDropdown() {
-	browser.$('#dropdownIndicatorType').click();
+  browser.$('#dropdownIndicatorType').click();
 }
 
 function clickNewIndicatorButton() {
+  browser.waitForVisible('=New Indicator', 1000);
   browser.$('=New Indicator').click();
 }
 
@@ -33,10 +34,6 @@ function clickProgramsDropdown() {
 function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
   clickNewIndicatorButton();
 
-  // Accept the default values
-  let saveNew = $('form').$('input[name="submit"]');
-  saveNew.click();
-
   // Add some values
   setIndicatorName(name);
   setUnitOfMeasure(unit);
@@ -44,9 +41,7 @@ function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
   setBaseline(baseline);
   setTargetFrequency(frequency);
 
-  // Save
-  let saveChanges = $('input#submit-id-submit');
-  saveChanges.click();
+  saveIndicatorChanges();
 }
 
 function getIndicatorsList() {
@@ -55,8 +50,8 @@ function getIndicatorsList() {
   let indicators = new Array();
   for (let listItem of listItems) {
     indicators.push(listItem.getText());
-	}
-	return indicators;
+  }
+  return indicators;
 }
 
 function getIndicatorTypeList() {
@@ -65,8 +60,8 @@ function getIndicatorTypeList() {
   let indicatorTypes = new Array();
   for (let listItem of listItems) {
     indicatorTypes.push(listItem.getText());
-	}
-	return indicatorTypes;
+  }
+  return indicatorTypes;
 }
 
 function getProgramsList() {
@@ -88,6 +83,17 @@ function getProgramsTable() {
   return programs;
 }
 
+function saveIndicatorChanges() {
+  let saveChanges = $('input[value="Save changes"]');
+  saveChanges.click();    
+}
+
+function saveNewIndicator() {
+  // Accept the default values
+  let saveNew = $('form').$('input[value="save"]');
+  saveNew.click();
+}
+    
 function setBaseline(value = false) {
   if (value) {
     let targetsTab = browser.$('=Targets');
@@ -95,7 +101,7 @@ function setBaseline(value = false) {
     let baseline = $('input#id_baseline');
     baseline.setValue(value);
   } else {
-    // check the "Not applicable" check box
+      browser.$('#id_baseline_na').click();
   }
 }
 
@@ -162,6 +168,8 @@ exports.getProgramsList = getProgramsList;
 exports.getProgramsTable = getProgramsTable;
 exports.open = open;
 exports.pageName = pageName;
+exports.saveIndicatorChanges = saveIndicatorChanges;
+exports.saveNewIndicator = saveNewIndicator;
 exports.selectProgram = selectProgram;
 exports.setIndicatorName = setIndicatorName;
 exports.setUnitOfMeasure = setUnitOfMeasure;
@@ -170,8 +178,7 @@ exports.setBaseline = setBaseline;
 exports.setTargetFrequency = setTargetFrequency;
 
 /*
+exports.clickSaveChangesButton = clickSaveChangesButton;
 exports.clickPerformanceTab = clickPerformanceTab;
-exports.clickSaveChangesButton = clickSaveChangeButton;
-exports.clickSaveNewIndicatorButton = clickSaveNewIndicatorButton;
 exports.clickTargetsTab = clickTargetsTab;
 */
