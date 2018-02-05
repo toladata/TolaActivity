@@ -2,18 +2,18 @@ var assert = require('chai').assert;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
 var util = require('../lib/testutil.js');
-    
+
 describe('Indicator Targets', function() {
   // Disable timeouts
   this.timeout(0);
-    
+
   it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
     LoginPage.setUserName(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
-    IndPage.open();      
+    IndPage.open();
     assert.equal('Program Indicators', IndPage.pageName());
   });
 
@@ -26,7 +26,7 @@ describe('Indicator Targets', function() {
     it('should have a "Save changes" button');
     it('should have a "Reset" button');
     it('should have a "Help" button');
-    it('should open the "Targets" tab when clicked');  
+    it('should open the "Targets" tab when clicked');
     it('should clear form when "Reset" button clicked');
     it('should save data when "Save changes" button clicked');
   }); // end new indicator dialog
@@ -39,19 +39,19 @@ describe('Indicator Targets', function() {
     it('should require Baseline for target unless "Not applicable" checked');
     it('should clear form when Reset button clicked');
     it('should save data when Save changes button clicked');
-  
+
     describe('Target frequency', function() {
       it('should be a required selection');
       it('should require selecting Target frequency');
       it('should have 8 options on Target frequency selection menu');
-  
+
       describe('"Life of Program (LoP) only" target frequency', function() {
         it('should permit only numeric values for LoP target');
         it('should reject non-numeric values for LoP target');
         it('should permit non-numeric values only in legacy data for LoP target');
         it('should require numeric value for LoP target if non-numeric legacy data is modified');
       });
-  
+
       describe('"Midline and endline" target frequency', function() {
         it('should show Midline and endline targets form after clicking Create targets button');
         it('should clear Midline and endline targets form after clicking Remove all targets button');
@@ -63,27 +63,27 @@ describe('Indicator Targets', function() {
         it('should require Midline target if freq is midline and endline')
         it('should require Endline target if freq is midline and endline')
       });
-  
+
       describe('"Annual" target frequency', function() {
         it('should require value for Annual target if freq is annual');
       });
-  
+
       describe('"Semi-annual" target frequency', function() {
         it('should require Semi-annual target if freq is semi-annual');
       });
-  
+
       describe('"Tri-annual" target frequency', function() {
         it('should require Tri-annual target if freq is tri-annual');
       });
-  
+
       describe('"Quarterly" target frequency', function() {
         it('should require Quarterly target if freq is quarterly');
       });
-  
+
       describe('"Monthly" target frequency', function() {
         it('should require Monthly target if freq is monthly');
       });
-  
+
       describe('"Event" target frequency', function() {
         it('should require name of first event if Target frequency is Event');
         it('should require number of events if Target frequency is Event');
@@ -98,7 +98,7 @@ describe('Indicator Targets', function() {
         it('should limit Number of events between 1 and 12');
       });
     });
-  
+
     it('should have Create targets button');
     it('should have Remove all targets button');
     it('should require target frequency options before enabling Create targets button');

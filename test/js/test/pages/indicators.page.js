@@ -1,5 +1,5 @@
 // indicators.page.js -- page object for testing the top-level Program
-// Indicators page 
+// Indicators page
 var util = require('../lib/testutil.js');
 
 var parms = util.readConfig();
@@ -39,7 +39,7 @@ function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
   setLoPTarget(lopTarget);
   setBaseline(baseline);
   setTargetFrequency(frequency);
-  saveIndicatorChanges();   
+  saveIndicatorChanges();
 }
 
 function getIndicatorsList() {
@@ -83,7 +83,7 @@ function getProgramsTable() {
 
 function saveIndicatorChanges() {
   let saveChanges = $('input[value="Save changes"]');
-  saveChanges.click();    
+  saveChanges.click();
 }
 
 function saveNewIndicator() {
@@ -91,7 +91,7 @@ function saveNewIndicator() {
   let saveNew = $('form').$('input[value="save"]');
   saveNew.click();
 }
-    
+
 function setBaseline(value = false) {
   if (value) {
     let targetsTab = browser.$('=Targets');

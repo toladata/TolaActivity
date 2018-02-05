@@ -1,7 +1,7 @@
 let assert = require('chai').assert;
 let LoginPage = require('../pages/login.page.js');
 let util = require('../lib/testutil.js');
-    
+
 describe('TolaActivity Dashboard', function() {
   // Disable timeouts
   this.timeout(0);
@@ -49,9 +49,9 @@ describe('TolaActivity Dashboard', function() {
     let link = $('=Form Library');
     assert(link.getText() == 'Form Library');
     link.click();
-      
+
   });
-  
+
   it('should have a Reports link', function() {
     let link = $('=Reports');
     assert(link.getText() == 'Reports');

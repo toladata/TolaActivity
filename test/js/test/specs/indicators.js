@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
 var util = require('../lib/testutil.js');
-    
+
 describe('TolaActivity Program Indicators page', function() {
   // Disable timeouts
   this.timeout(0);

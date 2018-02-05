@@ -1,7 +1,7 @@
 var assert = require('chai').assert;
 var LoginPage = require('../pages/login.page.js');
 var util = require('../lib/testutil.js');
-    
+
 describe('TolaActivity login screen', function() {
   this.timeout(0);
 
@@ -14,7 +14,7 @@ describe('TolaActivity login screen', function() {
     LoginPage.setUserName(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
-    
+
     assert(browser.getText('#error').startsWith('Login failed:'));
   });
 });
