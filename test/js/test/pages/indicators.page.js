@@ -138,7 +138,7 @@ function open(url = parms.baseurl) {
 // FIXME: This should be a property
 function pageName() {
   // On this page, the "title" is actually the <h2> caption
-  return browser.getText('h2=Program Indicators');
+  return browser.$('h2').getText();
 }
 
 function selectProgram(program) {
