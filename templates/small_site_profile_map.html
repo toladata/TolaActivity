@@ -7,6 +7,7 @@
 /* this fixes the following problem:
  * when using a jquery-ui dialog over the map: the control buttons are shown over the dialog instead of staying under it.
  */;
+ .leaflet-top { z-index: "auto"; }
 #map {
     z-index: 1;
 }
