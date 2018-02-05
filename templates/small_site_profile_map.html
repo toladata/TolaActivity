@@ -3,8 +3,21 @@
 <script src="{{ STATIC_URL }}js/leaflet-google.js"></script>
 
 <link rel="borders" type="application/json" href="{{ STATIC_URL }}js/world_borders.geojson">
+<style>
+/* this fixes the following problem:
+ * when using a jquery-ui dialog over the map: the control buttons are shown over the dialog instead of staying under it.
+ */;
+ .leaflet-top { z-index: "auto"; }
+#map {
+    z-index: 1;
+}
+.ui-dialog {
+    z-index: 2;
+}
 
+</style>
 <script type="text/javascript">
+    // $(".leaflet-top").css("z-index","auto");
     var country=[];
     var country_lat=[];
     var country_long=[];
@@ -55,6 +68,7 @@
             layers: [positron], // only add one!
             touchZoom: false,
             scrollWheelZoom: false,
+            attributionControl:false,
         }).setView([country_lat[1],country_long[1]], country_zoom[1]);
 
 

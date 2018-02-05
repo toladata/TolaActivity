@@ -180,7 +180,6 @@
         }
         $(this).attr("disabled", true);
         submitForm($("#indicator_update_form"));
-
     });
 
 
@@ -327,7 +326,7 @@
             ${(indicator.fields.target_frequency != 2) ? `
                 <div class="row">
                     <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top:20px; margin-bottom:30px;">
-                        <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> Add a target</a>
+                        <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> ${getNewTargetBtnLabel(indicator.fields.target_frequency)}</a>
                     </div>
                 </div>`
                 :
@@ -476,6 +475,8 @@
 
 
     function show_hide_frequency_fields(lock = false) {
+        // set the text for the 'create new target' button.
+        $("#addNewPeriodicTarget").text(getNewTargetBtnLabel($("#id_target_frequency").val()) );
         var selected_option = $("#id_target_frequency").find("option:selected").text();
         if ( (lock == true || $('#id_target_frequency').is('[readonly="readonly"]'))
                  && selected_option != 'Life of Program (LoP) only') {
@@ -533,6 +534,25 @@
     }
 
 
+    function getNewTargetBtnLabel(index) {
+        var label = '';
+        if (index == 3 ) {
+            label += 'Add a year';
+        } else if (index == 4) {
+            label += 'Add a semi-annual period';
+        } else if (index == 5) {
+            label += 'Add a tri-annual period';
+        } else if (index == 6) {
+            label += 'Add a quarter';
+        } else if (index == 7) {
+            label += 'Add a month';
+        } else if (index == 8) {
+            label += 'Add an event';
+        } else {
+            label = 'Add a target';
+        }
+        return label;
+    }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
         show_hide_frequency_fields();
     });
