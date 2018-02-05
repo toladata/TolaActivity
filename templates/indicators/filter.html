@@ -6,6 +6,7 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownProgram">
+                <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter(0)"> -- All -- </a></li>
                 {% for program in getPrograms %}
                     <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
                 {% endfor %}
