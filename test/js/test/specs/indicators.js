@@ -62,12 +62,12 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicators dropdown', function() {
     it('should be present on page', function() {
-			IndPage.clickIndicatorsDropdown();
+      IndPage.clickIndicatorsDropdown();
     });
 
     it('should have at least one entry', function() {
-			let indList = IndPage.getIndicatorsList();
-			assert(indList.length > 0);
+      let indList = IndPage.getIndicatorsList();
+      assert(indList.length > 0);
     });
 
     it('should be able to select any/all list items');
@@ -75,7 +75,7 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicator Type dropdown', function() {
     it('should be present on page', function() {
-			IndPage.clickIndicatorTypeDropdown();
+      IndPage.clickIndicatorTypeDropdown();
     });
 
     it('should have at least one entry', function() {
@@ -163,7 +163,6 @@ describe('TolaActivity Program Indicators page', function() {
     // });
 
     it('should be able to create PI by clicking the New Indicator button', function() {
-	//IndPage.createNewProgramIndicator('Buckets', 'DELETE THIS PLEASE', 100, false, 'Annual');
 	IndPage.clickNewIndicatorButton();
 	IndPage.saveNewIndicator();
 	IndPage.setIndicatorName('Bug reduction');
