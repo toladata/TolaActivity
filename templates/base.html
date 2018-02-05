@@ -37,7 +37,7 @@
 
         {% block extra_js_in_header %}
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
 
         <!-- App specific Javascript -->
         <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
@@ -259,6 +259,8 @@
 
         <!-- Bootstrap compiled javascript plugins -->
         <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
+
         {% if offline_mode %}
             <!--- offline mode so don't try andload the external fonts -->
         {% else %}

@@ -1,7 +1,5 @@
 
 {% block content %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
-    <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
     <script type="text/javascript">
         $(document).ready(function() {
             /* add select2 js library to the indicator select box */
@@ -16,7 +14,6 @@
                             .attr("value", sel.val())
                             .text(sel.text()));
             });
-
 
             var achieved_formatted_value = parseFloat($("#id_achieved").val()).toFixed(2).replace(/[.,]00$/, "");
             $("#id_achieved").val(achieved_formatted_value);
