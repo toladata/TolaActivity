@@ -47,7 +47,6 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should filter programs table by selected program name', function() {
-      //IndPage.clickProgramsDropdown();
       let progList = IndPage.getProgramsList();
       let listItem = progList[0];
       IndPage.selectProgram(listItem);
@@ -63,19 +62,13 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicators dropdown', function() {
     it('should be present on page', function() {
-      let button = $('#dropdownIndicator');
-      assert(button.getText() == 'Indicators');
+			IndPage.clickIndicatorsDropdown();
     });
 
     it('should have at least one entry', function() {
-      let buttons = $('div.panel').$$('div.btn-group');
-      let indicators = buttons[1];
-
-      // have to click to make the menu visible
-      indicators.click();
-      let dropdownList = indicators.$('ul.dropdown-menu').$$('li');
-      indicators.click();
-      assert(dropdownList.length > 0);
+			let indList = IndPage.getIndicatorsList();
+			assert(indList.length > 0);
+			console.log(indList.length);
     });
 
     it('should be able to select any/all list items');
@@ -83,9 +76,7 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicator Type dropdown', function() {
     it('should be present on page', function() {
-      let button = $('#dropdownIndicatorType');
-      assert(button.getText() == 'Indicator Type');
-      button.click();
+			IndPage.clickIndicatorTypeDropdown();
     });
 
     it('should have at least one entry', function() {
@@ -326,19 +317,15 @@ describe('TolaActivity Program Indicators page', function() {
       it('should exist');
       it('should require required fields');
       it('should not require optional fields');
-      it('should have a Save button');
-      it('should validate input data after Save button clicked');
-      it('should validate input data before committing');
+      it('should validate input data before saving it');
       it('should not save invalid input data');
-      it('should highlight invalid input data');
       it('should have a Reset button');
       it('should clear the form by clicking the Reset button');
       it('should restore the form defaults by clicking the Reset button');
-      it('should pull data from Tola Tables by clicking the Import Evidence From Tola Tables link');
       it('should open the Indicator edit form by clicking the Add a Disaggregation link');
-      it('should only accept numerica values in the disaggregations Actuals fields');
+      it('should only accept numeric values in the disaggregations Actuals fields');
       it('should have a cancel button');
-      it('should be able to close the firm by clicking the Cancel button');
+      it('should be able to close the form by clicking the Cancel button');
     });
 
     // TODO: Indicator Delete confirmation page only has a Confirm
