@@ -5,8 +5,13 @@ var util = require('../lib/testutil.js');
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
-function clickProgramsDropdown() {
-  browser.$('#dropdownProgram').click();
+function clickIndicatorDataButton(indicatorName) {
+}
+
+function clickIndicatorDeleteButton(indicatorName) {
+}
+
+function clickIndicatorEditButton(indicatorName) {
 }
 
 function clickIndicatorsDropdown() {
@@ -17,23 +22,59 @@ function clickIndicatorTypeDropdown() {
 	browser.$('#dropdownIndicatorType').click();
 }
 
+function clickNewIndicatorButton() {
+  browser.$('=New Indicator').click();
+}
+
+function clickProgramsDropdown() {
+  browser.$('#dropdownProgram').click();
+}
+
+function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
+  clickNewIndicatorButton();
+
+  // Accept the default values
+  let saveNew = $('form').$('input[name="submit"]');
+  saveNew.click();
+
+  // Add some values
+  setIndicatorName(name);
+  setUnitOfMeasure(unit);
+  setLoPTarget(lopTarget);
+  setBaseline(baseline);
+  setTargetFrequency(frequency);
+
+  // Save
+  let saveChanges = $('input#submit-id-submit');
+  saveChanges.click();
+}
+
 function getIndicatorsList() {
-  let items = browser.$('#dropdownIndicator>div.btn-group').$('ul.dropdown-menu').$$('li>a');
+  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownIndicator"]');
+  let listItems = list.$$('li>a');
   let indicators = new Array();
-  for (let item of items) {
-    indicators.push(item.getText());
+  for (let listItem of listItems) {
+    indicators.push(listItem.getText());
 	}
 	return indicators;
 }
 
 function getIndicatorTypeList() {
+  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownIndicatorType"]');
+  let listItems = list.$$('li>a');
+  let indicatorTypes = new Array();
+  for (let listItem of listItems) {
+    indicatorTypes.push(listItem.getText());
+	}
+	return indicatorTypes;
 }
 
 function getProgramsList() {
-  let items = browser.$('div.btn-group').$('ul.dropdown-menu').$$('li>a');
+  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownProgram"]');
+  let listItems = list.$$('li>a');
   let programs = new Array();
-  for (let item of items) {
-    programs.push(item.getText());
+  for (let listItem of listItems) {
+    programs.push(listItem.getText());
   }
   return programs;
 }
@@ -45,6 +86,45 @@ function getProgramsTable() {
     programs.push(row.$('h4').getText());
   }
   return programs;
+}
+
+function setBaseline(value = false) {
+  if (value) {
+    let targetsTab = browser.$('=Targets');
+    targetsTab.click();
+    let baseline = $('input#id_baseline');
+    baseline.setValue(value);
+  } else {
+    // check the "Not applicable" check box
+  }
+}
+
+function setIndicatorName(name) {
+  let perfTab = browser.$('=Performance');
+  perfTab.click();
+  let indName = $('input#id_name');
+  indName.setValue(name);
+}
+
+function setLoPTarget(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let lopTarget = $('input#id_lop_target');
+  lopTarget.setValue(value);
+}
+
+function setTargetFrequency(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let targetFreq = $('select#id_target_frequency');
+  targetFreq.selectByValue(1);
+}
+
+function setUnitOfMeasure(unit) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let bucket = $('input#id_unit_of_measure');
+  bucket.setValue('Buckets');
 }
 
 function open(url = parms.baseurl) {
@@ -68,29 +148,30 @@ function selectProgram(program) {
   }
 }
 
-exports.clickProgramsDropdown = clickProgramsDropdown;
+exports.clickIndicatorDataButton = clickIndicatorDataButton;
+exports.clickIndicatorDeleteButton = clickIndicatorDeleteButton;
+exports.clickIndicatorEditButton = clickIndicatorEditButton;
 exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
 exports.clickIndicatorTypeDropdown = clickIndicatorTypeDropdown;
+exports.clickNewIndicatorButton = clickNewIndicatorButton;
+exports.clickProgramsDropdown = clickProgramsDropdown;
+exports.createNewProgramIndicator = createNewProgramIndicator;
 exports.getIndicatorsList = getIndicatorsList;
+exports.getIndicatorTypeList = getIndicatorTypeList;
 exports.getProgramsList = getProgramsList;
 exports.getProgramsTable = getProgramsTable;
 exports.open = open;
 exports.pageName = pageName;
 exports.selectProgram = selectProgram;
+exports.setIndicatorName = setIndicatorName;
+exports.setUnitOfMeasure = setUnitOfMeasure;
+exports.setLoPTarget = setLoPTarget;
+exports.setBaseline = setBaseline;
+exports.setTargetFrequency = setTargetFrequency;
 
 /*
-exports.clickIndicatorDataButton = clickIndicatorDataButton;
-exports.clickIndicatorDeleteButton = clickIndicatorDeleteButton;
-exports.clickIndicatorEditButton = clickIndicatorEditButton;
-exports.clickNewIndicatorButton = clickNewIndicatorButton;
 exports.clickPerformanceTab = clickPerformanceTab;
-exports.clickProgramIndicatorsButton = selectProgram;
 exports.clickSaveChangesButton = clickSaveChangeButton;
 exports.clickSaveNewIndicatorButton = clickSaveNewIndicatorButton;
 exports.clickTargetsTab = clickTargetsTab;
-exports.selectTargetFrequency = selectTargetFrequency;
-exports.setBaselineValue = setBaselineValue;
-exports.setIndicatorName = setIndicatorName;
-exports.setLoPTarget = setLoPTarget;
-exports.setUnitOfMeasure = setUnitOfMeasure;
 */
