@@ -14,21 +14,21 @@ describe('Indicator Targets', function() {
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     IndPage.open();
-		assert.equal('Program Indicators', IndPage.pageName());
+    assert.equal('Program Indicators', IndPage.pageName());
   });
 
   describe('Create new indicator dialog', function() {
-	  it('should open the new indicator form when the button is clicked', function() {
-			IndPage.clickNewIndicatorButton();
-			assert.equal('Create an Indicator', IndPage.pageName());
-			IndPage.saveNewIndicator();
-			IndPage.setIndicatorName('testing LoP only target frequency')
-			IndPage.setUnitOfMeasure('Bugs fixed');
-			IndPage.setLoPTarget(42);
-			IndPage.setBaseline(2);
-			IndPage.setTargetFrequency('Life of Program (LoP) only');
-			IndPage.saveIndicatorChanges();
-		});
+    it('should open the new indicator form when the button is clicked', function() {
+      IndPage.clickNewIndicatorButton();
+      assert.equal('Create an Indicator', IndPage.pageName());
+      IndPage.saveNewIndicator();
+      IndPage.setIndicatorName('testing LoP only target frequency')
+      IndPage.setUnitOfMeasure('Bugs fixed');
+      IndPage.setLoPTarget(42);
+      IndPage.setBaseline(2);
+      IndPage.setTargetFrequency('Life of Program (LoP) only');
+      IndPage.saveIndicatorChanges();
+    });
 
     it('should accept no value for "Sector"');
     it('should accept any value for "Sector"');
