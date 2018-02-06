@@ -18,6 +18,10 @@ function clickIndicatorsDropdown() {
   browser.$('#dropdownIndicator').click();
 }
 
+function clickIndicatorsLink() {
+  browser.$('=Indicators').click();
+}
+
 function clickIndicatorTypeDropdown() {
   browser.$('#dropdownIndicatorType').click();
 }
@@ -29,6 +33,10 @@ function clickNewIndicatorButton() {
 
 function clickProgramsDropdown() {
   browser.$('#dropdownProgram').click();
+}
+
+function clickResetButton() {
+  browser.$('input[value="Reset"]').click();
 }
 
 function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
@@ -52,6 +60,26 @@ function getIndicatorsList() {
   return indicators;
 }
 
+function getAlertMsg() {
+  //let alertDiv = browser.$('div#alerts>div.alert.alert-danger.dynamic-alert.alert-dismissable');
+  let alertDiv = browser.$('div#alerts');
+  return alertDiv.$('p').getText();
+}
+
+function getBaseline() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let val = $('input#id_baseline').getValue();
+  return val;
+}
+
+function getIndicatorName() {
+  let targetsTab = browser.$('=Performance');
+  targetsTab.click();
+  let val = $('input#id_name').getValue();
+  return val;
+}
+
 function getIndicatorTypeList() {
   let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownIndicatorType"]');
   let listItems = list.$$('li>a');
@@ -60,6 +88,13 @@ function getIndicatorTypeList() {
     indicatorTypes.push(listItem.getText());
   }
   return indicatorTypes;
+}
+
+function getLoPTarget() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let val = $('input#id_lop_target').getValue();
+  return val;
 }
 
 function getProgramsList() {
@@ -79,6 +114,20 @@ function getProgramsTable() {
     programs.push(row.$('h4').getText());
   }
   return programs;
+}
+
+function getTargetFrequency() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let val = $('select#id_target_frequency').getValue();
+  return val;
+}
+
+function getUnitOfMeasure() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let val = $('input#id_unit_of_measure').getValue();
+  return val;
 }
 
 function saveIndicatorChanges() {
@@ -155,15 +204,23 @@ function selectProgram(program) {
 exports.clickIndicatorDataButton = clickIndicatorDataButton;
 exports.clickIndicatorDeleteButton = clickIndicatorDeleteButton;
 exports.clickIndicatorEditButton = clickIndicatorEditButton;
-exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
 exports.clickIndicatorTypeDropdown = clickIndicatorTypeDropdown;
+exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
+exports.clickIndicatorsLink = clickIndicatorsLink;
 exports.clickNewIndicatorButton = clickNewIndicatorButton;
 exports.clickProgramsDropdown = clickProgramsDropdown;
+exports.clickResetButton = clickResetButton;
 exports.createNewProgramIndicator = createNewProgramIndicator;
+exports.getAlertMsg = getAlertMsg;
+exports.getBaseline = getBaseline;
 exports.getIndicatorsList = getIndicatorsList;
+exports.getIndicatorName = getIndicatorName;
 exports.getIndicatorTypeList = getIndicatorTypeList;
+exports.getLoPTarget = getLoPTarget;
 exports.getProgramsList = getProgramsList;
 exports.getProgramsTable = getProgramsTable;
+exports.getTargetFrequency = getTargetFrequency;
+exports.getUnitOfMeasure = getUnitOfMeasure;
 exports.open = open;
 exports.pageName = pageName;
 exports.saveIndicatorChanges = saveIndicatorChanges;
@@ -176,7 +233,6 @@ exports.setBaseline = setBaseline;
 exports.setTargetFrequency = setTargetFrequency;
 
 /*
-exports.clickSaveChangesButton = clickSaveChangesButton;
 exports.clickPerformanceTab = clickPerformanceTab;
 exports.clickTargetsTab = clickTargetsTab;
 */

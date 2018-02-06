@@ -1,21 +1,21 @@
-# Using MochaJS and Selenium WebDriver to Test the TolaActivity UI
+# Using Selenium WebDriver to Test the TolaActivity UI
 
 This document describes how to set up your system to test TolaActivity
-front-end code. TolaActivity using. The tools of choice are:
+front-end code. The tools of choice are:
 
 * Selenium WebDriver for browser automation
 * Selenium Server for remote browsers (think Saucelabs, BrowserStack,
+  or TestBot)
 * WebdriverIO, a test automation framework for NodeJS with support
   for synchronous or asynchronous JavaScript
 * MochaJS test framework with assorted plugins, particularly the Chai
   JS assertion library
 * Chrome and/or Firefox browsers
-* Selenium Server for supporting remote testing
 
 If you're reading this, you've already probably cloned the repo. If you
 haven't, do that, then come back here. Commands listed in this document
 assume you're working from the testing directory, `test/js` in the
-TolaActivity repo unless noted otherwise.
+TolaActivity repo, unless noted otherwise.
 
 ## Install Things
 First, download and install all the bits you'll need. These include
@@ -25,23 +25,21 @@ the NPM-packaged Chrome or Firefox webdrivers because they might not
 be current.
 
 1. Install the latest versions of the
-[Chrome](ttps://www.google.com/chrome/browser/) and
+[Chrome](https://www.google.com/chrome/browser) and
 [Firefox](https://www.mozilla.org/download) browsers.
 1. Download and install Chrome's Selenium browser driver,
 [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver).
 Place it anywhere in your system $PATH. You may also keep it in
-the testing directory (`test/js`) of your local repo because it is 
-gitignored.
+the testing directory of your local repo because it is gitignored.
 1. Download and install Firefox's Selenium browser driver,
 [geckodriver](https://github.com/mozilla/geckodriver/releases).
 Place it anywhere in your system $PATH. You can also keep it in
-the testing directory (`test/js`) of your local repo because it is 
-gitignored.
-1. Install [NodeJS](https://nodjs.org) so you can use the
-[Node Package Manager](https://www.npmjos.com), _npm_, to install
-other JavaScript packages.
+the testing directory of your local repo because it is gitignored.
 1. Download [Selenium Server](https://goo.gl/hvDPsK) and place it
-the testing directory (`test/js`).
+the testing directory.
+1. Install [NodeJS](https://nodjs.org) so you can use the
+[Node Package Manager](https://www.npmjos.com), `npm`,  to install
+other JavaScript packages.
 1. Finally, use `npm` to install all of the JavaScript language 
 bindings for Selenium, the Mocha test framework, the Chai plugin for
 Mocha, and WebDriverIO, and all of the other assorted dependencies
@@ -52,11 +50,9 @@ $ npm install
 [...]
 ```
 
-The resulting tech stack: ![](./testing_stack.jpg)
-
 ## Validate the Installation
 1. Make a copy the config-example.json file in the testing directory
-(`test/js`) of the TolaActivity repo:
+   of the TolaActivity repo:
 
 ```
 $ cd test/js
@@ -64,12 +60,17 @@ $ cp config-example.json config.json
 ```
 
 Edit `config.json` and change the `username`, `password`, `baseurl`,
-and `browser` values to suit your taste, taste. In particular,
+and `browser` values to suit your taste, taste. In particular:
 * `username` and `password` correspond to your MercyCorps SSO login
 * `baseurl` points to the home page of the TolaActivity instance
   you are testing
-* `browser_name` sets the BUT (browser under test), and should
-  be either `chrome` or `firefox`.
+1. Start the Seleniuim server:
+
+```
+$ cd test/js
+$ java -jar -Dwebdriver.firefox.driver=./geckodriver selenium-server-standalone-3.8.1.jar &> selenium-server.log &
+```
+
 1. Execute the test suite:
 
 ```
@@ -95,7 +96,13 @@ Number of specs: 6
 35 passing (42.80s)
 164 skipped
 ```
-1. Rejoice!
+
+1. To run the tests in a single file, specify `--spec path/to/file`.
+   For example, to run only the dashboard tests, the command would be
+
+```
+$ ./node_modules/.bin/wdio --spec test/specs/dashboard.js
+```
 
 ## Helpful development practices
 
