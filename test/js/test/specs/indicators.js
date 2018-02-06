@@ -118,6 +118,11 @@ describe('TolaActivity Program Indicators page', function() {
       let buttonCnt = parseInt(button.$('a').getText());
       let link = button.$('a');
       // expand the table
+      // FIXME: This is a horrible hack to accomodate a race.
+      // <div id="ajaxloading" class="modal ajax_loading" style="display: block;"></div>
+      // obscures the button we want to click, but how long varies because Internet.,
+      // so hide the div. :-\
+      browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
       link.click();
       browser.pause(500);
 
@@ -137,24 +142,15 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Program Indicators table', function() {
     it('should view PI by clicking its name in Indicator Name column', function() {
-      let buttons = $('#toplevel_div').$$('div.panel-body');
-      let button = buttons[0];
-      let link = button.$('a');
-      let target = link.getAttribute('data-target');
-      let targetDiv = $('div' + target);
-      link.click();
-      browser.pause(500);
-
-      let table = targetDiv.$('table');
-      let tableRows = table.$$('tbody>tr>td>a.indicator-link');
-      let tableRow = tableRows[0];
-      let rowText = tableRow.getText();
+		  browser.pause(500);
+		  let progTable = IndPage.getProgramsTable();
+			let tableRow = progTable[1];
+			let link = $('='+tableRow);
+			link.click();
       // FIXME: This is a horrible hack to accomodate a race.
       // <div id="ajaxloading" class="modal ajax_loading" style="display: block;"></div>
       // obscures the button we want to click, but how long varies because Internet.,
       // so hide the div. :-\
-      browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
-      tableRow.click();
       browser.waitForVisible('div#indicator_modal_header>h3');
       let dialogText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
       assert.equal(rowText, dialogText, 'indicator name mismatch');
