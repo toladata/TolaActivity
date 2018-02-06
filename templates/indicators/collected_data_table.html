@@ -7,9 +7,7 @@
         pointer-events: none;
     }
 </style>
-<script>
-    $("#id_indicator_data_count_btn_" + `{{indicator.id}}`).text("Data {{ indicator.collecteddata_set.count|default:0 }}" );
-</script>
+
 {% load assign %}
 {% if collecteddata.count > 0 or indicator.target_frequency  %}
     <table class="table table-bordered" style="border: 0px solid #ddd;">
