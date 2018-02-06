@@ -136,41 +136,41 @@ describe('TolaActivity Program Indicators page', function() {
   }, 3); // retry this flaky test 2 more times before failing
 
   describe('Program Indicators table', function() {
-    // it('should view PI by clicking its name in Indicator Name column', function() {
-    //   let buttons = $('#toplevel_div').$$('div.panel-body');
-    //   let button = buttons[0];
-    //   let link = button.$('a');
-    //   let target = link.getAttribute('data-target');
-    //   let targetDiv = $('div' + target);
-    //   link.click();
-    //   browser.pause(500);
+    it('should view PI by clicking its name in Indicator Name column', function() {
+      let buttons = $('#toplevel_div').$$('div.panel-body');
+      let button = buttons[0];
+      let link = button.$('a');
+      let target = link.getAttribute('data-target');
+      let targetDiv = $('div' + target);
+      link.click();
+      browser.pause(500);
 
-    //   let table = targetDiv.$('table');
-    //   let tableRows = table.$$('tbody>tr>td>a.indicator-link');
-    //   let tableRow = tableRows[0];
-    //   let rowText = tableRow.getText();
-    //   // FIXME: This is a horrible hack to accomodate a race.
-    //   // <div id="ajaxloading" class="modal ajax_loading" style="display: block;"></div>
-    //   // obscures the button we want to click, but how long varies because Internet.,
-    //   // so hide the div. :-\
-    //   browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
-    //   tableRow.click();
-    //   browser.waitForVisible('div#indicator_modal_header>h3');
-    //   let dialogText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
-    //   assert.equal(rowText, dialogText, 'indicator name mismatch');
-    //   let close = $('div#indicator_modal_div').$('button.close');
-    //   close.click();
-    // });
+      let table = targetDiv.$('table');
+      let tableRows = table.$$('tbody>tr>td>a.indicator-link');
+      let tableRow = tableRows[0];
+      let rowText = tableRow.getText();
+      // FIXME: This is a horrible hack to accomodate a race.
+      // <div id="ajaxloading" class="modal ajax_loading" style="display: block;"></div>
+      // obscures the button we want to click, but how long varies because Internet.,
+      // so hide the div. :-\
+      browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
+      tableRow.click();
+      browser.waitForVisible('div#indicator_modal_header>h3');
+      let dialogText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
+      assert.equal(rowText, dialogText, 'indicator name mismatch');
+      let close = $('div#indicator_modal_div').$('button.close');
+      close.click();
+    });
 
     it('should be able to create PI by clicking the New Indicator button', function() {
-	IndPage.clickNewIndicatorButton();
-	IndPage.saveNewIndicator();
-	IndPage.setIndicatorName('Bug reduction');
-	IndPage.setUnitOfMeasure('Bugs fixed');
-	IndPage.setLoPTarget(10);
-	IndPage.setBaseline(1);
-	IndPage.setTargetFrequency('Life of Program (LoP) only');
-	IndPage.saveIndicatorChanges();
+      IndPage.clickNewIndicatorButton();
+      IndPage.saveNewIndicator();
+      IndPage.setIndicatorName('Bug reduction');
+      IndPage.setUnitOfMeasure('Bugs fixed');
+      IndPage.setLoPTarget(10);
+      IndPage.setBaseline(1);
+      IndPage.setTargetFrequency('Life of Program (LoP) only');
+      IndPage.saveIndicatorChanges();
     });
 
     it('should increase PI count after adding new indicator');
