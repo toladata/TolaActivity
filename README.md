@@ -178,6 +178,6 @@ Then set up the following environment variables in docker-compose-dev.yml:
 #### Create PRs and Issues
 The following templates were created to easy the way to create tickets and help the developer.
 
-- Bugs and Issues [[+]](https://github.com/toladata/TolaActivity/issues/new?template=issue_template.md)
+- Bugs and Issues [[+]](https://github.com/toladata/TolaActivity/issues/new)
 - New features [[+]](https://github.com/toladata/TolaActivity/issues/new?template=new_features.md)
-- Pull requestes [[+]](https://github.com/toladata/TolaActivity/compare/master...demo?template=pull_request.md)
+- Pull requests [[+]](https://github.com/toladata/TolaActivity/compare/master...demo?template=pull_request_template.md)
