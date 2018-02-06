@@ -175,7 +175,7 @@ Then set up the following environment variables in docker-compose-dev.yml:
 * `SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL=https://<ID>.ngrok.io/complete/microsoft-graph`
 * `TOLA_HOSTNAME=127.0.0.1,localhost,<ID>.ngrok.io`
 
-#### Create PRs and Issues
+## Creating PRs and Issues
 The following templates were created to easy the way to create tickets and help the developer.
 
 - Bugs and Issues [[+]](https://github.com/toladata/TolaActivity/issues/new)
