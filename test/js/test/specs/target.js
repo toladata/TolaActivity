@@ -112,7 +112,6 @@ describe('Indicator Targets', function() {
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       //, check "Not applicable" then try to save
       IndPage.setBaselineNA();
-      browser.debug();
       IndPage.saveIndicatorChanges();
       // Should get this success message
       assert.notEqual('Please complete all required fields in the Targets tab.',
