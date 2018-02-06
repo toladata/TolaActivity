@@ -24,6 +24,7 @@ class SyncTrackTest(TestCase):
         logging.disable(logging.ERROR)
 
         self.org = factories.Organization()
+        self.tola_user = factories.TolaUser()
         self.wfl1 = factories.WorkflowLevel1(organization=self.org)
         self.wfl2 = factories.WorkflowLevel2(workflowlevel1=self.wfl1)
 
@@ -136,6 +137,17 @@ class SyncTrackTest(TestCase):
         command = Command()
         result = command.save_wfl1()
         self.assertIn(str(self.wfl1.id), result)
+
+    @patch('tola.management.commands.synctrack.Command._get_from_track')
+    @patch('tola.management.commands.synctrack.Command._create_or_update')
+    def test_save_tola_user(self, mock_create_or_update, mock_get_from_track):
+        mock_create_or_update.return_value = self.tola_user.id
+        mock_get_from_track.return_value = {'id': self.org.id,
+                                            'name': self.org.name}
+
+        command = Command()
+        result = command.save_tola_user()
+        self.assertIn(str(self.tola_user.id), result)
 
     @patch('tola.management.commands.synctrack.Command._create_or_update')
     def test_save_org(self, mock_create_or_update):

@@ -2,12 +2,15 @@ import json
 import requests
 import logging
 import sys
+import random
 from urlparse import urljoin
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
-from workflow.models import Organization, WorkflowLevel1, WorkflowLevel2
+from workflow.models import (Organization, TolaUser, WorkflowLevel1,
+                             WorkflowLevel2)
+from tola.track_sync import register_user
 
 logger = logging.getLogger(__name__)
 
@@ -143,6 +146,59 @@ class Command(BaseCommand):
         sys.stdout.write('\n')
         return updated_wfl2s
 
+    def save_tola_user(self):
+        """
+        Update or create each Tola User in Track
+        """
+        # update TolaTrack with program data
+        tola_users = TolaUser.objects.all()
+        updated_tola_users = []
+
+        # each tola user send to Track
+        for tola_user in tola_users:
+            sys.stdout.write('.')
+            params = {
+                'organization_uuid': tola_user.organization.organization_uuid
+            }
+            data = self._get_from_track('organization', params)
+            org_id = data['id']
+            org_name = data['name']
+
+            # set payload and deliver
+            payload = {
+                'title': tola_user.title,
+                'tola_user_uuid': tola_user.tola_user_uuid
+            }
+
+            params = {
+                'tola_user_uuid': tola_user.tola_user_uuid
+            }
+            data = self._get_from_track('tolauser', params)
+            if not data:
+                generated_pass = '%032x' % random.getrandbits(128)
+                create_data = {
+                    'username': tola_user.user.username,
+                    'first_name': tola_user.user.first_name,
+                    'last_name': tola_user.user.last_name,
+                    'email': tola_user.user.email,
+                    'password1': generated_pass,
+                    'password2': generated_pass,
+                    'org': org_name
+                }
+                payload.update(create_data)
+                register_user(payload, tola_user)
+            else:
+                update_data = {
+                    'name': tola_user.name,
+                    'organization': org_id,
+                }
+                payload.update(update_data)
+                self._create_or_update('tolauser', params, payload)
+            updated_tola_users.append(str(tola_user.id))
+
+        sys.stdout.write('\n')
+        return updated_tola_users
+
     def save_org(self):
         """
         Update or create each organization in Track
@@ -181,6 +237,14 @@ class Command(BaseCommand):
             result = self.save_org()
             org_ids = ', '.join(result)
             logger.info('The id of updated organizations: {}'.format(org_ids))
+        except Exception as e:
+            logger.error(e)
+
+        sys.stdout.write('INFO: Syncing Tola Users')
+        try:
+            result = self.save_tola_user()
+            tolauser_ids = ', '.join(result)
+            logger.info('The id of updated tola users: {}'.format(tolauser_ids))
         except Exception as e:
             logger.error(e)
 
