@@ -514,7 +514,7 @@ class WorkflowTeamDeleteViewsTest(TestCase):
 
 class WorkflowTeamFilterViewTest(TestCase):
     def setUp(self):
-        self.tola_user = factories.TolaUser()
+        self.tola_user = factories.TolaUser(tola_user_uuid='987654321')
         self.factory = APIRequestFactory()
 
     def test_filter_workflowteam_superuser(self):
@@ -543,3 +543,31 @@ class WorkflowTeamFilterViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['salary'], str(workflowteam1.salary))
+
+    def test_filter_workflowteam_tola_user_uuid(self):
+        self.tola_user.user.is_staff = True
+        self.tola_user.user.is_superuser = True
+        self.tola_user.user.save()
+
+        wkflvl1_1 = factories.WorkflowLevel1(
+            organization=self.tola_user.organization)
+        wfteam1 = factories.WorkflowTeam(workflow_user=self.tola_user,
+                                         workflowlevel1=wkflvl1_1)
+
+        request = self.factory.get(
+            '/api/workflowteam/?workflow_user__tola_user_uuid=%s' %
+            self.tola_user.tola_user_uuid)
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['id'], wfteam1.id)
+
+        request = self.factory.get(
+            '/api/workflowteam/?workflow_user__tola_user_uuid=123456789')
+        request.user = self.tola_user.user
+        view = WorkflowTeamViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
