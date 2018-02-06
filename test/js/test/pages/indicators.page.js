@@ -20,6 +20,7 @@ function clickIndicatorsDropdown() {
 
 function clickIndicatorsLink() {
   browser.$('=Indicators').click();
+  browser.waitForText('h2');
 }
 
 function clickIndicatorTypeDropdown() {
@@ -61,7 +62,6 @@ function getIndicatorsList() {
 }
 
 function getAlertMsg() {
-  //let alertDiv = browser.$('div#alerts>div.alert.alert-danger.dynamic-alert.alert-dismissable');
   let alertDiv = browser.$('div#alerts');
   return alertDiv.$('p').getText();
 }
@@ -148,8 +148,12 @@ function setBaseline(value = false) {
     let baseline = $('input#id_baseline');
     baseline.setValue(value);
   } else {
-      browser.$('#id_baseline_na').click();
+      setBaselineNA();
   }
+}
+
+function setBaselineNA() {
+  browser.$('#id_baseline_na').click()
 }
 
 function setIndicatorName(name) {
@@ -230,6 +234,7 @@ exports.setIndicatorName = setIndicatorName;
 exports.setUnitOfMeasure = setUnitOfMeasure;
 exports.setLoPTarget = setLoPTarget;
 exports.setBaseline = setBaseline;
+exports.setBaselineNA = setBaselineNA;
 exports.setTargetFrequency = setTargetFrequency;
 
 /*

@@ -55,9 +55,8 @@ describe('Indicator Targets', function() {
     });
   }); // end new indicator dialog
 
-  // Test cases from Github #21, #24, #25, #30, #33, #35, #37, #42, #43
+  // Test cases from issues #21, #24, #25, #30, #33, #35, #37, #42, #43
   describe('Targets tab', function() {
-    // div.alerts>div.alert.alert-danger.dyanmic-alert.alert-dismissable>p
     it('should require "Unit of measure"', function() {
       // Set everything but the unit of measure then try to save
       IndPage.clickIndicatorsLink();
@@ -88,7 +87,7 @@ describe('Indicator Targets', function() {
                    'Did not receive expected failure message');
     });
 
-    it('should require Baseline for target unless "Not applicable" checked', function() {
+    it('should require target Baseline if "Not applicable" not checked', function() {
       // Set everything but the baseline value then try to save
       IndPage.clickIndicatorsLink();
       IndPage.clickNewIndicatorButton();
@@ -101,6 +100,24 @@ describe('Indicator Targets', function() {
       assert.equal('Please complete all required fields in the Targets tab.',
                    IndPage.getAlertMsg(),
                    'Did not receive expected failure message');
+    });
+
+    it('should *not* require target Baseline if "Not applicable" *is* checked', function() {
+      // Set everything but the baseline value
+      IndPage.clickIndicatorsLink();
+      IndPage.clickNewIndicatorButton();
+      IndPage.saveNewIndicator();
+      IndPage.setUnitOfMeasure('Bugs fixed');
+      IndPage.setLoPTarget(42);
+      IndPage.setTargetFrequency('Life of Program (LoP) only');
+      //, check "Not applicable" then try to save
+      IndPage.setBaselineNA();
+      browser.debug();
+      IndPage.saveIndicatorChanges();
+      // Should get this success message
+      assert.notEqual('Please complete all required fields in the Targets tab.',
+                       IndPage.getAlertMsg(),
+                       'Received unexpected error message');
     });
 
     it('should require Target frequency', function() {
