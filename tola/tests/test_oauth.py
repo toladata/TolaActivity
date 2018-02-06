@@ -94,7 +94,7 @@ class OAuthTest(TestCase):
         backend = self.BackendTest()
         details = {'email': self.tola_user.user.email}
         result = auth_pipeline.auth_allowed(backend, details, None)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
     def test_auth_allowed_not_in_whitelist(self):
         backend = self.BackendTest()
@@ -115,7 +115,7 @@ class OAuthTest(TestCase):
         backend = self.BackendTest()
         details = {'email': self.tola_user.user.email}
         result = auth_pipeline.auth_allowed(backend, details, None)
-        self.assertTrue(result)
+        self.assertIsNone(result)
 
     def test_auth_allowed_no_email(self):
         backend = self.BackendTest()
