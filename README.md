@@ -180,4 +180,4 @@ The following templates were created to easy the way to create tickets and help 
 
 - Bugs and Issues [[+]](https://github.com/toladata/TolaActivity/issues/new)
 - New features [[+]](https://github.com/toladata/TolaActivity/issues/new?template=new_features.md)
-- Pull requests [[+]](https://github.com/toladata/TolaActivity/compare/master...demo?template=pull_request_template.md)
+- Pull requests [[+]](https://github.com/toladata/TolaActivity/compare/dev-v2?expand=1)
