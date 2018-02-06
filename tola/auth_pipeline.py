@@ -75,4 +75,3 @@ def auth_allowed(backend, details, response, *args, **kwargs):
     if not allowed:
         return render_to_response('unauthorized.html',
                                   context={'STATIC_URL': static_url})
-    return allowed
