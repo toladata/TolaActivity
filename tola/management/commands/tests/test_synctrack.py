@@ -61,7 +61,10 @@ class SyncTrackTest(TestCase):
         mock_requests.post.return_value = Mock(status_code=201,
                                                content='{"id": 1}')
         command = Command()
-        data = command._get_from_track('organization', self.org.name)
+        params = {
+            'organization_uuid': self.org.organization_uuid
+        }
+        data = command._get_from_track('organization', params)
         self.assertEqual(data, {})
 
     @patch('tola.management.commands.synctrack.requests')
@@ -69,7 +72,10 @@ class SyncTrackTest(TestCase):
         mock_requests.get.return_value = Mock(status_code=200,
                                               content='[{"id": 2}]')
         command = Command()
-        data = command._get_from_track('organization', self.org.name)
+        params = {
+            'organization_uuid': self.org.organization_uuid
+        }
+        data = command._get_from_track('organization', params)
         self.assertEqual(data['id'], 2)
 
     @patch('tola.management.commands.synctrack.Command._get_from_track')
@@ -119,7 +125,7 @@ class SyncTrackTest(TestCase):
 
         command = Command()
         result = command.save_wfl2()
-        self.assertIn(self.wfl2.id, result)
+        self.assertIn(str(self.wfl2.id), result)
 
     @patch('tola.management.commands.synctrack.Command._get_from_track')
     @patch('tola.management.commands.synctrack.Command._create_or_update')
@@ -129,7 +135,7 @@ class SyncTrackTest(TestCase):
 
         command = Command()
         result = command.save_wfl1()
-        self.assertIn(self.wfl1.id, result)
+        self.assertIn(str(self.wfl1.id), result)
 
     @patch('tola.management.commands.synctrack.Command._create_or_update')
     def test_save_org(self, mock_create_or_update):
@@ -137,4 +143,4 @@ class SyncTrackTest(TestCase):
 
         command = Command()
         result = command.save_org()
-        self.assertIn(self.org.id, result)
+        self.assertIn(str(self.org.id), result)

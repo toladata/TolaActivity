@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
         return headers
 
-    def _get_from_track(self, section, name):
+    def _get_from_track(self, section, params):
         """
         Get the instance ID from Track based on the name
         :param section:
@@ -43,23 +43,26 @@ class Command(BaseCommand):
         :return: the Track instance id
         """
         headers = self._get_headers()
-        url_subpath = 'api/{}?format=json&name={}'.format(section, name)
+        list_params = ['{}={}'.format(k, v) for k, v in params.iteritems()]
+        query_params = '&'.join(list_params)
+        url_subpath = 'api/{}?format=json&{}'.format(section, query_params)
         url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
         response = requests.get(url, headers=headers, verify=False)
         data = json.loads(response.content)
-        return data[0]
+        if data:
+            return data[0]
 
-    def _create_or_update(self, section, name, payload):
+    def _create_or_update(self, section, params, payload):
         """
         Create or update the instance in Track
         :param section:
-        :param name:
+        :param params:
         :param payload:
         :return: the Track instance id
         """
         instance_id = None
         headers = self._get_headers()
-        data = self._get_from_track(section, name)
+        data = self._get_from_track(section, params)
         if data:
             instance_id = data['id']
 
@@ -93,8 +96,10 @@ class Command(BaseCommand):
         # each level1 send to Track
         for program in programs:
             sys.stdout.write('.')
-            data = self._get_from_track('organization',
-                                        program.organization.name)
+            params = {
+                'organization_uuid': program.organization.organization_uuid
+            }
+            data = self._get_from_track('organization', params)
             org_id = data['id']
 
             # set payload and deliver
@@ -103,10 +108,9 @@ class Command(BaseCommand):
                 'name': program.name,
                 'organization': org_id,
             }
-            wfl1_id = self._create_or_update('workflowlevel1', program.name,
-                                             payload)
+            wfl1_id = self._create_or_update('workflowlevel1', params, payload)
 
-            updated_wfl1s.append(wfl1_id)
+            updated_wfl1s.append(str(wfl1_id))
         sys.stdout.write('\n')
         return updated_wfl1s
 
@@ -118,11 +122,13 @@ class Command(BaseCommand):
         projects = WorkflowLevel2.objects.all()
         updated_wfl2s = []
 
-        # each level1 send to Track
+        # each level2 send to Track
         for project in projects:
             sys.stdout.write('.')
-            data = self._get_from_track('workflowlevel1',
-                                        project.workflowlevel1.name)
+            params = {
+                'level1_uuid': project.workflowlevel1.level1_uuid
+            }
+            data = self._get_from_track('workflowlevel1', params)
             wfl1_id = data['id']
 
             # set payload and deliver
@@ -132,8 +138,8 @@ class Command(BaseCommand):
                 'workflowlevel1': wfl1_id,
             }
 
-            self._create_or_update('workflowlevel2', project.name, payload)
-            updated_wfl2s.append(project.id)
+            self._create_or_update('workflowlevel2', params, payload)
+            updated_wfl2s.append(str(project.id))
         sys.stdout.write('\n')
         return updated_wfl2s
 
@@ -148,7 +154,9 @@ class Command(BaseCommand):
         # each level1 send to Track
         for org in orgs:
             sys.stdout.write('.')
-
+            params = {
+                'organization_uuid': org.organization_uuid
+            }
             # set payload and send to Track
             payload = {
                 'organization_uuid': org.organization_uuid,
@@ -160,8 +168,8 @@ class Command(BaseCommand):
                 'level_3_label': org.level_3_label,
                 'level_4_label': org.level_4_label,
             }
-            org_id = self._create_or_update('organization', org.name, payload)
-            updated_orgs.append(org_id)
+            org_id = self._create_or_update('organization', params, payload)
+            updated_orgs.append(str(org_id))
         sys.stdout.write('\n')
         return updated_orgs
 
