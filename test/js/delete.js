@@ -17,7 +17,7 @@ describe('TolaActivity Program Indicators page', function() {
   });
 
   it('should delete a PI by clicking its Delete button', function() {
-		for (let i = 1; i <= 12; ++i) {
+		for (let i = 1; i <= 5; ++i) {
 		  let indButton = $('div#toplevel_div').$('div.panel-body').$('a.btn.btn-sm.btn-success');
 			indButton.click();
 			browser.pause(msec);
