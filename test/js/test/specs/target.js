@@ -1,4 +1,5 @@
 var assert = require('chai').assert;
+var expect = require('chai').expect;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
 var util = require('../lib/testutil.js');
@@ -35,8 +36,8 @@ describe('Indicator Targets', function() {
     it('should clear form when "Reset" button clicked', function() {
       IndPage.setIndicatorName('Testing the reset button');
       IndPage.setUnitOfMeasure('Clicks');
-      IndPage.setLoPTarget(61);
-      IndPage.setBaseline(62);
+      IndPage.setLoPTarget(38);
+      IndPage.setBaseline(39);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.clickResetButton();
       assert.equal('Temporary', IndPage.getIndicatorName());
@@ -49,8 +50,8 @@ describe('Indicator Targets', function() {
     it('should save data when "Save changes" button clicked', function() {
       IndPage.setIndicatorName('Testing the save changes button');
       IndPage.setUnitOfMeasure('Dashes');
-      IndPage.setLoPTarget(71);
-      IndPage.setBaseline(72);
+      IndPage.setLoPTarget(52);
+      IndPage.setBaseline(53);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
     });
@@ -65,8 +66,8 @@ describe('Indicator Targets', function() {
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
       IndPage.setIndicatorName('Unit of measure test');
-      IndPage.setLoPTarget(11);
-      IndPage.setBaseline(12);
+      IndPage.setLoPTarget(68);
+      IndPage.setBaseline(69);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
       // Should get this error message
@@ -81,7 +82,7 @@ describe('Indicator Targets', function() {
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
       IndPage.setUnitOfMeasure('LoP target test');
-      IndPage.setBaseline(21);
+      IndPage.setBaseline(84);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
       // Should get this error message
@@ -96,7 +97,7 @@ describe('Indicator Targets', function() {
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
       IndPage.setUnitOfMeasure('Baseline value test');
-      IndPage.setLoPTarget(31);
+      IndPage.setLoPTarget(99);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
       // Should get this error message
@@ -111,7 +112,7 @@ describe('Indicator Targets', function() {
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
       IndPage.setUnitOfMeasure('Baseline value not applicable test');
-      IndPage.setLoPTarget(41);
+      IndPage.setLoPTarget(114);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       // check "Not applicable" then try to save
       IndPage.setBaselineNA();
@@ -136,8 +137,8 @@ describe('Indicator Targets', function() {
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
       IndPage.setUnitOfMeasure('Target frequency test');
-      IndPage.setLoPTarget(42);
-      IndPage.setBaseline(43);
+      IndPage.setLoPTarget(139);
+      IndPage.setBaseline(140);
       IndPage.saveIndicatorChanges();
       // Should get this error message
       assert.equal('Please complete all required fields in the Targets tab.',
@@ -148,8 +149,35 @@ describe('Indicator Targets', function() {
     it('should have 8 options on Target frequency selection menu');
 
     describe('"Life of Program (LoP) only" target frequency', function() {
-      it('should permit only numeric values for LoP target');
-      it('should reject non-numeric values for LoP target');
+      it('should permit only numeric values for LoP target', function() {
+        IndPage.clickIndicatorsLink();
+        IndPage.clickNewIndicatorButton();
+        IndPage.saveNewIndicator();
+
+        IndPage.setIndicatorName('LoP only target testing');
+        IndPage.setUnitOfMeasure('Furlongs per fortnight');
+        IndPage.setLoPTarget(158);
+        IndPage.setBaseline(156);
+        IndPage.setTargetFrequency('Life of Program (LoP) only');
+        // This should succeed
+        IndPage.saveIndicatorChanges();
+      });
+
+      it('should reject non-numeric values for LoP target', function() {
+        IndPage.setLoPTarget('"166"');
+        // This should fail
+        IndPage.saveIndicatorChanges();
+        let errorHint = IndPage.getLoPErrorHint();
+        assert(errorHint.includes('Please enter a number larger than zero'),
+               'Did not receive expected failure message');
+        // Make it numeric; this should succeed
+        IndPage.setLoPTarget(173);
+        IndPage.saveIndicatorChanges();
+        assert.equal(173,
+                     IndPage.getLoPTarget(),
+                     'Did not receive expected value from getLoPTarget()');
+      });
+
       // FIXME: Are these 2 test cases still important?
       it('should permit non-numeric values only in legacy data for LoP target');
       it('should require numeric value for LoP target if non-numeric legacy data is modified');

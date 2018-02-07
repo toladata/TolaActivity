@@ -110,6 +110,16 @@ function getBaseline() {
   return val;
 }
 
+/** Get the contents of the error hint for Baseline value conformance
+ * errors
+ * @returns {string} The contents of the hint as a string
+ */
+function getBaselineErrorHint() {
+  let errorBox = browser.$('span#hint_id_baseline_na.help-block');
+  let errorHint = errorBox.getText();
+  return errorHint;
+}
+
 /** Get the current indicator name (from the Performance tab)
  * @returns {string} The current value of the indicator name from the Performance
  * tab of the indicator detail screen
@@ -147,6 +157,15 @@ function getIndicatorsList() {
     indicators.push(listItem.getText());
   }
   return indicators;
+}
+
+/** Get the contens of the error hint for LoP tarbet conformance errors
+ * @returns {string} The contents of the hint as a string
+ */
+function getLoPErrorHint() {
+  let errorBox = browser.$('span#hint_id_lop_target.help-block');
+  let errorHint = errorBox.getText();
+  return errorHint;
 }
 
 /** Get the current LoP target from the the target indicators detail page
@@ -240,6 +259,13 @@ function open(url = parms.baseurl) {
 function pageName() {
   // On this page, the "title" is actually the <h2> caption
   return browser.$('h2').getText();
+}
+
+/** Reload the current page. Just a wrapper around the API call.
+ * @returns Nothing
+ */
+function refresh() {
+  browser.refresh();
 }
 
 /** Click the "Save changes" button on the Indicator edit screen
@@ -365,6 +391,7 @@ exports.getBaseline = getBaseline;
 exports.getIndicatorsList = getIndicatorsList;
 exports.getIndicatorName = getIndicatorName;
 exports.getIndicatorTypeList = getIndicatorTypeList;
+exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
 exports.getProgramsList = getProgramsList;
@@ -373,6 +400,7 @@ exports.getTargetFrequency = getTargetFrequency;
 exports.getUnitOfMeasure = getUnitOfMeasure;
 exports.open = open;
 exports.pageName = pageName;
+exports.refresh = refresh;
 exports.saveIndicatorChanges = saveIndicatorChanges;
 exports.saveNewIndicator = saveNewIndicator;
 exports.selectProgram = selectProgram;
