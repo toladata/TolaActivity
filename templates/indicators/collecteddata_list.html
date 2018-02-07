@@ -134,8 +134,13 @@
                                 "mRender": function ( data, type, row ) {
                                 var javascriptDate = new Date(row.date_collected).toISOString().slice(0, 10);
                                 return "<div class='date'>"+javascriptDate+"<div>";}},
-                        { title: "Targeted", data: "periodic_target"},
-                        { title: "Achieved", data: "achieved"},
+                        { title: "Target", data: "periodic_target",
+                            "mRender": function(data, type, row) {
+                                var target = parseFloat(row.periodic_target).toFixed(2).replace(/[.,]00$/, "");
+                                return target;
+                            }
+                        },
+                        { title: "Actual", data: "achieved"},
                         //{ title: "IDs", data: "id"},
                     ],
                     dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",

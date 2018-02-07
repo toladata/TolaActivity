@@ -44,11 +44,11 @@
                         <td style="display:none;">{{row.IndicatorID}}</td>
                         <td>{{row.INumber|default_if_none:""}}</td>
                         <td>{{row.Indicator}}</td>
-                        <td>{{row.LOP_Target|default_if_none:""}}</td>
-                        <td>{{row.Overall}}</td>
+                        <td>{{row.LOP_Target|floatformat:"-2"|default_if_none:""}}</td>
+                        <td>{{row.Overall|floatformat:"-2"}}</td>
                         <td>{{d.DType}}</td>
                         <td>{{d.Disaggregation}}</td>
-                        <td>{{d.Actuals}}</td>
+                        <td>{{d.Actuals|floatformat:"-2"}}</td>
                     </tr>
                 {% empty %}
                     <tr>
@@ -56,8 +56,8 @@
                         <td style="display:none;">{{row.IndicatorID}}</td>
                         <td>{{row.INumber|default_if_none:""}}</td>
                         <td>{{row.Indicator}}</td>
-                        <td>{{row.LOP_Target|default_if_none:""}}</td>
-                        <td>{{row.Overall|default_if_none:""}}</td>
+                        <td>{{row.LOP_Target|floatformat:"-2"|default_if_none:""}}</td>
+                        <td>{{row.Overall|floatformat:"-2"|default_if_none:""}}</td>
                         <td>No Disaggregation</td>
                         <td></td>
                         <td></td>

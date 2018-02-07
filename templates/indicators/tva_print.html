@@ -58,8 +58,8 @@
                         <!-- <td>{{row.indicator_type.all.0.indicator_type|default_if_none:''}}</td> -->
                         <td>{{row.level.all.0.name}}</td>
                         <!-- <td>{{row.sector.sector}}</td> -->
-                        <td>{{row.lop_target}}</td>
-                        <td>{{row.actuals|default_if_none:''}}</td>
+                        <td>{{row.lop_target|floatformat:"-2"}}</td>
+                        <td>{{row.actuals|floatformat:"-2"|default_if_none:''}}</td>
                     </tr>
                 {% endfor %}
             </table>
