@@ -1,6 +1,6 @@
 // indicators.page.js -- page object for testing the top-level Program
 // Indicators page object model; methods are listed in alphabetical order
-// so please help maintain that order.
+// please help maintain that order.
 var util = require('../lib/testutil.js');
 
 var parms = util.readConfig();
@@ -56,6 +56,14 @@ function clickIndicatorTypeDropdown() {
 function clickNewIndicatorButton() {
   browser.waitForVisible('=New Indicator');
   browser.$('=New Indicator').click();
+}
+
+/** Click a program's Indicators button to toggle the Indicator table
+ * @param {string} programName - The program name whose Indicators button
+ * you want to press
+ * @returns Nothing
+ */
+function clickProgramIndicatorsButton(programName) {
 }
 
 /** Click the Programs dropdown
@@ -132,7 +140,7 @@ function getIndicatorName() {
 }
 
 /** Get a list of the indicator types in the Indicator Type dropdown
- * Returns {Array<string>} returns an array of the text strings making up the
+ * @returns {Array<string>} returns an array of the text strings making up the
  * indicator types dropdown menu
  */
 function getIndicatorTypeList() {
@@ -146,7 +154,7 @@ function getIndicatorTypeList() {
 }
 
 /** Get a list of the indicators in the Indicators dropdown
- * Returns {Array<string>} returns an array of the text strings making up the
+ * @returns {Array<string>} returns an array of the text strings making up the
  * indicators dropdown menu
  */
 function getIndicatorsList() {
@@ -159,7 +167,7 @@ function getIndicatorsList() {
   return indicators;
 }
 
-/** Get the contens of the error hint for LoP tarbet conformance errors
+/** Get the contents of the error hint for LoP tarbet conformance errors
  * @returns {string} The contents of the hint as a string
  */
 function getLoPErrorHint() {
@@ -178,12 +186,18 @@ function getLoPTarget() {
   return val;
 }
 
+/** Get the list of indicators for the specified program
+ * @param {string} programName - the name of the program whose indicators you
+ * want
+ * @returns {Array<string>} - an array of strings containing the indicator names
+ * for the specified program
+ */
 function getProgramIndicators(programName) {
   selectProgram(programName);
 }
 
 /** Get a list of the program names in the Programs dropdown
- * Returns {Array<string>} returns an array of the text strings making up the
+ * @returns {Array<string>} returns an array of the text strings making up the
  * Programs dropdown menu
  */
 function getProgramsList() {
@@ -197,7 +211,7 @@ function getProgramsList() {
 }
 
 /** Get a list of the program names in the main Program table
- * Returns {Array<string>} returns an array of the text strings of the
+ * @returns {Array<string>} returns an array of the text strings of the
  * program names in the programs table
  */
 function getProgramsTable() {
@@ -210,7 +224,7 @@ function getProgramsTable() {
 }
 
 /** Get a list of the indicator buttons in the main programs table
- * Returns {Array<buttons>} returns an array of clickable "buttons",
+ * @returns {Array<buttons>} returns an array of clickable "buttons",
  * which are actually anchor (<a />) elements, from the programs table
  */
 function getProgramIndicatorButtons() {
@@ -223,7 +237,7 @@ function getProgramIndicatorButtons() {
 }
 
 /** Get the currently selected target frequency from the Target Frequency
- *  dropdown
+ * dropdown
  * @returns {string} The currently selected target frequency as a text string
  */
 function getTargetFrequency() {
@@ -320,7 +334,8 @@ function setBaseline(value = false) {
   }
 }
 
-/** Click the "Not applicable" checkbox for baseline target values
+/** Click the "Not applicable" checkbox for baseline targets on the
+ * indicator detail form
  * @returns Nothing
  */
 function setBaselineNA() {
