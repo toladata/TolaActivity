@@ -326,7 +326,7 @@
             ${(indicator.fields.target_frequency != 2) ? `
                 <div class="row">
                     <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top:20px; margin-bottom:30px;">
-                        <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> ${getNewTargetBtnLabel(indicator.fields.target_frequency)}</a>
+                        <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><i class="fas fa-plus"></i> ${getNewTargetBtnLabel(indicator.fields.target_frequency)}</a>
                     </div>
                 </div>`
                 :
@@ -476,7 +476,7 @@
 
     function show_hide_frequency_fields(lock = false) {
         // set the text for the 'create new target' button.
-        var label = '<span class=" glyphicon glyphicon-plus-sign"></span> ' + getNewTargetBtnLabel($("#id_target_frequency").val());
+        var label = '<i class="fas fa-plus"></i> ' + getNewTargetBtnLabel($("#id_target_frequency").val());
         $("#addNewPeriodicTarget").html(label);
         var selected_option = $("#id_target_frequency").find("option:selected").text();
         if ( (lock == true || $('#id_target_frequency').is('[readonly="readonly"]'))
