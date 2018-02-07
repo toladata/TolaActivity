@@ -140,7 +140,12 @@
                                 return target;
                             }
                         },
-                        { title: "Actual", data: "achieved"},
+                        { title: "Actual", data: "achieved",
+                            "mRender": function(data, type, row) {
+                                var actual = parseFloat(row.achieved).toFixed(2).replace(/[.,]00$/, "");
+                                return actual;
+                            }
+                        },
                         //{ title: "IDs", data: "id"},
                     ],
                     dom: "<'row'<'col-sm-2'B><'col-sm-5'l><'col-sm-5'f>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
