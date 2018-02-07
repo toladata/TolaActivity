@@ -18,6 +18,7 @@ describe('Indicator Targets', function() {
   });
 
   describe('Create new indicator dialog', function() {
+    this.timeout(0);
     it('should open new indicator form when button is clicked', function() {
       IndPage.clickNewIndicatorButton();
       assert.equal('Create an Indicator', IndPage.pageName());
@@ -32,10 +33,10 @@ describe('Indicator Targets', function() {
     });
 
     it('should clear form when "Reset" button clicked', function() {
-      IndPage.setIndicatorName('testing LoP only target frequency');
-      IndPage.setUnitOfMeasure('Bugs fixed');
-      IndPage.setLoPTarget(42);
-      IndPage.setBaseline(2);
+      IndPage.setIndicatorName('Testing the reset button');
+      IndPage.setUnitOfMeasure('Clicks');
+      IndPage.setLoPTarget(61);
+      IndPage.setBaseline(62);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.clickResetButton();
       assert.equal('Temporary', IndPage.getIndicatorName());
@@ -46,10 +47,10 @@ describe('Indicator Targets', function() {
     });
 
     it('should save data when "Save changes" button clicked', function() {
-      IndPage.setIndicatorName('testing LoP only target frequency');
-      IndPage.setUnitOfMeasure('Bugs fixed');
-      IndPage.setLoPTarget(42);
-      IndPage.setBaseline(2);
+      IndPage.setIndicatorName('Testing the save changes button');
+      IndPage.setUnitOfMeasure('Dashes');
+      IndPage.setLoPTarget(71);
+      IndPage.setBaseline(72);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
     });
@@ -57,13 +58,15 @@ describe('Indicator Targets', function() {
 
   // Test cases from issues #21, #24, #25, #30, #33, #35, #37, #42, #43
   describe('Targets tab', function() {
+    this.timeout(0);
     it('should require "Unit of measure"', function() {
       // Set everything but the unit of measure then try to save
       IndPage.clickIndicatorsLink();
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
-      IndPage.setLoPTarget(42);
-      IndPage.setBaseline(2);
+      IndPage.setIndicatorName('Unit of measure test');
+      IndPage.setLoPTarget(11);
+      IndPage.setBaseline(12);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
       // Should get this error message
@@ -77,8 +80,8 @@ describe('Indicator Targets', function() {
       IndPage.clickIndicatorsLink();
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
-      IndPage.setUnitOfMeasure('Bugs fixed');
-      IndPage.setBaseline(2);
+      IndPage.setUnitOfMeasure('LoP target test');
+      IndPage.setBaseline(21);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
       // Should get this error message
@@ -92,8 +95,8 @@ describe('Indicator Targets', function() {
       IndPage.clickIndicatorsLink();
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
-      IndPage.setUnitOfMeasure('Bugs fixed');
-      IndPage.setLoPTarget(42);
+      IndPage.setUnitOfMeasure('Baseline value test');
+      IndPage.setLoPTarget(31);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
       // Should get this error message
@@ -107,13 +110,21 @@ describe('Indicator Targets', function() {
       IndPage.clickIndicatorsLink();
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
-      IndPage.setUnitOfMeasure('Bugs fixed');
-      IndPage.setLoPTarget(42);
+      IndPage.setUnitOfMeasure('Baseline value not applicable test');
+      IndPage.setLoPTarget(41);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
-      //, check "Not applicable" then try to save
+      // check "Not applicable" then try to save
       IndPage.setBaselineNA();
       IndPage.saveIndicatorChanges();
       // Should get this success message
+      // FIXME: This test fails because the success message is too fast;
+      //        I don't know how to catch it with WebDriver
+      assert.equal('Success, form data saved.',
+                   IndPage.getAlertMsg(),
+                   'Did not receive expected success message');
+      // Should not get this message
+      // FIXME: I'd rather not use the negative logic; much prefer the
+      //        positive form above if it can be made to work
       assert.notEqual('Please complete all required fields in the Targets tab.',
                        IndPage.getAlertMsg(),
                        'Received unexpected error message');
@@ -124,9 +135,9 @@ describe('Indicator Targets', function() {
       IndPage.clickIndicatorsLink();
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
-      IndPage.setUnitOfMeasure('Bugs fixed');
+      IndPage.setUnitOfMeasure('Target frequency test');
       IndPage.setLoPTarget(42);
-      IndPage.setBaseline(2);
+      IndPage.setBaseline(43);
       IndPage.saveIndicatorChanges();
       // Should get this error message
       assert.equal('Please complete all required fields in the Targets tab.',

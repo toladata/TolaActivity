@@ -1,5 +1,6 @@
 // indicators.page.js -- page object for testing the top-level Program
-// Indicators page
+// Indicators page object model; methods are listed in alphabetical order
+// so please help maintain that order.
 var util = require('../lib/testutil.js');
 
 var parms = util.readConfig();
@@ -37,8 +38,7 @@ function clickIndicatorsDropdown() {
  * @returns Nothing
  */
 function clickIndicatorsLink() {
-  browser.waitForText('h2');
-  browser.$('=Indicators').click();
+  browser.$('ul.nav.navbar-nav').$('=Indicators').click();
 }
 
 /** Click the Indicator Type dropdown
@@ -54,7 +54,7 @@ function clickIndicatorTypeDropdown() {
  * @returns Nothing
  */
 function clickNewIndicatorButton() {
-  browser.waitForVisible('=New Indicator', 1000);
+  browser.waitForVisible('=New Indicator');
   browser.$('=New Indicator').click();
 }
 
@@ -65,6 +65,9 @@ function clickProgramsDropdown() {
   browser.$('#dropdownProgram').click();
 }
 
+/** Clicks the Reset button on the current form
+ * @returns Nothing
+ */
 function clickResetButton() {
   browser.$('input[value="Reset"]').click();
 }
@@ -89,7 +92,8 @@ function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
 }
 
 /** Get the text of the current alert message, if any, and return it as a string
- * @returns {string} The current alert message as string
+ * @returns {string} The current alert message as a string. Fails ugly if the
+ * element isn't found.
  */
 function getAlertMsg() {
   let alertDiv = browser.$('div#alerts');
@@ -155,6 +159,10 @@ function getLoPTarget() {
   return val;
 }
 
+function getProgramIndicators(programName) {
+  selectProgram(programName);
+}
+
 /** Get a list of the program names in the Programs dropdown
  * Returns {Array<string>} - returns an array of the text strings making up the
  * Programs dropdown menu
@@ -182,6 +190,19 @@ function getProgramsTable() {
   return programs;
 }
 
+/** Get a list of the indicator buttons in the main programs table
+ * Returns {Array<buttons>} - returns an array of clickable "buttons",
+ * which are actually anchor (<a />) elements, from the programs table
+ */
+function getProgramIndicatorButtons() {
+  let rows = browser.$('div#toplevel_div').$$('div.panel-body');
+  let buttons = new Array();
+  for (let row of rows) {
+    buttons.push(row.$('a.btn.btn-sm.btn-success'));
+  }
+  return buttons;
+}
+
 /** Get the currently selected target frequency from the Target Frequency
  *  dropdown
  * @returns {string} - The currently selected target frequency as a text string
@@ -203,6 +224,24 @@ function getUnitOfMeasure() {
   return val;
 }
 
+/** Open the specified page in the browser
+ * @param {string} url - The URL to display in the browser; defaults
+ * to the baseurl value from the config file
+ * @returns Nothing
+ */
+function open(url = parms.baseurl) {
+  browser.url(url);
+}
+
+// FIXME: This should be a property
+/** Return the page title
+ * @returns {string} - The title of the current page
+ */
+function pageName() {
+  // On this page, the "title" is actually the <h2> caption
+  return browser.$('h2').getText();
+}
+
 /** Click the "Save changes" button on the Indicator edit screen
  * @returns Nothing
  */
@@ -220,10 +259,28 @@ function saveNewIndicator() {
   saveNew.click();
 }
 
+/** Select the specified program from the Programs dropdown
+ * @param {string} program - The name of the program to select
+ * from the Programs dropdown menu
+ * @returns Nothing
+ */
+function selectProgram(program) {
+  browser.$('#dropdownProgram').click();
+  let items = browser.$('div.btn-group').$('ul.dropdown-menu').$$('li>a');
+  for (let item of items) {
+    let s = item.getText();
+    if(s.includes(program)) {
+      item.click();
+      break;
+    }
+  }
+}
+
 /** Type a baseline value into the baseline text field on the Targets
  * tab unless the "Not applicable" check box has been checked
- * @param {integer|boolean} value - The integral value to be set or
- * "false" to ignore the baseline requirement
+ * @param {integer|boolean} value - The non-negative integer baseline
+ * value. If set to false, ignore the baseline requirement and check
+ * the "Not applicable" check box
  * @returns Nothing
  */
 function setBaseline(value = false) {
@@ -244,8 +301,8 @@ function setBaselineNA() {
   browser.$('#id_baseline_na').click()
 }
 
-/** Type an indicator name into the Name field on the Performance
- * tab of the indicator edit screen
+/** Type the specified indicator name into the Name field on thei
+ * Performance tab of the indicator detail screen
  * @param {string} name - The new name for the indicator
  * @returns Nothing
  */
@@ -293,40 +350,6 @@ function setUnitOfMeasure(unit) {
   bucket.setValue('Buckets');
 }
 
-/** Open the specified page in the browser
- * @param {string} url - The URL to display in the browser; defaults
- * to the baseurl value from the config file
- * @returns Nothing
- */
-function open(url = parms.baseurl) {
-  browser.url(url);
-}
-
-// FIXME: This should be a property
-/** Return the page title
- * @returns {string} - The title of the current page
- */
-function pageName() {
-  // On this page, the "title" is actually the <h2> caption
-  return browser.$('h2').getText();
-}
-
-/** Select the specified program from the Programs dropdown
- * @param {string} program - The name of the program to select
- * from the Programs dropdown menu
- * @returns Nothing
- */
-function selectProgram(program) {
-  browser.$('#dropdownProgram').click();
-  let items = browser.$('div.btn-group').$('ul.dropdown-menu').$$('li>a');
-  for (let item of items) {
-    if (program == item.getText()) {
-      item.click();
-      break;
-    }
-  }
-}
-
 exports.clickIndicatorDataButton = clickIndicatorDataButton;
 exports.clickIndicatorDeleteButton = clickIndicatorDeleteButton;
 exports.clickIndicatorEditButton = clickIndicatorEditButton;
@@ -343,6 +366,7 @@ exports.getIndicatorsList = getIndicatorsList;
 exports.getIndicatorName = getIndicatorName;
 exports.getIndicatorTypeList = getIndicatorTypeList;
 exports.getLoPTarget = getLoPTarget;
+exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
 exports.getProgramsList = getProgramsList;
 exports.getProgramsTable = getProgramsTable;
 exports.getTargetFrequency = getTargetFrequency;
