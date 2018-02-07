@@ -7,21 +7,21 @@ var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /** Click the indicator data button for the specified indicator
- * @param {string} indicatorName - The name of the indicator
+ * @param {string} indicatorName The name of the indicator
  * @returns Nothing
  */
 function clickIndicatorDataButton(indicatorName) {
 }
 
 /** Click the delete button for the specified indicator
- * @param {string} indicatorName - The name of the indicator to delete
+ * @param {string} indicatorName The name of the indicator to delete
  * @returns Nothing
  */
 function clickIndicatorDeleteButton(indicatorName) {
 }
 
 /** Click the indicator data button for the specified indicator
- * @param {string} indicatorName - The name of the indicator to edit
+ * @param {string} indicatorName The name of the indicator to edit
  * @returns Nothing
  */
 function clickIndicatorEditButton(indicatorName) {
@@ -50,7 +50,7 @@ function clickIndicatorTypeDropdown() {
 
 // FIXME: Should this be a per-program method?
 /** Click the New Indicator button for the current program
- * @param {string} - The name of the indicator
+ * @param {string} The name of the indicator
  * @returns Nothing
  */
 function clickNewIndicatorButton() {
@@ -73,11 +73,11 @@ function clickResetButton() {
 }
 
 /** Create a new basic indicator with the specified required values
- * @param {string} name - The new name for the indicator (defaults to "Temporary")
- * @param {string} unit - The unit of measurement for this target
- * @param {integer} lopTarget - The LoP target for this indicator
- * @param {integer|boolean} - Non-zero integer OR false if a baseline is not applicable
- * @param {string} frequency - One of the 8 pre-defined periodic intervals
+ * @param {string} name The new name for the indicator (defaults to "Temporary")
+ * @param {string} unit The unit of measurement for this target
+ * @param {integer} lopTarget The LoP target for this indicator
+ * @param {integer|boolean} Non-zero integer OR false if a baseline is not applicable
+ * @param {string} frequency One of the 8 pre-defined periodic intervals
  * @returns Nothing
  */
 function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
@@ -101,7 +101,7 @@ function getAlertMsg() {
 }
 
 /** Get the current value of the target baseline from the indicators detail screen
- * @returns {integer} - The current value of the Baseline text field
+ * @returns {integer} The current value of the Baseline text field
  */
 function getBaseline() {
   let targetsTab = browser.$('=Targets');
@@ -111,7 +111,7 @@ function getBaseline() {
 }
 
 /** Get the current indicator name (from the Performance tab)
- * @returns {string} - The current value of the indicator name from the Performance
+ * @returns {string} The current value of the indicator name from the Performance
  * tab of the indicator detail screen
  */
 function getIndicatorName() {
@@ -122,7 +122,7 @@ function getIndicatorName() {
 }
 
 /** Get a list of the indicator types in the Indicator Type dropdown
- * Returns {Array<string>} - returns an array of the text strings making up the
+ * Returns {Array<string>} returns an array of the text strings making up the
  * indicator types dropdown menu
  */
 function getIndicatorTypeList() {
@@ -136,7 +136,7 @@ function getIndicatorTypeList() {
 }
 
 /** Get a list of the indicators in the Indicators dropdown
- * Returns {Array<string>} - returns an array of the text strings making up the
+ * Returns {Array<string>} returns an array of the text strings making up the
  * indicators dropdown menu
  */
 function getIndicatorsList() {
@@ -150,7 +150,7 @@ function getIndicatorsList() {
 }
 
 /** Get the current LoP target from the the target indicators detail page
- * @returns {integer} - The current value of the LoP target field
+ * @returns {integer} The current value of the LoP target field
  */
 function getLoPTarget() {
   let targetsTab = browser.$('=Targets');
@@ -164,7 +164,7 @@ function getProgramIndicators(programName) {
 }
 
 /** Get a list of the program names in the Programs dropdown
- * Returns {Array<string>} - returns an array of the text strings making up the
+ * Returns {Array<string>} returns an array of the text strings making up the
  * Programs dropdown menu
  */
 function getProgramsList() {
@@ -178,7 +178,7 @@ function getProgramsList() {
 }
 
 /** Get a list of the program names in the main Program table
- * Returns {Array<string>} - returns an array of the text strings of the
+ * Returns {Array<string>} returns an array of the text strings of the
  * program names in the programs table
  */
 function getProgramsTable() {
@@ -191,7 +191,7 @@ function getProgramsTable() {
 }
 
 /** Get a list of the indicator buttons in the main programs table
- * Returns {Array<buttons>} - returns an array of clickable "buttons",
+ * Returns {Array<buttons>} returns an array of clickable "buttons",
  * which are actually anchor (<a />) elements, from the programs table
  */
 function getProgramIndicatorButtons() {
@@ -205,7 +205,7 @@ function getProgramIndicatorButtons() {
 
 /** Get the currently selected target frequency from the Target Frequency
  *  dropdown
- * @returns {string} - The currently selected target frequency as a text string
+ * @returns {string} The currently selected target frequency as a text string
  */
 function getTargetFrequency() {
   let targetsTab = browser.$('=Targets');
@@ -215,7 +215,7 @@ function getTargetFrequency() {
 }
 
 /** Get the current value of the Unit of measure text field
- * @returns {integer} - The current value as an integer
+ * @returns {integer} The current value as an integer
  */
 function getUnitOfMeasure() {
   let targetsTab = browser.$('=Targets');
@@ -225,7 +225,7 @@ function getUnitOfMeasure() {
 }
 
 /** Open the specified page in the browser
- * @param {string} url - The URL to display in the browser; defaults
+ * @param {string} url The URL to display in the browser; defaults
  * to the baseurl value from the config file
  * @returns Nothing
  */
@@ -235,7 +235,7 @@ function open(url = parms.baseurl) {
 
 // FIXME: This should be a property
 /** Return the page title
- * @returns {string} - The title of the current page
+ * @returns {string} The title of the current page
  */
 function pageName() {
   // On this page, the "title" is actually the <h2> caption
@@ -260,7 +260,7 @@ function saveNewIndicator() {
 }
 
 /** Select the specified program from the Programs dropdown
- * @param {string} program - The name of the program to select
+ * @param {string} program The name of the program to select
  * from the Programs dropdown menu
  * @returns Nothing
  */
@@ -278,7 +278,7 @@ function selectProgram(program) {
 
 /** Type a baseline value into the baseline text field on the Targets
  * tab unless the "Not applicable" check box has been checked
- * @param {integer|boolean} value - The non-negative integer baseline
+ * @param {integer|boolean} value The non-negative integer baseline
  * value. If set to false, ignore the baseline requirement and check
  * the "Not applicable" check box
  * @returns Nothing
@@ -303,7 +303,7 @@ function setBaselineNA() {
 
 /** Type the specified indicator name into the Name field on thei
  * Performance tab of the indicator detail screen
- * @param {string} name - The new name for the indicator
+ * @param {string} name The new name for the indicator
  * @returns Nothing
  */
 function setIndicatorName(name) {
@@ -315,7 +315,7 @@ function setIndicatorName(name) {
 
 /** Type LoP target value name into "Life of Program (LoP) target" text
  * field on the Targets tab of the indicator edit screen
- * @param {string} name - The new name for the indicator
+ * @param {string} name The new name for the indicator
  * @returns Nothing
  */
 function setLoPTarget(value) {
@@ -328,7 +328,7 @@ function setLoPTarget(value) {
 // FIXME: should not be hard-coding the value to select
 /** Select the target frequency from the Target Frequency dropdown on the
  *  the Targets tab of the indicator edit screen
- * @param {string} value - The target frequency to select from the dropdown
+ * @param {string} value The target frequency to select from the dropdown
  * @returns Nothing
  */
 function setTargetFrequency(value) {
@@ -340,7 +340,7 @@ function setTargetFrequency(value) {
 
 /** Type the unit of measure into the Unit of measure text field on
  * the Targets tab of the indicator edit screen
- * @param {string} unit - The new name for the indicator
+ * @param {string} unit The new name for the indicator
  * @returns Nothing
  */
 function setUnitOfMeasure(unit) {
