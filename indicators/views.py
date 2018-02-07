@@ -501,7 +501,7 @@ class IndicatorUpdate(UpdateView):
         if fields_to_watch.intersection(changed_fields):
             update_indicator_row = '1'
         else:
-            update_indicator_row = '0'
+            update_indicator_row = '1'
 
         self.object = form.save()
         #periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
