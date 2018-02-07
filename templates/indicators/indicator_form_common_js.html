@@ -306,7 +306,7 @@
                                 <td class="pt-delete-row" style="border: none;">
                                 </td>
                                 <td align="left" style="padding-left: 0px; border: none; vertical-align: middle;">
-                                    <strong>Life of Program (LOP) target</strong>
+                                    <strong>Life of Program (LoP) target</strong>
                                 </td>
                                 <td align="right" style="vertical-align: middle; border: none;">
                                     <div style="margin: 5px 10px;">
@@ -476,7 +476,8 @@
 
     function show_hide_frequency_fields(lock = false) {
         // set the text for the 'create new target' button.
-        $("#addNewPeriodicTarget").text(getNewTargetBtnLabel($("#id_target_frequency").val()) );
+        var label = '<span class=" glyphicon glyphicon-plus-sign"></span> ' + getNewTargetBtnLabel($("#id_target_frequency").val());
+        $("#addNewPeriodicTarget").html(label);
         var selected_option = $("#id_target_frequency").find("option:selected").text();
         if ( (lock == true || $('#id_target_frequency').is('[readonly="readonly"]'))
                  && selected_option != 'Life of Program (LoP) only') {
