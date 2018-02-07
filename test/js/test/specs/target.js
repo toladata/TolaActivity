@@ -150,71 +150,55 @@ describe('Indicator Targets', function() {
     describe('"Life of Program (LoP) only" target frequency', function() {
       it('should permit only numeric values for LoP target');
       it('should reject non-numeric values for LoP target');
+      // FIXME: Are these 2 test cases still important?
       it('should permit non-numeric values only in legacy data for LoP target');
       it('should require numeric value for LoP target if non-numeric legacy data is modified');
     });
 
     describe('"Midline and endline" target frequency', function() {
-      it('should show Midline and endline targets form after clicking Create targets button');
-      it('should clear Midline and endline targets form after clicking Remove all targets button');
-      it('should show Midline and endline target table');
       it('should require value in Midline target field');
       it('should require value in Endline target field');
-      it('should not permit removing only midline or endline targets');
-      it('should require removing both targets to remove either one');
-      it('should require Midline target if freq is midline and endline');
-      it('should require Endline target if freq is midline and endline');
     });
 
     describe('"Annual" target frequency', function() {
-      it('should require value for Annual target if freq is annual');
+      it('should require date that first target period begins');
+      it('should require the number of target periods to create');
+      it('should require entering targets for each target period')
     });
 
     describe('"Semi-annual" target frequency', function() {
-      it('should require Semi-annual target if freq is semi-annual');
+      it('should require date that first target period begins');
+      it('should require the number of target periods to create');
+      it('should require entering targets for each target period');
     });
 
     describe('"Tri-annual" target frequency', function() {
-      it('should require Tri-annual target if freq is tri-annual');
+      it('should require date that first target period begins');
+      it('should require the number of target periods to create');
+      it('should require entering targets for each target period');
     });
 
     describe('"Quarterly" target frequency', function() {
-      it('should require Quarterly target if freq is quarterly');
+      it('should require date that first target period begins');
+      it('should require the number of target periods to create');
+      it('should require entering targets for each target period');
     });
 
     describe('"Monthly" target frequency', function() {
-      it('should require Monthly target if freq is monthly');
+      it('should require date that first target period begins');
+      it('should require the number of target periods to create');
+      it('should require entering targets for each target period');
     });
 
     describe('"Event" target frequency', function() {
-      it('should require name of first event if Target frequency is Event');
-      it('should require number of events if Target frequency is Event');
-      it('should require at least one event if Target frequency is Event');
-      it('should permit adding up to 12 events if Target frequency is Event');
+      it('should require "First event name"');
+      it('should require "Number of events"');
+      it('should allow only numeric values in "Number of events"');
+      it('should default "Number of events" to 1');
+      it('should limit "Number of events" between 1 and 12 inclusive');
+      // FIXME: The next test fails; I can enter 0 events and save
+      it('should require at least one event');
       it('should inform user that only 12 events can be created at once');
-      it('should create table of event-based targets when Create targets button is clicked');
-      it('should require First event name if freq is Event');
-      it('should require Number of events if freq is Event');
-      it('should require only numeric value for Number of events');
-      it('should default Number of events to 1');
-      it('should limit Number of events between 1 and 12');
     });
-
-    it('should have Create targets button');
-    it('should have Remove all targets button');
-    it('should require target frequency options before enabling Create targets button');
-    it('should enable type-to-search in the Target frequency selection menu');
-    it('should require First target period if using periodic indicators');
-    it('should require Number of target periods if using periodic indicators');
-    it('should require only numeric value for Number of target periods');
-    it('should default Number of target periods to 1');
-    it('should prompt user if any required field is empty');
-    it('should not permit edting saved targets except for LoP');
-    it('should disable Target frequency menu after changes saved');
-    it('should enable only Remove all targets after target saved');
-    it('should not see Target frequency sub-options after target saved');
-    it('should require only numeric values for target values');
-    it('should require all target fields be filled or save nothing');
-    it('should update target sums when targets entered and saved');
   }); // end test cases from GitHub issues
 });
