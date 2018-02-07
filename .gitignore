@@ -27,6 +27,7 @@ errorShots
 *.jar
 config.json
 test/js/node_modules/
+test/js/doc/
 
 #allvritualenv
 venv/
