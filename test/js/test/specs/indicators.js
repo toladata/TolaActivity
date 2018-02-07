@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
 var util = require('../lib/testutil.js');
-    
+
 describe('TolaActivity Program Indicators page', function() {
   // Disable timeouts
   this.timeout(0);
@@ -62,13 +62,12 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicators dropdown', function() {
     it('should be present on page', function() {
-			IndPage.clickIndicatorsDropdown();
+      IndPage.clickIndicatorsDropdown();
     });
 
     it('should have at least one entry', function() {
-			let indList = IndPage.getIndicatorsList();
-			assert(indList.length > 0);
-			console.log(indList.length);
+      let indList = IndPage.getIndicatorsList();
+      assert(indList.length > 0);
     });
 
     it('should be able to select any/all list items');
@@ -76,19 +75,12 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Indicator Type dropdown', function() {
     it('should be present on page', function() {
-			IndPage.clickIndicatorTypeDropdown();
+      IndPage.clickIndicatorTypeDropdown();
     });
 
     it('should have at least one entry', function() {
-      let buttons = $('div.panel').$$('div.btn-group');
-      let indicatorType = buttons[2];
-
-      // have to click to make the menu visible
-      // TODO: Validate the indicator type list as static
-      indicatorType.click();
-      let dropdownList = indicatorType.$('ul.dropdown-menu').$$('li');
-      indicatorType.click();
-      assert(dropdownList.length > 0);
+      let indTypeList = IndPage.getIndicatorTypeList();
+      assert(indTypeList.length > 0);
     });
 
     it('should default to showing all Indicator Types for a program');
@@ -126,6 +118,11 @@ describe('TolaActivity Program Indicators page', function() {
       let buttonCnt = parseInt(button.$('a').getText());
       let link = button.$('a');
       // expand the table
+      // FIXME: This is a horrible hack to accomodate a race.
+      // <div id="ajaxloading" class="modal ajax_loading" style="display: block;"></div>
+      // obscures the button we want to click, but how long varies because Internet.,
+      // so hide the div. :-\
+      browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
       link.click();
       browser.pause(500);
 
@@ -145,24 +142,15 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Program Indicators table', function() {
     it('should view PI by clicking its name in Indicator Name column', function() {
-      let buttons = $('#toplevel_div').$$('div.panel-body');
-      let button = buttons[0];
-      let link = button.$('a');
-      let target = link.getAttribute('data-target');
-      let targetDiv = $('div' + target);
-      link.click();
-      browser.pause(500);
-
-      let table = targetDiv.$('table');
-      let tableRows = table.$$('tbody>tr>td>a.indicator-link');
-      let tableRow = tableRows[0];
-      let rowText = tableRow.getText();
+		  browser.pause(500);
+		  let progTable = IndPage.getProgramsTable();
+			let tableRow = progTable[1];
+			let link = $('='+tableRow);
+			link.click();
       // FIXME: This is a horrible hack to accomodate a race.
       // <div id="ajaxloading" class="modal ajax_loading" style="display: block;"></div>
       // obscures the button we want to click, but how long varies because Internet.,
       // so hide the div. :-\
-      browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
-      tableRow.click();
       browser.waitForVisible('div#indicator_modal_header>h3');
       let dialogText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
       assert.equal(rowText, dialogText, 'indicator name mismatch');
@@ -171,47 +159,14 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should be able to create PI by clicking the New Indicator button', function() {
-      browser.pause(500);
-      let newButtons = $('div#toplevel_div').$('div.panel-heading').$$('h4>span>a');
-      let newButton = newButtons[0];
-      newButton.click();
-      assert.equal('Create an Indicator', $('h2').getText());
-
-      // Go with the defaults
-      let form = $('form');
-      let saveNew = form.$('input.btn.btn-success');
-      saveNew.click();
-      assert.equal('Success, Basic Indicator Created!',
-                   $('div.alert.alert-success').getText());
-
-      // Find the Performance tab
-      let tabs = $$('li.tab-pane>a');
-      let perfTab = tabs[1];
-      let indName = $('input#id_name');
-      assert.equal('Performance', perfTab.getText());
-      perfTab.click();
-      // A name unlikely to clash with real data
-      indName.setValue('===> Delete Me! <===');
-
-      // Find the Targets tab
-      let targetsTab = tabs[2];
-      assert.equal('Targets', targetsTab.getText());
-      targetsTab.click();
-
-      // Add some values
-      let bucket = $('input#id_unit_of_measure');
-      bucket.setValue('Buckets');
-      let lopTarget = $('input#id_lop_target');
-      lopTarget.setValue('10');
-      let baseline = $('input#id_baseline');
-      baseline.setValue('0');
-      let targetFreq = $('select#id_target_frequency');
-      targetFreq.selectByValue(1);
-
-      // Save
-      let saveChanges = $('input.btn.btn-primary');
-      assert.equal('Save changes', saveChanges.getValue());
-      saveChanges.click();
+      IndPage.clickNewIndicatorButton();
+      IndPage.saveNewIndicator();
+      IndPage.setIndicatorName('Bug reduction');
+      IndPage.setUnitOfMeasure('Bugs fixed');
+      IndPage.setLoPTarget(10);
+      IndPage.setBaseline(1);
+      IndPage.setTargetFrequency('Life of Program (LoP) only');
+      IndPage.saveIndicatorChanges();
     });
 
     it('should increase PI count after adding new indicator');

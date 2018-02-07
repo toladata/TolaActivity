@@ -4,7 +4,7 @@ var util = require('../lib/testutil.js');
 
 describe('TolaActivity login screen', function() {
   this.timeout(0);
-    
+
   it('should deny access if username is invalid', function() {
     let parms = util.readConfig();
     // inject bogus username
@@ -14,7 +14,7 @@ describe('TolaActivity login screen', function() {
     LoginPage.setUserName(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
-    
+
     assert(browser.getText('#error').startsWith('Login failed:'));
   });
 });
