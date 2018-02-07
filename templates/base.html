@@ -12,32 +12,40 @@
 
         <title>{% block title %} TolaActivity {% endblock %}</title>
 
-        <link rel="icon" href="{% static 'img/favicon.ico' %}" />
+        <link rel="icon" href="{% static 'img/favicon.ico' %}">
 
         <!-- Datatables css for HTML tables -->
-        <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'css/datatables.min.css' %}" rel="stylesheet" type="text/css">
 
         <!-- Bootstrap -->
-        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
-
-        <!-- JQuery UI CSS -->
-        <link href="{% static 'css/jquery-ui.min.css' %}" rel="stylesheet" type="text/css" />
+        <!-- <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" type="text/css"> -->
 
         <!-- Dynatable -->
         <link rel="stylesheet" href="{% static 'css/select2.min.css' %} ">
+
+        <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous">
 
         <!-- Custom CSS -->
         <link href="{% static 'css/app.css' %}" rel="stylesheet" type="text/css">
 
         <!--- Django Tables2 css -->
-        <link rel="stylesheet" href="{% static 'django_tables2/themes/paleblue/css/screen.css' %}" />
+        <link rel="stylesheet" href="{% static 'django_tables2/themes/paleblue/css/screen.css' %}">
 
         <!-- Hosted Leaflet CSS -->
         <link rel="stylesheet" href="{% static 'css/leaflet.css' %}">
 
+        <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
+
+        <script
+              src="http://code.jquery.com/jquery-3.3.1.min.js"
+              integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+              crossorigin="anonymous"></script>
+
         {% block extra_js_in_header %}
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script type="text/javascript" src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
 
         <!-- App specific Javascript -->
         <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
@@ -251,14 +259,26 @@
             </div>
         </div><!-- .footer collapse -->
 
-        <!-- jQuery UI (necessary for datepicker as well as dataTables library -->
-        <script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
+        <script
+              src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+              integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+              crossorigin="anonymous"></script>
 
-        <!-- data tables jquery javascript library -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+        <script
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+
         <script type="text/javascript" src="{% static 'js/datatables.min.js' %}"></script>
 
         <!-- Bootstrap compiled javascript plugins -->
-        <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+        <!-- <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script> -->
         <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
 
         {% if offline_mode %}
