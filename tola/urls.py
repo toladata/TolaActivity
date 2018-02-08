@@ -8,6 +8,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken import views as auth_views
 from django.contrib.auth import views as authviews
+from django.views.generic import TemplateView
 
 from tola import views as tolaviews
 
@@ -63,6 +64,7 @@ urlpatterns = [ # rest framework
                 url(r'^api/', include(router.urls)),
                 url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
                 url(r'^api-token-auth/', auth_views.obtain_auth_token),
+                url(r'^bootstrap/', TemplateView.as_view(template_name="bootstrap4.html")),
 
                 # index
                 url(r'^$', views.index, name='index'),
@@ -112,6 +114,7 @@ urlpatterns = [ # rest framework
                 url(r'^bookmark_add', BookmarkCreate.as_view(), name='bookmark_add'),
                 url(r'^bookmark_update/(?P<pk>\w+)/$', BookmarkUpdate.as_view(), name='bookmark_update'),
                 url(r'^bookmark_delete/(?P<pk>\w+)/$', BookmarkDelete.as_view(), name='bookmark_delete'),
+
 
                 # Auth backend URL's
                 url('', include('django.contrib.auth.urls', namespace='auth')),

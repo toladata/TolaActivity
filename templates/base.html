@@ -57,7 +57,7 @@
 
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-tola">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark"> <!-- navbar navbar-expand-lg navbar-tola -->
             <div class="container">
                 <a class="navbar-brand" href="{% url 'index' %}">
                     <img style="margin-top: -3px; max-width: 140px;" src="{% static 'img/tola-activity-primary-mark-white.png' %}" />
@@ -130,16 +130,15 @@
                             </li>
                         {% endif %}
                     </ul>
-                    <span class="navbar-text">
-                    <!--     Navbar text wit
+                    <!-- <span class="navbar-text"> Navbar text wit
                     </span>
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav"> <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
                         <li class="nav-item active">
                             <a class="nav-link" href="#">Login</a>
                         </li>
                     </ul> -->
-                    {% if user.is_authenticated  %}
-                        <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+                    <ul class="navbar-nav">
+                        {% if user.is_authenticated  %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarProfileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     {% if "demo" in request.build_absolute_uri %}
@@ -177,9 +176,7 @@
                                      {% endif %}
                                 </div>
                             </li>
-                        </ul>
-                    {% else %}
-                        <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+                        {% else %}
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="nvarbarLoginDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 </a>
@@ -192,8 +189,8 @@
                                     <a class="dropdown-item" id="id_tolaLoginLInk" href="{% url 'login' %}">Login with Tola account</a>
                                 </div>
                             </li>
-                        </ul>
-                    {% endif %}
+                        {% endif %}
+                    </ul>
                 </div><!-- end .collapse navbar-collapse -->
             </div><!-- end .container -->
         </nav>
