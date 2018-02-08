@@ -59,7 +59,7 @@ $ cd test/js
 $ cp config-example.json config.json
 ```
 
-Edit `config.json` and change the `username`, `password`, and `baseurl`
+1. Edit `config.json` and change the `username`, `password`, and `baseurl`
 values to suit your needs. In particular:
 * `username` and `password` correspond to your MercyCorps SSO login
 * `baseurl` points to the home page of the TolaActivity instance you
@@ -81,7 +81,7 @@ $ ./node_modules/.bin/wdio
 ------------------------------------------------------------------
 [chrome #0-0] Session ID: db980c3deae94de17354e7000ee25288
 [chrome #0-0] Spec: /Users/kwall/repos/TolaActivity/test/js/test/specs/dashboard.js
-[chrome #0-0] Running: chrome
+[chrome #0-0] Running: firefox
 [chrome #0-0]
 [chrome #0-0] TolaActivity Dashboard
 [chrome #0-0]   ✓ should require unauthenticated users to login
@@ -94,8 +94,8 @@ $ ./node_modules/.bin/wdio
 Number of specs: 6
 
 
-35 passing (42.80s)
-164 skipped
+47 passing (109.10s)
+114 skipped
 ```
 
 ## Don't want to run everything?
@@ -113,7 +113,6 @@ $ ./node_modules/.bin/wdio --spec invalid
 ```
 
 ## Looking for documentation?
-
 To produce documentation for the test suite, execute the command `make
 doc` at the top of the TolaActivity repo:
 
@@ -130,7 +129,6 @@ Parsing /home/kwall/Work/TolaActivity/test/js/test/pages/indicators.page.js ...
 Parsing /home/kwall/Work/TolaActivity/test/js/test/pages/login.page.js ...
 Generating output files...
 Finished running in 0.15 seconds.
-
 ```
 
 The resulting output is best viewed in your browser. To do so, open 
