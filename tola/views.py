@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView, View
@@ -20,7 +20,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
 
+from social_django.utils import load_strategy
 from chargebee import APIError, InvalidRequestError, Subscription
+
 from tola import DEMO_BRANCH
 from tola.track_sync import register_user
 from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
@@ -129,6 +131,21 @@ class RegisterView(View):
 
     def post(self, request, *args, **kwargs):
         register_form = request.POST.copy()
+
+        # Check if an organization uuid was given and create the user
+        # associate with that organization
+        if 'org' not in register_form:
+            org_name = ''
+            if 'organization_uuid' in request.GET:
+                org_uuid = request.GET.get('organization_uuid', '')
+                org_name = Organization.objects.values_list(
+                    'name', flat=True).get(organization_uuid=org_uuid)
+            elif 'cus_company' in request.GET:
+                org_name = request.GET.get('cus_company', '')
+            register_form.appendlist('org', org_name)
+        partial_token = request.GET.get('partial_token', '')
+
+        # Create the user and tola user django forms for validation
         form_user = NewUserRegistrationForm(register_form)
         form_tolauser = NewTolaUserRegistrationForm(register_form)
 
@@ -147,6 +164,10 @@ class RegisterView(View):
                 request,
                 'Thank you, You have been registered as a new user.',
                 fail_silently=False)
+            if partial_token:
+                strategy = load_strategy()
+                partial = strategy.partial_load(partial_token)
+                return redirect('social:complete', backend=partial.backend)
             return HttpResponseRedirect(reverse('login'))
 
         context = self._get_context_data(request.GET, **{

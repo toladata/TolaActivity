@@ -264,7 +264,7 @@ class RegisterViewGetTest(TestCase):
 class RegisterViewPostTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
-        self.organization = factories.Organization()
+        self.organization = factories.Organization(organization_uuid='12345')
         factories.Group(name=ROLE_VIEW_ONLY)
         logging.disable(logging.ERROR)
 
@@ -329,7 +329,7 @@ class RegisterViewPostTest(TestCase):
         view = views.RegisterView.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse('index'), response.url)
+        self.assertEqual(reverse('login'), response.url)
 
         tolauser = TolaUser.objects.select_related('user').get(
             name='John Lennon')
@@ -360,7 +360,7 @@ class RegisterViewPostTest(TestCase):
         view = views.RegisterView.as_view()
         response = view(request)
         self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse('index'), response.url)
+        self.assertEqual(reverse('login'), response.url)
 
         tolauser = TolaUser.objects.select_related('user').get(
             name='John')
@@ -393,7 +393,7 @@ class RegisterViewPostTest(TestCase):
         response = view(request)
         os.environ['APP_BRANCH'] = ''
         self.assertEqual(response.status_code, 302)
-        self.assertIn(reverse('index'), response.url)
+        self.assertEqual(reverse('login'), response.url)
 
         tolauser = TolaUser.objects.select_related('user').get(
             name='John Lennon')
@@ -406,6 +406,118 @@ class RegisterViewPostTest(TestCase):
         self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
         os.environ['APP_BRANCH'] = ''
+
+    @patch('tola.track_sync.requests')
+    def test_post_success_with_organization_uuid(self, mock_requests):
+        mock_requests.post.return_value = Mock(status_code=201)
+
+        data = {
+            'first_name': 'John',
+            'email': 'johnlennon@test.com',
+            'username': 'ILoveYoko',
+            'password1': '123456',
+            'password2': '123456',
+            'title': TITLE_CHOICES[0][0],
+            'privacy_disclaimer_accepted': 'on',
+        }
+        query_params = '?organization_uuid={}'.format(
+            self.organization.organization_uuid)
+        url = '/accounts/register/{}'.format(query_params)
+        request = self.factory.post(url, data)
+        self._hotfix_django_bug(request)
+        view = views.RegisterView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(reverse('login'), response.url)
+
+        tolauser = TolaUser.objects.select_related('user').get(
+            name='John')
+        user = tolauser.user
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.email, data['email'])
+        self.assertEqual(tolauser.organization, self.organization)
+        self.assertEqual(tolauser.title, data['title'])
+        self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
+
+    @patch('tola.track_sync.requests')
+    def test_post_success_with_cus_company(self, mock_requests):
+        mock_requests.post.return_value = Mock(status_code=201)
+
+        data = {
+            'first_name': 'John',
+            'email': 'johnlennon@test.com',
+            'username': 'ILoveYoko',
+            'password1': '123456',
+            'password2': '123456',
+            'title': TITLE_CHOICES[0][0],
+            'privacy_disclaimer_accepted': 'on',
+        }
+        query_params = '?cus_company={}'.format(self.organization.name)
+        url = '/accounts/register/{}'.format(query_params)
+        request = self.factory.post(url, data)
+        self._hotfix_django_bug(request)
+        view = views.RegisterView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(reverse('login'), response.url)
+
+        tolauser = TolaUser.objects.select_related('user').get(
+            name='John')
+        user = tolauser.user
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.email, data['email'])
+        self.assertEqual(tolauser.organization, self.organization)
+        self.assertEqual(tolauser.title, data['title'])
+        self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
+
+    @patch('tola.track_sync.requests')
+    @patch('tola.views.load_strategy')
+    def test_post_success_with_partial_pipeline(self, mock_load_strategy,
+                                                mock_requests):
+        class PartialTest(object):
+            def __init__(self, backend):
+                self.backend = backend
+
+        class StrategyTest(object):
+            def __init__(self, partial):
+                self.partial = partial
+
+            def partial_load(self, *args):
+                return self.partial
+
+        partial = PartialTest('blablabla')
+        strategy = StrategyTest(partial)
+        mock_load_strategy.return_value = strategy
+        mock_requests.post.return_value = Mock(status_code=201)
+
+        data = {
+            'first_name': 'John',
+            'email': 'johnlennon@test.com',
+            'username': 'ILoveYoko',
+            'password1': '123456',
+            'password2': '123456',
+            'title': TITLE_CHOICES[0][0],
+            'privacy_disclaimer_accepted': 'on',
+        }
+        query_params = '?organization_uuid={}&partial_token=09876'.format(
+            self.organization.organization_uuid)
+        url = '/accounts/register/{}'.format(query_params)
+        request = self.factory.post(url, data)
+        self._hotfix_django_bug(request)
+        view = views.RegisterView.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(reverse('social:complete', args=('blablabla', )),
+                         response.url)
+
+        tolauser = TolaUser.objects.select_related('user').get(
+            name='John')
+        user = tolauser.user
+        self.assertEqual(user.first_name, data['first_name'])
+        self.assertEqual(user.email, data['email'])
+        self.assertEqual(tolauser.organization, self.organization)
+        self.assertEqual(tolauser.title, data['title'])
+        self.assertTrue(User.objects.filter(username='ILoveYoko').exists())
 
 
 class TolaTrackSiloProxyTest(TestCase):
