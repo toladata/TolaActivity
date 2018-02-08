@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.postgres import fields
 from django.contrib.auth.models import User, Group
 from django.contrib.sites.models import Site
 from decimal import Decimal
@@ -123,6 +124,7 @@ class Organization(models.Model):
     edit_date = models.DateTimeField(null=True, blank=True)
     chargebee_subscription_id = models.CharField(blank=True, null=True, max_length=50)
     chargebee_used_seats = models.IntegerField(blank=True, null=True, default=0)
+    oauth_domains = fields.ArrayField(models.CharField("OAuth Domains", max_length=255, null=True, blank=True), null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
