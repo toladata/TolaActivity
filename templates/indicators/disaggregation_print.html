@@ -64,7 +64,7 @@
                         {% ifchanged row.IndicatorID %}
                             <td style="border-bottom:none; padding-top:0px; padding-bottom: 0px;">{{row.IndicatorID}}</td>
                             <td style="border-bottom:none; padding-top:0px; padding-bottom: 0px;">{{row.Indicator}}</td>
-                            <td style="border-bottom:none; padding-top:0px; padding-bottom: 0px;">{{row.Overall}}</td>
+                            <td style="border-bottom:none; padding-top:0px; padding-bottom: 0px;">{{row.Overall|floatformat:"-2"}}</td>
                         {% else %}
                             <td style="border-bottom:none; border-top:none;"></td>
                             <td style="border-bottom:none; border-top:none;"></td>
@@ -77,7 +77,7 @@
                             <td style="border-bottom:none; border-top:none; padding-top:0px; padding-bottom: 0px;"></td>
                         {% endifchanged %}
                         <td style="padding-top:0px; padding-bottom: 0px;">{{d.Disaggregation}}</td>
-                        <td style="padding-top:0px; padding-bottom: 0px;">{{d.Actuals}}</td>
+                        <td style="padding-top:0px; padding-bottom: 0px;">{{d.Actuals|floatformat:"-2"}}</td>
                     </tr>
                 {% endfor %}
             {% endfor %}

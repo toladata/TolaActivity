@@ -11,14 +11,14 @@
     <tr>
         <td>{{ item.date_collected|date:"d-m-Y" }}</td>
         <td>{{ item.evidence }} {{ item.tola_table}}</td>
-        <td>{{ item.targeted }}</td>
-        <td>{{ item.achieved }}</td>
+        <td>{{ item.targeted|floatformat:"-2" }}</td>
+        <td>{{ item.achieved|floatformat:"-2" }}</td>
     </tr>
     {% endfor %}
     <tr>
         <td colspan="6"><span style="float: right;">Sum:</span></td>
-        <td>{{ collected_sum.targeted__sum }}</td>
-        <td>{{ collected_sum.achieved__sum }}</td>
+        <td>{{ collected_sum.targeted__sum|floatformat:"-2" }}</td>
+        <td>{{ collected_sum.achieved__sum|floatformat:"-2" }}</td>
         <td>&nbsp;</td>
     </tr>
 </table>

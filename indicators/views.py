@@ -125,48 +125,39 @@ class IndicatorList(ListView):
 
     def get(self, request, *args, **kwargs):
 
-        countries = getCountry(request.user)
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.all().filter(program__country__in=countries).exclude(collecteddata__isnull=True)
+        # countries = getCountry(request.user)
+        countries = request.user.tola_user.countries.all()
+        getPrograms = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
+        getIndicators = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
-        program = self.kwargs['program']
-        indicator = self.kwargs['indicator']
-        type = self.kwargs['type']
-        indicator_name = ""
-        type_name = ""
-        program_name = ""
 
-        q = {'id__isnull': False}
-        # if we have a program filter active
-        if int(program) != 0:
-            q = {
-                'id': program,
-            }
-            # redress the indicator list based on program
-            getIndicators = Indicator.objects.select_related().filter(program=program)
-            program_name = Program.objects.get(id=program)
-        # if we have an indicator type active
-        if int(type) != 0:
-            r = {
-                'indicator__indicator_type__id': type,
-            }
-            q.update(r)
-            # redress the indicator list based on type
-            getIndicators = Indicator.objects.select_related().filter(indicator_type__id=type)
-            type_name = IndicatorType.objects.get(id=type).indicator_type
-        # if we have an indicator id append it to the query filter
-        if int(indicator) != 0:
-            s = {
-                'indicator': indicator,
-            }
-            q.update(s)
-            indicator_name = Indicator.objects.get(id=indicator)
+        program_id = int(self.kwargs['program'])
+        indicator_id = int(self.kwargs['indicator'])
+        type_id = int(self.kwargs['type'])
 
-        indicators = Program.objects.all().filter(funding_status="Funded", country__in=countries).filter(**q).order_by('name').annotate(indicator_count=Count('indicator'))
-        return render(request, self.template_name, {'getPrograms': getPrograms,'getIndicators':getIndicators,
-                                                    'program_name':program_name, 'indicator_name':indicator_name,
-                                                    'type_name':type_name, 'program':program, 'indicator': indicator, 'type': type,
-                                                    'getProgramsIndicator': indicators, 'getIndicatorTypes': getIndicatorTypes})
+        filters = {'id__isnull': False}
+        if program_id != 0:
+            filters['id'] = program_id
+
+        if type_id != 0:
+            filters['indicator__indicator_type__id'] = type_id
+
+        if indicator_id != 0:
+            filters['indicator'] = indicator_id
+
+        programs = Program.objects.prefetch_related('indicator_set')\
+            .filter(funding_status="Funded", country__in=countries)\
+            .filter(**filters).order_by('name')\
+            .annotate(indicator_count=Count('indicator'))
+
+        return render(request, self.template_name, {
+                        'getPrograms': getPrograms,
+                        'getIndicators':getIndicators,
+                        'getIndicatorTypes': getIndicatorTypes,
+                        'program_id':program_id,
+                        'indicator_id': indicator_id,
+                        'type_id': type_id,
+                        'programs': programs})
 
 
 def import_indicator(service=1,deserialize=True):
@@ -510,7 +501,7 @@ class IndicatorUpdate(UpdateView):
         if fields_to_watch.intersection(changed_fields):
             update_indicator_row = '1'
         else:
-            update_indicator_row = '0'
+            update_indicator_row = '1'
 
         self.object = form.save()
         #periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
@@ -931,7 +922,9 @@ def collected_data_json(AjaxableResponseMixin, indicator, program):
     template_name = 'indicators/collected_data_table.html'
 
     collecteddata = CollectedData.objects\
-        .filter(indicator=indicator).prefetch_related('evidence', 'periodic_target')\
+        .filter(indicator=indicator)\
+        .select_related('indicator')\
+        .prefetch_related('evidence', 'periodic_target', 'disaggregation_value')\
         .order_by('periodic_target__customsort', 'date_collected')
 
     detail_url = ''
@@ -968,7 +961,13 @@ def program_indicators_json(AjaxableResponseMixin, program, indicator, type):
         q['id'] = indicator
 
         #
-    indicators = Indicator.objects.filter(**q).annotate(data_count=Count('collecteddata'), levelmin=Min('level__id')).order_by('levelmin', 'number')
+    indicators = Indicator.objects\
+        .select_related('sector')\
+        .prefetch_related('collecteddata_set', 'indicator_type', 'level', 'periodictarget_set')\
+        .filter(**q)\
+        .annotate(data_count=Count('collecteddata'), levelmin=Min('level__id'))\
+        .order_by('levelmin', 'number')
+
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
 
 
