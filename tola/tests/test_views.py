@@ -154,6 +154,18 @@ class RegisterViewGetTest(TestCase):
         self.assertIn('Humanitec - Privacy Policy', template_content)
         self.assertIn('Privacy disclaimer accepted', template_content)
 
+    def test_get_with_org_organization_uuid(self):
+        org = factories.Organization(organization_uuid='123456')
+
+        query_params = '?organization_uuid={}'.format(org.organization_uuid)
+        request = self.factory.get('/accounts/register/{}'.format(query_params))
+        response = views.RegisterView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        template_content = response.content
+        self.assertIn(('<input type="text" name="org" value="{}" disabled '
+                       'required class="textinput textInput form-control" '
+                       'id="id_org" />').format(org.name), template_content)
+
     def test_get_with_chargebee_active_sub_in_template(self):
         class ExternalResponse:
             def __init__(self, values):
