@@ -5,6 +5,8 @@ html {
     min-height: 100%;
 }
 body {
+    font-family: Arial;
+    font-size:  87.5%;
     /* Margin bottom by footer height */
     height: 100%;
     margin-bottom: 60px;
@@ -28,7 +30,7 @@ body {
     content: none;
   }
 }
-
+/*
 *,
 *:focus,
 *:target,
@@ -45,16 +47,20 @@ button:focus,
   margin-top: 10px;
 }
 
+*/
 .navbar-tola {
   /* TolaActivity Brand Color: */
   background-color: rgb(232, 148, 36);
   border: none;
 }
 
+/*
 .navbar-tola .navbar-nav > li > a {
   color: #fff;
 }
+*/
 
+/*
 .navbar-tola .navbar-nav > li > a:hover,
 .navbar-tola .navbar-nav > li > a:focus,
 .navbar-tola .navbar-nav > li.active > a,
@@ -69,6 +75,8 @@ button:focus,
     clear: both;
     float: none;
 }
+*/
+
 /* - End Bootstrap Overrides */
 
 /* Custom page CSS
