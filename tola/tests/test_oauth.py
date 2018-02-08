@@ -103,8 +103,8 @@ class OAuthTest(TestCase):
         self.site.save()
         response = auth_pipeline.auth_allowed(backend, details, None)
         template_content = response.content
-        self.assertIn("Your organization doesn't appear to have permissions "
-                      "to access the system.", template_content)
+        self.assertIn("You don't appear to have permissions to access "
+                      "the system.", template_content)
         self.assertIn("Please check with your organization to have access.",
                       template_content)
 
@@ -122,7 +122,7 @@ class OAuthTest(TestCase):
         details = {}
         response = auth_pipeline.auth_allowed(backend, details, None)
         template_content = response.content
-        self.assertIn("Your organization doesn't appear to have permissions "
-                      "to access the system.", template_content)
+        self.assertIn("You don't appear to have permissions to access "
+                      "the system.", template_content)
         self.assertIn("Please check with your organization to have access.",
                       template_content)
