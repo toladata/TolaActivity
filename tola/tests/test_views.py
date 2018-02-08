@@ -187,9 +187,9 @@ class RegisterViewGetTest(TestCase):
              'maxlength="254" />'),
             template_content)
         self.assertIn(
-            ('<input type="text" name="org" value="The Beatles" required '
-             'class="textinput textInput form-control" id="id_org" />'),
-            template_content)
+            ('<input type="text" name="org" value="The Beatles" disabled '
+             'required class="textinput textInput form-control" '
+             'id="id_org" />'), template_content)
         org = Organization.objects.get(name='The Beatles')
         self.assertEqual(org.chargebee_subscription_id, '1234567890')
 
