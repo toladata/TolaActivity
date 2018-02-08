@@ -122,9 +122,7 @@ describe('TolaActivity Program Indicators page', function() {
       // Expand the table
       button.click();
       // Get indicator count from table
-      console.log('targetDiv='+targetDiv);
       let table = $('='+targetDiv).$('table');
-      console.log('table='+table);
 /*
       let tableRows = table.$$('tbody>tr>td>a');
       // Divide by 2 because live TR has a blank TR spacer beneath it
