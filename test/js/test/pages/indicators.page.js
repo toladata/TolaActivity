@@ -1,47 +1,53 @@
 // indicators.page.js -- page object for testing the top-level Program
 // Indicators page object model; methods are listed in alphabetical order
-// so please help maintain that order.
+// please help maintain that order.
 var util = require('../lib/testutil.js');
 
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
-/** Click the indicator data button for the specified indicator
+/**
+ * Click the indicator data button for the specified indicator
  * @param {string} indicatorName The name of the indicator
  * @returns Nothing
  */
 function clickIndicatorDataButton(indicatorName) {
 }
 
-/** Click the delete button for the specified indicator
+/**
+ * Click the delete button for the specified indicator
  * @param {string} indicatorName The name of the indicator to delete
  * @returns Nothing
  */
 function clickIndicatorDeleteButton(indicatorName) {
 }
 
-/** Click the indicator data button for the specified indicator
+/**
+ * Click the indicator data button for the specified indicator
  * @param {string} indicatorName The name of the indicator to edit
  * @returns Nothing
  */
 function clickIndicatorEditButton(indicatorName) {
 }
 
-/** Click the Indicators dropdown button
+/**
+ * Click the Indicators dropdown button
  * @returns Nothing
  */
 function clickIndicatorsDropdown() {
   browser.$('#dropdownIndicator').click();
 }
 
-/** Click the Indicators link on the toolbar
+/**
+ * Click the Indicators link on the toolbar
  * @returns Nothing
  */
 function clickIndicatorsLink() {
   browser.$('ul.nav.navbar-nav').$('=Indicators').click();
 }
 
-/** Click the Indicator Type dropdown
+/**
+ * Click the Indicator Type dropdown
  * @returns Nothing
  */
 function clickIndicatorTypeDropdown() {
@@ -49,7 +55,8 @@ function clickIndicatorTypeDropdown() {
 }
 
 // FIXME: Should this be a per-program method?
-/** Click the New Indicator button for the current program
+/**
+ * Click the New Indicator button for the current program
  * @param {string} The name of the indicator
  * @returns Nothing
  */
@@ -58,21 +65,51 @@ function clickNewIndicatorButton() {
   browser.$('=New Indicator').click();
 }
 
-/** Click the Programs dropdown
+/**
+ * Click the indicator name link for the specified indicator
+ * to show its detail/edit screen
+ * @param {string} indicatorName - The name of the indicator whose
+ * detail screen you want to view
+ * @returns Nothing
+ */
+function clickProgramIndicator(indicatorName) {
+  let link = browser.$('=' + indicatorName);
+  link.click();
+}
+
+/**
+ * Click the specified program's Indicators button to toggle the
+ * programs corresponding table of program indicators
+ * @param {string} programName - The program name whose Indicators button
+ * you want to lcik
+ * @returns Nothing
+ */
+function clickProgramIndicatorsButton(programName) {
+  selectProgram(programName);
+  // find indicators button
+  let indicatorButtons = getProgramIndicatorButtons()
+
+  // click it
+}
+
+/**
+ * Click the Programs dropdown
  * @returns Nothing
  */
 function clickProgramsDropdown() {
   browser.$('#dropdownProgram').click();
 }
 
-/** Clicks the Reset button on the current form
+/**
+ * Click the Reset button on the current form
  * @returns Nothing
  */
 function clickResetButton() {
   browser.$('input[value="Reset"]').click();
 }
 
-/** Create a new basic indicator with the specified required values
+/**
+ *  Create a new basic indicator with the specified required values
  * @param {string} name The new name for the indicator (defaults to "Temporary")
  * @param {string} unit The unit of measurement for this target
  * @param {integer} lopTarget The LoP target for this indicator
@@ -91,7 +128,8 @@ function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
   saveIndicatorChanges();
 }
 
-/** Get the text of the current alert message, if any, and return it as a string
+/**
+ *  Get the text of the current alert message, if any, and return it as a string
  * @returns {string} The current alert message as a string. Fails ugly if the
  * element isn't found.
  */
@@ -100,7 +138,8 @@ function getAlertMsg() {
   return alertDiv.$('p').getText();
 }
 
-/** Get the current value of the target baseline from the indicators detail screen
+/**
+ *  Get the current value of the target baseline from the indicators detail screen
  * @returns {integer} The current value of the Baseline text field
  */
 function getBaseline() {
@@ -110,7 +149,19 @@ function getBaseline() {
   return val;
 }
 
-/** Get the current indicator name (from the Performance tab)
+/**
+ *  Get the contents of the error hint for Baseline value conformance
+ * errors
+ * @returns {string} The contents of the hint as a string
+ */
+function getBaselineErrorHint() {
+  let errorBox = browser.$('span#hint_id_baseline_na.help-block');
+  let errorHint = errorBox.getText();
+  return errorHint;
+}
+
+/**
+ *  Get the current indicator name (from the Performance tab)
  * @returns {string} The current value of the indicator name from the Performance
  * tab of the indicator detail screen
  */
@@ -121,8 +172,9 @@ function getIndicatorName() {
   return val;
 }
 
-/** Get a list of the indicator types in the Indicator Type dropdown
- * Returns {Array<string>} returns an array of the text strings making up the
+/**
+ *  Get a list of the indicator types in the Indicator Type dropdown
+ * @returns {Array<string>} returns an array of the text strings making up the
  * indicator types dropdown menu
  */
 function getIndicatorTypeList() {
@@ -135,11 +187,12 @@ function getIndicatorTypeList() {
   return indicatorTypes;
 }
 
-/** Get a list of the indicators in the Indicators dropdown
- * Returns {Array<string>} returns an array of the text strings making up the
+/**
+ *  Get a list of the indicators in the Indicators dropdown
+ * @returns {Array<string>} returns an array of the text strings making up the
  * indicators dropdown menu
  */
-function getIndicatorsList() {
+function getIndicatorsDropdownList() {
   let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownIndicator"]');
   let listItems = list.$$('li>a');
   let indicators = new Array();
@@ -149,7 +202,18 @@ function getIndicatorsList() {
   return indicators;
 }
 
-/** Get the current LoP target from the the target indicators detail page
+/**
+ *  Get the contents of the error hint for LoP tarbet conformance errors
+ * @returns {string} The contents of the hint as a string
+ */
+function getLoPErrorHint() {
+  let errorBox = browser.$('span#hint_id_lop_target.help-block');
+  let errorHint = errorBox.getText();
+  return errorHint;
+}
+
+/**
+ *  Get the current LoP target from the the target indicators detail page
  * @returns {integer} The current value of the LoP target field
  */
 function getLoPTarget() {
@@ -159,12 +223,21 @@ function getLoPTarget() {
   return val;
 }
 
+/**
+ * Get the list of indicators for the specified program
+ * @param {string} programName - the name of the program whose indicators you
+ * want
+ * @returns {Array<string>} - an array of strings containing the indicator names
+ * for the specified program
+ */
 function getProgramIndicators(programName) {
   selectProgram(programName);
+  let indicatorsList = getIndicatorsList();
 }
 
-/** Get a list of the program names in the Programs dropdown
- * Returns {Array<string>} returns an array of the text strings making up the
+/**
+ *  Get a list of the program names in the Programs dropdown
+ * @returns {Array<string>} returns an array of the text strings making up the
  * Programs dropdown menu
  */
 function getProgramsList() {
@@ -177,8 +250,9 @@ function getProgramsList() {
   return programs;
 }
 
-/** Get a list of the program names in the main Program table
- * Returns {Array<string>} returns an array of the text strings of the
+/**
+ *  Get a list of the program names in the main Program table
+ * @returns {Array<string>} returns an array of the text strings of the
  * program names in the programs table
  */
 function getProgramsTable() {
@@ -190,8 +264,9 @@ function getProgramsTable() {
   return programs;
 }
 
-/** Get a list of the indicator buttons in the main programs table
- * Returns {Array<buttons>} returns an array of clickable "buttons",
+/**
+ *  Get a list of the indicator buttons in the main programs table
+ * @returns {Array<buttons>} returns an array of clickable "buttons",
  * which are actually anchor (<a />) elements, from the programs table
  */
 function getProgramIndicatorButtons() {
@@ -203,8 +278,9 @@ function getProgramIndicatorButtons() {
   return buttons;
 }
 
-/** Get the currently selected target frequency from the Target Frequency
- *  dropdown
+/**
+ *  Get the currently selected target frequency from the Target Frequency
+ * dropdown
  * @returns {string} The currently selected target frequency as a text string
  */
 function getTargetFrequency() {
@@ -214,7 +290,8 @@ function getTargetFrequency() {
   return val;
 }
 
-/** Get the current value of the Unit of measure text field
+/**
+ *  Get the current value of the Unit of measure text field
  * @returns {integer} The current value as an integer
  */
 function getUnitOfMeasure() {
@@ -224,7 +301,8 @@ function getUnitOfMeasure() {
   return val;
 }
 
-/** Open the specified page in the browser
+/**
+ *  Open the specified page in the browser
  * @param {string} url The URL to display in the browser; defaults
  * to the baseurl value from the config file
  * @returns Nothing
@@ -234,7 +312,8 @@ function open(url = parms.baseurl) {
 }
 
 // FIXME: This should be a property
-/** Return the page title
+/**
+ *  Return the page title
  * @returns {string} The title of the current page
  */
 function pageName() {
@@ -242,7 +321,16 @@ function pageName() {
   return browser.$('h2').getText();
 }
 
-/** Click the "Save changes" button on the Indicator edit screen
+/**
+ *  Reload the current page. Just a wrapper around the API call.
+ * @returns Nothing
+ */
+function refresh() {
+  browser.refresh();
+}
+
+/**
+ * Click the "Save changes" button on the Indicator edit screen
  * @returns Nothing
  */
 function saveIndicatorChanges() {
@@ -250,7 +338,8 @@ function saveIndicatorChanges() {
   saveChanges.click();
 }
 
-/** Click the "save" button on the new indicator to save a new basic indicator
+/**
+ * Click the "save" button on the new indicator to save a new basic indicator
  * @returns Nothing
  */
 function saveNewIndicator() {
@@ -259,7 +348,8 @@ function saveNewIndicator() {
   saveNew.click();
 }
 
-/** Select the specified program from the Programs dropdown
+/**
+ *  Select the specified program from the Programs dropdown
  * @param {string} program The name of the program to select
  * from the Programs dropdown menu
  * @returns Nothing
@@ -276,7 +366,8 @@ function selectProgram(program) {
   }
 }
 
-/** Type a baseline value into the baseline text field on the Targets
+/**
+ *  Type a baseline value into the baseline text field on the Targets
  * tab unless the "Not applicable" check box has been checked
  * @param {integer|boolean} value The non-negative integer baseline
  * value. If set to false, ignore the baseline requirement and check
@@ -294,14 +385,17 @@ function setBaseline(value = false) {
   }
 }
 
-/** Click the "Not applicable" checkbox for baseline target values
+/**
+ * Click the "Not applicable" checkbox for baseline targets on the
+ * indicator detail form
  * @returns Nothing
  */
 function setBaselineNA() {
   browser.$('#id_baseline_na').click()
 }
 
-/** Type the specified indicator name into the Name field on thei
+/**
+ *  Type the specified indicator name into the Name field on thei
  * Performance tab of the indicator detail screen
  * @param {string} name The new name for the indicator
  * @returns Nothing
@@ -313,7 +407,8 @@ function setIndicatorName(name) {
   indName.setValue(name);
 }
 
-/** Type LoP target value name into "Life of Program (LoP) target" text
+/**
+ *  Type LoP target value name into "Life of Program (LoP) target" text
  * field on the Targets tab of the indicator edit screen
  * @param {string} name The new name for the indicator
  * @returns Nothing
@@ -326,7 +421,8 @@ function setLoPTarget(value) {
 }
 
 // FIXME: should not be hard-coding the value to select
-/** Select the target frequency from the Target Frequency dropdown on the
+/**
+ *  Select the target frequency from the Target Frequency dropdown on the
  *  the Targets tab of the indicator edit screen
  * @param {string} value The target frequency to select from the dropdown
  * @returns Nothing
@@ -338,7 +434,8 @@ function setTargetFrequency(value) {
   targetFreq.selectByValue(1);
 }
 
-/** Type the unit of measure into the Unit of measure text field on
+/**
+ *  Type the unit of measure into the Unit of measure text field on
  * the Targets tab of the indicator edit screen
  * @param {string} unit The new name for the indicator
  * @returns Nothing
@@ -358,13 +455,16 @@ exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
 exports.clickIndicatorsLink = clickIndicatorsLink;
 exports.clickNewIndicatorButton = clickNewIndicatorButton;
 exports.clickProgramsDropdown = clickProgramsDropdown;
+exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
+exports.clickProgramIndicator = clickProgramIndicator;
 exports.clickResetButton = clickResetButton;
 exports.createNewProgramIndicator = createNewProgramIndicator;
 exports.getAlertMsg = getAlertMsg;
 exports.getBaseline = getBaseline;
-exports.getIndicatorsList = getIndicatorsList;
+exports.getIndicatorsDropdownList = getIndicatorsDropdownList;
 exports.getIndicatorName = getIndicatorName;
 exports.getIndicatorTypeList = getIndicatorTypeList;
+exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
 exports.getProgramsList = getProgramsList;
@@ -373,6 +473,7 @@ exports.getTargetFrequency = getTargetFrequency;
 exports.getUnitOfMeasure = getUnitOfMeasure;
 exports.open = open;
 exports.pageName = pageName;
+exports.refresh = refresh;
 exports.saveIndicatorChanges = saveIndicatorChanges;
 exports.saveNewIndicator = saveNewIndicator;
 exports.selectProgram = selectProgram;
@@ -382,8 +483,3 @@ exports.setLoPTarget = setLoPTarget;
 exports.setBaseline = setBaseline;
 exports.setBaselineNA = setBaselineNA;
 exports.setTargetFrequency = setTargetFrequency;
-
-/*
-exports.clickPerformanceTab = clickPerformanceTab;
-exports.clickTargetsTab = clickTargetsTab;
-*/
