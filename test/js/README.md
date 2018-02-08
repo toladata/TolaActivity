@@ -98,7 +98,7 @@ Number of specs: 6
 164 skipped
 ```
 
-### Don't want to run everything?
+## Don't want to run everything?
 1. To run the tests in a single file, specify `--spec path/to/file`.
    For example, to run only the dashboard tests, the command would be
 
@@ -106,7 +106,13 @@ Number of specs: 6
 $ ./node_modules/.bin/wdio --spec test/specs/dashboard.js
 ```
 
-### Looking for documentation?
+1. You can also the the `--spec` argument as a crude regex and spec filenames. For example, to run any test that contains _invalid_ in the filename, this command would do it:
+
+```
+$ ./node_modules/.bin/wdio --spec invalid
+```
+
+## Looking for documentation?
 
 To produce documentation for the test suite, execute the command `make
 doc` at the top of the TolaActivity repo:
@@ -128,12 +134,15 @@ Finished running in 0.15 seconds.
 ```
 
 The resulting output is best viewed in your browser. To do so, open 
-file:///path/to/your/repo/doc/index.html in your web browser.
+file:///path/to/your/repo/doc/index.html in your web browser. It will
+end up looking something like the following image.
+
+![](./tola_test_doc_home.png)
 
 ## Helpful development practices
 
 If you are a developer, this section is for you. It offers some suggestions
-for simple coding conventions that can make the job of testing your GUI code
+for simple coding proactices that can make the job of testing your GUI code
 much, much simpler.
 
 * First and foremost, the single best practice that helps QA testing
@@ -145,12 +154,12 @@ much, much simpler.
   they need. They also make element queries fast, because such lookups
   are Selenium's happy path.
 
-  Semantic markup is arguably more correct, too, but the interest here
-  is to create code and tests that are easy to maintain, not demonstrate
-  adherence to standards. The key point is that using _id_ or _name_
-  reduces Selenium's code fragility several orders of magnitude. The
-  people who come after us will thank us for using this small bit of
-  semantic markup.
+  [Semantic markup](https://en.wikipedia.org/wiki/Semantic_HTML) is
+  arguably more correct, too, but the interest here is to create code
+  and tests that are easy to maintain, not demonstrate adherence to best
+  practices. Rather, the point is that using _id_ or _name_ reduces Selenium's
+  code fragility several orders of magnitude. The people who come after
+  us will thank us for using this small bit of semantic markup.
 
 * Similarly, it is helpful for each page to have its own unique
   title. Again, this makes programmatic access to page elements much
