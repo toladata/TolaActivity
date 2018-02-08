@@ -357,7 +357,7 @@ select.listoption_filters
 from being applied when there is no value */
 .periodic-target .input-value {
   margin: 10px 10px 10px 6px;
-  padding-right: 2px;
+  padding-right: 10px;
   text-align: right;
   width: 150px;
   box-shadow: none;
