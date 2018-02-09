@@ -28,6 +28,7 @@ DEFAULT_WORKFLOW_LEVEL_1S = [  # tuple (id, name)
 DEFAULT_ORG = {
     'id': 1,
     'name': settings.DEFAULT_ORG,
+    'oauth_domains': settings.DEFAULT_OAUTH_DOMAINS.split(',')
 }
 DEFAULT_COUNTRY_CODES = ('DE', 'SY')
 
@@ -138,6 +139,7 @@ class Command(BaseCommand):
                 level_2_label="Project",
                 level_3_label="Activity",
                 level_4_label="Component",
+                oauth_domains=DEFAULT_ORG['oauth_domains'],
             )
 
     def _create_site(self):
