@@ -14,8 +14,8 @@ describe('Deleting a lot of indicators', function() {
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
 
-     IndPage.clickIndicatorsLink();
-     browser.waitForVisible('h2=Program Indicators', 10*msec);
+    IndPage.clickIndicatorsLink();
+    browser.waitForVisible('h2=Program Indicators', 10*msec);
     if (browser.isVisible('div#ajaxloading')) {
       browser.waitForVisible('div#ajaxloading', true);
     }
