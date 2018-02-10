@@ -62,7 +62,7 @@ function clickProgramIndicator(indicatorName) {
  * Click the specified program's Indicators button to toggle the
  * programs corresponding table of program indicators
  * @param {string} programName - The program name whose Indicators button
- * you want to lcik
+ * you want to click
  * @returns Nothing
  */
 function clickProgramIndicatorsButton(programName) {
@@ -162,13 +162,13 @@ function getLoPTarget() {
 }
 
 /**
- * Get a list of the program indicators for the specified program
- * from the program indicators table for that program
- * @param {string} programName The name of the program to query
- * @returns {Array<string>} returns an array of progrom indicator
- * names as text strings
+ * Get a list of the program indicators for the program currently displayed in 
+ * the program indicators table 
+ * @returns {Array<clickable>} returns an array of clickable progrom indicators
+ * based on the "Delete" button
  */
-function getProgramIndicatorsTable(programName) {
+// FIXME: should probably returns linkage to all the buttons and links?
+function getProgramIndicatorsTable() {
   let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
   let dataTarget = link.getAttribute('data-target');
   if (browser.isVisible('div#ajaxloading')) {
@@ -180,19 +180,20 @@ function getProgramIndicatorsTable(programName) {
 }
 
 /**
- * Get the number of program indicators for the specified
- * program from the program indicators table for that program
- * @param {string} programName The name of the program to query
+ * Get the number of program indicators for the program currently
+ * displayed in the progams indicats table
  * @returns {integer} The number of program indicators in the table
+ * based on the "Delete" key
  */
-function getProgramIndicatorsTableCount(programName) {
+// FIXME: should probably returns linkage to all the buttons and links?
+function getProgramIndicatorsTableCount() {
   let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
   let dataTarget = link.getAttribute('data-target');
   if (browser.isVisible('div#ajaxloading')) {
     browser.waitForVisible('div#ajaxloading', 10*msec, true);
   }
   let table = $('div'+dataTarget).$('table');
-  let rows = table.$$('=Edit');
+  let rows = table.$$('=Delete');
   return rows.length;
 }
 
