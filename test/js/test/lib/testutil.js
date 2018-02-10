@@ -1,5 +1,7 @@
-// testutil.js -- Dumping ground for utility methods and objects
-// used in testing that don't fit anywhere else
+/**
+ * Hodgepodge of helper code that doesn't fit elsewhere
+ * @module testutil
+ */
 
 /** Read the configuration file to get user session data (username,
  * password, base URL)

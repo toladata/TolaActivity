@@ -2,6 +2,7 @@ var assert = require('chai').assert;
 var expect = require('chai').expect;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
+var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
 
@@ -91,7 +92,7 @@ describe('TolaActivity Program Indicators page', function() {
 
   // FIXME: Still need to get WebDriver code out of this test
   it('should toggle PIs table by clicking PI Indicators button', function() {
-    let buttons = IndPage.getProgramIndicatorButtons();
+    let buttons = TargetsTab.getProgramIndicatorButtons();
     for (let button of buttons) {
       let targetDiv = 'div' + button.getAttribute('data-target');
       let isVisible = browser.isVisible(targetDiv);
@@ -115,7 +116,7 @@ describe('TolaActivity Program Indicators page', function() {
 
   // FIXME: Still need to get WebDriver code out of this test
   it('should have matching indicator counts on data button and in table', function() {
-    let buttons = IndPage.getProgramIndicatorButtons();
+    let buttons = TargetsTab.getProgramIndicatorButtons();
     for (let button of buttons) {
       let buttonCnt = parseInt(button.getText());
       let targetDiv = button.getAttribute('data-target');
@@ -138,7 +139,7 @@ describe('TolaActivity Program Indicators page', function() {
   describe('Program Indicators table', function() {
     it('should view PI by clicking its name in Indicator Name column', function() {
       // Make list of Indicators buttons
-      let buttons = IndPage.getProgramIndicatorButtons();
+      let buttons = TargetsTab.getProgramIndicatorButtons();
       // Click the first one to expand the table
       let button = buttons[0];
       button.click();
@@ -147,7 +148,7 @@ describe('TolaActivity Program Indicators page', function() {
       let indicatorNameList = IndPage.getIndicatorsDropdownList();
       // Click the first one
       let indicatorName = indicatorNameList[0];
-      IndPage.clickProgramIndicatorsButton(indicatorName);
+      TargetsTab.clickProgramIndicatorsButton(indicatorName);
 
       /*
       let progTable = IndPage.getProgramsTable();
@@ -165,14 +166,14 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should be able to create PI by clicking the New Indicator button', function() {
-      IndPage.clickNewIndicatorButton();
-      IndPage.saveNewIndicator();
-      IndPage.setIndicatorName('New Indicator button test');
-      IndPage.setUnitOfMeasure('Bugs fixed');
-      IndPage.setLoPTarget(172);
-      IndPage.setBaseline(173);
-      IndPage.setTargetFrequency('Life of Program (LoP) only');
-      IndPage.saveIndicatorChanges();
+      TargetsTab.clickNewIndicatorButton();
+      TargetsTab.saveNewIndicator();
+      TargetsTab.setIndicatorName('New Indicator button test');
+      TargetsTab.setUnitOfMeasure('Bugs fixed');
+      TargetsTab.setLoPTarget(172);
+      TargetsTab.setBaseline(173);
+      TargetsTab.setTargetFrequency('Life of Program (LoP) only');
+      TargetsTab.saveIndicatorChanges();
     });
 
     it('should increase PI count after adding new indicator');
