@@ -85,16 +85,7 @@ function clickResetButton() {
  * @param {string} frequency One of the 8 pre-defined periodic intervals
  * @returns Nothing
  */
-function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
-  clickNewIndicatorButton();
-  saveNewIndicator();
-  setIndicatorName(name);
-  setUnitOfMeasure(unit);
-  setLoPTarget(lopTarget);
-  setBaseline(baseline);
-  setTargetFrequency(frequency);
-  saveIndicatorChanges();
-}
+function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {}
 
 /**
  * Get the text of the current alert message, if any, and return it as a string
@@ -158,6 +149,18 @@ function getLoPTarget() {
   let targetsTab = browser.$('=Targets');
   targetsTab.click();
   let val = $('input#id_lop_target').getValue();
+  return val;
+}
+
+/**
+ * Get the current value of the "Number of target periods" field on the
+ * target indicators detail page
+ * @returns {integer} The value of the field, if any
+ */
+function getNumTargetPeriods() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let val = $('input#id_target_frequency_num_periods').getValue();
   return val;
 }
 
@@ -235,6 +238,23 @@ function getTargetFrequency() {
   targetsTab.click();
   let val = $('select#id_target_frequency').getValue();
   return val;
+}
+
+function getTargetFirstPeriodErrorHint() {
+  let errorBox = browser.$('#hint_id_target_frequency_start');
+  let errorHint = errorBox.getText();
+  return errorHint;
+}
+
+/**
+ * Get the current error string, if any, from the target creation
+ * screen on the Targets tab
+ * @returns {string} The error text present, if any
+ */
+function getTargetValueErrorHint() {
+  let errorBox = browser.$('.target-value-error');
+  let errorHint = errorBox.getText();
+  return errorHint;
 }
 
 /**
@@ -316,6 +336,20 @@ function setBaselineNA() {
 }
 
 /**
+ * Set the endline target on the targets detail screen to the 
+ * specifed value
+ * @param {integer} value The value to set
+ * @returns Nothing
+ */
+function setEndlineTarget(value) {
+  if (! browser.isVisible('div>input[name="Endline"]')) {
+    browser.waitForVisible('div>input[name="Endline"]');
+  }
+  let endline = $('div>input[name="Endline"]');
+  endline.setValue(value);
+}
+
+/**
  * Type the specified indicator name into the Name field on thei
  * Performance tab of the indicator detail screen
  * @param {string} name The new name for the indicator
@@ -341,6 +375,12 @@ function setLoPTarget(value) {
   lopTarget.setValue(value);
 }
 
+/**
+ * Set the midline target on the targets detail screen to the 
+ * specifed value
+ * @param {integer} value The value to set
+ * @returns Nothing
+ */
 function setMidlineTarget(value) {
   if (! browser.isVisible('div>input[name="Midline"]')) {
     browser.waitForVisible('div>input[name="Midline"]');
@@ -349,12 +389,10 @@ function setMidlineTarget(value) {
   midline.setValue(value);
 }
 
-function setEndlineTarget(value) {
-  if (! browser.isVisible('div>input[name="Endline"]')) {
-    browser.waitForVisible('div>input[name="Endline"]');
-  }
-  let endline = $('div>input[name="Endline"]');
-  endline.setValue(value);
+function setNumTargetPeriods(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  $('input#id_target_frequency_num_periods').setValue(value);
 }
 
 // FIXME: should not be hard-coding the value to select
@@ -402,11 +440,14 @@ exports.getBaselineErrorHint = getBaselineErrorHint;
 exports.getIndicatorName = getIndicatorName;
 exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
+exports.getNumTargetPeriods = getNumTargetPeriods;
 exports.getProgramIndicatorsTable = getProgramIndicatorsTable;
 exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
 exports.getProgramsTable = getProgramsTable;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
 exports.getTargetFrequency = getTargetFrequency;
+exports.getTargetFirstPeriodErrorHint = getTargetFirstPeriodErrorHint;
+exports.getTargetValueErrorHint = getTargetValueErrorHint;
 exports.getUnitOfMeasure = getUnitOfMeasure;
 exports.open = open;
 exports.pageName = pageName;
@@ -418,5 +459,6 @@ exports.setEndlineTarget = setEndlineTarget;
 exports.setIndicatorName = setIndicatorName;
 exports.setLoPTarget = setLoPTarget;
 exports.setMidlineTarget = setMidlineTarget;
+exports.setNumTargetPeriods = setNumTargetPeriods;
 exports.setTargetFrequency = setTargetFrequency;
 exports.setUnitOfMeasure = setUnitOfMeasure;

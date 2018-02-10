@@ -204,6 +204,8 @@ describe('Indicator Targets', function() {
         // This should fail without midline target
         TargetsTab.setEndlineTarget(202);
         TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getTargetValueErrorHint();
+        assert(errorMessage.includes('Please enter a target value. Your target value can be zero.'));
 
       });
 
@@ -223,36 +225,165 @@ describe('Indicator Targets', function() {
         // This should fail without endline target
         TargetsTab.setMidlineTarget(225);
         TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getTargetValueErrorHint();
+        assert(errorMessage.includes('Please enter a target value. Your target value can be zero.'));
       });
     });
 
     describe('"Annual" target frequency', function() {
-      it('should require date that first target period begins');
-      it('should require the number of target periods to create');
+      it('should require date that first target period begins', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        // This should succeed
+        TargetsTab.setIndicatorName('Annual target first period required testing');
+        TargetsTab.setUnitOfMeasure('Hawks per hectare');
+        TargetsTab.setLoPTarget(242);
+        TargetsTab.setBaseline(242);
+        TargetsTab.setTargetFrequency('Annual');
+
+        // Trying to save without setting the start date should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getTargetFirstPeriodErrorHint();
+        assert(errorMessage.includes('Please complete this field.'));
+      });
+
+      it('should default number of periods to 1', function() {
+        assert.equal(1, TargetsTab.getNumTargetPeriods());
+      });
+
+      it('should create target periods for each period requested', function() {
+        TargetsTab.setNumTargetPeriods(2);
+        TargetsTab.saveIndicatorChanges();
+        assert.equal(2, TargetsTab.getNumTargetPeriods());
+      });
+
       it('should require entering targets for each target period')
     });
 
     describe('"Semi-annual" target frequency', function() {
-      it('should require date that first target period begins');
-      it('should require the number of target periods to create');
+      it('should require date that first target period begins', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        // This should succeed
+        TargetsTab.setIndicatorName('Semi-annual target first period required testing');
+        TargetsTab.setUnitOfMeasure('Hawks per hectare');
+        TargetsTab.setLoPTarget(265);
+        TargetsTab.setBaseline(266);
+        TargetsTab.setTargetFrequency('Semi-annual');
+
+        // Trying to save without setting the start date should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getTargetFirstPeriodErrorHint();
+        assert(errorMessage.includes('Please complete this field.'));
+      });
+
+      it('should default number of periods to 1', function() {
+        assert.equal(1, TargetsTab.getNumTargetPeriods());
+      });
+
+      it('should create target periods for each period requested', function() {
+        TargetsTab.setNumTargetPeriods(2);
+        TargetsTab.saveIndicatorChanges();
+        assert.equal(2, TargetsTab.getNumTargetPeriods());
+      });
       it('should require entering targets for each target period');
+
     });
 
     describe('"Tri-annual" target frequency', function() {
-      it('should require date that first target period begins');
-      it('should require the number of target periods to create');
+      it('should require date that first target period begins', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        // This should succeed
+        TargetsTab.setIndicatorName('Annual target first period required testing');
+        TargetsTab.setUnitOfMeasure('Hawks per hectare');
+        TargetsTab.setLoPTarget(238);
+        TargetsTab.setBaseline(239);
+        TargetsTab.setTargetFrequency('Annual');
+
+        // Trying to save without setting the start date should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getTargetFirstPeriodErrorHint();
+        assert(errorMessage.includes('Please complete this field.'));
+      });
+
+      it('should default number of periods to 1', function() {
+        assert.equal(1, TargetsTab.getNumTargetPeriods());
+      });
+
+      it('should create target periods for each period requested', function() {
+        TargetsTab.setNumTargetPeriods(3);
+        TargetsTab.saveIndicatorChanges();
+        assert.equal(3, TargetsTab.getNumTargetPeriods());
+      });
       it('should require entering targets for each target period');
     });
 
     describe('"Quarterly" target frequency', function() {
-      it('should require date that first target period begins');
-      it('should require the number of target periods to create');
+      it('should require date that first target period begins', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        // This should succeed
+        TargetsTab.setIndicatorName('Annual target first period required testing');
+        TargetsTab.setUnitOfMeasure('Hawks per hectare');
+        TargetsTab.setLoPTarget(238);
+        TargetsTab.setBaseline(239);
+        TargetsTab.setTargetFrequency('Annual');
+
+        // Trying to save without setting the start date should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getTargetFirstPeriodErrorHint();
+        assert(errorMessage.includes('Please complete this field.'));
+      });
+
+      it('should default number of periods to 1', function() {
+        assert.equal(1, TargetsTab.getNumTargetPeriods());
+      });
+
+      it('should create target periods for each period requested', function() {
+        TargetsTab.setNumTargetPeriods(4);
+        TargetsTab.saveIndicatorChanges();
+        assert.equal(4, TargetsTab.getNumTargetPeriods());
+      });
       it('should require entering targets for each target period');
     });
 
     describe('"Monthly" target frequency', function() {
-      it('should require date that first target period begins');
-      it('should require the number of target periods to create');
+      it('should require date that first target period begins', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        // This should succeed
+        TargetsTab.setIndicatorName('Annual target first period required testing');
+        TargetsTab.setUnitOfMeasure('Hawks per hectare');
+        TargetsTab.setLoPTarget(238);
+        TargetsTab.setBaseline(239);
+        TargetsTab.setTargetFrequency('Annual');
+
+        // Trying to save without setting the start date should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getTargetFirstPeriodErrorHint();
+        assert(errorMessage.includes('Please complete this field.'));
+      });
+
+      it('should default number of periods to 1', function() {
+        assert.equal(1, TargetsTab.getNumTargetPeriods());
+      });
+
+      it('should create target periods for each period requested', function() {
+        TargetsTab.setNumTargetPeriods(12);
+        TargetsTab.saveIndicatorChanges();
+        assert.equal(12, TargetsTab.getNumTargetPeriods());
+      });
       it('should require entering targets for each target period');
     });
 
