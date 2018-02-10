@@ -27,14 +27,14 @@ describe('TolaActivity Program Indicators page', function() {
 
     it('should have same number of items as the Programs table', function() {
       IndPage.clickProgramsDropdown();
-      let progList = IndPage.getProgramsList();
+      let progList = IndPage.getProgramsDropdownList();
       let progTable = IndPage.getProgramsTable();
       assert.equal(progList.length, progTable.length, 'row count mismatch');
       IndPage.clickProgramsDropdown();
     });
 
     it('should have same items as Programs table', function() {
-      let progList = IndPage.getProgramsList();
+      let progList = IndPage.getProgramsDropdownList();
       let listItems = new Array();
       for (let prog of progList) {
         let name = prog.split('-')[1].trim();
@@ -49,7 +49,7 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should filter programs table by selected program name', function() {
-      let progList = IndPage.getProgramsList();
+      let progList = IndPage.getProgramsDropdownList();
       let listItem = progList[0];
       IndPage.selectProgram(listItem);
 
@@ -150,11 +150,11 @@ describe('TolaActivity Program Indicators page', function() {
       IndPage.clickProgramIndicatorsButton(indicatorName);
 
       /*
-		  let progTable = IndPage.getProgramsTable();
-			let tableRow = progTable[1];
+      let progTable = IndPage.getProgramsTable();
+      let tableRow = progTable[1];
       let tableRowText = progTable[0].split('\n')[0].trim();
-			let link = $('=' + tableRowText);
-			link.click();
+      let link = $('=' + tableRowText);
+      link.click();
       // FIXME: This is the same horrible hack to accommodate a race.
       browser.waitForVisible('div#indicator_modal_header>h3');
       let dialogText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
@@ -167,10 +167,10 @@ describe('TolaActivity Program Indicators page', function() {
     it('should be able to create PI by clicking the New Indicator button', function() {
       IndPage.clickNewIndicatorButton();
       IndPage.saveNewIndicator();
-      IndPage.setIndicatorName('Bug reduction');
+      IndPage.setIndicatorName('New Indicator button test');
       IndPage.setUnitOfMeasure('Bugs fixed');
-      IndPage.setLoPTarget(10);
-      IndPage.setBaseline(1);
+      IndPage.setLoPTarget(172);
+      IndPage.setBaseline(173);
       IndPage.setTargetFrequency('Life of Program (LoP) only');
       IndPage.saveIndicatorChanges();
     });

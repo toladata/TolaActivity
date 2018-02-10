@@ -1,6 +1,11 @@
-// indicators.page.js -- page object for testing the top-level Program
-// Indicators page object model; methods are listed in alphabetical order
-// please help maintain that order.
+/**
+ * Page model for testing the Program Indicators screen.
+ * @module pages/indicators
+ */
+// Methods are listed in alphabetical order; please help
+// keep them that way. Thanks!
+const msec = 1000;
+
 var util = require('../lib/testutil.js');
 
 var parms = util.readConfig();
@@ -88,7 +93,6 @@ function clickProgramIndicatorsButton(programName) {
   selectProgram(programName);
   // find indicators button
   let indicatorButtons = getProgramIndicatorButtons()
-
   // click it
 }
 
@@ -109,11 +113,11 @@ function clickResetButton() {
 }
 
 /**
- *  Create a new basic indicator with the specified required values
- * @param {string} name The new name for the indicator (defaults to "Temporary")
+ * Create a new basic indicator with the specified required values
+ * @param {string} name The new name for the indicator
  * @param {string} unit The unit of measurement for this target
  * @param {integer} lopTarget The LoP target for this indicator
- * @param {integer|boolean} Non-zero integer OR false if a baseline is not applicable
+ * @param {integer|boolean} Integer > 0 OR false if baseline is not applicable
  * @param {string} frequency One of the 8 pre-defined periodic intervals
  * @returns Nothing
  */
@@ -129,7 +133,7 @@ function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
 }
 
 /**
- *  Get the text of the current alert message, if any, and return it as a string
+ * Get the text of the current alert message, if any, and return it as a string
  * @returns {string} The current alert message as a string. Fails ugly if the
  * element isn't found.
  */
@@ -139,7 +143,7 @@ function getAlertMsg() {
 }
 
 /**
- *  Get the current value of the target baseline from the indicators detail screen
+ * Get the current value of the target baseline from the indicators detail screen
  * @returns {integer} The current value of the Baseline text field
  */
 function getBaseline() {
@@ -150,7 +154,7 @@ function getBaseline() {
 }
 
 /**
- *  Get the contents of the error hint for Baseline value conformance
+ * Get the contents of the error hint for Baseline value conformance
  * errors
  * @returns {string} The contents of the hint as a string
  */
@@ -161,7 +165,7 @@ function getBaselineErrorHint() {
 }
 
 /**
- *  Get the current indicator name (from the Performance tab)
+ * Get the current indicator name (from the Performance tab)
  * @returns {string} The current value of the indicator name from the Performance
  * tab of the indicator detail screen
  */
@@ -173,7 +177,7 @@ function getIndicatorName() {
 }
 
 /**
- *  Get a list of the indicator types in the Indicator Type dropdown
+ * Get a list of the indicator types in the Indicator Type dropdown
  * @returns {Array<string>} returns an array of the text strings making up the
  * indicator types dropdown menu
  */
@@ -188,7 +192,7 @@ function getIndicatorTypeList() {
 }
 
 /**
- *  Get a list of the indicators in the Indicators dropdown
+ * Get a list of the indicators in the Indicators dropdown
  * @returns {Array<string>} returns an array of the text strings making up the
  * indicators dropdown menu
  */
@@ -203,7 +207,7 @@ function getIndicatorsDropdownList() {
 }
 
 /**
- *  Get the contents of the error hint for LoP tarbet conformance errors
+ * Get the contents of the error hint for LoP tarbet conformance errors
  * @returns {string} The contents of the hint as a string
  */
 function getLoPErrorHint() {
@@ -213,7 +217,7 @@ function getLoPErrorHint() {
 }
 
 /**
- *  Get the current LoP target from the the target indicators detail page
+ * Get the current LoP target from the the target indicators detail page
  * @returns {integer} The current value of the LoP target field
  */
 function getLoPTarget() {
@@ -224,23 +228,47 @@ function getLoPTarget() {
 }
 
 /**
- * Get the list of indicators for the specified program
- * @param {string} programName - the name of the program whose indicators you
- * want
- * @returns {Array<string>} - an array of strings containing the indicator names
- * for the specified program
+ * Get a list of the program indicators for the specified program
+ * from the program indicators table for that program
+ * @param {string} programName The name of the program to query
+ * @returns {Array<string>} returns an array of progrom indicator
+ * names as text strings
  */
-function getProgramIndicators(programName) {
-  selectProgram(programName);
-  let indicatorsList = getIndicatorsList();
+function getProgramIndicatorsTable(programName) {
+  let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
+  let dataTarget = link.getAttribute('data-target');
+  if (browser.isVisible('div#ajaxloading')) {
+    browser.waitForVisible('div#ajaxloading', 10*msec, true);
+  }
+  let table = $('div'+dataTarget).$('table');
+  let rows = table.$$('=Delete');
+  return rows;
 }
 
 /**
- *  Get a list of the program names in the Programs dropdown
+ * Get the number of program indicators for the specified
+ * program from the program indicators table for that program
+ * @param {string} programName The name of the program to query
+ * @returns {integer} The number of program indicators in the table
+ */
+function getProgramIndicatorsTableCount(programName) {
+  let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
+  let dataTarget = link.getAttribute('data-target');
+  if (browser.isVisible('div#ajaxloading')) {
+    browser.waitForVisible('div#ajaxloading', 10*msec, true);
+  }
+
+  let table = $('div'+dataTarget).$('table');
+  let rows = table.$$('=Edit');
+  return rows.length;
+}
+
+/**
+ * Get a list of the program names in the Programs dropdown
  * @returns {Array<string>} returns an array of the text strings making up the
  * Programs dropdown menu
  */
-function getProgramsList() {
+function getProgramsDropdownList() {
   let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownProgram"]');
   let listItems = list.$$('li>a');
   let programs = new Array();
@@ -251,7 +279,7 @@ function getProgramsList() {
 }
 
 /**
- *  Get a list of the program names in the main Program table
+ * Get a list of the program names in the main Program table
  * @returns {Array<string>} returns an array of the text strings of the
  * program names in the programs table
  */
@@ -265,7 +293,7 @@ function getProgramsTable() {
 }
 
 /**
- *  Get a list of the indicator buttons in the main programs table
+ * Get a list of the indicator buttons in the main programs table
  * @returns {Array<buttons>} returns an array of clickable "buttons",
  * which are actually anchor (<a />) elements, from the programs table
  */
@@ -279,7 +307,7 @@ function getProgramIndicatorButtons() {
 }
 
 /**
- *  Get the currently selected target frequency from the Target Frequency
+ * Get the currently selected target frequency from the Target Frequency
  * dropdown
  * @returns {string} The currently selected target frequency as a text string
  */
@@ -291,7 +319,7 @@ function getTargetFrequency() {
 }
 
 /**
- *  Get the current value of the Unit of measure text field
+ * Get the current value of the Unit of measure text field
  * @returns {integer} The current value as an integer
  */
 function getUnitOfMeasure() {
@@ -302,7 +330,7 @@ function getUnitOfMeasure() {
 }
 
 /**
- *  Open the specified page in the browser
+ * Open the specified page in the browser
  * @param {string} url The URL to display in the browser; defaults
  * to the baseurl value from the config file
  * @returns Nothing
@@ -313,7 +341,7 @@ function open(url = parms.baseurl) {
 
 // FIXME: This should be a property
 /**
- *  Return the page title
+ * Return the page title
  * @returns {string} The title of the current page
  */
 function pageName() {
@@ -322,7 +350,7 @@ function pageName() {
 }
 
 /**
- *  Reload the current page. Just a wrapper around the API call.
+ * Reload the current page. Just a wrapper around the API call.
  * @returns Nothing
  */
 function refresh() {
@@ -349,7 +377,7 @@ function saveNewIndicator() {
 }
 
 /**
- *  Select the specified program from the Programs dropdown
+ * Select the specified program from the Programs dropdown
  * @param {string} program The name of the program to select
  * from the Programs dropdown menu
  * @returns Nothing
@@ -367,7 +395,7 @@ function selectProgram(program) {
 }
 
 /**
- *  Type a baseline value into the baseline text field on the Targets
+ * Type a baseline value into the baseline text field on the Targets
  * tab unless the "Not applicable" check box has been checked
  * @param {integer|boolean} value The non-negative integer baseline
  * value. If set to false, ignore the baseline requirement and check
@@ -395,7 +423,7 @@ function setBaselineNA() {
 }
 
 /**
- *  Type the specified indicator name into the Name field on thei
+ * Type the specified indicator name into the Name field on thei
  * Performance tab of the indicator detail screen
  * @param {string} name The new name for the indicator
  * @returns Nothing
@@ -408,7 +436,7 @@ function setIndicatorName(name) {
 }
 
 /**
- *  Type LoP target value name into "Life of Program (LoP) target" text
+ * Type LoP target value name into "Life of Program (LoP) target" text
  * field on the Targets tab of the indicator edit screen
  * @param {string} name The new name for the indicator
  * @returns Nothing
@@ -422,8 +450,8 @@ function setLoPTarget(value) {
 
 // FIXME: should not be hard-coding the value to select
 /**
- *  Select the target frequency from the Target Frequency dropdown on the
- *  the Targets tab of the indicator edit screen
+ * Select the target frequency from the Target Frequency dropdown on the
+ * the Targets tab of the indicator edit screen
  * @param {string} value The target frequency to select from the dropdown
  * @returns Nothing
  */
@@ -435,7 +463,7 @@ function setTargetFrequency(value) {
 }
 
 /**
- *  Type the unit of measure into the Unit of measure text field on
+ * Type the unit of measure into the Unit of measure text field on
  * the Targets tab of the indicator edit screen
  * @param {string} unit The new name for the indicator
  * @returns Nothing
@@ -467,7 +495,9 @@ exports.getIndicatorTypeList = getIndicatorTypeList;
 exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
-exports.getProgramsList = getProgramsList;
+exports.getProgramIndicatorsTable = getProgramIndicatorsTable;
+exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
+exports.getProgramsDropdownList = getProgramsDropdownList;
 exports.getProgramsTable = getProgramsTable;
 exports.getTargetFrequency = getTargetFrequency;
 exports.getUnitOfMeasure = getUnitOfMeasure;
