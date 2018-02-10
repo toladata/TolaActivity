@@ -8,6 +8,7 @@ var util = require('../lib/testutil.js');
 describe('Indicator Targets', function() {
   // Disable timeouts
   this.timeout(0);
+  browser.windowHandleMaximize();
 
   describe('Create new indicator dialog', function() {
     it('should require unauthenticated users to login', function() {
@@ -254,12 +255,23 @@ describe('Indicator Targets', function() {
       });
 
       it('should create target periods for each period requested', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        TargetsTab.setIndicatorName('Annual target create target periods testing');
+        TargetsTab.setUnitOfMeasure('Inkblots per Injunction');
+        TargetsTab.setLoPTarget(263);
+        TargetsTab.setBaseline(264);
+        TargetsTab.setTargetFrequency('Annual');
         TargetsTab.setNumTargetPeriods(2);
+
+        // This should succeed
         TargetsTab.saveIndicatorChanges();
         assert.equal(2, TargetsTab.getNumTargetPeriods());
       });
 
-      it('should require entering targets for each target period')
+      it('should require entering targets for each target period');
     });
 
     describe('"Semi-annual" target frequency', function() {
@@ -268,11 +280,10 @@ describe('Indicator Targets', function() {
         TargetsTab.clickNewIndicatorButton();
         TargetsTab.saveNewIndicator();
 
-        // This should succeed
         TargetsTab.setIndicatorName('Semi-annual target first period required testing');
-        TargetsTab.setUnitOfMeasure('Hawks per hectare');
-        TargetsTab.setLoPTarget(265);
-        TargetsTab.setBaseline(266);
+        TargetsTab.setUnitOfMeasure('Krypton per Klingon');
+        TargetsTab.setLoPTarget(284);
+        TargetsTab.setBaseline(285);
         TargetsTab.setTargetFrequency('Semi-annual');
 
         // Trying to save without setting the start date should fail
@@ -286,7 +297,19 @@ describe('Indicator Targets', function() {
       });
 
       it('should create target periods for each period requested', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+
+        // This should succeed
+        TargetsTab.setIndicatorName('Semi-annual target create target periods testing');
+        TargetsTab.setUnitOfMeasure('Llamas per Lane');
+        TargetsTab.setLoPTarget(307);
+        TargetsTab.setBaseline(308);
+        TargetsTab.setTargetFrequency('Semi-annual');
         TargetsTab.setNumTargetPeriods(2);
+
         TargetsTab.saveIndicatorChanges();
         assert.equal(2, TargetsTab.getNumTargetPeriods());
       });
@@ -301,11 +324,11 @@ describe('Indicator Targets', function() {
         TargetsTab.saveNewIndicator();
 
         // This should succeed
-        TargetsTab.setIndicatorName('Annual target first period required testing');
+        TargetsTab.setIndicatorName('Tri-annual target first period required testing');
         TargetsTab.setUnitOfMeasure('Hawks per hectare');
-        TargetsTab.setLoPTarget(238);
-        TargetsTab.setBaseline(239);
-        TargetsTab.setTargetFrequency('Annual');
+        TargetsTab.setLoPTarget(328);
+        TargetsTab.setBaseline(329);
+        TargetsTab.setTargetFrequency('Tri-annual');
 
         // Trying to save without setting the start date should fail
         TargetsTab.saveIndicatorChanges();
@@ -318,6 +341,16 @@ describe('Indicator Targets', function() {
       });
 
       it('should create target periods for each period requested', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        // This should succeed
+        TargetsTab.setIndicatorName('Tri-annual target first period required testing');
+        TargetsTab.setUnitOfMeasure('Hawks per hectare');
+        TargetsTab.setLoPTarget(350);
+        TargetsTab.setBaseline(351);
+        TargetsTab.setTargetFrequency('Tri-annual');
         TargetsTab.setNumTargetPeriods(3);
         TargetsTab.saveIndicatorChanges();
         assert.equal(3, TargetsTab.getNumTargetPeriods());
@@ -332,11 +365,11 @@ describe('Indicator Targets', function() {
         TargetsTab.saveNewIndicator();
 
         // This should succeed
-        TargetsTab.setIndicatorName('Annual target first period required testing');
+        TargetsTab.setIndicatorName('Quarterly target first period required testing');
         TargetsTab.setUnitOfMeasure('Hawks per hectare');
-        TargetsTab.setLoPTarget(238);
-        TargetsTab.setBaseline(239);
-        TargetsTab.setTargetFrequency('Annual');
+        TargetsTab.setLoPTarget(369);
+        TargetsTab.setBaseline(370);
+        TargetsTab.setTargetFrequency('Quarterly');
 
         // Trying to save without setting the start date should fail
         TargetsTab.saveIndicatorChanges();
@@ -349,6 +382,17 @@ describe('Indicator Targets', function() {
       });
 
       it('should create target periods for each period requested', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        // This should succeed
+        TargetsTab.setIndicatorName('Quarterly target create target periods testing');
+        TargetsTab.setUnitOfMeasure('Hawks per hectare');
+        TargetsTab.setLoPTarget(369);
+        TargetsTab.setBaseline(370);
+        TargetsTab.setTargetFrequency('Quarterly');
+
         TargetsTab.setNumTargetPeriods(4);
         TargetsTab.saveIndicatorChanges();
         assert.equal(4, TargetsTab.getNumTargetPeriods());

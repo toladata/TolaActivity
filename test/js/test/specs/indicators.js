@@ -9,6 +9,7 @@ const msec = 1000;
 describe('TolaActivity Program Indicators page', function() {
   // Disable timeouts
   this.timeout(0);
+  browser.windowHandleMaximize();
 
   it('should exist', function() {
     let parms = util.readConfig();

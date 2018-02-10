@@ -16,15 +16,12 @@ update-all:
 	@cd node_modules && npm update --dev --save && cd ..
 
 clean:
-	@rm -fvr doc errorShots node_modules selenium-server.log 
+	@rm -fvr doc errorShots node_modules selenium-server.log
 
 server:
 	@java -jar \
-		-Dwebdriver.chrome.driver=./chromedriver \
+		-Dwebdriver.gecko.driver=./geckodriver \
 		selenium-server-standalone-3.8.1.jar &> server.log &
-
-test:
-	@./node_modules/.bin/wdio wdio.conf.js
 
 doc:
 	@./node_modules/.bin/jsdoc --verbose \
