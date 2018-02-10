@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Using Selenium WebDriver to Test the TolaActivity UI</h1><p>This document describes how to set up your system to test TolaActivity
+front-end code. The tools of choice are:</p>
+<ul>
+<li>Selenium WebDriver for browser automation</li>
+<li>Selenium Server for remote browsers (think Saucelabs, BrowserStack,
+or TestBot)</li>
+<li>WebdriverIO, a test automation framework for NodeJS with support
+for synchronous or asynchronous JavaScript</li>
+<li>MochaJS test framework with assorted plugins, particularly the Chai
+JS assertion library</li>
+<li>Chrome and/or Firefox browsers</li>
+</ul>
+<p>If you're reading this, you've already probably cloned the repo. If you
+haven't, do that, then come back here. Commands listed in this document
+assume you're working from the testing directory, <code>test/js</code> in the
+TolaActivity repo, unless noted otherwise.</p>
+<h2>Install Things</h2><p>First, download and install all the bits you'll need. These include
+NodeJS, Firefox, Chrome, Selenium, Mocha, and Chai. If you are already
+using NPM, you can use it to install mocha and chai, but do not use
+the NPM-packaged Chrome or Firefox webdrivers because they might not
+be current.</p>
+<ol>
+<li>Install the latest versions of the
+<a href="https://www.google.com/chrome/browser">Chrome</a> and
+<a href="https://www.mozilla.org/download">Firefox</a> browsers.</li>
+<li>Download and install Chrome's Selenium browser driver,
+<a href="https://sites.google.com/a/chromium.org/chromedriver">ChromeDriver</a>.
+Place it anywhere in your system $PATH. You may also keep it in
+the testing directory of your local repo because it is gitignored.</li>
+<li>Download and install Firefox's Selenium browser driver,
+<a href="https://github.com/mozilla/geckodriver/releases">geckodriver</a>.
+Place it anywhere in your system $PATH. You can also keep it in
+the testing directory of your local repo because it is gitignored.</li>
+<li>Download <a href="https://goo.gl/hvDPsK">Selenium Server</a> and place it
+the testing directory.</li>
+<li>Install <a href="https://nodjs.org">NodeJS</a> so you can use the
+<a href="https://www.npmjos.com">Node Package Manager</a>, <code>npm</code>,  to install
+other JavaScript packages.</li>
+<li>Finally, use <code>npm</code> to install all of the JavaScript language 
+bindings for Selenium, the Mocha test framework, the Chai plugin for
+Mocha, and WebDriverIO, and all of the other assorted dependencies
+bits:</li>
+</ol>
+<pre class="prettyprint source"><code>$ npm install 
+[...]</code></pre><h2>Validate the Installation</h2><ol>
+<li>Make a copy the config-example.json file in the testing directory
+of the TolaActivity repo:</li>
+</ol>
+<pre class="prettyprint source"><code>$ cd test/js
+$ cp config-example.json config.json</code></pre><ol>
+<li>Edit <code>config.json</code> and change the <code>username</code>, <code>password</code>, and <code>baseurl</code>
+values to suit your needs. In particular:</li>
+<li><code>username</code> and <code>password</code> correspond to your MercyCorps SSO login</li>
+<li><p><code>baseurl</code> points to the home page of the TolaActivity instance you
+are testing</p>
+</li>
+<li><p>Start the Seleniuim server:</p>
+</li>
+</ol>
+<pre class="prettyprint source"><code>$ cd test/js
+$ java -jar -Dwebdriver.firefox.driver=./geckodriver selenium-server-standalone-3.8.1.jar &> selenium-server.log &</code></pre><ol>
+<li>Execute the test suite:</li>
+</ol>
+<pre class="prettyprint source"><code>$ cd test/js
+$ ./node_modules/.bin/wdio
+
+------------------------------------------------------------------
+[chrome #0-0] Session ID: db980c3deae94de17354e7000ee25288
+[chrome #0-0] Spec: /Users/kwall/repos/TolaActivity/test/js/test/specs/dashboard.js
+[chrome #0-0] Running: firefox
+[chrome #0-0]
+[chrome #0-0] TolaActivity Dashboard
+[chrome #0-0]   ✓ should require unauthenticated users to login
+[chrome #0-0]   ✓ should have a page header
+[chrome #0-0]   ✓ should have a TolaActivity link
+
+    [...output deleted...]
+
+==================================================================
+Number of specs: 6
+
+
+47 passing (109.10s)
+114 skipped</code></pre><h2>Don't want to run everything?</h2><ol>
+<li>To run the tests in a single file, specify <code>--spec path/to/file</code>.
+For example, to run only the dashboard tests, the command would be</li>
+</ol>
+<pre class="prettyprint source"><code>$ ./node_modules/.bin/wdio --spec test/specs/dashboard.js</code></pre><ol>
+<li>You can also the the <code>--spec</code> argument as a crude regex and spec filenames. For example, to run any test that contains <em>invalid</em> in the filename, this command would do it:</li>
+</ol>
+<pre class="prettyprint source"><code>$ ./node_modules/.bin/wdio --spec invalid</code></pre><h2>Looking for documentation?</h2><p>To produce documentation for the test suite, execute the command <code>make
+doc</code> at the top of the TolaActivity repo:</p>
+<pre class="prettyprint source"><code>$ make doc
+./node_modules/.bin/jsdoc --verbose \
+  --package package.json \
+  --recurse \
+  --destination doc \
+  --readme README.md \
+  test/lib test/pages -R README.md
+Parsing /home/kwall/Work/TolaActivity/test/js/test/lib/testutil.js ...
+Parsing /home/kwall/Work/TolaActivity/test/js/test/pages/indicators.page.js ...
+Parsing /home/kwall/Work/TolaActivity/test/js/test/pages/login.page.js ...
+Generating output files...
+Finished running in 0.15 seconds.</code></pre><p>The resulting output is best viewed in your browser. To do so, open 
+file:///path/to/your/repo/doc/index.html in your web browser. It will
+end up looking something like the following image.</p>
+<p><img src="./tola_test_doc_home.png" alt=""></p>
+<h2>Helpful development practices</h2><p>If you are a developer, this section is for you. It offers some suggestions
+for simple coding proactices that can make the job of testing your GUI code
+much, much simpler.</p>
+<ul>
+<li><p>First and foremost, the single best practice that helps QA testing
+the most is to <strong>use either the <em>id</em> or <em>name</em> attribute on all UI
+elements which require, which <em>might</em> require, or which you are
+even <em>thinking</em> about requiring for user interaction.</strong> These attributes
+make it easier to write tests quickly because they have to be unique
+per-page, so tests can rely on being able to access the page elements
+they need. They also make element queries fast, because such lookups
+are Selenium's happy path.</p>
+<p><a href="https://en.wikipedia.org/wiki/Semantic_HTML">Semantic markup</a> is
+arguably more correct, too, but the interest here is to create code
+and tests that are easy to maintain, not demonstrate adherence to best
+practices. Rather, the point is that using <em>id</em> or <em>name</em> reduces Selenium's
+code fragility several orders of magnitude. The people who come after
+us will thank us for using this small bit of semantic markup.</p>
+</li>
+<li><p>Similarly, it is helpful for each page to have its own unique
+title. Again, this makes programmatic access to page elements much
+less complicated and reduces verifying that we've loaded the right
+page to a single short, fast expression. This is less impactful
+than using <em>id</em> or <em>name</em> attributes consistently, so if you can
+only do one of these, use <em>id</em> or <em>name</em> attributes consistently.</p>
+</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-indicators.html">indicators</a></li><li><a href="module-login.html">login</a></li><li><a href="module-targets.html">targets</a></li><li><a href="module-testutil.html">testutil</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Feb 10 2018 04:04:53 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
