@@ -4,6 +4,7 @@ var util = require('../lib/testutil.js');
 
 describe('TolaActivity Login screen', function() {
   this.timeout(0);
+  browser.windowHandleMaximize();
 
   it('should require unauthenticated user to authenticate', function() {
     let parms = util.readConfig();

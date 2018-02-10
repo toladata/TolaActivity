@@ -92,6 +92,7 @@ function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
  * @returns {string} The current alert message as a string. Fails ugly if the
  * element isn't found.
  */
+// FIXME: broken -- doesn't find the <p> tag in the alert div
 function getAlertMsg() {
   let alertDiv = browser.$('div#alerts');
   return alertDiv.$('p').getText();
@@ -356,6 +357,9 @@ function setEndlineTarget(value) {
  * @returns Nothing
  */
 function setIndicatorName(name) {
+  if (! browser.isVisible('=Performance')) {
+    browser.waitForVisible('=Performance');
+  }
   let perfTab = browser.$('=Performance');
   perfTab.click();
   let indName = $('input#id_name');

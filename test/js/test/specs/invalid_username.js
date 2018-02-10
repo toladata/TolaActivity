@@ -4,6 +4,7 @@ var util = require('../lib/testutil.js');
 
 describe('TolaActivity login screen', function() {
   this.timeout(0);
+  browser.windowHandleMaximize();
 
   it('should deny access if username is invalid', function() {
     let parms = util.readConfig();
