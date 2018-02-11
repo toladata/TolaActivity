@@ -6,7 +6,7 @@ from django.forms import HiddenInput
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
-from .models import WorkflowLevel1, WorkflowLevel2, WorkflowLevel3, SiteProfile, Documentation, Budget, ApprovalWorkflow, \
+from .models import WorkflowLevel1, WorkflowLevel2, SiteProfile, Documentation, Budget, ApprovalWorkflow, \
     Office, ChecklistItem, AdminLevelOne, Stakeholder, TolaUser, Contact, Sector
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -245,7 +245,7 @@ class WorkflowLevel2Form(forms.ModelForm):
                     Fieldset(
                         'Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
-                        PrependedText('on_time', ''), 'no_explanation',
+                        'no_explanation',
 
                         ),
 
@@ -265,51 +265,6 @@ class WorkflowLevel2Form(forms.ModelForm):
                     ),
                 ),
 
-
-                Tab('Components',
-                    Fieldset("Project Components",
-                        HTML("""
-
-                            <div class='panel panel-default'>
-                              <!-- Default panel contents -->
-                              <div class='panel-heading'>Components</div>
-                              {% if getBenchmark %}
-                                  <!-- Table -->
-                                  <table class="table">
-                                    <tr>
-                                    <th>Description</th>
-                                    <th>Site</th>
-                                    <th>Est. Start Date</th>
-                                    <th>Est. End Date</th>
-                                    <th>Actual Start Date</th>
-                                    <th>Actual End Date</th>
-                                    <th>Budget</th>
-                                    <th>Actual Cost</th>
-                                    <th>View</th>
-                                    </tr>
-                                    {% for item in getBenchmark %}
-                                    <tr>
-                                        <td>{{ item.description}}</td>
-                                        <td>{{ item.site }}</td>
-                                        <td>{{ item.est_start_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.est_end_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.actual_start_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.actual_end_date|date:"m-d-Y"}}</td>
-                                        <td>{{ item.budget}}</td>
-                                        <td>{{ item.cost}}</td>
-                                        <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/workflow/benchmark_complete_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/workflow/benchmark_complete_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
-                                    </tr>
-                                    {% endfor %}
-                                  </table>
-                              {% endif %}
-                              <div class="panel-footer">
-                                <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ pk }}/?is_it_project_complete_form=true">Add Component</a>
-                              </div>
-                            </div>
-
-                            """),
-                        ),
-                    ),
                 Tab('Budget',
                     Fieldset(
                         '',
@@ -520,48 +475,7 @@ class WorkflowLevel2SimpleForm(forms.ModelForm):
                     ),
                     Fieldset('Dates',
                         'expected_start_date','expected_end_date', 'actual_start_date', 'actual_end_date',
-                        PrependedText('on_time', ''), 'no_explanation',
-                    ),
-                ),
-                Tab('Components',
-                    Fieldset("Project Components",
-                        HTML("""
-                            <div class='panel panel-default'>
-                                <!-- Default panel contents -->
-                                <div class='panel-heading'>Components</div>
-                                {% if getBenchmark %}
-                                    <table class="table">
-                                        <tr>
-                                            <th>Description</th>
-                                            <th>Site</th>
-                                            <th>Est. Start Date</th>
-                                            <th>Est. End Date</th>
-                                            <th>Actual Start Date</th>
-                                            <th>Actual End Date</th>
-                                            <th>Budget</th>
-                                            <th>Actual Cost</th>
-                                            <th>View</th>
-                                        </tr>
-                                        {% for item in getBenchmark %}
-                                            <tr>
-                                                <td>{{ item.description}}</td>
-                                                <td>{{ item.site }}</td>
-                                                <td>{{ item.est_start_date|date:"m-d-Y"}}</td>
-                                                <td>{{ item.est_end_date|date:"m-d-Y"}}</td>
-                                                <td>{{ item.actual_start_date|date:"m-d-Y"}}</td>
-                                                <td>{{ item.actual_end_date|date:"m-d-Y"}}</td>
-                                                <td>{{ item.budget}}</td>
-                                                <td>{{ item.cost}}</td>
-                                                <td><a class="benchmarks" data-toggle="modal" data-target="#myModal" href='/workflow/benchmark_complete_update/{{ item.id }}/'>Edit</a> | <a class="benchmarks" href='/workflow/benchmark_complete_delete/{{ item.id }}/' data-toggle="modal" data-target="#myModal">Delete</a></td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                {% endif %}
-                                <div class="panel-footer">
-                                    <a class="benchmarks" data-toggle="modal" data-target="#myModal" href="/workflow/benchmark_complete_add/{{ pk }}/?is_it_project_complete_form=true" id="btn_bench">Add Component</a>
-                                </div>
-                            </div>
-                        """),
+                        'no_explanation',
                     ),
                 ),
                 Tab('Budget',
@@ -889,47 +803,6 @@ class QuantitativeOutputsForm(forms.ModelForm):
         #self.fields['program'].widget.attrs['disabled'] = "disabled"
         self.fields['workflowlevel1'].widget = HiddenInput()
         self.fields['workflowlevel2'].widget = HiddenInput()
-
-
-class BenchmarkForm(forms.ModelForm):
-
-    class Meta:
-        model = WorkflowLevel3
-        exclude = ['create_date', 'edit_date']
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.request = kwargs.pop('request')
-        self.agreement = kwargs.pop('agreement')
-        self.workflowlevel2 = kwargs.pop('workflowlevel2')
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-6'
-        self.helper.form_error_title = 'Form Errors'
-        self.helper.error_text_inline = True
-        self.helper.help_text_inline = True
-        self.helper.html5_required = True
-        self.helper.form_tag = False
-
-        if "benchmark_complete" in self.request.path:
-            self.helper.layout = Layout(
-                Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date',
-                Field('actual_start_date', css_class="act_datepicker", id="actual_start_date_id"),
-                 Field('actual_end_date', css_class="act_datepicker", id="actual_end_date_id"),'budget','cost','workflowlevel2', 'level3_uuid'
-            )
-        else:
-            self.helper.layout = Layout(
-                Field('description', rows="3", css_class='input-xlarge'),'site','est_start_date','est_end_date','budget','workflowlevel2',
-            )
-        super(BenchmarkForm, self).__init__(*args, **kwargs)
-
-        countries = getCountry(self.request.user)
-        # override the site queryset to use request.user for country
-        self.fields['site'].queryset = SiteProfile.objects.filter(country__in=countries)
-
-        self.fields['workflowlevel2'].widget = HiddenInput()
-        self.fields['level3_uuid'].widget = HiddenInput()
 
 
 class ChecklistItemForm(forms.ModelForm):
