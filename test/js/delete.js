@@ -24,7 +24,8 @@ describe('Deleting a lot of indicators', function() {
     let buttons = TargetsTab.getProgramIndicatorButtons();
     buttons[0].click();
 
-    let indicatorList, indicator, confirmBtn;
+    let indicatorList, indicator, confirmBtn
+    let deleteCnt = 0;
     let indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
     while (indicatorCount > 8) {
       indicatorList = TargetsTab.getProgramIndicatorsTable();
@@ -36,7 +37,7 @@ describe('Deleting a lot of indicators', function() {
       buttons = TargetsTab.getProgramIndicatorButtons();
       buttons[0].click();
       indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
-      console.log('Indicators deleted: ' + indicatorCount - (indicatorCount - 8));
+      console.log('Indicators deleted: ' + deleteCnt++);
     }
   });
 });

@@ -7,6 +7,7 @@
 const msec = 1000;
 
 var util = require('../lib/testutil.js');
+var dp = require('../lib/testutil.js').dp;
 var selectProgram = require('../pages/indicators.page.js').selectProgram
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
@@ -59,8 +60,8 @@ function clickProgramIndicator(indicatorName) {
 }
 
 /**
- * Click the specified program's Indicators button to toggle the
- * programs corresponding table of program indicators
+ * Click the specified program's Indicators button to toggle the corresponding
+ * table of indicators
  * @param {string} programName - The program name whose Indicators button
  * you want to click
  * @returns Nothing
@@ -68,7 +69,6 @@ function clickProgramIndicator(indicatorName) {
 function clickProgramIndicatorsButton(programName) {
   selectProgram(programName);
   // find indicators button
-  let indicatorButtons = getProgramIndicatorButtons()
   // click it
 }
 
@@ -85,14 +85,30 @@ function clickResetButton() {
  * @param {string} frequency One of the 8 pre-defined periodic intervals
  * @returns Nothing
  */
-function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {}
+function createNewProgramIndicator(name, unit, lopTarget,
+                                   baseline = false,
+                                   frequency = 'Life of Program (LoP) only') {
+  clickNewIndicatorButton();
+  saveNewIndicator();
+  setIndicatorName(name);
+  setUnitOfMeasure(unit);
+  setLoPTarget(lopTarget);
+  if (baseline) {
+    setBaseline(baseline);
+  } else {
+    setBaselineNA();
+  }
+  setTargetFrequency(frequency);
+  saveIndicatorChanges();
+}
 
 /**
  * Get the text of the current alert message, if any, and return it as a string
  * @returns {string} The current alert message as a string. Fails ugly if the
  * element isn't found.
  */
-// FIXME: broken -- doesn't find the <p> tag in the alert div
+// FIXME: broken -- doesn't find the <p> tag in the alert div; I think this
+// is because the success message flashes through faster than I can catch it
 function getAlertMsg() {
   let alertDiv = browser.$('div#alerts');
   return alertDiv.$('p').getText();
@@ -166,8 +182,8 @@ function getNumTargetPeriods() {
 }
 
 /**
- * Get a list of the program indicators for the program currently displayed in 
- * the program indicators table 
+ * Get a list of the program indicators for the program currently displayed in
+ * the program indicators table
  * @returns {Array<clickable>} returns an array of clickable progrom indicators
  * based on the "Delete" button
  */
@@ -316,15 +332,11 @@ function saveNewIndicator() {
  * the "Not applicable" check box
  * @returns Nothing
  */
-function setBaseline(value = false) {
-  if (value) {
-    let targetsTab = browser.$('=Targets');
-    targetsTab.click();
-    let baseline = $('input#id_baseline');
-    baseline.setValue(value);
-  } else {
-      setBaselineNA();
-  }
+function setBaseline(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let baseline = $('input#id_baseline');
+  baseline.setValue(value);
 }
 
 /**
@@ -333,16 +345,20 @@ function setBaseline(value = false) {
  * @returns Nothing
  */
 function setBaselineNA() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
   browser.$('#id_baseline_na').click()
 }
 
 /**
- * Set the endline target on the targets detail screen to the 
+ * Set the endline target on the targets detail screen to the
  * specifed value
  * @param {integer} value The value to set
  * @returns Nothing
  */
 function setEndlineTarget(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
   if (! browser.isVisible('div>input[name="Endline"]')) {
     browser.waitForVisible('div>input[name="Endline"]');
   }
@@ -380,12 +396,14 @@ function setLoPTarget(value) {
 }
 
 /**
- * Set the midline target on the targets detail screen to the 
+ * Set the midline target on the targets detail screen to the
  * specifed value
  * @param {integer} value The value to set
  * @returns Nothing
  */
 function setMidlineTarget(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
   if (! browser.isVisible('div>input[name="Midline"]')) {
     browser.waitForVisible('div>input[name="Midline"]');
   }
@@ -399,7 +417,6 @@ function setNumTargetPeriods(value) {
   $('input#id_target_frequency_num_periods').setValue(value);
 }
 
-// FIXME: should not be hard-coding the value to select
 /**
  * Select the target frequency from the Target Frequency dropdown on the
  * the Targets tab of the indicator edit screen
@@ -407,12 +424,13 @@ function setNumTargetPeriods(value) {
  * @returns Nothing
  */
 function setTargetFrequency(freqName) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+
   let frequencies = ['', 'Life of Program (LoP) only',
     'Midline and endline', 'Annual', 'Semi-annual',
     'Tri-annual', 'Quarterly', 'Monthly', 'Event'];
   let freqValue = frequencies.indexOf(freqName);
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
   let targetFreq = $('select#id_target_frequency');
   targetFreq.selectByValue(freqValue);
 }
