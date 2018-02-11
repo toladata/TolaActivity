@@ -717,7 +717,8 @@ class WorkflowTeam(models.Model):
         super(WorkflowTeam, self).save()
 
     def __unicode__(self):
-        return self.workflow_user.user.first_name + " " + self.workflow_user.user.last_name
+        return u"{} - {} <{}>".format(self.workflow_user, self.role,
+                                      self.workflowlevel1)
 
 
 class AdminLevelOne(models.Model):
@@ -822,8 +823,10 @@ class Office(models.Model):
         super(Office, self).save()
 
     def __unicode__(self):
-        new_name = unicode(self.name) + unicode(" - ") + unicode(self.code)
-        return new_name
+        if not self.code:
+            return unicode(self.name)
+        else:
+            return u"{} - {}".format(self.name, self.code)
 
 
 class ProfileType(models.Model):
@@ -965,8 +968,10 @@ class Contact(models.Model):
         super(Contact, self).save()
 
     def __unicode__(self):
-        return self.name + ", " + self.title
-
+        if self.title:
+            return u"{}, {}".format(self.name, self.title)
+        else:
+            return unicode(self.name)
 
 class StakeholderType(models.Model):
     name = models.CharField("Stakeholder Type", max_length=255, blank=True, null=True)
@@ -1227,8 +1232,7 @@ class WorkflowLevel2(models.Model):
         return ', '.join([x.name for x in self.stakeholder.all()])
 
     def __unicode__(self):
-        new_name = unicode(self.office) + unicode(" - ") + unicode(self.name)
-        return new_name
+        return unicode(self.name)
 
 
 class WorkflowLevel2Sort(models.Model):
