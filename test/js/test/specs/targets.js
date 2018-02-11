@@ -49,12 +49,9 @@ describe('Indicator Targets', function() {
     });
 
     it('should save data when "Save changes" button clicked', function() {
-      TargetsTab.setIndicatorName('Testing the save changes button');
-      TargetsTab.setUnitOfMeasure('Dashes');
-      TargetsTab.setLoPTarget(52);
-      TargetsTab.setBaseline(53);
-      TargetsTab.setTargetFrequency('Life of Program (LoP) only');
-      TargetsTab.saveIndicatorChanges();
+      IndPage.clickIndicatorsLink();
+      TargetsTab.createNewProgramIndicator('Testing the createNewProgramIndicator method', 
+                                            'Dashes', 52, 53, 'Life of Program (LoP) only');
     });
   }); // end new indicator dialog
 
@@ -313,8 +310,8 @@ describe('Indicator Targets', function() {
         TargetsTab.saveIndicatorChanges();
         assert.equal(2, TargetsTab.getNumTargetPeriods());
       });
-      it('should require entering targets for each target period');
 
+      it('should require entering targets for each target period');
     });
 
     describe('"Tri-annual" target frequency', function() {
@@ -355,6 +352,7 @@ describe('Indicator Targets', function() {
         TargetsTab.saveIndicatorChanges();
         assert.equal(3, TargetsTab.getNumTargetPeriods());
       });
+
       it('should require entering targets for each target period');
     });
 
@@ -397,6 +395,7 @@ describe('Indicator Targets', function() {
         TargetsTab.saveIndicatorChanges();
         assert.equal(4, TargetsTab.getNumTargetPeriods());
       });
+
       it('should require entering targets for each target period');
     });
 
@@ -428,6 +427,7 @@ describe('Indicator Targets', function() {
         TargetsTab.saveIndicatorChanges();
         assert.equal(12, TargetsTab.getNumTargetPeriods());
       });
+
       it('should require entering targets for each target period');
     });
 
