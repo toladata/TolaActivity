@@ -14,4 +14,12 @@ function readConfig(configFile = 'config.json') {
   return JSON.parse(data);
 }
 
+/**
+ * Print the specific string to the console
+ * @param {string} s The string to print
+ * @returns Nothing
+ */
+function dp(s) { console.log('*** ' + s); }
+
+exports.dp = dp;
 exports.readConfig = readConfig;
