@@ -7,6 +7,7 @@
 const msec = 1000;
 
 var util = require('../lib/testutil.js');
+var dp = require('../lib/testutil.js').dp;
 var selectProgram = require('../pages/indicators.page.js').selectProgram
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
@@ -84,7 +85,9 @@ function clickResetButton() {
  * @param {string} frequency One of the 8 pre-defined periodic intervals
  * @returns Nothing
  */
-function createNewProgramIndicator(name, unit, lopTarget, baseline = false, frequency = 'Life of Program (LoP) only') {
+function createNewProgramIndicator(name, unit, lopTarget,
+                                   baseline = false,
+                                   frequency = 'Life of Program (LoP) only') {
   clickNewIndicatorButton();
   saveNewIndicator();
   setIndicatorName(name);
@@ -104,7 +107,8 @@ function createNewProgramIndicator(name, unit, lopTarget, baseline = false, freq
  * @returns {string} The current alert message as a string. Fails ugly if the
  * element isn't found.
  */
-// FIXME: broken -- doesn't find the <p> tag in the alert div
+// FIXME: broken -- doesn't find the <p> tag in the alert div; I think this
+// is because the success message flashes through faster than I can catch it
 function getAlertMsg() {
   let alertDiv = browser.$('div#alerts');
   return alertDiv.$('p').getText();
