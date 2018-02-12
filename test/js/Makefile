@@ -1,4 +1,4 @@
-.default: help
+.DEFAULT: help
 
 help:
 	@echo "clean: remove all logs and generated files"
@@ -12,16 +12,8 @@ install:
 update:
 	@npm update --dev --save
 
-update-all:
-	@cd node_modules && npm update --dev --save && cd ..
-
 clean:
-	@rm -fvr doc errorShots node_modules selenium-server.log
-
-server:
-	@java -jar \
-		-Dwebdriver.gecko.driver=./geckodriver \
-		selenium-server-standalone-3.8.1.jar &> server.log &
+	@rm -fvr doc errorShots logs node_modules
 
 doc:
 	@./node_modules/.bin/jsdoc --verbose \

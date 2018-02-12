@@ -28,6 +28,7 @@ errorShots
 config.json
 test/js/node_modules/
 test/js/doc/
+test/js/logs/
 
 #allvritualenv
 venv/
