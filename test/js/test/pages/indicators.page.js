@@ -1,6 +1,6 @@
 /**
  * Page model for testing the Program Indicators screen.
- * @module pages/indicators
+ * @module indicators
  */
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
