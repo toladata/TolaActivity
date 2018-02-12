@@ -1,7 +1,10 @@
 var assert = require('chai').assert;
+var expect = require('chai').expect;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
+var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
+const msec = 1000;
 
 describe('TolaActivity Program Indicators page', function() {
   // Disable timeouts
@@ -25,14 +28,14 @@ describe('TolaActivity Program Indicators page', function() {
 
     it('should have same number of items as the Programs table', function() {
       IndPage.clickProgramsDropdown();
-      let progList = IndPage.getProgramsList();
+      let progList = IndPage.getProgramsDropdownList();
       let progTable = IndPage.getProgramsTable();
       assert.equal(progList.length, progTable.length, 'row count mismatch');
       IndPage.clickProgramsDropdown();
     });
 
     it('should have same items as Programs table', function() {
-      let progList = IndPage.getProgramsList();
+      let progList = IndPage.getProgramsDropdownList();
       let listItems = new Array();
       for (let prog of progList) {
         let name = prog.split('-')[1].trim();
@@ -47,7 +50,7 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should filter programs table by selected program name', function() {
-      let progList = IndPage.getProgramsList();
+      let progList = IndPage.getProgramsDropdownList();
       let listItem = progList[0];
       IndPage.selectProgram(listItem);
 
@@ -66,7 +69,7 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should have at least one entry', function() {
-      let indList = IndPage.getIndicatorsList();
+      let indList = IndPage.getIndicatorsDropdownList();
       assert(indList.length > 0);
     });
 
@@ -87,75 +90,72 @@ describe('TolaActivity Program Indicators page', function() {
     it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
 
+  // FIXME: Still need to get WebDriver code out of this test
   it('should toggle PIs table by clicking PI Indicators button', function() {
-    let progIndTable = $('#toplevel_div');
-    let buttons = progIndTable.$$('div.panel-body');
+    let buttons = TargetsTab.getProgramIndicatorButtons();
     for (let button of buttons) {
-      // starts out collapsed
-      let link = button.$('a');
-      let target = link.getAttribute('data-target');
-      let state = browser.isVisible('div' + target);
-      assert(!state);
+      let targetDiv = 'div' + button.getAttribute('data-target');
+      let isVisible = browser.isVisible(targetDiv);
+      // Starts out collapsed
+      assert.equal(false, isVisible);
 
-      // open it and verify
+      // Open it and verify
       button.click();
-      state = browser.isVisible('div' + target);
-      assert(!state);
-
-      // close it and verify again
-      button.click();
-      state = browser.isVisible('div' + target);
-      assert(!state);
-    }
-  });
-
-  it('should have matching indicator counts on data button and in table', function() {
-    // FIXME: The hard pause WARs, poorly, the situation in which the button
-    //        we want to click is sometimes, but not always, obscured by another element.
-    let progIndTable = $('#toplevel_div');
-    let buttons = progIndTable.$$('div.panel-body');
-    for (let button of buttons) {
-      let buttonCnt = parseInt(button.$('a').getText());
-      let link = button.$('a');
-      // expand the table
       // FIXME: This is a horrible hack to accommodate a race.
       // <div id="ajaxloading" class="modal ajax_loading" style="display: block;"></div>
       // obscures the button we want to click, but how long varies because Internet,
-      // so hide the div. :-\
+      // so hide the obscuring div. Pfft.
+      // Close it and move on
       browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
-      link.click();
-      browser.pause(500);
+      isVisible = browser.isVisible(targetDiv);
+      assert.equal(true, isVisible);
 
-      // indicator count from table
-      let targetDiv = link.getAttribute('data-target');
-      let table = $('div' + targetDiv).$('table');
+      button.click();
+    }
+  });
+
+  // FIXME: Still need to get WebDriver code out of this test
+  it('should have matching indicator counts on data button and in table', function() {
+    let buttons = TargetsTab.getProgramIndicatorButtons();
+    for (let button of buttons) {
+      let buttonCnt = parseInt(button.getText());
+      let targetDiv = button.getAttribute('data-target');
+      // Expand the table
+      button.click();
+      // Get indicator count from table
+      let table = $('='+targetDiv).$('table');
+/*
       let tableRows = table.$$('tbody>tr>td>a');
-      // divide by 2 because each <tr> has a blank <tr> spacer row
-      // beneath it
-      assert.equal(buttonCnt, (tableRows.length / 2), 'evidence count mismatch');
+      // Divide by 2 because live TR has a blank TR spacer beneath it
+      console.log('tableRows.length='+tableRows.length);
+      assert.equal(buttonCnt, (tableRows.length / 2), 'Evidence count mismatch');
+*/
 
       // collapse the table
-      link.click();
-      browser.pause(500);
+      button.click();
     }
-  }, 3); // retry this flaky test 2 more times before failing
+  }, 3); // Try this flaky test up to 3 times before failing
 
   describe('Program Indicators table', function() {
     it('should view PI by clicking its name in Indicator Name column', function() {
       // Make list of Indicators buttons
-      let buttons = IndPage.getProgramIndicatorButtons();
+      let buttons = TargetsTab.getProgramIndicatorButtons();
       // Click the first one to expand the table
       let button = buttons[0];
       button.click();
       // Make list of indicator names in resulting table
+      // FIXME: needs to be from table, not dropdown
+      let indicatorNameList = IndPage.getIndicatorsDropdownList();
       // Click the first one
+      let indicatorName = indicatorNameList[0];
+      TargetsTab.clickProgramIndicatorsButton(indicatorName);
 
       /*
-		  let progTable = IndPage.getProgramsTable();
-			let tableRow = progTable[1];
+      let progTable = IndPage.getProgramsTable();
+      let tableRow = progTable[1];
       let tableRowText = progTable[0].split('\n')[0].trim();
-			let link = $('=' + tableRowText);
-			link.click();
+      let link = $('=' + tableRowText);
+      link.click();
       // FIXME: This is the same horrible hack to accommodate a race.
       browser.waitForVisible('div#indicator_modal_header>h3');
       let dialogText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
@@ -166,14 +166,14 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should be able to create PI by clicking the New Indicator button', function() {
-      IndPage.clickNewIndicatorButton();
-      IndPage.saveNewIndicator();
-      IndPage.setIndicatorName('Bug reduction');
-      IndPage.setUnitOfMeasure('Bugs fixed');
-      IndPage.setLoPTarget(10);
-      IndPage.setBaseline(1);
-      IndPage.setTargetFrequency('Life of Program (LoP) only');
-      IndPage.saveIndicatorChanges();
+      TargetsTab.clickNewIndicatorButton();
+      TargetsTab.saveNewIndicator();
+      TargetsTab.setIndicatorName('New Indicator button test');
+      TargetsTab.setUnitOfMeasure('Bugs fixed');
+      TargetsTab.setLoPTarget(172);
+      TargetsTab.setBaseline(173);
+      TargetsTab.setTargetFrequency('Life of Program (LoP) only');
+      TargetsTab.saveIndicatorChanges();
     });
 
     it('should increase PI count after adding new indicator');

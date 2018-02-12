@@ -1,5 +1,7 @@
-// login.page.js -- Page model and methods for login page
-// for use in testing
+/**
+ * Page model and methods for testing the login page
+ * @module pages/login
+ */
 
 /** Opens a browser window and navigates to the requested URL
  * @param {string} url - The URL to which to navigate
