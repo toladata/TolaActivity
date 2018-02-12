@@ -59,7 +59,7 @@ $ cd test/js
 $ cp config-example.json config.json
 ```
 
-Edit `config.json` and change the `username`, `password`, and `baseurl`
+1. Edit `config.json` and change the `username`, `password`, and `baseurl`
 values to suit your needs. In particular:
 * `username` and `password` correspond to your MercyCorps SSO login
 * `baseurl` points to the home page of the TolaActivity instance you
@@ -81,7 +81,7 @@ $ ./node_modules/.bin/wdio
 ------------------------------------------------------------------
 [chrome #0-0] Session ID: db980c3deae94de17354e7000ee25288
 [chrome #0-0] Spec: /Users/kwall/repos/TolaActivity/test/js/test/specs/dashboard.js
-[chrome #0-0] Running: chrome
+[chrome #0-0] Running: firefox
 [chrome #0-0]
 [chrome #0-0] TolaActivity Dashboard
 [chrome #0-0]   ✓ should require unauthenticated users to login
@@ -94,11 +94,11 @@ $ ./node_modules/.bin/wdio
 Number of specs: 6
 
 
-35 passing (42.80s)
-164 skipped
+47 passing (109.10s)
+114 skipped
 ```
 
-### Don't want to run everything?
+## Don't want to run everything?
 1. To run the tests in a single file, specify `--spec path/to/file`.
    For example, to run only the dashboard tests, the command would be
 
@@ -106,8 +106,13 @@ Number of specs: 6
 $ ./node_modules/.bin/wdio --spec test/specs/dashboard.js
 ```
 
-### Looking for documentation?
+1. You can also the the `--spec` argument as a crude regex and spec filenames. For example, to run any test that contains _invalid_ in the filename, this command would do it:
 
+```
+$ ./node_modules/.bin/wdio --spec invalid
+```
+
+## Looking for documentation?
 To produce documentation for the test suite, execute the command `make
 doc` at the top of the TolaActivity repo:
 
@@ -124,16 +129,18 @@ Parsing /home/kwall/Work/TolaActivity/test/js/test/pages/indicators.page.js ...
 Parsing /home/kwall/Work/TolaActivity/test/js/test/pages/login.page.js ...
 Generating output files...
 Finished running in 0.15 seconds.
-
 ```
 
 The resulting output is best viewed in your browser. To do so, open 
-file:///path/to/your/repo/doc/index.html in your web browser.
+file:///path/to/your/repo/doc/index.html in your web browser. It will
+end up looking something like the following image.
+
+![](./tola_test_doc_home.png)
 
 ## Helpful development practices
 
 If you are a developer, this section is for you. It offers some suggestions
-for simple coding conventions that can make the job of testing your GUI code
+for simple coding proactices that can make the job of testing your GUI code
 much, much simpler.
 
 * First and foremost, the single best practice that helps QA testing
@@ -145,12 +152,12 @@ much, much simpler.
   they need. They also make element queries fast, because such lookups
   are Selenium's happy path.
 
-  Semantic markup is arguably more correct, too, but the interest here
-  is to create code and tests that are easy to maintain, not demonstrate
-  adherence to standards. The key point is that using _id_ or _name_
-  reduces Selenium's code fragility several orders of magnitude. The
-  people who come after us will thank us for using this small bit of
-  semantic markup.
+  [Semantic markup](https://en.wikipedia.org/wiki/Semantic_HTML) is
+  arguably more correct, too, but the interest here is to create code
+  and tests that are easy to maintain, not demonstrate adherence to best
+  practices. Rather, the point is that using _id_ or _name_ reduces Selenium's
+  code fragility several orders of magnitude. The people who come after
+  us will thank us for using this small bit of semantic markup.
 
 * Similarly, it is helpful for each page to have its own unique
   title. Again, this makes programmatic access to page elements much
