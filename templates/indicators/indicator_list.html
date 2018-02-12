@@ -42,7 +42,7 @@ function loadIndicators(program, indicator, type){
 </script>
 
 {% include "indicators/filter.html"%}
-
+<br>
 <div id="toplevel_div">
 <!-- Default panel contents -->
     {% for program in programs %}
@@ -250,8 +250,26 @@ function loadIndicators(program, indicator, type){
 
     });
 
+    $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
+        var programId = $("#program_filter_value").data('programid');
+        if (parseInt(programId) >= 0) {
+            window.location.href = '/indicators/home/' + programId+'/0/0/';
+        }
+    });
 
+    $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
+        var programId = $("#program_filter_value").data('programid');
+        var indicatorId = $("#indicator_filter_value").data('indicatorid');
+        console.log('programId', programId, 'indicatorId', indicatorId);
 
+        if (parseInt(programId) >= 0 && parseInt(indicatorId) >=0 ) {
+            window.location.href = '/indicators/home/'+programId+'/'+indicatorId+'/0';
+        } else if (parseInt(indicatorId) >=0 ) {
+            // window.location.href = '/indicators/home/0/'+indicatorId+'/0';
+        }
+    });
+
+    /*
     function program_filter(program_id) {
         window.location.href = '/indicators/home/'+program_id+'/0/0/';
     }
@@ -263,6 +281,7 @@ function loadIndicators(program, indicator, type){
     function indicator_type_filter(type) {
         window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;
     }
+    */
 
  </script>
 {% include 'indicators/indicator_form_common_js.html' %}
