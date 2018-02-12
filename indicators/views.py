@@ -1114,17 +1114,7 @@ def programIndicatorReport(request, program=0):
 
 
 def indicator_data_report(request, id=0, program=0, type=0):
-    """
-    This is the Indicator Visual report for each indicator and program.  Displays a list collected data entries
-    and sums it at the bottom.  Lives in the "Reports" navigation.
-    URL: indicators/data/[id]/[program]/[type]
-    :param request:
-    :param id: Indicator ID
-    :param program: Program ID
-    :param type: Type ID
-    :return:
-    """
-    countries = getCountry(request.user)
+    countries = request.user.tola_user.countries.all()
     getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
     getIndicators = Indicator.objects.select_related().filter(program__country__in=countries)
     getIndicatorTypes = IndicatorType.objects.all()
@@ -1132,47 +1122,36 @@ def indicator_data_report(request, id=0, program=0, type=0):
     program_name = None
     type_name = None
     q = {'indicator__id__isnull': False}
-    z = None
 
-    # Build query based on filters and search
+    getSiteProfile = SiteProfile.objects\
+        .filter(projectagreement__program__country__in=countries)\
+        .select_related('country','district','province')
+
     if int(id) != 0:
-        getSiteProfile = Indicator.objects.all().filter(id=id).select_related()
         indicator_name = Indicator.objects.get(id=id).name
-        z = {
-            'indicator__id': id
-        }
+        q['indicator__id'] = id
     else:
-        getSiteProfile = SiteProfile.objects.all().select_related()
-        z = {
-            'indicator__program__country__in': countries,
-        }
+        q['indicator__program__country__in'] = countries
 
     if int(program) != 0:
-        getSiteProfile = SiteProfile.objects.all().filter(projectagreement__program__id=program).select_related()
+        getSiteProfile = SiteProfile.objects\
+            .filter(projectagreement__program__id=program)\
+            .select_related('country','district','province')
         program_name = Program.objects.get(id=program).name
-        q = {
-            'program__id': program
-        }
-        # redress the indicator list based on program
+        q = {'program__id': program}
         getIndicators = Indicator.objects.select_related().filter(program=program)
 
     if int(type) != 0:
         type_name = IndicatorType.objects.get(id=type).indicator_type
-        q = {
-            'indicator__indicator_type__id': type,
-        }
-
-    if z:
-        q.update(z)
+        q = {'indicator__indicator_type__id': type}
 
     if request.method == "GET" and "search" in request.GET:
-        queryset = CollectedData.objects.filter(**q).filter(
-            Q(agreement__project_name__contains=request.GET["search"]) |
-            Q(description__icontains=request.GET["search"]) |
-            Q(indicator__name__contains=request.GET["search"])
-        ).select_related()
+        queryset = CollectedData.objects.filter(**q)\
+            .filter(Q(agreement__project_name__contains=request.GET["search"]) |
+                Q(description__icontains=request.GET["search"]) |
+                Q(indicator__name__contains=request.GET["search"]))\
+            .select_related()
     else:
-
         queryset = CollectedData.objects.all().filter(**q).select_related()
 
     # pass query to table and configure
@@ -1181,13 +1160,20 @@ def indicator_data_report(request, id=0, program=0, type=0):
 
     RequestConfig(request).configure(table)
 
+    filters = {'status': 1, 'country__in': countries}
+    getSiteProfileIndicator = SiteProfile.objects\
+        .select_related('country','district','province')\
+        .prefetch_related('collecteddata_set')\
+        .filter(**filters)
+
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
     return render(request, "indicators/data_report.html",
                   {'getQuantitativeData': queryset, 'countries': countries, 'getSiteProfile': getSiteProfile,
                    'getPrograms': getPrograms, 'getIndicators': getIndicators,
                    'getIndicatorTypes': getIndicatorTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
                    'id': id, 'program': program, 'type': type, 'indicator': id, 'indicator_name': indicator_name,
-                   'type_name': type_name, 'program_name': program_name})
+                   'type_name': type_name, 'program_name': program_name,
+                   'getSiteProfileIndicator': getSiteProfileIndicator})
 
 
 class IndicatorReportData(View, AjaxableResponseMixin):
