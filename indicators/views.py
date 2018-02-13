@@ -1161,13 +1161,24 @@ def indicator_data_report(request, id=0, program=0, type=0):
         .filter(**filters)
 
     # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/data_report.html",
-                  {'getQuantitativeData': queryset, 'countries': countries, 'getSiteProfile': getSiteProfile,
-                   'getPrograms': getPrograms, 'getIndicators': getIndicators,
-                   'getIndicatorTypes': getIndicatorTypes, 'form': FilterForm(), 'helper': FilterForm.helper,
-                   'id': id, 'program': program, 'type': type, 'indicator': id, 'indicator_name': indicator_name,
-                   'type_name': type_name, 'program_name': program_name,
-                   'getSiteProfileIndicator': getSiteProfileIndicator})
+    return render(request, "indicators/data_report.html", {
+        'getQuantitativeData': queryset,
+        'countries': countries,
+        'getSiteProfile': getSiteProfile,
+        'getPrograms': getPrograms,
+        'getIndicators': getIndicators,
+        'getIndicatorTypes': getIndicatorTypes,
+        'form': FilterForm(),
+        'helper': FilterForm.helper,
+        'id': id,
+        'program': program,
+        'type': type,
+        'indicator': id,
+        'indicator_name': indicator_name,
+        'type_name': type_name,
+        'program_name': program_name,
+        'getSiteProfileIndicator': getSiteProfileIndicator,
+        })
 
 
 class IndicatorReportData(View, AjaxableResponseMixin):
