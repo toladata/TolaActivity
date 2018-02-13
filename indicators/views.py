@@ -984,16 +984,8 @@ def tool(request):
 
 # REPORT VIEWS
 def indicator_report(request, program=0, indicator=0, type=0):
-    """
-    This is the indicator library report.  List of all indicators across a country or countries filtered by
-    program.  Lives in the "Report" navigation.
-    URL: indicators/report/0/
-    :param request:
-    :param program:
-    :return:
-    """
-    countries = getCountry(request.user)
-    getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
+    countries = request.user.tola_user.countries.all()
+    getPrograms = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
     getIndicatorTypes = IndicatorType.objects.all()
 
     filters = {}
@@ -1003,8 +995,8 @@ def indicator_report(request, program=0, indicator=0, type=0):
         filters['indicator_type'] = type
     if int(indicator) != 0:
         filters['id'] = indicator
-    if program == 0 and type == 0:
-        filters['program__country__in'] = countries
+
+    filters['program__country__in'] = countries
 
     indicator_data = Indicator.objects.filter(**filters)\
             .prefetch_related('sector')\
