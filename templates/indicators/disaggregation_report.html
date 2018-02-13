@@ -124,14 +124,17 @@
             });
         });
 
-        function program_filter(program_id) {
-            window.location.href = '/indicators/disrep/' + program_id + '/';
-        }
 
-        function indicator_filter(indicator) {
-            $("#indicator_filter_value").data("indicatorid", indicator);
+        $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
+            var programId = $("#program_filter_value").data('programid');
+            window.location.href = '/indicators/disrep/' + programId + '/';
+        });
+
+        $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
             disrep_table.draw();
-        }
+        });
+
+
 
         function export_to_pdf() {
             var programId = "{{ program_selected.id }}"; // $("#program_filter_value").data('programid');
