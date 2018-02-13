@@ -128,7 +128,7 @@ class IndicatorList(ListView):
         # countries = getCountry(request.user)
         countries = request.user.tola_user.countries.all()
         getPrograms = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.filter(program__country__in=countries).exclude(collecteddata__isnull=True)
+        getIndicators = Indicator.objects.filter(program__country__in=countries)#.exclude(collecteddata__isnull=True)
         getIndicatorTypes = IndicatorType.objects.all()
 
         program_id = int(self.kwargs['program'])
@@ -138,10 +138,11 @@ class IndicatorList(ListView):
         filters = {'id__isnull': False}
         if program_id != 0:
             filters['id'] = program_id
-            getIndicators = Indicator.objects.filter(program__in=[program_id])
+            getIndicators = getIndicators.filter(program__in=[program_id])
 
         if type_id != 0:
             filters['indicator__indicator_type__id'] = type_id
+            getIndicators = getIndicators.filter(indicator_type=type_id)
 
         if indicator_id != 0:
             filters['indicator'] = indicator_id

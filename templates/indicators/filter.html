@@ -28,8 +28,7 @@
 
     <div class="form-group">
         {% if getIndicators %}
-            <select name="indicators_filter" id="id_indicators_filter_dropdown" class="select form-control" onChange="indicator_filter()">
-                <option value="0"> -- All -- </option>
+            <select name="indicators_filter" id="id_indicators_filter_dropdown" class="select form-control">
                 {% for item in getIndicators %}
                     <option value="{{ item.id }}">{{ item.number }} - {{ item.name|truncatechars:82}} </option>
                 {% endfor %}
@@ -39,7 +38,7 @@
 
     <div class="form-group">
         {%if getIndicatorTypes %}
-            <select name="indicatortypes_filter" id="id_indicatortypes_filter_dropdown" class="select form-control" onChange="indicator_type_filter()">
+            <select name="indicatortypes_filter" id="id_indicatortypes_filter_dropdown" class="select form-control">
                 {% for item in getIndicatorTypes %}
                 <option value="{{ item.id }}">{{ item.indicator_type }}</option>
                 {% endfor %}
@@ -75,6 +74,7 @@
             programDropdown.val(programId).trigger('change.select2');
         }
 
+        var indicatorId = `{{ indicator_id }}`;
         var indicatorDropdown = $("#id_indicators_filter_dropdown");
         indicatorDropdown.prop("selectedIndex", -1);
         indicatorDropdown.select2({
@@ -83,7 +83,14 @@
             dropdownAutoWidth: true,
             width: "400px",
         });
+        if (parseInt(indicatorId) > 0 ) {
+            $("#indicator_filter_value").data('indicatorid', indicatorId);
+            // only trigger event with the namespace that Select2 is looking for
+            // so other event handlers will not be triggered.
+            indicatorDropdown.val(indicatorId).trigger('change.select2');
+        }
 
+        var typeId = `{{ type_id }}`;
         var indicatorTypeDropdown = $("#id_indicatortypes_filter_dropdown");
         indicatorTypeDropdown.prop("selectedIndex", -1);
         indicatorTypeDropdown.select2({
@@ -92,10 +99,17 @@
             dropdownAutoWidth: true,
             width: "200px",
         });
+        if (parseInt(typeId) > 0 ) {
+            $("#type_filter_value").data('typeid', typeId);
+            // only trigger event with the namespace that Select2 is looking for
+            // so other event handlers will not be triggered.
+            indicatorTypeDropdown.val(typeId).trigger('change.select2');
+        }
 
     });
 
 
+    // watch for selection change in program dropdown
     $("#id_programs_filter_dropdown").change(function(e){
         var selectedValue = $("#id_programs_filter_dropdown :selected").val();
         $("#program_filter_value").data('programid', selectedValue);
@@ -106,7 +120,7 @@
         $("#program_filter_value").data('programid', 0);
     });
 
-
+    // watch for selection change in indicator dropdown
     $("#id_indicators_filter_dropdown").change(function(e){
         var selectedValue = $("#id_indicators_filter_dropdown :selected").val();
         $("#indicator_filter_value").data('indicatorid', selectedValue);
@@ -117,18 +131,14 @@
         $("#indicator_filter_value").data('indicatorid', 0);
     });
 
-
-    function program_filter(program_id=undefined) {
-
-    }
-
-    function indicator_filter(indicator_id=undefined) {
-        var selectedValue = $("#id_indicators_filter_dropdown :selected").val();
-        $("#indicator_filter_value").data("indicatorid", selectedValue);
-    }
-
-    function indicator_type_filter(type_id=undefined) {
+    // watch for selection change indicator_type dropdown
+    $("#id_indicatortypes_filter_dropdown").change(function(e){
         var selectedValue = $("#id_indicatortypes_filter_dropdown :selected").val();
         $("#type_filter_value").data('typeid', selectedValue);
-    }
+        $("#id_indicatortypes_filter_dropdown").trigger("indicatorTypeFilterUpdated");
+    });
+
+    $("#id_indicatortypes_filter_dropdown").on("select2:select select2:unselecting", function(e) {
+        $("#type_filter_value").data('typeid', 0);
+    });
 </script>

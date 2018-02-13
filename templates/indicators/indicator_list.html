@@ -129,19 +129,6 @@ function loadIndicators(program, indicator, type){
 </div> <!-- /.modal -->
 
 <script type="text/javascript">
-    /*
-    var program_id = document.URL.split('/')[5];
-    var indicator_id = document.URL.split('/')[6];
-    var type_id = document.URL.split('/')[7];
-    $(document).ready(function() {
-        if (typeof program_id !== 'undefined' && program_id > 0) {
-            var a = $('#hidden-' + program_id).collapse('hide');
-            loadIndicators(program_id, 0, 0);
-            a.collapse('show');
-        }
-    });
-    */
-
     $("#indicator_collecteddata_div").on("click", "#targetsTabLink", function(e){
         e.preventDefault();
         $("#indicator_modal_content").empty();
@@ -250,23 +237,35 @@ function loadIndicators(program, indicator, type){
 
     });
 
-    $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
+
+    function getUrl() {
         var programId = $("#program_filter_value").data('programid');
-        if (parseInt(programId) >= 0) {
-            window.location.href = '/indicators/home/' + programId+'/0/0/';
-        }
+        var indicatorId = $("#indicator_filter_value").data('indicatorid');
+        var typeId = $("#type_filter_value").data('typeid');
+        var url = '/indicators/home/';
+
+        url += (parseInt(programId) >= 0 ? programId : 0) + '/';
+        url += (parseInt(indicatorId) >= 0 ? indicatorId : 0) + '/';
+        url += (parseInt(typeId) >= 0 ? typeId : 0 ) + '/';
+        return url;
+    }
+    $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
+        var url = getUrl();
+        console.log(url);
+        window.location.href = url;
     });
 
     $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
-        var programId = $("#program_filter_value").data('programid');
-        var indicatorId = $("#indicator_filter_value").data('indicatorid');
-        console.log('programId', programId, 'indicatorId', indicatorId);
+        var url = getUrl();
+        console.log(url);
+        window.location.href = url;
+    });
 
-        if (parseInt(programId) >= 0 && parseInt(indicatorId) >=0 ) {
-            window.location.href = '/indicators/home/'+programId+'/'+indicatorId+'/0';
-        } else if (parseInt(indicatorId) >=0 ) {
-            // window.location.href = '/indicators/home/0/'+indicatorId+'/0';
-        }
+
+    $("#id_filtersDropdown").on("indicatorTypeFilterUpdated", "#id_indicatortypes_filter_dropdown", function(e){
+        var url = getUrl();
+        console.log(url);
+        window.location.href = url;
     });
 
     /*
