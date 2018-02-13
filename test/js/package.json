@@ -16,7 +16,7 @@
 		"webdriverio": "^4.10.2"
 	},
 	"dependencies": {
-		"readable-stream": "^2.3.3",
+		"readable-stream": "^2.3.4",
 		"string_decoder": "^1.0.3"
 	},
 	"repository": "https://github.com/mercycorps/TolaActivity.git",

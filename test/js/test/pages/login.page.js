@@ -1,6 +1,6 @@
 /**
  * Page model and methods for testing the login page
- * @module pages/login
+ * @module login
  */
 
 /** Opens a browser window and navigates to the requested URL
