@@ -118,6 +118,7 @@
 
     $("#id_programs_filter_dropdown").on("select2:select select2:unselecting", function(e) {
         $("#program_filter_value").data('programid', 0);
+        $("#indicator_filter_value").data('indicatorid', 0);
     });
 
     // watch for selection change in indicator dropdown
