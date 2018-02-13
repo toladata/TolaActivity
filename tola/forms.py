@@ -126,8 +126,9 @@ class NewTolaUserRegistrationForm(forms.ModelForm):
         if settings.DEFAULT_ORG and os.getenv('APP_BRANCH') == DEMO_BRANCH:
             self.fields['org'] = forms.CharField(
                 initial=settings.DEFAULT_ORG, disabled=True)
-        else:
-            self.fields['org'].initial = organization
+        elif organization:
+            self.fields['org'] = forms.CharField(
+                initial=organization, disabled=True)
 
         self.fields['privacy_disclaimer_accepted'].required = True
 
