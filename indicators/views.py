@@ -1560,14 +1560,22 @@ class CollectedDataList(ListView):
             response['Content-Disposition'] = 'attachment; filename=indicator_data.csv'
             return response
 
-        return render(request, self.template_name, {'indicators': indicators, 'getPrograms': getPrograms,
-                                                    'getIndicatorTypes': getIndicatorTypes,
-                                                    'getIndicators': getIndicators,
-                                                    'program': program, 'indicator': indicator, 'type': type,
-                                                    'filter_program': program_name, 'filter_indicator': indicator_name,
-                                                    'indicator': indicator, 'program': program, 'type': type,
-                                                    'indicator_name': indicator_name,
-                                                    'program_name': program_name, 'type_name': type_name})
+        return render(request, self.template_name, {
+                    'indicators': indicators,
+                    'getPrograms': getPrograms,
+                    'getIndicatorTypes': getIndicatorTypes,
+                    'getIndicators': getIndicators,
+                    'program': program,
+                    'indicator': indicator,
+                    'type': type,
+                    'filter_program': program_name,
+                    'filter_indicator': indicator_name,
+                    'indicator': indicator,
+                    'program': program,
+                    'indicator_name': indicator_name,
+                    'program_name': program_name,
+                    'type_name': type_name,
+                    })
 
 
 class IndicatorExport(View):
