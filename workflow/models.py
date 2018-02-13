@@ -355,6 +355,7 @@ class Widget(models.Model):
     changed = models.BooleanField(default=0)
     title = models.CharField(max_length=255)
     type = models.CharField(max_length=255)
+    data_source = models.CharField(max_length=255)
     data = JSONField(null=True, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
