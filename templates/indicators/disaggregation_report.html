@@ -106,7 +106,7 @@
             );
 
 
-            $("#dropdownProgram").html("{{ program_selected.gaitid}} - {{ program_selected.name }}" + ' <span class="caret"></span>');
+            // $("#dropdownProgram").html("{{ program_selected.gaitid}} - {{ program_selected.name }}" + ' <span class="caret"></span>');
 
             disrep_table = $("#disrep_table").DataTable({
                 bSort: true,
@@ -137,7 +137,7 @@
 
 
         function export_to_pdf() {
-            var programId = "{{ program_selected.id }}"; // $("#program_filter_value").data('programid');
+            var programId = "{{ program_id }}"; // $("#program_filter_value").data('programid');
             if (programId != undefined && programId > 0) {
                 window.location.href = "/indicators/disrepprint/" + programId + "/";
             } else {

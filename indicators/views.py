@@ -1322,13 +1322,12 @@ class DisaggregationReportMixin(object):
         programs = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
         indicators = Indicator.objects.filter(program__country__in=countries)
 
-        program_selected = Program.objects.filter(id=kwargs.get('program', None)).first()
-        if not program_selected:
-            program_selected = programs.first()
-
-        if program_selected:
+        programId = int(kwargs.get('program', 0))
+        program_selected = None
+        if programId:
+            program_selected = Program.objects.filter(id=programId).first()
             if program_selected.indicator_set.count() > 0:
-                indicators = indicators.filter(program=program_selected.id)
+                indicators = indicators.filter(program=programId)
 
         disagg_query = "SELECT i.id AS IndicatorID, dt.disaggregation_type AS DType, "\
             "l.customsort AS customsort, l.label AS Disaggregation, SUM(dv.value) AS Actuals "\
@@ -1342,7 +1341,7 @@ class DisaggregationReportMixin(object):
                 "INNER JOIN indicators_disaggregationtype AS dt ON dt.id = l.disaggregation_type_id "\
                 "WHERE p.id = %s "\
                 "GROUP BY IndicatorID, DType, customsort, Disaggregation "\
-                "ORDER BY IndicatorID, DType, customsort, Disaggregation;"  % program_selected.id
+                "ORDER BY IndicatorID, DType, customsort, Disaggregation;"  % programId
         cursor = connection.cursor()
         cursor.execute(disagg_query)
         disdata = dictfetchall(cursor)
@@ -1356,7 +1355,7 @@ class DisaggregationReportMixin(object):
             "LEFT OUTER JOIN indicators_collecteddata AS cd ON i.id = cd.indicator_id "\
             "WHERE p.id = %s "\
             "GROUP BY PID, IndicatorID "\
-            "ORDER BY Indicator; " % program_selected.id
+            "ORDER BY Indicator; " % programId
         cursor.execute(indicator_query)
         idata = dictfetchall(cursor)
 
@@ -1366,7 +1365,7 @@ class DisaggregationReportMixin(object):
                 if dis['IndicatorID'] == indicator['IndicatorID']:
                     indicator["disdata"].append(disdata[i])
 
-
+        context['program_id'] = programId
         context['data'] = idata
         context['getPrograms'] = programs
         context['getIndicators'] = indicators
