@@ -170,27 +170,24 @@
 
         }
 
-
-
-        function program_filter(program_id) {
-            $("#program_filter_value").data('programid', program_id);
-            indicator_report(program_id, undefined, undefined);
+        $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
+            var programId = $("#program_filter_value").data('programid');
+            indicator_report(programId, undefined, undefined);
             table.draw();
-        }
+        });
 
-        function indicator_filter(indicator) {
-            $("#indicator_filter_value").data("indicatorid", indicator);
-            indicator_report(undefined, indicator, undefined);
+        $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
+            var indicatorId = $("#indicator_filter_value").data("indicatorid");
+            indicator_report(undefined, indicatorId, undefined);
             table.draw();
-        }
+        });
 
-        function indicator_type_filter(type) {
-            $("#type_filter_value").data('typeid', type);
-            indicator_report(undefined, undefined, type);
+
+        $("#id_filtersDropdown").on("indicatorTypeFilterUpdated", "#id_indicatortypes_filter_dropdown", function(e){
+            var typeId = $("#type_filter_value").data('typeid');
+            indicator_report(undefined, undefined, typeId);
             table.draw();
-        }
-
-
+        });
     </script>
 
     <div class="row">

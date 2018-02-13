@@ -12,12 +12,6 @@
 {% block content %}
     {% include "indicators/filter.html"%}
 
-    <div style="display: none;">
-        <span class="filter" id="indicator_filter_value"></span>
-        <span class="filter" id="program_filter_value"></span>
-        <span class="filter" id="type_filter_value"></span>
-    </div>
-
     <div id="tdisrep_table_div" class="table-responsive">
         <table id="disrep_table" class="table table-bordered">
             <thead>
@@ -106,7 +100,7 @@
             );
 
 
-            $("#dropdownProgram").html("{{ program_selected.gaitid}} - {{ program_selected.name }}" + ' <span class="caret"></span>');
+            // $("#dropdownProgram").html("{{ program_selected.gaitid}} - {{ program_selected.name }}" + ' <span class="caret"></span>');
 
             disrep_table = $("#disrep_table").DataTable({
                 bSort: true,
@@ -124,17 +118,20 @@
             });
         });
 
-        function program_filter(program_id) {
-            window.location.href = '/indicators/disrep/' + program_id + '/';
-        }
 
-        function indicator_filter(indicator) {
-            $("#indicator_filter_value").data("indicatorid", indicator);
+        $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
+            var programId = $("#program_filter_value").data('programid');
+            window.location.href = '/indicators/disrep/' + programId + '/';
+        });
+
+        $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
             disrep_table.draw();
-        }
+        });
+
+
 
         function export_to_pdf() {
-            var programId = "{{ program_selected.id }}"; // $("#program_filter_value").data('programid');
+            var programId = "{{ program_id }}"; // $("#program_filter_value").data('programid');
             if (programId != undefined && programId > 0) {
                 window.location.href = "/indicators/disrepprint/" + programId + "/";
             } else {
