@@ -1063,7 +1063,6 @@ class Command(BaseCommand):
         self._site_profiles.append(factories.SiteProfile(
             id=6,
             name="Paul Schule",
-            contact_leader="Direktor Paul Schule",
             country=self._country_germany,
             latitude="50.9692657293000000",
             longitude="6.9889383750000000",
@@ -1074,7 +1073,6 @@ class Command(BaseCommand):
         self._site_profiles.append(factories.SiteProfile(
             id=7,
             name="Peter Schule",
-            contact_leader="Direktor Peter Schule",
             country=self._country_germany,
             latitude="49.4507464458000000",
             longitude="11.0319071250000000",
