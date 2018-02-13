@@ -1,6 +1,6 @@
 /**
  * Page model for testing the Program Indicators screen.
- * @module pages/indicators
+ * @module indicators
  */
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
@@ -109,13 +109,17 @@ function getIndicatorsDropdownList() {
  * Programs dropdown menu
  */
 function getProgramsDropdownList() {
+	clickProgramsDropdown();
   let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownProgram"]');
   let listItems = list.$$('li>a');
   let programs = new Array();
   for (let listItem of listItems) {
-    programs.push(listItem.getText());
+	  if (! listItem.getText().includes('-- All --')) {
+	    programs.push(listItem.getText());
+		}
   }
-  return programs;
+	clickProgramsDropdown();
+	return programs;
 }
 
 /**

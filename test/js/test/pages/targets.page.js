@@ -1,6 +1,6 @@
 /**
  * Page model for testing the Program Indicators screen.
- * @module pages/indicators
+ * @module targets
  */
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
@@ -59,16 +59,15 @@ function clickProgramIndicator(indicatorName) {
 }
 
 /**
- * Click the specified program's Indicators button to toggle the
- * programs corresponding table of program indicators
+ * Click the specified program's Indicators button to toggle the corresponding
+ * table of indicators
  * @param {string} programName - The program name whose Indicators button
- * you want to lcik
+ * you want to click
  * @returns Nothing
  */
 function clickProgramIndicatorsButton(programName) {
   selectProgram(programName);
   // find indicators button
-  let indicatorButtons = getProgramIndicatorButtons()
   // click it
 }
 
@@ -85,13 +84,15 @@ function clickResetButton() {
  * @param {string} frequency One of the 8 pre-defined periodic intervals
  * @returns Nothing
  */
-function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
-  clickNewIndicatorButton();
-  saveNewIndicator();
-  setIndicatorName(name);
-  setUnitOfMeasure(unit);
-  setLoPTarget(lopTarget);
+function createNewProgramIndicator(name, unit, lopTarget,
+                                   baseline = false,
+                                   frequency = 'Life of Program (LoP) only') {
   setBaseline(baseline);
+  if (baseline) {
+    setBaseline(baseline);
+  } else {
+    setBaselineNA();
+  }
   setTargetFrequency(frequency);
   saveIndicatorChanges();
 }
@@ -101,6 +102,8 @@ function createNewProgramIndicator(name, unit, lopTarget, baseline, frequency) {
  * @returns {string} The current alert message as a string. Fails ugly if the
  * element isn't found.
  */
+// FIXME: broken -- doesn't find the <p> tag in the alert div; I think this
+// is because the success message flashes through faster than I can catch it
 function getAlertMsg() {
   let alertDiv = browser.$('div#alerts');
   return alertDiv.$('p').getText();
@@ -162,13 +165,25 @@ function getLoPTarget() {
 }
 
 /**
- * Get a list of the program indicators for the specified program
- * from the program indicators table for that program
- * @param {string} programName The name of the program to query
- * @returns {Array<string>} returns an array of progrom indicator
- * names as text strings
+ * Get the current value of the "Number of target periods" field on the
+ * target indicators detail page
+ * @returns {integer} The value of the field, if any
  */
-function getProgramIndicatorsTable(programName) {
+function getNumTargetPeriods() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let val = $('input#id_target_frequency_num_periods').getValue();
+  return val;
+}
+
+/**
+ * Get a list of the program indicators for the program currently displayed in
+ * the program indicators table
+ * @returns {Array<clickable>} returns an array of clickable progrom indicators
+ * based on the "Delete" button
+ */
+// FIXME: should probably returns linkage to all the buttons and links?
+function getProgramIndicatorsTable() {
   let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
   let dataTarget = link.getAttribute('data-target');
   if (browser.isVisible('div#ajaxloading')) {
@@ -180,19 +195,20 @@ function getProgramIndicatorsTable(programName) {
 }
 
 /**
- * Get the number of program indicators for the specified
- * program from the program indicators table for that program
- * @param {string} programName The name of the program to query
+ * Get the number of program indicators for the program currently
+ * displayed in the progams indicats table
  * @returns {integer} The number of program indicators in the table
+ * based on the "Delete" key
  */
-function getProgramIndicatorsTableCount(programName) {
+// FIXME: should probably returns linkage to all the buttons and links?
+function getProgramIndicatorsTableCount() {
   let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
   let dataTarget = link.getAttribute('data-target');
   if (browser.isVisible('div#ajaxloading')) {
     browser.waitForVisible('div#ajaxloading', 10*msec, true);
   }
   let table = $('div'+dataTarget).$('table');
-  let rows = table.$$('=Edit');
+  let rows = table.$$('=Delete');
   return rows.length;
 }
 
@@ -234,6 +250,23 @@ function getTargetFrequency() {
   targetsTab.click();
   let val = $('select#id_target_frequency').getValue();
   return val;
+}
+
+function getTargetFirstPeriodErrorHint() {
+  let errorBox = browser.$('#hint_id_target_frequency_start');
+  let errorHint = errorBox.getText();
+  return errorHint;
+}
+
+/**
+ * Get the current error string, if any, from the target creation
+ * screen on the Targets tab
+ * @returns {string} The error text present, if any
+ */
+function getTargetValueErrorHint() {
+  let errorBox = browser.$('.target-value-error');
+  let errorHint = errorBox.getText();
+  return errorHint;
 }
 
 /**
@@ -294,15 +327,11 @@ function saveNewIndicator() {
  * the "Not applicable" check box
  * @returns Nothing
  */
-function setBaseline(value = false) {
-  if (value) {
-    let targetsTab = browser.$('=Targets');
-    targetsTab.click();
-    let baseline = $('input#id_baseline');
-    baseline.setValue(value);
-  } else {
-      setBaselineNA();
-  }
+function setBaseline(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let baseline = $('input#id_baseline');
+  baseline.setValue(value);
 }
 
 /**
@@ -311,7 +340,25 @@ function setBaseline(value = false) {
  * @returns Nothing
  */
 function setBaselineNA() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
   browser.$('#id_baseline_na').click()
+}
+
+/**
+ * Set the endline target on the targets detail screen to the
+ * specifed value
+ * @param {integer} value The value to set
+ * @returns Nothing
+ */
+function setEndlineTarget(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  if (! browser.isVisible('div>input[name="Endline"]')) {
+    browser.waitForVisible('div>input[name="Endline"]');
+  }
+  let endline = $('div>input[name="Endline"]');
+  endline.setValue(value);
 }
 
 /**
@@ -321,6 +368,9 @@ function setBaselineNA() {
  * @returns Nothing
  */
 function setIndicatorName(name) {
+  if (! browser.isVisible('=Performance')) {
+    browser.waitForVisible('=Performance');
+  }
   let perfTab = browser.$('=Performance');
   perfTab.click();
   let indName = $('input#id_name');
@@ -334,24 +384,50 @@ function setIndicatorName(name) {
  * @returns Nothing
  */
 function setLoPTarget(value) {
-  let targetsTab = browser.$('=Targets');
+  let targetsTab = $('=Targets');
   targetsTab.click();
   let lopTarget = $('input#id_lop_target');
   lopTarget.setValue(value);
 }
 
-// FIXME: should not be hard-coding the value to select
+/**
+ * Set the midline target on the targets detail screen to the
+ * specifed value
+ * @param {integer} value The value to set
+ * @returns Nothing
+ */
+function setMidlineTarget(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  if (! browser.isVisible('div>input[name="Midline"]')) {
+    browser.waitForVisible('div>input[name="Midline"]');
+  }
+  let midline = $('div>input[name="Midline"]');
+  midline.setValue(value);
+}
+
+function setNumTargetPeriods(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  $('input#id_target_frequency_num_periods').setValue(value);
+}
+
 /**
  * Select the target frequency from the Target Frequency dropdown on the
  * the Targets tab of the indicator edit screen
  * @param {string} value The target frequency to select from the dropdown
  * @returns Nothing
  */
-function setTargetFrequency(value) {
+function setTargetFrequency(freqName) {
   let targetsTab = browser.$('=Targets');
   targetsTab.click();
+
+  let frequencies = ['', 'Life of Program (LoP) only',
+    'Midline and endline', 'Annual', 'Semi-annual',
+    'Tri-annual', 'Quarterly', 'Monthly', 'Event'];
+  let freqValue = frequencies.indexOf(freqName);
   let targetFreq = $('select#id_target_frequency');
-  targetFreq.selectByValue(1);
+  targetFreq.selectByValue(freqValue);
 }
 
 /**
@@ -381,11 +457,14 @@ exports.getBaselineErrorHint = getBaselineErrorHint;
 exports.getIndicatorName = getIndicatorName;
 exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
+exports.getNumTargetPeriods = getNumTargetPeriods;
 exports.getProgramIndicatorsTable = getProgramIndicatorsTable;
 exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
 exports.getProgramsTable = getProgramsTable;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
 exports.getTargetFrequency = getTargetFrequency;
+exports.getTargetFirstPeriodErrorHint = getTargetFirstPeriodErrorHint;
+exports.getTargetValueErrorHint = getTargetValueErrorHint;
 exports.getUnitOfMeasure = getUnitOfMeasure;
 exports.open = open;
 exports.pageName = pageName;
@@ -393,7 +472,10 @@ exports.saveIndicatorChanges = saveIndicatorChanges;
 exports.saveNewIndicator = saveNewIndicator;
 exports.setBaseline = setBaseline;
 exports.setBaselineNA = setBaselineNA;
+exports.setEndlineTarget = setEndlineTarget;
 exports.setIndicatorName = setIndicatorName;
 exports.setLoPTarget = setLoPTarget;
+exports.setMidlineTarget = setMidlineTarget;
+exports.setNumTargetPeriods = setNumTargetPeriods;
 exports.setTargetFrequency = setTargetFrequency;
 exports.setUnitOfMeasure = setUnitOfMeasure;

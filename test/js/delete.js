@@ -1,5 +1,6 @@
 var LoginPage = require('./test/pages/login.page.js');
 var IndPage = require('./test/pages/indicators.page.js');
+var TargetsTab = require('./test/pages/targets.page.js');
 var util = require('./test/lib/testutil.js');
 const msec = 1000;
 
@@ -17,21 +18,26 @@ describe('Deleting a lot of indicators', function() {
     IndPage.clickIndicatorsLink();
     browser.waitForVisible('h2=Program Indicators', 10*msec);
     if (browser.isVisible('div#ajaxloading')) {
-      browser.waitForVisible('div#ajaxloading', true);
+      browser.waitForVisible('div#ajaxloading', true, 10*msec);
     }
-
-
     IndPage.selectProgram('Tola Rollout');
-    let indicatorList, indicator, confirm;
-    let indicatorCount = IndPage.getProgramIndicatorsTableCount();
-    while (indicatorCount > 6) {
-      indicatorList = IndPage.getProgramIndicatorsTable('Tola Rollout');
+    let buttons = TargetsTab.getProgramIndicatorButtons();
+    buttons[0].click();
+
+    let indicatorList, indicator, confirmBtn
+    let deleteCnt = 0;
+    let indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
+    while (indicatorCount > 8) {
+      indicatorList = TargetsTab.getProgramIndicatorsTable();
       indicator = indicatorList.shift();
       indicator.click();
-      confirm=$('input[value="Confirm"]');
-      confirm.click();
+      confirmBtn = $('input[value="Confirm"]');
+      confirmBtn.click();
       browser.waitForVisible('h2=Program Indicators', 10*msec);
-      indicatorCount = IndPage.getProgramIndicatorsTableCount();
+      buttons = TargetsTab.getProgramIndicatorButtons();
+      buttons[0].click();
+      indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
+      console.log('Indicators deleted: ' + deleteCnt++);
     }
   });
 });
