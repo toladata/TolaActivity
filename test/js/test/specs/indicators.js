@@ -53,19 +53,16 @@ describe('TolaActivity Program Indicators page', function() {
       };
     });
 
-    it('should filter programs table by selected program name', function() {
-      let progList = IndPage.getProgramsDropdownList();
-      let prog = progList[0]
-      IndPage.selectProgram(prog);
-
-      // should have a single row in the table
-      let progTable = IndPage.getProgramsTable();
-      // row should be the one selected from the dropdown
-      let rowText = progTable[0].split('\n')[0].trim();
-      browser.debug();
-      let listText = listItem.split('-')[1].trim();
-      assert.equal(rowText, listText, 'program name mismtach');
-    });
+		it('should filter programs table by selected program name', function() {
+			let selectList = browser.$('select#id_programs_filter_dropdown');
+			let progTable = selectList.$$('options');
+			for (let listItem of progTable) {
+				let s = listItem.getText();
+				if (! s.includes('-- All --')) {
+					browser.selectByVisibleText(s);
+				}
+			}
+		});
   }); // end programs dropdown tests
 
   describe('Indicators dropdown', function() {

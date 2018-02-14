@@ -16,7 +16,7 @@ parms.baseurl += '/indicators/home/0/0/0';
  */
 function clickIndicatorsDropdown() {
   let span = $('span.select2-selection--single');
-  let indicatorsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  let indicatorsDropdown = span.$('span#select2-id_indicators_filter_dropdown-container');
   indicatorsDropdown.click();
 }
 
@@ -34,7 +34,7 @@ function clickIndicatorsLink() {
  */
 function clickIndicatorTypeDropdown() {
   let span = $('span.select2-selection--single');
-  let indicatorsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  let indicatorsDropdown = span.$('span#select2-id_indicatortypes_filter_dropdown-container');
   indicatorTypesDropdown.click();
 }
 
@@ -84,11 +84,14 @@ function getIndicatorName() {
  * indicator types dropdown menu
  */
 function getIndicatorTypeList() {
-  let list = browser.$('ul#' + indtypes_filter);
-  let listItems = list.$$('li>a');
+  let selectList = browser.$('select#id_indicatortypes_filter_dropdown');
+  let listItems = selectList.$$('option');
   let indicatorTypes = new Array();
   for (let listItem of listItems) {
-    indicatorTypes.push(listItem.getText());
+    if (! s.includes('-- All --')) {
+      let s = listItem.getText();
+      indicatorTypes.push(s);
+    }
   }
   return indicatorTypes;
 }
@@ -99,18 +102,21 @@ function getIndicatorTypeList() {
  * indicators dropdown menu
  */
 function getIndicatorsDropdownList() {
-  let list = browser.$('ul#' + inds_filter);
-  let listItems = list.$$('li>a');
+  let selectList = browser.$('select#id_indicators_filter_dropdown');
+  let listItems = selectList.$$('option');
   let indicators = new Array();
   for (let listItem of listItems) {
-    indicators.push(listItem.getText());
+    let s = listItem.getText();
+    if (! s.includes('-- All --')) {
+      indicators.push(s);
+    }
   }
   return indicators;
 }
 
 /**
  * Get a list of the programs Programs dropdown. If which is empty or "strings",
- * returns a list of the names; if which is "links" or anything else, return the 
+ * returns a list of the names; if which is "links" or anything else, return the
  * list as clickable links so they can be selected.
  * @returns {Array<string>|<link>} an array of either the text strings making up the
  * Programs dropdown menu or the actual clickable links on the Programs dropdown menu
@@ -120,13 +126,15 @@ function getProgramsDropdownList() {
   //let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
   //let dropdownList = browser.$('select#id_programs_filter_dropdown');
   //let listItems = list.$$('li>a');
-  let selectList = browser.$('select#id_programs_filter_dropdown')
+  let selectList = browser.$('select#id_programs_filter_dropdown');
   let listItems = selectList.$$('option');
   let programs = new Array();
   for (let listItem of listItems) {
-    programs.push(listItem.getText());
-  }
-	return programs;
+    let s = listItem.getText();
+    if (! s.includes('-- All --'))
+      programs.push(s);
+    }
+    return programs;
 }
 
 /**
@@ -138,7 +146,8 @@ function getProgramsTable() {
   let rows = browser.$('div#toplevel_div').$$('div.panel-heading');
   let programs = new Array();
   for(let row of rows) {
-    programs.push(row.$('h4').getText());
+    let s = row.$('h4').getText();
+    programs.push(s);
   }
   return programs;
 }
@@ -171,13 +180,18 @@ function pageName() {
  */
 function selectProgram(program) {
   clickProgramsDropdown();
-  let listItems = getProgramsDropdownList();
+  let selectList = browser.$('select#id_programs_filter_dropdown');
+  let listItems = selectList.$$('option');
+  let programs = new Array();
   for (let listItem of listItems) {
-    if(listItem.includes(program)) {
-      listItems.selectByVisibleText(program);
+    let s = listItem.getText();
+    let v = listItem.getValue();
+    if (s.includes(program)) {
+      selectList.selectByValue(v);
       break;
     }
   }
+  clickProgramsDropdown();
 }
 
 exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
