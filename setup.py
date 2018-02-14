@@ -50,6 +50,8 @@ setup(
         'search.exceptions',
         'search.models',
         'search.utils',
+        'search.urls',
+        'search.views',
         # search.management.commands
         'search.management.__init__',
         'search.management.commands.__init__',
