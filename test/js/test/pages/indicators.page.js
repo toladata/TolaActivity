@@ -14,6 +14,14 @@ parms.baseurl += '/indicators/home/0/0/0';
  * Click the Indicators dropdown button
  * @returns Nothing
  */
+/*
+> $$('span.select2-selection--single')[0].getText()
+'Filter by program'
+> $$('span.select2-selection--single')[1].getText()
+'Filter by indicator'
+> $$('span.select2-selection--single')[2].getText()
+'Filter by indicator type'
+*/
 function clickIndicatorsDropdown() {
   let span = $('span.select2-selection--single');
   let indicatorsDropdown = span.$('span#select2-id_indicators_filter_dropdown-container');
@@ -34,7 +42,7 @@ function clickIndicatorsLink() {
  */
 function clickIndicatorTypeDropdown() {
   let span = $('span.select2-selection--single');
-  let indicatorsDropdown = span.$('span#select2-id_indicatortypes_filter_dropdown-container');
+  let indicatorTypesDropdown = span.$('span#select2-id_indicatortypes_filter_dropdown-container');
   indicatorTypesDropdown.click();
 }
 
@@ -88,8 +96,8 @@ function getIndicatorTypeList() {
   let listItems = selectList.$$('option');
   let indicatorTypes = new Array();
   for (let listItem of listItems) {
+    let s = listItem.getText();
     if (! s.includes('-- All --')) {
-      let s = listItem.getText();
       indicatorTypes.push(s);
     }
   }
