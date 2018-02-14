@@ -12,6 +12,9 @@
     .select2-container .select2-selection--single .select2-selection__rendered {
         padding-right: 30px !important;
     }
+    .select2-results__options {
+        white-space: nowrap;
+    }
 </style>
 
 
@@ -19,6 +22,7 @@
     <div class="form-group">
         {% if getPrograms %}
             <select name="programs_filter" id="id_programs_filter_dropdown" class="select form-control" >
+                <option value = "0">-- All --</option>
             {% for program in getPrograms %}
                 <option value="{{ program.id }}">{{ program.gaitid }} - {{ program.name|truncatechars:85 }}</option>
             {% endfor %}
@@ -29,8 +33,9 @@
     <div class="form-group">
         {% if getIndicators %}
             <select name="indicators_filter" id="id_indicators_filter_dropdown" class="select form-control">
+                <option value = "0">-- All --</option>
                 {% for item in getIndicators %}
-                    <option value="{{ item.id }}">{{ item.number }} - {{ item.name|truncatechars:82}} </option>
+                    <option value="{{ item.id }}">{{ item.number|default_if_none:'' }} - {{ item.name|truncatechars:82}} </option>
                 {% endfor %}
             </select>
         {% endif %}
@@ -39,6 +44,7 @@
     <div class="form-group">
         {%if getIndicatorTypes %}
             <select name="indicatortypes_filter" id="id_indicatortypes_filter_dropdown" class="select form-control">
+                <option value = "0">-- All --</option>
                 {% for item in getIndicatorTypes %}
                 <option value="{{ item.id }}">{{ item.indicator_type }}</option>
                 {% endfor %}
@@ -63,9 +69,10 @@
         programDropdown.prop("selectedIndex", -1);
         programDropdown.select2({
             placeholder: {id: -1, text: "Filter by program"},
-            allowClear: true,
+            allowClear: false,
             dropdownAutoWidth: true,
             width: "400px",
+            // width: 'resolve',
         });
         if (parseInt(programId) > 0 ) {
             $("#program_filter_value").data('programid', programId);
@@ -79,9 +86,10 @@
         indicatorDropdown.prop("selectedIndex", -1);
         indicatorDropdown.select2({
             placeholder: {id: -1, text: "Filter by indicator"},
-            allowClear: true,
+            allowClear: false,
             dropdownAutoWidth: true,
             width: "400px",
+            // width: 'resolve',
         });
         if (parseInt(indicatorId) > 0 ) {
             $("#indicator_filter_value").data('indicatorid', indicatorId);
@@ -95,9 +103,10 @@
         indicatorTypeDropdown.prop("selectedIndex", -1);
         indicatorTypeDropdown.select2({
             placeholder: {id: -1, text: "Filter by indicator type"},
-            allowClear: true,
+            allowClear: false,
             dropdownAutoWidth: true,
             width: "200px",
+            // width: 'resolve',
         });
         if (parseInt(typeId) > 0 ) {
             $("#type_filter_value").data('typeid', typeId);
@@ -112,6 +121,7 @@
     // watch for selection change in program dropdown
     $("#id_programs_filter_dropdown").change(function(e){
         var selectedValue = $("#id_programs_filter_dropdown :selected").val();
+        $("#indicator_filter_value").data('indicatorid', 0);
         $("#program_filter_value").data('programid', selectedValue);
         $("#id_programs_filter_dropdown").trigger("programFilterUpdated");
     });

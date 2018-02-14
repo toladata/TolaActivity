@@ -250,20 +250,17 @@ function loadIndicators(program, indicator, type){
     }
     $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
         var url = getUrl();
-        console.log(url);
         window.location.href = url;
     });
 
     $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
         var url = getUrl();
-        console.log(url);
         window.location.href = url;
     });
 
 
     $("#id_filtersDropdown").on("indicatorTypeFilterUpdated", "#id_indicatortypes_filter_dropdown", function(e){
         var url = getUrl();
-        console.log(url);
         window.location.href = url;
     });
 
