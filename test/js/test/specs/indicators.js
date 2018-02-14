@@ -26,7 +26,7 @@ describe('TolaActivity Program Indicators page', function() {
   describe('Programs dropdown', function() {
     it('should be present on page', function() {
 			if (browser.isVisible('div#ajaxloading')) {
-				browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
+				browser.waitForVisible('div#ajaxloading', delay, true);
 		  }
       IndPage.clickProgramsDropdown();
       IndPage.clickProgramsDropdown();
@@ -55,13 +55,14 @@ describe('TolaActivity Program Indicators page', function() {
 
     it('should filter programs table by selected program name', function() {
       let progList = IndPage.getProgramsDropdownList();
-      let listItem = progList[0];
-      IndPage.selectProgram(listItem);
+      let prog = progList[0]
+      IndPage.selectProgram(prog);
 
       // should have a single row in the table
       let progTable = IndPage.getProgramsTable();
       // row should be the one selected from the dropdown
       let rowText = progTable[0].split('\n')[0].trim();
+      browser.debug();
       let listText = listItem.split('-')[1].trim();
       assert.equal(rowText, listText, 'program name mismtach');
     });

@@ -7,7 +7,6 @@
 const msec = 1000;
 
 var util = require('../lib/testutil.js');
-
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
@@ -16,7 +15,9 @@ parms.baseurl += '/indicators/home/0/0/0';
  * @returns Nothing
  */
 function clickIndicatorsDropdown() {
-  browser.$('#dropdownIndicator').click();
+  let span = $('span.select2-selection--single');
+  let indicatorsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  indicatorsDropdown.click();
 }
 
 /**
@@ -32,15 +33,19 @@ function clickIndicatorsLink() {
  * @returns Nothing
  */
 function clickIndicatorTypeDropdown() {
-  browser.$('#dropdownIndicatorType').click();
+  let span = $('span.select2-selection--single');
+  let indicatorsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  indicatorTypesDropdown.click();
 }
 
 /**
- * Click the Programs dropdown
+ * Click the Programs dropdown button
  * @returns Nothing
  */
 function clickProgramsDropdown() {
-  browser.$('#dropdownProgram').click();
+  let span = $('span.select2-selection--single');
+  let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  programsDropdown.click();
 }
 
 /**
@@ -79,7 +84,7 @@ function getIndicatorName() {
  * indicator types dropdown menu
  */
 function getIndicatorTypeList() {
-  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownIndicatorType"]');
+  let list = browser.$('ul#' + indtypes_filter);
   let listItems = list.$$('li>a');
   let indicatorTypes = new Array();
   for (let listItem of listItems) {
@@ -94,7 +99,7 @@ function getIndicatorTypeList() {
  * indicators dropdown menu
  */
 function getIndicatorsDropdownList() {
-  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownIndicator"]');
+  let list = browser.$('ul#' + inds_filter);
   let listItems = list.$$('li>a');
   let indicators = new Array();
   for (let listItem of listItems) {
@@ -104,21 +109,23 @@ function getIndicatorsDropdownList() {
 }
 
 /**
- * Get a list of the program names in the Programs dropdown
- * @returns {Array<string>} returns an array of the text strings making up the
- * Programs dropdown menu
+ * Get a list of the programs Programs dropdown. If which is empty or "strings",
+ * returns a list of the names; if which is "links" or anything else, return the 
+ * list as clickable links so they can be selected.
+ * @returns {Array<string>|<link>} an array of either the text strings making up the
+ * Programs dropdown menu or the actual clickable links on the Programs dropdown menu
  */
 function getProgramsDropdownList() {
-	clickProgramsDropdown();
-  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownProgram"]');
-  let listItems = list.$$('li>a');
+  //let span = $('span.select2-selection--single');
+  //let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  //let dropdownList = browser.$('select#id_programs_filter_dropdown');
+  //let listItems = list.$$('li>a');
+  let selectList = browser.$('select#id_programs_filter_dropdown')
+  let listItems = selectList.$$('option');
   let programs = new Array();
   for (let listItem of listItems) {
-	  if (! listItem.getText().includes('-- All --')) {
-	    programs.push(listItem.getText());
-		}
+    programs.push(listItem.getText());
   }
-	clickProgramsDropdown();
 	return programs;
 }
 
@@ -163,12 +170,11 @@ function pageName() {
  * @returns Nothing
  */
 function selectProgram(program) {
-  browser.$('#dropdownProgram').click();
-  let items = browser.$('div.btn-group').$('ul.dropdown-menu').$$('li>a');
-  for (let item of items) {
-    let s = item.getText();
-    if(s.includes(program)) {
-      item.click();
+  clickProgramsDropdown();
+  let listItems = getProgramsDropdownList();
+  for (let listItem of listItems) {
+    if(listItem.includes(program)) {
+      listItems.selectByVisibleText(program);
       break;
     }
   }
