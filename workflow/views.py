@@ -4,7 +4,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import WorkflowLevel1, Country, AdminLevelOne, AdminLevelThree, AdminLevelTwo, WorkflowLevel2, SiteProfile, \
-    Documentation, WorkflowLevel3, Budget, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
+    Documentation, Budget, Checklist, ChecklistItem, Contact, Stakeholder, FormGuidance, \
     TolaBookmarks, TolaUser, ApprovalWorkflow, CodedField
 from formlibrary.models import TrainingAttendance, Distribution
 from indicators.models import CollectedData, ExternalService
@@ -12,7 +12,7 @@ from django.utils import timezone
 
 
 from .forms import WorkflowLevel2CreateForm, WorkflowLevel2Form, WorkflowLevel2SimpleForm, DocumentationForm, \
-    SiteProfileForm, BenchmarkForm, BudgetForm, FilterForm, \
+    SiteProfileForm, BudgetForm, FilterForm, \
     QuantitativeOutputsForm, ChecklistItemForm, StakeholderForm, ContactForm, ApprovalForm, WorkflowLevel1Form
 
 import pytz
@@ -439,12 +439,6 @@ class ProjectAgreementUpdate(UpdateView):
         context.update({'getQuantitative': getQuantitative})
 
         try:
-            getBenchmark = WorkflowLevel3.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).order_by('description')
-        except WorkflowLevel3.DoesNotExist:
-            getBenchmark = None
-        context.update({'getBenchmark': getBenchmark})
-
-        try:
             getBudget = Budget.objects.all().filter(workflowlevel2__id=self.kwargs['pk']).order_by('description_of_contribution')
         except Budget.DoesNotExist:
             getBudget = None
@@ -551,12 +545,6 @@ class ProjectAgreementDetail(DetailView):
         context = super(ProjectAgreementDetail, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         context.update({'id': self.kwargs['pk']})
-
-        try:
-            getBenchmark = WorkflowLevel3.objects.all().filter(workflowlevel2__id=self.kwargs['pk'])
-        except WorkflowLevel3.DoesNotExist:
-            getBenchmark = None
-        context.update({'getWorkflowLevel3': getBenchmark})
 
         try:
             getBudget = Budget.objects.all().filter(workflowlevel2__id=self.kwargs['pk'])
@@ -1145,127 +1133,6 @@ class SiteProfileDelete(DeleteView):
     form_class = SiteProfileForm
 
 
-class BenchmarkCreate(AjaxableResponseMixin, CreateView):
-    """
-    Benchmark Form
-    """
-    model = WorkflowLevel3
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(BenchmarkCreate, self).get_form_kwargs()
-        try:
-            getComplete = WorkflowLevel2.objects.get(doc_workflowlevel2__id=self.kwargs['id'])
-            kwargs['workflowlevel2'] = getComplete.id
-        except WorkflowLevel2.DoesNotExist:
-            kwargs['workflowlevel2'] = None
-
-        kwargs['request'] = self.request
-        kwargs['agreement'] = self.kwargs['id']
-        return kwargs
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(BenchmarkCreate, self).dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(BenchmarkCreate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['id']})
-        try:
-            getComplete = WorkflowLevel2.objects.get(id=self.kwargs['id'])
-            context.update({'p_name': getComplete.name})
-        except WorkflowLevel2.DoesNotExist:
-            # do nothing
-            context = context
-        return context
-
-    def get_initial(self):
-
-        if self.request.GET.get('is_it_project_complete_form', None):
-            initial = { 'workflowlevel2': self.kwargs['id'] }
-        else:
-            initial = { 'workflowlevel2': self.kwargs['id'] }
-        return initial
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Component Created!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = BenchmarkForm
-
-
-class BenchmarkUpdate(AjaxableResponseMixin, UpdateView):
-    """
-    Benchmark Form
-    """
-    model = WorkflowLevel3
-
-    def get_context_data(self, **kwargs):
-        context = super(BenchmarkUpdate, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
-        return context
-
-    # add the request to the kwargs
-    def get_form_kwargs(self):
-        kwargs = super(BenchmarkUpdate, self).get_form_kwargs()
-        getBenchmark = WorkflowLevel3.objects.all().get(id=self.kwargs['pk'])
-
-        kwargs['request'] = self.request
-        kwargs['agreement'] = getBenchmark.agreement.id
-        if getBenchmark.workflowlevel2:
-            kwargs['workflowlevel2'] = getBenchmark.workflowlevel2.id
-        else:
-            kwargs['workflowlevel2'] = None
-
-        return kwargs
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-        form.save()
-        messages.success(self.request, 'Success, Component Updated!')
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = BenchmarkForm
-
-
-class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
-    """
-    Benchmark Form
-    """
-    model = WorkflowLevel3
-    success_url = '/'
-
-    def get_context_data(self, **kwargs):
-        context = super(BenchmarkDelete, self).get_context_data(**kwargs)
-        context.update({'id': self.kwargs['pk']})
-        return context
-
-    def form_invalid(self, form):
-
-        messages.error(self.request, 'Invalid Form', fail_silently=False)
-
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def form_valid(self, form):
-
-        form.save()
-
-        messages.success(self.request, 'Success, Component Deleted!')
-        return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = BenchmarkForm
-
-
 class ContactList(ListView):
     """
     Get Contacts
@@ -1377,7 +1244,7 @@ class ContactUpdate(UpdateView):
 
 class ContactDelete(DeleteView):
     """
-    Benchmark Form
+    Contact Form
     """
     model = Contact
     success_url = '/workflow/contact_list/0/'
@@ -1531,7 +1398,7 @@ class StakeholderUpdate(UpdateView):
 
 class StakeholderDelete(DeleteView):
     """
-    Benchmark Form
+    Stakeholder Form
     """
     model = Stakeholder
     success_url = '/workflow/stakeholder_list/0/0/'

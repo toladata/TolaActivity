@@ -10,7 +10,7 @@ from .models import (Country, Documentation, WorkflowLevel2,
                      Organization, AdminLevelOne, Office, AdminLevelTwo,
                      AdminLevelThree, AdminLevelFour, WorkflowLevel1, Sector,
                      WorkflowLevel2, WorkflowLevel2Sort, Documentation,
-                     SiteProfile,  WorkflowLevel3, ProjectType,  Budget,
+                     SiteProfile, ProjectType,  Budget,
                      ProfileType, WorkflowTeam, ChecklistItem, Checklist,
                      Stakeholder, Contact, StakeholderType, TolaUser, TolaSites,
                      FormGuidance, TolaUserProxy, TolaBookmarks, Currency,
@@ -249,11 +249,6 @@ class OfficeAdmin(admin.ModelAdmin):
     display = 'Office'
 
 
-class WorkflowLevel3Admin(admin.ModelAdmin):
-    list_display = ('description', 'create_date', 'edit_date')
-    display = 'Workflow Level 3'
-
-
 class ChecklistAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
     list_filter = ('country', 'workflowlevel2')
@@ -303,7 +298,6 @@ admin.site.register(WorkflowLevel2, SimpleHistoryAdmin)
 admin.site.register(WorkflowLevel2Sort)
 admin.site.register(Documentation, DocumentationAdmin)
 admin.site.register(SiteProfile, SimpleHistoryAdmin)
-admin.site.register(WorkflowLevel3, WorkflowLevel3Admin)
 admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
