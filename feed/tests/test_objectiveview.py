@@ -7,8 +7,7 @@ import factories
 from feed.views import ObjectiveViewSet
 from indicators.models import Objective
 from workflow.models import WorkflowLevel1, WorkflowTeam, \
-    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM, ROLE_PROGRAM_ADMIN, \
-    ROLE_VIEW_ONLY
+    ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN
 
 
 class ObjectiveViewTest(TestCase):

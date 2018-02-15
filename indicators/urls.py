@@ -1,9 +1,9 @@
-from django.conf.urls import include, url
+from django.conf.urls import url
 
+from indicators import views as indicatorviews
 from .views import CollectedDataList, CollectedDataCreate, CollectedDataUpdate, CollectedDataDelete, IndicatorCreate, IndicatorDelete, IndicatorUpdate,\
     IndicatorList, IndicatorExport, IndicatorReportData,CollectedDataReportData, IndicatorReport, IndicatorDataExport, TVAReport, DisaggregationReport, PeriodicTargetDeleteView, TVAPrint, DisaggregationPrint
 
-from indicators import views as indicatorviews
 
 urlpatterns = [
 

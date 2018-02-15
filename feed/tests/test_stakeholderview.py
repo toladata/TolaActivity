@@ -1,13 +1,12 @@
-from django.contrib.auth.models import User
+import json
+
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
 
-import json
 import factories
 from feed.views import StakeholderViewSet
-from workflow.models import Stakeholder, Organization, WorkflowLevel1, \
-    WorkflowTeam
+from workflow.models import Stakeholder, WorkflowLevel1, WorkflowTeam
 
 
 class StakeholderListViewTest(TestCase):

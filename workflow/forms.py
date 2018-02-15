@@ -11,8 +11,6 @@ from .models import WorkflowLevel1, WorkflowLevel2, WorkflowLevel3, SiteProfile,
 from indicators.models import CollectedData, Indicator
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from tola.util import getCountry
-import ast
-import collections
 
 
 #Global for approvals

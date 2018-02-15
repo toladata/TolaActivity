@@ -1,31 +1,12 @@
 import unicodedata
 import json
 import requests
-import logging
-from urlparse import urljoin
 
-from workflow.models import (Country, TolaUser, TolaSites, WorkflowTeam,
-                             WorkflowLevel1, Organization)
+from workflow.models import Country, TolaUser, TolaSites, WorkflowTeam
 from django.contrib.auth.models import User
-from django.conf import settings
 from django.core.mail import mail_admins, EmailMessage
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import user_passes_test
-
-
-# CREATE NEW DATA DICTIONARY OBJECT
-def siloToDict(silo):
-    parsed_data = {}
-    key_value = 1
-    for d in silo:
-        label = unicodedata.normalize('NFKD', d.field.name).encode('ascii','ignore')
-        value = unicodedata.normalize('NFKD', d.char_store).encode('ascii','ignore')
-        row = unicodedata.normalize('NFKD', d.row_number).encode('ascii','ignore')
-        parsed_data[key_value] = {label : value}
-
-        key_value += 1
-
-    return parsed_data
 
 
 def getCountry(user):
@@ -38,16 +19,6 @@ def getCountry(user):
         get_countries = Country.objects.all().filter(id__in=user_countries)
 
         return get_countries
-
-
-def get_programs_user(user):
-    """
-    Returns a list of Programs (WorkflowLevel1) ID's where the user has access
-    to.
-    """
-    # get user
-    return WorkflowTeam.objects.filter(
-        workflow_user__user=user).values_list('workflowlevel1__id', flat=True)
 
 
 def emailGroup(country, group, link, subject, message, submiter=None):
@@ -119,23 +90,3 @@ def group_required(*group_names, **url):
             raise PermissionDenied
         return False
     return user_passes_test(in_groups)
-
-
-def register_in_track(data, tolauser):
-        headers = {
-            'Authorization': 'Token {}'.format(settings.TOLA_TRACK_TOKEN),
-        }
-
-        url_subpath = 'accounts/register/'
-        url = urljoin(settings.TOLA_TRACK_URL, url_subpath)
-
-        response = requests.post(url, data=data, headers=headers)
-        logger = logging.getLogger(__name__)
-        if response.status_code == 201:
-            logger.info("The TolaUser %s (id=%s) was created successfully in "
-                        "Track." % (tolauser.name, tolauser.id))
-        elif response.status_code in [400, 403]:
-            logger.warning("The TolaUser %s (id=%s) could not be created "
-                           "successfully in Track." %
-                           (tolauser.name, tolauser.id))
-        return response

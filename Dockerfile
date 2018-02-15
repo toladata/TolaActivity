@@ -6,10 +6,10 @@ WORKDIR /code
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install nginx -y
 
-ADD docker/etc/nginx/nginx.conf /etc/nginx/nginx.conf
+ADD docker/etc/nginx/tola.conf /etc/nginx/conf.d/tola.conf
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements/production.txt
 
-EXPOSE 8000
+EXPOSE 8080
 
-CMD ["sh", "-c", "/code/docker-entrypoint.sh"]
+ENTRYPOINT ["/code/docker-entrypoint.sh"]

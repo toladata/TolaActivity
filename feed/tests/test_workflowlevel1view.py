@@ -2,6 +2,8 @@ from django.test import TestCase
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 
+from mock import Mock, patch
+
 import json
 import factories
 from feed.views import WorkflowLevel1ViewSet

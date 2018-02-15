@@ -4,14 +4,16 @@ import logging
 import os
 
 from django.conf import settings
+from django.contrib.sites.models import Site
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import transaction, IntegrityError, connection
 
 import factories
 from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
-                               CollectedData)
+                               CollectedData, SiteProfile)
 from workflow.models import (
     ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
     ROLE_PROGRAM_TEAM, Organization, Country, TolaUser, Group, Sector,
@@ -108,14 +110,19 @@ class Command(BaseCommand):
         Group.objects.all().delete()
         Country.objects.exclude(code__in=DEFAULT_COUNTRY_CODES).delete()
         Sector.objects.all().delete()
+        SiteProfile.history.all().delete()
+        SiteProfile.objects.all().delete()
         Stakeholder.objects.all().delete()
         Milestone.objects.all().delete()
         WorkflowLevel1.objects.all().delete()
+        WorkflowLevel2.history.all().delete()
         WorkflowLevel2.objects.all().delete()
         Level.objects.all().delete()
         Frequency.objects.all().delete()
+        Indicator.history.all().delete()
         Indicator.objects.all().delete()
         PeriodicTarget.objects.all().delete()
+        CollectedData.history.all().delete()
         CollectedData.objects.all().delete()
         WorkflowLevel1Sector.objects.all().delete()
         WorkflowTeam.objects.all().delete()
@@ -132,6 +139,14 @@ class Command(BaseCommand):
                 level_3_label="Activity",
                 level_4_label="Component",
             )
+
+    def _create_site(self):
+        site = Site.objects.get(id=1)
+        site.domain='toladata.io'
+        site.name = 'API'
+        site.save()
+
+        factories.TolaSites(site=get_current_site(None))
 
     def _create_groups(self):
         self._groups.append(factories.Group(
@@ -2926,6 +2941,7 @@ class Command(BaseCommand):
 
         self.stdout.write('Creating basic data')
         self._create_organization()
+        self._create_site()
         self._create_groups()
         self._create_countries()
         self._create_sectors()

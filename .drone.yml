@@ -1,9 +1,9 @@
 ---
 pipeline:
-  build:
+  test:
     image: python:${PYTHON_VERSION}
     commands:
-      - pip install -r requirements-ci.txt
+      - pip install -r requirements/ci.txt
       - python manage.py test
     when:
       event: [push, tag]
@@ -13,7 +13,9 @@ pipeline:
       - TOLA_DB_USER=root
       - TOLA_DB_PASS=root
       - TOLA_DB_HOST=postgres
+      - TOLA_TRACK_SYNC_ENABLED=False
       - DEFAULT_ORG=TolaData
+
   build-docker-image:
     image: plugins/docker
     insecure: true
@@ -26,7 +28,7 @@ pipeline:
     secrets: [DOCKER_USERNAME, DOCKER_PASSWORD]
     when:
       event: [push, tag]
-      branches: [master, dev-v2]
+      branch: [master, demo, staging]
       status: [success]
 
   trigger-deployment:
@@ -41,7 +43,7 @@ pipeline:
     params: "APP_ID=/tolaactivity,APP_GROUP=toladata,APP_NAME=TolaActivity,APP_BRANCH=${DRONE_COMMIT_BRANCH},APP_COMMIT=${DRONE_COMMIT_SHA},APP_TAG=${DRONE_TAG},APP_IMAGE=registry.tola.io/toladata/tolaactivity:${DRONE_COMMIT_SHA}"
     when:
       event: [push, tag]
-      branches: [master, dev-v2]
+      branch: [master, demo, staging]
       status: [success]
 
   notify:
@@ -50,9 +52,9 @@ pipeline:
     username: Drone-CI
     secrets: [SLACK_WEBHOOK]
     when:
-      status: [failure]
       event: [push, tag]
-      branches: [master, dev-v2]
+      branch: [master, demo, staging]
+      status: [failure]
 
 services:
   postgres:

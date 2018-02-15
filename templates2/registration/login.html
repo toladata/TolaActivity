@@ -17,6 +17,7 @@
               </div>
           </div>
             <p class="text-center login-page__or-seperator__wrap"> <span class="login-page__or-seperator">or</span></p>
+            {% if not is_demo_branch %}
             <div class="social-buttons row">
                 <div class="col-md-6">
                     <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-block  btn-social btn-social--google"><i class="icon-google"></i>Login with Google</a>
@@ -25,6 +26,7 @@
                     <a href="{% url 'social:begin' 'microsoft-graph' %}" class="btn btn-social btn-social--microsoft"><i class="icon-microsoft"></i>Login with Microsoft</a>
                 </div>
             </div>
+            {% endif %}
           <p class="mt-4 text-center">
               Don't have an account? <a href="{% url 'register' %}">Register a new TolaData Account</a><br/>
           </p>

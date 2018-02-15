@@ -475,21 +475,3 @@ def Notebook(request,id=0):
     """
     getNotebook = JupyterNotebooks.objects.get(id=id)
     return render(request, "customdashboard/notebook.html", {'getNotebook':getNotebook})
-
-#RRIMA JupyterView (in use 12/16)
-def RRIMAJupyterView1(request,id=0):
-    """
-    RRIMA custom dashboard TODO: Migrate this to the existing configurable dashboard
-    :param request:
-    :param id:
-    :return:
-    """
-    model = WorkflowLevel1
-    workflowlevel1_id = 1#id ##USE TURKEY workflowlevel1 ID HERE
-    # getworkflowlevel1 = workflowlevel1.objects.all().filter(id=workflowlevel1_id)
-
-    ## retrieve the coutries the user has data access for
-    countries = getCountry(request.user)
-    with open('static/rrima.html') as myfile: data = "\n".join(line for line in myfile)
-
-    return HttpResponse(data)

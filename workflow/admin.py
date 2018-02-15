@@ -170,9 +170,9 @@ class TolaBookmarksAdmin(admin.ModelAdmin):
 
 
 class TolaUserAdmin(admin.ModelAdmin):
-    list_display = ('name', 'country')
+    list_display = ('name', 'country', 'organization')
     display = 'Tola User'
-    list_filter = ('country', 'user__is_staff',)
+    list_filter = ('country', 'user__is_staff', 'organization')
     search_fields = ('name', 'country__country', 'title')
 
 

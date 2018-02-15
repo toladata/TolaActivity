@@ -9,9 +9,9 @@ from mock import Mock, patch
 import factories
 from feed.views import CustomFormViewSet
 from formlibrary.models import CustomForm
-from workflow.models import (WorkflowLevel1, WorkflowTeam,
-                             ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM,
-                             ROLE_PROGRAM_ADMIN, ROLE_VIEW_ONLY)
+from workflow.models import (
+    WorkflowTeam, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_TEAM,
+    ROLE_PROGRAM_ADMIN, ROLE_VIEW_ONLY)
 
 
 class CustomFormListViewsTest(TestCase):

@@ -45,7 +45,6 @@ services:
       - elasticsearch
     environment:
       - DJANGO_SETTINGS_MODULE=tola.settings.dev
-      - TOLA_DEBUG=True
       - TOLA_ERROR_LOG=error.log
       - TOLA_HOSTNAME=127.0.0.1,localhost
       - TOLA_DB_ENGINE=django.db.backends.postgresql_psycopg2
@@ -55,8 +54,9 @@ services:
       - TOLA_DB_HOST=postgres
       - TOLA_DB_PORT=5432
       - ELASTICSEARCH_URL=http://elasticsearch:9200/
-      - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=445847194486-gl2v6ud6ll65vf06vbjaslqqgejad61k.apps.googleusercontent.com
-      - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=qAAdNMQy77Vwqgj4YgOu20f7
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=1090285679254-ep8e9kh2p2juqq8u169fqr5ijfnuaihm.apps.googleusercontent.com
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=kfy1DGJ3POZYtWMGX0l1yoMi
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS=toladata.com,humanitec.com,treeaid.org,gmail.com
       - SOCIAL_AUTH_LOGIN_REDIRECT_URL=http://dev-v2.tolaactivity.app.tola.io/
       - SOCIAL_AUTH_MICROSOFT_GRAPH_KEY=63783b55-0c15-4e94-8ceb-4de040fea71d
       - SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET=w8zgk5dz5JVErCNzc8Jz7EM
@@ -64,3 +64,7 @@ services:
       - TOLA_ACTIVITY_URL=http://tolaactivity.dev.com
       - TOLA_TRACK_URL=http://tolatrack.dev.com
       - DEFAULT_ORG=TolaData
+      - CHARGEBEE_SIGNUP_ORG_URL=https://toladata-test.chargebee.com/hosted_pages/plans/monthly?addons[id][0]=user&addons[quantity][0]=1
+      - CHARGEBEE_SITE_API_KEY=test_31lcdE7L3grqdkGcvy24ik3lmlJrnA0Ez
+      - CHARGEBEE_SITE=toladata-test
+      - TOLA_TRACK_SYNC_ENABLED=False

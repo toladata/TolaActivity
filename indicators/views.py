@@ -16,7 +16,6 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
 from django.http import HttpResponse
-from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
@@ -1235,8 +1234,6 @@ class DisaggregationPrint(DisaggregationReportMixin, TemplateView):
         #return super(DisaggregationReport, self).get(request, *args, **kwargs)
         return res
 
-from django.template.loader import render_to_string
-#import tempfile
 
 class TVAPrint(TemplateView):
     template_name = 'indicators/tva_print.html'
@@ -1249,36 +1246,19 @@ class TVAPrint(TemplateView):
             .filter(program=program)\
             .annotate(actuals=Sum('collecteddata__achieved'))
 
-        #hmtl_string = render_to_string('indicators/tva_print.html', {'data': context['data'], 'program': context['program']})
         hmtl_string = render(request, 'indicators/tva_print.html', {'data': indicators, 'program': program})
         pdffile = HTML(string=hmtl_string.content)
-        # stylesheets=[CSS(string='@page { size: letter; margin: 1cm}')]
         result = pdffile.write_pdf(stylesheets=[CSS(
             string='@page {\
                 size: letter; margin: 1cm;\
                 @bottom-right{\
                     content: "Page " counter(page) " of " counter(pages);\
                 };\
-            }'\
+            }'
         )])
         res = HttpResponse(result, content_type='application/pdf')
-        #res['Content-Disposition'] = 'inline; filename="ztvareport.pdf"'
         res['Content-Disposition'] = 'attachment; filename=tva.pdf'
         res['Content-Transfer-Encoding'] = 'binary'
-        """
-        with tempfile.NamedTemporaryFile(delete=True) as output:
-            output.write(result)
-            output.flush()
-            output = open(output.name, 'r')
-            res.write(output.read())
-        """
-        """
-        # Create the PDF object, using the response object as its "file."
-        p = canvas.Canvas(res)
-        p.drawString(100, 100, 'hello world!')
-        p.showPage()
-        p.save()
-        """
         return res
 
 class TVAReport(TemplateView):
