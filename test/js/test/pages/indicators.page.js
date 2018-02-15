@@ -14,11 +14,18 @@ parms.baseurl += '/indicators/home/0/0/0';
  * Click the Indicators dropdown button
  * @returns Nothing
  */
+/*
+> $$('span.select2-selection--single')[0].getText()
+'Filter by program'
+> $$('span.select2-selection--single')[1].getText()
+'Filter by indicator'
+> $$('span.select2-selection--single')[2].getText()
+'Filter by indicator type'
+*/
 function clickIndicatorsDropdown() {
-  // $$('span.select2-selection--single')[0].getText()
-  // 'Filter by program'
-  let span = browser.$$('span.select2-selection--single')[1];
-  span.click();
+  let span = $('span.select2-selection--single');
+  let indicatorsDropdown = span.$('span#select2-id_indicators_filter_dropdown-container');
+  indicatorsDropdown.click();
 }
 
 /**
@@ -34,8 +41,9 @@ function clickIndicatorsLink() {
  * @returns Nothing
  */
 function clickIndicatorTypeDropdown() {
-  let span = $$('span.select2-selection--single')[2];
-  span.click();
+  let span = $('span.select2-selection--single');
+  let indicatorTypesDropdown = span.$('span#select2-id_indicatortypes_filter_dropdown-container');
+  indicatorTypesDropdown.click();
 }
 
 /**
@@ -43,8 +51,9 @@ function clickIndicatorTypeDropdown() {
  * @returns Nothing
  */
 function clickProgramsDropdown() {
-  let span = $$('span.select2-selection--single')[0];
-  span.click();
+  let span = $('span.select2-selection--single');
+  let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  programsDropdown.click();
 }
 
 /**
