@@ -1280,7 +1280,8 @@ class WorkflowTeamViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    filter_fields = ('workflowlevel1__organization__id',)
+    filter_fields = ('workflowlevel1__organization__id',
+                     'workflow_user__tola_user_uuid')
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     permission_classes = (AllowTolaRoles,)
     queryset = wfm.WorkflowTeam.objects.all()
