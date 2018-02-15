@@ -16,47 +16,50 @@
         white-space: nowrap;
     }
 </style>
-<div id="id_filtersDropdown" class="row">
-    <div class="col-sm-5" style="padding-right: 2px;">
-        {% if getPrograms %}
-            <select name="programs_filter" id="id_programs_filter_dropdown" class="select form-control" >
-                <option value = "0">-- All --</option>
-            {% for program in getPrograms %}
-                <option value="{{ program.id }}">{{ program.gaitid }} - {{ program.name|truncatechars:85 }}</option>
-            {% endfor %}
-            </select>
-        {% endif %}
-    </div>
-
-    <div class="col-sm-5" style="padding-right: 2px; padding-left: 0px;">
-        {% if getIndicators %}
-            <select name="indicators_filter" id="id_indicators_filter_dropdown" class="select form-control">
-                <option value = "0">-- All --</option>
-                {% for item in getIndicators %}
-                    <option value="{{ item.id }}">{{ item.number|default_if_none:'' }} - {{ item.name|truncatechars:82}} </option>
+<div id="id_filtersDropdown">
+    <div class="row">
+        <div class="col-sm-5" style="padding-right: 2px;">
+            {% if getPrograms %}
+                <select name="programs_filter" id="id_programs_filter_dropdown" class="select form-control" >
+                    <option value = "0">-- All --</option>
+                {% for program in getPrograms %}
+                    <option value="{{ program.id }}">{{ program.gaitid }} - {{ program.name|truncatechars:85 }}</option>
                 {% endfor %}
-            </select>
-        {% endif %}
-    </div>
+                </select>
+            {% endif %}
+        </div>
 
-    <div class="col-sm-2" style="padding-left: 0px;">
-        {%if getIndicatorTypes %}
-            <select name="indicatortypes_filter" id="id_indicatortypes_filter_dropdown" class="select form-control">
-                <option value = "0">-- All --</option>
-                {% for item in getIndicatorTypes %}
-                <option value="{{ item.id }}">{{ item.indicator_type }}</option>
-                {% endfor %}
-            </select>
-        {% endif %}
-    </div>
+        <div class="col-sm-5" style="padding-right: 2px; padding-left: 0px;">
+            {% if getIndicators %}
+                <select name="indicators_filter" id="id_indicators_filter_dropdown" class="select form-control">
+                    <option value = "0">-- All --</option>
+                    {% for item in getIndicators %}
+                        <option value="{{ item.id }}">{{ item.number|default_if_none:'' }} - {{ item.name|truncatechars:82}} </option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+        </div>
 
-    <div class="form-group">
+        <div class="col-sm-2" style="padding-left: 0px;">
+            {%if getIndicatorTypes %}
+                <select name="indicatortypes_filter" id="id_indicatortypes_filter_dropdown" class="select form-control">
+                    <option value = "0">-- All --</option>
+                    {% for item in getIndicatorTypes %}
+                    <option value="{{ item.id }}">{{ item.indicator_type }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5">
         {% if export_to_pdf_url %}
-            <button id="export_to_pdf_button" class="btn btn-default pull-right" onclick="export_to_pdf()">Export to PDF</button>
+            <button id="export_to_pdf_button" class="btn btn-default" onclick="export_to_pdf()">Export to PDF</button>
         {% endif %}
         {% if disaggregationprint_button %}
-            <button id="export_to_pdf_button" class="btn btn-default pull-right" onclick="export_to_pdf()">Export to PDF</button>
+            <button id="export_to_pdf_button" class="btn btn-default" onclick="export_to_pdf()">Export to PDF</button>
         {% endif %}
+    </div>
     </div>
 </div>
 
