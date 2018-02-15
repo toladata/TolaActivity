@@ -49,10 +49,10 @@ function loadIndicators(program, indicator, type){
         <div class='card'>
             <div class='card-header'>
                 {{ program.name|truncatechars:85 }}
-                    <span style="float: right;" class="btn-group" role="group">
-                        <a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-sm btn-success">New Indicator</a>
-                        <a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">Grid/Print Report</a>
-                    </span>
+                <span style="float: right;" class="btn-group" role="group">
+                    <a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-sm btn-secondary"><i class="fas fa-plus-circle"></i> New Indicator</a>
+                    <a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">Grid/Print Report</a>
+                </span>
             </div>
             {% if not program.indicator_set.all %}
                 <div class='card-body'>
@@ -61,9 +61,9 @@ function loadIndicators(program, indicator, type){
                 </div>
             {% else %}
                 <div class='card-body'>
-                    <a id="id_btnOpenindicatorsForProgramId_{{ program.id}}" onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
+                    <a id="id_btnOpenindicatorsForProgramId_{{ program.id}}" onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-outline-info" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators <i class="fas fa-chevron-right"></i></a>
                 </div>
-                <div id="hidden-{{ program.id }}" class="accordian-body collapse">
+                <div id="hidden-{{ program.id }}" class="collapse">
                     {% include "indicators/program_indicators_table.html" %}
                 </div>
             {% endif %}

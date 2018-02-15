@@ -6,7 +6,7 @@ html {
 }
 body {
     font-family: Arial;
-    font-size:  87.5%;
+    /*font-size:  87.5%;*/
     /* Margin bottom by footer height */
     height: 100%;
     margin-bottom: 60px;
