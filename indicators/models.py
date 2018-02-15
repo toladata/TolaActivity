@@ -320,9 +320,10 @@ class IndicatorManager(models.Manager):
 
 from search.utils import ElasticsearchIndexer
 
+
 class Indicator(models.Model):
     indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True, blank=True)
-    indicator_type = models.ManyToManyField(IndicatorType, blank=True, help_text="If indicator was pulled from aservie select one here")
+    indicator_type = models.ManyToManyField(IndicatorType, blank=True, help_text="If indicator was pulled from a service select one here")
     level = models.ForeignKey(Level, null=True, blank=True, on_delete=models.SET_NULL, help_text="The results framework level goal, objective etc. for this indicator")
     objectives = models.ManyToManyField(Objective, blank=True,verbose_name="Objective", related_name="obj_indicator", help_text="Internal stated objective")
     strategic_objectives = models.ManyToManyField(StrategicObjective, verbose_name="Country Strategic Objective", blank=True, related_name="strat_indicator", help_text="Organizational objectives")
@@ -348,7 +349,7 @@ class Indicator(models.Model):
     data_issues = models.TextField(max_length=500, null=True, blank=True, verbose_name="Data Issues", help_text="Problems with the data quality if any")
     indicator_changes = models.TextField(max_length=500, null=True, blank=True, verbose_name="Changes to Indicator", help_text="How did the indicator change over time if at all")
     comments = models.TextField(max_length=255, null=True, blank=True, help_text="")
-    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, help_text="Related workflowlevel1 or project/prgoram etc.")
+    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, help_text="Related workflowlevel1 or project/program etc.")
     sector = models.ForeignKey(Sector, null=True, blank=True, help_text="Primary related sector or type of work done")
     sub_sector = models.ManyToManyField(Sector, blank=True, related_name="indicator_sub_sector", help_text="Additiona related sectors or type of work if any")
     key_performance_indicator = models.BooleanField("Key Performance Indicator?",default=False, help_text="Yes/No is this a key measurement for the overall effort")
@@ -455,11 +456,11 @@ class CollectedDataManager(models.Manager):
 
 class CollectedData(models.Model):
     data_uuid = models.CharField(max_length=255,verbose_name='Data UUID', default=uuid.uuid4, unique=True, blank=True, help_text="")
-    periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True, help_text="Releate this collection to a periodic target")
+    periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True, help_text="Relate this collection to a periodic target")
     #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
     achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2, default=Decimal('0.00'), help_text="Actual or total for this record")
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True, help_text="Values for each disaggregated field")
-    description = models.TextField("Remarks/comments", blank=True, null=True, help_text="HOw was this data collected")
+    description = models.TextField("Remarks/comments", blank=True, null=True, help_text="How was this data collected")
     indicator = models.ForeignKey(Indicator, help_text="Related indicator for this data")
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, related_name="i_workflowlevel2", verbose_name="Project Initiation", help_text="Related workflowlevel1 for this data if no indicator")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True, related_name="i_workflowlevel1", help_text="Related workflowlevel1 if no workflowlevel 2 for this data and no indicator")
