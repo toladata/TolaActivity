@@ -23,7 +23,7 @@ parms.baseurl += '/indicators/home/0/0/0';
 'Filter by indicator type'
 */
 function clickIndicatorsDropdown() {
-  let span = $('span.select2-selection--single');
+  let span = $$('span.select2-selection--single')[1];
   let indicatorsDropdown = span.$('span#select2-id_indicators_filter_dropdown-container');
   indicatorsDropdown.click();
 }
@@ -41,7 +41,7 @@ function clickIndicatorsLink() {
  * @returns Nothing
  */
 function clickIndicatorTypeDropdown() {
-  let span = $('span.select2-selection--single');
+  let span = $$('span.select2-selection--single')[2];
   let indicatorTypesDropdown = span.$('span#select2-id_indicatortypes_filter_dropdown-container');
   indicatorTypesDropdown.click();
 }
@@ -51,7 +51,7 @@ function clickIndicatorTypeDropdown() {
  * @returns Nothing
  */
 function clickProgramsDropdown() {
-  let span = $('span.select2-selection--single');
+  let span = $$('span.select2-selection--single')[0];
   let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
   programsDropdown.click();
 }
