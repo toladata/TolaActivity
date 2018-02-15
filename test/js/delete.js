@@ -21,13 +21,14 @@ describe('Deleting a lot of indicators', function() {
       browser.waitForVisible('div#ajaxloading', true, 10*msec);
     }
     IndPage.selectProgram('Tola Rollout');
-    let buttons = TargetsTab.getProgramIndicatorButtons();
-    buttons[0].click();
+    let indButtons = TargetsTab.getProgramIndicatorButtons();
+    indButtons[0].click();
 
     let indicatorList, indicator, confirmBtn
     let deleteCnt = 0;
     let indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
-    while (indicatorCount > 8) {
+    let buttons = new Array();
+    while (indicatorCount > 6) {
       indicatorList = TargetsTab.getProgramIndicatorsTable();
       indicator = indicatorList.shift();
       indicator.click();
