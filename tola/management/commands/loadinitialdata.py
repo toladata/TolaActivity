@@ -1515,7 +1515,6 @@ class Command(BaseCommand):
             expected_start_date="2018-10-01T11:00:00Z",  # TODO
             expected_end_date="2018-09-30T11:00:00Z",  # TODO
             created_by=self._tolauser_ninette.user,  # 11
-            on_time=False,
             progress="tracking",
             status="yellow",
         ))
@@ -1528,7 +1527,6 @@ class Command(BaseCommand):
             expected_start_date="2018-10-01T11:00:00Z",  # TODO
             expected_end_date="2018-09-30T11:00:00Z",  # TODO
             created_by=self._tolauser_ninette.user,  # 11
-            on_time=False,
             progress="closed",
             status="yellow",
         ))
