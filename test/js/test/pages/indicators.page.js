@@ -123,11 +123,9 @@ function getIndicatorsDropdownList() {
 }
 
 /**
- * Get a list of the programs Programs dropdown. If which is empty or "strings",
- * returns a list of the names; if which is "links" or anything else, return the
- * list as clickable links so they can be selected.
- * @returns {Array<string>|<link>} an array of either the text strings making up the
- * Programs dropdown menu or the actual clickable links on the Programs dropdown menu
+ * Get a list of the programs Programs dropdown.
+ * @returns {Array<string>} an array of the text strings making up the Programs 
+ * dropdown menu
  */
 function getProgramsDropdownList() {
   //let span = $('span.select2-selection--single');
@@ -188,9 +186,9 @@ function pageName() {
  */
 function selectProgram(program) {
   clickProgramsDropdown();
-  let selectList = browser.$('select#id_programs_filter_dropdown');
-  let listItems = selectList.$$('option');
-  let programs = new Array();
+  let span = $('span.select2-selection--single');
+  let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  let listItems = programsDropdown.$$('option');
   for (let listItem of listItems) {
     let s = listItem.getText();
     let v = listItem.getValue();
@@ -199,7 +197,6 @@ function selectProgram(program) {
       break;
     }
   }
-  clickProgramsDropdown();
 }
 
 exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
