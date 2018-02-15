@@ -130,11 +130,53 @@
                             </li>
                         {% endif %}
                     </ul>
+<<<<<<< HEAD
                     <!-- <span class="navbar-text"> Navbar text wit
                     </span>
                     <ul class="navbar-nav"> <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
                         <li class="nav-item active">
                             <a class="nav-link" href="#">Login</a>
+=======
+
+                    {% if user.is_authenticated  %}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                {% if "demo" in request.build_absolute_uri %}
+                                    <span class="label label-danger">DEMO</span>
+                                {% elif  "127." in request.build_absolute_uri or "localhost" in request.build_absolute_uri %}
+                                    <span class="label label-danger">LOCAL</span>
+                                {% elif "dev" in request.build_absolute_uri %}
+                                    <span class="label label-danger">DEV</span>
+                                {% elif "report" in request.build_absolute_uri %}
+                                    <span class="label label-info">REPORT</span>
+                                {% endif %}
+                                <span class="glyphicon glyphicon-user"></span> {{ user.tola_user.name }} <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-lock"></span> Logout</a></li> -->
+                                <li><a href="{% url 'profile' %}"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+                                <li><a href="{% url 'profile' %}"><span>{{ user.tola_user.countries_list }}</span></a></li>
+                            </ul>
+                        </li><!-- .dropdown collapse -->
+                        <!-- bookmarks -->
+                        <li class="dropdown-submenu">
+                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                 <span class="glyphicon glyphicon-bookmark"></span> Bookmarks<b class="caret"></b>
+                             </a>
+                             <ul class="dropdown-menu" id="bookmarks">
+                                 {% if request.path in user.tola_user.tolabookmark.bookmark_url %}
+                                    <li>This page is in your bookmarks!</li>
+                                 {% else %}
+                                    <li><a onClick="newBookmark('{{ request.path }}','{{ user }}')"><span class="glyphicon glyphicon-star-empty"></span> <b>Bookmark Current Page</b></a></li>
+                                 {% endif %}
+                                 {% if user.tola_user.tolabookmark %}
+                                     {% for bookmark in user.tola_user.tolabookmark.all %}
+                                        <li><a href="{{ bookmark.bookmark_url }}"><span class="glyphicon glyphicon-star"></span> {{ bookmark.name }}</a></li>
+                                     {% endfor %}
+                                 {% endif %}
+                             </ul>
+>>>>>>> new_dev
                         </li>
                     </ul> -->
                     <ul class="navbar-nav">

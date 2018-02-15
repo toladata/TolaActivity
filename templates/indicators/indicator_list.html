@@ -61,7 +61,7 @@ function loadIndicators(program, indicator, type){
                 </div>
             {% else %}
                 <div class='card-body'>
-                    <a onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
+                    <a id="id_btnOpenindicatorsForProgramId_{{ program.id}}" onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
                 </div>
                 <div id="hidden-{{ program.id }}" class="accordian-body collapse">
                     {% include "indicators/program_indicators_table.html" %}
@@ -255,6 +255,7 @@ function loadIndicators(program, indicator, type){
 
     $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
         var url = getUrl();
+        sessionStorage.setItem("openProgram", "true");
         window.location.href = url;
     });
 
@@ -264,6 +265,15 @@ function loadIndicators(program, indicator, type){
         window.location.href = url;
     });
 
+    window.onload = function() {
+        var programId = `{{ programs.0.id }}`;
+
+        if (sessionStorage.getItem('openProgram')) {
+            sessionStorage.removeItem("openProgram");
+            loadIndicators(programId, indicatorId, 0);
+            $("#hidden-"+programId).collapse('show');
+        }
+    }
  </script>
 {% include 'indicators/indicator_form_common_js.html' %}
 {% include 'indicators/collecteddata_form_common_js.html' %}
