@@ -16,7 +16,7 @@ update-all:
 	@cd node_modules && npm update --dev --save && cd ..
 
 clean:
-	@rm -fvr doc errorShots node_modules selenium-server.log
+	@rm -fvr doc errorShots node_modules selenium-server.log server.log
 
 server:
 	@java -jar \

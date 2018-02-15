@@ -122,6 +122,20 @@ function getIndicatorsDropdownList() {
   return indicators;
 }
 
+function getProgramIndicatorsTableCount(targetId) {
+  let tableDiv = $('div#toplevel_div').$('div.panel');
+  let table = tableDiv.$(targetId).$('table.hiddenTable');
+  let rows = table.$$('tbody>tr>td>a');
+  let rowCnt = 0;
+  for (let row of rows) {
+    let text = row.getText();
+    if (text.length > 0) {
+      rowCnt++;
+    }
+  }
+  return rowCnt;
+}
+
 /**
  * Get a list of the programs Programs dropdown.
  * @returns {Array<string>} an array of the text strings making up the Programs 
@@ -208,6 +222,7 @@ exports.getAlertMsg = getAlertMsg;
 exports.getIndicatorName = getIndicatorName;
 exports.getIndicatorTypeList = getIndicatorTypeList;
 exports.getIndicatorsDropdownList = getIndicatorsDropdownList;
+exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
 exports.getProgramsDropdownList = getProgramsDropdownList;
 exports.getProgramsTable = getProgramsTable;
 exports.open = open;
