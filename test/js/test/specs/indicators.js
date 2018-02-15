@@ -26,7 +26,7 @@ describe('TolaActivity Program Indicators page', function() {
   describe('Programs dropdown', function() {
     it('should be present on page', function() {
 			if (browser.isVisible('div#ajaxloading')) {
-				browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
+				browser.waitForVisible('div#ajaxloading', delay, true);
 		  }
       IndPage.clickProgramsDropdown();
       IndPage.clickProgramsDropdown();
@@ -53,18 +53,16 @@ describe('TolaActivity Program Indicators page', function() {
       };
     });
 
-    it('should filter programs table by selected program name', function() {
-      let progList = IndPage.getProgramsDropdownList();
-      let listItem = progList[0];
-      IndPage.selectProgram(listItem);
-
-      // should have a single row in the table
-      let progTable = IndPage.getProgramsTable();
-      // row should be the one selected from the dropdown
-      let rowText = progTable[0].split('\n')[0].trim();
-      let listText = listItem.split('-')[1].trim();
-      assert.equal(rowText, listText, 'program name mismtach');
-    });
+		it('should filter programs table by selected program name', function() {
+			let selectList = browser.$('select#id_programs_filter_dropdown');
+			let progTable = selectList.$$('options');
+			for (let listItem of progTable) {
+				let s = listItem.getText();
+				if (! s.includes('-- All --')) {
+					browser.selectByVisibleText(s);
+				}
+			}
+		});
   }); // end programs dropdown tests
 
   describe('Indicators dropdown', function() {
@@ -123,14 +121,29 @@ describe('TolaActivity Program Indicators page', function() {
 		IndPage.clickIndicatorsLink();
     let buttons = TargetsTab.getProgramIndicatorButtons();
     for (let button of buttons) {
+      // Get indicator count from the button
       let buttonCnt = parseInt(button.getText());
       let targetDiv = button.getAttribute('data-target');
+
       // Expand the table
       button.click();
+		  if(browser.isVisible('div#ajaxloading')) {
+			  browser.waitForVisible('div#ajaxloading', delay, true);
+		  }
+
       // Get indicator count from table
-      let table = $('='+targetDiv).$('table');
+      let table = $('div.panel-heading').$('div.panel-body').$('table');
+      let rows = table.$('tbody').$$('tr>td>a.indicator-link');
+      let tableCnt = rows.length;
+
       // collapse the table
+			if (browser.isVisible('div#ajaxloading')) {
+				browser.waitForVisible('div#ajaxloading', delay, true);
+		  }
       button.click();
+
+      // Should be the same count
+      assert.equal(buttonCnt, tableCnt, 'Indicator count mismatch with table count');
     }
   }, 3); // Try this flaky test up to 3 times before failing
 
