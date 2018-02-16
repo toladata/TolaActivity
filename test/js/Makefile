@@ -7,7 +7,7 @@ help:
 	@echo "doc: (re)generate test suite documentation"
 
 install:
-	@npm install --verbose
+	@npm install --verbose --save-dev
 
 update:
 	@npm update --dev --save
