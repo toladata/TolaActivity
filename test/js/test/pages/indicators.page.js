@@ -4,24 +4,25 @@
  */
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
-const msec = 1000;
 
 var util = require('../lib/testutil.js');
 var parms = util.readConfig();
+
+// milliseconds
+const msec = 1000;
 parms.baseurl += '/indicators/home/0/0/0';
+
+/*
+ * dropdowns = $$('span.select2-selection--single');
+ * programsDropdown = dropdowns[0];
+ * indicatorsDropdown = dropdowns[1];
+ * indicatorTypesDropdown = dropdowns[2]
+*/
 
 /**
  * Click the Indicators dropdown button
  * @returns Nothing
  */
-/*
-> $$('span.select2-selection--single')[0].getText()
-'Filter by program'
-> $$('span.select2-selection--single')[1].getText()
-'Filter by indicator'
-> $$('span.select2-selection--single')[2].getText()
-'Filter by indicator type'
-*/
 function clickIndicatorsDropdown() {
   let span = $$('span.select2-selection--single')[1];
   let indicatorsDropdown = span.$('span#select2-id_indicators_filter_dropdown-container');
@@ -33,7 +34,9 @@ function clickIndicatorsDropdown() {
  * @returns Nothing
  */
 function clickIndicatorsLink() {
-  browser.$('ul.nav.navbar-nav').$('=Indicators').click();
+  let indicatorsLink = browser.$('ul.nav.navbar-nav').$('=Indicators');
+  indicatorsLink.click();
+  browser.waitForVisible('h2=Program Indicators');
 }
 
 /**
@@ -75,9 +78,9 @@ function getAlertMsg() {
 }
 
 /**
- * Get the current indicator name (from the Performance tab)
- * @returns {string} The current value of the indicator name from the Performance
- * tab of the indicator detail screen
+ * Get the current indicator name (from the Performance tab) on the indicator
+ * detail screen
+ * @returns {string} The indicator name
  */
 function getIndicatorName() {
   let targetsTab = browser.$('=Performance');
@@ -122,6 +125,14 @@ function getIndicatorsDropdownList() {
   return indicators;
 }
 
+/**
+ * Get the number of program indicators for the table in a div named
+ * targetId. This is the program indicators table for the the given
+ * program.
+ * @param {string} targetId The target div containing the table you
+ * want to enumerate
+ * @returns {integer} The number of indicators in the specified table
+ */
 function getProgramIndicatorsTableCount(targetId) {
   let tableDiv = $('div#toplevel_div').$('div.panel');
   let table = tableDiv.$(targetId).$('table.hiddenTable');
@@ -137,15 +148,11 @@ function getProgramIndicatorsTableCount(targetId) {
 }
 
 /**
- * Get a list of the programs Programs dropdown.
- * @returns {Array<string>} an array of the text strings making up the Programs 
+ * Get a list of the program name in the Programs dropdown.
+ * @returns {Array<string>} an array of the text strings in the Programs 
  * dropdown menu
  */
 function getProgramsDropdownList() {
-  //let span = $('span.select2-selection--single');
-  //let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
-  //let dropdownList = browser.$('select#id_programs_filter_dropdown');
-  //let listItems = list.$$('li>a');
   let selectList = browser.$('select#id_programs_filter_dropdown');
   let listItems = selectList.$$('option');
   let programs = new Array();
@@ -158,7 +165,7 @@ function getProgramsDropdownList() {
 }
 
 /**
- * Get a list of the program names in the main Program table
+ * Get a list of the program names in the main Programs table
  * @returns {Array<string>} returns an array of the text strings of the
  * program names in the programs table
  */
@@ -200,7 +207,7 @@ function pageName() {
  */
 function selectProgram(program) {
   clickProgramsDropdown();
-  let span = $('span.select2-selection--single');
+  let span = $$('span.select2-selection--single')[0];
   let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
   let listItems = programsDropdown.$$('option');
   for (let listItem of listItems) {
