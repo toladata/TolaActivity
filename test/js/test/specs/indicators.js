@@ -25,9 +25,9 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Programs dropdown', function() {
     it('should be present on page', function() {
-			if (browser.isVisible('div#ajaxloading')) {
-				browser.waitForVisible('div#ajaxloading', delay, true);
-		  }
+      if (browser.isVisible('div#ajaxloading')) {
+        browser.waitForVisible('div#ajaxloading', delay, true);
+      }
       IndPage.clickProgramsDropdown();
       IndPage.clickProgramsDropdown();
     });
@@ -53,16 +53,16 @@ describe('TolaActivity Program Indicators page', function() {
       };
     });
 
-		it('should filter programs table by selected program name', function() {
-			let selectList = browser.$('select#id_programs_filter_dropdown');
-			let progTable = selectList.$$('options');
-			for (let listItem of progTable) {
-				let s = listItem.getText();
-				if (! s.includes('-- All --')) {
-					browser.selectByVisibleText(s);
-				}
-			}
-		});
+    it('should filter programs table by selected program name', function() {
+      let selectList = browser.$('select#id_programs_filter_dropdown');
+      let progTable = selectList.$$('options');
+      for (let listItem of progTable) {
+        let s = listItem.getText();
+        if (! s.includes('-- All --')) {
+          browser.selectByVisibleText(s);
+        }
+      }
+    });
   }); // end programs dropdown tests
 
   describe('Indicators dropdown', function() {
@@ -115,26 +115,30 @@ describe('TolaActivity Program Indicators page', function() {
 
   // FIXME: Still need to get WebDriver code out of this test
   it('should have matching indicator counts on data button and in table', function() {
-		if(browser.isVisible('div#ajaxloading')) {
-			browser.waitForVisible('div#ajaxloading', delay, true);
-		}
-		IndPage.clickIndicatorsLink();
+    if(browser.isVisible('div#ajaxloading')) {
+      browser.waitForVisible('div#ajaxloading', delay, true);
+    }
+    IndPage.clickIndicatorsLink();
     let buttons = TargetsTab.getProgramIndicatorButtons();
     for (let button of buttons) {
       let buttonCnt = parseInt(button.getText());
-      let targetDiv = button.getAttribute('data-target');
-      // Expand the table
       button.click();
-      // Get indicator count from table
-      let table = $('='+targetDiv).$('table');
-      // collapse the table
+      if(browser.isVisible('div#ajaxloading')) {
+        browser.waitForVisible('div#ajaxloading', delay, true);
+      }
+      let targetId = button.getAttribute('data-target');
+      let tableCnt = IndPage.getProgramIndicatorsTableCount(targetId);
+      assert.equal(buttonCnt, tableCnt, "Indicator count mismatch");
       button.click();
+      if(browser.isVisible('div#ajaxloading')) {
+        browser.waitForVisible('div#ajaxloading', delay, true);
+      }
     }
   }, 3); // Try this flaky test up to 3 times before failing
 
   describe('Program Indicators table', function() {
     it('should view PI by clicking its name in Indicator Name column', function() {
-			IndPage.clickIndicatorsLink();
+      IndPage.clickIndicatorsLink();
       // Make list of Indicators buttons
       let buttons = TargetsTab.getProgramIndicatorButtons();
       // Click the first one to expand the table
@@ -144,9 +148,9 @@ describe('TolaActivity Program Indicators page', function() {
       // FIXME: needs to be from table, not dropdown
       let indicatorNameList = IndPage.getIndicatorsDropdownList();
       // Click the first one
-			if (browser.isVisible('div#ajaxloading')) {
-				browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
-		  }
+      if (browser.isVisible('div#ajaxloading')) {
+        browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
+      }
       let indicatorName = indicatorNameList[0];
       TargetsTab.clickProgramIndicatorsButton(indicatorName);
     });
