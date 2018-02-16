@@ -15,6 +15,7 @@ class DevNull(object):
         pass
 
 
+@tag('pkg')
 class SyncTrackTest(TestCase):
     def setUp(self):
         self.old_stdout = sys.stdout

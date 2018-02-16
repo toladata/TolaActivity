@@ -63,6 +63,7 @@ setup(
         'tola.management.__init__',
         'tola.management.commands.__init__',
         'tola.management.commands.loadinitialdata',
+        'tola.management.commands.synctrack',
         # workflow
         'workflow.admin',
         'workflow.apps',
