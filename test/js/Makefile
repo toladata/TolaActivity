@@ -13,7 +13,7 @@ update:
 	@npm update --dev --save
 
 clean:
-	@rm -fvr doc errorShots logs node_modules
+	@rm -fvr doc errorShots node_modules selenium-server.log server.log
 
 doc:
 	@./node_modules/.bin/jsdoc --verbose \

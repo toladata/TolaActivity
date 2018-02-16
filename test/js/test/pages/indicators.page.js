@@ -7,7 +7,6 @@
 const msec = 1000;
 
 var util = require('../lib/testutil.js');
-
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
@@ -15,8 +14,18 @@ parms.baseurl += '/indicators/home/0/0/0';
  * Click the Indicators dropdown button
  * @returns Nothing
  */
+/*
+> $$('span.select2-selection--single')[0].getText()
+'Filter by program'
+> $$('span.select2-selection--single')[1].getText()
+'Filter by indicator'
+> $$('span.select2-selection--single')[2].getText()
+'Filter by indicator type'
+*/
 function clickIndicatorsDropdown() {
-  browser.$('#dropdownIndicator').click();
+  let span = $$('span.select2-selection--single')[1];
+  let indicatorsDropdown = span.$('span#select2-id_indicators_filter_dropdown-container');
+  indicatorsDropdown.click();
 }
 
 /**
@@ -32,15 +41,19 @@ function clickIndicatorsLink() {
  * @returns Nothing
  */
 function clickIndicatorTypeDropdown() {
-  browser.$('#dropdownIndicatorType').click();
+  let span = $$('span.select2-selection--single')[2];
+  let indicatorTypesDropdown = span.$('span#select2-id_indicatortypes_filter_dropdown-container');
+  indicatorTypesDropdown.click();
 }
 
 /**
- * Click the Programs dropdown
+ * Click the Programs dropdown button
  * @returns Nothing
  */
 function clickProgramsDropdown() {
-  browser.$('#dropdownProgram').click();
+  let span = $$('span.select2-selection--single')[0];
+  let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  programsDropdown.click();
 }
 
 /**
@@ -79,11 +92,14 @@ function getIndicatorName() {
  * indicator types dropdown menu
  */
 function getIndicatorTypeList() {
-  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownIndicatorType"]');
-  let listItems = list.$$('li>a');
+  let selectList = browser.$('select#id_indicatortypes_filter_dropdown');
+  let listItems = selectList.$$('option');
   let indicatorTypes = new Array();
   for (let listItem of listItems) {
-    indicatorTypes.push(listItem.getText());
+    let s = listItem.getText();
+    if (! s.includes('-- All --')) {
+      indicatorTypes.push(s);
+    }
   }
   return indicatorTypes;
 }
@@ -94,28 +110,51 @@ function getIndicatorTypeList() {
  * indicators dropdown menu
  */
 function getIndicatorsDropdownList() {
-  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownIndicator"]');
-  let listItems = list.$$('li>a');
+  let selectList = browser.$('select#id_indicators_filter_dropdown');
+  let listItems = selectList.$$('option');
   let indicators = new Array();
   for (let listItem of listItems) {
-    indicators.push(listItem.getText());
+    let s = listItem.getText();
+    if (! s.includes('-- All --')) {
+      indicators.push(s);
+    }
   }
   return indicators;
 }
 
+function getProgramIndicatorsTableCount(targetId) {
+  let tableDiv = $('div#toplevel_div').$('div.panel');
+  let table = tableDiv.$(targetId).$('table.hiddenTable');
+  let rows = table.$$('tbody>tr>td>a');
+  let rowCnt = 0;
+  for (let row of rows) {
+    let text = row.getText();
+    if (text.length > 0) {
+      rowCnt++;
+    }
+  }
+  return rowCnt;
+}
+
 /**
- * Get a list of the program names in the Programs dropdown
- * @returns {Array<string>} returns an array of the text strings making up the
- * Programs dropdown menu
+ * Get a list of the programs Programs dropdown.
+ * @returns {Array<string>} an array of the text strings making up the Programs 
+ * dropdown menu
  */
 function getProgramsDropdownList() {
-  let list = browser.$('ul.dropdown-menu[aria-labelledby="dropdownProgram"]');
-  let listItems = list.$$('li>a');
+  //let span = $('span.select2-selection--single');
+  //let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  //let dropdownList = browser.$('select#id_programs_filter_dropdown');
+  //let listItems = list.$$('li>a');
+  let selectList = browser.$('select#id_programs_filter_dropdown');
+  let listItems = selectList.$$('option');
   let programs = new Array();
   for (let listItem of listItems) {
-    programs.push(listItem.getText());
-  }
-  return programs;
+    let s = listItem.getText();
+    if (! s.includes('-- All --'))
+      programs.push(s);
+    }
+    return programs;
 }
 
 /**
@@ -127,7 +166,8 @@ function getProgramsTable() {
   let rows = browser.$('div#toplevel_div').$$('div.panel-heading');
   let programs = new Array();
   for(let row of rows) {
-    programs.push(row.$('h4').getText());
+    let s = row.$('h4').getText();
+    programs.push(s);
   }
   return programs;
 }
@@ -159,12 +199,15 @@ function pageName() {
  * @returns Nothing
  */
 function selectProgram(program) {
-  browser.$('#dropdownProgram').click();
-  let items = browser.$('div.btn-group').$('ul.dropdown-menu').$$('li>a');
-  for (let item of items) {
-    let s = item.getText();
-    if(s.includes(program)) {
-      item.click();
+  clickProgramsDropdown();
+  let span = $('span.select2-selection--single');
+  let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
+  let listItems = programsDropdown.$$('option');
+  for (let listItem of listItems) {
+    let s = listItem.getText();
+    let v = listItem.getValue();
+    if (s.includes(program)) {
+      selectList.selectByValue(v);
       break;
     }
   }
@@ -179,6 +222,7 @@ exports.getAlertMsg = getAlertMsg;
 exports.getIndicatorName = getIndicatorName;
 exports.getIndicatorTypeList = getIndicatorTypeList;
 exports.getIndicatorsDropdownList = getIndicatorsDropdownList;
+exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
 exports.getProgramsDropdownList = getProgramsDropdownList;
 exports.getProgramsTable = getProgramsTable;
 exports.open = open;

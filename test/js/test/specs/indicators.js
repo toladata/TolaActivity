@@ -5,6 +5,7 @@ var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
+const delay = 10*msec;
 
 describe('TolaActivity Program Indicators page', function() {
   // Disable timeouts
@@ -24,15 +25,17 @@ describe('TolaActivity Program Indicators page', function() {
 
   describe('Programs dropdown', function() {
     it('should be present on page', function() {
+      if (browser.isVisible('div#ajaxloading')) {
+        browser.waitForVisible('div#ajaxloading', delay, true);
+      }
+      IndPage.clickProgramsDropdown();
       IndPage.clickProgramsDropdown();
     });
 
     it('should have same number of items as the Programs table', function() {
-      IndPage.clickProgramsDropdown();
       let progList = IndPage.getProgramsDropdownList();
       let progTable = IndPage.getProgramsTable();
       assert.equal(progList.length, progTable.length, 'row count mismatch');
-      IndPage.clickProgramsDropdown();
     });
 
     it('should have same items as Programs table', function() {
@@ -51,16 +54,14 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
     it('should filter programs table by selected program name', function() {
-      let progList = IndPage.getProgramsDropdownList();
-      let listItem = progList[0];
-      IndPage.selectProgram(listItem);
-
-      // should have a single row in the table
-      let progTable = IndPage.getProgramsTable();
-      // row should be the one selected from the dropdown
-      let rowText = progTable[0].split('\n')[0].trim();
-      let listText = listItem.split('-')[1].trim();
-      assert.equal(rowText, listText, 'program name mismtach');
+      let selectList = browser.$('select#id_programs_filter_dropdown');
+      let progTable = selectList.$$('options');
+      for (let listItem of progTable) {
+        let s = listItem.getText();
+        if (! s.includes('-- All --')) {
+          browser.selectByVisibleText(s);
+        }
+      }
     });
   }); // end programs dropdown tests
 
@@ -74,7 +75,6 @@ describe('TolaActivity Program Indicators page', function() {
       assert(indList.length > 0);
     });
 
-    it('should be able to select any/all list items');
   }); // end indicators dropdown tests
 
   describe('Indicator Type dropdown', function() {
@@ -87,8 +87,6 @@ describe('TolaActivity Program Indicators page', function() {
       assert(indTypeList.length > 0);
     });
 
-    it('should default to showing all Indicator Types for a program');
-    it('should be able to filter the resultset by Indicator Type');
   }); // end indicator type dropdown tests
 
   // FIXME: Still need to get WebDriver code out of this test
@@ -117,28 +115,30 @@ describe('TolaActivity Program Indicators page', function() {
 
   // FIXME: Still need to get WebDriver code out of this test
   it('should have matching indicator counts on data button and in table', function() {
+    if(browser.isVisible('div#ajaxloading')) {
+      browser.waitForVisible('div#ajaxloading', delay, true);
+    }
+    IndPage.clickIndicatorsLink();
     let buttons = TargetsTab.getProgramIndicatorButtons();
     for (let button of buttons) {
       let buttonCnt = parseInt(button.getText());
-      let targetDiv = button.getAttribute('data-target');
-      // Expand the table
       button.click();
-      // Get indicator count from table
-      let table = $('='+targetDiv).$('table');
-/*
-      let tableRows = table.$$('tbody>tr>td>a');
-      // Divide by 2 because live TR has a blank TR spacer beneath it
-      console.log('tableRows.length='+tableRows.length);
-      assert.equal(buttonCnt, (tableRows.length / 2), 'Evidence count mismatch');
-*/
-
-      // collapse the table
+      if(browser.isVisible('div#ajaxloading')) {
+        browser.waitForVisible('div#ajaxloading', delay, true);
+      }
+      let targetId = button.getAttribute('data-target');
+      let tableCnt = IndPage.getProgramIndicatorsTableCount(targetId);
+      assert.equal(buttonCnt, tableCnt, "Indicator count mismatch");
       button.click();
+      if(browser.isVisible('div#ajaxloading')) {
+        browser.waitForVisible('div#ajaxloading', delay, true);
+      }
     }
   }, 3); // Try this flaky test up to 3 times before failing
 
   describe('Program Indicators table', function() {
     it('should view PI by clicking its name in Indicator Name column', function() {
+      IndPage.clickIndicatorsLink();
       // Make list of Indicators buttons
       let buttons = TargetsTab.getProgramIndicatorButtons();
       // Click the first one to expand the table
@@ -148,22 +148,11 @@ describe('TolaActivity Program Indicators page', function() {
       // FIXME: needs to be from table, not dropdown
       let indicatorNameList = IndPage.getIndicatorsDropdownList();
       // Click the first one
+      if (browser.isVisible('div#ajaxloading')) {
+        browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
+      }
       let indicatorName = indicatorNameList[0];
       TargetsTab.clickProgramIndicatorsButton(indicatorName);
-
-      /*
-      let progTable = IndPage.getProgramsTable();
-      let tableRow = progTable[1];
-      let tableRowText = progTable[0].split('\n')[0].trim();
-      let link = $('=' + tableRowText);
-      link.click();
-      // FIXME: This is the same horrible hack to accommodate a race.
-      browser.waitForVisible('div#indicator_modal_header>h3');
-      let dialogText = $('div#indicator_modal_header>h3').getText().split(':')[1].trim();
-      assert.equal(rowText, dialogText, 'indicator name mismatch');
-      let close = $('div#indicator_modal_div').$('button.close');
-      close.click();
-      */
     });
 
     it('should be able to create PI by clicking the New Indicator button', function() {
@@ -308,4 +297,7 @@ describe('TolaActivity Program Indicators page', function() {
   it('should highlight PIs with no evidence');
   it('should disable Indicators button if program has no indicators');
   it('should be able to sort table by clicking a column header');
+  it('should be able to select any/all list items');
+  it('should default to showing all Indicator Types for a program');
+  it('should be able to filter the resultset by Indicator Type');
 });
