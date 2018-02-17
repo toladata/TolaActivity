@@ -39,11 +39,15 @@ exports.config = {
     // https://docs.saucelabs.com/reference/platforms-configurator
     //
     capabilities: [{
-        // maxInstances can get overwritten per capability. So if you have an in-house Selenium
-        // grid with only 5 firefox instances available you can make sure that not more than
-        // 5 instances get started at a time.
-        maxInstances: 5,
-        browserName: 'firefox'
+    // maxInstances can get overwritten per capability. So if you have an in-house Selenium
+    // grid with only 5 chrome instances available you can make sure that not more than
+    // 5 instances get started at a time.
+        maxInstances: 2,
+        browserName: 'chrome'
+    },
+    {
+      maxinstances: 2,
+      browserName: 'firefox'
     }],
     //
     // ===================
@@ -110,7 +114,8 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    // services: [],//
+    services: ['selenium-standalone'],
+    seleniumLogs: './logs',
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
     // see also: http://webdriver.io/guide/testrunner/frameworks.html
@@ -122,7 +127,9 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/reporters/dot.html
-    reporters: ['spec'],
+    reporters: ['dot'],
+    //reporterOptions: {
+    //},
     //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/

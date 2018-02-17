@@ -7,6 +7,7 @@
 const msec = 1000;
 
 var util = require('../lib/testutil.js');
+var dp = require('../lib/testutil.js').dp;
 var selectProgram = require('../pages/indicators.page.js').selectProgram
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
@@ -100,7 +101,11 @@ function clickTargetsTab() {
 function createNewProgramIndicator(name, unit, lopTarget,
                                    baseline = false,
                                    frequency = 'Life of Program (LoP) only') {
-  setBaseline(baseline);
+  clickNewIndicatorButton();
+  saveNewIndicator();
+  setIndicatorName(name);
+  setUnitOfMeasure(unit);
+  setLoPTarget(lopTarget);
   if (baseline) {
     setBaseline(baseline);
   } else {
