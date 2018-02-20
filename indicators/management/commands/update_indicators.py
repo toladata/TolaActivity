@@ -56,6 +56,7 @@ class Command(BaseCommand):
                     indicator.unit_of_measure = unit_of_measure
                     indicator.lop_target = lop
                     if baseline_na == True:
+                        indicator.baseline = None
                         indicator.baseline_na = True
                     else:
                         indicator.baseline = baseline
