@@ -1,5 +1,10 @@
 #Search
 ###Configuration
+The following environment variables are required to run with search enabled.
+
+* `ELASTICSEARCH_ENABLED` decides whether objects saved to the database will also be indexed in elasticsearch. The search will work without it but only with existing data. This can be used if a lot of data is imported that should not be immediately indexed in ES.
+* `ELASTICSEARCH_URL` sets the URL for connecting with the ES cluster.
+* `ELASTICSEARCH_INDEX_PREFIX` sets a prefix for each index. There will be many indices for our instances and its important that we don't mix them up. Each index in the background will be created and named automatically, but we can set the prefix to separate between the servers.
 
 ###Updating the index
 The search index automatically updates itself whenever an object is saved. In a freshly configured, clean environment 
