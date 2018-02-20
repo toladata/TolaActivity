@@ -6,6 +6,7 @@ from django.utils import timezone
 class Command(BaseCommand):
     help = """
         Update lop, unit_of_measure, and baseline values of indicators based on a csv file
+        usage: sudo py -W ignore  manage.py update_indicators -f ~/country_data.csv
         """
 
     def add_arguments(self, parser):
@@ -28,6 +29,7 @@ class Command(BaseCommand):
                 unit_of_measure = row[4]
                 lop = row[5].replace(',', '')
                 baseline = row[6].replace(',', '')
+                baseline_na = False
                 indicator = None
                 try:
                     lop = float(lop) if '.' in lop else int(lop)
@@ -38,8 +40,11 @@ class Command(BaseCommand):
                 try:
                     baseline = float(baseline) if '.' in baseline else int(baseline)
                 except ValueError as e:
-                    self.stdout.write(self.style.ERROR('%s, invalid baseline (%s)' % (indicator_id, baseline) ))
-                    continue
+                    if baseline and baseline.lower() == 'na' or baseline == 'n/a' or baseline == 'not applicable':
+                        baseline_na = True
+                    else:
+                        self.stdout.write(self.style.ERROR('%s, invalid baseline (%s)' % (indicator_id, baseline) ))
+                        continue
 
                 try:
                     indicator = Indicator.objects.get(pk=indicator_id)
@@ -50,7 +55,11 @@ class Command(BaseCommand):
                 try:
                     indicator.unit_of_measure = unit_of_measure
                     indicator.lop_target = lop
-                    indicator.baseline = baseline
+                    if baseline_na == True:
+                        indicator.baseline = None
+                        indicator.baseline_na = True
+                    else:
+                        indicator.baseline = baseline
                     indicator.save()
                     self.stdout.write(self.style.SUCCESS("%s, updated successfully" % indicator.id))
                 except Exception as e:

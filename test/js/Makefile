@@ -7,7 +7,6 @@ help:
 	@echo "help      : show this help message"
 	@echo "install   : install all the bits needed to run tests"
 	@echo "update    : refresh packages in top-level package.json file"
-	@echo "update-all: refresh all packages in node_modules"
 
 
 allure: ./allure-results
