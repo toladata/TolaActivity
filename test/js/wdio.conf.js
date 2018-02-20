@@ -42,10 +42,10 @@ exports.config = {
     // maxInstances can get overwritten per capability. So if you have an in-house Selenium
     // grid with only 5 chrome instances available you can make sure that not more than
     // 5 instances get started at a time.
-//        maxInstances: 1,
-//        browserName: 'chrome'
-//    },
-//    {
+        maxInstances: 1,
+        browserName: 'chrome'
+    },
+    {
         maxinstances: 1,
         browserName: 'firefox'
     }],
