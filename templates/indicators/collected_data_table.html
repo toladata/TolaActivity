@@ -8,7 +8,7 @@
     }
 </style>
 <script type="text/javascript">
-    $("#id_indicator_data_count_btn_" + `{{indicator.id}}`).text("Data {{ indicator.collecteddata_set.count|default:0 }}" );
+    $("#id_indicator_data_span_count_" + `{{indicator.id}}`).text("{{ indicator.collecteddata_set.count|default:0 }}" );
 </script>
 {% load assign %}
 {% if collecteddata.count > 0 or indicator.target_frequency  %}

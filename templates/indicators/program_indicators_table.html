@@ -21,12 +21,12 @@
         <td id="id_indicator_sector_{{ indicator.id }}">{{ indicator.sector|default_if_none:''}}</td>
         <td id="id_indicator_buttons_{{ indicator.id }}"width="150">
             <span class="btn-group" role="group">
-                <a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-xs btn-info indicator-link">Edit</a>
-                <a id="id_indicator_data_count_btn_{{ indicator.id }}" onclick="loadCollected({{ indicator.id }}, {{ program_id }})"
-                    class="btn btn-xs btn-success"
+                <a href="/indicators/indicator_update/{{ indicator.id }}" class="btn btn-sm btn-info indicator-link"><i class="fas fa-edit"></i></a>
+                <a id="id_indicator_data_count_btn_{{ indicator.id }}" href="#" onclick="loadCollected({{ indicator.id }}, {{ program_id }})"
+                    class="btn btn-sm btn-secondary"
                     data-toggle="collapse"
-                    data-target="#hidden-indicator-{{ indicator.id }}">Data {{ indicator.data_count }} </a>
-                <a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-xs btn-danger">Delete</a>
+                    data-target="#hidden-indicator-{{ indicator.id }}"><i class="fas fa-database"></i> <span id="id_indicator_data_span_count_{{ indicator.id }}" {{ indicator.data_count }}</span></a>
+                <a href="/indicators/indicator_delete/{{ indicator.id }}" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>
             </span>
         </td>
     </tr>
