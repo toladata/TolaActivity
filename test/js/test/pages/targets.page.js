@@ -71,8 +71,21 @@ function clickProgramIndicatorsButton(programName) {
   // click it
 }
 
+/***
+ * Click the Reset button on the current form to clear any changes
+ * @returns Nothing
+ */
 function clickResetButton() {
   browser.$('input[value="Reset"]').click();
+}
+
+/**
+ * Click the Targets tab of the Indicator detail modal or page
+ * @returns Nothing
+ */
+function clickTargetsTab() {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
 }
 
 /**
@@ -114,8 +127,9 @@ function getAlertMsg() {
  * @returns {integer} The current value of the Baseline text field
  */
 function getBaseline() {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  //let targetsTab = browser.$('=Targets');
+  //targetsTab.click();
+  clickTargetsTab();
   let val = $('input#id_baseline').getValue();
   return val;
 }
@@ -249,7 +263,14 @@ function getTargetFrequency() {
   let targetsTab = browser.$('=Targets');
   targetsTab.click();
   let val = $('select#id_target_frequency').getValue();
-  return val;
+  if (val == 0) {
+    return '---------';
+  } else {
+    let list = $('select#id_target_frequency').getText();
+    let rows = list.split('\n');
+    let result = rows[val];
+    return result.trim();
+  }
 }
 
 function getTargetFirstPeriodErrorHint() {
@@ -307,6 +328,9 @@ function pageName() {
 function saveIndicatorChanges() {
   let saveChanges = $('input[value="Save changes"]');
   saveChanges.click();
+  if (browser.isVisible('id.alerts')) {
+    browser.waitForVisible('id.alerts', delay, true);
+  }
 }
 
 /**
@@ -440,7 +464,7 @@ function setUnitOfMeasure(unit) {
   let targetsTab = browser.$('=Targets');
   targetsTab.click();
   let bucket = $('input#id_unit_of_measure');
-  bucket.setValue('Buckets');
+  bucket.setValue(unit);
 }
 
 exports.clickIndicatorDataButton = clickIndicatorDataButton;

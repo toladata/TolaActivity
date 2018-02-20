@@ -7,6 +7,7 @@ const msec = 1000;
 describe('Deleting a lot of indicators', function() {
   // Disable timeouts
   this.timeout(0);
+  browser.windowHandleMaximize();
 
   it('should delete a PI by clicking its Delete button', function() {
     let parms = util.readConfig();
@@ -21,12 +22,14 @@ describe('Deleting a lot of indicators', function() {
       browser.waitForVisible('div#ajaxloading', true, 10*msec);
     }
     IndPage.selectProgram('Tola Rollout');
-    let buttons = TargetsTab.getProgramIndicatorButtons();
-    buttons[0].click();
+    let indButtons = TargetsTab.getProgramIndicatorButtons();
+    IndPage.clickProgramsDropdown();
+    indButtons[0].click();
 
     let indicatorList, indicator, confirmBtn
     let deleteCnt = 0;
     let indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
+    let buttons = new Array();
     while (indicatorCount > 8) {
       indicatorList = TargetsTab.getProgramIndicatorsTable();
       indicator = indicatorList.shift();

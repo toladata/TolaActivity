@@ -45,19 +45,47 @@ describe('Indicator Targets', function() {
       assert.equal('', TargetsTab.getUnitOfMeasure());
       assert.equal('', TargetsTab.getLoPTarget());
       assert.equal('', TargetsTab.getBaseline());
-      assert.equal('', TargetsTab.getTargetFrequency());
+      assert.equal('---------', TargetsTab.getTargetFrequency());
     });
 
-    it('should save data when "Save changes" button clicked', function() {
+    it('should save changed data when "Save changes" button clicked', function() {
+      // Create a new "basic" indicator
       IndPage.clickIndicatorsLink();
-      TargetsTab.createNewProgramIndicator('Testing the createNewProgramIndicator method', 
-        'Dashes', 52, 53, 'Life of Program (LoP) only');
+      TargetsTab.clickNewIndicatorButton();
+      TargetsTab.saveNewIndicator();
+
+      // Make a bunch of changes
+      let newIndicatorName = 'Testing the save changes button';
+      let newUnitOfMeasure = 'Leaps per lightyear';
+      let newLoPTarget = 57;
+      let newBaseline = 58;
+      let newTargetFrequency = 'Life of Program (LoP) only';
+
+      TargetsTab.setIndicatorName(newIndicatorName);
+      TargetsTab.setUnitOfMeasure(newUnitOfMeasure);
+      TargetsTab.setLoPTarget(newLoPTarget);
+      TargetsTab.setBaseline(newBaseline);
+      TargetsTab.setTargetFrequency(newTargetFrequency);
+
+      // Save them
+      TargetsTab.saveIndicatorChanges();
+
+      // Verify the new values are correct
+      assert.equal(newIndicatorName, TargetsTab.getIndicatorName(),
+        'Did not receive expected indicator name');
+      assert.equal(newUnitOfMeasure, TargetsTab.getUnitOfMeasure(),
+        'Did not receive expected unit of measure');
+      assert.equal(newLoPTarget, TargetsTab.getLoPTarget(),
+        'Did not receive expected LoP target');
+      assert.equal(newBaseline, TargetsTab.getBaseline(),
+        'Did not receive expected baseline value');
+      assert.equal(newTargetFrequency, TargetsTab.getTargetFrequency(),
+        'Did not receive expected target frequency');
     });
   }); // end new indicator dialog
 
   // Test cases from issues #21, #24, #25, #30, #33, #35, #37, #42, #43
   describe('Targets tab', function() {
-    this.timeout(0);
     it('should require "Unit of measure"', function() {
       // Set everything but the unit of measure then try to save
       IndPage.clickIndicatorsLink();
