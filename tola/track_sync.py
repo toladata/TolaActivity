@@ -1,9 +1,10 @@
-import requests
+# -*- coding: utf-8 -*-
 import logging
 import json
 from urlparse import urljoin
 
 from django.conf import settings
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +31,13 @@ def track_request(method, url_subpath, data=None):
 # Log info depending of the response status code
 def validate_response(response, obj):
     if response.status_code in [200, 201]:
-        logger.info('The request for {} (id={}, model={}) was successfully '
-                    'executed on Track.'.format(obj.name, obj.id,
-                                                obj.__class__.__name__))
+        logger.info(u'The request for {} (id={}, model={}) was successfully '
+                    u'executed on Track.'.format(obj.name, obj.id,
+                                                 obj.__class__.__name__))
     elif response.status_code in [400, 403, 500]:
-        logger.warning("{} (id={}, model={}) could not be created/fetched "
-                       "successfully on/from Track.".format(
-                        obj.name, obj.id, obj.__class__.__name__))
+        logger.warning(u"{} (id={}, model={}) could not be created/fetched "
+                       u"successfully on/from Track.".format(
+                       obj.name, obj.id, obj.__class__.__name__))
 
 
 def _build_org_form(obj):
