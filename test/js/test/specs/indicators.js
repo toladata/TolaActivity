@@ -128,20 +128,12 @@ describe('TolaActivity Program Indicators page', function() {
     for (let button of buttons) {
       let buttonCnt = parseInt(button.getText());
       button.click();
-      //if(browser.isVisible('div#ajaxloading')) {
-      //  browser.waitForVisible('div#ajaxloading', delay, true);
-      //}
       let targetId = button.getAttribute('data-target');
       let tableCnt = IndPage.getProgramIndicatorsTableCount(targetId);
       assert.equal(buttonCnt, tableCnt, "Indicator count mismatch");
-      //button.click();
-      //if(browser.isVisible('div#ajaxloading')) {
-      //  browser.waitForVisible('div#ajaxloading', delay, true);
-      //}
     }
   }, 3); // Try this flaky test up to 3 times before failing
 
-/*
   describe('Program Indicators table', function() {
     it('should view PI by clicking its name in Indicator Name column', function() {
       IndPage.clickIndicatorsLink();

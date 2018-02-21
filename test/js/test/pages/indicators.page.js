@@ -74,7 +74,7 @@ function clickResetButton() {
  */
 function getAlertMsg() {
   let alertDiv = browser.$('div#alerts');
-  return alertDiv.$('p').getText();
+  return alertDiv.getText();
 }
 
 /**

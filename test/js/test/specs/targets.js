@@ -1,5 +1,4 @@
 var assert = require('chai').assert;
-var expect = require('chai').expect;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
@@ -18,12 +17,14 @@ describe('Indicator Targets', function() {
       LoginPage.setPassword(parms.password);
       LoginPage.clickLoginButton();
       IndPage.open();
-      assert.equal('Program Indicators', IndPage.pageName());
+      assert.equal('Program Indicators', IndPage.pageName(),
+        'Unexpected page name mismatch');
     });
 
     it('should open new indicator form when button is clicked', function() {
       TargetsTab.clickNewIndicatorButton();
-      assert.equal('Create an Indicator', TargetsTab.pageName());
+      assert.equal('Create an Indicator', TargetsTab.pageName(),
+        'Unexpected page name mismatch');
     });
 
     it('should save the new indicator when the button is clicked', function() {
@@ -91,14 +92,15 @@ describe('Indicator Targets', function() {
       IndPage.clickIndicatorsLink();
       TargetsTab.clickNewIndicatorButton();
       TargetsTab.saveNewIndicator();
+
       TargetsTab.setIndicatorName('Unit of measure test');
-      TargetsTab.setLoPTarget(68);
-      TargetsTab.setBaseline(69);
+      TargetsTab.setLoPTarget(98);
+      TargetsTab.setBaseline(99);
       TargetsTab.setTargetFrequency('Life of Program (LoP) only');
       TargetsTab.saveIndicatorChanges();
       // Should get this error message
-      assert.equal('Please complete all required fields in the Targets tab.',
-        TargetsTab.getAlertMsg(),
+      let msg = TargetsTab.getAlertMsg();
+      assert(msg.includes('Please complete all required fields in the Targets tab.'),
         'Did not receive expected failure message');
     });
 
@@ -109,12 +111,12 @@ describe('Indicator Targets', function() {
       TargetsTab.saveNewIndicator();
       TargetsTab.setIndicatorName('LoP target value test');
       TargetsTab.setUnitOfMeasure('Buckets');
-      TargetsTab.setBaseline(84);
+      TargetsTab.setBaseline(115);
       TargetsTab.setTargetFrequency('Life of Program (LoP) only');
       TargetsTab.saveIndicatorChanges();
       // Should get this error message
-      assert.equal('Please complete all required fields in the Targets tab.',
-        TargetsTab.getAlertMsg(),
+      let msg = TargetsTab.getAlertMsg();
+      assert(msg.includes('Please complete all required fields in the Targets tab.'),
         'Did not receive expected failure message');
     });
 
@@ -125,38 +127,38 @@ describe('Indicator Targets', function() {
       TargetsTab.saveNewIndicator();
       TargetsTab.setIndicatorName('Baseline value test');
       TargetsTab.setUnitOfMeasure('Crates');
-      TargetsTab.setLoPTarget(103);
+      TargetsTab.setLoPTarget(131);
       TargetsTab.setTargetFrequency('Life of Program (LoP) only');
       TargetsTab.saveIndicatorChanges();
       // Should get this error message
-      assert.equal('Please complete all required fields in the Targets tab.',
-        TargetsTab.getAlertMsg(),
+      let msg = TargetsTab.getAlertMsg();
+      assert(msg.includes('Please complete all required fields in the Targets tab.'),
         'Did not receive expected failure message');
     });
 
-    it('should *not* require target Baseline if "Not applicable" *is* checked', function() {
-      // Set everything but the baseline value
+    it('should *not* require Baseline if "Not applicable" *is* checked', function() {
+      // Set everything but the baseline value; enable the
+      // Not applicable checkbox
       IndPage.clickIndicatorsLink();
       TargetsTab.clickNewIndicatorButton();
       TargetsTab.saveNewIndicator();
+
       TargetsTab.setIndicatorName('Baseline value not applicable test');
       TargetsTab.setUnitOfMeasure('Drops');
-      TargetsTab.setLoPTarget(119);
+      TargetsTab.setLoPTarget(147);
       TargetsTab.setTargetFrequency('Life of Program (LoP) only');
-      // check "Not applicable" then try to save
       TargetsTab.setBaselineNA();
+
+      // Save; this should pass
       TargetsTab.saveIndicatorChanges();
       // Should get this success message
-      // FIXME: This test often fails because the success message is too fast;
-      // I don't know how to catch it with WebDriver
-//      assert.equal('Success, form data saved.',
-//        TargetsTab.getAlertMsg(),
-//        'Did not receive expected success message');
+      assert.equal('Success, form data saved.', TargetsTab.getAlertMsg(),
+        'Did not receive expected success message');
       // Should not get this message
       // FIXME: I'd rather not use the negative logic; much prefer the
       // positive form above if it can be made to work
       assert.notEqual('Please complete all required fields in the Targets tab.',
-        IndPage.getAlertMsg(),
+        TargetsTab.getAlertMsg(),
         'Received unexpected error message');
     });
 
@@ -167,12 +169,12 @@ describe('Indicator Targets', function() {
       TargetsTab.saveNewIndicator();
       TargetsTab.setIndicatorName('Target frequency test');
       TargetsTab.setUnitOfMeasure('Emissions');
-      TargetsTab.setLoPTarget(145);
-      TargetsTab.setBaseline(146);
+      TargetsTab.setLoPTarget(173);
+      TargetsTab.setBaseline(174);
       TargetsTab.saveIndicatorChanges();
       // Should get this error message
-      assert.equal('Please complete all required fields in the Targets tab.',
-        TargetsTab.getAlertMsg(),
+      let msg = TargetsTab.getAlertMsg();
+      assert(msg.includes('Please complete all required fields in the Targets tab.'),
         'Did not receive expected failure message');
     });
 
@@ -186,24 +188,24 @@ describe('Indicator Targets', function() {
 
         TargetsTab.setIndicatorName('LoP only target testing');
         TargetsTab.setUnitOfMeasure('Furlongs per fortnight');
-        TargetsTab.setLoPTarget(164);
-        TargetsTab.setBaseline(165);
+        TargetsTab.setLoPTarget(192);
+        TargetsTab.setBaseline(193);
         TargetsTab.setTargetFrequency('Life of Program (LoP) only');
         // This should succeed
         TargetsTab.saveIndicatorChanges();
       });
 
       it('should reject non-numeric values for LoP target', function() {
-        TargetsTab.setLoPTarget('"166"');
+        TargetsTab.setLoPTarget('"666"');
         // This should fail
         TargetsTab.saveIndicatorChanges();
         let errorHint = TargetsTab.getLoPErrorHint();
         assert(errorHint.includes('Please enter a number larger than zero'),
-               'Did not receive expected failure message');
+          'Did not receive expected failure message');
         // Make it numeric; this should succeed
-        TargetsTab.setLoPTarget(179);
+        TargetsTab.setLoPTarget(207);
         TargetsTab.saveIndicatorChanges();
-        assert.equal(179,
+        assert.equal(207,
           TargetsTab.getLoPTarget(),
           'Did not receive expected value from getLoPTarget()');
       });
@@ -222,13 +224,13 @@ describe('Indicator Targets', function() {
         // This shold succeed
         TargetsTab.setIndicatorName('Midline target required testing');
         TargetsTab.setUnitOfMeasure('Furlongs per fortnight');
-        TargetsTab.setLoPTarget(199);
-        TargetsTab.setBaseline(200);
+        TargetsTab.setLoPTarget(228);
+        TargetsTab.setBaseline(229);
         TargetsTab.setTargetFrequency('Midline and endline');
         TargetsTab.saveIndicatorChanges();
 
         // This should fail without midline target
-        TargetsTab.setEndlineTarget(202);
+        TargetsTab.setEndlineTarget(234);
         TargetsTab.saveIndicatorChanges();
         let errorMessage = TargetsTab.getTargetValueErrorHint();
         assert(errorMessage.includes('Please enter a target value. Your target value can be zero.'));
@@ -243,13 +245,13 @@ describe('Indicator Targets', function() {
         // This should succeed
         TargetsTab.setIndicatorName('Endline target required testing');
         TargetsTab.setUnitOfMeasure('Gargoyles per parapet');
-        TargetsTab.setLoPTarget(219);
-        TargetsTab.setBaseline(220);
+        TargetsTab.setLoPTarget(249);
+        TargetsTab.setBaseline(250);
         TargetsTab.setTargetFrequency('Midline and endline');
         TargetsTab.saveIndicatorChanges();
 
         // This should fail without endline target
-        TargetsTab.setMidlineTarget(225);
+        TargetsTab.setMidlineTarget(255);
         TargetsTab.saveIndicatorChanges();
         let errorMessage = TargetsTab.getTargetValueErrorHint();
         assert(errorMessage.includes('Please enter a target value. Your target value can be zero.'));
@@ -265,8 +267,8 @@ describe('Indicator Targets', function() {
         // This should succeed
         TargetsTab.setIndicatorName('Annual target first period required testing');
         TargetsTab.setUnitOfMeasure('Hawks per hectare');
-        TargetsTab.setLoPTarget(242);
-        TargetsTab.setBaseline(242);
+        TargetsTab.setLoPTarget(271);
+        TargetsTab.setBaseline(272);
         TargetsTab.setTargetFrequency('Annual');
 
         // Trying to save without setting the start date should fail
@@ -276,7 +278,8 @@ describe('Indicator Targets', function() {
       });
 
       it('should default number of periods to 1', function() {
-        assert.equal(1, TargetsTab.getNumTargetPeriods());
+        assert.equal(1, TargetsTab.getNumTargetPeriods(),
+          'Did not find expected default value');
       });
 
       it('should create target periods for each period requested', function() {
@@ -286,14 +289,15 @@ describe('Indicator Targets', function() {
 
         TargetsTab.setIndicatorName('Annual target create target periods testing');
         TargetsTab.setUnitOfMeasure('Inkblots per Injunction');
-        TargetsTab.setLoPTarget(263);
-        TargetsTab.setBaseline(264);
+        TargetsTab.setLoPTarget(293);
+        TargetsTab.setBaseline(294);
         TargetsTab.setTargetFrequency('Annual');
         TargetsTab.setNumTargetPeriods(2);
 
         // This should succeed
         TargetsTab.saveIndicatorChanges();
-        assert.equal(2, TargetsTab.getNumTargetPeriods());
+        assert.equal(2, TargetsTab.getNumTargetPeriods(),
+          'Did not find expected number of periods');
       });
 
       it('should require entering targets for each target period');
@@ -307,8 +311,8 @@ describe('Indicator Targets', function() {
 
         TargetsTab.setIndicatorName('Semi-annual target first period required testing');
         TargetsTab.setUnitOfMeasure('Krypton per Klingon');
-        TargetsTab.setLoPTarget(284);
-        TargetsTab.setBaseline(285);
+        TargetsTab.setLoPTarget(315);
+        TargetsTab.setBaseline(316);
         TargetsTab.setTargetFrequency('Semi-annual');
 
         // Trying to save without setting the start date should fail
@@ -318,7 +322,8 @@ describe('Indicator Targets', function() {
       });
 
       it('should default number of periods to 1', function() {
-        assert.equal(1, TargetsTab.getNumTargetPeriods());
+        assert.equal(1, TargetsTab.getNumTargetPeriods(),
+          'Did not receive expected default value');
       });
 
       it('should create target periods for each period requested', function() {
@@ -330,8 +335,8 @@ describe('Indicator Targets', function() {
         // This should succeed
         TargetsTab.setIndicatorName('Semi-annual target create target periods testing');
         TargetsTab.setUnitOfMeasure('Llamas per Lane');
-        TargetsTab.setLoPTarget(307);
-        TargetsTab.setBaseline(308);
+        TargetsTab.setLoPTarget(339);
+        TargetsTab.setBaseline(340);
         TargetsTab.setTargetFrequency('Semi-annual');
         TargetsTab.setNumTargetPeriods(2);
 
@@ -373,8 +378,8 @@ describe('Indicator Targets', function() {
         // This should succeed
         TargetsTab.setIndicatorName('Tri-annual target first period required testing');
         TargetsTab.setUnitOfMeasure('Hawks per hectare');
-        TargetsTab.setLoPTarget(350);
-        TargetsTab.setBaseline(351);
+        TargetsTab.setLoPTarget(382);
+        TargetsTab.setBaseline(383);
         TargetsTab.setTargetFrequency('Tri-annual');
         TargetsTab.setNumTargetPeriods(3);
         TargetsTab.saveIndicatorChanges();
@@ -393,8 +398,8 @@ describe('Indicator Targets', function() {
         // This should succeed
         TargetsTab.setIndicatorName('Quarterly target first period required testing');
         TargetsTab.setUnitOfMeasure('Hawks per hectare');
-        TargetsTab.setLoPTarget(369);
-        TargetsTab.setBaseline(370);
+        TargetsTab.setLoPTarget(402);
+        TargetsTab.setBaseline(403);
         TargetsTab.setTargetFrequency('Quarterly');
 
         // Trying to save without setting the start date should fail
@@ -415,8 +420,8 @@ describe('Indicator Targets', function() {
         // This should succeed
         TargetsTab.setIndicatorName('Quarterly target create target periods testing');
         TargetsTab.setUnitOfMeasure('Hawks per hectare');
-        TargetsTab.setLoPTarget(369);
-        TargetsTab.setBaseline(370);
+        TargetsTab.setLoPTarget(424);
+        TargetsTab.setBaseline(425);
         TargetsTab.setTargetFrequency('Quarterly');
 
         TargetsTab.setNumTargetPeriods(4);
@@ -436,8 +441,8 @@ describe('Indicator Targets', function() {
         // This should succeed
         TargetsTab.setIndicatorName('Annual target first period required testing');
         TargetsTab.setUnitOfMeasure('Hawks per hectare');
-        TargetsTab.setLoPTarget(238);
-        TargetsTab.setBaseline(239);
+        TargetsTab.setLoPTarget(445);
+        TargetsTab.setBaseline(446);
         TargetsTab.setTargetFrequency('Annual');
 
         // Trying to save without setting the start date should fail
@@ -460,14 +465,109 @@ describe('Indicator Targets', function() {
     });
 
     describe('"Event" target frequency', function() {
-      it('should require "First event name"');
-      it('should require "Number of events"');
-      it('should allow only numeric values in "Number of events"');
-      it('should default "Number of events" to 1');
-      it('should limit "Number of events" between 1 and 12 inclusive');
+      it('should require "First event name"', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        // Don't set a name
+        TargetsTab.setIndicatorName('Event target first event name required testing');
+        TargetsTab.setUnitOfMeasure('Iodine per igloo');
+        TargetsTab.setLoPTarget(476);
+        TargetsTab.setBaseline(477);
+        TargetsTab.setTargetFrequency('Event');
+        TargetsTab.setNumTargetEvents(1);
+
+        // Should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getTargetFirstEventErrorHint();
+        assert(errorMessage.includes('Please complete this field.'));
+      });
+
+      it('should require "Number of events"', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        TargetsTab.setIndicatorName('Event target first number of events required testing');
+        TargetsTab.setUnitOfMeasure('Iodine per igloo');
+        TargetsTab.setLoPTarget(495);
+        TargetsTab.setBaseline(496);
+        TargetsTab.setTargetFrequency('Event');
+        TargetsTab.setFirstEventName('Mulugeta Seraw Memorial');
+        TargetsTab.setNumTargetEvents(0);
+
+        // Should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getNumTargetEventsErrorHint();
+        assert(errorMessage.includes('Please complete this field.'));
+      });
+
+      it('should allow only numeric values in "Number of events"', function () {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        TargetsTab.setIndicatorName('Event target number can only be numeric testing');
+        TargetsTab.setUnitOfMeasure('Jugglers per jitney');
+        TargetsTab.setLoPTarget(514);
+        TargetsTab.setBaseline(515);
+        TargetsTab.setTargetFrequency('Event');
+        TargetsTab.setFirstEventName('Heather Heyer Rest in Power');
+        TargetsTab.setNumTargetEvents('a');
+
+        // Should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getNumTargetEventsErrorHint();
+        assert(errorMessage.includes('Please complete this field.'));
+      });
+
+      it('should default "Number of events" to 1'), function() {
+        assert.equal(1, TargetsTab.getNumTargetEvents(),
+          'Did not receive expected number of target events');
+      }
+
+      it('should limit max "Number of events" to 12 or less', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        TargetsTab.setIndicatorName('Can create max of 12 events initially testing');
+        TargetsTab.setUnitOfMeasure('Mangos per manager');
+        TargetsTab.setLoPTarget(538);
+        TargetsTab.setBaseline(539);
+        TargetsTab.setTargetFrequency('Event');
+        TargetsTab.setFirstEventName('Battle of Cable Street');
+        TargetsTab.setNumTargetEvents(13);
+
+        // Should fail
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getNumTargetEventsErrorHint();
+        assert(errorMessage.includes('You can start with up to 12 targets and add more later.'));
+      });
+
       // FIXME: The next test fails; I can enter 0 events and save
-      it('should require at least one event');
-      it('should inform user that only 12 events can be created at once');
+      it('should require at least one event', function() {
+        IndPage.clickIndicatorsLink();
+        TargetsTab.clickNewIndicatorButton();
+        TargetsTab.saveNewIndicator();
+
+        TargetsTab.setIndicatorName('Must create a least one event testing');
+        TargetsTab.setUnitOfMeasure('Noodles per night');
+        TargetsTab.setLoPTarget(560);
+        TargetsTab.setBaseline(561);
+        TargetsTab.setTargetFrequency('Event');
+        TargetsTab.setFirstEventName('Battle of Cable Street');
+        TargetsTab.setNumTargetEvents(1);
+
+        // FIXME: Test should fail but passes (
+        //[see issue #106](https://github.com/mercycorps/TolaActivity/issues/106)).
+        // This test will start to fail when that bug if fixed.
+        TargetsTab.saveIndicatorChanges();
+        let errorMessage = TargetsTab.getNumTargetEventsErrorHint();
+        assert.equal('', errorMessage);
+      });
+
     });
   }); // end test cases from GitHub issues
 });
