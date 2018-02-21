@@ -217,20 +217,20 @@
 
         });
 
-        function program_filter(program_id) {
-            $("#program_filter_value").data('programid', program_id);
-            table.draw();
-        }
 
-        function indicator_filter(indicator) {
-            $("#indicator_filter_value").data("indicatorid", indicator);
+        $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
             table.draw();
-        }
+        });
 
-        function indicator_type_filter(type) {
-            $("#type_filter_value").data('typeid', type);
+        $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
             table.draw();
-        }
+        });
+
+
+        $("#id_filtersDropdown").on("indicatorTypeFilterUpdated", "#id_indicatortypes_filter_dropdown", function(e){
+            table.draw();
+        });
+
     </script>
     <div id="sum1" style="display: none; float: right;">
         <p>

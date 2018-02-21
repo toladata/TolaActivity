@@ -10,10 +10,12 @@
 
 {% block content %}
         <script>
-            var developerKey = 'AIzaSyCT-IRNfrcEhYjcrf7CIHAF54eTldOaYlY';
+            var developerKey = 'AIzaSyCuDmq8DjGziPnfAl4bW7fEZtf25teO3x4';
+            // var developerKey = 'AIzaSyCT-IRNfrcEhYjcrf7CIHAF54eTldOaYlY';
 
             // The Client ID obtained from the Google Developers Console. Replace with your own Client ID.
-            var clientId = "445847194486-gl2v6ud6ll65vf06vbjaslqqgejad61k.apps.googleusercontent.com"
+            var clientId = '859950034311-r6gsqnipugbtv6a2j4h4eo2tt2a1js2t.apps.googleusercontent.com';
+            // var clientId = "445847194486-gl2v6ud6ll65vf06vbjaslqqgejad61k.apps.googleusercontent.com"
 
             // Scope to use to access user's drive.
             var scope = ['https://www.googleapis.com/auth/drive.readonly'];
@@ -53,16 +55,24 @@
             function createPicker() {
                 if (pickerApiLoaded && oauthToken) {
                     var view = new google.picker.DocsView(google.picker.ViewId.DOCS);
+                    var teamView = new google.picker.DocsView(google.picker.ViewId.DOCS);
                     view.setIncludeFolders(true);
-                    view.setOwnedByMe(true);
-                    view.setSelectFolderEnabled(false);
+                    // view.setOwnedByMe(true);
+                    view.setSelectFolderEnabled(true);
                     view.setMode("DocsViewMode.LIST");
+                    teamView.setEnableTeamDrives(true);
+                    teamView.setIncludeFolders(true);
+                    teamView.setSelectFolderEnabled(true);
+                    teamView.setMode("DocsViewMode.LIST");
                     var picker = new google.picker.PickerBuilder()
-                        .enableFeature(google.picker.Feature.NAV_HIDDEN)
+                        // .enableFeature(google.picker.Feature.NAV_HIDDEN)
+                        .enableFeature(google.picker.Feature.SUPPORT_TEAM_DRIVES)
                         .addView(view)
+                        .addView(teamView)
                         .setOAuthToken(oauthToken)
-                        .setDeveloperKey(developerKey)
+                        // .setDeveloperKey(developerKey)
                         .setCallback(pickerCallback)
+                        .setOrigin(window.location.protocol + '//' + window.location.host)
                         .build();
                     picker.setVisible(true);
                 }

@@ -5,6 +5,7 @@
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
 const msec = 1000;
+const delay = 10*msec;
 
 var util = require('../lib/testutil.js');
 var dp = require('../lib/testutil.js').dp;
@@ -124,7 +125,8 @@ function createNewProgramIndicator(name, unit, lopTarget,
 // is because the success message flashes through faster than I can catch it
 function getAlertMsg() {
   let alertDiv = browser.$('div#alerts');
-  return alertDiv.$('p').getText();
+  let msg = alertDiv.getText();
+  return msg;
 }
 
 /**
@@ -181,6 +183,27 @@ function getLoPTarget() {
   targetsTab.click();
   let val = $('input#id_lop_target').getValue();
   return val;
+}
+
+/**
+ * FIXME: Document this function
+ */
+function getNumTargetEvents() {
+  let targetsTab = browser.$('=Targets');
+  util.dp('targetsTab='+targetsTab);
+  targetsTab.click();
+  let val = $('input#id_target_frequency_num_periods').getValue();
+  util.dp('val='+val);
+  return val;
+}
+
+/**
+ * FIXME: Document this function
+ */
+function getNumTargetEventsErrorHint() {
+  let errorBox = browser.$('span#hint_id_target_frequency_num_periods.help-block');
+  let errorHint = errorBox.getText();
+  return errorHint;
 }
 
 /**
@@ -260,6 +283,30 @@ function getProgramIndicatorButtons() {
 }
 
 /**
+ * Get the current error string, if any, from the error box for
+ * the target first event name field on the targets tab of the
+ * indictor detail screen
+ * @returns {string} The error text present, if any
+ */
+function getTargetFirstEventErrorHint() {
+    let errorBox = browser.$('#hint_id_target_frequency_custom.help-block');
+    let errorHint = errorBox.getText();
+    return errorHint;
+}
+
+/**
+ * Get the current error string, if any, from the error box for
+ * the target first period field on the targets tab of the
+ * indictor detail screen
+ * @returns {string} The error text present, if any
+ */
+function getTargetFirstPeriodErrorHint() {
+  let errorBox = browser.$('#hint_id_target_frequency_start.help-block');
+  let errorHint = errorBox.getText();
+  return errorHint;
+}
+
+/**
  * Get the currently selected target frequency from the Target Frequency
  * dropdown
  * @returns {string} The currently selected target frequency as a text string
@@ -276,12 +323,6 @@ function getTargetFrequency() {
     let result = rows[val];
     return result.trim();
   }
-}
-
-function getTargetFirstPeriodErrorHint() {
-  let errorBox = browser.$('#hint_id_target_frequency_start');
-  let errorHint = errorBox.getText();
-  return errorHint;
 }
 
 /**
@@ -333,9 +374,6 @@ function pageName() {
 function saveIndicatorChanges() {
   let saveChanges = $('input[value="Save changes"]');
   saveChanges.click();
-  if (browser.isVisible('id.alerts')) {
-    browser.waitForVisible('id.alerts', delay, true);
-  }
 }
 
 /**
@@ -391,6 +429,30 @@ function setEndlineTarget(value) {
 }
 
 /**
+ * FIXME: Document this function
+ */
+function setFirstEventName(value) {
+  let textBox = browser.$('input#id_target_frequency_custom');
+  if (value == 0) {
+    textBox.clear();
+  } else {
+    textBox.setValue(value);
+  }
+}
+
+/**
+ * FIXME: Document this function
+ */
+function setFirstTargetPeriod() {
+  let textBox = browser.$('input#id_target_frequency_start');
+  textBox.click();
+  let datepickerDiv = browser.$('div#ui-datepicker-div');
+  let buttonPane = datepickerDiv.$('div.ui-datepicker-buttonpane');
+  let button = buttonPane.$('button.ui-datepicker-close');
+  button.click();
+}
+
+/**
  * Type the specified indicator name into the Name field on thei
  * Performance tab of the indicator detail screen
  * @param {string} name The new name for the indicator
@@ -435,6 +497,23 @@ function setMidlineTarget(value) {
   midline.setValue(value);
 }
 
+/**
+ * FIXME: Document this function
+ */
+function setNumTargetEvents(value) {
+  let targetsTab = browser.$('=Targets');
+  targetsTab.click();
+  let textBox = browser.$('input#id_target_frequency_num_periods');
+  if (value == 0) {
+    textBox.clearElement();
+  } else {
+    textBox.setValue(value);
+  }
+}
+
+/**
+ * FIXME: Document this function
+ */
 function setNumTargetPeriods(value) {
   let targetsTab = browser.$('=Targets');
   targetsTab.click();
@@ -486,13 +565,16 @@ exports.getBaselineErrorHint = getBaselineErrorHint;
 exports.getIndicatorName = getIndicatorName;
 exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
+exports.getNumTargetEvents = getNumTargetEvents;
 exports.getNumTargetPeriods = getNumTargetPeriods;
 exports.getProgramIndicatorsTable = getProgramIndicatorsTable;
 exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
 exports.getProgramsTable = getProgramsTable;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
-exports.getTargetFrequency = getTargetFrequency;
+exports.getTargetFirstEventErrorHint = getTargetFirstEventErrorHint;
 exports.getTargetFirstPeriodErrorHint = getTargetFirstPeriodErrorHint;
+exports.getTargetFrequency = getTargetFrequency;
+exports.getNumTargetEventsErrorHint = getNumTargetEventsErrorHint;
 exports.getTargetValueErrorHint = getTargetValueErrorHint;
 exports.getUnitOfMeasure = getUnitOfMeasure;
 exports.open = open;
@@ -502,9 +584,12 @@ exports.saveNewIndicator = saveNewIndicator;
 exports.setBaseline = setBaseline;
 exports.setBaselineNA = setBaselineNA;
 exports.setEndlineTarget = setEndlineTarget;
+exports.setFirstEventName = setFirstEventName;
+exports.setFirstTargetPeriod = setFirstTargetPeriod;
 exports.setIndicatorName = setIndicatorName;
 exports.setLoPTarget = setLoPTarget;
 exports.setMidlineTarget = setMidlineTarget;
+exports.setNumTargetEvents = setNumTargetEvents;
 exports.setNumTargetPeriods = setNumTargetPeriods;
 exports.setTargetFrequency = setTargetFrequency;
 exports.setUnitOfMeasure = setUnitOfMeasure;

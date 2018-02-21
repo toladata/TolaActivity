@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         file = options['filepath']
-        self.stdout.write(self.style.WARNING('updating indicators for program_id = "%s"' % file))
+        self.stdout.write(self.style.WARNING('reading indicators info from: "%s"' % file))
 
         with open(file, 'rb') as csvfile:
             indicatorcsv_reader = csv.reader(csvfile)
@@ -26,26 +26,25 @@ class Command(BaseCommand):
             for row in indicatorcsv_reader:
                 indicator_id = row[0]
                 unit_of_measure = row[4]
-                lop = row[5]
-                baseline = row[6]
+                lop = row[5].replace(',', '')
+                baseline = row[6].replace(',', '')
                 indicator = None
                 try:
                     lop = float(lop) if '.' in lop else int(lop)
                 except ValueError as e:
-                    self.stdout.write(self.style.ERROR('indicator with id = %s has invalid lop = %s' % (indicator.id, lop) ))
+                    self.stdout.write(self.style.ERROR('%s, invalid lop (%s)' % (indicator_id, lop) ))
                     continue
 
                 try:
                     baseline = float(baseline) if '.' in baseline else int(baseline)
                 except ValueError as e:
-                    self.stdout.write(self.style.ERROR('indicator with id = %s has invalid lop = %s' % (indicator.id, baseline) ))
+                    self.stdout.write(self.style.ERROR('%s, invalid baseline (%s)' % (indicator_id, baseline) ))
                     continue
 
                 try:
                     indicator = Indicator.objects.get(pk=indicator_id)
-                    self.stdout.write(self.style.SUCCESS(indicator.id))
                 except Indicator.DoesNotExist as e:
-                    self.stdout.write(self.style.ERROR('indicator with id = %s does not exist!' % indicator_id))
+                    self.stdout.write(self.style.ERROR('%s, does not exist!' % indicator_id))
                     continue
 
                 try:
@@ -53,6 +52,7 @@ class Command(BaseCommand):
                     indicator.lop_target = lop
                     indicator.baseline = baseline
                     indicator.save()
+                    self.stdout.write(self.style.SUCCESS("%s, updated successfully" % indicator.id))
                 except Exception as e:
-                    self.stdout.write(self.style.ERROR('failed to save indicator with id = %s' % indicator.id))
+                    self.stdout.write(self.style.ERROR('%s, failed to save!' % indicator.id))
 

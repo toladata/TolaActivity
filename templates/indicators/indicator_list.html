@@ -42,7 +42,7 @@ function loadIndicators(program, indicator, type){
 </script>
 
 {% include "indicators/filter.html"%}
-
+<br>
 <div id="toplevel_div">
 <!-- Default panel contents -->
     {% for program in programs %}
@@ -62,7 +62,7 @@ function loadIndicators(program, indicator, type){
                 </div>
             {% else %}
                 <div class='panel-body'>
-                    <a onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
+                    <a id="id_btnOpenindicatorsForProgramId_{{ program.id}}" onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
                 </div>
                 <div id="hidden-{{ program.id }}" class="accordian-body collapse">
                     {% include "indicators/program_indicators_table.html" %}
@@ -129,19 +129,6 @@ function loadIndicators(program, indicator, type){
 </div> <!-- /.modal -->
 
 <script type="text/javascript">
-    /*
-    var program_id = document.URL.split('/')[5];
-    var indicator_id = document.URL.split('/')[6];
-    var type_id = document.URL.split('/')[7];
-    $(document).ready(function() {
-        if (typeof program_id !== 'undefined' && program_id > 0) {
-            var a = $('#hidden-' + program_id).collapse('hide');
-            loadIndicators(program_id, 0, 0);
-            a.collapse('show');
-        }
-    });
-    */
-
     $("#indicator_collecteddata_div").on("click", "#targetsTabLink", function(e){
         e.preventDefault();
         $("#indicator_modal_content").empty();
@@ -251,19 +238,43 @@ function loadIndicators(program, indicator, type){
     });
 
 
+    function getUrl() {
+        var programId = $("#program_filter_value").data('programid');
+        var indicatorId = $("#indicator_filter_value").data('indicatorid');
+        var typeId = $("#type_filter_value").data('typeid');
+        var url = '/indicators/home/';
 
-    function program_filter(program_id) {
-        window.location.href = '/indicators/home/'+program_id+'/0/0/';
+        url += (parseInt(programId) >= 0 ? programId : 0) + '/';
+        url += (parseInt(indicatorId) >= 0 ? indicatorId : 0) + '/';
+        url += (parseInt(typeId) >= 0 ? typeId : 0 ) + '/';
+        return url;
     }
+    $("#id_filtersDropdown").on("programFilterUpdated", "#id_programs_filter_dropdown", function(e){
+        var url = getUrl();
+        window.location.href = url;
+    });
 
-    function indicator_filter(indicator) {
-        window.location.href = '/indicators/home/'+program_id+'/'+indicator+'/0';
+    $("#id_filtersDropdown").on("indicatorFilterUpdated", "#id_indicators_filter_dropdown", function(e){
+        var url = getUrl();
+        sessionStorage.setItem("openProgram", "true");
+        window.location.href = url;
+    });
+
+
+    $("#id_filtersDropdown").on("indicatorTypeFilterUpdated", "#id_indicatortypes_filter_dropdown", function(e){
+        var url = getUrl();
+        window.location.href = url;
+    });
+
+    window.onload = function() {
+        var programId = `{{ programs.0.id }}`;
+
+        if (sessionStorage.getItem('openProgram')) {
+            sessionStorage.removeItem("openProgram");
+            loadIndicators(programId, indicatorId, 0);
+            $("#hidden-"+programId).collapse('show');
+        }
     }
-
-    function indicator_type_filter(type) {
-        window.location.href = '/indicators/home/'+program_id+'/'+indicator_id+'/'+type;
-    }
-
  </script>
 {% include 'indicators/indicator_form_common_js.html' %}
 {% include 'indicators/collecteddata_form_common_js.html' %}

@@ -130,13 +130,13 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 {% if "demo" in request.build_absolute_uri %}
-                                    <span class="label label-danger">DEMO SERVER</span>
-                                {% elif  "127." in request.build_absolute_uri %}
-                                    <span class="label label-danger">LOCAL SERVER</span>
+                                    <span class="label label-danger">DEMO</span>
+                                {% elif  "127." in request.build_absolute_uri or "localhost" in request.build_absolute_uri %}
+                                    <span class="label label-danger">LOCAL</span>
                                 {% elif "dev" in request.build_absolute_uri %}
-                                    <span class="label label-danger">DEV SERVER</span>
+                                    <span class="label label-danger">DEV</span>
                                 {% elif "report" in request.build_absolute_uri %}
-                                    <span class="label label-info">REPORT SERVER</span>
+                                    <span class="label label-info">REPORT</span>
                                 {% endif %}
                                 <span class="glyphicon glyphicon-user"></span> {{ user.tola_user.name }} <b class="caret"></b>
                             </a>
