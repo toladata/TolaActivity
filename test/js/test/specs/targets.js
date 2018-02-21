@@ -317,7 +317,6 @@ describe('Indicator Targets', function() {
         // Find the input boxes
         let inputBoxes = browser.$$('input#pt-undefined.form-control.input-value');
         // Count them
-        console.log('inputBoxes.length='+inputBoxes.length);
         // Place values
         // Evaluate
       });
