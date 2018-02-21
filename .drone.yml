@@ -20,7 +20,7 @@ pipeline:
     image: python:${PYTHON_VERSION}
     commands:
       - pip install bandit
-      - bandit -x tests/ -r . || echo Failed
+      - bandit -x tests/ -r -lll .
     when:
       event: [push, tag]
 
