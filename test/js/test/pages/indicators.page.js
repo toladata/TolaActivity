@@ -134,14 +134,27 @@ function getIndicatorsDropdownList() {
  * @returns {integer} The number of indicators in the specified table
  */
 function getProgramIndicatorsTableCount(targetId) {
-  let tableDiv = $('div#toplevel_div').$('div.panel');
-  let table = tableDiv.$(targetId).$('table.hiddenTable');
-  let rows = table.$$('tbody>tr>td>a');
+  let container = browser.$('div#toplevel_div').$('div.panel.panel-default');
+  let s = 'div' + targetId;
+  let tableDiv = container.$(s)
+  if (! browser.isVisible(s)) {
+    browser.waitForVisible(s, 10*msec);
+  }
+  /*
+  */
+  let table = tableDiv.$('table.table.table-striped.hiddenTable');
+  let tbody = table.$('tbody');
+  let tableRows = tbody.$$('tr')
   let rowCnt = 0;
-  for (let row of rows) {
-    let text = row.getText();
-    if (text.length > 0) {
-      rowCnt++;
+  for (let row of tableRows) {
+    //let text = row.getText();
+    //if (text.length > 0) {
+    //  rowCnt++;
+    //}
+    let cells = row.$$('td');
+    for (let cell of cells) {
+      let link = cell.$('a.indicator-link');
+      if (! link == undefined) { rowCnt++; }
     }
   }
   return rowCnt;
