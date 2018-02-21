@@ -185,8 +185,10 @@ function getLoPTarget() {
  */
 function getNumTargetEvents() {
   let targetsTab = browser.$('=Targets');
+  util.dp('targetsTab='+targetsTab);
   targetsTab.click();
   let val = $('input#id_target_frequency_num_periods').getValue();
+  util.dp('val='+val);
   return val;
 }
 
@@ -425,12 +427,24 @@ function setEndlineTarget(value) {
  * FIXME: Document this function
  */
 function setFirstEventName(value) {
-    let textBox = $('input#id_target_frequency_custom');
-    if (value == 0) {
-      textBox.clear();
-    } else {
-      textBox.setValue(value);
-    }
+  let textBox = browser.$('input#id_target_frequency_custom');
+  if (value == 0) {
+    textBox.clear();
+  } else {
+    textBox.setValue(value);
+  }
+}
+
+/**
+ * FIXME: Document this function
+ */
+function setFirstTargetPeriod() {
+  let textBox = browser.$('input#id_target_frequency_start');
+  textBox.click();
+  let datepickerDiv = browser.$('div#ui-datepicker-div');
+  let buttonPane = datepickerDiv.$('div.ui-datepicker-buttonpane');
+  let button = buttonPane.$('button.ui-datepicker-close');
+  button.click();
 }
 
 /**
@@ -566,6 +580,7 @@ exports.setBaseline = setBaseline;
 exports.setBaselineNA = setBaselineNA;
 exports.setEndlineTarget = setEndlineTarget;
 exports.setFirstEventName = setFirstEventName;
+exports.setFirstTargetPeriod = setFirstTargetPeriod;
 exports.setIndicatorName = setIndicatorName;
 exports.setLoPTarget = setLoPTarget;
 exports.setMidlineTarget = setMidlineTarget;

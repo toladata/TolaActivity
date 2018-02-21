@@ -88,7 +88,6 @@ describe('TolaActivity Program Indicators page', function() {
     });
 
   }); // end indicator type dropdown tests
-*/
 
   // FIXME: Still need to get WebDriver code out of this test
   it('should toggle PIs table by clicking PI Indicators button', function() {
