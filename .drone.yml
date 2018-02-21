@@ -16,6 +16,15 @@ pipeline:
       - TOLA_TRACK_SYNC_ENABLED=False
       - DEFAULT_ORG=TolaData
 
+  bandit:
+    image: python:${PYTHON_VERSION}
+    commands:
+      - pip install bandit
+      - bandit -x tests/ -r .
+    when:
+      event: [push, tag]
+
+
   build-docker-image:
     image: plugins/docker
     insecure: true
