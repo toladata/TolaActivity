@@ -125,6 +125,11 @@ function getIndicatorsDropdownList() {
   return indicators;
 }
 
+/**
+ * Get a count of the indicators in the currently displayed program table
+ * @returns {integer}j The number of indicators displayed in the program
+ * table
+ */
 function getProgramIndicatorsTableCount(targetId) {
   let tableDiv = $('div#toplevel_div').$('div.panel');
   let table = tableDiv.$(targetId).$('table.hiddenTable');

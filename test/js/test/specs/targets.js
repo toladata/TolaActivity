@@ -152,7 +152,7 @@ describe('Indicator Targets', function() {
       // Save; this should pass
       TargetsTab.saveIndicatorChanges();
       // FIXME: This is a green-red test. When it starts failing, the underlying
-      // bug has been fixed.
+      // bug has been fixed and the test needs to be updated accordingly
       assert.notEqual('Success, form data saved.', TargetsTab.getAlertMsg(),
         'Did not receive expected success message');
       // Should not get this message
@@ -190,7 +190,6 @@ describe('Indicator Targets', function() {
         TargetsTab.setLoPTarget(192);
         TargetsTab.setBaseline(193);
         TargetsTab.setTargetFrequency('Life of Program (LoP) only');
-        // This should succeed
         TargetsTab.saveIndicatorChanges();
       });
 
@@ -208,11 +207,7 @@ describe('Indicator Targets', function() {
           TargetsTab.getLoPTarget(),
           'Did not receive expected value from getLoPTarget()');
       });
-
-      // FIXME: Are these 2 test cases still important?
-      it('should permit non-numeric values only in legacy data for LoP target');
-      it('should require numeric value for LoP target if non-numeric legacy data is modified');
-    });
+    }); // end LoP targets
 
     describe('"Midline and endline" target frequency', function() {
       it('should require value in Midline target field', function() {
@@ -233,7 +228,6 @@ describe('Indicator Targets', function() {
         TargetsTab.saveIndicatorChanges();
         let errorMessage = TargetsTab.getTargetValueErrorHint();
         assert(errorMessage.includes('Please enter a target value. Your target value can be zero.'));
-
       });
 
       it('should require value in Endline target field', function() {
@@ -316,6 +310,7 @@ describe('Indicator Targets', function() {
 
         // Find the input boxes
         let inputBoxes = browser.$$('input#pt-undefined.form-control.input-value');
+        browser.debug();
         // Count them
         // Place values
         // Evaluate

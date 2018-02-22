@@ -134,8 +134,6 @@ function getAlertMsg() {
  * @returns {integer} The current value of the Baseline text field
  */
 function getBaseline() {
-  //let targetsTab = browser.$('=Targets');
-  //targetsTab.click();
   clickTargetsTab();
   let val = $('input#id_baseline').getValue();
   return val;
@@ -158,8 +156,7 @@ function getBaselineErrorHint() {
  * tab of the indicator detail screen
  */
 function getIndicatorName() {
-  let targetsTab = browser.$('=Performance');
-  targetsTab.click();
+  clickTargetsTab();
   let val = $('input#id_name').getValue();
   return val;
 }
@@ -179,26 +176,26 @@ function getLoPErrorHint() {
  * @returns {integer} The current value of the LoP target field
  */
 function getLoPTarget() {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab;
   let val = $('input#id_lop_target').getValue();
   return val;
 }
 
 /**
- * FIXME: Document this function
+ * Get the number of events specified for event-based targets
+ * @returns {integer} The number of events specified
  */
 function getNumTargetEvents() {
-  let targetsTab = browser.$('=Targets');
-  util.dp('targetsTab='+targetsTab);
-  targetsTab.click();
+  clickTargetsTab;
   let val = $('input#id_target_frequency_num_periods').getValue();
   util.dp('val='+val);
   return val;
 }
 
 /**
- * FIXME: Document this function
+ * Get the text, if any, from the error box beneath the number of
+ * events text bo
+ * @returns {string} The error text as a string
  */
 function getNumTargetEventsErrorHint() {
   let errorBox = browser.$('span#hint_id_target_frequency_num_periods.help-block');
@@ -212,8 +209,7 @@ function getNumTargetEventsErrorHint() {
  * @returns {integer} The value of the field, if any
  */
 function getNumTargetPeriods() {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
   let val = $('input#id_target_frequency_num_periods').getValue();
   return val;
 }
@@ -312,8 +308,7 @@ function getTargetFirstPeriodErrorHint() {
  * @returns {string} The currently selected target frequency as a text string
  */
 function getTargetFrequency() {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
   let val = $('select#id_target_frequency').getValue();
   if (val == 0) {
     return '---------';
@@ -341,8 +336,7 @@ function getTargetValueErrorHint() {
  * @returns {integer} The current value as an integer
  */
 function getUnitOfMeasure() {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
   let val = $('input#id_unit_of_measure').getValue();
   return val;
 }
@@ -395,8 +389,7 @@ function saveNewIndicator() {
  * @returns Nothing
  */
 function setBaseline(value) {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
   let baseline = $('input#id_baseline');
   baseline.setValue(value);
 }
@@ -407,8 +400,7 @@ function setBaseline(value) {
  * @returns Nothing
  */
 function setBaselineNA() {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
   browser.$('#id_baseline_na').click()
 }
 
@@ -419,8 +411,7 @@ function setBaselineNA() {
  * @returns Nothing
  */
 function setEndlineTarget(value) {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
   if (! browser.isVisible('div>input[name="Endline"]')) {
     browser.waitForVisible('div>input[name="Endline"]');
   }
@@ -475,8 +466,7 @@ function setIndicatorName(name) {
  * @returns Nothing
  */
 function setLoPTarget(value) {
-  let targetsTab = $('=Targets');
-  targetsTab.click();
+  clickTargetTab();
   let lopTarget = $('input#id_lop_target');
   lopTarget.setValue(value);
 }
@@ -488,8 +478,7 @@ function setLoPTarget(value) {
  * @returns Nothing
  */
 function setMidlineTarget(value) {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
   if (! browser.isVisible('div>input[name="Midline"]')) {
     browser.waitForVisible('div>input[name="Midline"]');
   }
@@ -501,8 +490,6 @@ function setMidlineTarget(value) {
  * FIXME: Document this function
  */
 function setNumTargetEvents(value) {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
   let textBox = browser.$('input#id_target_frequency_num_periods');
   if (value == 0) {
     textBox.clearElement();
@@ -517,7 +504,7 @@ function setNumTargetEvents(value) {
 function setNumTargetPeriods(value) {
   let targetsTab = browser.$('=Targets');
   targetsTab.click();
-  $('input#id_target_frequency_num_periods').setValue(value);
+  browser.$('input#id_target_frequency_num_periods').setValue(value);
 }
 
 /**
@@ -527,8 +514,7 @@ function setNumTargetPeriods(value) {
  * @returns Nothing
  */
 function setTargetFrequency(freqName) {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
 
   let frequencies = ['', 'Life of Program (LoP) only',
     'Midline and endline', 'Annual', 'Semi-annual',
@@ -545,8 +531,7 @@ function setTargetFrequency(freqName) {
  * @returns Nothing
  */
 function setUnitOfMeasure(unit) {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
+  clickTargetsTab();
   let bucket = $('input#id_unit_of_measure');
   bucket.setValue(unit);
 }
@@ -558,6 +543,7 @@ exports.clickNewIndicatorButton = clickNewIndicatorButton;
 exports.clickProgramIndicator = clickProgramIndicator;
 exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;
+exports.clickTargetsTab = clickTargetsTab;
 exports.createNewProgramIndicator = createNewProgramIndicator;
 exports.getAlertMsg = getAlertMsg;
 exports.getBaseline = getBaseline;
