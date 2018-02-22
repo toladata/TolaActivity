@@ -1,4 +1,4 @@
-# Using Selenium WebDriver to Test the TolaActivity UI
+= Using Selenium WebDriver to Test the TolaActivity UI
 
 This document describes how to set up your system to test TolaActivity
 front-end code. The tools of choice are:
@@ -14,10 +14,81 @@ front-end code. The tools of choice are:
 
 If you're reading this, you've already probably cloned the repo. If you
 haven't, do that, then come back here. Commands listed in this document
-assume you're working from the testing directory, `test/js` in the
-TolaActivity repo, unless noted otherwise.
+assume you're working from the testing directory, _test/js_ in the
+TolaActivity repo, unless noted otherwise. If you are impatient, start
+with the next section, "For the impatient: The Big Green Button©". If you
+want to understand more about how this thing works, start with the following
+section, "Manual installation and testing".
 
-## Install Things
+
+== For the impatient: The Big Green Button©h
+
+If you just want to run the tests, have a functional development system,
+and have `git` `node` and `npm` installed, the following sequence of
+commands should work for you.
+
+```
+git clone https://github.com/mercycorps.org/TolaActivity.git
+get checkout merge-test
+cd TolaActivity/test/js
+[edit user config file]
+make install
+./node_modules/.bin/wdio
+```
+
+=== Edit the user config file
+
+```
+cd test/js
+$ cp config-example.json config.json
+```
+
+Edit `config.json` and change the _username_, _password_, and _baseurl_
+values to suit your needs. In particular:
+- _username_ and _password_ correspond to your MercyCorps SSO login
+- _baseurl_ points to the home page of the TolaActivity instance you
+  are testing
+
+1. Start the Seleniuim server:
+
+There might be a brief pause while the Selenium server starts, so please be
+patient. You'll know the tests have started when web browsers start dancing
+on your desktop. The last step, `wdio`, starts the WebDriverIO test and then
+runs the complete test suite for each configured browser, shows the 
+test results, and then exits, terminating the server as it goes. The output
+should resemble the following, hopefully without the test failures:
+
+```
+$ cd test/js
+$ ./node_modules/.bin/wdio
+
+․․․․․․․․․․․․․․․․․․․․․․․․F․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․F․․
+
+69 passing (161.60s)
+93 skipped
+2 failing
+
+1) TolaActivity Program Indicators page should have matching indicator counts on data button and in table:
+Indicator count mismatch: expected 8 to equal 0
+running firefox
+AssertionError: Indicator count mismatch: expected 8 to equal 0
+    at /Users/kwall/repos/TolaActivity/test/js/test/specs/indicators.js:132:14
+    at new Promise (<anonymous>)
+    at new F (/Users/kwall/repos/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
+    at new Promise (<anonymous>)
+    at new F (/Users/kwall/repos/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
+
+2) Indicator Targets Targets tab "Event" target frequency should default "Number of events" to 1:
+Did not receive expected number of target events: expected 1 to equal ''
+running firefox
+AssertionError: Did not receive expected number of target events: expected 1 to equal ''
+    at Context.<anonymous> (/Users/kwall/repos/TolaActivity/test/js/test/specs/targets.js:545:16)
+    at new Promise (<anonymous>)
+    at new F (/Users/kwall/repos/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
+```
+
+== Manual installation and testing
+
 First, download and install all the bits you'll need. These include
 NodeJS, Firefox, Chrome, Selenium, Mocha, and Chai. If you are already
 using NPM, you can use it to install mocha and chai, but do not use

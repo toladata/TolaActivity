@@ -125,6 +125,20 @@ function getIndicatorsDropdownList() {
   return indicators;
 }
 
+function getProgramIndicatorsTableCount(targetId) {
+  let tableDiv = $('div#toplevel_div').$('div.panel');
+  let table = tableDiv.$(targetId).$('table.hiddenTable');
+  let rows = table.$$('tbody>tr>td>a');
+  let rowCnt = 0;
+  for (let row of rows) {
+    let text = row.getText();
+    if (text.length > 0) {
+      rowCnt++;
+    }
+  }
+  return rowCnt;
+}
+
 /**
  * Get the number of program indicators for the table in a div named
  * targetId. This is the program indicators table for the the given

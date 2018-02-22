@@ -1,4 +1,4 @@
-.default: help
+.DEFAULT: help
 
 help:
 	@echo "clean: remove all logs and generated files"
@@ -7,21 +7,13 @@ help:
 	@echo "doc: (re)generate test suite documentation"
 
 install:
-	@npm install --verbose
+	@npm install --verbose --save-dev
 
 update:
 	@npm update --dev --save
 
-update-all:
-	@cd node_modules && npm update --dev --save && cd ..
-
 clean:
-	@rm -fvr doc errorShots node_modules selenium-server.log server.log
-
-server:
-	@java -jar \
-		-Dwebdriver.gecko.driver=./geckodriver \
-		selenium-server-standalone-3.8.1.jar &> server.log &
+	@rm -fvr doc errorShots node_modules logs selenium-server.log server.log
 
 doc:
 	@./node_modules/.bin/jsdoc --verbose \
