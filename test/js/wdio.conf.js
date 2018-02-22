@@ -37,6 +37,8 @@ exports.config = {
         // maxInstances can get overwritten per capability
         maxInstances: 2,
         browserName: 'firefox'
+    },{
+        browserName: 'chrome',
     }],
     //
     // ===================
@@ -116,7 +118,7 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/reporters/dot.html
-    reporters: ['dot'],
+    reporters: ['spec'],
     //reporterOptions: {
     //},
     //
