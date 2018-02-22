@@ -21,11 +21,19 @@ want to understand more about how this thing works, start with the following
 section, "Manual installation and testing".
 
 
-== For the impatient: The Big Green Button©h
+== For the impatient: The Big Green Button©
 
 If you just want to run the tests, have a functional development system,
 and have `git` `node` and `npm` installed, the following sequence of
 commands should work for you.
+
+Edit `config.json` and change the _username_, _password_, and _baseurl_
+values to suit your needs. In particular:
+- _username_ and _password_ correspond to your MercyCorps SSO login
+- _baseurl_ points to the home page of the TolaActivity instance you
+  are testing
+- Under **no** circumstances should this suite be run against the production
+  TolaActivity server. It will create loads of bad data.
 
 ```
 git clone https://github.com/mercycorps.org/TolaActivity.git
@@ -36,27 +44,14 @@ make install
 ./node_modules/.bin/wdio
 ```
 
-=== Edit the user config file
-
-```
-cd test/js
-$ cp config-example.json config.json
-```
-
-Edit `config.json` and change the _username_, _password_, and _baseurl_
-values to suit your needs. In particular:
-- _username_ and _password_ correspond to your MercyCorps SSO login
-- _baseurl_ points to the home page of the TolaActivity instance you
-  are testing
-
-1. Start the Seleniuim server:
-
-There might be a brief pause while the Selenium server starts, so please be
-patient. You'll know the tests have started when web browsers start dancing
-on your desktop. The last step, `wdio`, starts the WebDriverIO test and then
-runs the complete test suite for each configured browser, shows the 
-test results, and then exits, terminating the server as it goes. The output
-should resemble the following, hopefully without the test failures:
+The last command starts Selenium server. There might be a brief
+pause while the Selenium server starts, so please be patient. You'll
+know the tests have started when web browsers start dancing on your
+desktop. The last step, `wdio`, starts the WebDriverIO test and
+then runs the complete test suite for each configured browser, shows
+the test results, and then exits, terminating the server as it goes.
+The output should resemble the following, hopefully without the
+test failures:
 
 ```
 $ cd test/js
