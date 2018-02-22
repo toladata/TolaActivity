@@ -11,11 +11,12 @@ exports.config = {
     maxInstances: 5,
     capabilities: [{
         // maxInstances can get overwritten per capability
-        maxInstances: 2,
-        browserName: 'firefox'
-    },{
         maxInstances: 3,
         browserName: 'chrome',
+    },
+    {
+        maxInstances: 2,
+        browserName: 'firefox'
     }],
     // Test Configurations
     sync: true,
