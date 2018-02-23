@@ -31,13 +31,23 @@ class Command(BaseCommand):
                 type_of_site = row[1].strip()
                 # read the first 7 characters only
                 # latitude = re.sub('[^0-9]', '', row[2])
-                latitude = e.findall('\d+\.\d+', row[2])r
-                longitude = re.findall('\d+\.\d+', '', row[3])
+                latitude = re.findall('\d+\.\d+', row[2])
+                longitude = re.findall('\d+\.\d+', row[3])
                 office_name = row[4].strip()
                 contact = row[5].strip()
                 country_name = row[6].strip()
                 province_name = row[7].strip()
                 district_name = row[8].strip()
+
+                try:
+                    latitude = latitude[0]
+                except IndexError:
+                    latitude = None
+
+                try:
+                    longitude = longitude[0]
+                except IndexError:
+                    longitude = None
 
                 try:
                     country = Country.objects.get(country=country_name)
