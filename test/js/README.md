@@ -4,13 +4,14 @@ This document describes how to set up your system to test TolaActivity
 front-end code. The tools of choice are:
 
 * Selenium WebDriver for browser automation
+* Chrome and/or Firefox browsers
 * Selenium Server for remote browsers (think Saucelabs, BrowserStack,
   or TestBot)
 * WebdriverIO, a test automation framework for NodeJS with support
   for synchronous or asynchronous JavaScript
 * MochaJS test framework with assorted plugins, particularly the Chai
   JS assertion library
-* Chrome and/or Firefox browsers
+* Allure, a test reporter
 
 If you're reading this, you've already probably cloned the repo. If you
 haven't, do that, then come back here. Commands listed in this document
@@ -20,9 +21,27 @@ with the next section, "For the impatient: The Big Green Button©". If you
 want to understand more about how this thing works, start with the following
 section, "Manual installation and testing".
 
+== Config files
+
+The framework includes three WebdriverIO, or _WDIO_, runtime configuration
+files that control which and/or how many tests get run. These are summary
+descriptions; sections describing each option in detail follow.
+
+- **wdio.conf.auto.js** -- Consider this the one-size-fits-all option. It runs
+  all of the tests against all of the browsers all of the time. If you feel
+  impatient, this is the config for you. Read "For the impatient" to get started.
+- **wdio.conf.manual.js** -- If you desire slightly more control over the 
+  process, particularly which specific test files WDIO executes, use this 
+  config file and pass "--spec {_path|regex_}" on the command line to specify
+  the file or regex that interests you.
+- **wdio.conf.headless.js** -- This is an experimental option that runs the test
+  framework using Chrome's headless mode. I know, right? I didn't know Chrome _had_
+  a headless mode. This option executes all of the tests against the Chrome
+  browser.
 
 == For the impatient: The Big Green Button©
 
+![](doc/big_green_button.jpg)
 If you just want to run the tests, have a functional development system,
 and have `git` `node` and `npm` installed, the following sequence of
 commands should work for you.
@@ -201,7 +220,7 @@ The resulting output is best viewed in your browser. To do so, open
 file:///path/to/your/repo/doc/index.html in your web browser. It will
 end up looking something like the following image.
 
-![](./tola_test_doc_home.png)
+![](doc/tola_test_doc_home.png)
 
 ## Helpful development practices
 
