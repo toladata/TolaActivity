@@ -21,9 +21,7 @@ describe('"Annual" target frequency', function() {
   });
 
   it('should require date that first target period begins', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Annual target, first period required');
     TargetsTab.setUnitOfMeasure('Hawks per hectare');
@@ -43,9 +41,7 @@ describe('"Annual" target frequency', function() {
   });
 
   it('should create target periods for each period requested', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Annual target, create target periods');
     TargetsTab.setUnitOfMeasure('Inkblots per Injunction');
@@ -61,9 +57,7 @@ describe('"Annual" target frequency', function() {
   });
 
   it('should require entering targets for each target period', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Annual target, target period value(s) required');
     TargetsTab.setUnitOfMeasure('Inedibles per iguana');

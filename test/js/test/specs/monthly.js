@@ -21,9 +21,7 @@ describe('"Monthly" target frequency', function() {
   });
 
   it('should require date that first target period begins', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     // This should succeed
     TargetsTab.setIndicatorName('Annual target first period required testing');

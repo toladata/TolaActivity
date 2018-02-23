@@ -4,7 +4,7 @@
  */
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
-
+var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 var parms = util.readConfig();
 
@@ -67,6 +67,16 @@ function clickResetButton() {
   browser.$('input[value="Reset"]').click();
 }
 
+/**
+ * Create a new "basic" indicator. This is just enough of an indicator
+ * to be able to save and still be able to modify it in other more
+ * specific calls.
+ */
+function createBasicIndicator() {
+    clickIndicatorsLink();
+    TargetsTab.clickNewIndicatorButton();
+    TargetsTab.saveNewIndicator();
+}
 /**
  * Get the text of the current alert message, if any, and return it as a string
  * @returns {string} The current alert message as a string. Fails ugly if the
@@ -251,6 +261,7 @@ exports.clickIndicatorsLink = clickIndicatorsLink;
 exports.clickIndicatorTypeDropdown = clickIndicatorTypeDropdown;
 exports.clickProgramsDropdown = clickProgramsDropdown;
 exports.clickResetButton = clickResetButton;
+exports.createBasicIndicator = createBasicIndicator;
 exports.getAlertMsg = getAlertMsg;
 exports.getIndicatorName = getIndicatorName;
 exports.getIndicatorTypeList = getIndicatorTypeList;

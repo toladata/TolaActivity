@@ -21,9 +21,7 @@ describe('"Life of Program (LoP) only" target frequency', function() {
   });
 
   it('should permit only numeric values for LoP target', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('LoP only target testing');
     TargetsTab.setUnitOfMeasure('Furlongs per fortnight');

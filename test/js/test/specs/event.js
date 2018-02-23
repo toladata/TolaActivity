@@ -21,9 +21,7 @@ describe('"Event" target frequency', function() {
   });
 
   it('should require "First event name"', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     // Don't set a name
     TargetsTab.setIndicatorName('Event target first event name required testing');
@@ -40,9 +38,7 @@ describe('"Event" target frequency', function() {
   });
 
   it('should require "Number of events"', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Event target first number of events required testing');
     TargetsTab.setUnitOfMeasure('Iodine per igloo');
@@ -59,9 +55,7 @@ describe('"Event" target frequency', function() {
   });
 
   it('should allow only numeric values in "Number of events"', function () {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Event target number can only be numeric testing');
     TargetsTab.setUnitOfMeasure('Jugglers per jitney');
@@ -83,9 +77,7 @@ describe('"Event" target frequency', function() {
   });
 
   it('should limit max "Number of events" to 12 or less', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Can create max of 12 events initially testing');
     TargetsTab.setUnitOfMeasure('Mangos per manager');
@@ -103,9 +95,7 @@ describe('"Event" target frequency', function() {
 
   // FIXME: The next test fails; I can enter 0 events and save
   it('should require at least one event', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Must create a least one event testing');
     TargetsTab.setUnitOfMeasure('Noodles per night');

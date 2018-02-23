@@ -21,9 +21,7 @@ describe('"Midline and endline" target frequency', function() {
   });
 
   it('should require value in Midline target field', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
  
     // This shold succeed
     TargetsTab.setIndicatorName('Midline target required testing');
@@ -42,9 +40,7 @@ describe('"Midline and endline" target frequency', function() {
   });
  
   it('should require value in Endline target field', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
  
     // This should succeed
     TargetsTab.setIndicatorName('Endline target required testing');

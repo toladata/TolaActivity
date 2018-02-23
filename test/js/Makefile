@@ -9,8 +9,12 @@ help:
 	@echo "update    : refresh packages in top-level package.json file"
 
 
-allure: ./allure-results
+allure: allure-results
 	@./node_modules/.bin/allure generate ./allure-results --clean
+
+
+allure-results:
+	@test -d ./allure-results || mkdir -v ./allure-results
 
 
 clean:

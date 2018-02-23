@@ -21,9 +21,7 @@ describe('"Quarterly" target frequency', function() {
   });
 
   it('should require date that first target period begins', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     // This should succeed
     TargetsTab.setIndicatorName('Quarterly target first period required testing');
@@ -43,9 +41,7 @@ describe('"Quarterly" target frequency', function() {
   });
 
   it('should create target periods for each period requested', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     // This should succeed
     TargetsTab.setIndicatorName('Quarterly target create target periods testing');
