@@ -109,6 +109,28 @@ class SectorRelated(models.Model):
         ordering = ('order',)
 
 
+class Currency(models.Model):
+    source_currency = models.CharField("Source Currency Name", max_length=255, blank=True)
+    target_currency = models.CharField("Target Currency Name", max_length=255, blank=True)
+    current_rate = models.IntegerField("Conversion Rate", null=True, blank=True)
+    conversion_date = models.DateTimeField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('source_currency',)
+        verbose_name_plural = "Currencies"
+
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
+        super(Currency, self).save()
+
+    def __unicode__(self):
+        return self.source_currency
+
+
 class Organization(models.Model):
     organization_uuid = models.CharField(max_length=255, verbose_name='Organization UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
@@ -125,6 +147,11 @@ class Organization(models.Model):
     chargebee_subscription_id = models.CharField(blank=True, null=True, max_length=50)
     chargebee_used_seats = models.IntegerField(blank=True, null=True, default=0)
     oauth_domains = fields.ArrayField(models.CharField("OAuth Domains", max_length=255, null=True, blank=True), null=True, blank=True)
+    date_format = models.CharField("Date Format", max_length=50, blank=True, default="DD.MM.YYYY")
+    default_currency = models.ForeignKey(Currency, blank=True, null=True)
+    currency_format = models.CharField("Currency Format", max_length=50, blank=True, default="Commas")
+    default_language = models.CharField("Default Language", max_length=100, blank=True, default="English")
+
 
     class Meta:
         ordering = ('name',)
@@ -222,28 +249,6 @@ class TolaUser(models.Model):
             self.name = settings.TOLAUSER_OBFUSCATED_NAME
 
         super(TolaUser, self).save()
-
-
-class Currency(models.Model):
-    source_currency = models.CharField("Source Currency Name", max_length=255, blank=True)
-    target_currency = models.CharField("Target Currency Name", max_length=255, blank=True)
-    current_rate = models.IntegerField("Conversion Rate", null=True, blank=True)
-    conversion_date = models.DateTimeField(null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('source_currency',)
-        verbose_name_plural = "Currencies"
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(Currency, self).save()
-
-    def __unicode__(self):
-        return self.source_currency
 
 
 class Award(models.Model):
