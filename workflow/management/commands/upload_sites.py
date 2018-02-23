@@ -90,6 +90,7 @@ class Command(BaseCommand):
                             'latitude': lat, 'longitude': lon, 'country': country, 'province': province,\
                             'district': district, 'create_date': timezone.now()\
                             })
+                    self.stdout.write(self.style.ERROR('%s site_profile created(%s) successfully!' % (site_name, created)))
                 except Exception as e:
                     self.stdout.write(self.style.ERROR('%s, could not update or create site_profile %s ' % (site_name, e) ))
                     continue
