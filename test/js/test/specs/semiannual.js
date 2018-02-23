@@ -21,7 +21,7 @@ describe('"Semi-annual" target frequency', function() {
   });
 
   it('should require entering the date that first period begins', function() {
-    IndPage.createBasicIndiator();
+    IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Semi-annual target, first period start date required');
     TargetsTab.setUnitOfMeasure('Klingons per kiloton');
@@ -41,7 +41,7 @@ describe('"Semi-annual" target frequency', function() {
   });
 
   it('should create target periods for each period requested', function() {
-    IndPage.createBasicIndiator();
+    IndPage.createBasicIndicator();
 
     // This should succeed
     TargetsTab.setIndicatorName('Semi-annual target create target periods testing');
