@@ -39,21 +39,25 @@ class Command(BaseCommand):
                 district_name = row[8].strip()
 
                 try:
-                    office = Office.objects.get(name=office_name)
+                    country = Country.objects.get(country=country_name)
+                except Country.DoesNotExist:
+                    self.stdout.write(self.style.ERROR('%s, country not found (%s)' % (site_name, country_name) ))
+                    continue
+
+                try:
+                    provinces = Province.objects.filter(country=country)
+                    office = Office.objects.get(name=office_name, province__in=provinces)
                 except Office.DoesNotExist:
                     self.stdout.write(self.style.WARNING('%s, invalid office_name = %s' % (site_name, office_name) ))
+                    office = None
+                except Office.MultipleObjectsReturned:
+                    self.stdout.write(self.style.WARNING('%s, multiple offices with the same name = %s' % (site_name, office_name) ))
                     office = None
 
                 try:
                     profile_type = ProfileType.objects.get(profile=type_of_site)
                 except ProfileType.DoesNotExist:
                     profile_type = None
-
-                try:
-                    country = Country.objects.get(country=country_name)
-                except Country.DoesNotExist:
-                    self.stdout.write(self.style.ERROR('%s, country not found (%s)' % (site_name, country_name) ))
-                    continue
 
                 try:
                     province = Province.objects.get(name=province_name)
