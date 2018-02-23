@@ -30,8 +30,9 @@ class Command(BaseCommand):
                 site_name = row[0].strip()
                 type_of_site = row[1].strip()
                 # read the first 7 characters only
-                latitude = re.sub('[^0-9]', '', row[2])
-                longitude = re.sub('[^0-9]', '', row[3])
+                # latitude = re.sub('[^0-9]', '', row[2])
+                latitude = e.findall('\d+\.\d+', row[2])r
+                longitude = re.findall('\d+\.\d+', '', row[3])
                 office_name = row[4].strip()
                 contact = row[5].strip()
                 country_name = row[6].strip()
