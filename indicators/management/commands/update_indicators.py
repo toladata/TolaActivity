@@ -40,7 +40,7 @@ class Command(BaseCommand):
                 try:
                     baseline = float(baseline) if '.' in baseline else int(baseline)
                 except ValueError as e:
-                    if baseline and baseline.lower() == 'na' or baseline == 'n/a' or baseline == 'not applicable':
+                    if baseline and baseline.lower() == 'na' or baseline.lower() == 'n/a' or baseline.lower() == 'not applicable':
                         baseline_na = True
                     else:
                         self.stdout.write(self.style.ERROR('%s, invalid baseline (%s)' % (indicator_id, baseline) ))
