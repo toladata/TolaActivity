@@ -11,11 +11,11 @@ exports.config = {
     maxInstances: 5,
     capabilities: [{
         // maxInstances can get overwritten per capability
-        maxInstances: 3,
+        maxInstances: 1,
         browserName: 'chrome',
     },
     {
-        maxInstances: 2,
+        maxInstances: 1,
         browserName: 'firefox'
     }],
     // Test Configurations
@@ -32,7 +32,12 @@ exports.config = {
     services: ['selenium-standalone'],
     seleniumLogs: './logs',
     framework: 'mocha',
-    reporters: ['spec'],
+    reporters: ['spec', 'allure'],
+    reporterOptions: {
+        allure: {
+            outputDir: './allure-results'
+        }
+    },
     mochaOpts: {
         ui: 'bdd',
         compilers: ['js:babel-register']

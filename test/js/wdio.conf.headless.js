@@ -1,22 +1,23 @@
 exports.config = {
-    // Specify Test Files
     specs: [
         './test/specs/**/*.js'
     ],
-    // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
     ],
-    // Capabilities
+    // Capabilities - can override per-capability
     maxInstances: 1,
-    capabilities: [{
-        // maxInstances can get overwritten per capability
-        maxInstances: 1,
-        browserName: 'firefox',
-    }],
-    // Test Configurations
+    capabilities: [
+        {
+            browserName: 'chrome',
+            maxInstances: 1,
+            chromeOptions: {
+                args: ['--headless']
+            }
+        }
+    ],
     sync: true,
-    logLevel: 'silent',
+    logLevel: 'command',
     coloredLogs: true,
     deprecationWarnings: true,
     bail: 0,
@@ -28,16 +29,15 @@ exports.config = {
     services: [],
     seleniumLogs: './logs',
     framework: 'mocha',
-    reporters: ['spec', 'junit', 'allure'],
-        reporterOptions: {
-            allure: {
-                outputDir: './allure-results'
-            }
+    reporters: ['spec', 'allure'],
+    reporterOptions: {
+        allure: {
+            outputDir: './allure-results'
         }
     },
     mochaOpts: {
         ui: 'bdd',
         compilers: ['js:babel-register']
         //require: 'babel-register'
-    },
+    }
 }

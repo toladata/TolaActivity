@@ -321,6 +321,14 @@ function getTargetFrequency() {
 }
 
 /**
+ * FIXME: Document this function
+ */
+function getTargetInputBoxes() {
+    // Find the input boxes
+    let inputBoxes = browser.$$('input#pt-undefined.form-control.input-value');
+    return inputBoxes;
+}
+/**
  * Get the current error string, if any, from the target creation
  * screen on the Targets tab
  * @returns {string} The error text present, if any
@@ -466,7 +474,7 @@ function setIndicatorName(name) {
  * @returns Nothing
  */
 function setLoPTarget(value) {
-  clickTargetTab();
+  clickTargetsTab();
   let lopTarget = $('input#id_lop_target');
   lopTarget.setValue(value);
 }
@@ -560,6 +568,7 @@ exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
 exports.getTargetFirstEventErrorHint = getTargetFirstEventErrorHint;
 exports.getTargetFirstPeriodErrorHint = getTargetFirstPeriodErrorHint;
 exports.getTargetFrequency = getTargetFrequency;
+exports.getTargetInputBoxes = getTargetInputBoxes;
 exports.getNumTargetEventsErrorHint = getNumTargetEventsErrorHint;
 exports.getTargetValueErrorHint = getTargetValueErrorHint;
 exports.getUnitOfMeasure = getUnitOfMeasure;

@@ -6,12 +6,24 @@ exports.config = {
         // 'path/to/excluded/files'
     ],
     // Capabilities
-    maxInstances: 3,
-    capabilities: [{
-        // maxInstances can get overwritten per capability
-        maxInstances: 2,
-        browserName: 'firefox'
-    }],
+    maxInstances: 1,
+    capabilities: [
+        {
+            // maxInstances can get overwritten per capability
+            browserName: 'chrome',
+            //maxInstances: 3,
+            chromeOptions: {
+                //[]
+            }
+        },
+        {
+            browserName: 'firefox',
+            maxInstances: 1,
+            'moz:firefoxOptions': {
+                //[]
+             }
+        }
+    ],
     sync: true,
     logLevel: 'silent',
     coloredLogs: true,
@@ -25,7 +37,12 @@ exports.config = {
     services: [],
     seleniumLogs: './logs',
     framework: 'mocha',
-    reporters: ['spec'],
+    reporters: ['spec', 'allure'],
+    reporterOptions: {
+        allure: {
+            outputDir: './allure-results'
+        }
+    },
     mochaOpts: {
         ui: 'bdd',
         compilers: ['js:babel-register']
