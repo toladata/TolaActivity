@@ -8,11 +8,15 @@ exports.config = {
         // 'path/to/excluded/files'
     ],
     // Capabilities
-    maxInstances: 1,
+    maxInstances: 5,
     capabilities: [{
         // maxInstances can get overwritten per capability
         maxInstances: 1,
-        browserName: 'firefox',
+        browserName: 'chrome',
+    },
+    {
+        maxInstances: 1,
+        browserName: 'firefox'
     }],
     // Test Configurations
     sync: true,
@@ -25,14 +29,13 @@ exports.config = {
     waitforTimeout: 10000,
     connectionRetryTimeout: 90000,
     connectionRetryCount: 3,
-    services: [],
+    services: ['selenium-standalone'],
     seleniumLogs: './logs',
     framework: 'mocha',
-    reporters: ['spec', 'junit', 'allure'],
-        reporterOptions: {
-            allure: {
-                outputDir: './allure-results'
-            }
+    reporters: ['spec', 'allure'],
+    reporterOptions: {
+        allure: {
+            outputDir: './allure-results'
         }
     },
     mochaOpts: {

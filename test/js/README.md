@@ -4,13 +4,14 @@ This document describes how to set up your system to test TolaActivity
 front-end code. The tools of choice are:
 
 * Selenium WebDriver for browser automation
+* Chrome and/or Firefox browsers
 * Selenium Server for remote browsers (think Saucelabs, BrowserStack,
   or TestBot)
 * WebdriverIO, a test automation framework for NodeJS with support
   for synchronous or asynchronous JavaScript
 * MochaJS test framework with assorted plugins, particularly the Chai
   JS assertion library
-* Chrome and/or Firefox browsers
+* Allure, a test reporter
 
 If you're reading this, you've already probably cloned the repo. If you
 haven't, do that, then come back here. Commands listed in this document
@@ -20,12 +21,38 @@ with the next section, "For the impatient: The Big Green Button©". If you
 want to understand more about how this thing works, start with the following
 section, "Manual installation and testing".
 
+== Config files
 
-== For the impatient: The Big Green Button©h
+The framework includes three WebdriverIO, or _WDIO_, runtime configuration
+files that control which and/or how many tests get run. These are summary
+descriptions; sections describing each option in detail follow.
 
+- **wdio.conf.auto.js** -- Consider this the one-size-fits-all option. It runs
+  all of the tests against all of the browsers all of the time. If you feel
+  impatient, this is the config for you. Read "For the impatient" to get started.
+- **wdio.conf.manual.js** -- If you desire slightly more control over the 
+  process, particularly which specific test files WDIO executes, use this 
+  config file and pass "--spec {_path|regex_}" on the command line to specify
+  the file or regex that interests you.
+- **wdio.conf.headless.js** -- This is an experimental option that runs the test
+  framework using Chrome's headless mode. I know, right? I didn't know Chrome _had_
+  a headless mode. This option executes all of the tests against the Chrome
+  browser.
+
+== For the impatient: The Big Green Button©
+
+![](doc/big_green_button.jpg)
 If you just want to run the tests, have a functional development system,
 and have `git` `node` and `npm` installed, the following sequence of
 commands should work for you.
+
+Edit `config.json` and change the _username_, _password_, and _baseurl_
+values to suit your needs. In particular:
+- _username_ and _password_ correspond to your MercyCorps SSO login
+- _baseurl_ points to the home page of the TolaActivity instance you
+  are testing
+- Under **no** circumstances should this suite be run against the production
+  TolaActivity server. It will create loads of bad data.
 
 ```
 git clone https://github.com/mercycorps.org/TolaActivity.git
@@ -36,27 +63,14 @@ make install
 ./node_modules/.bin/wdio
 ```
 
-=== Edit the user config file
-
-```
-cd test/js
-$ cp config-example.json config.json
-```
-
-Edit `config.json` and change the _username_, _password_, and _baseurl_
-values to suit your needs. In particular:
-- _username_ and _password_ correspond to your MercyCorps SSO login
-- _baseurl_ points to the home page of the TolaActivity instance you
-  are testing
-
-1. Start the Seleniuim server:
-
-There might be a brief pause while the Selenium server starts, so please be
-patient. You'll know the tests have started when web browsers start dancing
-on your desktop. The last step, `wdio`, starts the WebDriverIO test and then
-runs the complete test suite for each configured browser, shows the 
-test results, and then exits, terminating the server as it goes. The output
-should resemble the following, hopefully without the test failures:
+The last command starts Selenium server. There might be a brief
+pause while the Selenium server starts, so please be patient. You'll
+know the tests have started when web browsers start dancing on your
+desktop. The last step, `wdio`, starts the WebDriverIO test and
+then runs the complete test suite for each configured browser, shows
+the test results, and then exits, terminating the server as it goes.
+The output should resemble the following, hopefully without the
+test failures:
 
 ```
 $ cd test/js
@@ -206,7 +220,7 @@ The resulting output is best viewed in your browser. To do so, open
 file:///path/to/your/repo/doc/index.html in your web browser. It will
 end up looking something like the following image.
 
-![](./tola_test_doc_home.png)
+![](doc/tola_test_doc_home.png)
 
 ## Helpful development practices
 

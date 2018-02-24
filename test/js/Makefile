@@ -1,19 +1,25 @@
 .DEFAULT: help
 
 help:
-	@echo "clean: remove all logs and generated files"
-	@echo "update: refresh packages in top-level package.json file"
-	@echo "update-all: refresh all packages in node_modules"
-	@echo "doc: (re)generate test suite documentation"
+	@echo "allure    : generates Allure HTML output from ./allure-results"
+	@echo "clean     : remove all logs and generated files except test results"
+	@echo "doc       : (re)generate test suite documentation"
+	@echo "help      : show this help message"
+	@echo "install   : install all the bits needed to run tests"
+	@echo "update    : refresh packages in top-level package.json file"
 
-install:
-	@npm install --verbose --save-dev
 
-update:
-	@npm update --dev --save
+allure: allure-results
+	@./node_modules/.bin/allure generate ./allure-results --clean
+
+
+allure-results:
+	@test -d ./allure-results || mkdir -v ./allure-results
+
 
 clean:
-	@rm -fvr doc errorShots node_modules logs selenium-server.log server.log
+	@rm -fvr allure-report doc errorShots logs node_modules *server.log
+
 
 doc:
 	@./node_modules/.bin/jsdoc --verbose \
@@ -22,3 +28,14 @@ doc:
 		--destination doc \
 		--readme README.md \
 		test/lib test/pages -R README.md
+
+
+install:
+	@npm install --verbose --save-dev
+
+
+report: allure
+
+
+update:
+	@npm update --dev --save

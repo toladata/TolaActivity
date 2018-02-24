@@ -1,5 +1,5 @@
 {
 	"username": "username",
 	"password": "password",
-	"baseurl": "https://tola-activity.example.com"
+	"baseurl": "https://tola-activity-dev.example.com"
 }

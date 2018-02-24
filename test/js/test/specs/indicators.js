@@ -74,7 +74,6 @@ describe('TolaActivity Program Indicators page', function() {
       let indList = IndPage.getIndicatorsDropdownList();
       assert(indList.length > 0);
     });
-
   }); // end indicators dropdown tests
 
   describe('Indicator Type dropdown', function() {
@@ -86,7 +85,6 @@ describe('TolaActivity Program Indicators page', function() {
       let indTypeList = IndPage.getIndicatorTypeList();
       assert(indTypeList.length > 0);
     });
-
   }); // end indicator type dropdown tests
 
   // FIXME: Still need to get WebDriver code out of this test
