@@ -3,9 +3,11 @@ let LoginPage = require('../pages/login.page.js');
 let util = require('../lib/testutil.js');
 
 describe('TolaActivity Dashboard', function() {
-  // Disable timeouts
-  this.timeout(0);
-  browser.windowHandleMaximize();
+  before(function() {
+    // Disable timeouts
+    this.timeout(0);
+    browser.windowHandleMaximize();
+  });
 
   it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();

@@ -5,9 +5,11 @@ var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 
 describe('"Event" target frequency', function() {
-  // Disable timeouts
-  this.timeout(0);
-  browser.windowHandleMaximize();
+  before(function() {
+    // Disable timeouts
+    this.timeout(0);
+    browser.windowHandleMaximize();
+  });
 
   it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
@@ -72,6 +74,7 @@ describe('"Event" target frequency', function() {
   });
 
   it('should default "Number of events" to 1', function() {
+    IndPage.createBasicIndicator();
     assert.equal(1, TargetsTab.getNumTargetPeriods(),
       'Did not receive expected number of target events');
   });

@@ -141,7 +141,10 @@ function getIndicatorsDropdownList() {
  * table
  */
 function getProgramIndicatorsTableCount(targetId) {
-  let tableDiv = $('div#toplevel_div').$('div.panel');
+  if (browser.isVisible('div#ajaxloading')) {
+    browser.waitForVisible('div#ajaxloading', 10*msec, true);
+  }
+  let tableDiv = browser.$('div#toplevel_div').$('div.panel');
   let table = tableDiv.$(targetId).$('table.hiddenTable');
   let rows = table.$$('tbody>tr>td>a');
   let rowCnt = 0;
@@ -154,34 +157,39 @@ function getProgramIndicatorsTableCount(targetId) {
   return rowCnt;
 }
 
-/**
- * Get the number of program indicators for the table in a div named
- * targetId. This is the program indicators table for the the given
- * program.
- * @param {string} targetId The target div containing the table you
- * want to enumerate
- * @returns {integer} The number of indicators in the specified table
- */
-function getProgramIndicatorsTableCount(targetId) {
-  let container = browser.$('div#toplevel_div').$('div.panel.panel-default');
-  let s = 'div' + targetId;
-  let tableDiv = container.$(s)
-  if (! browser.isVisible(s)) {
-    browser.waitForVisible(s, 10*msec);
-  }
-  let table = tableDiv.$('table.table.table-striped.hiddenTable');
-  let tbody = table.$('tbody');
-  let tableRows = tbody.$$('tr')
-  let rowCnt = 0;
-  for (let row of tableRows) {
-    let cells = row.$$('td');
-    for (let cell of cells) {
-      let link = cell.$('a.indicator-link');
-      if (! link == undefined) { rowCnt++; }
-    }
-  }
-  return rowCnt;
-}
+///**
+// * Get the number of program indicators for the table in a div named
+// * targetId. This is the program indicators table for the the given
+// * program.
+// * @param {string} targetId The target div containing the table you
+// * want to enumerate
+// * @returns {integer} The number of indicators in the specified table
+// */
+//function getProgramIndicatorsTableCount(targetId) {
+//  let toplevel_div = browser.$('div#toplevel_div');
+//  let panel_div = toplevel_div.$('div.panel.panel-default');
+//  let s = "div" + targetId;
+//  let tableDiv = panel_div.$(s);
+//  if (! browser.isVisible(tableDiv)) {
+//    browser.waitForVisible(tableDiv, 10*msec);
+//  }
+//  let table = tableDiv.$('table.table.table-striped.hiddenTable');
+//  let tbody = table.$('tbody');
+//  let tableRows = tbody.$$('tr');
+//  let rowCnt = 0;
+//  for (let row of tableRows) {
+//    let links = row.$$('td>a.indicator-link');
+//    for (let link of links) {
+//      let linkText = link.getText();
+//      if (link) {
+//        rowCnt++;
+//        util.dp('\trowCnt='+rowCnt);
+//      }
+//    }
+//    util.dp('rowCnt='+rowCnt);
+//  }
+//  return rowCnt;
+//}
 
 /**
  * Get a list of the program name in the Programs dropdown.
