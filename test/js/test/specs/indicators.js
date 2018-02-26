@@ -7,10 +7,12 @@ var util = require('../lib/testutil.js');
 const msec = 1000;
 const delay = 10*msec;
 
-describe('TolaActivity Program Indicators page', function() {
-  // Disable timeouts
-  this.timeout(0);
-  browser.windowHandleMaximize();
+describe('Program Indicators page', function() {
+  before(function() {
+    // Disable timeouts
+    this.timeout(0);
+    browser.windowHandleMaximize();
+  });
 
   it('should exist', function() {
     let parms = util.readConfig();
@@ -22,70 +24,6 @@ describe('TolaActivity Program Indicators page', function() {
     // FIXME: pageName should be a property
     assert.equal('Program Indicators', IndPage.pageName());
   });
-
-  describe('Programs dropdown', function() {
-    it('should be present on page', function() {
-      if (browser.isVisible('div#ajaxloading')) {
-        browser.waitForVisible('div#ajaxloading', delay, true);
-      }
-      IndPage.clickProgramsDropdown();
-      IndPage.clickProgramsDropdown();
-    });
-
-    it('should have same number of items as the Programs table', function() {
-      let progList = IndPage.getProgramsDropdownList();
-      let progTable = IndPage.getProgramsTable();
-      assert.equal(progList.length, progTable.length, 'row count mismatch');
-    });
-
-    it('should have same items as Programs table', function() {
-      let progList = IndPage.getProgramsDropdownList();
-      let listItems = new Array();
-      for (let prog of progList) {
-        let name = prog.split('-')[1].trim();
-        listItems.push(name);
-      }
-
-      let progTable = IndPage.getProgramsTable();
-      for (let i = 0; i < progTable.length; i++) {
-        let rowText = progTable[i].split('\n')[0].trim();
-        assert.equal(rowText, listItems[i]);
-      };
-    });
-
-    it('should filter programs table by selected program name', function() {
-      let selectList = browser.$('select#id_programs_filter_dropdown');
-      let progTable = selectList.$$('options');
-      for (let listItem of progTable) {
-        let s = listItem.getText();
-        if (! s.includes('-- All --')) {
-          browser.selectByVisibleText(s);
-        }
-      }
-    });
-  }); // end programs dropdown tests
-
-  describe('Indicators dropdown', function() {
-    it('should be present on page', function() {
-      IndPage.clickIndicatorsDropdown();
-    });
-
-    it('should have at least one entry', function() {
-      let indList = IndPage.getIndicatorsDropdownList();
-      assert(indList.length > 0);
-    });
-  }); // end indicators dropdown tests
-
-  describe('Indicator Type dropdown', function() {
-    it('should be present on page', function() {
-      IndPage.clickIndicatorTypeDropdown();
-    });
-
-    it('should have at least one entry', function() {
-      let indTypeList = IndPage.getIndicatorTypeList();
-      assert(indTypeList.length > 0);
-    });
-  }); // end indicator type dropdown tests
 
   // FIXME: Still need to get WebDriver code out of this test
   it('should toggle PIs table by clicking PI Indicators button', function() {
@@ -115,24 +53,11 @@ describe('TolaActivity Program Indicators page', function() {
     }
   });
 
-  // FIXME: Still need to get WebDriver code out of this test
-  it('should have matching indicator counts on data button and in table', function() {
-    if(browser.isVisible('div#ajaxloading')) {
-      browser.waitForVisible('div#ajaxloading', delay, true);
-    }
-    IndPage.clickIndicatorsLink();
-    let buttons = TargetsTab.getProgramIndicatorButtons();
-    for (let button of buttons) {
-      let buttonCnt = parseInt(button.getText());
-      button.click();
-      let targetId = button.getAttribute('data-target');
-      let tableCnt = IndPage.getProgramIndicatorsTableCount(targetId);
-      assert.equal(buttonCnt, tableCnt, "Indicator count mismatch");
-    }
-  }, 3); // Try this flaky test up to 3 times before failing
-
-  describe('Program Indicators table', function() {
-    it('should view PI by clicking its name in Indicator Name column', function() {
+  describe('Program Indicators', function() {
+    it('should be viewable by clicking their names in Indicator Name column', function() {
+      if (browser.isVisible('div#ajaxloading')) {
+        browser.waitForVisible('div#ajaxloading', delay, true);
+      }
       IndPage.clickIndicatorsLink();
       // Make list of Indicators buttons
       let buttons = TargetsTab.getProgramIndicatorButtons();
@@ -144,7 +69,6 @@ describe('TolaActivity Program Indicators page', function() {
       let indicatorNameList = IndPage.getIndicatorsDropdownList();
       // Click the first one
       if (browser.isVisible('div#ajaxloading')) {
-        //browser.execute("document.getElementById('ajaxloading').style.visibility = 'hidden';");
         browser.waitForVisible('div#ajaxloading', delay, true);
       }
       let indicatorName = indicatorNameList[0];

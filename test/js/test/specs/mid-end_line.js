@@ -5,9 +5,11 @@ var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 
 describe('"Midline and endline" target frequency', function() {
-  // Disable timeouts
-  this.timeout(0);
-  browser.windowHandleMaximize();
+  before(function() {
+    // Disable timeouts
+    this.timeout(0);
+    browser.windowHandleMaximize();
+  });
 
   it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
