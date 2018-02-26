@@ -1,4 +1,5 @@
 exports.config = {
+    execArgv: ['--inspect'],
     specs: [
         './test/specs/**/*.js'
     ],
@@ -11,17 +12,18 @@ exports.config = {
         {
             // maxInstances can get overwritten per capability
             browserName: 'chrome',
-            //maxInstances: 3,
+            maxInstances: 1,
             chromeOptions: {
                 //[]
             }
         },
         {
-            browserName: 'firefox',
-            maxInstances: 1,
-            'moz:firefoxOptions': {
-                //[]
-             }
+           browserName: 'firefox',
+           maxInstances: 1,
+           args: '[--jsdebugger]',
+           'moz:firefoxOptions': {
+               //[]
+            }
         }
     ],
     sync: true,

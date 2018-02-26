@@ -17,7 +17,7 @@ exports.config = {
         }
     ],
     sync: true,
-    logLevel: 'command',
+    logLevel: 'silent',
     coloredLogs: true,
     deprecationWarnings: true,
     bail: 0,
