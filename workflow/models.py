@@ -150,7 +150,6 @@ class Organization(models.Model):
     date_format = models.CharField("Date Format", max_length=50, blank=True, default="DD.MM.YYYY")
     default_currency = models.ForeignKey(Currency, blank=True, null=True)
     currency_format = models.CharField("Currency Format", max_length=50, blank=True, default="Commas")
-    default_language = models.CharField("Default Language", max_length=100, blank=True, default="English")
 
 
     class Meta:
