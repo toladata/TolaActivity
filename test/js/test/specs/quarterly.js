@@ -57,5 +57,33 @@ describe('"Quarterly" target frequency', function() {
     assert.equal(4, TargetsTab.getNumTargetPeriods());
   });
 
-  it('should require entering targets for each target period');
+  it('should require entering targets for each target period', function() {
+    IndPage.createBasicIndicator();
+
+    TargetsTab.setIndicatorName('Quarterly target, target period value(s) required');
+    TargetsTab.setUnitOfMeasure('Weekends per worker');
+    TargetsTab.setLoPTarget(65);
+    TargetsTab.setBaseline(66);
+    TargetsTab.setTargetFrequency('Quarterly');
+    TargetsTab.setNumTargetPeriods(4);
+    TargetsTab.setFirstTargetPeriod();
+    TargetsTab.saveIndicatorChanges();
+
+    // Find the input boxes
+    let inputBoxes = TargetsTab.getTargetInputBoxes();
+    let targetCount = inputBoxes.length;
+    // Place values in each box one at a time and attempt to save.
+    // This should *fail* until all the fields are filled.
+    let errorCount = 0;
+    for(let inputBox of inputBoxes) {
+        inputBox.setValue(86);
+        TargetsTab.saveIndicatorChanges();
+        // Did we fail successfully?
+        let errMsg = TargetsTab.getTargetValueErrorHint();
+        assert(errMsg.includes('Please enter a target value. Your target value can be zero.'));
+        errorCount++;
+    }
+    assert.equal(targetCount, errorCount, 'Received unexpected mismatch');
+    TargetsTab.saveIndicatorChanges();
+  });
 }); // end quarterly target tests
