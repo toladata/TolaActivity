@@ -69,8 +69,6 @@ function clickProgramIndicator(indicatorName) {
  */
 function clickProgramIndicatorsButton(programName) {
   IndPage.selectProgram(programName);
-  // find indicators button
-  // click it
 }
 
 /***

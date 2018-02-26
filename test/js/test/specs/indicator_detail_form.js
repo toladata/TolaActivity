@@ -25,30 +25,6 @@ describe('Program Indicators page', function() {
     assert.equal('Program Indicators', IndPage.pageName());
   });
 
-  describe('Create an Indicator form', function() {
-    it('should show context-sensitve help by clicking Form Help/Guidance button');
-    it('should have an Indicator Service Templates dropdown');
-    it('should have a Custom entry in the Indicator Service Templates dropdown');
-    it('should have a Service Indicator dropdown');
-    it('should have a Country dropdown');
-    it('should have a Program dropdown');
-    it('should have a Save button');
-    it('should confirm indicator created')
-    it('should open Indicator detail form after clicking Save button');
-    it('should have a Cancel button');
-    it('should reset and close form when Cancel button clicked');
-    it('should return to previous screen when Cancel button clicked');
-    it('should have a Reset button to reset form');
-    it('should have a Help link');
-    it('should have a Save Changes button');
-    it('should have a Reset button');
-    it('should have a Cancel button');
-    it('should trigger cancel action by pressing Escape key');
-    it('should validate input data after clicking Save Changes button');
-    it('should validate input data before committing it');
-    it('should restore form to pre-edit state when Reset button is clicked');
-  }); // end create new indicator form tests
-
   describe('Indicator creation detail form', function() {
     describe('Summary tab', function() {
       it('should exist');
@@ -75,12 +51,4 @@ describe('Program Indicators page', function() {
       it('should exist');
     }); // end approval tab tests
   }); // end create indicator detail page tests
-
-  describe('Grid/Print Report page', function() {
-    it('should have a Grid/Print Report button');
-    it('should open when the Grid/Print Report button is clicked');
-    it('should exist');
-    it('should have an Export All button');
-    it('should export all report entries when Export All button is clicked');
-  });
 });

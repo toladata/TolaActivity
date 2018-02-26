@@ -48,39 +48,4 @@ describe('Program Indicators page', function() {
     it('should validate input data before committing it');
     it('should restore form to pre-edit state when Reset button is clicked');
   }); // end create new indicator form tests
-
-  describe('Indicator creation detail form', function() {
-    describe('Summary tab', function() {
-      it('should exist');
-      it('should have Program field matching input data')
-    }); // end summary tab tests
-
-    describe('Performance tab', function() {
-      it('should exist');
-    }); // end performance tab tests
-
-    describe('Targets tab', function() {
-      it('should exist');
-    }); // end targets tab tests
-
-    describe('Data Acquisition tab', function() {
-      it('should exist');
-    }); // end data acquistion tab tests
-
-    describe('Analysis and Reporting tab', function() {
-      it('should exist');
-    }); // end analysis tab tests
-
-    describe('Approval tab', function() {
-      it('should exist');
-    }); // end approval tab tests
-  }); // end create indicator detail page tests
-
-  describe('Grid/Print Report page', function() {
-    it('should have a Grid/Print Report button');
-    it('should open when the Grid/Print Report button is clicked');
-    it('should exist');
-    it('should have an Export All button');
-    it('should export all report entries when Export All button is clicked');
-  });
 });

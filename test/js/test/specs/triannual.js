@@ -9,9 +9,7 @@ describe('"Tri-annual" target frequency', function() {
     // Disable timeouts
     this.timeout(0);
     browser.windowHandleMaximize();
-  });
 
-  it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
     LoginPage.setUserName(parms.username);
@@ -23,9 +21,7 @@ describe('"Tri-annual" target frequency', function() {
   });
 
   it('should require date that first target period begins', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     // This should succeed
     TargetsTab.setIndicatorName('Tri-annual target first period required testing');
@@ -45,9 +41,7 @@ describe('"Tri-annual" target frequency', function() {
   });
 
   it('should create target periods for each period requested', function() {
-    IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.createBasicIndicator();
 
     // This should succeed
     TargetsTab.setIndicatorName('Tri-annual target first period required testing');
