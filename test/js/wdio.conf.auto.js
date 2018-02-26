@@ -8,7 +8,7 @@ exports.config = {
         // 'path/to/excluded/files'
     ],
     // Capabilities
-    maxInstances: 5,
+    maxInstances: 1,
     capabilities: [{
         // maxInstances can get overwritten per capability
         maxInstances: 1,
