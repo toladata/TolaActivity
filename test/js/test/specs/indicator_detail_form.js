@@ -32,9 +32,8 @@ describe('Indicator creation detail form', function() {
 
   describe('Summary tab', function() {
     it('should exist', function() {
-        expect(browser.isVisible('=Summary')); 
+      expect(browser.isVisible('=Summary')); 
     });
-    it('should have Program field matching input data');
   }); // end summary tab tests
 
   describe('Performance tab', function() {
@@ -67,11 +66,19 @@ describe('Indicator creation detail form', function() {
     });
   }); // end approval tab tests
 
-  it('should have a Help link');
-  it('should have a Save Changes button');
-  it('should have a Reset button');
-  it('should have a Cancel button');
-  it('should trigger cancel action by pressing Escape key');
-  it('should restore form to pre-edit state when Reset button is clicked');
+  it('should have a Help link', function() {
+    expect(browser.isVisible('=Help'));
+  });
 
+  it('should have a Save Changes button', function() {
+    expect(browser.isVisible('=Save changes'));
+  });
+
+  it('should have a Reset button', function() {
+    expect(browser.isVisible('=Reset'));
+  });
+
+  it('should trigger reset action by pressing Escape key');
+  it('should restore form to pre-edit state when Reset button is clicked');
+  it('should have a Cancel button');
 }); // end create indicator detail page tests
