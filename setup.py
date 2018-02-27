@@ -50,6 +50,8 @@ setup(
         'search.exceptions',
         'search.models',
         'search.utils',
+        'search.urls',
+        'search.views',
         # search.management.commands
         'search.management.__init__',
         'search.management.commands.__init__',
@@ -61,6 +63,7 @@ setup(
         'tola.management.__init__',
         'tola.management.commands.__init__',
         'tola.management.commands.loadinitialdata',
+        'tola.management.commands.synctrack',
         # workflow
         'workflow.admin',
         'workflow.apps',

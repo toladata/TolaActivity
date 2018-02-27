@@ -28,6 +28,7 @@ DEFAULT_WORKFLOW_LEVEL_1S = [  # tuple (id, name)
 DEFAULT_ORG = {
     'id': 1,
     'name': settings.DEFAULT_ORG,
+    'oauth_domains': settings.DEFAULT_OAUTH_DOMAINS.split(',')
 }
 DEFAULT_COUNTRY_CODES = ('DE', 'SY')
 
@@ -138,6 +139,7 @@ class Command(BaseCommand):
                 level_2_label="Project",
                 level_3_label="Activity",
                 level_4_label="Component",
+                oauth_domains=DEFAULT_ORG['oauth_domains'],
             )
 
     def _create_site(self):
@@ -1061,7 +1063,6 @@ class Command(BaseCommand):
         self._site_profiles.append(factories.SiteProfile(
             id=6,
             name="Paul Schule",
-            contact_leader="Direktor Paul Schule",
             country=self._country_germany,
             latitude="50.9692657293000000",
             longitude="6.9889383750000000",
@@ -1072,7 +1073,6 @@ class Command(BaseCommand):
         self._site_profiles.append(factories.SiteProfile(
             id=7,
             name="Peter Schule",
-            contact_leader="Direktor Peter Schule",
             country=self._country_germany,
             latitude="49.4507464458000000",
             longitude="11.0319071250000000",
@@ -1513,7 +1513,6 @@ class Command(BaseCommand):
             expected_start_date="2018-10-01T11:00:00Z",  # TODO
             expected_end_date="2018-09-30T11:00:00Z",  # TODO
             created_by=self._tolauser_ninette.user,  # 11
-            on_time=False,
             progress="tracking",
             status="yellow",
         ))
@@ -1526,7 +1525,6 @@ class Command(BaseCommand):
             expected_start_date="2018-10-01T11:00:00Z",  # TODO
             expected_end_date="2018-09-30T11:00:00Z",  # TODO
             created_by=self._tolauser_ninette.user,  # 11
-            on_time=False,
             progress="closed",
             status="yellow",
         ))
