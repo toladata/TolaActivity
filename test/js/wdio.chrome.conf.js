@@ -8,30 +8,20 @@ exports.config = {
     ],
     // Capabilities
     maxInstances: 1,
-    capabilities: [
-        {
-            // maxInstances can get overwritten per capability
-            browserName: 'chrome',
-            maxInstances: 1,
-            chromeOptions: {
-                //[]
-            }
-        },
-        {
-           browserName: 'firefox',
-           maxInstances: 1,
-           args: '[--jsdebugger]',
-           'moz:firefoxOptions': {
-               //[]
-            }
+    capabilities: [{
+        // maxInstances can get overwritten per capability
+        browserName: 'chrome',
+        maxInstances: 1,
+        chromeOptions: {
+            //[]
         }
-    ],
+    }],
     sync: true,
     logLevel: 'silent',
     coloredLogs: true,
     deprecationWarnings: true,
     bail: 0,
-    screenshotPath: './errorShots/',
+    screenshotPath: './errorShots',
     baseUrl: 'http://localhost',
     waitforTimeout: 10000,
     connectionRetryTimeout: 90000,

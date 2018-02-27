@@ -7,7 +7,7 @@ var util = require('../lib/testutil.js');
 const msec = 1000;
 const delay = 10*msec;
 
-describe('Program Indicators page', function() {
+describe('Indicator creation detail form', function() {
   before(function() {
     // Disable timeouts
     this.timeout(0);
@@ -25,30 +25,28 @@ describe('Program Indicators page', function() {
     assert.equal('Program Indicators', IndPage.pageName());
   });
 
-  describe('Indicator creation detail form', function() {
-    describe('Summary tab', function() {
-      it('should exist');
-      it('should have Program field matching input data')
-    }); // end summary tab tests
+  describe('Summary tab', function() {
+    it('should exist');
+    it('should have Program field matching input data')
+  }); // end summary tab tests
 
-    describe('Performance tab', function() {
-      it('should exist');
-    }); // end performance tab tests
+  describe('Performance tab', function() {
+    it('should exist');
+  }); // end performance tab tests
 
-    describe('Targets tab', function() {
-      it('should exist');
-    }); // end targets tab tests
+  describe('Targets tab', function() {
+    it('should exist');
+  }); // end targets tab tests
 
-    describe('Data Acquisition tab', function() {
-      it('should exist');
-    }); // end data acquistion tab tests
+  describe('Data Acquisition tab', function() {
+    it('should exist');
+  }); // end data acquistion tab tests
 
-    describe('Analysis and Reporting tab', function() {
-      it('should exist');
-    }); // end analysis tab tests
+  describe('Analysis and Reporting tab', function() {
+    it('should exist');
+  }); // end analysis tab tests
 
-    describe('Approval tab', function() {
-      it('should exist');
-    }); // end approval tab tests
-  }); // end create indicator detail page tests
-});
+  describe('Approval tab', function() {
+    it('should exist');
+  }); // end approval tab tests
+}); // end create indicator detail page tests
