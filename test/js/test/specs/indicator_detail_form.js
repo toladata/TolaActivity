@@ -12,7 +12,7 @@ describe('Indicator creation detail form', function() {
     // Disable timeouts
     this.timeout(0);
     browser.windowHandleMaximize();
-  }
+  });
 
   it('should exist', function() {
     let parms = util.readConfig();
@@ -21,33 +21,50 @@ describe('Indicator creation detail form', function() {
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     IndPage.open();
-    // FIXME: pageName should be a property
     assert.equal('Program Indicators', IndPage.pageName());
+
+    IndPage.createBasicIndicator();
+    browser.waitForVisible('h4');
+    let title = browser.$('h4').getText().trim();
+    expect(title.includes('Goal indicator: Temporary'),
+      'Unexpected title text on the indicator detail screen');
   });
 
   describe('Summary tab', function() {
-    it('should exist');
-    it('should have Program field matching input data')
+    it('should exist', function() {
+        expect(browser.isVisible('=Summary')); 
+    });
+    it('should have Program field matching input data');
   }); // end summary tab tests
 
   describe('Performance tab', function() {
-    it('should exist');
+    it('should exist', function() {
+      expect(browser.isVisible('=Performance')); 
+    });
   }); // end performance tab tests
 
   describe('Targets tab', function() {
-    it('should exist');
+    it('should exist', function() {
+      expect(browser.isVisible('=Targets')); 
+    });
   }); // end targets tab tests
 
   describe('Data Acquisition tab', function() {
-    it('should exist');
+    it('should exist', function() {
+      expect(browser.isVisible('=Data Acquisition')); 
+    });
   }); // end data acquistion tab tests
 
   describe('Analysis and Reporting tab', function() {
-    it('should exist');
+    it('should exist', function() {
+      expect(browser.isVisible('=Analysis and Reporting')); 
+    });
   }); // end analysis tab tests
 
   describe('Approval tab', function() {
-    it('should exist');
+    it('should exist', function() {
+      expect(browser.isVisible('=Approval')); 
+    });
   }); // end approval tab tests
 
   it('should have a Help link');
