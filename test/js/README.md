@@ -1,4 +1,4 @@
-= Using Selenium WebDriver to Test the TolaActivity UI
+# Using Selenium WebDriver to Test the TolaActivity UI
 
 This document describes how to set up your system to test TolaActivity
 front-end code. The tools of choice are:
@@ -21,30 +21,32 @@ with the next section, "For the impatient: The Big Green Button©". If you
 want to understand more about how this thing works, start with the following
 section, "Manual installation and testing".
 
-== Config files
+## Runtime configuration files
 
 The framework includes three WebdriverIO, or _WDIO_, runtime configuration
 files that control which and/or how many tests get run. These are summary
 descriptions; sections describing each option in detail follow.
 
-- **wdio.conf.auto.js** -- Consider this the one-size-fits-all option. It runs
+- **wdio.auto.conf.js** -- Consider this the one-size-fits-all option. It runs
   all of the tests against all of the browsers all of the time. If you feel
   impatient, this is the config for you. Read "For the impatient" to get started.
-- **wdio.conf.manual.js** -- If you desire slightly more control over the 
-  process, particularly which specific test files WDIO executes, use this 
-  config file and pass "--spec {_path|regex_}" on the command line to specify
-  the file or regex that interests you.
-- **wdio.conf.headless.js** -- This is an experimental option that runs the test
+- **wdio.chrome.conf.js** -- Runs all of the tests in the suite against the
+  Chrome browser.
+- **wdio.gecko.conf.js** -- RUns all of the tests in the suite against the
+  Firefox browser.
+- **wdio.headless.conf.js** -- This is an experimental option that runs the test
   framework using Chrome's headless mode. I know, right? I didn't know Chrome _had_
   a headless mode. This option executes all of the tests against the Chrome
   browser.
+- **wdio.manual.conf.js** -- Runs all of the tests in the suite agsinst both the
+  Chrome and the Firefox browsers.
 
-== For the impatient: The Big Green Button©
+## The Big Green Button©: Quickstart guide for the impatient
 
-![](doc/big_green_button.jpg)
+![](docs/big_green_button.jpg)
 If you just want to run the tests, have a functional development system,
-and have `git` `node` and `npm` installed, the following sequence of
-commands should work for you.
+and have `git` `node` and `npm` installed, the following sequence of steps
+and commands should work for you.
 
 Edit `config.json` and change the _username_, _password_, and _baseurl_
 values to suit your needs. In particular:
@@ -63,14 +65,14 @@ make install
 ./node_modules/.bin/wdio
 ```
 
-The last command starts Selenium server. There might be a brief
-pause while the Selenium server starts, so please be patient. You'll
-know the tests have started when web browsers start dancing on your
-desktop. The last step, `wdio`, starts the WebDriverIO test and
-then runs the complete test suite for each configured browser, shows
-the test results, and then exits, terminating the server as it goes.
-The output should resemble the following, hopefully without the
-test failures:
+The last command starts Selenium server, which is a big fat Java app. As a
+result, there might be a brief pause while the Selenium server starts,
+so please be patient. You'll know the tests have started when web
+browsers start dancing on your desktop. The last step, `wdio`, starts the
+WebDriverIO test and then runs the complete test suite for each configured
+browser, shows the test results, and then exits, terminating the server
+as it goes.  The output should resemble the following, hopefully without
+the test failures:
 
 ```
 $ cd test/js
@@ -101,7 +103,7 @@ AssertionError: Did not receive expected number of target events: expected 1 to 
     at new F (/Users/kwall/repos/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
 ```
 
-== Manual installation and testing
+## Manual installation and testing
 
 First, download and install all the bits you'll need. These include
 NodeJS, Firefox, Chrome, Selenium, Mocha, and Chai. If you are already
