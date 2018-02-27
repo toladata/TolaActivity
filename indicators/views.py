@@ -923,11 +923,14 @@ def collected_data_json(AjaxableResponseMixin, indicator, program):
     ind = Indicator.objects.get(pk=indicator)
     template_name = 'indicators/collected_data_table.html'
 
-    collecteddata = CollectedData.objects\
-        .filter(indicator=indicator)\
-        .select_related('indicator')\
-        .prefetch_related('evidence', 'periodic_target', 'disaggregation_value')\
-        .order_by('periodic_target__customsort', 'date_collected')
+    # collecteddata = CollectedData.objects\
+    #     .filter(indicator=indicator)\
+    #     .select_related('indicator')\
+    #     .prefetch_related('evidence', 'periodic_target', 'disaggregation_value')\
+    #     .order_by('periodic_target__customsort', 'date_collected')
+
+    periodictargets = PeriodicTarget.objects.filter(indicator=indicator).prefetch_related('collecteddata_set').order_by('customsort')
+    collecteddata_without_periodictargets = CollectedData.objects.filter(indicator=indicator, periodic_target__isnull=True)
 
     detail_url = ''
     try:
@@ -943,7 +946,8 @@ def collected_data_json(AjaxableResponseMixin, indicator, program):
         .aggregate(Sum('periodic_target__target'),Sum('achieved'))
 
     return render_to_response(template_name, {
-                'collecteddata': collecteddata,
+                'periodictargets': periodictargets,
+                'collecteddata_without_periodictargets': collecteddata_without_periodictargets,
                 'collected_sum': collected_sum,
                 'indicator': ind,
                 'program_id': program})
