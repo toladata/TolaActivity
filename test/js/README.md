@@ -3,23 +3,25 @@
 This document describes how to set up your system to test TolaActivity
 front-end code. The tools of choice are:
 
-* Selenium WebDriver for browser automation
-* Chrome and/or Firefox browsers
-* Selenium Server for remote browsers (think Saucelabs, BrowserStack,
-  or TestBot)
-* WebdriverIO, a test automation framework for NodeJS with support
-  for synchronous or asynchronous JavaScript
-* MochaJS test framework with assorted plugins, particularly the Chai
-  JS assertion library
-* Allure, a test reporter
+* [Selenium WebDriver](http://www.seleniumhq.org/) for browser automation
+* [Chrome](https://www.google.com/chrome/) and/or
+  [Firefox](https://www.mozilla.org/firefox/) browsers
+* [WebdriverIO](), a test automation framework for NodeJS that supports both
+  synchronous and asynchronous JavaScript
+* [Selenium Server](http://www.seleniumhq.org/) for remote browsers
+  (think Saucelabs, BrowserStack, or TestBot), a WebdriverIO dependency
+* [MochaJS test framework](https://mochajs.org/) with assorted plugins,
+  particularly the [ChaiJS assertion library](http://chaijs.com/)
+* [Allure](http://allure.qatools.ru/), a test reporter
 
 If you're reading this, you've already probably cloned the repo. If you
 haven't, do that, then come back here. Commands listed in this document
 assume you're working from the testing directory, _test/js_ in the
 TolaActivity repo, unless noted otherwise. If you are impatient, start
-with the next section, "For the impatient: The Big Green Button©". If you
-want to understand more about how this thing works, start with the following
-section, "Manual installation and testing".
+with the next section, "The Big Green Button<sup>©</sup>: Quickstart
+guide for the impatient".  If you want to understand more about how
+this thing works, start with the following section, "Manual installation
+and testing".
 
 ## Runtime configuration files
 
@@ -41,66 +43,86 @@ descriptions; sections describing each option in detail follow.
 - **wdio.manual.conf.js** -- Runs all of the tests in the suite agsinst both the
   Chrome and the Firefox browsers.
 
-## The Big Green Button©: Quickstart guide for the impatient
+## The Big Green Button<sup>©</sup>: Quickstart guide for the impatient
 
 ![](docs/big_green_button.jpg)
-If you just want to run the tests, have a functional development system,
-and have `git` `node` and `npm` installed, the following sequence of steps
-and commands should work for you.
 
-Edit `config.json` and change the _username_, _password_, and _baseurl_
-values to suit your needs. In particular:
-- _username_ and _password_ correspond to your MercyCorps SSO login
-- _baseurl_ points to the home page of the TolaActivity instance you
-  are testing
-- Under **no** circumstances should this suite be run against the production
-  TolaActivity server. It will create loads of bad data.
+If you just want to run the tests, have a functional development system,
+and have `node` and `npm` installed, the following sequence of steps and 
+commands will get you going:
 
 ```
 git clone https://github.com/mercycorps.org/TolaActivity.git
-get checkout merge-test
 cd TolaActivity/test/js
-[edit user config file]
+[edit user config file as described below]
 make install
-./node_modules/.bin/wdio
+./node_modules/.bin/wdio wdio.auto.conf.js
 ```
 
-The last command starts Selenium server, which is a big fat Java app. As a
-result, there might be a brief pause while the Selenium server starts,
-so please be patient. You'll know the tests have started when web
-browsers start dancing on your desktop. The last step, `wdio`, starts the
-WebDriverIO test and then runs the complete test suite for each configured
-browser, shows the test results, and then exits, terminating the server
-as it goes.  The output should resemble the following, hopefully without
-the test failures:
+### Create the user config file
+Copy the example user config file to _config.json_ (`cp
+config-example.json config.json`) and edit _config.json_, changing
+_username_, _password_, and _baseurl_ to suit your needs. In particular:
+
+- _username_ and _password_ must correspond to your MercyCorps SSO login
+- _baseurl_ points to the home page of the TolaActivity instance you
+  are testing
+- **Under no circumstances should this suite be run against the production
+  TolaActivity server. It will create bad data, result in a lot of work to
+  remove, and potentially result in losing known-good, live data.**
+
+The last command, `./node_modules/.bin/wdio`, starts Selenium server,
+which is a Java app. As a result, there might be a multi-second pause
+while it starts. When web browsers start operating themselves on your
+desktop, the tests have started. The last step, `wdio wdio.auto.conf.js`,
+starts the WebDriverIO bits, the Selenium server, unconditionally runs
+the complete test suite for each configured browser, shows the test
+results, and then exits, terminating the server as it goes. The output
+should resemble the following, hopefully without the test failures:
 
 ```
 $ cd test/js
-$ ./node_modules/.bin/wdio
+$ ./node_modules/.bin/wdio wdio.auto.conf.js 
 
-․․․․․․․․․․․․․․․․․․․․․․․․F․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․F․․
+․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․F․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․F․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․
 
-69 passing (161.60s)
-93 skipped
+144 passing (396.40s)
+140 skipped
 2 failing
 
-1) TolaActivity Program Indicators page should have matching indicator counts on data button and in table:
-Indicator count mismatch: expected 8 to equal 0
+1) Program Indicators table should toggle table when a PI Indicators button is clicked:
+expected true to equal false
+running chrome
 running firefox
-AssertionError: Indicator count mismatch: expected 8 to equal 0
-    at /Users/kwall/repos/TolaActivity/test/js/test/specs/indicators.js:132:14
-    at new Promise (<anonymous>)
-    at new F (/Users/kwall/repos/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
-    at new Promise (<anonymous>)
-    at new F (/Users/kwall/repos/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
+AssertionError: expected true to equal false
+    at Context.<anonymous> (/home/kwall/Work/TolaActivity/test/js/test/specs/indicators_table.js:51:14)
+        at new Promise (<anonymous>)
+            at new F (/home/kwall/Work/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
 
-2) Indicator Targets Targets tab "Event" target frequency should default "Number of events" to 1:
-Did not receive expected number of target events: expected 1 to equal ''
-running firefox
-AssertionError: Did not receive expected number of target events: expected 1 to equal ''
-    at Context.<anonymous> (/Users/kwall/repos/TolaActivity/test/js/test/specs/targets.js:545:16)
-    at new Promise (<anonymous>)
-    at new F (/Users/kwall/repos/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
+
+
+========= Your concise report ========== 
+chrome::undefined:latest
+All went well !!
+========= Your concise report ========== 
+chrome::undefined:latest
+All went well !!
+[...]
+========= Your concise report ========== 
+chrome::undefined:latest
+Test failed (1): 
+Fail : Program Indicators table2 => should toggle table when a PI Indicators button is clicked
+AssertionError : expected true to equal false
+[...]
+========= Your concise report ========== 
+firefox::undefined:latest
+All went well !!
+========= Your concise report ========== 
+firefox::undefined:latest
+Test failed (1): 
+Fail : Program Indicators table2 => should toggle table when a PI Indicators button is clicked
+AssertionError : expected true to equal false
+[...]
 ```
 
 ## Manual installation and testing
@@ -118,12 +140,15 @@ be current.
 [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver).
 Place it anywhere in your system $PATH. You may also keep it in
 the testing directory of your local repo because it is gitignored.
+The current version (at the time of writing) is 2.34.
 1. Download and install Firefox's Selenium browser driver,
 [geckodriver](https://github.com/mozilla/geckodriver/releases).
 Place it anywhere in your system $PATH. You can also keep it in
 the testing directory of your local repo because it is gitignored.
+The current version (at the time of writing) is 0.19.1.
 1. Download [Selenium Server](https://goo.gl/hvDPsK) and place it
-the testing directory.
+the testing directory. The current version (at the time of writing) is
+3.9.1.
 1. Install [NodeJS](https://nodjs.org) so you can use the
 [Node Package Manager](https://www.npmjos.com), `npm`,  to install
 other JavaScript packages.
@@ -138,8 +163,14 @@ $ npm install
 ```
 
 ## Validate the Installation
-1. Make a copy the config-example.json file in the testing directory
-   of the TolaActivity repo:
+1. Edit `config.json` and change the _username_, _password_, and _baseurl_
+values to suit your needs. In particular:
+- _username_ and _password_ correspond to your MercyCorps SSO login
+- _baseurl_ points to the home page of the TolaActivity instance you
+  are testing
+- **Under no circumstances should this suite be run against the production
+  TolaActivity server. It will create bad data, result in a lot of work to
+  remove, and potentially result in losing known-good, live data.**
 
 ```
 $ cd test/js
@@ -151,57 +182,70 @@ values to suit your needs. In particular:
 * `username` and `password` correspond to your MercyCorps SSO login
 * `baseurl` points to the home page of the TolaActivity instance you
   are testing
-
-1. Start the Seleniuim server:
+1. Start the Seleniuim server (targeting the Firefox browser):
 
 ```
 $ cd test/js
-$ java -jar -Dwebdriver.firefox.driver=./geckodriver selenium-server-standalone-3.8.1.jar &> selenium-server.log &
+$ java -jar -Dwebdriver.gecko.driver=./geckodriver selenium-server-standalone-3.9.1.jar &> selenium-server.log &
 ```
 
 1. Execute the test suite:
 
 ```
 $ cd test/js
-$ ./node_modules/.bin/wdio
+$ ./node_modules/.bin/wdio wdio.firefox.conf.js
 
 ------------------------------------------------------------------
-[chrome #0-0] Session ID: db980c3deae94de17354e7000ee25288
-[chrome #0-0] Spec: /Users/kwall/repos/TolaActivity/test/js/test/specs/dashboard.js
-[chrome #0-0] Running: firefox
-[chrome #0-0]
-[chrome #0-0] TolaActivity Dashboard
-[chrome #0-0]   ✓ should require unauthenticated users to login
-[chrome #0-0]   ✓ should have a page header
-[chrome #0-0]   ✓ should have a TolaActivity link
-
-    [...output deleted...]
-
+[firefox #0-0] Session ID: db980c3deae94de17354e7000ee25288
+[firefox #0-0] Spec: /Users/kwall/repos/TolaActivity/test/js/test/specs/dashboard.js
+[firefox #0-0] Running: firefox
+[firefox #0-0]
+[firefox #0-0] TolaActivity Dashboard
+[firefox #0-0]   ✓ should require unauthenticated users to login
+[firefox #0-0]   ✓ should have a page header
+[firefox #0-0]   ✓ should have a TolaActivity link
+[...]
 ==================================================================
 Number of specs: 6
 
 
-47 passing (109.10s)
-114 skipped
+72 passing (109.10s)
+70 skipped
+1 failing
+
+1) Program Indicators table should toggle table when a PI Indicators button is clicked:
+expected true to equal false
+ running chrome
+running firefox
+AssertionError: expected true to equal false
+    at Context.<anonymous> (/home/kwall/Work/TolaActivity/test/js/test/specs/indicators_table.js:51:14)
+        at new Promise (<anonymous>)
+            at new F (/home/kwall/Work/TolaActivity/test/js/node_modules/core-js/library/modules/_export    .js:35:28)
+95 
+
 ```
 
 ## Don't want to run everything?
 1. To run the tests in a single file, specify `--spec path/to/file`.
-   For example, to run only the dashboard tests, the command would be
+   For example, to run only the dashboard tests in auto mode, the command would be
 
 ```
-$ ./node_modules/.bin/wdio --spec test/specs/dashboard.js
+$ ./node_modules/.bin/wdio wdio.auto.conf.js --spec test/specs/dashboard.js
 ```
 
-1. You can also the the `--spec` argument as a crude regex and spec filenames. For example, to run any test that contains _invalid_ in the filename, this command would do it:
+1. You can also the the `--spec` argument as a crude regex and spec
+filenames. For example, to run any test that contains _invalid_ in the
+filename, this command would do it:
 
 ```
 $ ./node_modules/.bin/wdio --spec invalid
 ```
 
-## Looking for documentation?
-To produce documentation for the test suite, execute the command `make
-doc` at the top of the TolaActivity repo:
+## Looking for framework documentation?
+To produce documentation for the test framework, the API is decorated with
+JSDoc decorators, so it will produce JSDoc-compatible documentation from the
+code itself. To do so, execute the command `make doc` at the top of the 
+testing directory:
 
 ```
 $ make doc
@@ -220,7 +264,8 @@ Finished running in 0.15 seconds.
 
 The resulting output is best viewed in your browser. To do so, open 
 file:///path/to/your/repo/doc/index.html in your web browser. It will
-end up looking something like the following image.
+end up looking something like the following image. **NOTE:** This is
+_API_ documentation; the tests themselves are self-documenting.
 
 ![](doc/tola_test_doc_home.png)
 

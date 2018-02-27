@@ -12,7 +12,7 @@ exports.config = {
     capabilities: [{
         // maxInstances can get overwritten per capability
         maxInstances: 1,
-        browserName: 'chrome',
+        browserName: 'chrome'
     },
     {
         maxInstances: 1,
@@ -20,9 +20,10 @@ exports.config = {
     }],
     // Test Configurations
     sync: true,
-    logLevel: 'silent',
+    logLevel: 'verbose',
+    logOutput: 'webdriver.log',
     coloredLogs: true,
-    deprecationWarnings: true,
+    deprecationWarnings: false,
     bail: 0,
     screenshotPath: './errorShots/',
     baseUrl: 'http://localhost',
@@ -32,7 +33,7 @@ exports.config = {
     services: ['selenium-standalone'],
     seleniumLogs: './logs',
     framework: 'mocha',
-    reporters: ['spec', 'allure'],
+    reporters: ['dot', 'concise', 'allure'],
     reporterOptions: {
         allure: {
             outputDir: './allure-results'
@@ -41,6 +42,5 @@ exports.config = {
     mochaOpts: {
         ui: 'bdd',
         compilers: ['js:babel-register']
-        //require: 'babel-register'
-    },
+    }
 }

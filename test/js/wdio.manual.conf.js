@@ -28,8 +28,9 @@ exports.config = {
     ],
     sync: true,
     logLevel: 'silent',
+    logOutput: 'webdriver.log',
     coloredLogs: true,
-    deprecationWarnings: true,
+    deprecationWarnings: false,
     bail: 0,
     screenshotPath: './errorShots/',
     baseUrl: 'http://localhost',
@@ -39,7 +40,7 @@ exports.config = {
     services: [],
     seleniumLogs: './logs',
     framework: 'mocha',
-    reporters: ['spec', 'allure'],
+    reporters: ['dot', 'spec', 'allure'],
     reporterOptions: {
         allure: {
             outputDir: './allure-results'
