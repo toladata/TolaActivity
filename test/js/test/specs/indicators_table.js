@@ -85,7 +85,7 @@ describe('Program Indicators table', function() {
   });
 
   it('should increase PI count after adding new indicator', function() {
-    TargetsTab.createBasicIndicator();
+    IndPage.createBasicIndicator();
   });
   it('should be able to delete PI by clicking its Delete button');
   it('should decrease PI count after deleting indicator');

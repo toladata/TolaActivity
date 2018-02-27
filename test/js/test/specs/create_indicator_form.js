@@ -58,8 +58,10 @@ describe('Create an Indicator form', function() {
 
   it('should have a save button', function() {
     IndPage.clickIndicatorsLink();
-    let control = $('input[type="submit"]')
-    assert.equal(true, control.isVisible());
+    TargetsTab.clickNewIndicatorButton();
+    let control = $('form').$('input[value="save"]');
+    assert.equal(true, control.isVisible(),
+      'Save button is not visible');
     control.click();
   });
 
@@ -67,7 +69,7 @@ describe('Create an Indicator form', function() {
     IndPage.clickIndicatorsLink();
     TargetsTab.clickNewIndicatorButton();
     TargetsTab.saveNewIndicator();
-    let messsage = IndPage.getAlertMsg();
+    let message = IndPage.getAlertMsg();
     assert(message.includes('Success, Basic Indicator Created!'),
       'Unexpected message during indicator creation');
   });
