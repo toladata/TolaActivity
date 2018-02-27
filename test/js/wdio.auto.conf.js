@@ -21,7 +21,7 @@ exports.config = {
     // Test Configurations
     sync: true,
     logLevel: 'verbose',
-    logOutput: 'webdriver.log',
+    logOutput: './log',
     coloredLogs: true,
     deprecationWarnings: false,
     bail: 0,
@@ -31,7 +31,7 @@ exports.config = {
     connectionRetryTimeout: 90000,
     connectionRetryCount: 3,
     services: ['selenium-standalone'],
-    seleniumLogs: './logs',
+    seleniumLogs: './log',
     framework: 'mocha',
     reporters: ['dot', 'concise', 'allure'],
     reporterOptions: {
