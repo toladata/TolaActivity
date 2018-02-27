@@ -7,7 +7,7 @@ var util = require('../lib/testutil.js');
 const msec = 1000;
 const delay = 10*msec;
 
-describe('Program Indicators page', function() {
+describe('Create an Indicator form', function() {
   before(function() {
     // Disable timeouts
     this.timeout(0);
@@ -25,27 +25,64 @@ describe('Program Indicators page', function() {
     assert.equal('Program Indicators', IndPage.pageName());
   });
 
-  describe('Create an Indicator form', function() {
-    it('should show context-sensitve help by clicking Form Help/Guidance button');
-    it('should have an Indicator Service Templates dropdown');
-    it('should have a Custom entry in the Indicator Service Templates dropdown');
-    it('should have a Service Indicator dropdown');
-    it('should have a Country dropdown');
-    it('should have a Program dropdown');
-    it('should have a Save button');
-    it('should confirm indicator created')
-    it('should open Indicator detail form after clicking Save button');
-    it('should have a Cancel button');
-    it('should reset and close form when Cancel button clicked');
-    it('should return to previous screen when Cancel button clicked');
-    it('should have a Reset button to reset form');
-    it('should have a Help link');
-    it('should have a Save Changes button');
-    it('should have a Reset button');
-    it('should have a Cancel button');
-    it('should trigger cancel action by pressing Escape key');
-    it('should validate input data after clicking Save Changes button');
-    it('should validate input data before committing it');
-    it('should restore form to pre-edit state when Reset button is clicked');
-  }); // end create new indicator form tests
-});
+  it('should have an Indicator Service Templates dropdown', function() {
+    TargetsTab.clickNewIndicatorButton();
+    let control = $('select#services');
+    assert.equal(true, control.isVisible());
+    TargetsTab.saveNewIndicator();
+  });
+
+  it('should have a Service Indicator dropdown', function() {
+    IndPage.clickIndicatorsLink();
+    TargetsTab.clickNewIndicatorButton();
+    let control = $('select#service_indicator');
+    assert.equal(true, control.isVisible());
+    TargetsTab.saveNewIndicator();
+  });
+
+  it('should have a Country dropdown', function() {
+    IndPage.clickIndicatorsLink();
+    TargetsTab.clickNewIndicatorButton();
+    let control = $('select#country');
+    assert.equal(true, control.isVisible());
+    TargetsTab.saveNewIndicator();
+  });
+
+  it('should have a Program dropdown', function() {
+    IndPage.clickIndicatorsLink();
+    TargetsTab.clickNewIndicatorButton();
+    let control = $('select#program');
+    assert.equal(true, control.isVisible());
+    TargetsTab.saveNewIndicator();
+  });
+
+  it('should have a save button', function() {
+    IndPage.clickIndicatorsLink();
+    let control = $('input[type="submit"]')
+    assert.equal(true, control.isVisible());
+    control.click();
+  });
+
+  it('should confirm indicator created', function() {
+    IndPage.clickIndicatorsLink();
+    TargetsTab.clickNewIndicatorButton();
+    TargetsTab.saveNewIndicator();
+    let messsage = IndPage.getAlertMsg();
+    assert(message.includes('Success, Basic Indicator Created!'),
+      'Unexpected message during indicator creation');
+  });
+
+  it('should open Indicator detail form after clicking Save button');
+  it('should have a Cancel button');
+  it('should reset and close form when Cancel button clicked');
+  it('should return to previous screen when Cancel button clicked');
+  it('should have a Reset button to reset form');
+  it('should have a Help link');
+  it('should have a Save Changes button');
+  it('should have a Reset button');
+  it('should have a Cancel button');
+  it('should trigger cancel action by pressing Escape key');
+  it('should validate input data after clicking Save Changes button');
+  it('should validate input data before committing it');
+  it('should restore form to pre-edit state when Reset button is clicked');
+}); // end create new indicator form tests
