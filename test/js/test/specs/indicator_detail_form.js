@@ -12,14 +12,14 @@ describe('Indicator creation detail form', function() {
     // Disable timeouts
     this.timeout(0);
     browser.windowHandleMaximize();
+  }
+
+  it('should exist', function() {
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
     LoginPage.setUserName(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
-  });
-
-  it('should exist', function() {
     IndPage.open();
     // FIXME: pageName should be a property
     assert.equal('Program Indicators', IndPage.pageName());
@@ -49,4 +49,12 @@ describe('Indicator creation detail form', function() {
   describe('Approval tab', function() {
     it('should exist');
   }); // end approval tab tests
+
+  it('should have a Help link');
+  it('should have a Save Changes button');
+  it('should have a Reset button');
+  it('should have a Cancel button');
+  it('should trigger cancel action by pressing Escape key');
+  it('should restore form to pre-edit state when Reset button is clicked');
+
 }); // end create indicator detail page tests

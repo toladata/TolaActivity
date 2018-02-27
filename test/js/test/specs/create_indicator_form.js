@@ -5,7 +5,6 @@ var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
-const delay = 10*msec;
 
 describe('Create an Indicator form', function() {
   before(function() {
@@ -70,21 +69,23 @@ describe('Create an Indicator form', function() {
     TargetsTab.clickNewIndicatorButton();
     TargetsTab.saveNewIndicator();
     let message = IndPage.getAlertMsg();
-    assert(message.includes('Success, Basic Indicator Created!'),
+    expect(message.includes('Success, Basic Indicator Created!'),
       'Unexpected message during indicator creation');
   });
 
-  it('should open Indicator detail form after clicking Save button');
+  it('should open Indicator detail form after clicking Save button', function() {
+    IndPage.clickIndicatorsLink();
+    TargetsTab.clickNewIndicatorButton();
+    TargetsTab.saveNewIndicator();
+    browser.waitForVisible('h4');
+    let title = browser.$('h4').getText().trim();
+    expect(title.includes('Goal indicator: Temporary'),
+      'Unexpected title text on the indicator detail screen');
+  });
+
+  // Enhancements
   it('should have a Cancel button');
   it('should reset and close form when Cancel button clicked');
   it('should return to previous screen when Cancel button clicked');
   it('should have a Reset button to reset form');
-  it('should have a Help link');
-  it('should have a Save Changes button');
-  it('should have a Reset button');
-  it('should have a Cancel button');
-  it('should trigger cancel action by pressing Escape key');
-  it('should validate input data after clicking Save Changes button');
-  it('should validate input data before committing it');
-  it('should restore form to pre-edit state when Reset button is clicked');
 }); // end create new indicator form tests
