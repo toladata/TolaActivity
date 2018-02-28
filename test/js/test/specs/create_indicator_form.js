@@ -85,9 +85,12 @@ describe('Create an Indicator form', function() {
       'Unexpected title text on the indicator detail screen');
   });
 
-  // Enhancements
-  it('should have a Cancel button');
-  it('should reset and close form when Cancel button clicked');
-  it('should return to previous screen when Cancel button clicked');
-  it('should have a Reset button to reset form');
+  it('should have a Reset button to reset form', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    TargetsTab.saveNewIndicator();
+    let control = $('form').$('input[value="Reset"]');
+    assert.equal(true, control.isVisible(), 'Reset button is not visible');
+    control.click();
+  });
 }); // end create new indicator form tests
