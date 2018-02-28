@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView, View
@@ -20,7 +20,9 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from oauth2_provider.views.generic import ProtectedResourceView
 
+from social_django.utils import load_strategy
 from chargebee import APIError, InvalidRequestError, Subscription
+
 from tola import DEMO_BRANCH
 from tola.track_sync import register_user
 from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
@@ -61,7 +63,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
 class RegisterView(View):
     template_name = 'registration/register.html'
 
-    def _get_context_data(self, **kwargs):
+    def _get_context_data(self, params, **kwargs):
         context = {}
         try:  # CE only
             privacy_disclaimer = TolaSites.objects.values_list(
@@ -69,19 +71,34 @@ class RegisterView(View):
         except TolaSites.DoesNotExist:
             privacy_disclaimer = ''
         context['privacy_disclaimer'] = privacy_disclaimer
+
         if kwargs:
             context.update(kwargs)
+
+        # Auto fill some fields based on query parameters and set partial token
+        if params:
+            if 'organization_uuid' in params:
+                org_uuid = params.get('organization_uuid', '')
+                org_name = Organization.objects.values_list(
+                    'name', flat=True).get(organization_uuid=org_uuid)
+            else:
+                org_name = params.get('cus_company', '')
+            first_name = params.get('cus_fname', '')
+            last_name = params.get('cus_lname', '')
+            email = params.get('cus_email', '')
+            context['form_tolauser'] = NewTolaUserRegistrationForm(org=org_name)
+            context['form_user'] = NewUserRegistrationForm(
+                first_name=first_name, last_name=last_name, email=email)
         return context
 
-    def _get_chargebee_data(self, query_params, **kwargs):
+    def _get_chargebee_data(self, params, **kwargs):
         context = {}
-
         context.update(kwargs)
-        first_name = query_params.get('cus_fname', '')
-        last_name = query_params.get('cus_lname', '')
-        email = query_params.get('cus_email', '')
-        org_name = query_params.get('cus_company', '')
-        sub_id = query_params.get('sub_id', '')
+        org_name = params.get('cus_company', '')
+        sub_id = params.get('sub_id', '')
+
+        if not org_name and not sub_id:
+            return context
 
         # Check subscription id and
         # Create an organization defined on ChargeBee
@@ -98,11 +115,6 @@ class RegisterView(View):
                 org = Organization.objects.get_or_create(name=org_name)[0]
                 org.chargebee_subscription_id = sub_id
                 org.save()
-
-        # Auto fill some fields for the user
-        context['form_user'] = NewUserRegistrationForm(
-            first_name=first_name, last_name=last_name, email=email)
-        context['form_tolauser'] = NewTolaUserRegistrationForm(org=org_name)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -110,16 +122,32 @@ class RegisterView(View):
             'form_user': NewUserRegistrationForm(),
             'form_tolauser': NewTolaUserRegistrationForm(),
         }
-        if len(request.GET.values()) and request.GET.get('sub_id') and \
-                os.getenv('APP_BRANCH') != DEMO_BRANCH:
+        if (request.GET.get('sub_id', None) and
+                os.getenv('APP_BRANCH') != DEMO_BRANCH):
             extra_context = self._get_chargebee_data(
                 request.GET, **extra_context)
-        context = self._get_context_data(**extra_context)
+        context = self._get_context_data(request.GET, **extra_context)
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        form_user = NewUserRegistrationForm(request.POST)
-        form_tolauser = NewTolaUserRegistrationForm(request.POST)
+        register_form = request.POST.copy()
+
+        # Check if an organization uuid was given and create the user
+        # associate with that organization
+        if 'org' not in register_form:
+            org_name = ''
+            if 'organization_uuid' in request.GET:
+                org_uuid = request.GET.get('organization_uuid', '')
+                org_name = Organization.objects.values_list(
+                    'name', flat=True).get(organization_uuid=org_uuid)
+            elif 'cus_company' in request.GET:
+                org_name = request.GET.get('cus_company', '')
+            register_form.appendlist('org', org_name)
+        partial_token = request.GET.get('partial_token', '')
+
+        # Create the user and tola user django forms for validation
+        form_user = NewUserRegistrationForm(register_form)
+        form_tolauser = NewTolaUserRegistrationForm(register_form)
 
         if form_user.is_valid() and form_tolauser.is_valid():
             user = form_user.save()
@@ -130,16 +158,19 @@ class RegisterView(View):
             tolauser.organization = form_tolauser.cleaned_data.get('org')
             tolauser.name = ' '.join([user.first_name, user.last_name]).strip()
             tolauser.save()
-            data = request.POST.copy().dict()
-            data.update({'tola_user_uuid': tolauser.tola_user_uuid})
-            register_user(data, tolauser)
+            register_form.appendlist('tola_user_uuid', tolauser.tola_user_uuid)
+            register_user(register_form, tolauser)
             messages.error(
                 request,
                 'Thank you, You have been registered as a new user.',
                 fail_silently=False)
+            if partial_token:
+                strategy = load_strategy()
+                partial = strategy.partial_load(partial_token)
+                return redirect('social:complete', backend=partial.backend)
             return HttpResponseRedirect(reverse('login'))
 
-        context = self._get_context_data(**{
+        context = self._get_context_data(request.GET, **{
             'form_user': form_user,
             'form_tolauser': form_tolauser,
         })
