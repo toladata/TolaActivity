@@ -4,7 +4,6 @@ var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
-const delay = 10*msec;
 
 describe('Program Indicators page', function() {
   before(function() {

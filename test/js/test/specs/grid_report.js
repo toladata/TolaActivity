@@ -1,11 +1,9 @@
 var assert = require('chai').assert;
-var expect = require('chai').expect;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
-const delay = 10*msec;
 
 describe('Grid/Print Report page', function() {
   before(function() {
