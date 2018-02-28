@@ -4,12 +4,11 @@
  */
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
-const msec = 1000;
-const delay = 10*msec;
-
 var util = require('../lib/testutil.js');
 var dp = require('../lib/testutil.js').dp;
 var IndPage = require('../pages/indicators.page.js');
+const msec = 1000;
+
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
@@ -61,9 +60,9 @@ function clickProgramIndicator(indicatorName) {
 }
 
 /**
- * Click the specified program's Indicators button to toggle the corresponding
+ * Click the specified program's indicators button to toggle the corresponding
  * table of indicators
- * @param {string} programName - The program name whose Indicators button
+ * @param {string} programName - The program name whose indicators button
  * you want to click
  * @returns Nothing
  */
@@ -80,38 +79,12 @@ function clickResetButton() {
 }
 
 /**
- * Click the Targets tab of the Indicator detail modal or page
+ * Click the Targets tab of the indicator detail modal or page
  * @returns Nothing
  */
 function clickTargetsTab() {
   let targetsTab = browser.$('=Targets');
   targetsTab.click();
-}
-
-/**
- * Create a new basic indicator with the specified required values
- * @param {string} name The new name for the indicator
- * @param {string} unit The unit of measurement for this target
- * @param {integer} lopTarget The LoP target for this indicator
- * @param {integer|boolean} Integer > 0 OR false if baseline is not applicable
- * @param {string} frequency One of the 8 pre-defined periodic intervals
- * @returns Nothing
- */
-function createNewProgramIndicator(name, unit, lopTarget,
-                                   baseline = false,
-                                   frequency = 'Life of Program (LoP) only') {
-  clickNewIndicatorButton();
-  saveNewIndicator();
-  setIndicatorName(name);
-  setUnitOfMeasure(unit);
-  setLoPTarget(lopTarget);
-  if (baseline) {
-    setBaseline(baseline);
-  } else {
-    setBaselineNA();
-  }
-  setTargetFrequency(frequency);
-  saveIndicatorChanges();
 }
 
 /**
@@ -320,7 +293,9 @@ function getTargetFrequency() {
 }
 
 /**
- * FIXME: Document this function
+ * Get a list of the target value input boxes on a target entry form
+ * @returns {Array} A list of input target value input boxes on the
+ * current target entry form
  */
 function getTargetInputBoxes() {
     // Find the input boxes
@@ -427,7 +402,10 @@ function setEndlineTarget(value) {
 }
 
 /**
- * FIXME: Document this function
+ * Set the name of the first event to the specified value when
+ * working with event-based periodic targets
+ * @param {integer} value The value to set
+ * @returns Nothing
  */
 function setFirstEventName(value) {
   let textBox = browser.$('input#id_target_frequency_custom');
@@ -439,7 +417,9 @@ function setFirstEventName(value) {
 }
 
 /**
- * FIXME: Document this function
+ * Sets the date of the first target period to the 1st day of the
+ * current month
+ * @returns Nothing
  */
 function setFirstTargetPeriod() {
   browser.moveToObject('div.controls.col-sm-6>input#id_target_frequency_start');
@@ -490,7 +470,10 @@ function setMidlineTarget(value) {
 }
 
 /**
- * FIXME: Document this function
+ * Set the number of events to the specified value when working with
+ * event-based periodic targets.
+ * @param {integer} value The value to set
+ * @returns Nothing
  */
 function setNumTargetEvents(value) {
   let textBox = browser.$('input#id_target_frequency_num_periods');
@@ -502,7 +485,10 @@ function setNumTargetEvents(value) {
 }
 
 /**
- * FIXME: Document this function
+ * Set the number of periods to the specified value when working with
+ * interval-based periodic targets
+ * @param {integer} value The value to set
+ * @returns Nothing
  */
 function setNumTargetPeriods(value) {
   let targetsTab = browser.$('=Targets');
@@ -547,7 +533,6 @@ exports.clickProgramIndicator = clickProgramIndicator;
 exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;
 exports.clickTargetsTab = clickTargetsTab;
-exports.createNewProgramIndicator = createNewProgramIndicator;
 exports.getAlertMsg = getAlertMsg;
 exports.getBaseline = getBaseline;
 exports.getBaselineErrorHint = getBaselineErrorHint;
