@@ -19,7 +19,7 @@ exports.config = {
    }
     ],
     sync: true,
-    logLevel: 'silent',
+    logLevel: 'verbose',
     logOutput: './log',
     coloredLogs: true,
     deprecationWarnings: false,
