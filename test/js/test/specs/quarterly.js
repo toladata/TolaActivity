@@ -1,10 +1,11 @@
 var assert = require('chai').assert;
+var expect = require('chai').expect;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 
-describe('"Quarterly" target frequency', function() {
+describe('Quarterly target frequency', function() {
   before(function() {
     // Disable timeouts
     this.timeout(0);
@@ -24,12 +25,10 @@ describe('"Quarterly" target frequency', function() {
 
   it('should require date that first target period begins', function() {
     IndPage.createBasicIndicator();
-
-    // This should succeed
     TargetsTab.setIndicatorName('Quarterly target first period required testing');
     TargetsTab.setUnitOfMeasure('Hawks per hectare');
-    TargetsTab.setLoPTarget(402);
-    TargetsTab.setBaseline(403);
+    TargetsTab.setLoPTarget(31);
+    TargetsTab.setBaseline(32);
     TargetsTab.setTargetFrequency('Quarterly');
 
     // Trying to save without setting the start date should fail
@@ -43,13 +42,14 @@ describe('"Quarterly" target frequency', function() {
   });
 
   it('should create target periods for each period requested', function() {
+    IndPage.clickIndicatorsLink();
     IndPage.createBasicIndicator();
 
     // This should succeed
     TargetsTab.setIndicatorName('Quarterly target create target periods testing');
-    TargetsTab.setUnitOfMeasure('Hawks per hectare');
-    TargetsTab.setLoPTarget(424);
-    TargetsTab.setBaseline(425);
+    TargetsTab.setUnitOfMeasure('Irritants per island');
+    TargetsTab.setLoPTarget(49);
+    TargetsTab.setBaseline(50);
     TargetsTab.setTargetFrequency('Quarterly');
 
     TargetsTab.setNumTargetPeriods(4);
@@ -58,6 +58,7 @@ describe('"Quarterly" target frequency', function() {
   });
 
   it('should require entering targets for each target period', function() {
+    IndPage.clickIndicatorsLink();
     IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Quarterly target, target period value(s) required');
@@ -76,14 +77,14 @@ describe('"Quarterly" target frequency', function() {
     // This should *fail* until all the fields are filled.
     let errorCount = 0;
     for(let inputBox of inputBoxes) {
-        inputBox.setValue(86);
-        TargetsTab.saveIndicatorChanges();
-        // Did we fail successfully?
-        let errMsg = TargetsTab.getTargetValueErrorHint();
-        assert(errMsg.includes('Please enter a target value. Your target value can be zero.'));
-        errorCount++;
+      inputBox.setValue(86);
+      TargetsTab.saveIndicatorChanges();
+      // Did we fail successfully?
+      let errMsg = TargetsTab.getTargetValueErrorHint();
+      expect(errMsg.includes('Please enter a target value. Your target value can be zero.'));
+      errorCount++;
     }
-    assert.equal(targetCount, errorCount, 'Received unexpected mismatch');
+    assert.equal(targetCount, errorCount, 'Received unexpected error count mismatch');
     TargetsTab.saveIndicatorChanges();
   });
 }); // end quarterly target tests

@@ -13,7 +13,6 @@
 		"mocha": "^4.1.0",
 		"selenium-webdriver": "^3.6.0",
 		"wdio-allure-reporter": "^0.3.2",
-		"wdio-concise-reporter": "^0.1.2",
 		"wdio-mocha-framework": "^0.5.12",
 		"wdio-selenium-standalone-service": "0.0.9",
 		"wdio-spec-reporter": "^0.1.3",

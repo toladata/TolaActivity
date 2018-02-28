@@ -4,7 +4,7 @@ var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 
-describe('"Tri-annual" target frequency', function() {
+describe('Tri-annual target frequency', function() {
   before(function() {
     // Disable timeouts
     this.timeout(0);
@@ -25,9 +25,9 @@ describe('"Tri-annual" target frequency', function() {
 
     // This should succeed
     TargetsTab.setIndicatorName('Tri-annual target first period required testing');
-    TargetsTab.setUnitOfMeasure('Hawks per hectare');
-    TargetsTab.setLoPTarget(379);
-    TargetsTab.setBaseline(380);
+    TargetsTab.setUnitOfMeasure('Jugs per jalopy');
+    TargetsTab.setLoPTarget(29);
+    TargetsTab.setBaseline(30);
     TargetsTab.setTargetFrequency('Tri-annual');
 
     // Trying to save without setting the start date should fail
@@ -41,13 +41,14 @@ describe('"Tri-annual" target frequency', function() {
   });
 
   it('should create target periods for each period requested', function() {
+    IndPage.clickIndicatorsLink();
     IndPage.createBasicIndicator();
 
     // This should succeed
     TargetsTab.setIndicatorName('Tri-annual target first period required testing');
-    TargetsTab.setUnitOfMeasure('Hawks per hectare');
-    TargetsTab.setLoPTarget(382);
-    TargetsTab.setBaseline(383);
+    TargetsTab.setUnitOfMeasure('Krogers per Kurt');
+    TargetsTab.setLoPTarget(49);
+    TargetsTab.setBaseline(50);
     TargetsTab.setTargetFrequency('Tri-annual');
     TargetsTab.setNumTargetPeriods(3);
     TargetsTab.saveIndicatorChanges();
@@ -55,6 +56,7 @@ describe('"Tri-annual" target frequency', function() {
   });
 
   it('should require entering targets for each target period', function() {
+    IndPage.clickIndicatorsLink();
     IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Tri-annual target, target period value(s) required');
