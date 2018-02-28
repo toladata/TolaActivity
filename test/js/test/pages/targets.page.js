@@ -342,16 +342,6 @@ function saveIndicatorChanges() {
 }
 
 /**
- * Click the "save" button on the new indicator to save a new basic indicator
- * @returns Nothing
- */
-function saveNewIndicator() {
-  // Accept the default values
-  let saveNew = $('form').$('input[value="save"]');
-  saveNew.click();
-}
-
-/**
  * Type a baseline value into the baseline text field on the Targets
  * tab unless the "Not applicable" check box has been checked
  * @param {integer|boolean} value The non-negative integer baseline
@@ -543,7 +533,6 @@ exports.getUnitOfMeasure = getUnitOfMeasure;
 exports.open = open;
 exports.pageName = pageName;
 exports.saveIndicatorChanges = saveIndicatorChanges;
-exports.saveNewIndicator = saveNewIndicator;
 exports.setBaseline = setBaseline;
 exports.setBaselineNA = setBaselineNA;
 exports.setEndlineTarget = setEndlineTarget;

@@ -85,8 +85,8 @@ function clickResetButton() {
  */
 function createBasicIndicator() {
     clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    clickNewIndicatorButton();
+    saveNewIndicator();
 }
 /**
  * Get the text of the current alert message, if any, and return it as a string
@@ -254,6 +254,16 @@ function getPageName() {
 }
 
 /**
+ * Click the "save" button on the new indicator to save a new basic indicator
+ * @returns Nothing
+ */
+function saveNewIndicator() {
+  // Accept the default values
+  let saveNew = $('form').$('input[value="save"]');
+  saveNew.click();
+}
+
+/**
  * Select the specified program from the Programs dropdown
  * @param {string} program The name of the program to select
  * from the Programs dropdown menu
@@ -290,5 +300,6 @@ exports.getProgramsDropdownList = getProgramsDropdownList;
 exports.getProgramsTable = getProgramsTable;
 exports.open = open;
 exports.getPageName = getPageName;
+exports.saveNewIndicator = saveNewIndicator;
 exports.selectProgram = selectProgram;
 

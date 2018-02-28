@@ -2,7 +2,6 @@ var assert = require('chai').assert;
 var expect = require('chai').expect;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
-var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
 
@@ -30,7 +29,7 @@ describe('Create an Indicator form', function() {
     IndPage.clickNewIndicatorButton();
     let control = $('select#services');
     assert.equal(true, control.isVisible());
-    TargetsTab.saveNewIndicator();
+    IndPage.saveNewIndicator();
   });
 
   it('should have a Service Indicator dropdown', function() {
@@ -38,7 +37,7 @@ describe('Create an Indicator form', function() {
     IndPage.clickNewIndicatorButton();
     let control = $('select#service_indicator');
     assert.equal(true, control.isVisible());
-    TargetsTab.saveNewIndicator();
+    IndPage.saveNewIndicator();
   });
 
   it('should have a Country dropdown', function() {
@@ -46,7 +45,7 @@ describe('Create an Indicator form', function() {
     IndPage.clickNewIndicatorButton();
     let control = $('select#country');
     assert.equal(true, control.isVisible());
-    TargetsTab.saveNewIndicator();
+    IndPage.saveNewIndicator();
   });
 
   it('should have a Program dropdown', function() {
@@ -54,7 +53,7 @@ describe('Create an Indicator form', function() {
     IndPage.clickNewIndicatorButton();
     let control = $('select#program');
     assert.equal(true, control.isVisible());
-    TargetsTab.saveNewIndicator();
+    IndPage.saveNewIndicator();
   });
 
   it('should have a save button', function() {
@@ -69,7 +68,7 @@ describe('Create an Indicator form', function() {
   it('should confirm indicator created', function() {
     IndPage.clickIndicatorsLink();
     IndPage.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.saveNewIndicator();
     let message = IndPage.getAlertMsg();
     expect(message.includes('Success, Basic Indicator Created!'),
       'Unexpected message during indicator creation');
@@ -78,7 +77,7 @@ describe('Create an Indicator form', function() {
   it('should open Indicator detail form after clicking Save button', function() {
     IndPage.clickIndicatorsLink();
     IndPage.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.saveNewIndicator();
     browser.waitForVisible('h4');
     let title = browser.$('h4').getText().trim();
     expect(title.includes('Goal indicator: Temporary'),
@@ -88,7 +87,7 @@ describe('Create an Indicator form', function() {
   it('should have a Reset button to reset form', function() {
     IndPage.clickIndicatorsLink();
     IndPage.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    IndPage.saveNewIndicator();
     let control = $('form').$('input[value="Reset"]');
     assert.equal(true, control.isVisible(), 'Reset button is not visible');
     control.click();
