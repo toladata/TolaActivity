@@ -32,7 +32,7 @@ exports.config = {
     services: [],
     seleniumLogs: './log',
     framework: 'mocha',
-    reporters: ['dot', 'spec', 'allure'],
+    reporters: ['spec', 'allure'],
     reporterOptions: {
         allure: {
             outputDir: './allure-results'
