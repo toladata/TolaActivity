@@ -49,6 +49,17 @@ function clickIndicatorTypeDropdown() {
   indicatorTypesDropdown.click();
 }
 
+// FIXME: Should this be a per-program method?
+/**
+ * Click the New Indicator button for the current program
+ * @param {string} The name of the indicator
+ * @returns Nothing
+ */
+function clickNewIndicatorButton() {
+  browser.waitForVisible('=New Indicator');
+  browser.$('=New Indicator').click();
+}
+
 /**
  * Click the Programs dropdown button
  * @returns Nothing
@@ -233,12 +244,11 @@ function open(url = parms.baseurl) {
   browser.url(url);
 }
 
-// FIXME: This should be a property
 /**
  * Return the page title
  * @returns {string} The title of the current page
  */
-function pageName() {
+function getPageName() {
   // On this page, the "title" is actually the <h2> caption
   return browser.$('h2').getText();
 }
@@ -267,6 +277,7 @@ function selectProgram(program) {
 exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
 exports.clickIndicatorsLink = clickIndicatorsLink;
 exports.clickIndicatorTypeDropdown = clickIndicatorTypeDropdown;
+exports.clickNewIndicatorButton = clickNewIndicatorButton;
 exports.clickProgramsDropdown = clickProgramsDropdown;
 exports.clickResetButton = clickResetButton;
 exports.createBasicIndicator = createBasicIndicator;
@@ -278,6 +289,6 @@ exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
 exports.getProgramsDropdownList = getProgramsDropdownList;
 exports.getProgramsTable = getProgramsTable;
 exports.open = open;
-exports.pageName = pageName;
+exports.getPageName = getPageName;
 exports.selectProgram = selectProgram;
 

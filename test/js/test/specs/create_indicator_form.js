@@ -20,12 +20,14 @@ describe('Create an Indicator form', function() {
 
   it('should exist', function() {
     IndPage.open();
-    // FIXME: pageName should be a property
-    assert.equal('Program Indicators', IndPage.pageName());
+    assert.equal('Program Indicators', IndPage.getPageName());
+    IndPage.clickNewIndicatorButton();
+    assert.equal('Create an Indicator', IndPage.getPageName());
   });
 
   it('should have an Indicator Service Templates dropdown', function() {
-    TargetsTab.clickNewIndicatorButton();
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
     let control = $('select#services');
     assert.equal(true, control.isVisible());
     TargetsTab.saveNewIndicator();
@@ -33,7 +35,7 @@ describe('Create an Indicator form', function() {
 
   it('should have a Service Indicator dropdown', function() {
     IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
+    IndPage.clickNewIndicatorButton();
     let control = $('select#service_indicator');
     assert.equal(true, control.isVisible());
     TargetsTab.saveNewIndicator();
@@ -41,7 +43,7 @@ describe('Create an Indicator form', function() {
 
   it('should have a Country dropdown', function() {
     IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
+    IndPage.clickNewIndicatorButton();
     let control = $('select#country');
     assert.equal(true, control.isVisible());
     TargetsTab.saveNewIndicator();
@@ -49,7 +51,7 @@ describe('Create an Indicator form', function() {
 
   it('should have a Program dropdown', function() {
     IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
+    IndPage.clickNewIndicatorButton();
     let control = $('select#program');
     assert.equal(true, control.isVisible());
     TargetsTab.saveNewIndicator();
@@ -57,7 +59,7 @@ describe('Create an Indicator form', function() {
 
   it('should have a save button', function() {
     IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
+    IndPage.clickNewIndicatorButton();
     let control = $('form').$('input[value="save"]');
     assert.equal(true, control.isVisible(),
       'Save button is not visible');
@@ -66,7 +68,7 @@ describe('Create an Indicator form', function() {
 
   it('should confirm indicator created', function() {
     IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
+    IndPage.clickNewIndicatorButton();
     TargetsTab.saveNewIndicator();
     let message = IndPage.getAlertMsg();
     expect(message.includes('Success, Basic Indicator Created!'),
@@ -75,7 +77,7 @@ describe('Create an Indicator form', function() {
 
   it('should open Indicator detail form after clicking Save button', function() {
     IndPage.clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
+    IndPage.clickNewIndicatorButton();
     TargetsTab.saveNewIndicator();
     browser.waitForVisible('h4');
     let title = browser.$('h4').getText().trim();

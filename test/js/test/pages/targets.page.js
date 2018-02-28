@@ -36,17 +36,6 @@ function clickIndicatorDeleteButton(indicatorName) {
 function clickIndicatorEditButton(indicatorName) {
 }
 
-// FIXME: Should this be a per-program method?
-/**
- * Click the New Indicator button for the current program
- * @param {string} The name of the indicator
- * @returns Nothing
- */
-function clickNewIndicatorButton() {
-  browser.waitForVisible('=New Indicator');
-  browser.$('=New Indicator').click();
-}
-
 /**
  * Click the indicator name link for the specified indicator
  * to show its detail/edit screen
@@ -528,7 +517,6 @@ function setUnitOfMeasure(unit) {
 exports.clickIndicatorDataButton = clickIndicatorDataButton;
 exports.clickIndicatorDeleteButton = clickIndicatorDeleteButton;
 exports.clickIndicatorEditButton = clickIndicatorEditButton;
-exports.clickNewIndicatorButton = clickNewIndicatorButton;
 exports.clickProgramIndicator = clickProgramIndicator;
 exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;
