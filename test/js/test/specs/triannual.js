@@ -16,7 +16,7 @@ describe('Tri-annual target frequency', function() {
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     IndPage.open();
-    assert.equal('Program Indicators', IndPage.pageName(),
+    assert.equal('Program Indicators', IndPage.getPageName(),
       'Unexpected page name mismatch');
   });
 

@@ -22,7 +22,7 @@ describe('Program Indicators landing page', function() {
     LoginPage.clickLoginButton();
     IndPage.open();
     // FIXME: pageName should be a property
-    assert.equal('Program Indicators', IndPage.pageName());
+    assert.equal('Program Indicators', IndPage.getPageName());
   });
 
   describe("programs dropdown", function () {
@@ -33,7 +33,7 @@ describe('Program Indicators landing page', function() {
       IndPage.clickProgramsDropdown();
     });
 
-    it('should have same number of items as the programs table', function() {
+    it('should have same number of items as programs table', function() {
       let progList = IndPage.getProgramsDropdownList();
       let progTable = IndPage.getProgramsTable();
       assert.equal(progList.length, progTable.length, 'row count mismatch');
@@ -54,7 +54,6 @@ describe('Program Indicators landing page', function() {
       };
     });
 
-    // FIXME: Doesn't assert anything
     // FIXME: Get WebDriver code out of here
     it('should filter programs table by selected program name', function() {
       let selectList = browser.$('select#id_programs_filter_dropdown');
@@ -67,33 +66,34 @@ describe('Program Indicators landing page', function() {
         let h4 = $('h4').getText();
         assert.equal(s, h4, 'Unexpected text mismtach');
       }
-    }); // end programs dropdown tests
+    }); 
+  });// end programs dropdown tests
 
-    describe('Indicators dropdown', function() {
-      it('should be present on page', function() {
-        IndPage.clickIndicatorsDropdown();
-      });
+  describe('Indicators dropdown', function() {
+    it('should be present on page', function() {
+      IndPage.clickIndicatorsDropdown();
+    });
 
-      it('should have at least one entry', function() {
-        let indList = IndPage.getIndicatorsDropdownList();
-        assert(indList.length > 0);
-      });
-    }); // end indicators dropdown tests
+    it('should have at least one entry', function() {
+      let indList = IndPage.getIndicatorsDropdownList();
+      assert(indList.length > 0);
+    });
+  }); // end indicators dropdown tests
 
-    describe('Indicator Type dropdown', function() {
-      it('should be present on page', function() {
-        IndPage.clickIndicatorTypeDropdown();
-      });
+  describe('Indicator Type dropdown', function() {
+    it('should be present on page', function() {
+      IndPage.clickIndicatorTypeDropdown();
+    });
 
-      it('should have at least one entry', function() {
-        let indTypeList = IndPage.getIndicatorTypeList();
-        assert(indTypeList.length > 0);
-      });
-    }); // end indicator type dropdown tests
+    it('should have at least one entry', function() {
+      let indTypeList = IndPage.getIndicatorTypeList();
+      assert(indTypeList.length > 0);
+    });
+  }); // end indicator type dropdown tests
 
-    // FIXME: Make sure this actually tests/asserts something
-    // FIXME: Still need to get WebDriver code out of this test
-    it('should toggle PIs table by clicking PI Indicators button', function() {
+  // FIXME: Make sure this actually tests/asserts something
+  // FIXME: Still need to get WebDriver code out of this test
+  it('should toggle table by clicking Indicators button', function() {
       IndPage.clickIndicatorsLink();
       if(browser.isVisible('div#ajaxloading')) {
         browser.waitForVisible('div#ajaxloading', delay, true);
@@ -118,6 +118,5 @@ describe('Program Indicators landing page', function() {
           browser.waitForVisible('div#ajaxloading', delay, true);
         }
       }
-    });
   });
 });

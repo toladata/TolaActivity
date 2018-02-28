@@ -20,7 +20,7 @@ describe('Indicator creation detail form', function() {
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     IndPage.open();
-    assert.equal('Program Indicators', IndPage.pageName());
+    assert.equal('Program Indicators', IndPage.getPageName());
 
     IndPage.createBasicIndicator();
     browser.waitForVisible('h4');

@@ -20,7 +20,7 @@ describe('Grid/Print Report page', function() {
     LoginPage.clickLoginButton();
     // FIXME: pageName should be a property
     IndPage.open();
-    assert.equal('Program Indicators', IndPage.pageName());
+    assert.equal('Program Indicators', IndPage.getPageName());
   });
 
   it('should have a Grid/Print Report button');
