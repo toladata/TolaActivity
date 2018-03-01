@@ -1,8 +1,8 @@
-var assert = require('chai').assert;
-var LoginPage = require('../pages/login.page.js');
-var IndPage = require('../pages/indicators.page.js');
-var TargetsTab = require('../pages/targets.page.js');
-var util = require('../lib/testutil.js');
+const assert = require('chai').assert;
+const LoginPage = require('../pages/login.page.js');
+const IndPage = require('../pages/indicators.page.js');
+const TargetsTab = require('../pages/targets.page.js');
+const util = require('../lib/testutil.js');
 const msec = 1000;
 
 describe('Grid/Print Report page', function() {

@@ -8,9 +8,9 @@ const msec = 1000;
 const delay = 10*msec;
 
 describe('Program Indicators table', function() {
+  this.timeout(0);
   before(function() {
     // Disable timeouts
-    this.timeout(0);
     browser.windowHandleMaximize();
 
     let parms = util.readConfig();
@@ -21,7 +21,7 @@ describe('Program Indicators table', function() {
   });
 
   // FIXME: Still need to get WebDriver code out of this test
-  it('should toggle table when a PI Indicators button is clicked', function() {
+  it('should toggle table when a PI button is clicked', function() {
     IndPage.open();
     if(browser.isVisible('div#ajaxloading')) {
       browser.waitForVisible('div#ajaxloading', delay, true);
@@ -48,7 +48,7 @@ describe('Program Indicators table', function() {
         browser.waitForVisible('div#ajaxloading', delay, true);
       }
       isVisible = browser.isVisible(targetDiv);
-      assert.equal(true, false);
+      assert.equal(false, isVisible);
     }
   });
 
@@ -102,7 +102,10 @@ describe('Program Indicators table', function() {
     expect(newCount == oldCount + 1);
   });
 
-  it('should be able to delete PI by clicking its Delete button');
+  it('should be able to delete PI by clicking its Delete button', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.deleteIndicator();
+  });
 
   it('should decrease PI count after deleting indicator', function() {
     IndPage.clickIndicatorsLink();
@@ -110,17 +113,22 @@ describe('Program Indicators table', function() {
     let buttons = TargetsTab.getProgramIndicatorButtons();
     let buttonText = buttons[0].getText();
     let oldCount = buttonText;
+
     // Delete an indicator
-    //IndPage.deleteIndicator(parm);
+    IndPage.deleteIndicator();
+
     // Get new count
     buttons = TargetsTab.getProgramIndicatorButtons();
     buttonText = buttons[0].getText();
-    let newCount = buttonText;
+
     // Assert new count < old count
+    let newCount = buttonText;
     expect(newCount == oldCount - 1);
   });
 
-  it('should be able to edit PI by clicking its Edit button');
-
-  it('should open the Grid/Print Report page when button is clicked');
+  it('should edit an indicator by clicking its Edit button', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.editIndicator();
+    expect(browser.isVisible('div#indicator_modal_content'));
+  });
 });
