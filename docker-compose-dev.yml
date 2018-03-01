@@ -69,3 +69,4 @@ services:
       - CHARGEBEE_SITE_API_KEY=test_31lcdE7L3grqdkGcvy24ik3lmlJrnA0Ez
       - CHARGEBEE_SITE=toladata-test
       - TOLA_TRACK_SYNC_ENABLED=False
+      - DEFAULT_REPLY_TO=noreply@test.com
