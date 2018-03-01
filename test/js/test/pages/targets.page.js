@@ -13,30 +13,6 @@ var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /**
- * Click the indicator data button for the specified indicator
- * @param {string} indicatorName The name of the indicator
- * @returns Nothing
- */
-function clickIndicatorDataButton(indicatorName) {
-}
-
-/**
- * Click the delete button for the specified indicator
- * @param {string} indicatorName The name of the indicator to delete
- * @returns Nothing
- */
-function clickIndicatorDeleteButton(indicatorName) {
-}
-
-/**
- * Click the indicator data button for the specified indicator
- * @param {string} indicatorName The name of the indicator to edit
- * @returns Nothing
- */
-function clickIndicatorEditButton(indicatorName) {
-}
-
-/**
  * Click the indicator name link for the specified indicator
  * to show its detail/edit screen
  * @param {string} indicatorName - The name of the indicator whose
@@ -176,10 +152,27 @@ function getNumTargetPeriods() {
 }
 
 /**
+ * Get a list of the program indicators Edit buttons for the program 
+ * currently displayed in the program indicators table
+ * @returns {Array<clickable>} An array of clickable program indicator
+ * "Edit" button objects
+ */
+function getProgramIndicatorEditButtons() {
+  let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
+  let dataTarget = link.getAttribute('data-target');
+  if (browser.isVisible('div#ajaxloading')) {
+    browser.waitForVisible('div#ajaxloading', 10*msec, true);
+  }
+  let table = $('div'+dataTarget).$('table');
+  let rows = table.$$('=Edit');
+  return rows;
+}
+
+/**
  * Get a list of the program indicators for the program currently displayed in
  * the program indicators table
- * @returns {Array<clickable>} returns an array of clickable progrom indicators
- * based on the "Delete" button
+ * @returns {Array<clickable>} An array of clickable program indicators
+ * to the on the "Delete" button
  */
 // FIXME: should probably returns linkage to all the buttons and links?
 function getProgramIndicatorsTable() {
@@ -212,20 +205,6 @@ function getProgramIndicatorsTableCount() {
 }
 
 /**
- * Get a list of the program names in the main Program table
- * @returns {Array<string>} returns an array of the text strings of the
- * program names in the programs table
- */
-function getProgramsTable() {
-  let rows = browser.$('div#toplevel_div').$$('div.panel-heading');
-  let programs = new Array();
-  for(let row of rows) {
-    programs.push(row.$('h4').getText());
-  }
-  return programs;
-}
-
-/**
  * Get a list of the indicator buttons in the main programs table
  * @returns {Array<buttons>} returns an array of clickable "buttons",
  * which are actually anchor (<a />) elements, from the programs table
@@ -237,6 +216,20 @@ function getProgramIndicatorButtons() {
     buttons.push(row.$('a.btn.btn-sm.btn-success'));
   }
   return buttons;
+}
+
+/**
+ * Get a list of the program names in the main Program table
+ * @returns {Array<string>} returns an array of the text strings of the
+ * program names in the programs table
+ */
+function getProgramsTable() {
+  let rows = browser.$('div#toplevel_div').$$('div.panel-heading');
+  let programs = new Array();
+  for(let row of rows) {
+    programs.push(row.$('h4').getText());
+  }
+  return programs;
 }
 
 /**
@@ -504,9 +497,6 @@ function setUnitOfMeasure(unit) {
   bucket.setValue(unit);
 }
 
-exports.clickIndicatorDataButton = clickIndicatorDataButton;
-exports.clickIndicatorDeleteButton = clickIndicatorDeleteButton;
-exports.clickIndicatorEditButton = clickIndicatorEditButton;
 exports.clickProgramIndicator = clickProgramIndicator;
 exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;
@@ -521,8 +511,9 @@ exports.getNumTargetEvents = getNumTargetEvents;
 exports.getNumTargetPeriods = getNumTargetPeriods;
 exports.getProgramIndicatorsTable = getProgramIndicatorsTable;
 exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
-exports.getProgramsTable = getProgramsTable;
+exports.getProgramIndicatorEditButtons = getProgramIndicatorEditButtons;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
+exports.getProgramsTable = getProgramsTable;
 exports.getTargetFirstEventErrorHint = getTargetFirstEventErrorHint;
 exports.getTargetFirstPeriodErrorHint = getTargetFirstPeriodErrorHint;
 exports.getTargetFrequency = getTargetFrequency;
