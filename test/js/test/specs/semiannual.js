@@ -54,6 +54,7 @@ describe('"Semi-annual" target frequency', function() {
     TargetsTab.setNumTargetPeriods(2);
 
     TargetsTab.saveIndicatorChanges();
-    assert.equal(2, TargetsTab.getNumTargetPeriods());
+    assert.equal(2, TargetsTab.getNumTargetPeriods(),
+      'Did not find expected number of target periods');
   });
 });

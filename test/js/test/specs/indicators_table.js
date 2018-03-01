@@ -48,7 +48,7 @@ describe('Program Indicators table', function() {
         browser.waitForVisible('div#ajaxloading', delay, true);
       }
       isVisible = browser.isVisible(targetDiv);
-      assert.equal(true, isVisible);
+      assert.equal(true, false);
     }
   });
 
