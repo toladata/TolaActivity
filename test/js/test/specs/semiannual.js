@@ -18,7 +18,7 @@ describe('"Semi-annual" target frequency', function() {
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     IndPage.open();
-    assert.equal('Program Indicators', IndPage.pageName(),
+    assert.equal('Program Indicators', IndPage.getPageName(),
         'Unexpected page name mismatch');
   });
 
@@ -54,6 +54,7 @@ describe('"Semi-annual" target frequency', function() {
     TargetsTab.setNumTargetPeriods(2);
 
     TargetsTab.saveIndicatorChanges();
-    assert.equal(2, TargetsTab.getNumTargetPeriods());
+    assert.equal(2, TargetsTab.getNumTargetPeriods(),
+      'Did not find expected number of target periods');
   });
 });

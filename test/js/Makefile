@@ -18,7 +18,7 @@ allure-results:
 
 
 clean:
-	@rm -fvr allure-report doc errorShots logs node_modules *server.log
+	@rm -fvr allure-report doc errorShots log node_modules *server.log
 
 
 doc:

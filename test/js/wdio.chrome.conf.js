@@ -17,8 +17,8 @@ exports.config = {
         }
     }],
     sync: true,
-    logLevel: 'silent',
-    logOutput: 'webdriver.log',
+    logLevel: 'verbose',
+    logOutput: './log',
     coloredLogs: true,
     deprecationWarnings: false,
     bail: 0,
@@ -28,9 +28,9 @@ exports.config = {
     connectionRetryTimeout: 90000,
     connectionRetryCount: 3,
     services: [],
-    seleniumLogs: './logs',
+    seleniumLogs: './log',
     framework: 'mocha',
-    reporters: ['dot', 'spec', 'allure'],
+    reporters: ['spec', 'allure'],
     reporterOptions: {
         allure: {
             outputDir: './allure-results'

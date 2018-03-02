@@ -4,12 +4,11 @@
  */
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
-var TargetsTab = require('../pages/targets.page.js');
-var util = require('../lib/testutil.js');
-var parms = util.readConfig();
-
+const TargetsTab = require('../pages/targets.page.js');
+const util = require('../lib/testutil.js');
 // milliseconds
 const msec = 1000;
+var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /*
@@ -49,6 +48,17 @@ function clickIndicatorTypeDropdown() {
   indicatorTypesDropdown.click();
 }
 
+// FIXME: Should this be a per-program method?
+/**
+ * Click the New Indicator button for the current program
+ * @param {string} The name of the indicator
+ * @returns Nothing
+ */
+function clickNewIndicatorButton() {
+  browser.waitForVisible('=New Indicator');
+  browser.$('=New Indicator').click();
+}
+
 /**
  * Click the Programs dropdown button
  * @returns Nothing
@@ -74,9 +84,45 @@ function clickResetButton() {
  */
 function createBasicIndicator() {
     clickIndicatorsLink();
-    TargetsTab.clickNewIndicatorButton();
-    TargetsTab.saveNewIndicator();
+    clickNewIndicatorButton();
+    saveNewIndicator();
 }
+
+/** 
+ * Delete the first indicator for the first program currently displayed
+ * on the screen
+ * @param {string} indName This parameter is currently ignored but reserved
+ * for future use.
+ * @returns Nothing
+ */
+function deleteIndicator(indName = 'default') {
+    let indButtons = TargetsTab.getProgramIndicatorButtons();
+    let indButton = indButtons[0];
+    indButton.click();
+    let deleteBtns = TargetsTab.getProgramIndicatorsTable();
+    let deleteBtn = deleteBtns[0];
+    deleteBtn.click();
+    let confirmBtn = $('input[value="Confirm"]');
+    confirmBtn.click();
+}
+
+/** 
+ * Edit the first indicator for the first program currently displayed
+ * on the screen
+ * @param {string} indName This parameter is currently ignored but reserved
+ * for future use.
+ * @returns Nothing
+ */
+function editIndicator(indName = 'default') {
+    let indButtons = TargetsTab.getProgramIndicatorButtons();
+    let indButton = indButtons[0];
+    indButton.click();
+
+    let editBtns = TargetsTab.getProgramIndicatorEditButtons();
+    let editBtn = editBtns[0];
+    editBtn.click();
+}
+
 /**
  * Get the text of the current alert message, if any, and return it as a string
  * @returns {string} The current alert message as a string. Fails ugly if the
@@ -157,40 +203,6 @@ function getProgramIndicatorsTableCount(targetId) {
   return rowCnt;
 }
 
-///**
-// * Get the number of program indicators for the table in a div named
-// * targetId. This is the program indicators table for the the given
-// * program.
-// * @param {string} targetId The target div containing the table you
-// * want to enumerate
-// * @returns {integer} The number of indicators in the specified table
-// */
-//function getProgramIndicatorsTableCount(targetId) {
-//  let toplevel_div = browser.$('div#toplevel_div');
-//  let panel_div = toplevel_div.$('div.panel.panel-default');
-//  let s = "div" + targetId;
-//  let tableDiv = panel_div.$(s);
-//  if (! browser.isVisible(tableDiv)) {
-//    browser.waitForVisible(tableDiv, 10*msec);
-//  }
-//  let table = tableDiv.$('table.table.table-striped.hiddenTable');
-//  let tbody = table.$('tbody');
-//  let tableRows = tbody.$$('tr');
-//  let rowCnt = 0;
-//  for (let row of tableRows) {
-//    let links = row.$$('td>a.indicator-link');
-//    for (let link of links) {
-//      let linkText = link.getText();
-//      if (link) {
-//        rowCnt++;
-//        util.dp('\trowCnt='+rowCnt);
-//      }
-//    }
-//    util.dp('rowCnt='+rowCnt);
-//  }
-//  return rowCnt;
-//}
-
 /**
  * Get a list of the program name in the Programs dropdown.
  * @returns {Array<string>} an array of the text strings in the Programs 
@@ -233,14 +245,23 @@ function open(url = parms.baseurl) {
   browser.url(url);
 }
 
-// FIXME: This should be a property
 /**
  * Return the page title
  * @returns {string} The title of the current page
  */
-function pageName() {
+function getPageName() {
   // On this page, the "title" is actually the <h2> caption
   return browser.$('h2').getText();
+}
+
+/**
+ * Click the "save" button on the new indicator to save a new basic indicator
+ * @returns Nothing
+ */
+function saveNewIndicator() {
+  // Accept the default values
+  let saveNew = $('form').$('input[value="save"]');
+  saveNew.click();
 }
 
 /**
@@ -267,9 +288,12 @@ function selectProgram(program) {
 exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
 exports.clickIndicatorsLink = clickIndicatorsLink;
 exports.clickIndicatorTypeDropdown = clickIndicatorTypeDropdown;
+exports.clickNewIndicatorButton = clickNewIndicatorButton;
 exports.clickProgramsDropdown = clickProgramsDropdown;
 exports.clickResetButton = clickResetButton;
 exports.createBasicIndicator = createBasicIndicator;
+exports.deleteIndicator = deleteIndicator;
+exports.editIndicator = editIndicator;
 exports.getAlertMsg = getAlertMsg;
 exports.getIndicatorName = getIndicatorName;
 exports.getIndicatorTypeList = getIndicatorTypeList;
@@ -278,6 +302,7 @@ exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
 exports.getProgramsDropdownList = getProgramsDropdownList;
 exports.getProgramsTable = getProgramsTable;
 exports.open = open;
-exports.pageName = pageName;
+exports.getPageName = getPageName;
+exports.saveNewIndicator = saveNewIndicator;
 exports.selectProgram = selectProgram;
 

@@ -2,12 +2,10 @@ var assert = require('chai').assert;
 var expect = require('chai').expect;
 var LoginPage = require('../pages/login.page.js');
 var IndPage = require('../pages/indicators.page.js');
-var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
-const delay = 10*msec;
 
-describe('Program Indicators page', function() {
+describe('Create an Indicator form', function() {
   before(function() {
     // Disable timeouts
     this.timeout(0);
@@ -21,31 +19,77 @@ describe('Program Indicators page', function() {
 
   it('should exist', function() {
     IndPage.open();
-    // FIXME: pageName should be a property
-    assert.equal('Program Indicators', IndPage.pageName());
+    assert.equal('Program Indicators', IndPage.getPageName());
+    IndPage.clickNewIndicatorButton();
+    assert.equal('Create an Indicator', IndPage.getPageName());
   });
 
-  describe('Create an Indicator form', function() {
-    it('should show context-sensitve help by clicking Form Help/Guidance button');
-    it('should have an Indicator Service Templates dropdown');
-    it('should have a Custom entry in the Indicator Service Templates dropdown');
-    it('should have a Service Indicator dropdown');
-    it('should have a Country dropdown');
-    it('should have a Program dropdown');
-    it('should have a Save button');
-    it('should confirm indicator created')
-    it('should open Indicator detail form after clicking Save button');
-    it('should have a Cancel button');
-    it('should reset and close form when Cancel button clicked');
-    it('should return to previous screen when Cancel button clicked');
-    it('should have a Reset button to reset form');
-    it('should have a Help link');
-    it('should have a Save Changes button');
-    it('should have a Reset button');
-    it('should have a Cancel button');
-    it('should trigger cancel action by pressing Escape key');
-    it('should validate input data after clicking Save Changes button');
-    it('should validate input data before committing it');
-    it('should restore form to pre-edit state when Reset button is clicked');
-  }); // end create new indicator form tests
-});
+  it('should have an Indicator Service Templates dropdown', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    let control = $('select#services');
+    assert.equal(true, control.isVisible());
+    IndPage.saveNewIndicator();
+  });
+
+  it('should have a Service Indicator dropdown', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    let control = $('select#service_indicator');
+    assert.equal(true, control.isVisible());
+    IndPage.saveNewIndicator();
+  });
+
+  it('should have a Country dropdown', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    let control = $('select#country');
+    assert.equal(true, control.isVisible());
+    IndPage.saveNewIndicator();
+  });
+
+  it('should have a Program dropdown', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    let control = $('select#program');
+    assert.equal(true, control.isVisible());
+    IndPage.saveNewIndicator();
+  });
+
+  it('should have a save button', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    let control = $('form').$('input[value="save"]');
+    assert.equal(true, control.isVisible(),
+      'Save button is not visible');
+    control.click();
+  });
+
+  it('should confirm indicator created', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    IndPage.saveNewIndicator();
+    let message = IndPage.getAlertMsg();
+    expect(message.includes('Success, Basic Indicator Created!'),
+      'Unexpected message during indicator creation');
+  });
+
+  it('should open Indicator detail form after clicking Save button', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    IndPage.saveNewIndicator();
+    browser.waitForVisible('h4');
+    let title = browser.$('h4').getText().trim();
+    expect(title.includes('Goal indicator: Temporary'),
+      'Unexpected title text on the indicator detail screen');
+  });
+
+  it('should have a Reset button to reset form', function() {
+    IndPage.clickIndicatorsLink();
+    IndPage.clickNewIndicatorButton();
+    IndPage.saveNewIndicator();
+    let control = $('form').$('input[value="Reset"]');
+    assert.equal(true, control.isVisible(), 'Reset button is not visible');
+    control.click();
+  });
+}); // end create new indicator form tests
