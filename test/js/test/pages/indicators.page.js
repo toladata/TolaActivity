@@ -55,7 +55,7 @@ function clickIndicatorTypeDropdown() {
  * @returns Nothing
  */
 function clickNewIndicatorButton() {
-  browser.waitForVisible('=New Indicator');
+  let progList = browser.$$('panel-heading>h4');
   browser.$('=New Indicator').click();
 }
 
@@ -83,9 +83,11 @@ function clickResetButton() {
  * specific calls.
  */
 function createBasicIndicator() {
+  if ($('h2').getText() != 'Program Indicators') {
     clickIndicatorsLink();
-    clickNewIndicatorButton();
-    saveNewIndicator();
+  }
+  clickNewIndicatorButton();
+  saveNewIndicator();
 }
 
 /** 

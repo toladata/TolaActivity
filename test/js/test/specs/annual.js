@@ -9,9 +9,6 @@ describe('"Annual" target frequency', function() {
     // Disable timeouts
     this.timeout(0);
     browser.windowHandleMaximize();
-  });
-
-  it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
     LoginPage.setUserName(parms.username);
@@ -19,7 +16,7 @@ describe('"Annual" target frequency', function() {
     LoginPage.clickLoginButton();
     IndPage.open();
     assert.equal('Program Indicators', IndPage.getPageName(),
-      'Unexpected page name mismatch');
+      'Unexpected page name mismatch on program indicators page');
   });
 
   it('should require date that first target period begins', function() {
