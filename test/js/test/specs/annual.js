@@ -5,9 +5,11 @@ var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 
 describe('"Annual" target frequency', function() {
-  // Disable timeouts
-  this.timeout(0);
-  browser.windowHandleMaximize();
+  before(function() {
+    // Disable timeouts
+    this.timeout(0);
+    browser.windowHandleMaximize();
+  });
 
   it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
@@ -65,24 +67,20 @@ describe('"Annual" target frequency', function() {
     TargetsTab.setBaseline(309);
     TargetsTab.setTargetFrequency('Annual');
     TargetsTab.setNumTargetPeriods(2);
-
-    // This should succeed
     TargetsTab.setFirstTargetPeriod();
     TargetsTab.saveIndicatorChanges();
 
     // Find the input boxes
     let inputBoxes = TargetsTab.getTargetInputBoxes();
-    // Count them
     let targetCount = inputBoxes.length;
-    // Place values in each box one at a time, then attempt to
-    // save the changes. This should *fail* until all the fields
-    // are filled.
+    // Place values in each box one at a time and attempt to save.
+    // This should *fail* until all the fields are filled.
     let errorCount = 0;
     for(let inputBox of inputBoxes) {
         inputBox.setValue(86);
         TargetsTab.saveIndicatorChanges();
         // Did we fail successfully?
-        errMsg = TargetsTab.getTargetValueErrorHint();
+        let errMsg = TargetsTab.getTargetValueErrorHint();
         assert(errMsg.includes('Please enter a target value. Your target value can be zero.'));
         errorCount++;
     }

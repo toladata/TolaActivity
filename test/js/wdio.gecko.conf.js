@@ -1,4 +1,5 @@
 exports.config = {
+    execArgv: ['--inspect'],
     specs: [
         './test/specs/**/*.js'
     ],
@@ -8,28 +9,22 @@ exports.config = {
     // Capabilities
     maxInstances: 1,
     capabilities: [
-        {
-            // maxInstances can get overwritten per capability
-            browserName: 'chrome',
-            //maxInstances: 3,
-            chromeOptions: {
-                //[]
-            }
-        },
-        {
-            browserName: 'firefox',
-            maxInstances: 1,
-            'moz:firefoxOptions': {
-                //[]
-             }
-        }
+    {
+        browserName: 'firefox',
+        maxInstances: 1,
+        args: '[--jsdebugger]',
+        'moz:firefoxOptions': {
+            //[]
+       }
+   }
     ],
     sync: true,
     logLevel: 'silent',
+    logOutput: 'webdriver.log',
     coloredLogs: true,
-    deprecationWarnings: true,
+    deprecationWarnings: false,
     bail: 0,
-    screenshotPath: './errorShots/',
+    screenshotPath: './errorShots',
     baseUrl: 'http://localhost',
     waitforTimeout: 10000,
     connectionRetryTimeout: 90000,
@@ -37,7 +32,7 @@ exports.config = {
     services: [],
     seleniumLogs: './logs',
     framework: 'mocha',
-    reporters: ['spec', 'allure'],
+    reporters: ['dot', 'spec', 'allure'],
     reporterOptions: {
         allure: {
             outputDir: './allure-results'

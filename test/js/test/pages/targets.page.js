@@ -9,7 +9,7 @@ const delay = 10*msec;
 
 var util = require('../lib/testutil.js');
 var dp = require('../lib/testutil.js').dp;
-var selectProgram = require('../pages/indicators.page.js').selectProgram
+var IndPage = require('../pages/indicators.page.js');
 var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
@@ -68,9 +68,7 @@ function clickProgramIndicator(indicatorName) {
  * @returns Nothing
  */
 function clickProgramIndicatorsButton(programName) {
-  selectProgram(programName);
-  // find indicators button
-  // click it
+  IndPage.selectProgram(programName);
 }
 
 /***
@@ -210,7 +208,8 @@ function getNumTargetEventsErrorHint() {
  */
 function getNumTargetPeriods() {
   clickTargetsTab();
-  let val = $('input#id_target_frequency_num_periods').getValue();
+  browser.waitForExist('input#id_target_frequency_num_periods');
+  let val = browser.$('input#id_target_frequency_num_periods').getValue();
   return val;
 }
 
@@ -443,12 +442,8 @@ function setFirstEventName(value) {
  * FIXME: Document this function
  */
 function setFirstTargetPeriod() {
-  let textBox = browser.$('input#id_target_frequency_start');
-  textBox.click();
-  let datepickerDiv = browser.$('div#ui-datepicker-div');
-  let buttonPane = datepickerDiv.$('div.ui-datepicker-buttonpane');
-  let button = buttonPane.$('button.ui-datepicker-close');
-  button.click();
+  browser.moveToObject('div.controls.col-sm-6>input#id_target_frequency_start');
+  browser.moveToObject('div.controls.col-sm-6>input#id_target_frequency_num_periods');
 }
 
 /**

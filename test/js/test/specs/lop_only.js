@@ -5,9 +5,11 @@ var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 
 describe('"Life of Program (LoP) only" target frequency', function() {
-  // Disable timeouts
-  this.timeout(0);
-  browser.windowHandleMaximize();
+  before(function() {
+    // Disable timeouts
+    this.timeout(0);
+    browser.windowHandleMaximize();
+  });
 
   it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
@@ -25,8 +27,8 @@ describe('"Life of Program (LoP) only" target frequency', function() {
 
     TargetsTab.setIndicatorName('LoP only target testing');
     TargetsTab.setUnitOfMeasure('Furlongs per fortnight');
-    TargetsTab.setLoPTarget(192);
-    TargetsTab.setBaseline(193);
+    TargetsTab.setLoPTarget(30);
+    TargetsTab.setBaseline(31);
     TargetsTab.setTargetFrequency('Life of Program (LoP) only');
     // This should succeed
     TargetsTab.saveIndicatorChanges();
@@ -40,9 +42,9 @@ describe('"Life of Program (LoP) only" target frequency', function() {
     assert(errorHint.includes('Please enter a number larger than zero'),
       'Did not receive expected failure message');
     // Make it numeric; this should succeed
-    TargetsTab.setLoPTarget(207);
+    TargetsTab.setLoPTarget(45);
     TargetsTab.saveIndicatorChanges();
-    assert.equal(207,
+    assert.equal(45,
       TargetsTab.getLoPTarget(),
       'Did not receive expected value from getLoPTarget()');
   });
