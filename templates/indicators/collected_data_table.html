@@ -13,7 +13,7 @@
 {% load assign %}
 {% if indicator.target_frequency  %}
 
-    <table class="table table-bordered" style="border: 0px solid #ddd;">
+    <table class="table table-bordered">
         <tr>
             <th style="vertical-align:bottom; min-width:180px;">Target Period</th>
             <th style="vertical-align:bottom; text-align: right;">Target</th>
@@ -70,7 +70,8 @@
                         </a>
                     </td>
                     {% empty %}
-                        <td colspan="6">No data collected</td>
+                        <td style="border-right: 0px solid;">No data collected</td>
+                        <td colspan="5" style="border-left: 0px solid;"></td>
 
                     {% if item.collecteddata_set.count > 1 %}
                         </tr>
