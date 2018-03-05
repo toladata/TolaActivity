@@ -22,16 +22,19 @@ describe('Deleting a lot of indicators', function() {
     if (browser.isVisible('div#ajaxloading')) {
       browser.waitForVisible('div#ajaxloading', true, delay);
     }
-    IndPage.selectProgram('Tola Rollout');
-    let indButtons = TargetsTab.getProgramIndicatorButtons();
     IndPage.clickProgramsDropdown();
-    indButtons[0].click();
 
+    IndPage.selectProgram('Tola Rollout');
+    if (browser.isVisible('div#ajaxloading')) {
+      browser.waitForVisible('div#ajaxloading', true, delay);
+    }
+    let indButtons = TargetsTab.getProgramIndicatorButtons();
+    indButtons[0].click();
     let indicatorList, indicator, confirmBtn
     let indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
     let buttons = new Array();
     let deletedCount = 0;
-    while (indicatorCount > 8) {
+    while (indicatorCount > 10) {
       indicatorList = TargetsTab.getProgramIndicatorsTable();
       indicator = indicatorList.shift();
       indicator.click();
@@ -39,9 +42,6 @@ describe('Deleting a lot of indicators', function() {
       confirmBtn.click();
       browser.waitForVisible('h2=Program Indicators', delay);
       buttons = TargetsTab.getProgramIndicatorButtons();
-      // FIXME: this defaults to deleting from the first program
-      // in the list. It will need work before converting to a
-      // useful method for deleting an indicator
       buttons[0].click();
       indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
       deletedCount++;

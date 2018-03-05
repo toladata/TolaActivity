@@ -14,8 +14,11 @@ describe('TolaActivity Dashboard', function() {
   });
 
   it('should have a page header', function() {
-    browser.waitForText('h4', 5000)
-    let h4 = $('h4');
+    browser.waitForVisible('div.panel.panel-default');
+
+    let panel = browser.$('div.panel.panel-default');
+    let header = panel.$('div.panel-heading');
+    let h4 = header.$('div.row').$('div.col-md-4').$('h4');
     assert(h4.getText() == 'Tola-Activity Dashboard');
   });
 
@@ -50,7 +53,8 @@ describe('TolaActivity Dashboard', function() {
   });
 
   it('should have a Reports link', function() {
-    let link = $('=Reports');
+    let navbar = $('div#navbar-collapse-1');
+    let link = navbar.$('=Reports');
     assert(link.getText() == 'Reports');
     link.click();
   });

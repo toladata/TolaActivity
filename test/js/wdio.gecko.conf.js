@@ -4,7 +4,7 @@ exports.config = {
         './test/specs/**/*.js'
     ],
     exclude: [
-        './test/specs/**/indicators_*.js'
+        //'./test/specs/indicators_*.js'
     ],
     // Capabilities
     maxInstances: 1,
