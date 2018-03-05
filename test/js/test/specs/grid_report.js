@@ -10,19 +10,16 @@ describe('Grid/Print Report page', function() {
     // Disable timeouts
     this.timeout(0);
     browser.windowHandleMaximize();
-  });
-
-  it('should exist', function() {
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
     LoginPage.setUserName(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
-    IndPage.open();
-    assert.equal('Program Indicators', IndPage.getPageName());
   });
 
-  it('should have a Grid/Print Report button', function() {
+  it('should have a Grid/Print Report button for each program', function() {
+    IndPage.open();
+    assert.equal('Program Indicators', IndPage.getPageName());
     let progList = IndPage.getProgramsDropdownList();
     let prog = progList[1];
     IndPage.selectProgram(prog);
