@@ -31,7 +31,7 @@ describe('Deleting a lot of indicators', function() {
     let indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
     let buttons = new Array();
     let deletedCount = 0;
-    while (indicatorCount > 8) {
+    while (indicatorCount > 0) {
       indicatorList = TargetsTab.getProgramIndicatorsTable();
       indicator = indicatorList.shift();
       indicator.click();
@@ -39,9 +39,6 @@ describe('Deleting a lot of indicators', function() {
       confirmBtn.click();
       browser.waitForVisible('h2=Program Indicators', delay);
       buttons = TargetsTab.getProgramIndicatorButtons();
-      // FIXME: this defaults to deleting from the first program
-      // in the list. It will need work before converting to a
-      // useful method for deleting an indicator
       buttons[0].click();
       indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
       deletedCount++;

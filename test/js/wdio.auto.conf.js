@@ -5,7 +5,7 @@ exports.config = {
     ],
     // Patterns to exclude.
     exclude: [
-        // 'path/to/excluded/files'
+        '/test/specs/indicators_*.js'
     ],
     // Capabilities
     maxInstances: 1,
@@ -33,7 +33,7 @@ exports.config = {
     services: ['selenium-standalone'],
     seleniumLogs: './log',
     framework: 'mocha',
-    //reporters: ['dot', 'spec', 'allure'],
+    reporters: ['dot', 'allure'],
     reporterOptions: {
         allure: {
             outputDir: './allure-results'
@@ -41,6 +41,6 @@ exports.config = {
     },
     mochaOpts: {
         ui: 'bdd',
-        compilers: ['js:babel-register'],
+        compilers: ['js:babel-register']
     }
 }
