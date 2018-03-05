@@ -6,6 +6,7 @@ try:
 except ImportError:
     pass
 from django.conf import settings
+from django.core.mail import EmailMessage
 from django.contrib.auth.models import Group
 from django.db.models import signals
 from django.dispatch import receiver
@@ -107,8 +108,18 @@ def check_seats_save_team(sender, instance, **kwargs):
     if user_addon:
         available_seats = user_addon.quantity
         if available_seats < org.chargebee_used_seats:
-            # TODO: Notify the Org admin
-            pass
+            user_email = instance.workflow_user.user.email
+            email = EmailMessage(
+                subject='Exceeded the number of editors',
+                body='The number of editors has exceeded the amount of '
+                     'users set in your Subscription. Please check it out!'
+                     '\nCurrent amount of editors: {}.\nSelected amount '
+                     'of editors: {}.'.format(
+                        org.chargebee_used_seats, available_seats),
+                to=[user_email],
+                reply_to=[settings.DEFAULT_REPLY_TO],
+            )
+            email.send()
 
 
 @receiver(signals.pre_delete, sender=WorkflowTeam)
@@ -189,8 +200,18 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
         if user_addon:
             available_seats = user_addon.quantity
             if available_seats < org.chargebee_used_seats:
-                # TODO: Notify the Org admin
-                pass
+                user_email = instance.email
+                email = EmailMessage(
+                    subject='Exceeded the number of editors',
+                    body='The  number of editors has exceeded the amount of '
+                         'users set in your Subscription. Please check it '
+                         'out!\nCurrent amount of editors: {}.\nSelected '
+                         'amount of editors: {}.'.format(
+                            org.chargebee_used_seats, available_seats),
+                    to=[user_email],
+                    reply_to=[settings.DEFAULT_REPLY_TO],
+                )
+                email.send()
 
 
 # ORGANIZATION SIGNALS
