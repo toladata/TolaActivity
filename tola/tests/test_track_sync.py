@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import logging
 
@@ -6,7 +7,31 @@ from mock import Mock, patch
 
 import factories
 from tola.track_sync import (register_user, create_instance, update_instance,
-                             delete_instance)
+                             delete_instance, validate_response)
+
+
+class ValidateResponseTest(TestCase):
+    def test_validate_good_response(self):
+        response = Mock(status_code=200)
+        wflvl1 = factories.WorkflowLevel1(name='Some name')
+        validate_response(response, wflvl1)
+
+    def test_validate_good_response_utf8_object(self):
+        response = Mock(status_code=200)
+        logging.basicConfig(level=logging.DEBUG )
+        wflvl1 = factories.WorkflowLevel1(name=u'色は匂へど 散りぬるを')
+        validate_response(response, wflvl1)
+
+    def test_validate_bad_response(self):
+        response = Mock(status_code=400)
+        wflvl1 = factories.WorkflowLevel1(name='Some name')
+        validate_response(response, wflvl1)
+
+    def test_validate_bad_response_utf8_object(self):
+        response = Mock(status_code=200)
+        logging.basicConfig(level=logging.DEBUG )
+        wflvl1 = factories.WorkflowLevel1(name=u'色は匂へど 散りぬるを')
+        validate_response(response, wflvl1)
 
 
 class RegisterUserTest(TestCase):

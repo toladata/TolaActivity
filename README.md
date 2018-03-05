@@ -19,6 +19,7 @@ Location of settings:
 * Test runner: `tola/settings/test.py` and `tola/settings/test_pkg.py`
 * Staging/Production: `tola/settings/local.py`
 
+Check the documentation on setting up search functionality in `search/Readme.md`
 
 ## Deploy changes in activity servers
 
