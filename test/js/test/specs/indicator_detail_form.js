@@ -11,9 +11,6 @@ describe('Indicator creation detail form', function() {
     // Disable timeouts
     this.timeout(0);
     browser.windowHandleMaximize();
-  });
-
-  it('should exist', function() {
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
     LoginPage.setUserName(parms.username);
@@ -21,7 +18,9 @@ describe('Indicator creation detail form', function() {
     LoginPage.clickLoginButton();
     IndPage.open();
     assert.equal('Program Indicators', IndPage.getPageName());
+  });
 
+  it('should exist', function() {
     IndPage.createBasicIndicator();
     browser.waitForVisible('h4');
     let title = browser.$('h4').getText().trim();
@@ -77,7 +76,18 @@ describe('Indicator creation detail form', function() {
     expect(browser.isVisible('=Reset'));
   });
 
-  it('should trigger reset action by pressing Escape key');
-  it('should restore form to pre-edit state when Reset button is clicked');
-  it('should have a Cancel button');
+  it('should restore form to pre-edit state when Reset button is clicked', function() {
+    let select = browser.$('select#id_sector');
+    let options = select.$$('option');
+    let option = options[1];
+    let origVal = option.getValue();
+
+    // 2 - Basic Needs
+    select.selectByValue(2);
+    let newVal =  select.getValue();
+    assert.equal(2, newVal, 'Unexpected selection mismatch');
+    IndPage.clickResetButton();
+    let resetVal = options[1].getValue();
+    assert.equal(origVal, resetVal, 'Unexpected selection mismatch after Reset');
+  });
 }); // end create indicator detail page tests
