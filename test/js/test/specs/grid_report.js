@@ -51,5 +51,12 @@ describe('Grid/Print Report page', function() {
     assert(text.includes('Export All'), 'Did not find expected button text');
   });
 
-  it('should export all report entries when Export All button is clicked');
+  it('should export all report entries when Export All button is clicked', function() {
+    IndPage.clickIndicatorsLink();
+    let progList = IndPage.getProgramsDropdownList();
+    let prog = progList[1];
+    IndPage.selectProgram(prog);
+    browser.$('=Grid/Print Report').click();
+    IndPage.clickExportAllButton('myexportfile.csv');
+  });
 });
