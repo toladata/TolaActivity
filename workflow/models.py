@@ -1341,12 +1341,12 @@ class Documentation(models.Model):
 
 class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True, help_text="Source of budget fund")
-    account_code = models.CharField("Accounting Code",max_length=135, blank=True, null=True, help_text="Label or coded field")
-    cost_center = models.CharField("Cost Center",max_length=135, blank=True, null=True, help_text="Associate a cost with a type of expense")
-    donor_code = models.CharField("Donor Code",max_length=135, blank=True, null=True, help_text="Third Party coded field")
+    account_code = models.CharField("Accounting Code", max_length=135, blank=True, null=True, help_text="Label or coded field")
+    cost_center = models.CharField("Cost Center", max_length=135, blank=True, null=True, help_text="Associate a cost with a type of expense")
+    donor_code = models.CharField("Donor Code", max_length=135, blank=True, null=True, help_text="Third Party coded field")
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True, help_text="Purpose or use for funds")
-    proposed_value = models.IntegerField("Budget",default=0, blank=True, null=True, help_text="Approximate value if not a monetary fund")
-    actual_value = models.IntegerField("Actual", default=0, blank=True, null=True, help_text="Monetary value positive or negative")
+    proposed_value = models.DecimalField("Budget", decimal_places=2, max_digits=12, default=Decimal("0.00"), blank=True, help_text="Approximate value if not a monetary fund")
+    actual_value = models.DecimalField("Actual", decimal_places=2, max_digits=12, default=Decimal("0.00"), blank=True, help_text="Monetary value positive or negative")
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, on_delete=models.SET_NULL, help_text="Releated workflow level 2")
     local_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="local", help_text="Primary Currency")
     donor_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="donor", help_text="Secondary Currency")
@@ -1359,6 +1359,11 @@ class Budget(models.Model):
         if not self.create_date:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
+
+        if self.proposed_value is None:
+            self.proposed_value = Decimal("0.00")
+        if self.actual_value is None:
+            self.actual_value = Decimal("0.00")
 
         if self.workflowlevel2:
             wflvl2 = self.workflowlevel2

@@ -179,3 +179,9 @@ if CHARGEBEE_ENABLED:
     chargebee.configure(os.getenv('CHARGEBEE_SITE_API_KEY'), os.getenv('CHARGEBEE_SITE'))
 
 ########## END CHARGEBEE CONFIGURATION
+
+########## EMAIL CONFIGURATION
+
+DEFAULT_REPLY_TO = os.getenv('DEFAULT_REPLY_TO', '')
+
+########## END EMAIL CONFIGURATION

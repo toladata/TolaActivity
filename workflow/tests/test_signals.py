@@ -5,6 +5,7 @@ try:
     from chargebee import Addon, Subscription
 except ImportError:
     pass
+from django.core import mail
 from django.test import TestCase, override_settings, tag
 from mock import Mock, patch
 
@@ -109,7 +110,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
 
             addon = Addon(values)
             addon.id = 'user'
-            addon.quantity = 0
+            addon.quantity = 1
             self.subscription.addons = [addon]
 
     def setUp(self):
@@ -216,6 +217,34 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 1)
 
+    @override_settings(DEFAULT_REPLY_TO='noreply@test.com')
+    def test_check_seats_save_team_exceed_notify(self):
+        self.tola_user.user.groups.add(self.group_org_admin)
+        self.tola_user.user.save()
+        self.org = Organization.objects.get(pk=self.org.id)
+        user = factories.User(first_name='John', last_name='Lennon')
+        tolauser = factories.TolaUser(user=user, organization=self.org)
+
+        external_response = self.ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
+        factories.WorkflowTeam(workflow_user=tolauser,
+                               workflowlevel1=wflvl1,
+                               role=self.group_program_admin)
+
+        # It should notify the OrgAdmin
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 2)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('Exceeded the number of editors', mail.outbox[0].subject)
+        self.assertEqual(mail.outbox[0].to, [user.email])
+        self.assertEqual(mail.outbox[0].reply_to, ['noreply@test.com'])
+        self.assertEqual(mail.outbox[0].body,
+                         'The number of editors has exceeded the amount of '
+                         'users set in your Subscription. Please check it '
+                         'out!\nCurrent amount of editors: 2.\nSelected '
+                         'amount of editors: 1.')
+
 
 class CheckSeatsDeleteWFTeamsTest(TestCase):
     class ExternalResponse:
@@ -225,7 +254,7 @@ class CheckSeatsDeleteWFTeamsTest(TestCase):
 
             addon = Addon(values)
             addon.id = 'user'
-            addon.quantity = 0
+            addon.quantity = 1
             self.subscription.addons = [addon]
 
     def setUp(self):
@@ -251,7 +280,7 @@ class CheckSeatsDeleteWFTeamsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
 
-    def test_check_seats_save_team_not_decrease(self):
+    def test_check_seats_delete_team_not_decrease(self):
         external_response = self.ExternalResponse(None)
         Subscription.retrieve = Mock(return_value=external_response)
         wflvl1_1 = factories.WorkflowLevel1(name='WorkflowLevel1_1')
@@ -310,7 +339,7 @@ class CheckSeatsSaveUserGroupTest(TestCase):
 
             addon = Addon(values)
             addon.id = 'user'
-            addon.quantity = 0
+            addon.quantity = 1
             self.subscription.addons = [addon]
 
     def setUp(self):
@@ -377,6 +406,32 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         # It should have only one seat because of the Org Admin role
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
+
+    @override_settings(DEFAULT_REPLY_TO='noreply@test.com')
+    def test_check_seats_save_user_groups_exceed_notify(self):
+        external_response = self.ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        self.tola_user.user.groups.add(self.group_org_admin)
+        self.tola_user.user.save()
+
+        self.org = Organization.objects.get(pk=self.org.id)
+        user = factories.User(first_name='John', last_name='Lennon')
+        tolauser = factories.TolaUser(user=user, organization=self.org)
+        tolauser.user.groups.add(self.group_org_admin)
+        tolauser.user.save()
+
+        # It should notify the OrgAdmin
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 2)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('Exceeded the number of editors', mail.outbox[0].subject)
+        self.assertEqual(mail.outbox[0].to, [user.email])
+        self.assertEqual(mail.outbox[0].reply_to, ['noreply@test.com'])
+        self.assertEqual(mail.outbox[0].body,
+                         'The  number of editors has exceeded the amount of '
+                         'users set in your Subscription. Please check it '
+                         'out!\nCurrent amount of editors: 2.\nSelected '
+                         'amount of editors: 1.')
 
 
 class SignalSyncTrackTest(TestCase):
