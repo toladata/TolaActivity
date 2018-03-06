@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 from rest_framework.reverse import reverse
@@ -76,9 +78,10 @@ class BudgetCreateViewTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['proposed_value'],
+        self.assertEqual(Decimal(response.data['proposed_value']),
                          data['proposed_value'])
-        self.assertEqual(response.data['actual_value'], data['actual_value'])
+        self.assertEqual(Decimal(response.data['actual_value']),
+                         data['actual_value'])
         self.assertEqual(response.data['created_by'], user_url)
 
         # Check WorkflowLevel2
@@ -101,9 +104,10 @@ class BudgetCreateViewTest(TestCase):
         response = view(request)
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['proposed_value'],
+        self.assertEqual(Decimal(response.data['proposed_value']),
                          data['proposed_value'])
-        self.assertEqual(response.data['actual_value'], data['actual_value'])
+        self.assertEqual(Decimal(response.data['actual_value']),
+                         data['actual_value'])
         self.assertEqual(response.data['created_by'], user_url)
 
 
@@ -129,8 +133,10 @@ class BudgetUpdateViewTest(TestCase):
 
         budget = Budget.objects.get(pk=response.data['id'])
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['proposed_value'], budget.proposed_value)
-        self.assertEqual(response.data['actual_value'], budget.actual_value)
+        self.assertEqual(Decimal(response.data['proposed_value']),
+                         budget.proposed_value)
+        self.assertEqual(Decimal(response.data['actual_value']),
+                         budget.actual_value)
 
         # Check WorkflowLevel2
         wkfl2 = budget.workflowlevel2
@@ -154,8 +160,9 @@ class BudgetUpdateViewTest(TestCase):
 
         budget = Budget.objects.get(pk=response.data['id'])
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['proposed_value'], budget.proposed_value)
-        self.assertEqual(response.data['actual_value'], 0)
+        self.assertEqual(Decimal(response.data['proposed_value']),
+                         budget.proposed_value)
+        self.assertEqual(Decimal(response.data['actual_value']), 0)
 
         # Check WorkflowLevel2
         wkfl2 = budget.workflowlevel2
@@ -174,8 +181,10 @@ class BudgetUpdateViewTest(TestCase):
 
         budget = Budget.objects.get(pk=response.data['id'])
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['proposed_value'], budget.proposed_value)
-        self.assertEqual(response.data['actual_value'], budget.actual_value)
+        self.assertEqual(Decimal(response.data['proposed_value']),
+                         budget.proposed_value)
+        self.assertEqual(Decimal(response.data['actual_value']),
+                         budget.actual_value)
 
 
 class BudgetFilterViewTest(TestCase):
