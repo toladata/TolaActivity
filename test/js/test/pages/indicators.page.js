@@ -27,7 +27,6 @@ parms.baseurl += '/indicators/home/0/0/0';
 function clickExportAllButton(fileName) {
   let button = $('button[type="submit"]');
   let height = browser.getViewportSize('height');
-  util.dp('height='+height);
   browser.scroll(0, 5000);
   button.click();
 }
