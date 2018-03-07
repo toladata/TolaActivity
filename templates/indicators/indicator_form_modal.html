@@ -1,18 +1,21 @@
-{% load crispy_forms_tags %}
+{% load widget_tweaks %}
 <div id="numDataPoints" style="display: none;">{{ object.collecteddata_set.all.count }}</div>
 <div id="initialTargetFrequencyValue" style="display:none;">{{ object.target_frequency }}</div>
+
 <form action="{% url 'indicator_update' indicator.id %}" id="indicator_update_form" class="form-horizontal" method="post" novalidate>
+    {% csrf_token %}
+
     <div class="modal-header" style="border-bottom:none;">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <span id = "modalmessages"></span>
-        <div id="indicator_modal_header" style="padding-top: 10px; margin-top: 5px; margin-left: 15px">
-            <h3 style="font-size:21px; color:#94979c; margin-top: 10px">
+        <div id="indicator_modal_header" class="modal-title">
+            <h5 style="color:#94979c;">
                 {% if indicator.levels %}
                     {{ indicator.levels }} indicator:
                 {% endif %}
                 {{ indicator.name|truncatechars:300 }}
-            </h3>
+            </h5>
         </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="modal-body" id="indicator_modal_body">
         <script type="text/javascript">
@@ -45,7 +48,66 @@
             });
         </script>
 
-        {% crispy form %}
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" href="#summaryTab" role="tab" data-toggle="tab">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#performanceTab" role="tab" data-toggle="tab">Performance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#targetsTab" role="tab" data-toggle="tab">Targets</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#dataAcquisitionTab" role="tab" data-toggle="tab">Data Acquisition</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#analysisReportingTab" role="tab" data-toggle="tab">Analysis and Reporting</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#approvalTab" role="tab" data-toggle="tab">Approval</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="summaryTab">
+                <fieldset>
+                    <div class="form-group row" id="div_id_program">
+                        <label for="id_program" class="col-4 col-form-label" align="right">{{ form.program.label }}</label>
+                        <div class="controls col-6" style="padding-right: 0px; padding-left: 0px;">
+                        {% render_field form.program class+="form-control" %}
+                        </div>
+                        {% if form.program.help_text %}
+                            <small class="form-text text-muted">{{ form.program.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-group row" id="div_id_sector">
+                        <label for="id_sector" class="col-4 col-form-label" align="right">{{ form.sector.label }} </label>
+                        {% render_field form.sector class+="form-control col-6" %}
+                        {% if form.sector.help_text %}
+                            <small class="form-text text-muted">{{ form.sector.help_text }}</small>
+                        {% endif %}
+                    </div>
+
+                </fieldset>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="performanceTab">
+                Performance fields
+            </div>
+            <div role="tabpanel" class="tab-pane" id="targetsTab">
+                Targets fields
+            </div>
+            <div role="tabpanel" class="tab-pane" id="dataAcquisitionTab">
+                Data Acquisition
+            </div>
+            <div role="tabpanel" class="tab-pane" id="analysisReportingTab">
+                Analysis and reporting2
+            </div>
+            <div role="tabpanel" class="tab-pane" id="approvalTab">
+                Approval
+            </div>
+        </div>
+
     </div> <!-- modal body -->
     <div class="modal-footer" style="background-color: #d7d7d7; border-top:1px solid #f5f5f5; padding: 19px 6px 19px 15px;">
         <div class="pull-left" style="margin-left:5px">

@@ -242,6 +242,7 @@ THIRD_PARTY_APPS = (
     'ckeditor_uploader',
     'simplejson',
     'simple_history',
+    'widget_tweaks',
 )
 
 # Apps specific for this project go here.
