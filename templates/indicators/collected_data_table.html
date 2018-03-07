@@ -27,11 +27,11 @@
         {% for item in periodictargets %}
             <tr>
                 {% ifchanged item %}
-                    <td rowspan="{{ item.collecteddata_set.count }}" min-width="170">
+                    <td {% if item.collecteddata_set.count %} rowspan="{{ item.collecteddata_set.count }}" {% endif %} min-width="170">
                         <strong>{{ item.period }}</strong><br>
                         <small>{{ item.start_date_formatted|default_if_none:"" }} {% if item.start_date %} - {% endif %} {{ item.end_date_formatted|default_if_none:"" }}</small>
                     </td>
-                    <td rowspan="{{ item.collecteddata_set.count }}" align="right">
+                    <td {% if item.collecteddata_set.count %} rowspan="{{ item.collecteddata_set.count }}" align="right" {% endif %}>
                         {{ item.target|floatformat:"-2" }}
                     </td>
                 {% endifchanged %}
