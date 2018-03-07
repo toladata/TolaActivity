@@ -59,7 +59,7 @@ function formatDate(dateString, day=0) {
     try {
         var dateval = new Date(dateString);
         // Add the local timezone offset
-        dateval.setMinutes(dateval.getMinutes() + dateval.getTimezoneOffset());
+        // dateval.setMinutes(dateval.getMinutes() + dateval.getTimezoneOffset());
         var month = months[(dateval.getMonth() + 1)];
         var ret = month.concat(' ').concat(day == 0 ? dateval.getDate() : day).concat(', ').concat(dateval.getFullYear());
         return ret;
