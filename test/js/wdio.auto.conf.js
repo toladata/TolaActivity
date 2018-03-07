@@ -5,7 +5,7 @@ exports.config = {
     ],
     // Patterns to exclude.
     exclude: [
-        //'./test/specs/indicators_*.js'
+        //'./test/specs/**/*.js'
     ],
     // Capabilities
     maxInstances: 1,
