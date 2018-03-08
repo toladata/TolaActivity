@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"readable-stream": "^2.3.3",
-		"string_decoder": "^1.0.3"
+		"string_decoder": "^1.1.0"
 	},
 	"repository": "https://github.com/mercycorps/TolaActivity.git",
 	"license": "Apache-2.0"
