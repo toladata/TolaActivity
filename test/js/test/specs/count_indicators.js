@@ -1,5 +1,3 @@
-// Proposed test cases for TolaActivity v1.9.5
-
 describe('Non-cumulative count indicators', function() {
   it('should calculate target period results from data collected during target period');
   it('should calculate the LoP result by summing the target period values');

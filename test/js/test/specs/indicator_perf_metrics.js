@@ -1,5 +1,3 @@
-// Proposed test cases for TolaActivity v1.9.5
-
 describe('Indicator performance metrics', function() {
   it('should be measurable by discrete count');
   it('should be measurable by percentage');

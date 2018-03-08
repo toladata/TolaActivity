@@ -1,5 +1,3 @@
-// Proposed test cases for TolaActivity v1.9.5
-
 describe('Program impact overview', function() {
   it('should display combinations of indicators with compatible target frequencies');
   it('should not display combinations of indicators with incompatible target frequencies');

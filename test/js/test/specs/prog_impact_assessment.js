@@ -1,5 +1,3 @@
-// Proposed test cases for TolaActivity v1.9.5
-
 describe('Program impact assessment', function() {
   it('should have a Program dropdown');
   it('should have a Target Frequency dropdown');

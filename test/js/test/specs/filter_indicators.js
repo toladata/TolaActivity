@@ -1,5 +1,3 @@
-// Proposed test cases for TolaActivity v1.9.5
-
 describe('Filtering indicators', function() {
   it('should filter by program');
   it('should filter by target frequency');

@@ -1,5 +1,3 @@
-// Proposed test cases for TolaActivity v1.9.5
-
 describe('Work flow for attaching evidence', function() {
   it('should require a descriptive name for the attachment');
   it('should require a link to the attachment');

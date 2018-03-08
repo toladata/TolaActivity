@@ -1,5 +1,3 @@
-// Proposed test cases for TolaActivity v1.9.5
-
 describe('Non-cumulative percentage indicators', function() {
   it('should display percentage signs in all the appropriate fields');
   it('should calculate LoP result as the average of target period values');

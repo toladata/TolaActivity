@@ -1,5 +1,3 @@
-// Proposed test cases for TolaActivity v1.9.5
-
 describe('Target vs Actuals report', function() {
   it('should display data organized by target period over time');
   it('should have a Program impact overview report');
