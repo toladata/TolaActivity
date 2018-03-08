@@ -8,5 +8,5 @@ describe('Non-cumulative count indicators', function() {
 
 describe('Cumulative count indicators', function() {
   it('should include previous period values when calculating target period results');
-  it('should have the same values in the LoP target and the final period's target');
+  it('should have the same values in the LoP final period target fields');
 });

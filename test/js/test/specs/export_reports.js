@@ -5,4 +5,4 @@ describe('Export reports', function() {
   it('should be able to save as PDF');
   it('should have a shareable permalink');
   it('should be able to pin a report to the home page dashboard');
-}):
+});
