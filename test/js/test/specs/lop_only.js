@@ -48,8 +48,4 @@ describe('"Life of Program (LoP) only" target frequency', function() {
       TargetsTab.getLoPTarget(),
       'Did not receive expected value from getLoPTarget()');
   });
-
-  // FIXME: Are these 2 test cases still important?
-  it('should permit non-numeric values only in legacy data for LoP target');
-  it('should require numeric value for LoP target if non-numeric legacy data is modified');
 });

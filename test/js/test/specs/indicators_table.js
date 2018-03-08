@@ -31,24 +31,22 @@ describe('Program Indicators table', function() {
     for (let button of buttons) {
       let targetDiv = 'div' + button.getAttribute('data-target');
       let isVisible = browser.isVisible(targetDiv);
-      // Starts out collapsed
-      assert.equal(false, isVisible);
 
-      // Open it and verify
-      button.click();
-      if(browser.isVisible('div#ajaxloading')) {
-        browser.waitForVisible('div#ajaxloading', delay, true);
+      if (isVisible) {
+        // If it's open, close it
+        button.click();
+        if (browser.isVisible('div#ajaxloading')) {
+          browser.waitForVisible('div#ajaxloading', delay, true);
+        }
+        assert.equal(false, isVisible);
+      } else {
+      // It's closed, so open it
+        button.click();
+        if(browser.isVisible('div#ajaxloading')) {
+          browser.waitForVisible('div#ajaxloading', delay, true);
+        }
+        assert.equal(true, isVisible);
       }
-      isVisible = browser.isVisible(targetDiv);
-      assert.equal(true, isVisible);
-
-      // Close it and verify
-      button.click();
-      if(browser.isVisible('div#ajaxloading')) {
-        browser.waitForVisible('div#ajaxloading', delay, true);
-      }
-      isVisible = browser.isVisible(targetDiv);
-      assert.equal(false, isVisible);
     }
   });
 

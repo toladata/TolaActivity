@@ -25,16 +25,17 @@ and testing".
 
 ## Runtime configuration files
 
-The framework includes three WebdriverIO, or _WDIO_, runtime configuration
-files that control which and/or how many tests get run. These are summary
-descriptions; sections describing each option in detail follow.
+The framework includes various WebdriverIO, or _WDIO_, runtime configuration
+files. They control which browsers run, which tests get run, and, in some
+cases, start the server process on your behalf. The following are summary
+descriptions of each file.
 
-- **wdio.auto.conf.js** -- Consider this the one-size-fits-all option. It runs
-  all of the tests against all of the browsers all of the time. If you feel
-  impatient, this is the config for you. Read "For the impatient" to get started.
+- **wdio.auto.conf.js** -- This configuration runs all of the tests
+  against all of the browsers all of the time. If you feel impatient,
+  this is the config for you. Read "The Big Green Button" to get started.
 - **wdio.chrome.conf.js** -- Runs all of the tests in the suite against the
   Chrome browser.
-- **wdio.gecko.conf.js** -- RUns all of the tests in the suite against the
+- **wdio.gecko.conf.js** -- Runs all of the tests in the suite against the
   Firefox browser.
 - **wdio.headless.conf.js** -- This is an experimental option that runs the test
   framework using Chrome's headless mode. I know, right? I didn't know Chrome _had_
@@ -47,16 +48,15 @@ descriptions; sections describing each option in detail follow.
 
 ![](docs/big_green_button.jpg)
 
-If you just want to run the tests, have a functional development system,
-and have `node` and `npm` installed, the following sequence of steps and 
-commands will get you going:
+If you have a functional development system with node and npm installed, the
+following sequence of steps and commands will get you going:
 
 ```
-git clone https://github.com/mercycorps.org/TolaActivity.git
-cd TolaActivity/test/js
-[edit user config file as described below]
-make install
-./node_modules/.bin/wdio wdio.auto.conf.js
+$ git clone https://github.com/mercycorps.org/TolaActivity.git
+$ cd TolaActivity/test/js
+[edit user config file as described in the next section]
+$ make install
+$ ./node_modules/.bin/wdio wdio.auto.conf.js
 ```
 
 ### Create the user config file
@@ -68,17 +68,16 @@ _username_, _password_, and _baseurl_ to suit your needs. In particular:
 - _baseurl_ points to the home page of the TolaActivity instance you
   are testing
 - **Under no circumstances should this suite be run against the production
-  TolaActivity server. It will create bad data, result in a lot of work to
-  remove, and potentially result in losing known-good, live data.**
+  TolaActivity server. Doing so will create bad data and result in a lot
+  of work to remove it, and potentially result in losing known-good,
+  live data.**
 
 The last command, `./node_modules/.bin/wdio`, starts Selenium server,
 which is a Java app. As a result, there might be a multi-second pause
 while it starts. When web browsers start operating themselves on your
-desktop, the tests have started. The last step, `wdio wdio.auto.conf.js`,
-starts the WebDriverIO bits, the Selenium server, unconditionally runs
-the complete test suite for each configured browser, shows the test
-results, and then exits, terminating the server as it goes. The output
-should resemble the following, hopefully without the test failures:
+desktop, the tests have started. After they tests complete, WDIO shows
+the test results, and then exits, terminating the server as it goes. The
+output should resemble the following, hopefully without the test failures:
 
 ```
 $ cd test/js
@@ -99,30 +98,6 @@ AssertionError: expected true to equal false
         at new Promise (<anonymous>)
             at new F (/home/kwall/Work/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
 
-
-
-========= Your concise report ========== 
-chrome::undefined:latest
-All went well !!
-========= Your concise report ========== 
-chrome::undefined:latest
-All went well !!
-[...]
-========= Your concise report ========== 
-chrome::undefined:latest
-Test failed (1): 
-Fail : Program Indicators table2 => should toggle table when a PI Indicators button is clicked
-AssertionError : expected true to equal false
-[...]
-========= Your concise report ========== 
-firefox::undefined:latest
-All went well !!
-========= Your concise report ========== 
-firefox::undefined:latest
-Test failed (1): 
-Fail : Program Indicators table2 => should toggle table when a PI Indicators button is clicked
-AssertionError : expected true to equal false
-[...]
 ```
 
 ## Manual installation and testing
@@ -193,7 +168,7 @@ $ java -jar -Dwebdriver.gecko.driver=./geckodriver selenium-server-standalone-3.
 
 ```
 $ cd test/js
-$ ./node_modules/.bin/wdio wdio.firefox.conf.js
+$ ./node_modules/.bin/wdio wdio.gecko.conf.js
 
 ------------------------------------------------------------------
 [firefox #0-0] Session ID: db980c3deae94de17354e7000ee25288

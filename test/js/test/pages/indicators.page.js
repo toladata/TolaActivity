@@ -19,6 +19,19 @@ parms.baseurl += '/indicators/home/0/0/0';
 */
 
 /**
+ * Click the Export All button on the grid/print report page,
+ * saving it in the file specified by fileName
+ * @param {string} fileName The name of the output file
+ * @returns Nothing
+ */
+function clickExportAllButton(fileName) {
+  let button = $('button[type="submit"]');
+  let height = browser.getViewportSize('height');
+  browser.scroll(0, 5000);
+  button.click();
+}
+ 
+/**
  * Click the Indicators dropdown button
  * @returns Nothing
  */
@@ -287,6 +300,7 @@ function selectProgram(program) {
   }
 }
 
+exports.clickExportAllButton = clickExportAllButton;
 exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
 exports.clickIndicatorsLink = clickIndicatorsLink;
 exports.clickIndicatorTypeDropdown = clickIndicatorTypeDropdown;

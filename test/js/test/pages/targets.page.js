@@ -124,7 +124,6 @@ function getLoPTarget() {
 function getNumTargetEvents() {
   clickTargetsTab;
   let val = $('input#id_target_frequency_num_periods').getValue();
-  util.dp('val='+val);
   return val;
 }
 
