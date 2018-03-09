@@ -379,12 +379,19 @@ class Widget(models.Model):
 
 
 class Dashboard(models.Model):
+    PUBLIC_ORG = 'org'
+    PUBLIC_ALL = 'all'
+
+    PUBLIC_CHOICES = (
+        (PUBLIC_ORG, 'Organization'),
+        (PUBLIC_ALL, 'All')
+    )
+
     user = models.ForeignKey(TolaUser, related_name='toladashboard')
     name = models.CharField(blank=True, null=True, max_length=255)
     widgets = models.ManyToManyField(Widget, blank=True)
     share = models.ManyToManyField(TolaUser, blank=True)
-    public_in_org = models.BooleanField(default=0)
-    public_all = models.BooleanField(default=0)
+    public = models.CharField(choices=PUBLIC_CHOICES, max_length=5, blank=True, null=True,)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
