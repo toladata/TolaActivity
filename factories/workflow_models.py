@@ -108,10 +108,20 @@ class TolaUser(DjangoModelFactory):
 class Dashboard(DjangoModelFactory):
     class Meta:
         model = DashboardM
-        django_get_or_create = ('user',)
 
-    user = SubFactory(User)
+    user = SubFactory(TolaUser)
     name = "My crazy Dashboard"
+
+    @post_generation
+    def share(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if type(extracted) is list:
+            # A list of shared users were passed in, use them
+            for shared_user in extracted:
+                self.share.add(shared_user)
 
 
 class Widget(DjangoModelFactory):

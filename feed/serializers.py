@@ -593,6 +593,7 @@ class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
 
 class DashboardSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
+    user = serializers.ReadOnlyField()
 
     class Meta:
         model = wfm.Dashboard
