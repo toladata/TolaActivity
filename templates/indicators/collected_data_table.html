@@ -31,7 +31,7 @@
                         <strong>{{ item.period }}</strong><br>
                         <small>{{ item.start_date_formatted|default_if_none:"" }} {% if item.start_date %} - {% endif %} {{ item.end_date_formatted|default_if_none:"" }}</small>
                     </td>
-                    <td {% if item.collecteddata_set.count %} rowspan="{{ item.collecteddata_set.count }}" align="right" {% endif %}>
+                    <td {% if item.collecteddata_set.count %} rowspan="{{ item.collecteddata_set.count }}" {% endif %} align="right">
                         {{ item.target|floatformat:"-2" }}
                     </td>
                 {% endifchanged %}
