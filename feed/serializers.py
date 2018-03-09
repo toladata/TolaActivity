@@ -591,24 +591,9 @@ class PortfolioSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
 
 
-class PublicDashboardSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.ReadOnlyField()
-
-    class Meta:
-        model = wfm.Dashboard
-        fields = '__all__'
-
-
-class PublicOrgDashboardSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.ReadOnlyField()
-
-    class Meta:
-        model = wfm.Dashboard
-        fields = '__all__'
-
-
 class DashboardSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
+    user = serializers.ReadOnlyField()
 
     class Meta:
         model = wfm.Dashboard
