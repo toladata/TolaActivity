@@ -1340,31 +1340,6 @@ class PortfolioViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PortfolioSerializer
 
 
-class PublicDashboardViewSet(viewsets.ModelViewSet):
-
-    queryset = wfm.Dashboard.objects.all().filter(public_all=True)
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    serializer_class = serializers.PublicDashboardSerializer
-
-
-class PublicOrgDashboardViewSet(viewsets.ModelViewSet):
-
-    def list(self, request):
-        # Use this queryset or the django-filters lib will not work
-        queryset = self.filter_queryset(self.get_queryset())
-        if not request.user.is_superuser:
-            organization_id = wfm.TolaUser.objects. \
-                values_list('organization_id', flat=True). \
-                get(user=request.user)
-            queryset = queryset.filter(organization_id=organization_id)
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    queryset = wfm.Dashboard.objects.all().filter(public_in_org=True)
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    serializer_class = serializers.PublicOrgDashboardSerializer
-
-
 class DashboardViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
