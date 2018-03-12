@@ -271,13 +271,169 @@
                 </fieldset>
             </div>
             <div role="tabpanel" class="tab-pane" id="dataAcquisitionTab">
-                Data Acquisition
+                <fieldset>
+
+                    <div class="form-group row" id="div_id_means_of_verification">
+                        <label for="id_means_of_verification" class="col-sm-4 col-form-label" align="right">{{ form.means_of_verification.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.means_of_verification class+="form-control" %}
+                            {% if form.means_of_verification.help_text %}
+                                <small class="form-text text-muted">{{ form.means_of_verification.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_data_collection_method">
+                        <label for="id_data_collection_method" class="col-sm-4 col-form-label" align="right">{{ form.data_collection_method.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.data_collection_method class+="form-control" %}
+                            {% if form.data_collection_method.help_text %}
+                                <small class="form-text text-muted">{{ form.data_collection_method.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_data_collection_frequency">
+                        <label for="id_data_collection_frequency" class="col-sm-4 col-form-label" align="right">{{ form.data_collection_frequency.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.data_collection_frequency class+="form-control" %}
+                            {% if form.data_collection_frequency.help_text %}
+                                <small class="form-text text-muted">{{ form.data_collection_frequency.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_data_points">
+                        <label for="id_data_points" class="col-sm-4 col-form-label" align="right">{{ form.data_points.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.data_points class+="form-control" %}
+                            {% if form.data_points.help_text %}
+                                <small class="form-text text-muted">{{ form.data_points.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_responsible_person">
+                        <label for="id_responsible_person" class="col-sm-4 col-form-label" align="right">{{ form.responsible_person.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.responsible_person class+="form-control" %}
+                            {% if form.responsible_person.help_text %}
+                                <small class="form-text text-muted">{{ form.responsible_person.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </fieldset>
             </div>
             <div role="tabpanel" class="tab-pane" id="analysisReportingTab">
-                Analysis and reporting2
+                <br>
+                <fieldset>
+                    <div class="form-group row" id="div_id_method_of_analysis">
+                        <label for="id_method_of_analysis" class="col-sm-4 col-form-label" align="right">{{ form.method_of_analysis.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.method_of_analysis class+="form-control" %}
+                            {% if form.method_of_analysis.help_text %}
+                                <small class="form-text text-muted">{{ form.method_of_analysis.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_information_use">
+                        <label for="id_information_use" class="col-sm-4 col-form-label" align="right">{{ form.information_use.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.information_use class+="form-control" %}
+                            {% if form.information_use.help_text %}
+                                <small class="form-text text-muted">{{ form.information_use.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_reporting_frequency">
+                        <label for="id_reporting_frequency" class="col-sm-4 col-form-label" align="right">{{ form.reporting_frequency.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.reporting_frequency class+="form-control" %}
+                            {% if form.reporting_frequency.help_text %}
+                                <small class="form-text text-muted">{{ form.reporting_frequency.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_quality_assurance">
+                        <label for="id_quality_assurance" class="col-sm-4 col-form-label" align="right">{{ form.quality_assurance.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.quality_assurance class+="form-control" %}
+                            {% if form.quality_assurance.help_text %}
+                                <small class="form-text text-muted">{{ form.quality_assurance.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_data_issues">
+                        <label for="id_data_issues" class="col-sm-4 col-form-label" align="right">{{ form.data_issues.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.data_issues class+="form-control" %}
+                            {% if form.data_issues.help_text %}
+                                <small class="form-text text-muted">{{ form.data_issues.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_indicator_changes">
+                        <label for="id_indicator_changes" class="col-sm-4 col-form-label" align="right">{{ form.indicator_changes.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.indicator_changes class+="form-control" %}
+                            {% if form.indicator_changes.help_text %}
+                                <small class="form-text text-muted">{{ form.indicator_changes.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_comments">
+                        <label for="id_comments" class="col-sm-4 col-form-label" align="right">{{ form.comments.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.comments class+="form-control" %}
+                            {% if form.comments.help_text %}
+                                <small class="form-text text-muted">{{ form.comments.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_notes">
+                        <label for="id_notes" class="col-sm-4 col-form-label" align="right">{{ form.notes.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.notes class+="form-control" %}
+                            {% if form.notes.help_text %}
+                                <small class="form-text text-muted">{{ form.notes.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </fieldset>
             </div>
             <div role="tabpanel" class="tab-pane" id="approvalTab">
-                Approval
+                <br>
+                <fieldset>
+
+                    <div class="form-group row" id="div_id_approval_submitted_by">
+                        <label for="id_approval_submitted_by" class="col-sm-4 col-form-label" align="right">{{ form.approval_submitted_by.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.approval_submitted_by class+="form-control" %}
+                            {% if form.approval_submitted_by.help_text %}
+                                <small class="form-text text-muted">{{ form.approval_submitted_by.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="div_id_approved_by">
+                        <label for="id_approved_by" class="col-sm-4 col-form-label" align="right">{{ form.approved_by.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.approved_by class+="form-control" %}
+                            {% if form.approved_by.help_text %}
+                                <small class="form-text text-muted">{{ form.approved_by.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </fieldset>
             </div>
         </div>
 
