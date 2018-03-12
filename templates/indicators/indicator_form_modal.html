@@ -1,408 +1,48 @@
 {% load widget_tweaks %}
+<script type="text/javascript">
+    //Searchable select option for service indicator
+    $(document).ready(function() {
+        /* add select2 js library to the indicator select box */
+        $("#id_program").select2().on("select2:selecting select2:unselecting", function(e) {
+            e.preventDefault();
+        });
+        $("#id_strategic_objectives").select2();
+
+        var targetsonly = `{{targetsonly|safe}}`;
+        var targetsactive = `{{targetsactive|safe}}`;
+        if (targetsonly == 'True') {
+            // $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $('a[href="#targets"][data-toggle="tab"]').tab('show');
+                // $('a[href!="#targets"][data-toggle="tab"]').hide();
+                // $('a[href="#targets"][data-toggle="tab"]').hide();
+                $('ul.nav.nav-tabs').hide();
+                $('#indicator_modal_header').html('<a id="backToCollectedDataLink" href="/indicators/periodic_target_generate/' + $("#id_indicator").val() + '/" style="font-size: 21px;"><< Back to Collected Data</a>');
+                // e.target // newly activated tab
+                // e.relatedTarget // previous active tab
+            // });
+        }
+
+        if (targetsactive == 'True') {
+            $('a[href="#targets"][data-toggle="tab"]').tab('show');
+            $("#indicator_modal_body").data("targetsactive", "true");
+        }
+    });
+</script>
+
 <div id="numDataPoints" style="display: none;">{{ object.collecteddata_set.all.count }}</div>
 <div id="initialTargetFrequencyValue" style="display:none;">{{ object.target_frequency }}</div>
 
-<form action="{% url 'indicator_update' indicator.id %}" id="indicator_update_form" class="form-horizontal" method="post" novalidate>
-    {% csrf_token %}
-
-    {% for hidden_field in form.hidden_fields %}
-        {{ hidden_field }}
-    {% endfor %}
-
-    <div class="modal-header" style="border-bottom:none;">
-        <div id="indicator_modal_header" class="modal-title">
-            <span id = "modalmessages"></span>
-            <h5 style="color:#94979c;">
-                {% if indicator.levels %}
-                    {{ indicator.levels }} indicator:
-                {% endif %}
-                {{ indicator.name|truncatechars:300 }}
-            </h5>
-        </div>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<div class="modal-header" style="border-bottom:none;">
+    <div id="indicator_modal_header" class="modal-title">
+        <span id = "modalmessages"></span>
+        <h5 style="color:#94979c;">
+            {% if indicator.levels %}
+                {{ indicator.levels }} indicator:
+            {% endif %}
+            {{ indicator.name|truncatechars:300 }}
+        </h5>
     </div>
-    <div class="modal-body" id="indicator_modal_body">
-        <script type="text/javascript">
-            //Searchable select option for service indicator
-            $(document).ready(function() {
-                /* add select2 js library to the indicator select box */
-                $("#id_program").select2().on("select2:selecting select2:unselecting", function(e) {
-                    e.preventDefault();
-                });
-                $("#id_strategic_objectives").select2();
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+</div>
 
-                var targetsonly = `{{targetsonly|safe}}`;
-                var targetsactive = `{{targetsactive|safe}}`;
-                if (targetsonly == 'True') {
-                    // $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                        $('a[href="#targets"][data-toggle="tab"]').tab('show');
-                        // $('a[href!="#targets"][data-toggle="tab"]').hide();
-                        // $('a[href="#targets"][data-toggle="tab"]').hide();
-                        $('ul.nav.nav-tabs').hide();
-                        $('#indicator_modal_header').html('<a id="backToCollectedDataLink" href="/indicators/periodic_target_generate/' + $("#id_indicator").val() + '/" style="font-size: 21px;"><< Back to Collected Data</a>');
-                        // e.target // newly activated tab
-                        // e.relatedTarget // previous active tab
-                    // });
-                }
-
-                if (targetsactive == 'True') {
-                    $('a[href="#targets"][data-toggle="tab"]').tab('show');
-                    $("#indicator_modal_body").data("targetsactive", "true");
-                }
-            });
-        </script>
-
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" href="#summaryTab" role="tab" data-toggle="tab">Summary</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#performanceTab" role="tab" data-toggle="tab">Performance</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#targetsTab" role="tab" data-toggle="tab">Targets</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#dataAcquisitionTab" role="tab" data-toggle="tab">Data Acquisition</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#analysisReportingTab" role="tab" data-toggle="tab">Analysis and Reporting</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#approvalTab" role="tab" data-toggle="tab">Approval</a>
-            </li>
-        </ul>
-
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="summaryTab">
-                <br>
-                <fieldset>
-                    <div class="form-group row" id="div_id_program">
-                        <label for="id_program" class="col-sm-4 col-form-label" align="right">{{ form.program.label }}</label>
-                        <div class="col-sm-7">
-                            {% render_field form.program class+="form-control" %}
-                        </div>
-                        {% if form.program.help_text %}
-                            <small class="form-text text-muted">{{ form.program.help_text }}</small>
-                        {% endif %}
-                    </div>
-
-                    <div class="form-group row" id="div_id_sector">
-                        <label for="id_sector" class="col-sm-4 col-form-label" align="right">{{ form.sector.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.sector class+="form-control" %}
-                            {% if form.sector.help_text %}
-                                <small class="form-text text-muted">{{ form.sector.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_objectives">
-                        <label for="id_objectives" class="col-sm-4 col-form-label" align="right">{{ form.objectives.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.objectives class+="form-control" %}
-                            {% if form.objectives.help_text %}
-                                <small class="form-text text-muted">{{ form.objectives.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_strategic_objectives">
-                        <label for="id_strategic_objectives" class="col-sm-4 col-form-label" align="right">{{ form.strategic_objectives.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.strategic_objectives class+="form-control" %}
-                            {% if form.strategic_objectives.help_text %}
-                                <small class="form-text text-muted">{{ form.strategic_objectives.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                </fieldset>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="performanceTab">
-                <br>
-                <fieldset>
-                    <div class="form-group row" id="div_id_name">
-                        <label for="id_name" class="col-sm-4 col-form-label" align="right">{{ form.name.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.name class+="form-control" %}
-                            {% if form.name.help_text %}
-                                <small class="form-text text-muted">{{ form.name.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_level">
-                        <label for="id_level" class="col-sm-4 col-form-label" align="right">{{ form.level.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.level class+="form-control" %}
-                            {% if form.level.help_text %}
-                                <small class="form-text text-muted">{{ form.level.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_number">
-                        <label for="id_number" class="col-sm-4 col-form-label" align="right">{{ form.number.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.number class+="form-control" %}
-                            {% if form.number.help_text %}
-                                <small class="form-text text-muted">{{ form.number.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_source">
-                        <label for="id_source" class="col-sm-4 col-form-label" align="right">{{ form.source.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.source class+="form-control" %}
-                            {% if form.source.help_text %}
-                                <small class="form-text text-muted">{{ form.source.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_definition">
-                        <label for="id_definition" class="col-sm-4 col-form-label" align="right">{{ form.definition.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.definition class+="form-control" %}
-                            {% if form.definition.help_text %}
-                                <small class="form-text text-muted">{{ form.definition.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_justification">
-                        <label for="id_justification" class="col-sm-4 col-form-label" align="right">{{ form.justification.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.justification class+="form-control" %}
-                            {% if form.justification.help_text %}
-                                <small class="form-text text-muted">{{ form.justification.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_disaggregation">
-                        <label for="id_disaggregation" class="col-sm-4 col-form-label" align="right">{{ form.disaggregation.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.disaggregation class+="form-control" %}
-                            {% if form.disaggregation.help_text %}
-                                <small class="form-text text-muted">{{ form.disaggregation.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_indicator_type">
-                        <label for="id_indicator_type" class="col-sm-4 col-form-label" align="right">{{ form.indicator_type.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.indicator_type class+="form-control" %}
-                            {% if form.indicator_type.help_text %}
-                                <small class="form-text text-muted">{{ form.indicator_type.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_key_performance_indicator">
-                        <label for="id_key_performance_indicator" class="col-sm-4 col-form-label" align="right"></label>
-                        <div class="col-sm-7">
-                            {{ form.key_performance_indicator }}
-                            <label for="id_key_performance_indicator" class="col-form-label">{{ form.key_performance_indicator.label }}</label>
-                            {% if form.key_performance_indicator.help_text %}
-                                <small class="form-text text-muted">{{ form.key_performance_indicator.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                </fieldset>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="targetsTab">
-                <br>
-                <fieldset>
-                    <div class="form-group row" id="div_id_unit_of_measure">
-                        <label for="id_unit_of_measure" class="col-sm-4 col-form-label" align="right">{{ form.unit_of_measure.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.unit_of_measure class+="form-control" %}
-                            {% if form.unit_of_measure.help_text %}
-                                <small class="form-text text-muted">{{ form.unit_of_measure.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_lop_target">
-                        <label for="id_lop_target" class="col-sm-4 col-form-label" align="right">{{ form.lop_target.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.lop_target class+="form-control" %}
-                            {% if form.lop_target.help_text %}
-                                <small class="form-text text-muted">{{ form.lop_target.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_rationale_for_target">
-                        <label for="id_rationale_for_target" class="col-sm-4 col-form-label" align="right">{{ form.rationale_for_target.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.rationale_for_target class+="form-control" %}
-                            {% if form.rationale_for_target.help_text %}
-                                <small class="form-text text-muted">{{ form.rationale_for_target.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_baseline">
-                        <label for="id_baseline" class="col-sm-4 col-form-label" align="right">{{ form.baseline.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.baseline class+="form-control" %}
-                            {{ form.baseline_na }} <label for="id_baseline_na" class="col-form-label"> {{ form.baseline_na.label}}</label>
-                            {% if form.baseline.help_text %}
-                                <small class="form-text text-muted">{{ form.baseline.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_target_frequency">
-                        <label for="id_target_frequency" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.target_frequency class+="form-control" %}
-                            {% if form.target_frequency.help_text %}
-                                <small class="form-text text-muted">{{ form.target_frequency.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_target_frequency_start">
-                        <label for="id_target_frequency_start" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_start.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.target_frequency_start class+="form-control" %}
-                            {% if form.target_frequency_start.help_text %}
-                                <small class="form-text text-muted">{{ form.target_frequency_start.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="div_id_target_frequency_custom">
-                        <label for="id_target_frequency_custom" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_custom.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.target_frequency_custom class+="form-control" %}
-                            {% if form.target_frequency_custom.help_text %}
-                                <small class="form-text text-muted">{{ form.target_frequency_custom.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-
-                    <div class="form-group row" id="div_id_target_frequency_num_periods">
-                        <label for="id_target_frequency_num_periods" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_num_periods.label }} </label>
-                        <div class="col-sm-7">
-                            {% render_field form.target_frequency_num_periods class+="form-control" %}
-                            {% if form.target_frequency_num_periods.help_text %}
-                                <small class="form-text text-muted">{{ form.target_frequency_num_periods.help_text }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div id="div_id_create_targets_btn" class="form-group row">
-                         <label for="id_create_targets_btn" class="col-sm-4 col-form-label"></label>
-                        <div class="col-sm-7">
-                            <button type="button" id="id_create_targets_btn" class="btn btn-sm btn-primary">Create targets</button>
-                            <button type="button" id="id_delete_targets_btn" class="btn btn-sm btn-link">Remove all targets</button>
-                        </div>
-                    </div>
-
-                    <div id="id_div_periodic_tables_placeholder">
-                        {% if periodic_targets and indicator.target_frequency != 1%}
-                            <div class="d-flex flex-column p-4" style="background-color: #F5F5F5; margin-left:-15px; margin-right:-15px;">
-                                <div class="offset-sm-1">
-                                    <h5>{{ indicator.get_target_frequency_label }} targets</h5>
-                                </div>
-
-                                <div id="periodic-targets-tablediv" class="offset-sm-1 col-sm-10">
-                                    <table class="table table-sm mb-0" id="periodic_targets_table">
-                                        <tbody>
-                                        {% for pt in periodic_targets %}
-                                            <tr id="{{pt.pk}}" data-collected-count="{{pt.num_data}}" class="periodic-target">
-                                                <td class="align-middle pr-0" style="width: 50px; text-align: center;">
-                                                    <a href="{% url 'pt_delete' pt.id %}" id="deleteLastPT" class="detelebtn" style="color: red; display:{% if forloop.last and indicator.target_frequency != 2 or indicator.target_frequency == 8 %} block {% else %}none{% endif %}">
-                                                        <i class="fas fa-times"></i>
-                                                    </a>
-                                                </td>
-
-                                                <td class="align-middle pr-0">
-                                                    {% if indicator.target_frequency == 8 %}
-                                                        <input type="text" name="{{ pt.period }}" value="{{ pt.period }}" class="form-control input-text">
-                                                        <span style="margin:0px;" class="help-block"> </span>
-                                                    {% else %}
-                                                        <div style="line-height:1;"><strong>{{ pt.period }}</strong></div>
-                                                        <div style="line-height:1; margin-top:3px;">{{ pt.start_date_formatted|default_if_none:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date_formatted|default_if_none:'' }}</div>
-                                                    {% endif %}
-                                                </td>
-
-                                                <td class="align-middle" align="right" width="150px">
-                                                    <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target|floatformat:"-2" }}" data-start-date="{{pt.start_date|date:"M d, Y"|default:''}}" data-end-date="{{pt.end_date|date:"M d, Y"|default:''}}" placeholder="Enter target" class="form-control input-value">
-                                                    <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
-                                                </td>
-                                            </tr>
-                                            {% if forloop.last %}
-                                                <tr id="pt_sum_targets">
-                                                    <td class="pt-delete-row"> </td>
-                                                    <td align="left" style="padding-left:0px; border:none; vertical-align: middle;">
-                                                        <strong>Sum of targets</strong>
-                                                    </td>
-                                                    <td align="right" style="border:none; vertical-align: middle;">
-                                                        <div style="margin: 5px 10px;">
-                                                            <strong><span id="id_span_targets_sum">{{targets_sum|floatformat:"-2"}}</span></strong>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                        {% endfor %}
-                                        <tr style="background-color:#F5F5F5">
-                                            <td class="pt-delete-row"> </td>
-                                            <td align="left" class="align-middle">
-                                                <strong>Life of Program (LoP) target</strong>
-                                            </td>
-                                            <td align="right" class="align-middle">
-                                                <div style="margin: 5px 10px;">
-                                                    <strong>{{indicator.lop_target|floatformat:"-2"}}</strong>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr style="background-color:#F5F5F5">
-                                                <td colspan="3" style="color:red; padding: 0px" id="id_pt_errors"></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                                <div class="offset-sm-1">
-                                    {% if indicator.target_frequency != 2 %}
-                                        <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="btn btn-link"><i class="fas fa-plus"></i> Add a target</a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-
-                </fieldset>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="dataAcquisitionTab">
-                Data Acquisition
-            </div>
-            <div role="tabpanel" class="tab-pane" id="analysisReportingTab">
-                Analysis and reporting2
-            </div>
-            <div role="tabpanel" class="tab-pane" id="approvalTab">
-                Approval
-            </div>
-        </div>
-
-    </div> <!-- modal body -->
-    <div class="modal-footer" style="background-color: #d7d7d7; border-top:1px solid #f5f5f5; padding: 19px 6px 19px 15px;">
-        <div class="pull-left" style="margin-left:5px">
-            <!-- <input type="submit" class="btn btn-primary" value="Save changes"> -->
-            <input type="submit" name="submit" value="Save changes" class="btn btn-primary btn-default" id="submit-id-submit">
-            <input type="reset" style="background-color:#d7d7d7; border-color:#B8BABD; color:#888888" class="btn btn-default" value="Reset">
-        </div>
-        <div class="text-muted">{% include "form_guidance.html" %}</div>
-    </div>
-</form>
+{% include 'indicators/indicator_form_helper.html' %}
