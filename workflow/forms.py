@@ -297,7 +297,7 @@ class ProjectAgreementForm(forms.ModelForm):
                                           <!-- Table -->
                                           <table class="table">
                                             <tr>
-                                            <th>Targeted</th>
+                                            <th>Target</th>
                                             <th>Indicator</th>
                                             </tr>
                                             {% for item in getQuantitative %}
@@ -929,7 +929,7 @@ class ProjectCompleteForm(forms.ModelForm):
                                           <!-- Table -->
                                           <table class="table">
                                             <tr>
-                                            <th>Targeted</th>
+                                            <th>Target</th>
                                             <th>Achieved</th>
                                             <th>Indicator</th>
                                             </tr>
@@ -1185,15 +1185,14 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                     {% if getQuantitative %}
                                         <table class="table">
                                             <tr>
-                                                <th>Targeted</th>
+                                                <th>Target</th>
                                                 <th>Achieved</th>
                                                 <th>Indicator</th>
                                             </tr>
                                             {% for item in getQuantitative %}
                                                 <tr>
-                                                    <td>{{ item.targeted}}</td>
+                                                    <td>{{ item.target}}</td>
                                                     <td>{{ item.achieved}}</td>
-                                                    <td>{{ item.description}}</td>
                                                     <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
                                                 </tr>
                                             {% endfor %}
