@@ -291,7 +291,7 @@ class ProjectAgreementForm(forms.ModelForm):
                             '',
                             HTML("""
                                 <div class='panel panel-default'>
-                                    <div class='panel-heading'>Contributing to Indicator(s)</div>
+                                    <div class='panel-heading'>Related indicators</div>
                                     {% if getQuantitative %}
                                         <table class="table">
                                             {% for item in getQuantitative %}
@@ -917,7 +917,7 @@ class ProjectCompleteForm(forms.ModelForm):
                             '',
                              HTML("""
                                 <div class='panel panel-default'>
-                                    <div class='panel-heading'>Contributing to indicator(s)</div>
+                                    <div class='panel-heading'>Related indicators</div>
                                     {% if getQuantitative %}
                                         <table class="table">
                                         {% for item in getQuantitative %}
@@ -1168,7 +1168,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                         Div(
                              HTML("""
                                 <div class='panel panel-default'>
-                                    <div class='panel-heading'>Contributing to indicator(s)</div>
+                                    <div class='panel-heading'>Related indicators</div>
                                     {% if getQuantitative %}
                                         <table class="table">
                                             {% for item in getQuantitative %}
