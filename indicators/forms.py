@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse_lazy
 from indicators.models import Indicator, PeriodicTarget, CollectedData, Objective, StrategicObjective, TolaTable, DisaggregationType
-from workflow.models import Program, SiteProfile, Documentation, ProjectAgreement, TolaUser
+from workflow.models import Program, SiteProfile, Documentation, ProjectComplete, TolaUser
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
@@ -287,7 +287,7 @@ class CollectedDataForm(forms.ModelForm):
 
             ),
             Fieldset('Evidence',
-                'agreement', 'evidence','tola_table','update_count_tola_table',
+                'complete', 'evidence','tola_table','update_count_tola_table',
                 HTML("""<a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>"""),
 
             ),
@@ -403,8 +403,8 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['evidence'].queryset = Documentation.objects.filter(program=self.program)
 
         #override the program queryset to use request.user for country
-        self.fields['agreement'].queryset = ProjectAgreement.objects.filter(program=self.program)
-        self.fields['agreement'].label = "Project"
+        self.fields['complete'].queryset = ProjectComplete.objects.filter(program=self.program)
+        self.fields['complete'].label = "Project"
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)

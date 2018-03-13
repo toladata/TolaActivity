@@ -289,33 +289,22 @@ class ProjectAgreementForm(forms.ModelForm):
                         '',
                         Div(
                             '',
-                             HTML("""
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator</div>
-                                      {% if getQuantitative %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Targeted</th>
-                                            <th>Indicator</th>
-                                            <th>View</th>
-                                            </tr>
+                            HTML("""
+                                <div class='panel panel-default'>
+                                    <div class='panel-heading'>Related indicators</div>
+                                    {% if getQuantitative %}
+                                        <table class="table">
                                             {% for item in getQuantitative %}
-                                            <tr>
-                                                <td>{{ item.periodic_target|default:""}}</td>
-                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/?redirect_uri={{request.path}}#me' data-target="#myModal">Delete</a>
-                                            </tr>
+                                                {% ifchanged item.indicator.id %}
+                                                    <tr>
+                                                        <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
+                                                    </tr>
+                                                {% endifchanged %}
                                             {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ pk }}">Add Quantitative Outputs</a>
-                                      </div>
-                                    </div>
-                                     """),
-
+                                        </table>
+                                    {% endif %}
+                                </div>
+                            """),
                             'capacity',
                         ),
                     ),
@@ -927,33 +916,21 @@ class ProjectCompleteForm(forms.ModelForm):
                         Div(
                             '',
                              HTML("""
-                                    <div class='panel panel-default'>
-                                      <!-- Default panel contents -->
-                                      <div class='panel-heading'>Indicator</div>
-                                      {% if getQuantitative %}
-                                          <!-- Table -->
-                                          <table class="table">
-                                            <tr>
-                                            <th>Targeted</th>
-                                            <th>Achieved</th>
-                                            <th>Indicator</th>
-                                            <th>View</th>
-                                            </tr>
-                                            {% for item in getQuantitative %}
-                                            <tr>
-                                                <td>{{ item.periodic_target|default:""}}</td>
-                                                <td>{{ item.achieved}}</td>
-                                                <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/?is_it_project_complete_form=true'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/?redirect_uri={{request.path}}#impact' data-target="#myModal">Delete</a>
-                                            </tr>
-                                            {% endfor %}
-                                          </table>
-                                      {% endif %}
-                                      <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}/?is_it_project_complete_form=true">Add Quantitative Outputs</a>
-                                      </div>
-                                    </div>
-                             """),
+                                <div class='panel panel-default'>
+                                    <div class='panel-heading'>Related indicators</div>
+                                    {% if getQuantitative %}
+                                        <table class="table">
+                                        {% for item in getQuantitative %}
+                                            {% ifchanged item.indicator.id %}
+                                                <tr>
+                                                    <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
+                                                </tr>
+                                            {% endifchanged %}
+                                        {% endfor %}
+                                        </table>
+                                    {% endif %}
+                                </div>
+                            """),
                         ),
                     ),
                     Fieldset(
@@ -1191,29 +1168,18 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                         Div(
                              HTML("""
                                 <div class='panel panel-default'>
-                                    <div class='panel-heading'>Indicator</div>
+                                    <div class='panel-heading'>Related indicators</div>
                                     {% if getQuantitative %}
                                         <table class="table">
-                                            <tr>
-                                                <th>Targeted</th>
-                                                <th>Achieved</th>
-                                                <th>Indicator</th>
-                                                <th>View</th>
-                                            </tr>
                                             {% for item in getQuantitative %}
-                                                <tr>
-                                                    <td>{{ item.targeted}}</td>
-                                                    <td>{{ item.achieved}}</td>
-                                                    <td>{{ item.description}}</td>
-                                                    <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                    <td><a class="output" data-toggle="modal" data-target="#myModal" href='/workflow/quantitative_update/{{ item.id }}/'>Edit</a> | <a class="output" href='/workflow/quantitative_delete/{{ item.id }}/' data-target="#myModal">Delete</a>
-                                                </tr>
+                                                {% ifchanged item.indicator.id %}
+                                                    <tr>
+                                                        <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
+                                                    </tr>
+                                                {% endifchanged %}
                                             {% endfor %}
                                         </table>
                                     {% endif %}
-                                    <div class="panel-footer">
-                                        <a class="output" data-toggle="modal" data-target="#myModal" href="/workflow/quantitative_add/{{ id }}/?is_it_project_complete_form=true">Add Indicators</a>
-                                    </div>
                                 </div>
                             """),
                         ),

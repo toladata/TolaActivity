@@ -12,6 +12,13 @@ $( document )
          $('#ajaxloading').hide();
     });
 
+if (!Date.prototype.toISODate) {
+  Date.prototype.toISODate = function() {
+    return this.getFullYear() + '-' +
+           ('0'+ (this.getMonth()+1)).slice(-2) + '-' +
+           ('0'+ this.getDate()).slice(-2);
+  }
+}
 function isDate(dateVal) {
     /*
     var pattern = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -58,8 +65,12 @@ function formatDate(dateString, day=0) {
     }
     try {
         var dateval = new Date(dateString);
-        // Add the local timezone offset
-        // dateval.setMinutes(dateval.getMinutes() + dateval.getTimezoneOffset());
+        tz = dateval.getTimezoneOffset();
+        hrs = dateval.getHours();
+        if (hrs > 0) {
+            // alert("offsetting timezone tz=" + tz + " hrs = " + hrs);
+            dateval.setMinutes(dateval.getMinutes() + tz);
+        }
         var month = months[(dateval.getMonth() + 1)];
         var ret = month.concat(' ').concat(day == 0 ? dateval.getDate() : day).concat(', ').concat(dateval.getFullYear());
         return ret;
