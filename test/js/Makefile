@@ -11,6 +11,7 @@ help:
 
 allure: allure-results
 	@./node_modules/.bin/allure generate ./allure-results --clean
+	@./node_modules/.bin/allure open
 
 
 allure-results:
@@ -18,7 +19,7 @@ allure-results:
 
 
 clean:
-	@rm -fvr allure-report doc errorShots log node_modules *server.log
+	@rm -fvr allure-re* doc errorShots log node_modules *server.log
 
 
 doc:
