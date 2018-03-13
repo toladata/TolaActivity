@@ -1191,7 +1191,7 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                                             </tr>
                                             {% for item in getQuantitative %}
                                                 <tr>
-                                                    <td>{{ item.target}}</td>
+                                                    <td>{{ item.periodic_target}}</td>
                                                     <td>{{ item.achieved}}</td>
                                                     <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
                                                 </tr>
