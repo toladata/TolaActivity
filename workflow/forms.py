@@ -917,7 +917,7 @@ class ProjectCompleteForm(forms.ModelForm):
                             '',
                              HTML("""
                                 <div class='panel panel-default'>
-                                    <div class='panel-heading'>Indicator</div>
+                                    <div class='panel-heading'>Contributing to indicator(s)</div>
                                     {% if getQuantitative %}
                                         <table class="table">
                                         {% for item in getQuantitative %}
@@ -1168,20 +1168,15 @@ class ProjectCompleteSimpleForm(forms.ModelForm):
                         Div(
                              HTML("""
                                 <div class='panel panel-default'>
-                                    <div class='panel-heading'>Indicator</div>
+                                    <div class='panel-heading'>Contributing to indicator(s)</div>
                                     {% if getQuantitative %}
                                         <table class="table">
-                                            <tr>
-                                                <th>Target</th>
-                                                <th>Achieved</th>
-                                                <th>Indicator</th>
-                                            </tr>
                                             {% for item in getQuantitative %}
-                                                <tr>
-                                                    <td>{{ item.periodic_target}}</td>
-                                                    <td>{{ item.achieved}}</td>
-                                                    <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
-                                                </tr>
+                                                {% ifchanged item.indicator.id %}
+                                                    <tr>
+                                                        <td><a href="/indicators/indicator_update/{{ item.indicator_id }}">{{ item.indicator}}<a/></td>
+                                                    </tr>
+                                                {% endifchanged %}
                                             {% endfor %}
                                         </table>
                                     {% endif %}
