@@ -33,23 +33,19 @@
             <div role="tabpanel" class="tab-pane active" id="summaryTab">
                 <br>
                 <fieldset>
-                    <div class="form-group row" id="div_id_program">
+                    <div class="form-row mb-2" id="div_id_program">
                         <label for="id_program" class="col-sm-4 col-form-label" align="right">{{ form.program.label }}</label>
                         <div class="col-sm-7">
                             {% render_field form.program class+="form-control" %}
+                            <small class="form-text text-muted">hello {{ form.program.help_text }}</small>
                         </div>
-                        {% if form.program.help_text %}
-                            <small class="form-text text-muted">{{ form.program.help_text }}</small>
-                        {% endif %}
                     </div>
 
-                    <div class="form-group row" id="div_id_sector">
+                    <div class="form-row mb-2" id="div_id_sector">
                         <label for="id_sector" class="col-sm-4 col-form-label" align="right">{{ form.sector.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.sector class+="form-control" %}
-                            {% if form.sector.help_text %}
-                                <small class="form-text text-muted">{{ form.sector.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.sector.help_text }}</small>
                         </div>
                     </div>
 
@@ -57,9 +53,7 @@
                         <label for="id_objectives" class="col-sm-4 col-form-label" align="right">{{ form.objectives.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.objectives class+="form-control" %}
-                            {% if form.objectives.help_text %}
-                                <small class="form-text text-muted">{{ form.objectives.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.objectives.help_text }}</small>
                         </div>
                     </div>
 
@@ -67,9 +61,7 @@
                         <label for="id_strategic_objectives" class="col-sm-4 col-form-label" align="right">{{ form.strategic_objectives.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.strategic_objectives class+="form-control" %}
-                            {% if form.strategic_objectives.help_text %}
-                                <small class="form-text text-muted">{{ form.strategic_objectives.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.strategic_objectives.help_text }}</small>
                         </div>
                     </div>
 
@@ -82,9 +74,7 @@
                         <label for="id_name" class="col-sm-4 col-form-label" align="right">{{ form.name.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.name class+="form-control" %}
-                            {% if form.name.help_text %}
-                                <small class="form-text text-muted">{{ form.name.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.name.help_text }}</small>
                         </div>
                     </div>
 
@@ -92,9 +82,7 @@
                         <label for="id_level" class="col-sm-4 col-form-label" align="right">{{ form.level.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.level class+="form-control" %}
-                            {% if form.level.help_text %}
-                                <small class="form-text text-muted">{{ form.level.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.level.help_text }}</small>
                         </div>
                     </div>
 
@@ -102,9 +90,7 @@
                         <label for="id_number" class="col-sm-4 col-form-label" align="right">{{ form.number.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.number class+="form-control" %}
-                            {% if form.number.help_text %}
-                                <small class="form-text text-muted">{{ form.number.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.number.help_text }}</small>
                         </div>
                     </div>
 
@@ -112,9 +98,7 @@
                         <label for="id_source" class="col-sm-4 col-form-label" align="right">{{ form.source.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.source class+="form-control" %}
-                            {% if form.source.help_text %}
-                                <small class="form-text text-muted">{{ form.source.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.source.help_text }}</small>
                         </div>
                     </div>
 
@@ -122,9 +106,7 @@
                         <label for="id_definition" class="col-sm-4 col-form-label" align="right">{{ form.definition.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.definition class+="form-control" %}
-                            {% if form.definition.help_text %}
-                                <small class="form-text text-muted">{{ form.definition.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.definition.help_text }}</small>
                         </div>
                     </div>
 
@@ -132,9 +114,7 @@
                         <label for="id_justification" class="col-sm-4 col-form-label" align="right">{{ form.justification.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.justification class+="form-control" %}
-                            {% if form.justification.help_text %}
-                                <small class="form-text text-muted">{{ form.justification.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.justification.help_text }}</small>
                         </div>
                     </div>
 
@@ -142,9 +122,7 @@
                         <label for="id_disaggregation" class="col-sm-4 col-form-label" align="right">{{ form.disaggregation.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.disaggregation class+="form-control" %}
-                            {% if form.disaggregation.help_text %}
-                                <small class="form-text text-muted">{{ form.disaggregation.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.disaggregation.help_text }}</small>
                         </div>
                     </div>
 
@@ -152,9 +130,7 @@
                         <label for="id_indicator_type" class="col-sm-4 col-form-label" align="right">{{ form.indicator_type.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.indicator_type class+="form-control" %}
-                            {% if form.indicator_type.help_text %}
-                                <small class="form-text text-muted">{{ form.indicator_type.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.indicator_type.help_text }}</small>
                         </div>
                     </div>
 
@@ -163,9 +139,7 @@
                         <div class="col-sm-7">
                             {{ form.key_performance_indicator }}
                             <label for="id_key_performance_indicator" class="col-form-label">{{ form.key_performance_indicator.label }}</label>
-                            {% if form.key_performance_indicator.help_text %}
-                                <small class="form-text text-muted">{{ form.key_performance_indicator.help_text }}</small>
-                            {% endif %}
+                            <small class="form-text text-muted">{{ form.key_performance_indicator.help_text }}</small>
                         </div>
                     </div>
 
