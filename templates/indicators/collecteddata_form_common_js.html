@@ -58,7 +58,7 @@
     function validatePeriodicTarget(onlyPeriodic = false) {
         if (setPeriodicTargetValue() == false) {
             // $("#id_periodic_target").val('');
-            if ($("#id_periodic_target option").size() <= 1) {
+            if ($("#id_periodic_target option").length <= 1) {
                 $("#hint_id_periodic_target").html("<small>Targets are not set up for this indicator. <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>Start by selecting a target frequency.</strong></a></small>");
             } else {
                 if ($("#id_date_collected").val().length > 0){
