@@ -30,6 +30,22 @@ body {
     content: none;
   }
 }
+/* do not change border color to green when form is validated */
+.was-validated .form-control:valid {
+  border:1px solid #ced4da;
+}
+
+/* keep the blue color shadow around form elements even if form is validated successfully */
+.form-control:focus,
+.was-validated .form-control.is-valid:focus,
+.was-validated .form-control:valid:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
 /*
 *,
 *:focus,
