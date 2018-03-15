@@ -92,7 +92,7 @@ $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
     if (hash) {
-    $('.nav-tabs a[href='+hash+']').tab('show');
+        $('.nav-tabs a[href='+hash+']').tab('show');
     }
 
     // Change hash for page-reload

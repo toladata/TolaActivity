@@ -30,6 +30,10 @@ body {
     content: none;
   }
 }
+
+.has-error {
+  color: #dc3545;
+}
 /* do not change border color to green when form is validated */
 .was-validated .form-control:valid {
   border:1px solid #ced4da;
@@ -46,22 +50,7 @@ body {
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-/*
-*,
-*:focus,
-*:target,
-a:focus,
-input:focus,
-button:focus,
-.btn:focus,
-.btn:active:focus,
-.btn.active:focus {
-  outline: none;
-}
 
-.breadcrumb {
-  margin-top: 10px;
-}
 
 */
 .navbar-tola {
@@ -70,28 +59,7 @@ button:focus,
   border: none;
 }
 
-/*
-.navbar-tola .navbar-nav > li > a {
-  color: #fff;
-}
-*/
 
-/*
-.navbar-tola .navbar-nav > li > a:hover,
-.navbar-tola .navbar-nav > li > a:focus,
-.navbar-tola .navbar-nav > li.active > a,
-.navbar-tola .navbar-nav > li.active > a:hover,
-.navbar-tola .navbar-nav > li.active > a:focus,
-.navbar-tola .navbar-nav .dropdown.open a.dropdown-toggle {
-  color: #fff;
-  background-color: rgba(0, 0, 0, .15);
-}
-
-.navbar-tola .navbar-nav .navbar-collapse {
-    clear: both;
-    float: none;
-}
-*/
 
 /* - End Bootstrap Overrides */
 
@@ -99,18 +67,10 @@ button:focus,
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
 
-
 body > .container {
     height: 100%;
     margin-top: 40px;
 }
-
-/*
-.alert{
-    margin-top: 40px;
-    margin-bottom: -20px;
-}
-*/
 
 #footer > .container {
     padding: 10px;

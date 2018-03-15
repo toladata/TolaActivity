@@ -78,7 +78,7 @@
                     $("#indicator_update_form").data('indicatorchanged', true);
                     var targets_sum = data['targets_sum'];
                     if (targets_sum != 0 && targets_sum != "None" && targets_sum != '' && targets_sum != 'undefined') {
-                        $("#id_span_targets_sum").text(targets_sum);
+                        $("#id_span_targets_sum").text(parseFloat(targets_sum).toFixed(2).replace(/[.,]00$/, ""));
                     }
                     if ($('#periodic_targets_table tbody tr.periodic-target').length == 0) {
                         $("#id_div_periodic_tables_placeholder").empty();
@@ -306,7 +306,7 @@
             if ($("#id_target_frequency").val() != 1) {
                 $("#id_div_periodic_tables_placeholder").empty();
                 $("#id_div_periodic_tables_placeholder").append(content);
-                $("#id_span_targets_sum").text(targets_sum);
+                $("#id_span_targets_sum").text(parseFloat(targets_sum).toFixed(2).replace(/[.,]00$/, ""));
             }
             if ($('#indicator_modal_div').length == 1) {
                 // for the modal version;
