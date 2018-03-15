@@ -1,7 +1,7 @@
-describe('Target vs Actuals report', function() {
-  it('should display data organized by target period over time');
-  it('should have a Program impact overview report');
-  it('should have a Program impact assessment report');
-  it('should only display LoP targets, not intermediate targets');
-  it('should required setting start and end dates for report');
+describe('Target vs Actuals report: assorted improvements', function() {
+  it('should require descriptive names for attachments');
+  it('should require a link to the attachment');
+  it('should allow an attached document');
+  it('should allow an attached folder');
+  it('should include a link to the GDriver');
 });
