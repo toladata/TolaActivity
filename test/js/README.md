@@ -194,11 +194,42 @@ expected true to equal false
 running firefox
 AssertionError: expected true to equal false
     at Context.<anonymous> (/home/kwall/Work/TolaActivity/test/js/test/specs/indicators_table.js:51:14)
-        at new Promise (<anonymous>)
-            at new F (/home/kwall/Work/TolaActivity/test/js/node_modules/core-js/library/modules/_export    .js:35:28)
-95 
+    at new Promise (<anonymous>)
+    at new F (/home/kwall/Work/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
+```
+
+## View the results
+
+The test framework is configured to use Allure to generate visual reports
+from the test results. After a test is complete, you are currently required
+to generate the reports manually. Doing so requires just a couple of commands.
+
+First, generate the report from the raw test results. If you are using the 
+Makefile, you can just say `make report` and Allure will generate a report
+and open it in a new tab in your currently running browser or in a new window 
+in your default configured browser if one isn't already running.
+
+If you are not using the Makefile, first use the command `allure generate` to
+massage raw test data into Allure format. Then use the `allure open` command to
+view the report in your browser. Allure uses a small, built-in web server named
+Jetty to serve the report page. The `open` command starts this server and
+displays the test results in a new browser tab (if one is open) or in your 
+default browser if a browser is not already running:
 
 ```
+$ make allure
+$ allure open
+Starting web server...
+2018-03-13 11:32:44.749:INFO::main: Logging initialized @346ms to org.eclipse.jetty.util.log.StdErrLog
+Server started at <http://10.10.24.108:53285/>. Press <Ctrl+C> to exit
+```
+![](docs/tola_allure_report.png)
+
+If you have run a lot of tests, both the `make report` and `allure generate`
+command might take 20 or 30 seconds to complete, so please be patient. Alternatively,
+you can use the `allure serve` command, which will first generate the reports and then 
+open a browser window as described above. 
+
 
 ## Don't want to run everything?
 1. To run the tests in a single file, specify `--spec path/to/file`.
@@ -242,7 +273,7 @@ file:///path/to/your/repo/doc/index.html in your web browser. It will
 end up looking something like the following image. **NOTE:** This is
 _API_ documentation; the tests themselves are self-documenting.
 
-![](doc/tola_test_doc_home.png)
+![](docs/tola_test_doc_home.png)
 
 ## Helpful development practices
 
