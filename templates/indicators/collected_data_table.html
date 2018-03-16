@@ -31,7 +31,7 @@
                         <strong>{{ item.period }}</strong><br>
                         <small>{{ item.start_date_formatted|default_if_none:"" }} {% if item.start_date %} - {% endif %} {{ item.end_date_formatted|default_if_none:"" }}</small>
                     </td>
-                    <td {% if item.collecteddata_set.count %} rowspan="{{ item.collecteddata_set.count }}" align="right" {% endif %}>
+                    <td {% if item.collecteddata_set.count %} rowspan="{{ item.collecteddata_set.count }}" {% endif %} align="right">
                         {{ item.target|floatformat:"-2" }}
                     </td>
                 {% endifchanged %}
@@ -60,7 +60,7 @@
                             <a href="{{ cdata.tola_table.detail_url }}" target="_blank">{{ cdata.tola_table }}</a>
                         {% endif %}
                     </td>
-                    <td>{{ cdata.agreement|default_if_none:"" }}</td>
+                    <td>{{ cdata.complete|default_if_none:cdata.agreement|default_if_none:'' }}</td>
                     <td align="right">
                         <a href="{% url 'collecteddata_delete' cdata.id %}" style="color:red; vertical-align: middle;">
                             <span alt="Delete" class="glyphicon glyphicon-remove"></span>

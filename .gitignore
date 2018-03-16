@@ -43,6 +43,7 @@ conf/awstats.conf
 .DS_Store
 media/
 client_secrets.json
+tola/settings/local_secret.py
 *.crt
 *.key
 error.log
