@@ -14,12 +14,12 @@ describe('"Annual" target frequency', function() {
     LoginPage.setUserName(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
-    IndPage.open();
-    assert.equal('Program Indicators', IndPage.getPageName(),
-      'Unexpected page name mismatch on program indicators page');
   });
 
   it('should require date that first target period begins', function() {
+    IndPage.open();
+    assert.equal('Program Indicators', IndPage.getPageName(),
+      'Unexpected page name mismatch on program indicators page');
     IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Annual target, first period required');
