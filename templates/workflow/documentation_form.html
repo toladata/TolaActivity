@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 <div>
 <ol class="breadcrumb">
   <li><a href="/workflow/dashboard/0/">Program Index</a></li>
@@ -96,26 +97,77 @@
             }
 
         </script>
-        <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
 
+    <form
+        action="{% url 'documentation_update' object.id %}"
+        id="collecteddata_update_form"
+        class="form-horizontal"
+        method="post"
+        novalidate>
+        {% csrf_token %}
 
-    {% include "form_guidance.html" %}
-    {% if form.errors %}
-        <div class="help-block">
-        {% for field in form %}
-            {% for error in field.errors %}
-                    <strong><i>{{ field.label }}</i> - {{ error|escape }}</strong>&nbsp;
-            {% endfor %}
+        {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field }}
         {% endfor %}
-        </div>
-        {% for error in form.non_field_errors %}
-            <div class="alert alert-error">
-                <strong>{{ error|escape }}</strong>
+
+        <fieldset>
+            <div class="form-row mb-2" id="div_id_name">
+                <label for="id_name" class="col-sm-4 col-form-label" align="right">
+                    {{ form.name.label }}*
+                </label>
+                <div class="col-sm-7">
+                    {% render_field form.name class+="form-control" %}
+                    <small class="form-text text-muted">{{ form.name.help_text }}</small>
+                </div>
             </div>
-        {% endfor %}
-    {% endif %}
-	{% csrf_token %}
-    {% load crispy_forms_tags %}
-    {% crispy form %}
+
+            <div class="form-row mb-2" id="div_id_url">
+                <label for="id_url" class="col-sm-4 col-form-label" align="right">
+                    {{ form.url.label }}*
+                </label>
+                <div class="col-sm-6">
+                    {% render_field form.url class+="form-control" %}
+                    <small class="form-text text-muted">{{ form.url.help_text }}</small>
+                </div>
+                <button type="button" class="col-sm-1 btn btn-sm btn-secondary" onclick="onApiLoad();">gdrive</button>
+            </div>
+
+            <div class="form-row mb-2" id="div_id_description">
+                <label for="id_description" class="col-sm-4 col-form-label" align="right">
+                    {{ form.description.label }}*
+                </label>
+                <div class="col-sm-7">
+                    {% render_field form.description class+="form-control" %}
+                    <small class="form-text text-muted">{{ form.description.help_text }}</small>
+                </div>
+            </div>
+
+            <div class="form-row mb-2" id="div_id_project">
+                <label for="id_project" class="col-sm-4 col-form-label" align="right">
+                    {{ form.project.label }}*
+                </label>
+                <div class="col-sm-7">
+                    {% render_field form.project class+="form-control" %}
+                    <small class="form-text text-muted">{{ form.project.help_text }}</small>
+                </div>
+            </div>
+
+            <div class="form-row mb-2" id="div_id_program">
+                <label for="id_program" class="col-sm-4 col-form-label" align="right">
+                    {{ form.program.label }}*
+                </label>
+                <div class="col-sm-7">
+                    {% render_field form.program class+="form-control" %}
+                    <small class="form-text text-muted">{{ form.program.help_text }}</small>
+                </div>
+            </div>
+        </fieldset>
+
+            <input type="reset"
+                class="btn btn-secondary btn-sm mb-5" value="Reset">
+            <input type="submit" name="submit" value="Save changes"
+                class="btn btn-primary btn-sm mb-5" id="id-submit">
+    </form>
 
 {% endblock content %}
