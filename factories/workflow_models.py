@@ -135,18 +135,6 @@ class Widget(DjangoModelFactory):
     name = "My Crazy Widget"
 
 
-class TolaUser(DjangoModelFactory):
-    class Meta:
-        model = TolaUserM
-        django_get_or_create = ('user',)
-
-    user = SubFactory(User)
-    name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
-    organization = SubFactory(Organization)
-    position_description = 'Chief of Operations'
-    country = SubFactory(Country, country='Germany', code='DE')
-
-
 class WorkflowLevel1(DjangoModelFactory):
     class Meta:
         model = WorkflowLevel1M
