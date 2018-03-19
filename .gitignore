@@ -30,6 +30,7 @@ test/js/package-lock.json
 test/js/node_modules/
 test/js/doc/
 test/js/logs/
+test/js/allure-results
 
 #allvritualenv
 venv/
