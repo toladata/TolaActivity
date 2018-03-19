@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/indicators/home/{{ program|default_if_none:0 }}/0/0/">Indicators</a></li>
-  <li class="active">Collected Indicator Data Report</li>
-</ol>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/indicators/home/{{ program|default_if_none:0 }}/0/0/">Indicators</a>
+        </li>
+        <li class="breadcrumb-item active">Collected Indicator Data Report</li>
+    </ol>
+</nav>
 {% endblock %}
 
 
@@ -14,7 +18,7 @@
 {% block content %}
 
 {% include "indicators/filter.html"%}
-
+    <br>
     <div style="display: none;">
         <span class="filter" id="indicator_filter_value"></span>
         <span class="filter" id="program_filter_value"></span>
@@ -133,7 +137,7 @@
                         { title: "Date Collected", data: "date_collected",
                                 "mRender": function ( data, type, row ) {
                                 var javascriptDate = new Date(row.date_collected).toISOString().slice(0, 10);
-                                return "<div class='date'>"+javascriptDate+"<div>";}},
+                                return "<div class='date'>"+ formatDate(javascriptDate)+"<div>";}},
                         { title: "Target", data: "periodic_target",
                             "mRender": function(data, type, row) {
                                 var target = parseFloat(row.periodic_target).toFixed(2).replace(/[.,]00$/, "");
@@ -252,7 +256,7 @@
         </tbody>
         </table>
         <br/>
-        <table class="table table-bordered" id="data_table">
+        <table class="table table-bordered table-hover" style="border-collapse: collapse !important;" id="data_table">
         </table>
     </div>
     <div id="sum2" style="display: none; float: right;">

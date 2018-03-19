@@ -62,7 +62,7 @@ function loadIndicators(program, indicator, type){
                 </div>
             {% else %}
                 <div class='card-body'>
-                    <a id="id_btnOpenindicatorsForProgramId_{{ program.id}}" onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-outline-info" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators <i class="fas fa-chevron-right"></i></a>
+                    <a id="id_btnOpenindicatorsForProgramId_{{ program.id}}" href="#" onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-info" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators</a>
                 </div>
                 <div id="hidden-{{ program.id }}" class="collapse">
                     {% include "indicators/program_indicators_table.html" %}

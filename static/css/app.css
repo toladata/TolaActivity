@@ -30,6 +30,10 @@ body {
     content: none;
   }
 }
+.dataTables_wrapper.container-fluid {
+  padding-right: 0px !important;
+  padding-left: 0px !important;
+}
 
 .has-error {
   color: #dc3545;

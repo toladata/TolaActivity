@@ -59,21 +59,83 @@
     <body>
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark"> <!-- navbar navbar-expand-lg navbar-tola -->
             <div class="container">
-                <a class="navbar-brand" href="{% url 'index' %}">
-                    <img style="margin-top: -3px; max-width: 140px;" src="{% static 'img/tola-activity-primary-mark-white.png' %}" />
-                </a>
-                <button
-                    class="navbar-toggler"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
+                <div class="d-flex flex-column">
+                    <a class="navbar-brand" href="{% url 'index' %}">
+                        <img style="margin-top: -3px; max-width: 140px;" src="{% static 'img/tola-activity-primary-mark-white.png' %}" />
+                    </a>
+
+                    <h4 class="mt-2 mb-0" style="color:#ffffff80;">
+                        <!-- Page title  -->
+                        {% block page_title %}{% endblock %}
+                    </h4>
+                    <button
+                        class="navbar-toggler"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse flex-md-column" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        {% if user.is_authenticated  %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarProfileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {% if "demo" in request.build_absolute_uri %}
+                                        <span class="badge badge-danger">DEMO SERVER</span>
+                                    {% elif  "127." in request.build_absolute_uri %}
+                                        <span class="badge badge-danger">LOCAL SERVER</span>
+                                    {% elif "dev" in request.build_absolute_uri %}
+                                        <span class="badge badge-danger">DEV SERVER</span>
+                                    {% elif "report" in request.build_absolute_uri %}
+                                        <span class="badge badge-danger">REPORT SERVER</span>
+                                    {% elif "local" in request.build_absolute_uri %}
+                                        <span class="badge badge-danger">LOCAL</span>
+                                    {% endif %}
+                                    <i class="fas fa-user"></i> {{ user.tola_user.name }}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarProfileDropdown">
+                                    <a class="dropdown-item" id="id_profile_link" href="{% url 'profile' %}">Profile</a>
+                                    <a class="dropdown-item" id="id_profile_link2" href="{% url 'profile' %}">{{ user.tola_user.countries_list }}</a>
+                                </div>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarBookmarksDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Bookmarks</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarBookmarksDropdown">
+                                    {% if request.path in user.tola_user.tolabookmark.bookmark_url %}
+                                        <a class="dropdown-item" id="id_alreadyBookmarked">This page is in your bookmarks!</a>
+                                     {% else %}
+                                        <a class="dropdown-item" id="id_bookmarkIt" onClick="newBookmark('{{ request.path }}','{{ user }}')">
+                                            <i class="far fa-star"></i> Bookmark it</a>
+                                     {% endif %}
+                                     {% if user.tola_user.tolabookmark %}
+                                         {% for bookmark in user.tola_user.tolabookmark.all %}
+                                            <a class="dropdown-item" id="bookmark_{{bookmark.id}}" href="{{ bookmark.bookmark_url }}"><i class="fas fa-star"></i> {{ bookmark.name }}</a>
+                                         {% endfor %}
+                                     {% endif %}
+                                </div>
+                            </li>
+                        {% else %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="nvarbarLoginDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="nvarbarLoginDropdown">
+                                    {% if report_server == True or non_ldap == True%}
+                                        <div class="social-buttons">
+                                            <a class="dropdown-item" id="id_socialloginLink" href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-go"><i class="fa fa-google"></i> Google</a>
+                                        </div>
+                                    {% endif %}
+                                    <a class="dropdown-item" id="id_tolaLoginLInk" href="{% url 'login' %}">Login with Tola account</a>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+
+                    <ul class="navbar-nav ml-auto">
                         {% if report_server == True%}
                             {% if user.is_authenticated  %}
                                 <li class="nav-item dropdown">
@@ -130,69 +192,16 @@
                             </li>
                         {% endif %}
                     </ul>
-                    <!-- <span class="navbar-text"> Navbar text wit
+                    <!--
+                    <span class="navbar-text"> Navbar text wit
                     </span>
                     <ul class="navbar-nav"> <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
                         <li class="nav-item active">
                             <a class="nav-link" href="#">Login</a>
                         </li>
-                    </ul> -->
-                    <ul class="navbar-nav">
-                        {% if user.is_authenticated  %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarProfileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {% if "demo" in request.build_absolute_uri %}
-                                        <span class="badge badge-danger">DEMO SERVER</span>
-                                    {% elif  "127." in request.build_absolute_uri %}
-                                        <span class="badge badge-danger">LOCAL SERVER</span>
-                                    {% elif "dev" in request.build_absolute_uri %}
-                                        <span class="badge badge-danger">DEV SERVER</span>
-                                    {% elif "report" in request.build_absolute_uri %}
-                                        <span class="badge badge-danger">REPORT SERVER</span>
-                                    {% elif "local" in request.build_absolute_uri %}
-                                        <span class="badge badge-danger">LOCAL</span>
-                                    {% endif %}
-                                    <i class="fas fa-user"></i> {{ user.tola_user.name }}
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarProfileDropdown">
-                                    <a class="dropdown-item" id="id_profile_link" href="{% url 'profile' %}">Profile</a>
-                                    <a class="dropdown-item" id="id_profile_link2" href="{% url 'profile' %}">{{ user.tola_user.countries_list }}</a>
-                                </div>
-                            </li>
-
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarBookmarksDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Bookmarks</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarBookmarksDropdown">
-                                    {% if request.path in user.tola_user.tolabookmark.bookmark_url %}
-                                        <a class="dropdown-item" id="id_alreadyBookmarked">This page is in your bookmarks!</a>
-                                     {% else %}
-                                        <a class="dropdown-item" id="id_bookmarkIt" onClick="newBookmark('{{ request.path }}','{{ user }}')">
-                                            <i class="far fa-star"></i> Bookmark it</a>
-                                     {% endif %}
-                                     {% if user.tola_user.tolabookmark %}
-                                         {% for bookmark in user.tola_user.tolabookmark.all %}
-                                            <a class="dropdown-item" id="bookmark_{{bookmark.id}}" href="{{ bookmark.bookmark_url }}"><i class="fas fa-star"></i> {{ bookmark.name }}</a>
-                                         {% endfor %}
-                                     {% endif %}
-                                </div>
-                            </li>
-                        {% else %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="nvarbarLoginDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="nvarbarLoginDropdown">
-                                    {% if report_server == True or non_ldap == True%}
-                                        <div class="social-buttons">
-                                            <a class="dropdown-item" id="id_socialloginLink" href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-go"><i class="fa fa-google"></i> Google</a>
-                                        </div>
-                                    {% endif %}
-                                    <a class="dropdown-item" id="id_tolaLoginLInk" href="{% url 'login' %}">Login with Tola account</a>
-                                </div>
-                            </li>
-                        {% endif %}
-                    </ul>
+                    </ul>-->
                 </div><!-- end .collapse navbar-collapse -->
-            </div><!-- end .container -->
+            </div>
         </nav>
 
         <div class="container" style="margin-top:5px;">
@@ -213,8 +222,6 @@
                     {% endif %}
                 {% endblock messages %}
             </div>
-            <!-- Page title  -->
-            <h2>{% block page_title %}{% endblock %}</h2>
 
             <!-- Main body content -->
             <p>{% block content %}{% endblock %}</p>

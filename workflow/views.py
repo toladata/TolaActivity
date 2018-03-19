@@ -2256,33 +2256,24 @@ class Report(View, AjaxableResponseMixin):
     project agreement list report
     """
     def get(self, request, *args, **kwargs):
-
         countries=getCountry(request.user)
-
         if int(self.kwargs['pk']) != 0:
-            getAgreements = ProjectAgreement.objects.all().filter(program__id=self.kwargs['pk'])
+            getAgreements = ProjectAgreement.objects.filter(program__id=self.kwargs['pk'])
 
         elif self.kwargs['status'] != 'none':
-            getAgreements = ProjectAgreement.objects.all().filter(approval=self.kwargs['status'])
+            getAgreements = ProjectAgreement.objects.filter(approval=self.kwargs['status'])
         else:
             getAgreements = ProjectAgreement.objects.select_related().filter(program__country__in=countries)
 
-        getPrograms = Program.objects.all().filter(funding_status="Funded", country__in=countries).distinct()
-
+        getPrograms = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
         filtered = ProjectAgreementFilter(request.GET, queryset=getAgreements)
         table = ProjectAgreementTable(filtered.queryset)
         table.paginate(page=request.GET.get('page', 1), per_page=20)
 
         if request.method == "GET" and "search" in request.GET:
-            #list1 = list()
-            #for obj in filtered:
-            #    list1.append(obj)
-            """
-             fields = 'program','community'
-            """
-            getAgreements = ProjectAgreement.objects.filter(
-                                               Q(project_name__contains=request.GET["search"]) |
-                                               Q(activity_code__contains=request.GET["search"]))
+            getAgreements = ProjectAgreement.objects.filter(\
+                      Q(project_name__contains=request.GET["search"])\
+                    | Q(activity_code__contains=request.GET["search"]))
 
 
         if request.GET.get('export'):
@@ -2293,7 +2284,13 @@ class Report(View, AjaxableResponseMixin):
 
 
         # send the keys and vars
-        return render(request, "workflow/report.html", {'country': countries, 'form': FilterForm(), 'filter': filtered, 'helper': FilterForm.helper, 'APPROVALS': APPROVALS, 'getPrograms': getPrograms})
+        return render(request, "workflow/report.html", {
+                      'country': countries,
+                      'form': FilterForm(),
+                      'filter': filtered,
+                      'helper': FilterForm.helper,
+                      'APPROVALS': APPROVALS,
+                      'getPrograms': getPrograms})
 
 
 class ReportData(View, AjaxableResponseMixin):
