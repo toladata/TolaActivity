@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
     SubFactory, post_generation
@@ -18,6 +19,7 @@ from workflow.models import (
     Milestone as MilestoneM,
     Organization as OrganizationM,
     Portfolio as PortfolioM,
+    Product as ProductM,
     ProfileType as ProfileTypeM,
     ProjectType as ProjectTypeM,
     Sector as SectorM,
@@ -188,6 +190,16 @@ class WorkflowLevel2(DjangoModelFactory):
     total_estimated_budget = 15000
     actual_cost = 2900
     workflowlevel1 = SubFactory(WorkflowLevel1)
+
+
+class Product(DjangoModelFactory):
+    class Meta:
+        model = ProductM
+
+    workflowlevel2 = SubFactory(WorkflowLevel2)
+    name = u'Próduct P'
+    type = u'Týpe'
+    reference_id = u'Rèference'
 
 
 class Documentation(DjangoModelFactory):

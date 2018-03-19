@@ -1142,6 +1142,7 @@ class WorkflowLevel2(models.Model):
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)", blank=True, null=True, help_text="Descriptive, what are some of the issues and challenges")
     lessons_learned = models.TextField("Lessons learned", blank=True, null=True, help_text="Descriptive, when completed what lessons were learned")
     indicators = models.ManyToManyField("indicators.Indicator", blank=True)
+    # products = OneToMany(Product)  # reverse related relationship
     create_date = models.DateTimeField("Date Created", null=True, blank=True)
     edit_date = models.DateTimeField("Last Edit Date", null=True, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='workflowlevel2', null=True, blank=True, on_delete=models.SET_NULL)
@@ -1245,6 +1246,18 @@ class WorkflowLevel2Sort(models.Model):
 
     def __unicode__(self):
         return unicode(self.workflowlevel1)
+
+
+class Product(models.Model):
+    workflowlevel2 = models.ForeignKey(WorkflowLevel2, related_name="products")
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, blank=True, null=True)
+    reference_id = models.CharField("Product identifier", max_length=255, blank=True, null=True)
+    create_date = models.DateTimeField(auto_now_add=True)
+    edit_date = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return u'{} <{}>'.format(self.name, self.workflowlevel2)
 
 
 class CodedField(models.Model):
