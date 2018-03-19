@@ -27,9 +27,10 @@ test/js/config.json
 test/js/errorShots
 test/js/geckodriver
 test/js/package-lock.json
-test/js/node_modules/
-test/js/doc/
-test/js/logs/
+test/js/node_modules
+test/js/doc
+test/js/logs
+test/js/drivers
 
 #allvritualenv
 venv/

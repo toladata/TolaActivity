@@ -12,14 +12,14 @@ data sources or excel
 files.
 
 
-= Setting up a local TolaActivity instance
+=Setting up a local TolaActivity instance
 
 Running a local instance of TolaActivity makes development much faster and
 eliminates your dependence on access to MC's dev and demo and production
 servers. These instructions should get you up and running with a minimum of
 fuss.
 
-== Install the bits
+==Install the bits
 
 You will need Python 2 and MySQL installed because TolaActivity requires v2
 of Python.  On macOS, you can use Homebrew to install Python 2 alongside
