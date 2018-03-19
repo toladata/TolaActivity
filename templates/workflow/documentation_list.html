@@ -1,116 +1,115 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-  {% if project_agreement_id != '0' %}
-    <li><a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
-  {% endif %}
-  <li class="active">Documentation List</li>
-</ol>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/workflow/dashboard/0/">Program Index</a></li>
+        {% if project_agreement_id != '0' %}
+            <li class="breadcrumb-item">
+                <a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a>
+            </li>
+        {% endif %}
+        <li class="breadcrumb-item active">Documentation List</li>
+    </ol>
+</nav>
 {% endblock %}
 {% block page_title %}Document List{% endblock %}
 
 {% block content %}
 
-<div class="dropdown">
-  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-    Programs
-    <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter(0)">{{ program.gaitid}} - {{ program.name }}</a></li>>-- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
-    {% endfor %}
-  </ul>
-    <a href="/workflow/documentation_add" class="btn btn-large btn-success">New Document</a>
-
+<div class="btn-group" role="group">
+    <button class="btn btn-secondary btn-sm dropdown-toggle"
+            type="button"
+            id="programDropdown"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+        Programs
+    </button>
+    <div class="dropdown-menu" role="menu" aria-labelledby="programDropdown">
+        <a class="dropdown-item" href="#" onclick="program_filter(0)">-- All --</a>
+        {% for program in getPrograms %}
+            <a class="dropdown-item"
+                href="#"
+                onclick="program_filter({{program.id}})">
+                {{ program.gaitid}} - {{ program.name }}</a>
+        {% endfor %}
+    </div>
 </div>
+<a href="/workflow/documentation_add" class="btn btn-sm btn-success">New Document</a>
 <br/>
-<!-- Table -->
-<table class="table" id="documentationtable">
+
+<table
+    class="table table-hover table-sm"
+    id="documentationtable">
 </table>
+
 <script type="text/javascript">
     $(document).ready(function() {
       program_filter(0);
     });
 
-     function show_documentation_table(documentation_data) {
-            documentation_records = JSON.parse(documentation_data);
-            //First destroy any old version of the table to refresh anew
-            if ( $.fn.dataTable.isDataTable( '#documentationtable' ) ) {
-                table.destroy();
-                $('#documentationtable').empty();
-            };
+    function show_documentation_table(documentation_data) {
+        documentation_records = JSON.parse(documentation_data);
+        //First destroy any old version of the table to refresh anew
+        if ( $.fn.dataTable.isDataTable('#documentationtable') ) {
+            table.destroy();
+            $('#documentationtable').empty();
+        };
 
-            $('#documentationtable').on( 'page.dt', function () {
-                $('html, body').animate({
-                    scrollTop: 0
-                }, 300);
-            } );
+        $('#documentationtable').on('page.dt', function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 300);
+        } );
 
-
-            table = $('#documentationtable').DataTable( {
-                 "order": [],
-                 "bFilter": false,
-                 'bLengthChange': false,
-                 "aoColumnDefs": [
-                           { "bSortable": false, "targets": [0, 1, 2, 3] }
-                        ],
-                retrieve: true,
-                data: documentation_records,
-                columns: [
-                    { title: "Date Created", data: "create_date",
-                        "defaultContent": "<i>Not set</i>",
-                        "mRender": function (data, records, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + row.create_date + '</a>';
-                            }},
-                    { title: "Document Name", data: "name",
-                        "defaultContent": "<i>Not set</i>",
-                        "mRender": function (data, narecord, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + row.name + '</a>';
-                            }},
-                    { title: "Project", data: "project__project_name",
-                        "defaultContent": "<i>Not set</i>"},
-                    { title: "Delete/Update",
-                        "mRender": function (data, record, row) {
-                                return '<a href="/workflow/documentation_update/'+row.id+'" class="btn btn-xs btn-info">Edit</a><a href="/workflow/documentation_delete/'+row.id+'" class="btn btn-xs btn-danger">Delete Document</a>';
-                            }
-                    }
-                    ]
-            } );
-
-        }
-
-        function program_filter(program_id) {
-                // Filter documents
-                console.log(program_id);
-
-                if (program_id != 0) {
-
-                    $.getJSON("/workflow/documentation_objects/"+ program_id + "/0/", function(data) {
-                        show_documentation_table(data['getDocumentation']);
-                    });
-
-                }  else{
-
-                    program_id = document.URL.split('/')[5];
-                    project_id = document.URL.split('/')[6];
-
-                    $.getJSON("/workflow/documentation_objects/"+program_id+"/"+project_id+"/", function(data) {
-                        show_documentation_table(data['getDocumentation']);
-                    });
+        table = $('#documentationtable').DataTable( {
+            "order": [],
+            "bFilter": false,
+            'bLengthChange': false,
+            "aoColumnDefs": [{"bSortable": false, "targets": [0, 1, 2, 3]}],
+            retrieve: true,
+            data: documentation_records,
+            columns: [
+                { title: "Date Created", data: "create_date",
+                    "defaultContent": "<i>Not set</i>",
+                    "mRender": function (data, records, row) {
+                        return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + formatDate(row.create_date) + '</a>';
+                        }},
+                { title: "Document Name", data: "name",
+                    "defaultContent": "<i>Not set</i>",
+                    "mRender": function (data, narecord, row) {
+                        return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + row.name + '</a>';
+                        }},
+                { title: "Project", data: "project__project_name",
+                    "defaultContent": "<i>Not set</i>"},
+                { title: "Edit/Delete",
+                    "mRender": function (data, record, row) {
+                        return '<a href="/workflow/documentation_update/'+row.id+'" class="btn btn-sm btn-info"><i class="fas fa-edit"></i></a><a href="/workflow/documentation_delete/'+row.id+'" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>';
+                        }
                 }
-            }
+            ]
+        });
+    }
 
+    function program_filter(program_id) {
+        if (program_id != 0) {
+            $.getJSON("/workflow/documentation_objects/"+ program_id + "/0/", function(data) {
+                show_documentation_table(data['getDocumentation']);
+            });
+        }  else{
+            program_id = document.URL.split('/')[5];
+            project_id = document.URL.split('/')[6];
+            $.getJSON("/workflow/documentation_objects/"+program_id+"/"+project_id+"/", function(data) {
+                show_documentation_table(data['getDocumentation']);
+            });
+        }
+    }
 </script>
 
-
-<!-- Modal -->
 <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        </div> <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
-</div> <!-- /.modal -->
+        </div>
+    </div>
+</div>
 {% endblock content %}

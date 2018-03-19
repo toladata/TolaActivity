@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/indicators/home/0/0/0/">Indicators</a></li>
-  <li class="active">Reports</li>
-</ol>
-
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/indicators/home/0/0/0/">Indicators</a>
+        </li>
+        <li class="breadcrumb-item active">Reports</li>
+    </ol>
+</nav>
 {% endblock bread_crumb %}
 {% load render_table from django_tables2 %}
 
@@ -12,7 +15,7 @@
 
 {% block content %}
     {% include "indicators/filter.html"%}
-
+    <br>
     <script type="text/javascript">
         var table;
         $(document).ready(function(){
@@ -68,7 +71,7 @@
                         'orderable':false,
                         'className': 'dt-body-center noExport',
                         'render': function (data, type, row){
-                            return '<div class="btn-group btn-group-xs"><a type="button" class="btn btn-warning" href="/indicators/indicator_update/'+row.id+'">Edit</a><br><a type="button" class="btn btn-default" href="/indicators/data/'+row.id+'">View</a></div>';
+                            return '<div class="btn-group" role="group" aria-label="Edit and delete buttons"><a class="btn btn-sm btn-secondary" href="/indicators/indicator_update/'+row.id+'"><i class="fas fa-edit"></i></a><br><a class="btn btn-sm btn-secondary" href="/indicators/data/'+row.id+'"><i class="fas fa-eye"></i></a></div>';
                         }
                     },
                     {
@@ -139,7 +142,7 @@
 
     <div class="table-responsive">
         <div id="program_table_div">
-            <table class="table table-bordered" id="data_table">
+            <table class="table table-bordered table-hover" style="border-collapse: collapse !important;" id="data_table">
             </table>
         </div>
 

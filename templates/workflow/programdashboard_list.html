@@ -20,18 +20,17 @@
   {% endif %}
     {% for program in getDashboard %}
         {% if program.agreement.all %}
-            <div class='panel panel-default'>
-                <div class='panel-heading'>
-                    <h4>
-                       {{ program.name|truncatechars:80 }}
-
+            <div class='card'>
+                <div class='card-header'>
+                    <h6>
+                       {{ program.name|truncatechars:100 }}
                        <span class="float: right">
-                           <a href="/customdashboard/{{program.id }}/" class="btn btn-xs btn-info" style="float:right;">Dashboard Visualization</a>
+                           <a href="/customdashboard/{{program.id }}/" class="btn btn-primary" style="    margin-right: -17px; float: right;"><i class="fas fa-tachometer-alt"></i></a>
                        </span>
-                   </h4>
+                   </h6>
                 </div>
                 <!-- Table -->
-                <table class="table table-striped">
+                <table class="table table-sm table-hover table-striped">
                     <tr>
                         <th>Date Created</th>
                         <th>Project Name</th>

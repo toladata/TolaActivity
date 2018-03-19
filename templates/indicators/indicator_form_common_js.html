@@ -1,35 +1,5 @@
-<!-- <style>
-    .hide-calendar .ui-datepicker-calendar {
-        display: none;
-    }
-</style> -->
 <script>
     var validation_msgs = {};
-    /*
-    var modalConfirm = function(callback){
-        // $("#btn-confirm").on("click", function(){
-            $("#conform_modal_div").modal('show');
-        // });
-
-        $("#modal-btn-si").on("click", function(){
-            callback(true);
-            $("#conform_modal_div").modal('hide');
-        });
-
-        $("#modal-btn-no").on("click", function(){
-            callback(false);
-            $("#conform_modal_div").modal('hide');
-        });
-    };
-    */
-
-    // modalConfirm(function(confirm){
-    //     if (confirm) {
-    //         $("#result").html("CONFIRMADO");
-    //     } else {
-    //         $("#result").html("NO CONFIRMADO");
-    //     }
-    // });
 
     function setupPopupCalendar() {
         $('.monthPicker').datepicker({
@@ -37,27 +7,12 @@
             changeYear: true,
             showButtonPanel: true,
             dateFormat: 'M d, yy',
-            /*
-            beforeShowDay: function(date) {
-                if (date.getDate() == 1) {
-                    return [true, ''];
-                }
-                return [false, ''];
-            },
-            */
             beforeShow(input, inst){
                 // move date picker popup div inside modal dialog(fix for firefox)
                 $(input).parent().append($('#ui-datepicker-div'));
                 $('#ui-datepicker-div').hide();
-                // $(this).datepicker('setDate', $.datepicker.formatDate('M yy', new Date(2018, 3)));
-                // $(this).datepicker( "option", "defaultDate",$.datepicker.formatDate('M yy', new Date(2018, 3)));
-                // $(this).datepicker( "option", "defaultDate", "+1m");
-                // $(this).datepicker( "option", "defaultDate", "Mar 2018");
-                // $("#ui-datepicker-div .ui-datepicker-month").val(5);
             },
             onClose: function (dateText, inst) {
-                // var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-                // var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
                 $(this).datepicker("setDate", new Date(inst.selectedYear, inst.selectedMonth, 1));
                 $(this).datepicker("widget").find(".ui-datepicker-calendar").hide();
                 this.focus();
@@ -72,8 +27,8 @@
                 of: $(this)
             });
         });
-
     }
+
     $( document ).ready(function() {
         show_hide_frequency_fields();
         setupPopupCalendar();
@@ -104,12 +59,6 @@
             }
         }
         var prevDeleteBtn = currnentRow.prev("tr").find("a");
-        /*
-        if (prevDeleteBtn.length == 0) {
-            $("#id_div_periodic_tables_placeholder").empty();
-            reset_frequency_fields();
-        }
-        */
 
         if (id == 'undefined') {
             currnentRow.remove();
@@ -129,7 +78,7 @@
                     $("#indicator_update_form").data('indicatorchanged', true);
                     var targets_sum = data['targets_sum'];
                     if (targets_sum != 0 && targets_sum != "None" && targets_sum != '' && targets_sum != 'undefined') {
-                        $("#id_span_targets_sum").text(targets_sum);
+                        $("#id_span_targets_sum").text(parseFloat(targets_sum).toFixed(2).replace(/[.,]00$/, ""));
                     }
                     if ($('#periodic_targets_table tbody tr.periodic-target').length == 0) {
                         $("#id_div_periodic_tables_placeholder").empty();
@@ -186,29 +135,25 @@
     function createPeriodicTargetRow(pt, target_frequency, isLastIteration, rowNum) {
         var markup = `
                 <tr class="periodic-target">
-                    <td style="width: 50px; border: none; vertical-align: middle;">
-                        <a href="/indicators/periodic_target_delete/${pt.id}/" class="detelebtn" style="text-align: center; color:red; margin: 3px 10px 0px; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
-                            <span class=" glyphicon glyphicon-remove"></span>
+                    <td class="align-middle pr-0" style="width: 50px; text-align: center;">
+                        <a href="/indicators/periodic_target_delete/${pt.id}/" class="detelebtn" style="text-align: center; color:red; display: ${(isLastIteration && target_frequency != 2 || target_frequency == 8) ? 'block' : 'none'}">
+                            <i class="fas fa-times"></i>
                         </a>
                     </td>
 
-                    <td style="padding:1px; border: none; vertical-align: middle;">
+                    <td class="align-middle pr-0">
                         ${(target_frequency != 8) ? `
-                            <div style="line-height:1;"><strong>${pt.period }</strong></div>
-                            <div style="line-height:1; margin-top:4px;">${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</div>`
+                            <strong>${pt.period }</strong></div>
+                            <div>${formatDate(pt.start_date)} ${ pt.start_date ? '-' : ''} ${formatDate(pt.end_date)}</div>`
                             :
-                            `<div class="controls border-1px">
-                                <input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control input-text">
-                                <span style="margin:0px;" class="help-block"> </span>
-                            </div>`
+                            `<input type="text" name="${pt.period}" placeholder="Enter event name" value="${(rowNum == 0) ? pt.period : (pt.id ? pt.period : '') }" class="form-control input-text">
+                                <span style="margin:0px;" class="help-block"> </span>`
                         }
                     </td>
 
-                    <td align="right" style="padding:1px; border:none; vertical-align:middle; width: 150px;">
-                        <div class="controls border-1px">
-                            <input type="number" id="pt-${pt.id}" value="${parseFloat(pt.target).toFixed(2).replace(/[.,]00$/, "")}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control input-value">
+                    <td class="align-middle" align="right" width="150px">
+                        <input type="number" id="pt-${pt.id}" value="${parseFloat(pt.target).toFixed(2).replace(/[.,]00$/, "")}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control input-value">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
-                        </div>
                     </td>
                 </tr>
             `;
@@ -268,74 +213,6 @@
 
     });
 
-    function createPeriodTargetsHTML(periodic_targets, indicator, targets_sum) {
-        var markup;
-        var isLastIteration
-        var htmlString = `
-        <div class="container-fluid" style="background-color: #F5F5F5; margin: 0px -30px 0px -30px;">
-            <div class="row">
-                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top: 30px;">
-                    <h4>${$("#id_target_frequency").find("option:selected").text()} targets</h4>
-                </div>
-            </div>
-            <div class="row">
-                <div id="periodic-targets-tablediv" class="col-sm-offset-2 col-sm-8">
-                    <table class="table table-condensed" id="periodic_targets_table" style="margin-bottom: 1px;">
-                        <tbody>`;
-
-        // Add table rows
-        $.each(periodic_targets, function(i, pt){
-            isLastIteration = i == periodic_targets.length -1;
-            markup = createPeriodicTargetRow(pt, indicator.fields.target_frequency, isLastIteration, i);
-            htmlString += markup;
-        });
-
-        htmlString +=       `<tr id="pt_sum_targets">
-                                <td class="pt-delete-row" style="border: none;">
-                                </td>
-                                <td align="left" style="padding-left: 0px; border: none; vertical-align: middle;">
-                                    <strong>Sum of targets</strong>
-                                </td>
-                                <td align="right" style="vertical-align: middle; border: none;">
-                                    <div style="margin: 5px 10px;">
-                                        <strong><span id="id_span_targets_sum">${targets_sum}</span></strong>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="background-color:#F5F5F5">
-                                <td class="pt-delete-row" style="border: none;">
-                                </td>
-                                <td align="left" style="padding-left: 0px; border: none; vertical-align: middle;">
-                                    <strong>Life of Program (LoP) target</strong>
-                                </td>
-                                <td align="right" style="vertical-align: middle; border: none;">
-                                    <div style="margin: 5px 10px;">
-                                        <strong><span id="id_span_targets_sum">${indicator.fields.lop_target}</span></strong>
-                                    </div>
-                                </td>
-                          </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr style="background-color:#F5F5F5">
-                                <td colspan="3" style="color:red; padding: 0px;" id="id_pt_errors"></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            ${(indicator.fields.target_frequency != 2) ? `
-                <div class="row">
-                    <div class="col-sm-offset-2 col-sm-8" style="padding-left: 1px; margin-top:10px; margin-bottom:40px;">
-                        <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="button btn-lg btn-link"><span class=" glyphicon glyphicon-plus-sign"></span> ${getNewTargetBtnLabel(indicator.fields.target_frequency)}</a>
-                    </div>
-                </div>`
-                :
-                `<div class="row" style="height:30px;"></div>`
-              }
-        </div>`;
-        return htmlString;
-    }
-
     function submitForm(form) {
         var numDataPoints = parseInt($("#numDataPoints").text());
         var initalTargetFrequency = parseInt($("#initialTargetFrequencyValue").text());
@@ -343,16 +220,6 @@
         // console.log("numDataPoints: ", numDataPoints, " initalTargetFrequency: ", initalTargetFrequency, " target_Frequency: ", target_frequency);
 
         if (numDataPoints > 0 && initalTargetFrequency == 1 && target_frequency != 1) {
-
-            /*
-            modalConfirm(function(confirm){
-                alert(confirm);
-                if (!confirm) {
-                    console.log("haha");
-                }
-            });
-            return;
-            */
             if (!confirm(`Warning: This action cannot be undone. If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
                 initalTargetFrequency = undefined;
                 return;
@@ -422,32 +289,24 @@
                 createAlert("danger", data, true, alertsElement);
                 return;
             }
-            //var json = $.parseJSON(jqXHR.responseText);
+
             $(alertsElement).html('');
 
             createAlert("success", "Success, form data saved.", true, alertsElement);
+
             var jsondata = $.parseJSON(data);
-            var indicator = jsondata[0][0];
-            var pts = jsondata[1];
-            var generateTargets = jsondata[2];
-            var targets_sum = jsondata[3];
-            var update_indicator_row = jsondata[4];
+            var indicator = $.parseJSON(jsondata["indicatorjson"])[0];
+            var targets_sum = jsondata["targets_sum"];
+            var update_indicator_row = jsondata["update_indicator_row"];
+            var content = jsondata["content"];
+
             $(form).data('update_indicator_row', parseInt(update_indicator_row));
 
             $("#initialTargetFrequencyValue").text(indicator.fields.target_frequency);
-
-            // $("#id_achieved").val(indicator['fields']['achieved']);
-            var htmlString = '';
             if ($("#id_target_frequency").val() != 1) {
-                if (!$.isEmptyObject(generateTargets)) {
-                    htmlString = createPeriodTargetsHTML(generateTargets, indicator, targets_sum);
-                    $("#id_div_periodic_tables_placeholder").append(htmlString);
-                } else {
-                    htmlString = createPeriodTargetsHTML(pts, indicator, targets_sum);
-                    $("#id_div_periodic_tables_placeholder").empty();
-                    $("#id_div_periodic_tables_placeholder").append(htmlString);
-                    $("#id_span_targets_sum").text(targets_sum);
-                }
+                $("#id_div_periodic_tables_placeholder").empty();
+                $("#id_div_periodic_tables_placeholder").append(content);
+                $("#id_span_targets_sum").text(parseFloat(targets_sum).toFixed(2).replace(/[.,]00$/, ""));
             }
             if ($('#indicator_modal_div').length == 1) {
                 // for the modal version;
@@ -456,8 +315,6 @@
                 // for the non-modal version;
                 $("html, body").animate({ scrollTop: 0 }, "slow");
             }
-
-            // window.scrollTo(0, 0);
             show_hide_frequency_fields(true);
         });
     }
@@ -476,7 +333,7 @@
 
     function show_hide_frequency_fields(lock = false) {
         // set the text for the 'create new target' button.
-        var label = '<span class=" glyphicon glyphicon-plus-sign"></span> ' + getNewTargetBtnLabel($("#id_target_frequency").val());
+        var label = '<i class="fas fa-plus"></i> ' + getNewTargetBtnLabel($("#id_target_frequency").val());
         $("#addNewPeriodicTarget").html(label);
         var selected_option = $("#id_target_frequency").find("option:selected").text();
         if ( (lock == true || $('#id_target_frequency').is('[readonly="readonly"]'))

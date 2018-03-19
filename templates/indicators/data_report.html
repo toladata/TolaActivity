@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/indicators/home/0/0/0/">Indicators</a></li>
-  <li class="active">Reports</li>
-</ol>
-
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/indicators/home/0/0/0/">Indicators</a></li>
+        <li class="breadcrumb-item active">Reports</li>
+    </ol>
+</nav>
+    {% include "indicators/filter.html"%}
+    <br>
     <div class="row">
         <div class="col-sm-12 clearfix">
-
-            <div class="pull-left">{% include "indicators/filter.html"%}</div>
             <div class="btn-group" role="group">
-                <button class="btn btn-default {% if 'table' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/table/'" name="table">Table</button>&nbsp;
-                <button class="btn btn-default {% if 'map' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/map/'" name="map">Map</button>&nbsp;
-                <button class="btn btn-default {% if 'graph' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/graph/'" name="graph">Graph</button>
+                <button class="btn btn-sm btn-secondary {% if 'table' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/table/'" name="table">Table</button>&nbsp;
+                <button class="btn btn-sm btn-secondary {% if 'map' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/map/'" name="map">Map</button>&nbsp;
+                <button class="btn btn-sm btn-secondary {% if 'graph' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/graph/'" name="graph">Graph</button>
             </div>
         </div>
     </div>
@@ -22,12 +23,6 @@
 {% block page_title %}Indicator Report{% endblock %}
 
 {% block content %}
-
-<div style="display: none;">
-    <span class="filter" id="indicator_filter_value"></span>
-    <span class="filter" id="program_filter_value"></span>
-    <span class="filter" id="type_filter_value"></span>
-</div>
 
 {% if "map" in request.get_full_path %}
     <style>
@@ -192,19 +187,15 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <div id='data-panel' class="panel panel-primary">
-                <div class="panel-body" style="padding:15px;">
-                    <div id="program_table_div">
-                        <table class="table table-bordered" id="data_table">
-                        </table>
-                    </div>
-                    <br/>
-                    <!--
-                    <button type="button" class="btn btn-success" id="export">Export All</button>
-                    -->
-                    <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
-                </div>
+            <div id="program_table_div">
+                <table class="table table-bordered table-hover" style="border-collapse: collapse !important;" id="data_table">
+                </table>
             </div>
+            <br/>
+            <!--
+            <button type="button" class="btn btn-success" id="export">Export All</button>
+            -->
+            <div id="wait-animation" class="ajaxLoader" style="display: none;"></div>
         </div>
     </div>
 {% endif %}

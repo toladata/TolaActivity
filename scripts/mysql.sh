@@ -94,7 +94,7 @@ then
     echo "dropping db at localhost"
     mysql -h localhost -u $user -p mysql --password <<< "drop database $db_name"
     echo "creating db at localhost"
-    mysql -h localhost -u $user -p mysql --password <<< "create database $db_name"
+    mysql -h localhost -u $user -p mysql --password <<< "create database $db_name CHARACTER SET utf8 COLLATE utf8_general_ci"
 fi
 
 sleep 1

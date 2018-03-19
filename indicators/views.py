@@ -364,6 +364,9 @@ def handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_tar
         for pt in pts:
             CollectedData.objects.filter(indicator=indicatr, date_collected__range=[pt.start_date, pt.end_date]).update(periodic_target=pt)
 
+from django.template import loader
+from django.template.loader import get_template
+from django.template.loader import render_to_string
 class IndicatorUpdate(UpdateView):
     """
     Update and Edit Indicators.
@@ -433,7 +436,7 @@ class IndicatorUpdate(UpdateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorUpdate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values_list("program__id", flat=True)
+        program = self.object.program.first()
         kwargs['program'] = program
         return kwargs
 
@@ -498,6 +501,7 @@ class IndicatorUpdate(UpdateView):
             # handle related collected_data records for the new periodic targets
             handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency, generated_pt_ids)
 
+        # check to see if values of any of these fields have changed.
         fields_to_watch = set(['indicator_type', 'level', 'name', 'number', 'sector'])
         changed_fields = set(form.changed_data)
         if fields_to_watch.intersection(changed_fields):
@@ -505,21 +509,33 @@ class IndicatorUpdate(UpdateView):
         else:
             update_indicator_row = '1'
 
+        # save the indicator form
         self.object = form.save()
-        #periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).order_by('customsort','create_date', 'period')
+
+        # fetch all existing periodic_targets for this indicator
         periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
 
         if self.request.is_ajax():
-            data = serializers.serialize('json', [self.object])
+            indicatorjson = serializers.serialize('json', [self.object])
             pts = FlatJsonSerializer().serialize(periodic_targets)
+
             if generatedTargets:
-                generatedTargets = json.dumps(generatedTargets, cls=DjangoJSONEncoder)
+                content = render_to_string('indicators/indicatortargets.html',
+                                       {'indicator': indicatr, 'periodic_targets': generatedTargets})
             else:
-                generatedTargets = "[]"
+                content = render_to_string('indicators/indicatortargets.html',
+                                       {'indicator': indicatr, 'periodic_targets': periodic_targets})
 
             targets_sum = self.get_context_data().get('targets_sum')
             if targets_sum == None: targets_sum = "0"
-            return HttpResponse("[" + data + "," + pts + "," + generatedTargets + "," + str(targets_sum) +  "," + str(update_indicator_row) + "]")
+
+            data = {
+                "indicatorjson": str(indicatorjson),
+                "targets_sum": str(targets_sum),
+                "update_indicator_row": str(update_indicator_row),
+                "content": content
+            }
+            return HttpResponse(json.dumps(data))
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
         return self.render_to_response(self.get_context_data(form=form))

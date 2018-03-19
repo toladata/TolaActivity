@@ -1,37 +1,46 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-  <li class="active">Stakeholder List</li>
-</ol>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/workflow/dashboard/0/">Program Index</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Stakeholder List</li>
+    </ol>
+</nav>
 {% endblock %}
 {% block page_title %}Stakeholder List{% endblock %}
 
 {% block content %}
-<div class="dropdown">
-<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-    Programs
-    <span class="caret"></span>
-  </button>
-<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
-        <li role="presentation"><a role="menuitem" tabindex="-1" href=" ">-- All --</a></li>
-    {% for program in getPrograms %}
-        <li role="presentation"><a role="menuitem" tabindex="-1" onclick="program_filter({{program.id}})">{{ program.gaitid}} - {{ program.name }}</a></li>
-    {% endfor %}
-  </ul>
-<a href="/workflow/stakeholder_add/0/" class="btn btn-large btn-success">New Stakeholder</a> &nbsp;
+<div class="btn-group" role="group">
+    <button class="btn btn-secondary btn-sm dropdown-toggle"
+            type="button"
+            id="programDropdown"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+        Programs
+    </button>
+    <div class="dropdown-menu" role="menu" aria-labelledby="programDropdown">
+        <a class="dropdown-item" href="#" onclick="program_filter(0)">-- All --</a>
+        {% for program in getPrograms %}
+            <a class="dropdown-item"
+                href="#"
+                onclick="program_filter({{program.id}})">
+                {{ program.gaitid}} - {{ program.name }}</a>
+        {% endfor %}
+    </div>
 </div>
-<hr/>
+<a href="/workflow/stakeholder_add/0/" class="btn btn-sm btn-success">New Stakeholder</a>
 <br/>
 
-
-    <h3>Stakeholder</h3>
+<h3>Stakeholder</h3>
 
 <a href="/workflow/export_stakeholders_list/{{ program_id }}/" class="btn btn-sm btn-primary float-right"><span class="glyphicon glyphicon-export"></span> Export to Excel</a>&nbsp;
 <br><br>
 
 <!-- Table -->
-<table class="table" id="stakeholdertable">
+<table class="table table-sm table-hover table-striped" id="stakeholdertable">
 </table>
 
 <script type="text/javascript">
@@ -67,7 +76,7 @@
                 columns: [
                     { title: "Date Created", data: "create_date",
                         "mRender": function (data, sector, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + row.create_date + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="/workflow/stakeholder_update/' + row.id + '/">' + formatDate(row.create_date) + '</a>';
                             },
                         "defaultContent": "<i>Not set</i>"},
                     { title: "Stakeholder Name", data: "name",
@@ -89,12 +98,12 @@
                     { title: "Contacts",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, sector, row) {
-                                return '<a href="/workflow/contact_list/'+row.id+'" class="btn btn-xs btn-info">Contacts</a>';
+                                return '<a href="/workflow/contact_list/'+row.id+'" class="btn btn-sm btn-info">Contacts</a>';
                             },},
                     { title: "Delete",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, sector, row) {
-                                return '<a href="/workflow/stakeholder_delete/'+row.id+'" class="btn btn-xs btn-danger">Delete Stakeholder</a>';
+                                return '<a href="/workflow/stakeholder_delete/'+row.id+'" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>';
                             },
                         }
                     ]

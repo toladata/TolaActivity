@@ -1,0 +1,72 @@
+{% load mytags %}
+{% if periodic_targets and indicator.target_frequency != 1%}
+    <div class="d-flex flex-column p-4" style="background-color: #F5F5F5; margin-left:-15px; margin-right:-15px;">
+        <div class="offset-sm-1">
+            <h5>{{ indicator.get_target_frequency_label }} targets</h5>
+        </div>
+        <div id="periodic-targets-tablediv" class="offset-sm-1 col-sm-10">
+            <table class="table table-sm mb-0" id="periodic_targets_table">
+                <tbody>
+                {% for pt in periodic_targets %}
+                    <tr id="{{pt.pk}}" data-collected-count="{{pt.num_data}}" class="periodic-target">
+                        <td class="align-middle pr-0" style="width: 50px; text-align: center;">
+                            <a href="{% if pt.id %} {% url 'pt_delete' pt.id %} {% else %} # {% endif %}" id="deleteLastPT" class="detelebtn" style="color: red; display:{% if forloop.last and indicator.target_frequency != 2 or indicator.target_frequency == 8 %} block {% else %}none{% endif %}">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </td>
+
+                        <td class="align-middle pr-0">
+                            {% if indicator.target_frequency == 8 %}
+                                <input type="text" name="{{ pt.period }}" value="{{ pt.period }}" class="form-control input-text">
+                                <span style="margin:0px;" class="help-block"> </span>
+                            {% else %}
+                                <strong>{{ pt.period }}</strong>
+                                <div>{{ pt.start_date|convert2dateobject|date:"M d, Y"|default:'' }} {% if pt.start_date %} - {% endif %} {{ pt.end_date|convert2dateobject|date:"M d, Y"|default:'' }}</div>
+                            {% endif %}
+                        </td>
+
+                        <td class="align-middle" align="right" width="150px">
+                            <input type="number" id="pt-{{ pt.id }}" name="{{ pt.period }}" value="{{ pt.target|floatformat:"-2" }}" data-start-date="{{pt.start_date|convert2dateobject|date:"M d, Y"|default:''}}" data-end-date="{{pt.end_date|convert2dateobject|date:"M d, Y"|default:''}}" placeholder="Enter target" class="form-control input-value">
+                            <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
+                        </td>
+                    </tr>
+                    {% if forloop.last %}
+                        <tr id="pt_sum_targets">
+                            <td class="pt-delete-row"> </td>
+                            <td align="left" style="padding-left:0px; border:none; vertical-align: middle;">
+                                <strong>Sum of targets</strong>
+                            </td>
+                            <td align="right" style="border:none; vertical-align: middle;">
+                                <div style="margin: 5px 10px;">
+                                    <strong><span id="id_span_targets_sum">{{targets_sum|floatformat:"-2"}}</span></strong>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                <tr style="background-color:#F5F5F5">
+                    <td class="pt-delete-row"> </td>
+                    <td align="left" class="align-middle">
+                        <strong>Life of Program (LoP) target</strong>
+                    </td>
+                    <td align="right" class="align-middle">
+                        <div style="margin: 5px 10px;">
+                            <strong>{{indicator.lop_target|floatformat:"-2"}}</strong>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                    <tr style="background-color:#F5F5F5">
+                        <td colspan="3" style="color:red; padding: 0px" id="id_pt_errors"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="offset-sm-1">
+            {% if indicator.target_frequency != 2 %}
+                <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="btn btn-link"><i class="fas fa-plus"></i> Add a target</a>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

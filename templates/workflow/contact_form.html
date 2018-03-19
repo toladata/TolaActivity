@@ -1,19 +1,25 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<div>
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-  <li><a href="/workflow/stakeholder_list/0/0/">Stakeholder List</a></li>
-  <li><a href="/workflow/contact_list/{{stakeholder_id}}/">Contact List</a></li>
-  <li class="active">Contact Form</li>
-</ol>
-</div>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/workflow/dashboard/0/">Program Index</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="/workflow/stakeholder_list/0/0/">Stakeholder List</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="/workflow/contact_list/{{stakeholder_id}}/">Contact List</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Contact Form</li>
+    </ol>
+</nav>
 {% endblock %}
 {% block page_title %}Contact Form{% endblock %}
 
 
 {% block content %}
-    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}

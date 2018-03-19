@@ -1,0 +1,127 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="TolaData - TolaActivity: Putting Adaptive Management into Practice">
+        <meta name="author" content="TolaData">
+
+        <title>Bootstrap4 test file</title>
+
+        <link rel="icon" href="{% static 'img/favicon.ico' %}">
+
+        <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous">
+
+
+        <script
+              src="http://code.jquery.com/jquery-3.3.1.min.js"
+              integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+              crossorigin="anonymous"></script>
+
+    </head>
+    <body>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand" href="{% url 'index' %}">
+            <img style="margin-top: -3px; max-width: 140px;" src="{% static 'img/tola-activity-primary-mark-white.png' %}" />
+        </a>
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Links -->
+            <ul class="navbar-nav mr-auto">
+                {% if report_server == True%}
+                    {% if user.is_authenticated  %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reports</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarReportsDropdown">
+                                <a class="dropdown-item" href="/reports/report/"> Program Report</a>
+                                <a class="dropdown-item" href="/workflow/report/0/0"> Project Report</a>
+                                <a class="dropdown-item" href="/indicators/collecteddata/0/0/0/">Indicator Data Report</a>
+                                <a class="dropdown-item" href="/indicators/data/0/">Indicator Visual Report</a>
+                                <a class="dropdown-item" href="/indicators/report/0/0/0/">Indicator Library</a>
+                            </div>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDashboardsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dashboards</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDashboardsDropdown">
+                            <a class="dropdown-item" href="/customdashboard/program_list/0/">Public Dashboards</a>
+                        </div>
+                    </li>
+                {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarWorkflowDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Workflow</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarWorkflowDropdown">
+                            <a class="dropdown-item" href="/workflow/dashboard/0/">Program Index</a>
+                            <a class="dropdown-item" href="/workflow/documentation_list/0/0/"> Documents</a>
+                            <a class="dropdown-item" href="/workflow/siteprofile_list/0/0/">Sites</a>
+                            <a class="dropdown-item" href="/workflow/stakeholder_list/0/0">Stakeholders</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/indicators/home/0/0/0">Indicators</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarFormlibraryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Form Library</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarFormlibraryDropdown">
+                            <a class="dropdown-item" href="/formlibrary/training_list/0/">Training</a>
+                            <a class="dropdown-item" href="/formlibrary/distribution_list/0/">Distributions</a>
+                            <a class="dropdown-item" href="/formlibrary/beneficiary_list/0/">Beneficiaries</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarUserReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reports</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarUserReportsDropdown">
+                            <a class="dropdown-item" href="/reports/report/">Program Report</a>
+                            <a class="dropdown-item" href="/customdashboard/program_list/0/">Program Dashboards</a>
+                            <a class="dropdown-item" href="/workflow/report/0/none">Project Report</a>
+                            <a class="dropdown-item" href="/indicators/collecteddata/0/0/0/">Indicator Data Report</a>
+                            <a class="dropdown-item" href="/indicators/data/0/0/0/">Indicator Visual Report</a>
+                            <a class="dropdown-item" href="/indicators/report/0/0/0/">Indicator Library</a>
+                            <a class="dropdown-item" href="#">Target vs Actual Report</a>
+                            <a class="dropdown-item" href="#">Indicator Disaggregation Report</a>
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+        <script
+              src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+              integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+              crossorigin="anonymous"></script>
+
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+        <script
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+        <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    </body>
+</html>

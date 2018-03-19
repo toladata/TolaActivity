@@ -20,6 +20,7 @@ function loadCollected(indicator,program){
         $(div_name).html(data);
         $("body").removeClass("modal-open");
     });
+    $("#id_indicator_data_count_btn_"+indicator).blur();
 };
 
 /*
@@ -46,25 +47,24 @@ function loadIndicators(program, indicator, type){
 <div id="toplevel_div">
 <!-- Default panel contents -->
     {% for program in programs %}
-        <div class='panel panel-default'>
-            <div class='panel-heading'>
-                <h4>{{ program.name|truncatechars:85 }}
-                    <span style="float: right;" class="btn-group" role="group">
-                        <a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-xs btn-success">New Indicator</a>
-                        <a href="/indicators/program_report/{{ program.id }}/" class="btn btn-xs btn-info">Grid/Print Report</a>
-                    </span>
-                </h4>
+        <div class='card'>
+            <div class='card-header'>
+                {{ program.name|truncatechars:85 }}
+                <span style="float: right;" class="btn-group" role="group">
+                    <a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-sm btn-secondary"><i class="fas fa-plus-circle"></i> New Indicator</a>
+                    <a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">Grid/Print Report</a>
+                </span>
             </div>
             {% if not program.indicator_set.all %}
-                <div class='panel-body'>
-                    <h4>No Indicators have been entered for this program</h4>
-                    <p>Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
+                <div class='card-body'>
+                    <div class="card-title">No Indicators have been entered for this program</div>
+                    <p class="card-text">Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
                 </div>
             {% else %}
-                <div class='panel-body'>
-                    <a id="id_btnOpenindicatorsForProgramId_{{ program.id}}" onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-success" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators </a>
+                <div class='card-body'>
+                    <a id="id_btnOpenindicatorsForProgramId_{{ program.id}}" href="#" onclick="loadIndicators({{ program.id }}, {{ indicator_id }}, {{ type_id }})" class="btn btn-sm btn-info" data-toggle="collapse" data-target="#hidden-{{ program.id }}">{{ program.indicator_count }} Indicators</a>
                 </div>
-                <div id="hidden-{{ program.id }}" class="accordian-body collapse">
+                <div id="hidden-{{ program.id }}" class="collapse">
                     {% include "indicators/program_indicators_table.html" %}
                 </div>
             {% endif %}

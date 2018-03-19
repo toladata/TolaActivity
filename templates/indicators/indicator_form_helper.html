@@ -1,0 +1,524 @@
+{% load widget_tweaks %}
+    <form
+        action="{% url 'indicator_update' indicator.id %}"
+        id="indicator_update_form"
+        class="form-horizontal"
+        method="post"
+        novalidate>
+    <div class="modal-body" id="indicator_modal_body">
+
+        {% csrf_token %}
+
+        {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field }}
+        {% endfor %}
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" href="#summaryTab" role="tab" data-toggle="tab">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#performanceTab" role="tab" data-toggle="tab">Performance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#targetsTab" role="tab" data-toggle="tab">Targets</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#dataAcquisitionTab" role="tab" data-toggle="tab">Data Acquisition</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#analysisReportingTab" role="tab" data-toggle="tab">Analysis and Reporting</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#approvalTab" role="tab" data-toggle="tab">Approval</a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="summaryTab">
+                <br>
+                <fieldset>
+                    <div class="form-row mb-2" id="div_id_program">
+                        <label for="id_program2" class="col-sm-4 col-form-label" align="right">{{ form.program.label }}</label>
+                        <div class="col-sm-7">
+                            {% render_field form.program2 class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.program.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <!-- <div class="form-row mb-2" id="div_id_program">
+                        <label for="id_program" class="col-sm-4 col-form-label" align="right">{{ form.program.label }}</label>
+                        <div class="col-sm-7">
+                            {% render_field form.program class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.program.help_text }}</small>
+                        </div>
+                    </div> -->
+
+                    <div class="form-row mb-2" id="div_id_sector">
+                        <label for="id_sector" class="col-sm-4 col-form-label" align="right">{{ form.sector.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.sector class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.sector.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_objectives">
+                        <label for="id_objectives" class="col-sm-4 col-form-label" align="right">{{ form.objectives.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.objectives class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.objectives.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_strategic_objectives">
+                        <label for="id_strategic_objectives" class="col-sm-4 col-form-label" align="right">{{ form.strategic_objectives.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.strategic_objectives class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.strategic_objectives.help_text }}</small>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="performanceTab" name="Performance tab">
+                <br>
+                <fieldset>
+                    <div class="form-row mb-2" id="div_id_name">
+                        <label for="id_name" class="col-sm-4 col-form-label" align="right">{{ form.name.label }}* </label>
+                        <div class="col-sm-7">
+                            {% render_field form.name class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.name.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_level">
+                        <label for="id_level" class="col-sm-4 col-form-label" align="right">{{ form.level.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.level class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.level.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_number">
+                        <label for="id_number" class="col-sm-4 col-form-label" align="right">{{ form.number.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.number class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.number.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_source">
+                        <label for="id_source" class="col-sm-4 col-form-label" align="right">{{ form.source.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.source class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.source.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_definition">
+                        <label for="id_definition" class="col-sm-4 col-form-label" align="right">{{ form.definition.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.definition class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.definition.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_justification">
+                        <label for="id_justification" class="col-sm-4 col-form-label" align="right">{{ form.justification.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.justification class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.justification.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_disaggregation">
+                        <label for="id_disaggregation" class="col-sm-4 col-form-label" align="right">{{ form.disaggregation.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.disaggregation class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.disaggregation.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_indicator_type">
+                        <label for="id_indicator_type" class="col-sm-4 col-form-label" align="right">{{ form.indicator_type.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.indicator_type class+="form-control" %}
+                            <small class="form-text text-muted">{{ form.indicator_type.help_text }}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_key_performance_indicator">
+                        <label for="id_key_performance_indicator" class="col-sm-4 col-form-label" align="right"></label>
+                        <div class="col-sm-7">
+                            {{ form.key_performance_indicator }}
+                            <label for="id_key_performance_indicator" class="col-form-label">{{ form.key_performance_indicator.label }}</label>
+                            <small class="form-text text-muted">{{ form.key_performance_indicator.help_text }}</small>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="targetsTab" name="Targets tab">
+                <br>
+                <fieldset>
+                    <div class="form-row mb-2" id="div_id_unit_of_measure">
+                        <label for="id_unit_of_measure" class="col-sm-4 col-form-label" align="right">{{ form.unit_of_measure.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.unit_of_measure class+="form-control" %}
+                            {% if form.unit_of_measure.help_text %}
+                                <small class="form-text text-muted">{{ form.unit_of_measure.help_text }}</small>
+                            {% endif %}
+                            <div id="id_validation_unitofmeasure" class="invalid-feedback">Please complete this field.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_lop_target">
+                        <label for="id_lop_target" class="col-sm-4 col-form-label" align="right">{{ form.lop_target.label }} </label>
+                        <div class="col-sm-7">
+                            <!-- {% render_field form.lop_target class+="form-control" %} -->
+                            <input type="number"
+                                    name="{{ form.lop_target.name }}"
+                                    id="{{ form.lop_target.id_for_label }}"
+                                    class="form-control"
+                                    min="1"
+                                    {% if form.lop_target.value != None %} value="{{ form.lop_target.value|stringformat:'s' }}"{% endif %}
+                                    required
+                                    onblur="this.checkValidity();">
+                            {% if form.lop_target.help_text %}
+                                <small class="form-text text-muted">{{ form.lop_target.help_text }}</small>
+                            {% endif %}
+                            <div id="id_validation_lop" class="invalid-feedback">Please enter a number larger than zero with no letters or symbols. If your target is a percentage, describe it in the unit of measure field.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_rationale_for_target">
+                        <label for="id_rationale_for_target" class="col-sm-4 col-form-label" align="right">{{ form.rationale_for_target.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.rationale_for_target class+="form-control" %}
+                            {% if form.rationale_for_target.help_text %}
+                                <small class="form-text text-muted">{{ form.rationale_for_target.help_text }}</small>
+                            {% endif %}
+                            <div class="invalid-feedback">This is just a test</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_baseline">
+                        <label for="id_baseline" class="col-sm-4 col-form-label" align="right">{{ form.baseline.label }} </label>
+                        <div class="col-sm-7">
+                            <!-- {% render_field form.baseline class+="form-control" %} -->
+                            <input type="number"
+                                    name="{{ form.baseline.name }}"
+                                    id="{{ form.baseline.id_for_label }}"
+                                    class="form-control"
+                                    min="0"
+                                    {% if form.baseline.value != None %} value="{{ form.baseline.value|stringformat:'s' }}"{% endif %}
+                                    onblur="this.checkValidity();">
+                            {{ form.baseline_na }} <label for="id_baseline_na" class="col-form-label"> {{ form.baseline_na.label}}</label>
+                            {% if form.baseline.help_text %}
+                                <small class="form-text text-muted">{{ form.baseline.help_text }}</small>
+                            {% endif %}
+                            <div id="id_validation_baseline" class="invalid-feedback">Please enter a number with no letters or symbols. Your baseline can be zero.</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_target_frequency">
+                        <label for="id_target_frequency" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency.label }}* </label>
+                        <div class="col-sm-7">
+                            {% render_field form.target_frequency class+="form-control" %}
+                            {% if form.target_frequency.help_text %}
+                                <small class="form-text text-muted">{{ form.target_frequency.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_target_frequency_start">
+                        <label for="id_target_frequency_start" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_start.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.target_frequency_start class+="form-control" %}
+                            {% if form.target_frequency_start.help_text %}
+                                <small class="form-text text-muted">{{ form.target_frequency_start.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_target_frequency_custom">
+                        <label for="id_target_frequency_custom" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_custom.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.target_frequency_custom class+="form-control" %}
+                            {% if form.target_frequency_custom.help_text %}
+                                <small class="form-text text-muted">{{ form.target_frequency_custom.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+                    <div class="form-row mb-2" id="div_id_target_frequency_num_periods">
+                        <label for="id_target_frequency_num_periods" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_num_periods.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.target_frequency_num_periods class+="form-control" %}
+                            {% if form.target_frequency_num_periods.help_text %}
+                                <small class="form-text text-muted">{{ form.target_frequency_num_periods.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div id="div_id_create_targets_btn" class="form-row mb-2">
+                         <label for="id_create_targets_btn" class="col-sm-4 col-form-label"></label>
+                        <div class="col-sm-7">
+                            <button type="button" id="id_create_targets_btn" class="btn btn-sm btn-primary">Create targets</button>
+                            <button type="button" id="id_delete_targets_btn" class="btn btn-sm btn-link">Remove all targets</button>
+                        </div>
+                    </div>
+
+                    <div id="id_div_periodic_tables_placeholder">
+                        {% include "indicators/indicatortargets.html" %}
+                    </div>
+
+                </fieldset>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="dataAcquisitionTab">
+                <fieldset>
+                    <br>
+                    <div class="form-row mb-2" id="div_id_means_of_verification">
+                        <label for="id_means_of_verification" class="col-sm-4 col-form-label" align="right">{{ form.means_of_verification.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.means_of_verification class+="form-control" %}
+                            {% if form.means_of_verification.help_text %}
+                                <small class="form-text text-muted">{{ form.means_of_verification.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_data_collection_method">
+                        <label for="id_data_collection_method" class="col-sm-4 col-form-label" align="right">{{ form.data_collection_method.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.data_collection_method class+="form-control" %}
+                            {% if form.data_collection_method.help_text %}
+                                <small class="form-text text-muted">{{ form.data_collection_method.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_data_collection_frequency">
+                        <label for="id_data_collection_frequency" class="col-sm-4 col-form-label" align="right">{{ form.data_collection_frequency.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.data_collection_frequency class+="form-control" %}
+                            {% if form.data_collection_frequency.help_text %}
+                                <small class="form-text text-muted">{{ form.data_collection_frequency.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_data_points">
+                        <label for="id_data_points" class="col-sm-4 col-form-label" align="right">{{ form.data_points.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.data_points class+="form-control" %}
+                            {% if form.data_points.help_text %}
+                                <small class="form-text text-muted">{{ form.data_points.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_responsible_person">
+                        <label for="id_responsible_person" class="col-sm-4 col-form-label" align="right">{{ form.responsible_person.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.responsible_person class+="form-control" %}
+                            {% if form.responsible_person.help_text %}
+                                <small class="form-text text-muted">{{ form.responsible_person.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="analysisReportingTab">
+                <br>
+                <fieldset>
+                    <div class="form-row mb-2" id="div_id_method_of_analysis">
+                        <label for="id_method_of_analysis" class="col-sm-4 col-form-label" align="right">{{ form.method_of_analysis.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.method_of_analysis class+="form-control" %}
+                            {% if form.method_of_analysis.help_text %}
+                                <small class="form-text text-muted">{{ form.method_of_analysis.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_information_use">
+                        <label for="id_information_use" class="col-sm-4 col-form-label" align="right">{{ form.information_use.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.information_use class+="form-control" %}
+                            {% if form.information_use.help_text %}
+                                <small class="form-text text-muted">{{ form.information_use.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_reporting_frequency">
+                        <label for="id_reporting_frequency" class="col-sm-4 col-form-label" align="right">{{ form.reporting_frequency.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.reporting_frequency class+="form-control" %}
+                            {% if form.reporting_frequency.help_text %}
+                                <small class="form-text text-muted">{{ form.reporting_frequency.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_quality_assurance">
+                        <label for="id_quality_assurance" class="col-sm-4 col-form-label" align="right">{{ form.quality_assurance.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.quality_assurance class+="form-control" %}
+                            {% if form.quality_assurance.help_text %}
+                                <small class="form-text text-muted">{{ form.quality_assurance.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_data_issues">
+                        <label for="id_data_issues" class="col-sm-4 col-form-label" align="right">{{ form.data_issues.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.data_issues class+="form-control" %}
+                            {% if form.data_issues.help_text %}
+                                <small class="form-text text-muted">{{ form.data_issues.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_indicator_changes">
+                        <label for="id_indicator_changes" class="col-sm-4 col-form-label" align="right">{{ form.indicator_changes.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.indicator_changes class+="form-control" %}
+                            {% if form.indicator_changes.help_text %}
+                                <small class="form-text text-muted">{{ form.indicator_changes.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_comments">
+                        <label for="id_comments" class="col-sm-4 col-form-label" align="right">{{ form.comments.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.comments class+="form-control" %}
+                            {% if form.comments.help_text %}
+                                <small class="form-text text-muted">{{ form.comments.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_notes">
+                        <label for="id_notes" class="col-sm-4 col-form-label" align="right">{{ form.notes.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.notes class+="form-control" %}
+                            {% if form.notes.help_text %}
+                                <small class="form-text text-muted">{{ form.notes.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="approvalTab">
+                <br>
+                <fieldset>
+
+                    <div class="form-row mb-2" id="div_id_approval_submitted_by">
+                        <label for="id_approval_submitted_by" class="col-sm-4 col-form-label" align="right">{{ form.approval_submitted_by.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.approval_submitted_by class+="form-control" %}
+                            {% if form.approval_submitted_by.help_text %}
+                                <small class="form-text text-muted">{{ form.approval_submitted_by.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row mb-2" id="div_id_approved_by">
+                        <label for="id_approved_by" class="col-sm-4 col-form-label" align="right">{{ form.approved_by.label }} </label>
+                        <div class="col-sm-7">
+                            {% render_field form.approved_by class+="form-control" %}
+                            {% if form.approved_by.help_text %}
+                                <small class="form-text text-muted">{{ form.approved_by.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+    </div> <!-- modal body -->
+    <div class="modal-footer" style="background-color: #d7d7d7; border-top:1px solid #f5f5f5; padding: 19px 6px 19px 15px;">
+        <div class="pull-left" style="margin-left:5px">
+            <!-- <input type="submit" class="btn btn-primary" value="Save changes"> -->
+            <input type="submit" name="submit" value="Save changes" class="btn btn-primary btn-default" id="submit-id-submit">
+            <input type="reset" style="background-color:#d7d7d7; border-color:#B8BABD; color:#888888" class="btn btn-default" value="Reset">
+        </div>
+        <div class="text-muted">{% include "form_guidance.html" %}</div>
+    </div>
+</form>
+
+<script>
+    /*
+    var alerts = {};
+
+    function setTabAlert(tabId, tabName){
+        alerts[tabId] = 'Please complete all required fields in the ' + tabName;
+    }
+
+    function unSetTabAlert(tabId){
+        delete alerts[tabId];
+    }
+
+    function showAlerts(messagesDiv) {
+        var msg = '';
+        $.each(alerts, function(k,v) {
+            msg += v + '<br>';
+        });
+        $(messagesDiv).empty();
+        if (!jQuery.isEmptyObject(alerts)) {
+            createAlert('danger', msg, false, messagesDiv);
+        }
+        alerts = {};
+    }
+
+    $("#indicator_update_form").on("blur", ":input", function(e){
+        var isvalid = e.target.validity.valid;
+        var element = $(e.target);
+        var elementId = element.attr('id');
+        // console.log(element.attr('id'), isvalid);
+
+        element.parent().addClass('was-validated');
+        $('label[for="'+ elementId + '"]').toggleClass('has-error', !isvalid);
+        if (isvalid == false) {
+            var tabPane = element.closest('.tab-pane');
+            var tabId = tabPane.attr('id');
+            var tabName = tabPane.attr('name');
+            setTabAlert(tabId, tabName);
+        }
+
+        if (elementId == 'id_baseline' || elementId == 'id_baseline_na') {
+            $('label[for="id_baseline_na"]').toggleClass('has-error', !isvalid);
+            $('label[for="id_baseline"]').toggleClass('has-error', !isvalid);
+        }
+    });
+
+    $("#indicator_modal_content").on("submit", "#indicator_update_form", function(e){
+        e.preventDefault();
+        var form = e.target;
+        form.classList.add('was-validated');
+
+        if (form.checkValidity() == false) {
+            const tabs = $(".tab-pane");
+            $.each(tabs, (i, tab) => {
+                const tabId = tab.id;
+                const tabName = $(tab).attr('name');
+                if ($(tab).find('.form-control:invalid').length > 0) {
+                    setTabAlert(tabId, tabName);
+                } else {
+                    unSetTabAlert(tabId);
+                }
+            });
+            showAlerts("#modalmessages");
+        }
+
+    });
+    */
+
+</script>

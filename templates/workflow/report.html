@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Dashboards</a></li>
-  <li class="active">Reports</li>
-</ol>
-
+<nav class="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/workflow/dashboard/0/">Program Dashboards</a>
+        </li>
+        <li class="breadcrumb-item active">Reports</li>
+    </ol>
+</nav>
 {% endblock bread_crumb %}
 
 {% block page_title %}Project Report{% endblock %}
@@ -65,7 +68,7 @@
                         'orderable':false,
                         'className': 'dt-body-center',
                         'render': function (data, type, row){
-                            return '<div class="btn-group btn-group-xs"><a type="button" class="btn btn-warning" href="/workflow/dashboard/project/'+row.id+'">Edit</a><br><a type="button" class="btn btn-default" href="/workflow/projectagreement_detail/'+row.id+'">View</a></div>';
+                            return '<div class="btn-group" role="group" aria-label="Edit and delete buttons"><a class="btn btn-sm btn-secondary" href="/workflow/dashboard/project/'+row.id+'"><i class="fas fa-edit"></i></a><a class="btn btn-sm btn-secondary" href="/workflow/projectagreement_detail/'+row.id+'"><i class="fas fa-eye"></li></a></div>';
                     }
                 }],
                 columns: [
@@ -143,23 +146,22 @@
 <div class="dropdown">
 	{% include "workflow/filter.html" %}
 </div>
+
 <div style="display: none;">
     <span class="filter" id="status_filter_value"></span>
     <span class="filter" id="program_filter_value"></span>
 </div>
 
-
 <br>
-        <div class="col-md-12 table-responsive row">
-            <table class="table table-bordered " id="data_table" class="display" cellspacing="0" width="100%">
-            </table>
-        </div>
-        <!--
-       <div class="row" >
-    		<button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/workflow/report/0/none/?export=true&{{ request.GET.urlencode }}'">Export All</button>
-       </div>
-       -->
-
-<br/>
+<br>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover" id="data_table" cellspacing="0">
+    </table>
+</div>
+<!--
+<div class="row" >
+	<button type="submit" class="btn btn-success" style="margin-top:10px" onClick="location.href='/workflow/report/0/none/?export=true&{{ request.GET.urlencode }}'">Export All</button>
+</div>
+-->
 
 {% endblock content %}
