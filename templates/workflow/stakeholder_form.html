@@ -1,18 +1,21 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<div>
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-  <li><a href="/workflow/stakeholder_list/0/0/">Stakeholder List</a></li>
-  <li class="active">Stakeholder Form</li>
-</ol>
-</div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/workflow/dashboard/0/">Program Index</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="/workflow/stakeholder_list/0/0/">Stakeholder List</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Stakeholder Form</li>
+    </ol>
+</nav>
+
 {% endblock %}
 {% block page_title %}Stakeholder Form{% endblock %}
 
-
 {% block content %}
-
     <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
     <link href="{{ STATIC_URL }}css/select2.min.css" rel="stylesheet" />
     <script type="text/javascript">
