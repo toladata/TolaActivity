@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-    <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-    {% if project_agreement_id != '0' %}
-        <li>
-            <a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a>
-        </li>
-    {% endif %}
-    <li class="active">Documentation List</li>
-</ol>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/workflow/dashboard/0/">Program Index</a></li>
+        {% if project_agreement_id != '0' %}
+            <li class="breadcrumb-item">
+                <a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a>
+            </li>
+        {% endif %}
+        <li class="breadcrumb-item active">Documentation List</li>
+    </ol>
+</nav>
 {% endblock %}
 {% block page_title %}Document List{% endblock %}
 
@@ -37,7 +39,7 @@
 <br/>
 
 <table
-    class="table table-hover table-sm table-striped"
+    class="table table-hover table-sm"
     id="documentationtable">
 </table>
 
@@ -71,7 +73,7 @@
                 { title: "Date Created", data: "create_date",
                     "defaultContent": "<i>Not set</i>",
                     "mRender": function (data, records, row) {
-                        return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + row.create_date + '</a>';
+                        return '<a class="collecteddata" name=' + row.id + ' href="/workflow/documentation_update/'+row.id+'">' + formatDate(row.create_date) + '</a>';
                         }},
                 { title: "Document Name", data: "name",
                     "defaultContent": "<i>Not set</i>",

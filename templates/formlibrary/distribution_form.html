@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-  <li><a href="/formlibrary/distribution_list/0/">Distributions</a></li>
-  <li class="active">Distribution Form</li>
-</ol>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/workflow/dashboard/0/">Program Index</a></li>
+        <li class="breadcrumb-item"><a href="/formlibrary/distribution_list/0/">Distributions</a></li>
+        <li class="breadcrumb-item active">Distribution Form</li>
+    </ol>
+</nav>
 {% endblock %}
 {% block page_title %}Distribution Form{% endblock %}
 
 {% block content %}
-    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
             {% for field in form %}

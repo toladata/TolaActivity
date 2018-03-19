@@ -1524,9 +1524,6 @@ class BenchmarkDelete(AjaxableResponseMixin, DeleteView):
 
 
 class ContactList(ListView):
-    """
-    Get Contacts
-    """
     model = Contact
     template_name = 'workflow/contact_list.html'
 

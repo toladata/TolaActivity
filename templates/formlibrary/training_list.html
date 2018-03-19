@@ -1,12 +1,20 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-  {%  if project_agreement_id != '0'%}
-    <li><a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
-  {% endif %}
-  <li class="active">Trainings</li>
-</ol>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/workflow/dashboard/0/">Program Index</a>
+        </li>
+        {%  if project_agreement_id != '0'%}
+            <li class="breadcrumb-item">
+                <a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a>
+            </li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">Trainings</li>
+    </ol>
+</nav>
+
 {% endblock %}
 {% load group_tag %}
 {% block page_title %}Training List{% endblock %}
@@ -14,13 +22,12 @@
 {% block content %}
 <div>
     {% include "formlibrary/filter.html" %}
-    <a href="/formlibrary/training_add/0/" class="btn btn-large btn-success">New Training</a>
-    <a href="/formlibrary/training_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Training</a>
-<hr/>
+    <a href="/formlibrary/training_add/0/" class="btn btn-sm btn-success">New Training</a>
+    <a href="/formlibrary/training_import" class="btn btn-sm btn-info" data-toggle="modal" data-target="#importModal">Import Training</a>
 </div>
 
-<!-- Table -->
-<table class="table" id="trainingtable">
+
+<table class="table table-sm table-hover" id="trainingtable">
 </table>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -41,7 +48,7 @@
                         if(!$.trim(models['getAgreements'])){
                             $("select#project").html("<option>project(s)</option>");
                             $("select#project").attr('disabled', true);
-                            program_filter(program_id, 0);                            
+                            program_filter(program_id, 0);
                         }else{
                             data = JSON.parse(models['getAgreements']);
                             for (var i = 0; i < data.length; i++) {
@@ -82,7 +89,7 @@
 
 
             table = $('#trainingtable').DataTable( {
-                 "order": [], 
+                 "order": [],
                  "bFilter": false,
                  'bLengthChange': false,
                  "aoColumnDefs": [
@@ -94,7 +101,7 @@
                     { title: "Date Created", data: "create_date",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, record, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.create_date + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + formatDate(row.create_date) + '</a>';
                             }},
                     { title: "Training Name", data: "training_name",
                         "defaultContent": "<i>Not set</i>",
@@ -103,7 +110,7 @@
                             }},
                     { title: "Beneficiaries/Update/Delete/ ",
                         "mRender": function (data, record, row) {
-                                return '<a href="/formlibrary/beneficiary_list/'+ row.id +'" class="btn btn-xs btn-info">Beneficiaries</a><a href="/formlibrary/training_update/'+ row.id +'" class="btn btn-xs btn-warning">Update Training</a><a href="/formlibrary/training_delete/'+ row.id + '" class="btn btn-xs btn-danger">Delete Training</a>';
+                                return '<a href="/formlibrary/beneficiary_list/'+ row.id +'" class="btn btn-sm btn-info" alt="Beneficiaries"><i class="fas fa-users"></i></a><a href="/formlibrary/training_update/'+ row.id +'" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a><a href="/formlibrary/training_delete/'+ row.id + '" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>';
                             }
                     }
                     ]
@@ -115,23 +122,23 @@
                 // Filter Trainings
                 if (program_id != 0 && project_id == 0) {
 
-                    $.getJSON("/formlibrary/training_objects/"+ program_id + "/0/", function(data) {  
-                        show_training_table(data['getTraining']);                                          
-                    }); 
+                    $.getJSON("/formlibrary/training_objects/"+ program_id + "/0/", function(data) {
+                        show_training_table(data['getTraining']);
+                    });
 
                 }else if(program_id != 0 && project_id != 0){
 
-                     $.getJSON("/formlibrary/training_objects/"+ program_id +"/"+project_id+ "/", function(data) { 
-                        show_training_table(data['getTraining']);                                                                                                           
-                    }); 
-                }  
+                     $.getJSON("/formlibrary/training_objects/"+ program_id +"/"+project_id+ "/", function(data) {
+                        show_training_table(data['getTraining']);
+                    });
+                }
                 else{
 
-                    $.getJSON("/formlibrary/training_objects/0/0/", function(data) {  
-                        show_training_table(data['getTraining']);          
-                    });     
+                    $.getJSON("/formlibrary/training_objects/0/0/", function(data) {
+                        show_training_table(data['getTraining']);
+                    });
                 }
-            } 
+            }
 
 </script>
 

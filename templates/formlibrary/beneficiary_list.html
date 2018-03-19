@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-  {%  if project_agreement_id != '0'%}
-    <li><a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a></li>
-  {% endif %}
-  <li class="active">Beneficiaries</li>
-</ol>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/workflow/dashboard/0/">Program Index</a>
+        </li>
+        {%  if project_agreement_id != '0'%}
+            <li class="breadcrumb-item">
+                <a href="/workflow/dashboard/project/{{ project_agreement_id }}/">Project Dashboards</a>
+            </li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">Beneficiaries</li>
+    </ol>
+</nav>
 {% endblock %}
 {% load group_tag %}
 {% block page_title %}Beneficiary List{% endblock %}
@@ -15,48 +21,40 @@
 <div>
     {% include "formlibrary/filter.html" %}
     <a href="/formlibrary/beneficiary_add/0/" class="btn btn-large btn-success">New Beneficiary</a>
-<hr/>
 </div>
 
-<!-- Table -->
-<table class="table" id="beneficiarytable">
-</table>
+<table class="table table-sm table-hover" id="beneficiarytable"></table>
+
 <script type="text/javascript">
     $(document).ready(function() {
-
         $("select#program").change(function() {
-
             if ($(this).val() == 'all') {
-                    $("select#project").html("<option>project(s)</option>");
-                    $("select#project").attr('disabled', true);
+                $("select#project").html("<option>project(s)</option>");
+                $("select#project").attr('disabled', true);
+            }  else {
+                program_id = $(this).val();
+                var url = "/formlibrary/getagreements/" + program_id + "/0/";
 
-                }
+                $.getJSON(url, function(models) {
+                    var options = '<option value="all">Project</option>';
 
-            else {
-                    program_id = $(this).val();
-                    var url = "/formlibrary/getagreements/" + program_id + "/0/";
-
-                    $.getJSON(url, function(models) {
-                        var options = '<option value="all">Project</option>';
-
-                        if(!$.trim(models['getAgreements'])){
-                            $("select#project").html("<option>project(s)</option>");
-                            $("select#project").attr('disabled', true);
-                            program_filter(program_id, 0);                            
-                        }else{
-                            data = JSON.parse(models['getAgreements']);
-                            for (var i = 0; i < data.length; i++) {
-                                options += '<option value="' + data[i]['id'] + '">' + data[i]['project_name'] + '</option>';
-                            }
-
-                            $("select#project").html(options);
-                            $("select#project option:first").attr('selected', 'selected');
-                            $("select#project").attr('disabled', false);
-                            program_filter(program_id, 0);
+                    if(!$.trim(models['getAgreements'])){
+                        $("select#project").html("<option>project(s)</option>");
+                        $("select#project").attr('disabled', true);
+                        program_filter(program_id, 0);
+                    }else{
+                        data = JSON.parse(models['getAgreements']);
+                        for (var i = 0; i < data.length; i++) {
+                            options += '<option value="' + data[i]['id'] + '">' + data[i]['project_name'] + '</option>';
                         }
-                    });
 
-                }
+                        $("select#project").html(options);
+                        $("select#project option:first").attr('selected', 'selected');
+                        $("select#project").attr('disabled', false);
+                        program_filter(program_id, 0);
+                    }
+                });
+            }
         });
 
         $('select#project').change(function(){
@@ -83,7 +81,7 @@
 
 
             table = $('#beneficiarytable').DataTable( {
-                 "order": [], 
+                 "order": [],
                  "bFilter": false,
                  'bLengthChange': false,
                  "aoColumnDefs": [
@@ -95,7 +93,7 @@
                     { title: "Date Created", data: "create_date",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, record, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.create_date + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + formatDate(row.create_date) + '</a>';
                             }},
                     { title: "Beneficiary Name", data: "beeficiary_name",
                         "defaultContent": "<i>Not set</i>",
@@ -104,10 +102,10 @@
                             }},
                     { title: "Update/Delete/ ",
                         "mRender": function (data, record, row) {
-                                return '<a href="/formlibrary/beneficiary_update/'+ row.id + '" class="btn btn-xs btn-warning">Update Beneficiary</a><a href="/formlibrary/beneficairy_delete/'+ row.id + '" class="btn btn-xs btn-danger">Delete Beneficiary</a>';
+                                return '<a href="/formlibrary/beneficiary_update/'+ row.id + '" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a><a href="/formlibrary/beneficairy_delete/'+ row.id + '" class="btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></a>';
                             }
                     }
-                    ]
+                ]
             } );
 
         }
@@ -116,24 +114,24 @@
                 // Filter Beneficiaries
                 if (program_id != 0) {
 
-                    $.getJSON("/formlibrary/beneficiary_objects/"+ program_id + "/0/", function(data) {  
-                        show_beneficiary_table(data['getBeneficiaries']);                                          
-                    }); 
+                    $.getJSON("/formlibrary/beneficiary_objects/"+ program_id + "/0/", function(data) {
+                        show_beneficiary_table(data['getBeneficiaries']);
+                    });
 
                 } else if(program_id != 0 && project_id != 0){
 
-                     $.getJSON("/formlibrary/beneficiary_objects/"+ program_id +"/"+project_id+ "/", function(data) {  
-                        show_beneficiary_table(data['getBeneficiaries']);                                                                                                           
-                    }); 
+                     $.getJSON("/formlibrary/beneficiary_objects/"+ program_id +"/"+project_id+ "/", function(data) {
+                        show_beneficiary_table(data['getBeneficiaries']);
+                    });
                 }
-                
+
                 else{
 
-                    $.getJSON("/formlibrary/beneficiary_objects/0/0/", function(data) {  
-                        show_beneficiary_table(data['getBeneficiaries']);          
-                    });     
+                    $.getJSON("/formlibrary/beneficiary_objects/0/0/", function(data) {
+                        show_beneficiary_table(data['getBeneficiaries']);
+                    });
                 }
-            } 
+            }
 
 </script>
 

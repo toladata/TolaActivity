@@ -1,21 +1,28 @@
 {% extends "base.html" %}
 {% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/workflow/dashboard/0/">Program Index</a></li>
-  {%  if project_proposal_id %}
-    <li><a href="/workflow/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a></li>
-    <li><a href="/formlibrary/training_list/{{ project_proposal_id }}/">Trainings</a></li>
-  {%  else  %}
-    <li><a href="/formlibrary/training_list/0/">Trainings</a></li>
-  {% endif %}
 
-  <li class="active">Training Attendance Form</li>
-</ol>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/workflow/dashboard/0/">Program Index</a>
+        </li>
+        {%  if project_proposal_id %}
+            <li class="breadcrumb-item">
+                <a href="/workflow/dashboard/project/{{ project_proposal_id }}/">Project Dashboards</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="/formlibrary/training_list/{{ project_proposal_id }}/">Trainings</a>
+            </li>
+        {% endif %}
+        <li class="breadcrumb-item active" aria-current="page">Training Attendance Form</li>
+    </ol>
+</nav>
+
 {% endblock %}
 {% block page_title %}Training Attendance Form{% endblock %}
 
 {% block content %}
-    {% include "form_guidance.html" %}
+
     {% if form.errors %}
         <div class="help-block">
             {% for field in form %}
