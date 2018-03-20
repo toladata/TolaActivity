@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.test import TestCase, override_settings, tag
 
 import factories
@@ -7,7 +8,7 @@ from workflow.models import TolaUser, Office
 @tag('pkg')
 class TolaUserTest(TestCase):
     def setUp(self):
-        self.organization =  factories.Organization()
+        self.organization = factories.Organization()
         self.user = factories.User()
 
     @override_settings(TOLAUSER_OBFUSCATED_NAME='Fake Name')
@@ -55,6 +56,13 @@ class WorkflowTeamTest(TestCase):
 
 
 @tag('pkg')
+class ProductTest(TestCase):
+    def test_print_instance(self):
+        product = factories.Product()
+        self.assertEqual(unicode(product), u'Próduct P <Help Syrians>')
+
+
+@tag('pkg')
 class OfficeTest(TestCase):
     def test_print_instance(self):
         office = Office(name="Office", code="Code")
@@ -63,7 +71,6 @@ class OfficeTest(TestCase):
     def test_print_instance_without_code(self):
         office = Office(name="Office", code=None)
         self.assertEqual(unicode(office), u'Office')
-
 
 
 @tag('pkg')
