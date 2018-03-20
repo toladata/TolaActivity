@@ -12,19 +12,19 @@ data sources or excel
 files.
 
 
-= Setting up a local TolaActivity instance
+# Setting up a local TolaActivity instance
 
 Running a local instance of TolaActivity makes development much faster and
 eliminates your dependence on access to MC's dev and demo and production
 servers. These instructions should get you up and running with a minimum of
 fuss.
 
-== Install the bits
+## Install the bits
 
 You will need Python 2 and MySQL installed because TolaActivity requires v2
 of Python.
 
-=== macOS
+### macOS
 
 On macOS, you can use Homebrew to install Python 2 alongside the system
 Python 2 installation as shown in the following:
@@ -43,7 +43,7 @@ $ cp tola/settings/local-sample.py tola/settings/local.py
 $ vi tola/settings/local.py
 ```
 
-=== Ubuntu Linux, Linux Mate, and derivatives
+### Ubuntu Linux, Linux Mate, and derivatives
 
 On Ubuntu and its derivatives (this was done on Linux Mate 18), Python 2 is the
 default (true when written, this might change later), so the following should
@@ -62,7 +62,6 @@ $ # Place settings.secret.yml into config/ directory
 $ pip install -r requirements.txt
 $ cp tola/settings/local-sample.py tola/settings/local.py
 $ vi tola/settings/local.py
-
 ```
 
 Edit _tola/settings/local.py_. You will need to disable dependencies
@@ -97,10 +96,10 @@ Comment out these sections as shown below:
 #
 #
 # DEV\_MIDDLEWARE = (
-#     'debug\_toolbar.middleware.DebugToolbarMiddleware',
+#     'debug_toolbar.middleware.DebugToolbarMiddleware',
 # )
 #
-# MIDDLEWARE\_CLASSES = MIDDLEWARE\_CLASSES + DEV\_MIDDLEWARE
+# MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + DEV_MIDDLEWARE
 ```
 
 In the database configuration section, change the `USER:` value to `root` and:
@@ -112,6 +111,8 @@ In the database configuration section, change the `USER:` value to `root` and:
 
 Save your changes and exit the file.
 
+## Set up Django
+
 Next, Set up the Django database:
 
 ```
@@ -119,7 +120,7 @@ $ python manage.py migrate
 System check identified some issues:
 
 WARNINGS:
-?: (1_8.W001) The standalone TEMPLATE_* settings were deprecated in Django 1.8 and the TEMPLATES dictionary takes precedence. You must put the values of the following settings into your default TEMPLATES dict: TEMPLATE_DEBUG.
+?: (1\_8.W001) The standalone TEMPLATE_* settings were deprecated in Django 1.8 and the TEMPLATES dictionary takes precedence. You must put the values of the following settings into your default TEMPLATES dict: TEMPLATE_DEBUG.
 Operations to perform:
   Apply all migrations: admin, auth, authtoken, contenttypes, customdashboard, formlibrary, indicators, reports, sessions, sites, social_django, workflow
   Running migrations:
