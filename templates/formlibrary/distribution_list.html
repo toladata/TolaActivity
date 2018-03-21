@@ -16,12 +16,12 @@
 {% block content %}
 <div>
     {% include "formlibrary/filter.html" %}
-    <a href="/formlibrary/distribution_add/0/" class="btn btn-large btn-success">New Distribution</a>
+    <a href="/formlibrary/distribution_add/0/" class="btn btn-sm btn-success">New Distribution</a>
 <!--  TODO: import distribution functionality
    <a href="/workflow/distribution_import" class="btn btn-large btn-info" data-toggle="modal" data-target="#importModal">Import Distribution</a> -->
 </div>
 
-<table class="table table-sm table-hover" cellspacing="0" id="distributiontable"></table>
+<table class="table table-sm table-bordered table-hover" cellspacing="0" id="distributiontable"></table>
 <script type="text/javascript">
     $(document).ready(function() {
          $("select#program").change(function() {
@@ -89,7 +89,7 @@
                     { title: "Date Created", data: "create_date",
                         "defaultContent": "<i>Not set</i>",
                         "mRender": function (data, record, row) {
-                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + row.create_date + '</a>';
+                                return '<a class="collecteddata" name=' + row.id + ' href="#">' + formatDate(row.create_date) + '</a>';
                             }},
                     { title: "Training Name", data: "distribution_name",
                         "defaultContent": "<i>Not set</i>",
