@@ -19,9 +19,19 @@ class Migration(migrations.Migration):
             field=models.DecimalField(blank=True, null=True, decimal_places=2, default=Decimal('0.00'), help_text='Approximate value if not a monetary fund', max_digits=12, verbose_name='Budget'),
         ),
         migrations.AlterField(
+            model_name='budget',
+            name='proposed_value',
+            field=models.DecimalField(blank=True, decimal_places=2, default=Decimal('0.00'), help_text='Approximate value if not a monetary fund', max_digits=12, verbose_name='Budget'),
+        ),
+        migrations.AlterField(
             model_name='historicalbudget',
             name='proposed_value',
             field=models.DecimalField(blank=True, null=True, decimal_places=2, default=Decimal('0.00'), help_text='Approximate value if not a monetary fund', max_digits=12, verbose_name='Budget'),
+        ),
+        migrations.AlterField(
+            model_name='historicalbudget',
+            name='proposed_value',
+            field=models.DecimalField(blank=True, decimal_places=2, default=Decimal('0.00'), help_text='Approximate value if not a monetary fund', max_digits=12, verbose_name='Budget'),
         ),
         migrations.AlterField(
             model_name='budget',
@@ -29,8 +39,18 @@ class Migration(migrations.Migration):
             field=models.DecimalField(blank=True, null=True, decimal_places=2, default=Decimal('0.00'), help_text='Monetary value positive or negative', max_digits=12, verbose_name='Actual'),
         ),
         migrations.AlterField(
+            model_name='budget',
+            name='actual_value',
+            field=models.DecimalField(blank=True, decimal_places=2, default=Decimal('0.00'), help_text='Monetary value positive or negative', max_digits=12, verbose_name='Actual'),
+        ),
+        migrations.AlterField(
             model_name='historicalbudget',
             name='actual_value',
             field=models.DecimalField(blank=True, null=True, decimal_places=2, default=Decimal('0.00'), help_text='Monetary value positive or negative', max_digits=12, verbose_name='Actual'),
+        ),
+        migrations.AlterField(
+            model_name='historicalbudget',
+            name='actual_value',
+            field=models.DecimalField(blank=True, decimal_places=2, default=Decimal('0.00'), help_text='Monetary value positive or negative', max_digits=12, verbose_name='Actual'),
         ),
     ]
