@@ -99,11 +99,9 @@
     <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
 
     <form
-        action="{% url 'documentation_update' object.id %}"
         id="collecteddata_update_form"
         class="form-horizontal"
-        method="post"
-        novalidate>
+        method="post">
         {% csrf_token %}
 
         {% for hidden_field in form.hidden_fields %}
