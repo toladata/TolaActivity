@@ -3,14 +3,23 @@
 html {
     position: relative;
     min-height: 100%;
+    font-size:  100%;
 }
 body {
     font-family: Arial;
-    font-size:  87.5%;
     /* Margin bottom by footer height */
     height: 100%;
     margin-bottom: 60px;
 }
+
+/** {
+  font-size: .875rem;
+}
+
+.form-control {
+  font-size: .875rem !important;
+}*/
+
 #footer {
     position: fixed;
     bottom: 0px;

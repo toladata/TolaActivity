@@ -12,11 +12,11 @@
 <div>
 {% if getDashboard %}
   {% ifnotequal status 'none' %}
-    <p>Filtered by (Status): {{ status }}</p>
+    <p>Filtered by (Status): {{ status|default_if_none:'' }}</p>
   {% endifnotequal %}
 
   {% if filtered_program %}
-    <p>Filtered by (Program): {{filtered_program}}</p>
+    <p>Filtered by (Program): {{filtered_program|default_if_none:''}}</p>
   {% endif %}
     {% for program in getDashboard %}
         {% if program.agreement.all %}
@@ -83,6 +83,7 @@
                 </table>
             </div>
         {% endif %}
+        <br>
     {% endfor %}
 {% else %}
     <p>No Programs</p>
