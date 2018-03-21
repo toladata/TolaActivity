@@ -145,28 +145,11 @@
                                         {% elif "local" in request.build_absolute_uri %}
                                             <span class="badge badge-danger">LOCAL</span>
                                         {% endif %}
-                                        <i class="fas fa-user"></i> {{ user.tola_user.name }}
+                                        {{ user.tola_user.name }}
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarProfileDropdown">
                                         <a class="dropdown-item" id="id_profile_link" href="{% url 'profile' %}">Profile</a>
                                         <a class="dropdown-item" id="id_profile_link2" href="{% url 'profile' %}">{{ user.tola_user.countries_list }}</a>
-                                    </div>
-                                </li>
-
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarBookmarksDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Bookmarks</a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarBookmarksDropdown">
-                                        {% if request.path in user.tola_user.tolabookmark.bookmark_url %}
-                                            <a class="dropdown-item" id="id_alreadyBookmarked">This page is in your bookmarks!</a>
-                                         {% else %}
-                                            <a class="dropdown-item" id="id_bookmarkIt" onClick="newBookmark('{{ request.path }}','{{ user }}')">
-                                                <i class="far fa-star"></i> Bookmark it</a>
-                                         {% endif %}
-                                         {% if user.tola_user.tolabookmark %}
-                                             {% for bookmark in user.tola_user.tolabookmark.all %}
-                                                <a class="dropdown-item" id="bookmark_{{bookmark.id}}" href="{{ bookmark.bookmark_url }}"><i class="fas fa-star"></i> {{ bookmark.name }}</a>
-                                             {% endfor %}
-                                         {% endif %}
                                     </div>
                                 </li>
                             {% else %}
