@@ -2,7 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 from crispy_forms.bootstrap import *
 from crispy_forms.layout import Layout, Submit, Reset, Field
-from django.forms import HiddenInput
+from django.forms import HiddenInput, URLInput
 from functools import partial
 from widgets import GoogleMapsWidget
 from django import forms
@@ -1423,6 +1423,9 @@ class DocumentationForm(forms.ModelForm):
 
         #override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
+        self.fields['name'].required = True
+        self.fields['url'].widget = URLInput()
+        self.fields['url'].required = True
         self.fields['project'].queryset = ProjectAgreement.objects.filter(program__country__in=countries)
         self.fields['program'].queryset = Program.objects.filter(country__in=countries)
 
