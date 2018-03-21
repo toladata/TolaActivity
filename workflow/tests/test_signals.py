@@ -13,7 +13,8 @@ import factories
 from tola import DEMO_BRANCH
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Organization, WorkflowTeam, ROLE_PROGRAM_ADMIN,
-                             ROLE_ORGANIZATION_ADMIN, ROLE_VIEW_ONLY)
+                             ROLE_ORGANIZATION_ADMIN, ROLE_VIEW_ONLY,
+                             WorkflowLevel1)
 
 
 @tag('pkg')
@@ -100,6 +101,28 @@ class AddUsersToDefaultWorkflowLevel1Test(TestCase):
         num_results = WorkflowTeam.objects.filter(
             workflow_user=tola_user, role=role, workflowlevel1=wflvl1_1).count()
         self.assertEqual(num_results, 1)
+
+
+@tag('pkg')
+class CreateDefaultProgramTest(TestCase):
+
+    @override_settings(CREATE_DEFAULT_PROGRAM=False)
+    def test_deactivated(self):
+        factories.Organization()  # triggers the signal
+        self.assertEqual(WorkflowLevel1.objects.all().count(), 0)
+
+    @override_settings(CREATE_DEFAULT_PROGRAM=True)
+    def test_activated(self):
+        organization = factories.Organization()  # triggers the signal
+        WorkflowLevel1.objects.get(name='Default program',
+                                   organization=organization)
+
+    @override_settings(CREATE_DEFAULT_PROGRAM=True)
+    def test_activated_update(self):
+        organization = factories.Organization()  # triggers the signal
+        organization.name = 'Name updated'
+        organization.save()
+        self.assertEqual(WorkflowLevel1.objects.all().count(), 1)
 
 
 class CheckSeatsSaveWFTeamsTest(TestCase):

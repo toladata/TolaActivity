@@ -62,6 +62,18 @@ def add_users_to_default_wflvl1(sender, instance, **kwargs):
                                     workflowlevel1=wflvl1_1)
 
 
+@receiver(signals.post_save, sender=Organization)
+def create_default_program(sender, instance, **kwargs):
+    if not settings.CREATE_DEFAULT_PROGRAM:
+        return
+
+    if kwargs.get('created') is False:
+        return
+
+    WorkflowLevel1.objects.create(
+        name='Default program', organization=instance)
+
+
 # WORKFLOWTEAM SIGNALS
 @receiver(signals.pre_save, sender=WorkflowTeam)
 def check_seats_save_team(sender, instance, **kwargs):
