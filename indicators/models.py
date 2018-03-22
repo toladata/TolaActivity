@@ -59,7 +59,7 @@ class StrategicObjective(models.Model):
 
     def save(self):
         if self.create_date is None:
-            self.create_date = datetime.now()
+            self.create_date = timezone.now()
         super(StrategicObjective, self).save()
 
 
@@ -85,7 +85,7 @@ class Objective(models.Model):
 
     def save(self):
         if self.create_date is None:
-            self.create_date = datetime.now()
+            self.create_date = timezone.now()
         super(Objective, self).save()
 
 
@@ -107,7 +107,7 @@ class Level(models.Model):
 
     def save(self):
         if self.create_date is None:
-            self.create_date = datetime.now()
+            self.create_date = timezone.now()
         super(Level, self).save()
 
 
@@ -315,8 +315,8 @@ class Indicator(models.Model):
     def save(self, *args, **kwargs):
         #onsave add create date or update edit date
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Indicator, self).save(*args, **kwargs)
 
     @property
@@ -444,8 +444,8 @@ class CollectedData(models.Model):
     #onsave add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.utcnow()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(CollectedData, self).save()
 
     #displayed in admin templates
