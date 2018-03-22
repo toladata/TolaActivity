@@ -109,6 +109,28 @@ class SectorRelated(models.Model):
         ordering = ('order',)
 
 
+class Currency(models.Model):
+    source_currency = models.CharField("Source Currency Name", max_length=255, blank=True)
+    target_currency = models.CharField("Target Currency Name", max_length=255, blank=True)
+    current_rate = models.IntegerField("Conversion Rate", null=True, blank=True)
+    conversion_date = models.DateTimeField(null=True, blank=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('source_currency',)
+        verbose_name_plural = "Currencies"
+
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
+        super(Currency, self).save()
+
+    def __unicode__(self):
+        return self.source_currency
+
+
 class Organization(models.Model):
     organization_uuid = models.CharField(max_length=255, verbose_name='Organization UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
@@ -125,6 +147,9 @@ class Organization(models.Model):
     chargebee_subscription_id = models.CharField(blank=True, null=True, max_length=50)
     chargebee_used_seats = models.IntegerField(blank=True, null=True, default=0)
     oauth_domains = fields.ArrayField(models.CharField("OAuth Domains", max_length=255, null=True, blank=True), null=True, blank=True)
+    date_format = models.CharField("Date Format", max_length=50, blank=True, default="DD.MM.YYYY")
+    default_currency = models.ForeignKey(Currency, blank=True, null=True)
+    currency_format = models.CharField("Currency Format", max_length=50, blank=True, default="Commas")
 
     class Meta:
         ordering = ('name',)
@@ -222,28 +247,6 @@ class TolaUser(models.Model):
             self.name = settings.TOLAUSER_OBFUSCATED_NAME
 
         super(TolaUser, self).save()
-
-
-class Currency(models.Model):
-    source_currency = models.CharField("Source Currency Name", max_length=255, blank=True)
-    target_currency = models.CharField("Target Currency Name", max_length=255, blank=True)
-    current_rate = models.IntegerField("Conversion Rate", null=True, blank=True)
-    conversion_date = models.DateTimeField(null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('source_currency',)
-        verbose_name_plural = "Currencies"
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(Currency, self).save()
-
-    def __unicode__(self):
-        return self.source_currency
 
 
 class Award(models.Model):
@@ -1338,12 +1341,12 @@ class Documentation(models.Model):
 
 class Budget(models.Model):
     contributor = models.CharField(max_length=135, blank=True, null=True, help_text="Source of budget fund")
-    account_code = models.CharField("Accounting Code",max_length=135, blank=True, null=True, help_text="Label or coded field")
-    cost_center = models.CharField("Cost Center",max_length=135, blank=True, null=True, help_text="Associate a cost with a type of expense")
-    donor_code = models.CharField("Donor Code",max_length=135, blank=True, null=True, help_text="Third Party coded field")
+    account_code = models.CharField("Accounting Code", max_length=135, blank=True, null=True, help_text="Label or coded field")
+    cost_center = models.CharField("Cost Center", max_length=135, blank=True, null=True, help_text="Associate a cost with a type of expense")
+    donor_code = models.CharField("Donor Code", max_length=135, blank=True, null=True, help_text="Third Party coded field")
     description_of_contribution = models.CharField(max_length=255, blank=True, null=True, help_text="Purpose or use for funds")
-    proposed_value = models.IntegerField("Budget",default=0, blank=True, null=True, help_text="Approximate value if not a monetary fund")
-    actual_value = models.IntegerField("Actual", default=0, blank=True, null=True, help_text="Monetary value positive or negative")
+    proposed_value = models.DecimalField("Budget", decimal_places=2, max_digits=12, default=Decimal("0.00"), blank=True, help_text="Approximate value if not a monetary fund")
+    actual_value = models.DecimalField("Actual", decimal_places=2, max_digits=12, default=Decimal("0.00"), blank=True, help_text="Monetary value positive or negative")
     workflowlevel2 = models.ForeignKey(WorkflowLevel2, blank=True, null=True, on_delete=models.SET_NULL, help_text="Releated workflow level 2")
     local_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="local", help_text="Primary Currency")
     donor_currency = models.ForeignKey(Currency, blank=True, null=True, related_name="donor", help_text="Secondary Currency")
@@ -1356,6 +1359,11 @@ class Budget(models.Model):
         if not self.create_date:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
+
+        if self.proposed_value is None:
+            self.proposed_value = Decimal("0.00")
+        if self.actual_value is None:
+            self.actual_value = Decimal("0.00")
 
         if self.workflowlevel2:
             wflvl2 = self.workflowlevel2

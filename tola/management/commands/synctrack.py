@@ -105,6 +105,9 @@ class Command(BaseCommand):
             data = self._get_from_track('organization', params)
             org_id = data['id']
 
+            params = {
+                'level1_uuid': program.level1_uuid
+            }
             # set payload and deliver
             payload = {
                 'level1_uuid': program.level1_uuid,
@@ -134,6 +137,9 @@ class Command(BaseCommand):
             data = self._get_from_track('workflowlevel1', params)
             wfl1_id = data['id']
 
+            params = {
+                'level2_uuid': project.level2_uuid
+            }
             # set payload and deliver
             payload = {
                 'level2_uuid': project.level2_uuid,
