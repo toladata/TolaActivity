@@ -14,11 +14,16 @@ from django.dispatch import receiver
 from tola import DEMO_BRANCH, track_sync as tsync
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Organization, TolaUser, WorkflowLevel1,
-                             WorkflowTeam, ROLE_ORGANIZATION_ADMIN,
-                             ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM,
-                             ROLE_VIEW_ONLY)
+                             WorkflowTeam, WorkflowLevel2,
+                             ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
+                             ROLE_PROGRAM_TEAM, ROLE_VIEW_ONLY)
 
 logger = logging.getLogger(__name__)
+
+
+@receiver(signals.pre_save, sender=WorkflowLevel2)
+def pre_save_handler(sender, instance, *args, **kwargs):
+    instance.full_clean()
 
 
 def get_addon_by_id(addon_id, addons):
