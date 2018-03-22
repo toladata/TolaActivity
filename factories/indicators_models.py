@@ -1,5 +1,8 @@
 import factory
 import faker
+from random import randint
+from django.utils import timezone
+
 from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy, lazy_attribute
 
 from indicators.models import (
@@ -34,8 +37,12 @@ class RandomIndicatorFactory(DjangoModelFactory):
 
     @lazy_attribute
     def number(self):
+        return "%s.%s.%s" % (randint(1,2), randint(1,4), randint(1,5))
 
-        return "%s.%s.%s" % (str(fake.pyint())[:1], str(fake.pyint())[:1], str(fake.pyint())[:1])
+    @lazy_attribute
+    def create_date(self):
+        return timezone.now()
+
 
     @post_generation
     def program(self, create, extracted, **kwargs):
@@ -43,10 +50,15 @@ class RandomIndicatorFactory(DjangoModelFactory):
             # Simple build, do nothing.
             return
 
-        if extracted:
+        if type(extracted) is list:
             # A list of program were passed in, use them
             for program in extracted:
                 self.program.add(program)
+        elif extracted:
+            self.program.add(extracted)
+        else:
+            self.program.add(Program(name='Tola Rollout', country=Country(country='United States', code='US')))
+
 
 class Indicator(DjangoModelFactory):
     class Meta:

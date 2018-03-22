@@ -14,18 +14,20 @@ class IndicatorTestCase(TestCase):
 
     def setUp(self):
         # dbSetup()
-        self.indicators = factories.RandomIndicatorFactory.create_batch(2)
+        self.program = factories.Program()
+        self.indicators = factories.RandomIndicatorFactory.create_batch(2, program=self.program, source="TEST")
+
         self.tola_user = factories.TolaUser()
 
     def test_indicator_exists(self):
-        """Check for Indicator object"""
-        # indicator = Indicator.objects.get(name="Test Indicator One")
-        # self.assertEqual(Indicator.objects.filter(id=indicator.id).count(), 1)
         for ind in self.indicators:
-            print("%s - %s " % (ind.number, ind.name ))
+            print("%s - %s - %s " % (ind.number, ind.program.all()[0].id, ind.name ))
 
         print(self.tola_user)
         self.assertEqual(Indicator.objects.count(), 2)
+
+    def test_program_exist(self):
+        self.assertEqual(Program.objects.count(), 1)
 
     def ztest_collected_exists(self):
         """Check for CollectedData object"""
