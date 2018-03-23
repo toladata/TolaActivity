@@ -273,6 +273,7 @@ class IndicatorCreate(CreateView):
         user_profile = TolaUser.objects.get(user=self.request.user)
         initial = {
             'program': self.kwargs['id'],
+            'unit_of_measure_type': 1
             }
 
         return initial

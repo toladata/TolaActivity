@@ -287,7 +287,7 @@ class Indicator(models.Model):
 
     NUMBER = 1
     PERCENTAGE = 2
-    UNIT_OF_MEASURE_TYPE = (
+    UNIT_OF_MEASURE_TYPES = (
         (NUMBER, 'Number (#)'),
         (PERCENTAGE, "Percentage (%)")
     )
@@ -321,7 +321,8 @@ class Indicator(models.Model):
         help_text=" "
     )
     unit_of_measure_type = models.IntegerField(
-        blank=False, null=True, choices=UNIT_OF_MEASURE_TYPE,
+        blank=False, null=True, choices=UNIT_OF_MEASURE_TYPES,
+        default=UNIT_OF_MEASURE_TYPES[0][0],
         verbose_name="Unit Type", help_text=" "
     )
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True,
