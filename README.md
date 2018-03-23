@@ -1,27 +1,25 @@
-# Tola Activity
-[![Build Status](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
+# [Tola Activity](http://toladata.com/products/activity/)
+[![Build Satus](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
 
-http://toladata.com/products/activity/
+[TolaActivity](http://www.github.com/toladata/TolaActivity) extends
+the functionality of [TolaData](https://www.toladata.com/) to include a
+set of forms and reports for managing project activities for a Program. It
+includes workflow for approving and completing projects as well as sharing
+the output data. TolaActivity functionality is intended to allow importing
+and exporting of project-specific data from 3rd party data sources or
+excel files.
 
-TolaActivity extends the functionality of TolaData to include a set
-of forms and reports for managing project activities for a Program.
-It includes workflow for approving and completing projects as well
-as sharing the output data. TolaActivity functionality
-http://www.github.com/toladata/TolaActivity is intended to allow
-importing and exporting of project specific data from 3rd party
-data sources or excel files.
-
-# Setting up a local TolaActivity instance
+# Creating a local TolaActivity instance
 
 Running a local instance of TolaActivity makes development much faster and
-eliminates your dependence on access to MC's dev and demo and production
-servers. These instructions should get you up and running with a minimum
-of fuss.
+eliminates your dependence on access to any of MC's TolaActivity instances.
+These instructions should get you up and running with a minimum of fuss if
+you have [macOS](#macos) or one of the man [Ubunten](#ubunten). If they do
+not, pull requests accepted.
 
 ## Install the bits
 
-TolaActivity requires Python 2. We have chosen to use MySQL as Django's 
-back-end.
+TolaActivity requires Python 2. MC uses MySQL as Django's datastore.
 
 ### macOS
 
@@ -45,18 +43,18 @@ $ pip install --upgrade google-api-python-client
 $ cp tola/settings/local-sample.py tola/settings/local.py
 ```
 
-Edit the configuration file as described in the next section.
+Edit the configuration file as described in
+[Modify the config file](#modify-the-config-file).
 
-### Ubuntu Linux, Linux Mate, and derivatives
+### Ubunten
 
-On Ubuntu and its derivatives (this was done on Linux Mate 18), Python
-2 is the default (true when written, this might change later), so the
+On Ubuntu and its derivatives, Python 2 is the default, so the
 following should get you going on any current Python 2 version for most
-Ubuntu-family distros (could those be called, _Ubunten_?):
+Ubuntu-family distros (_Ubunten_):
 
 ```
 $ python --version
-$ # Makse sure output from above indicates Python 2
+$ # Make sure output from above indicates Python 2
 $ sudo apt install mysql-server libmysqld-dev mysql-utilities mysql-client
 $ git clone https://github.com/mercycorps.org/TolaActivity.git
 $ git checkout dev
@@ -71,13 +69,14 @@ $ cp tola/settings/local-sample.py tola/settings/local.py
 $ vi tola/settings/local.py
 ```
 
-Edit the configuration file as described in the next section.
+Edit the configuration file as described in
+[Modify the config file](#modify-the-config-file).
 
 ## Modify the config file
 
-Edit _tola/settings/local.py_. You will need to disable dependencies on
-local apps and set the TolaActivity's MySQL and password. First, find the
-section near the end of the file that looks like this:
+Edit _tola/settings/local.py_. You will need to disable dependencies
+on local apps and set the TolaActivity's MySQL and password. First,
+find the section near the end of the file that looks like this:
 
 ```
 ########## LOCAL APPS DEPENDING ON SERVER DEBUG FOR DEV BOXES, REPORT BUILDER FOR REPORT SERVER
@@ -115,7 +114,7 @@ Comment out these sections as shown below:
 
 In the database configuration section, set the appropriate value for
 `PASSWORD`. Don't change the `USER` entry unless you know why you need
-to.
+to do that.
 
 ```
         'USER': 'admin',
@@ -161,22 +160,18 @@ Quit the server with CONTROL-C.
 
 ## Configuring OAuth authentication
 
-When running a local instance, we use Google's OAuth API to control 
-access and authentication to TolaActivity. There exists a bug in the
-API library that requires an ugly manual workaround before you can
-actually log in and starting using TolaActivity.
+When running a local instance, we use Google's OAuth API to for authentication to TolaActivity. Access control is an app-level administrative function not addressed in this doc. There exists a bug in the API library that requires an ugly manual workaround before you can actually log in and starting using TolaActivity. The approximate steps:
 
-* Start the TA server
-* Browse to the home page
-* Click the "Google+" link below the login button to authenticate with
+1. Start the TA server
+1. Browse to the home page
+1. Click the "Google+" link below the login button to authenticate with
 Google Auth.
-* Select your username and login
-* You'll get this error screen. That means you've hit the bug.
-* Stop the TA server
-* Log in to your MySQL instance
-* Get the user ID google added
-* Insert that into the the Workflow_tolauser table
-* Restart the TA server
-* Refresh the browser window
-* Rejoice!
-
+1. Select your username and login
+1. You'll get this error screen. That means you've hit the bug.
+1. Stop the TA server
+1. Log in to your MySQL instance
+1. Get the user ID google added
+1. Insert that into the the Workflow_tolauser table
+1. Restart the TA server
+1. Refresh the browser window
+1. Rejoice!
