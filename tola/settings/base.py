@@ -26,8 +26,6 @@ path.append(DJANGO_ROOT)
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = False
 
-# See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
-TEMPLATE_DEBUG = DEBUG
 ########## END DEBUG CONFIGURATION
 
 
@@ -144,6 +142,7 @@ TEMPLATES = [
             normpath(join(SITE_ROOT, 'customdashboard','templates')),
         ],
         'OPTIONS': {
+            'debug': DEBUG,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

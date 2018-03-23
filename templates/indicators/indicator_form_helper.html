@@ -1,4 +1,24 @@
 {% load widget_tweaks %}
+{% load mytags %}
+<style>
+ .input-symbol-euro {
+     position: relative;
+     display: inline-block;
+     width: 100%;
+ }
+ .input-symbol-euro input {
+     padding-right: 15px;
+     width: 100%;
+ }
+ .input-symbol-euro:after {
+     position: absolute;
+     top: 50%;
+     transform: translateY(-50%);
+     margin: auto;
+     content:"%";
+     right: 20px;
+ }
+</style>
     <form
         action="{% url 'indicator_update' indicator.id %}"
         id="indicator_update_form"
@@ -164,7 +184,22 @@
                     <div class="form-row mb-2" id="div_id_unit_of_measure">
                         <label for="id_unit_of_measure" class="col-sm-4 col-form-label" align="right">{{ form.unit_of_measure.label }} </label>
                         <div class="col-sm-7">
-                            {% render_field form.unit_of_measure class+="form-control" %}
+                            <div class="card" id="id_fieldgroup_unit_of_measure" style="background-color: #F5F5F5;">
+                                <div class="card-body">
+                                    {% render_field form.unit_of_measure class+="form-control" %}
+                                    {% for ut in form.unit_of_measure_type %}
+                                        {% with id=form.unit_of_measure_type.auto_id %}
+                                            <div class="form-check form-check-inline pt-1"
+                                                 id="div_{{ id }}_{{ forloop.counter0 }}">
+                                                <span class="form-check-input ">
+                                                    {{ ut.tag }}
+                                                </span>
+                                                <label class="form-check-label" for="{{ ut.id_for_label }}">{{ ut.choice_label }} </label>
+                                            </div>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </div>
+                            </div>
                             {% if form.unit_of_measure.help_text %}
                                 <small class="form-text text-muted">{{ form.unit_of_measure.help_text }}</small>
                             {% endif %}
@@ -176,14 +211,16 @@
                         <label for="id_lop_target" class="col-sm-4 col-form-label" align="right">{{ form.lop_target.label }} </label>
                         <div class="col-sm-7">
                             <!-- {% render_field form.lop_target class+="form-control" %} -->
-                            <input type="number"
-                                    name="{{ form.lop_target.name }}"
-                                    id="{{ form.lop_target.id_for_label }}"
-                                    class="form-control"
-                                    min="1"
-                                    {% if form.lop_target.value != None %} value="{{ form.lop_target.value|stringformat:'s' }}"{% endif %}
-                                    required
-                                    onblur="this.checkValidity();">
+                            <span id="span_{{ form.lop_target.id_for_label }}">
+                                <input type="number"
+                                        name="{{ form.lop_target.name }}"
+                                        id="{{ form.lop_target.id_for_label }}"
+                                        class="form-control"
+                                        min="1"
+                                        {% if form.lop_target.value != None %} value="{{ form.lop_target.value|stringformat:'s' }}"{% endif %}
+                                        required
+                                        onblur="this.checkValidity();">
+                            </span>
                             {% if form.lop_target.help_text %}
                                 <small class="form-text text-muted">{{ form.lop_target.help_text }}</small>
                             {% endif %}
@@ -455,6 +492,24 @@
 </form>
 
 <script>
+
+    function togglePercentSymbol(unit_of_measure_type){
+        unit_of_measure_type = parseInt(unit_of_measure_type);
+        if (unit_of_measure_type == 2) { // 2 is for percente option
+            $("#span_id_lop_target").addClass('input-symbol-euro')
+        } else {
+            $("#span_id_lop_target").removeClass('input-symbol-euro')
+        }
+    }
+
+    $( document ).ready(function() {
+        let val = $("#id_unit_of_measure_type_1").is(":checked") ? 2 : 1;
+        togglePercentSymbol(val);
+    });
+
+    $("#id_fieldgroup_unit_of_measure").on("change", ":input[name='unit_of_measure_type']", function(e){
+        togglePercentSymbol(e.target.value);
+    })
     /*
     var alerts = {};
 

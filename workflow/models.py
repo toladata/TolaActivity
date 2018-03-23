@@ -50,9 +50,9 @@ class TolaSites(models.Model):
     def save(self, *args, **kwargs):
         ''' On save, update timestamps as appropriate '''
         if kwargs.pop('new_entry', True):
-            self.created = datetime.now()
+            self.created = timezone.now()
         else:
-            self.updated = datetime.now()
+            self.updated = timezone.now()
         return super(TolaSites, self).save(*args, **kwargs)
 
 
@@ -82,8 +82,8 @@ class Organization(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Organization, self).save()
 
     # displayed in admin templates
@@ -115,8 +115,8 @@ class Country(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Country, self).save()
 
     # displayed in admin templates
@@ -158,8 +158,8 @@ class TolaUser(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(TolaUser, self).save()
 
 
@@ -180,8 +180,8 @@ class TolaBookmarks(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(TolaBookmarks, self).save()
 
 
@@ -220,7 +220,7 @@ class FormGuidance(models.Model):
 
     def save(self):
         if self.create_date is None:
-            self.create_date = datetime.now()
+            self.create_date = timezone.now()
         super(FormGuidance, self).save()
 
     def __unicode__(self):
@@ -243,8 +243,8 @@ class Sector(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Sector, self).save()
 
     # displayed in admin templates
@@ -275,8 +275,8 @@ class Contact(models.Model):
     # onsave add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Contact, self).save()
 
     # displayed in admin templates
@@ -303,8 +303,8 @@ class FundCode(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(FundCode, self).save()
 
     # displayed in admin templates
@@ -340,8 +340,8 @@ class Program(models.Model):
         if not 'force_insert' in kwargs:
             kwargs['force_insert'] = False
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Program, self).save()
 
     @property
@@ -368,8 +368,8 @@ class ApprovalAuthority(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ApprovalAuthority, self).save()
 
     # displayed in admin templates
@@ -391,8 +391,8 @@ class Province(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Province, self).save()
 
     # displayed in admin templates
@@ -421,8 +421,8 @@ class District(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(District, self).save()
 
     # displayed in admin templates
@@ -451,8 +451,8 @@ class AdminLevelThree(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(AdminLevelThree, self).save()
 
     # displayed in admin templates
@@ -482,8 +482,8 @@ class Village(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Village, self).save()
 
     # displayed in admin templates
@@ -509,8 +509,8 @@ class Office(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Office, self).save()
 
     # displayed in admin templates
@@ -537,8 +537,8 @@ class ProfileType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ProfileType, self).save()
 
     # displayed in admin templates
@@ -563,8 +563,8 @@ class LandType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(LandType, self).save()
 
     # displayed in admin templates
@@ -653,8 +653,8 @@ class SiteProfile(models.Model):
 
         # Check if a create date has been specified. If not, display today's date in create_date and edit_date
         if self.create_date == None:
-            self.create_date = datetime.now()
-            self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+            self.edit_date = timezone.now()
 
         super(SiteProfile, self).save()
 
@@ -683,8 +683,8 @@ class Capacity(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Capacity, self).save()
 
     # displayed in admin templates
@@ -709,8 +709,8 @@ class StakeholderType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(StakeholderType, self).save()
 
     # displayed in admin templates
@@ -737,8 +737,8 @@ class Evaluate(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Evaluate, self).save()
 
     # displayed in admin templates
@@ -760,8 +760,8 @@ class ProjectType(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ProjectType, self).save()
 
     def __unicode__(self):
@@ -787,8 +787,8 @@ class Template(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Template, self).save()
 
     def __unicode__(self):
@@ -834,8 +834,8 @@ class Stakeholder(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Stakeholder, self).save()
 
     # displayed in admin templates
@@ -988,7 +988,7 @@ class ProjectAgreement(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
+            self.create_date = timezone.now()
         # defaults don't work if they aren't in the form so preset these to 0
         if self.total_estimated_budget == None:
             self.total_estimated_budget = Decimal("0.00")
@@ -999,7 +999,7 @@ class ProjectAgreement(models.Model):
         if self.local_mc_estimated_budget == None:
             self.local_mc_estimated_budget = Decimal("0.00")
 
-        self.edit_date = datetime.now()
+        self.edit_date = timezone.now()
         super(ProjectAgreement, self).save()
 
     @property
@@ -1115,7 +1115,7 @@ class ProjectComplete(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
+            self.create_date = timezone.now()
         # defaults don't work if they aren't in the form so preset these to 0
         if self.estimated_budget == None:
             self.estimated_budget = Decimal("0.00")
@@ -1129,7 +1129,7 @@ class ProjectComplete(models.Model):
             self.local_total_cost = Decimal("0.00")
         if self.local_agency_cost == None:
             self.local_agency_cost = Decimal("0.00")
-        self.edit_date = datetime.now()
+        self.edit_date = timezone.now()
         super(ProjectComplete, self).save()
 
     # displayed in admin templates
@@ -1157,8 +1157,8 @@ class Documentation(models.Model):
      # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Documentation, self).save()
 
     def __unicode__(self):
@@ -1210,8 +1210,8 @@ class Benchmarks(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Benchmarks, self).save()
 
     # displayed in admin templates
@@ -1241,8 +1241,8 @@ class Monitor(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Monitor, self).save()
 
     # displayed in admin templates
@@ -1267,8 +1267,8 @@ class Budget(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Budget, self).save()
 
     def __unicode__(self):
@@ -1296,8 +1296,8 @@ class Checklist(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(Checklist, self).save()
 
     # displayed in admin templates
@@ -1326,8 +1326,8 @@ class ChecklistItem(models.Model):
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
         if self.create_date == None:
-            self.create_date = datetime.now()
-        self.edit_date = datetime.now()
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
         super(ChecklistItem, self).save()
 
     # displayed in admin templates
