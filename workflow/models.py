@@ -150,6 +150,7 @@ class Organization(models.Model):
     date_format = models.CharField("Date Format", max_length=50, blank=True, default="DD.MM.YYYY")
     default_currency = models.ForeignKey(Currency, blank=True, null=True)
     currency_format = models.CharField("Currency Format", max_length=50, blank=True, default="Commas")
+    allow_budget_decimal = models.BooleanField("Allow Budget in Decimal", default=True)
 
     class Meta:
         ordering = ('name',)
