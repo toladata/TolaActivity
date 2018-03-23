@@ -18,6 +18,8 @@ from indicators.models import (
 )
 from workflow.models import Organization, Program
 
+FAKER = faker.Faker(locale='en_US')
+
 class ReportingFrequency(DjangoModelFactory):
     class Meta:
         model = ReportingFrequencyM
@@ -26,23 +28,14 @@ class ReportingFrequency(DjangoModelFactory):
     description = 'Every two weeks'
     organization = SubFactory(Organization)
 
-
-fake = faker.Faker()
 class RandomIndicatorFactory(DjangoModelFactory):
 
     class Meta:
         model = IndicatorM
 
-    name = factory.Faker('sentence', nb_words=8)
-
-    @lazy_attribute
-    def number(self):
-        return "%s.%s.%s" % (randint(1,2), randint(1,4), randint(1,5))
-
-    @lazy_attribute
-    def create_date(self):
-        return timezone.now()
-
+    name = lazy_attribute(lambda n: FAKER.sentence(nb_words=8))
+    number = lazy_attribute(lambda n: "%s.%s.%s" % (randint(1,2), randint(1,4), randint(1,5)))
+    create_date = lazy_attribute(lambda t: timezone.now())
 
     @post_generation
     def program(self, create, extracted, **kwargs):
@@ -57,7 +50,7 @@ class RandomIndicatorFactory(DjangoModelFactory):
         elif extracted:
             self.program.add(extracted)
         else:
-            self.program.add(Program(name='Tola Rollout', country=Country(country='United States', code='US')))
+            pass
 
 
 class Indicator(DjangoModelFactory):

@@ -10,10 +10,7 @@ import factories
 
 class IndicatorTestCase(TestCase):
 
-    fixtures = ['fixtures/organization.json','fixtures/country.json']
-
     def setUp(self):
-        # dbSetup()
         self.program = factories.Program()
         self.indicators = factories.RandomIndicatorFactory.create_batch(2, program=self.program, source="TEST")
 
@@ -22,7 +19,6 @@ class IndicatorTestCase(TestCase):
     def test_indicator_exists(self):
         for ind in self.indicators:
             print("%s - %s - %s " % (ind.number, ind.program.all()[0].id, ind.name ))
-
         print(self.tola_user)
         self.assertEqual(Indicator.objects.count(), 2)
 
