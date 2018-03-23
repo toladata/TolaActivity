@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workflow', '0020_product'),
+        ('workflow', '0021_auto_20180323_0215'),
     ]
 
     operations = [
