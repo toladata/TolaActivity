@@ -298,7 +298,7 @@ class Indicator(models.Model):
     )
 
     indicator_key = models.UUIDField(
-        default=uuid.uuid4, unique=True, help_text=" ")
+        default=uuid.uuid4, unique=True, help_text=" "),
 
     indicator_type = models.ManyToManyField(
         IndicatorType, blank=True, help_text=" ")
@@ -315,8 +315,8 @@ class Indicator(models.Model):
         blank=True, related_name="strat_indicator", help_text=" "
     )
 
-    name = models.CharField(
-        verbose_name="Name", max_length=255,  null=False, help_text=" ")
+    name = models.CharField(verbose_name="Name", max_length=255,
+                            null=False, help_text=" ")
 
     number = models.CharField(max_length=255, null=True, blank=True,
                               help_text=" ")
@@ -341,10 +341,8 @@ class Indicator(models.Model):
         default=UNIT_OF_MEASURE_TYPES[0][0],
         verbose_name="Unit Type", help_text=" "
     )
-
-    disaggregation = models.ManyToManyField(
-        DisaggregationType, blank=True, help_text=" ")
-
+    disaggregation = models.ManyToManyField(DisaggregationType, blank=True,
+                                            help_text=" ")
     baseline = models.CharField(
         verbose_name="Baseline*", max_length=255, null=True, blank=True,
         help_text=" "
@@ -355,9 +353,8 @@ class Indicator(models.Model):
         verbose_name="Life of Program (LoP) target*", max_length=255,
         null=True, blank=True, help_text=" "
     )
-    rationale_for_target = models.TextField(
-        max_length=255, null=True,  blank=True, help_text=" ")
-
+    rationale_for_target = models.TextField(max_length=255, null=True,
+                                            blank=True, help_text=" ")
     target_frequency = models.IntegerField(
         blank=False, null=True, choices=TARGET_FREQUENCIES,
         verbose_name="Target frequency", help_text=" "
