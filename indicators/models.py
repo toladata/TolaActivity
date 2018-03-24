@@ -1,14 +1,18 @@
+import uuid
+from datetime import timedelta
+from decimal import Decimal
+
 from django.db import models
+from django.utils import timezone
+
 from django.contrib import admin
+
+from simple_history.models import HistoricalRecords
+
 from workflow.models import (
     Program, Sector, SiteProfile, ProjectAgreement, ProjectComplete, Country,
     Documentation, TolaUser
 )
-from datetime import timedelta
-from django.utils import timezone
-import uuid
-from simple_history.models import HistoricalRecords
-from decimal import Decimal
 
 
 class TolaTable(models.Model):
@@ -241,8 +245,9 @@ class ExternalServiceAdmin(admin.ModelAdmin):
 
 
 class ExternalServiceRecord(models.Model):
-    external_service = models.ForeignKey(ExternalService, blank=True,
-                                         null=True)
+    external_service = models.ForeignKey(
+        ExternalService, blank=True, null=True)
+
     full_url = models.CharField(max_length=765, blank=True)
     record_id = models.CharField("Unique ID", max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -489,12 +494,16 @@ class Indicator(models.Model):
 class PeriodicTarget(models.Model):
     indicator = models.ForeignKey(Indicator, null=False, blank=False)
     period = models.CharField(max_length=255, null=True, blank=True)
-    target = models.DecimalField(max_digits=20, decimal_places=2,
-                                 default=Decimal('0.00'))
-    start_date = models.DateField(auto_now=False, auto_now_add=False,
-                                  null=True, blank=True)
-    end_date = models.DateField(auto_now=False, auto_now_add=False,
-                                null=True, blank=True)
+
+    target = models.DecimalField(
+        max_digits=20, decimal_places=2, default=Decimal('0.00'))
+
+    start_date = models.DateField(
+        auto_now=False, auto_now_add=False, null=True, blank=True)
+
+    end_date = models.DateField(
+        auto_now=False, auto_now_add=False,  null=True, blank=True)
+
     customsort = models.IntegerField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -541,45 +550,57 @@ class CollectedDataManager(models.Manager):
 
 
 class CollectedData(models.Model):
-    data_key = models.UUIDField(default=uuid.uuid4, unique=True,
-                                help_text=" "),
-    periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True,
-                                        help_text=" ")
-    achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=2,
-                                   help_text=" ")
-    disaggregation_value = models.ManyToManyField(DisaggregationValue,
-                                                  blank=True, help_text=" ")
-    description = models.TextField("Remarks/comments", blank=True, null=True,
-                                   help_text=" ")
+    data_key = models.UUIDField(
+        default=uuid.uuid4, unique=True, help_text=" "),
+
+    periodic_target = models.ForeignKey(
+        PeriodicTarget, null=True, blank=True, help_text=" ")
+
+    achieved = models.DecimalField(
+        "Achieved", max_digits=20, decimal_places=2, help_text=" ")
+
+    disaggregation_value = models.ManyToManyField(
+        DisaggregationValue, blank=True, help_text=" ")
+
+    description = models.TextField(
+        "Remarks/comments", blank=True, null=True, help_text=" ")
+
     indicator = models.ForeignKey(Indicator, help_text=" ")
+
     agreement = models.ForeignKey(
         ProjectAgreement, blank=True, null=True, related_name="q_agreement2",
-        verbose_name="Project Initiation", help_text=" "
-    )
+        verbose_name="Project Initiation", help_text=" ")
+
     complete = models.ForeignKey(
         ProjectComplete, blank=True, null=True, related_name="q_complete2",
-        on_delete=models.SET_NULL, help_text=" "
-    )
-    program = models.ForeignKey(Program, blank=True, null=True,
-                                related_name="i_program", help_text=" ")
-    date_collected = models.DateTimeField(null=True, blank=True,
-                                          help_text=" ")
-    comment = models.TextField("Comment/Explanation", max_length=255,
-                               blank=True, null=True, help_text=" ")
+        on_delete=models.SET_NULL, help_text=" ")
+
+    program = models.ForeignKey(
+        Program, blank=True, null=True, related_name="i_program",
+        help_text=" ")
+
+    date_collected = models.DateTimeField(
+        null=True, blank=True, help_text=" ")
+
+    comment = models.TextField(
+        "Comment/Explanation", max_length=255, blank=True, null=True,
+        help_text=" ")
+
     evidence = models.ForeignKey(
         Documentation, null=True, blank=True,
-        verbose_name="Evidence Document or Link", help_text=" "
-    )
+        verbose_name="Evidence Document or Link", help_text=" ")
+
     approved_by = models.ForeignKey(
         TolaUser, blank=True, null=True, verbose_name="Originated By",
-        related_name="approving_data", help_text=" "
-    )
-    tola_table = models.ForeignKey(TolaTable, blank=True, null=True,
-                                   help_text=" ")
+        related_name="approving_data", help_text=" ")
+
+    tola_table = models.ForeignKey(
+        TolaTable, blank=True, null=True, help_text=" ")
+
     update_count_tola_table = models.BooleanField(
         verbose_name="Would you like to update the achieved total with the \
-        row count from TolaTables?", default=False, help_text=" "
-    )
+        row count from TolaTables?", default=False, help_text=" ")
+
     create_date = models.DateTimeField(null=True, blank=True, help_text=" ")
     edit_date = models.DateTimeField(null=True, blank=True, help_text=" ")
     site = models.ManyToManyField(SiteProfile, blank=True, help_text=" ")
