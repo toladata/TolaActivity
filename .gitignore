@@ -36,7 +36,6 @@ client_secrets.json
 *.key
 error.log
 *.secret
-*.secret.yml
+settings.secret.yml
 assets/
-local.py
 templates/links.html
