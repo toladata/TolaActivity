@@ -297,41 +297,54 @@ class Indicator(models.Model):
         (PERCENTAGE, "Percentage (%)")
     )
 
-    indicator_key = models.UUIDField(default=uuid.uuid4, unique=True,
-                                     help_text=" "),
-    indicator_type = models.ManyToManyField(IndicatorType, blank=True,
-                                            help_text=" ")
+    indicator_key = models.UUIDField(
+        default=uuid.uuid4, unique=True, help_text=" ")
+
+    indicator_type = models.ManyToManyField(
+        IndicatorType, blank=True, help_text=" ")
+
     level = models.ManyToManyField(Level, blank=True, help_text=" ")
+
     objectives = models.ManyToManyField(
         Objective, blank=True, verbose_name="Program Objective",
         related_name="obj_indicator", help_text=" "
     )
+
     strategic_objectives = models.ManyToManyField(
         StrategicObjective, verbose_name="Country Strategic Objective",
         blank=True, related_name="strat_indicator", help_text=" "
     )
-    name = models.CharField(verbose_name="Name", max_length=255,
-                            null=False, help_text=" ")
+
+    name = models.CharField(
+        verbose_name="Name", max_length=255,  null=False, help_text=" ")
+
     number = models.CharField(max_length=255, null=True, blank=True,
                               help_text=" ")
-    source = models.CharField(max_length=255, null=True, blank=True,
-                              help_text=" ")
+
+    source = models.CharField(
+        max_length=255, null=True, blank=True, help_text=" ")
+
     definition = models.TextField(null=True, blank=True, help_text=" ")
+
     justification = models.TextField(
         max_length=500, null=True, blank=True,
         verbose_name="Rationale or Justification for Indicator", help_text=" "
     )
+
     unit_of_measure = models.CharField(
         max_length=135, null=True, blank=True, verbose_name="Unit of measure*",
         help_text=" "
     )
+
     unit_of_measure_type = models.IntegerField(
         blank=False, null=True, choices=UNIT_OF_MEASURE_TYPES,
         default=UNIT_OF_MEASURE_TYPES[0][0],
         verbose_name="Unit Type", help_text=" "
     )
-    disaggregation = models.ManyToManyField(DisaggregationType, blank=True,
-                                            help_text=" ")
+
+    disaggregation = models.ManyToManyField(
+        DisaggregationType, blank=True, help_text=" ")
+
     baseline = models.CharField(
         verbose_name="Baseline*", max_length=255, null=True, blank=True,
         help_text=" "
@@ -342,8 +355,9 @@ class Indicator(models.Model):
         verbose_name="Life of Program (LoP) target*", max_length=255,
         null=True, blank=True, help_text=" "
     )
-    rationale_for_target = models.TextField(max_length=255, null=True,
-                                            blank=True, help_text=" ")
+    rationale_for_target = models.TextField(
+        max_length=255, null=True,  blank=True, help_text=" ")
+
     target_frequency = models.IntegerField(
         blank=False, null=True, choices=TARGET_FREQUENCIES,
         verbose_name="Target frequency", help_text=" "
