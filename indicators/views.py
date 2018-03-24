@@ -1,9 +1,40 @@
-from django.db import connection
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from urlparse import urlparse
 import re
+from urlparse import urlparse
+import json
+import requests
+import dateutil.parser
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.exceptions import PermissionDenied
+from django.core import serializers
+
+from django.db import connection
+from django.db.models import Count, Min, Q, Sum
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView
+from django.views.generic.detail import View
+from django.views.generic import TemplateView
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, render_to_response
+from django.utils.decorators import method_decorator
+from django.template.loader import render_to_string
+from django.utils import timezone
+
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
+
+from weasyprint import HTML, CSS
+from django_tables2 import RequestConfig
+
+from tola.util import getCountry, get_table
+from tables import IndicatorDataTable
+from feed.serializers import FlatJsonSerializer
+from export import IndicatorResource, CollectedDataResource
+from workflow.forms import FilterForm
+from workflow.mixins import AjaxableResponseMixin
+from indicators.forms import IndicatorForm, CollectedDataForm
 from .models import (
     Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue,
     CollectedData, IndicatorType, Level, ExternalServiceRecord,
@@ -12,38 +43,6 @@ from .models import (
 from workflow.models import (
     Program, SiteProfile, Country, Sector, TolaSites, FormGuidance
 )
-from django.shortcuts import render_to_response
-from django.contrib import messages
-from django.core.serializers.json import DjangoJSONEncoder
-from tola.util import getCountry, get_table
-from tables import IndicatorDataTable
-from django_tables2 import RequestConfig
-from workflow.forms import FilterForm
-from .forms import IndicatorForm, CollectedDataForm
-
-from django.db.models import Count, Sum, Min
-from django.db.models import Q
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView
-from django.views.generic.detail import View
-from django.views.generic import TemplateView
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import user_passes_test
-from django.core.exceptions import PermissionDenied
-from django.core import serializers
-from django.utils import timezone
-
-from workflow.mixins import AjaxableResponseMixin
-import json
-
-import requests
-from export import IndicatorResource, CollectedDataResource
-from weasyprint import HTML, CSS
-from django.template.loader import get_template
-from datetime import datetime
-from dateutil.relativedelta import relativedelta  # ('%Y-%m-%d') %b %d, %Y
-from feed.serializers import FlatJsonSerializer
-import dateutil.parser
 
 
 def generate_periodic_target_single(tf, start_date, nthTargetPeriod,
@@ -361,15 +360,23 @@ class PeriodicTargetView(View):
             numTargets = PeriodicTarget.objects.filter(
                 indicator=indicator).count() + 1
 
-        pt_generated = generate_periodic_target_single(indicator.target_frequency, indicator.target_frequency_start, (numTargets-1), '')
+        pt_generated = generate_periodic_target_single(
+            indicator.target_frequency, indicator.target_frequency_start,
+            (numTargets-1), ''
+        )
+
         pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
         return HttpResponse(pt_generated_json)
 
     def post(self, request, *args, **kwargs):
-        indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
+        indicator = Indicator.objects.get(
+            pk=self.kwargs.get('indicator', None))
+
         deleteall = self.kwargs.get('deleteall', None)
         if deleteall == 'true':
-            periodic_targets = PeriodicTarget.objects.filter(indicator=indicator)
+            periodic_targets = PeriodicTarget.objects.filter(
+                indicator=indicator)
+
             for pt in periodic_targets:
                 pt.collecteddata_set.all().update(periodic_target=None)
                 pt.delete()
@@ -378,38 +385,55 @@ class PeriodicTargetView(View):
             indicator.target_frequency_start = None
             indicator.target_frequency_custom = None
             indicator.save()
-        return HttpResponse('{"status": "success", "message": "Request processed successfully!"}')
+        return HttpResponse('{"status": "success", \
+                            "message": "Request processed successfully!"}')
 
 
-def handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency, generated_pt_ids=[]):
-    # If the target_frequency is changed from LOP to something else then disassociate all
-    # collected_data from the LOP periodic_target and then delete the LOP periodic_target
-    # if existing_target_frequency == Indicator.LOP and new_target_frequency != Indicator.LOP:
+def handleDataCollectedRecords(indicatr, lop, existing_target_frequency,
+                               new_target_frequency, generated_pt_ids=[]):
+    """
+    If the target_frequency is changed from LOP to something else then
+    disassociate all collected_data from the LOP periodic_target and then
+    delete the LOP periodic_target
+    if existing_target_frequency == Indicator.LOP
+    and new_target_frequency != Indicator.LOP:
+    """
     if existing_target_frequency != new_target_frequency:
-        CollectedData.objects.filter(indicator=indicatr).update(periodic_target=None)
+        CollectedData.objects.filter(indicator=indicatr)\
+            .update(periodic_target=None)
+
         PeriodicTarget.objects.filter(indicator=indicatr).delete()
 
-    # If the user sets target_frequency to LOP then create a LOP periodic_target and associate all
-    # collected data for this indicator with this single LOP periodic_target
-    if existing_target_frequency != Indicator.LOP and new_target_frequency == Indicator.LOP:
-        lop_pt = PeriodicTarget.objects.create(indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1], target=lop, create_date = timezone.now())
-        CollectedData.objects.filter(indicator=indicatr).update(periodic_target=lop_pt)
+    # If the user sets target_frequency to LOP then create a LOP
+    # periodic_target and associate all collected data for this indicator with
+    # this single LOP periodic_target
+    if existing_target_frequency != Indicator.LOP and \
+            new_target_frequency == Indicator.LOP:
+
+        lop_pt = PeriodicTarget.objects.create(
+            indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1],
+            target=lop, create_date=timezone.now()
+        )
+        CollectedData.objects.filter(indicator=indicatr)\
+            .update(periodic_target=lop_pt)
 
     if generated_pt_ids:
-        pts = PeriodicTarget.objects.filter(indicator=indicatr, pk__in=generated_pt_ids)
+        pts = PeriodicTarget.objects.filter(indicator=indicatr,
+                                            pk__in=generated_pt_ids)
         for pt in pts:
-            CollectedData.objects.filter(indicator=indicatr, date_collected__range=[pt.start_date, pt.end_date]).update(periodic_target=pt)
+            CollectedData.objects.filter(
+                indicator=indicatr,
+                date_collected__range=[pt.start_date, pt.end_date])\
+                    .update(periodic_target=pt)
 
-from django.template import loader
-from django.template.loader import get_template
-from django.template.loader import render_to_string
+
 class IndicatorUpdate(UpdateView):
     """
     Update and Edit Indicators.
     """
     model = Indicator
+    form_class = IndicatorForm
 
-    #template_name = 'indicators/indicator_form.html'
     def get_template_names(self):
         if self.request.GET.get('modal'):
             return 'indicators/indicator_form_modal.html'
@@ -419,7 +443,8 @@ class IndicatorUpdate(UpdateView):
     def dispatch(self, request, *args, **kwargs):
 
         if request.method == 'GET':
-            # If target_frequency is set but not targets are saved then unset target_frequency too.
+            # If target_frequency is set but not targets are saved then
+            # unset target_frequency too.
             indicator = self.get_object()
             if indicator.target_frequency and \
                     indicator.target_frequency != 1 and \
@@ -442,12 +467,18 @@ class IndicatorUpdate(UpdateView):
 
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
-        context['periodic_targets'] = PeriodicTarget.objects.filter(indicator=getIndicator).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
-        context['targets_sum'] = PeriodicTarget.objects.filter(indicator=getIndicator).aggregate(Sum('target'))['target__sum']
+        context['periodic_targets'] = PeriodicTarget.objects.filter(
+            indicator=getIndicator)\
+            .annotate(num_data=Count('collecteddata'))\
+            .order_by('customsort', 'create_date', 'period')
+        context['targets_sum'] = PeriodicTarget.objects\
+            .filter(indicator=getIndicator)\
+            .aggregate(Sum('target'))['target__sum']
 
-        #get external service data if any
+        # get external service data if any
         try:
-            getExternalServiceRecord = ExternalServiceRecord.objects.all().filter(indicator__id=self.kwargs['pk'])
+            getExternalServiceRecord = ExternalServiceRecord.objects\
+                .filter(indicator__id=self.kwargs['pk'])
         except ExternalServiceRecord.DoesNotExist:
             getExternalServiceRecord = None
         context.update({'getExternalServiceRecord': getExternalServiceRecord})
@@ -455,17 +486,16 @@ class IndicatorUpdate(UpdateView):
             context['targetsonly'] = True
         elif self.request.GET.get('targetsactive') == 'true':
             context['targetsactive'] = True
-
         return context
 
     def get_initial(self):
-        target_frequency_num_periods = self.get_object().target_frequency_num_periods
+        target_frequency_num_periods = self.get_object()\
+            .target_frequency_num_periods
         if not target_frequency_num_periods:
             target_frequency_num_periods = 1
         initial = {
             'target_frequency_num_periods': target_frequency_num_periods
         }
-
         return initial
 
     # add the request to the kwargs
@@ -478,9 +508,8 @@ class IndicatorUpdate(UpdateView):
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Form', fail_silently=False)
-        print(".............................%s............................" % form.errors )
+        print("...............%s.........................." % form.errors)
         return self.render_to_response(self.get_context_data(form=form))
-
 
     def form_valid(self, form, **kwargs):
         periodic_targets = self.request.POST.get('periodic_targets', None)
@@ -491,16 +520,22 @@ class IndicatorUpdate(UpdateView):
         lop = form.cleaned_data.get('lop_target', None)
 
         if periodic_targets == 'generateTargets':
-            # handle (delete) association of colelcted data records if necessary
-            handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency)
+            # handle (delete) association of colelctedData records if necessary
+            handleDataCollectedRecords(
+                indicatr, lop, existing_target_frequency, new_target_frequency)
 
-            target_frequency_num_periods = form.cleaned_data.get('target_frequency_num_periods', 0)
-            if target_frequency_num_periods == None:
+            target_frequency_num_periods = form.cleaned_data.get(
+                'target_frequency_num_periods', 0)
+            if target_frequency_num_periods is None:
                 target_frequency_num_periods = 1
 
             event_name = form.cleaned_data.get('target_frequency_custom', '')
             start_date = form.cleaned_data.get('target_frequency_start', None)
-            generatedTargets = generate_periodic_targets(new_target_frequency, start_date, target_frequency_num_periods, event_name)
+
+            generatedTargets = generate_periodic_targets(
+                new_target_frequency, start_date, target_frequency_num_periods,
+                event_name
+            )
 
         if periodic_targets and periodic_targets != 'generateTargets':
             # now create/update periodic targets
@@ -508,9 +543,13 @@ class IndicatorUpdate(UpdateView):
             generated_pt_ids = []
             for i, pt in enumerate(pt_json):
                 pk = int(pt.get('id'))
-                if pk == 0: pk = None
+                if pk == 0:
+                    pk = None
+
                 try:
-                    start_date = dateutil.parser.parse(pt.get('start_date', None))
+                    start_date = dateutil.parser.parse(
+                        pt.get('start_date', None))
+
                     start_date = datetime.strftime(start_date, '%Y-%m-%d')
                 except ValueError:
                     # raise ValueError("Incorrect data value")
@@ -520,25 +559,35 @@ class IndicatorUpdate(UpdateView):
                     end_date = dateutil.parser.parse(pt.get('end_date', None))
                     end_date = datetime.strftime(end_date, '%Y-%m-%d')
                 except ValueError:
-                    #raise ValueError("Incorrect data value")
+                    # raise ValueError("Incorrect data value")
                     end_date = None
 
-                # print("i = %s.......................%s............................" % (i, periodic_targets) )
-                periodic_target,created = PeriodicTarget.objects.update_or_create(\
-                    indicator=indicatr, id=pk,\
-                    defaults={'period': pt.get('period', ''), 'target': pt.get('target', 0), 'customsort': i,\
-                            'start_date': start_date, 'end_date': end_date, 'edit_date': timezone.now() })
-                # print("%s|%s = %s, %s" % (created, pk, pt.get('period'), pt.get('target') ))
+                defaults = {
+                    'period': pt.get('period', ''),
+                    'target': pt.get('target', 0), 'customsort': i,
+                    'start_date': start_date, 'end_date': end_date,
+                    'edit_date': timezone.now()
+                }
+
+                periodic_target, created = PeriodicTarget.objects\
+                    .update_or_create(indicator=indicatr, id=pk,
+                                      defaults=defaults)
+
                 if created:
                     periodic_target.create_date = timezone.now()
                     periodic_target.save()
                     generated_pt_ids.append(periodic_target.id)
 
-            # handle related collected_data records for the new periodic targets
-            handleDataCollectedRecords(indicatr, lop, existing_target_frequency, new_target_frequency, generated_pt_ids)
+            # handle related collected_data records for new periodic targets
+            handleDataCollectedRecords(
+                indicatr, lop, existing_target_frequency,
+                new_target_frequency, generated_pt_ids
+            )
 
         # check to see if values of any of these fields have changed.
-        fields_to_watch = set(['indicator_type', 'level', 'name', 'number', 'sector'])
+        fields_to_watch = set(['indicator_type', 'level', 'name', 'number',
+                              'sector'])
+
         changed_fields = set(form.changed_data)
         if fields_to_watch.intersection(changed_fields):
             update_indicator_row = '1'
@@ -549,21 +598,30 @@ class IndicatorUpdate(UpdateView):
         self.object = form.save()
 
         # fetch all existing periodic_targets for this indicator
-        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr).annotate(num_data=Count('collecteddata')).order_by('customsort','create_date', 'period')
+        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr)\
+            .annotate(num_data=Count('collecteddata'))\
+            .order_by('customsort', 'create_date', 'period')
 
         if self.request.is_ajax():
             indicatorjson = serializers.serialize('json', [self.object])
-            pts = FlatJsonSerializer().serialize(periodic_targets)
+            # pts = FlatJsonSerializer().serialize(periodic_targets)
 
             if generatedTargets:
-                content = render_to_string('indicators/indicatortargets.html',
-                                       {'indicator': indicatr, 'periodic_targets': generatedTargets})
+                params = {'indicator': indicatr,
+                          'periodic_targets': generatedTargets}
+
+                content = render_to_string(
+                    'indicators/indicatortargets.html', params)
             else:
-                content = render_to_string('indicators/indicatortargets.html',
-                                       {'indicator': indicatr, 'periodic_targets': periodic_targets})
+                params = {'indicator': indicatr,
+                          'periodic_targets': periodic_targets}
+
+                content = render_to_string(
+                    'indicators/indicatortargets.html', params)
 
             targets_sum = self.get_context_data().get('targets_sum')
-            if targets_sum == None: targets_sum = "0"
+            if targets_sum is None:
+                targets_sum = "0"
 
             data = {
                 "indicatorjson": str(indicatorjson),
@@ -575,14 +633,11 @@ class IndicatorUpdate(UpdateView):
         else:
             messages.success(self.request, 'Success, Indicator Updated!')
         return self.render_to_response(self.get_context_data(form=form))
-    form_class = IndicatorForm
 
 
 class IndicatorDelete(DeleteView):
-    """
-    Delete and Indicator
-    """
     model = Indicator
+    form_class = IndicatorForm
     success_url = '/indicators/home/0/0/0/'
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
@@ -590,19 +645,13 @@ class IndicatorDelete(DeleteView):
         return super(IndicatorDelete, self).dispatch(request, *args, **kwargs)
 
     def form_invalid(self, form):
-
         messages.error(self.request, 'Invalid Form', fail_silently=False)
-
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-
         form.save()
-
         messages.success(self.request, 'Success, Indicator Deleted!')
         return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = IndicatorForm
 
 
 class PeriodicTargetDeleteView(DeleteView):
@@ -611,9 +660,10 @@ class PeriodicTargetDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         collecteddata_count = self.get_object().collecteddata_set.count()
         if collecteddata_count > 0:
-            self.get_object().collecteddata_set.all().update(periodic_target=None)
+            self.get_object().collecteddata_set.all().update(
+                periodic_target=None)
 
-        #super(PeriodicTargetDeleteView).delete(request, args, kwargs)
+        # super(PeriodicTargetDeleteView).delete(request, args, kwargs)
         indicator = self.get_object().indicator
         self.get_object().delete()
         if indicator.periodictarget_set.count() == 0:
@@ -622,22 +672,25 @@ class PeriodicTargetDeleteView(DeleteView):
             indicator.target_frequency_start = None
             indicator.target_frequency_custom = None
             indicator.save()
-        targets_sum = PeriodicTarget.objects.filter(indicator=indicator).aggregate(Sum('target'))['target__sum']
+
+        targets_sum = PeriodicTarget.objects.filter(indicator=indicator)\
+            .aggregate(Sum('target'))['target__sum']
+
         indicator = None
-        return JsonResponse({"status": "success", "msg": "Periodic Target deleted successfully.", "targets_sum": targets_sum})
+        return JsonResponse(
+            {"status": "success", "msg": "Periodic Target deleted\
+             successfully.", "targets_sum": targets_sum}
+        )
+
 
 class CollectedDataCreate(CreateView):
-    """
-    CollectedData Form
-    """
     model = CollectedData
-    #template_name = 'indicators/collecteddata_form.html'
+    form_class = CollectedDataForm
+
     def get_template_names(self):
         if self.request.is_ajax():
             return 'indicators/collecteddata_form_modal.html'
         return 'indicators/collecteddata_form.html'
-
-    form_class = CollectedDataForm
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -1463,8 +1516,6 @@ class DisaggregationPrint(DisaggregationReportMixin, TemplateView):
         #return super(DisaggregationReport, self).get(request, *args, **kwargs)
         return res
 
-from django.template.loader import render_to_string
-#import tempfile
 
 class TVAPrint(TemplateView):
     template_name = 'indicators/tva_print.html'
