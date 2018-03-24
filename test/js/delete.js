@@ -34,7 +34,7 @@ describe('Deleting a lot of indicators', function() {
     let indicatorCount = TargetsTab.getProgramIndicatorsTableCount();
     let buttons = new Array();
     let deletedCount = 0;
-    while (indicatorCount > 0) {
+    while (indicatorCount > 8) {
       indicatorList = TargetsTab.getProgramIndicatorsTable();
       indicator = indicatorList.shift();
       indicator.click();
