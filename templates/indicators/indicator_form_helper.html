@@ -1,16 +1,16 @@
 {% load widget_tweaks %}
 {% load mytags %}
 <style>
- .input-symbol-euro {
+ .input-symbol-percent {
      position: relative;
      display: inline-block;
      width: 100%;
  }
- .input-symbol-euro input {
+ .input-symbol-percent input {
      padding-right: 15px;
      width: 100%;
  }
- .input-symbol-euro:after {
+ .input-symbol-percent:after {
      position: absolute;
      top: 50%;
      transform: translateY(-50%);
@@ -496,9 +496,9 @@
     function togglePercentSymbol(unit_of_measure_type){
         unit_of_measure_type = parseInt(unit_of_measure_type);
         if (unit_of_measure_type == 2) { // 2 is for percente option
-            $("#span_id_lop_target").addClass('input-symbol-euro')
+            $("#span_id_lop_target").addClass('input-symbol-percent')
         } else {
-            $("#span_id_lop_target").removeClass('input-symbol-euro')
+            $("#span_id_lop_target").removeClass('input-symbol-percent')
         }
     }
 

@@ -4,8 +4,14 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from urlparse import urlparse
 import re
-from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from workflow.models import Program, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
+from .models import (
+    Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue,
+    CollectedData, IndicatorType, Level, ExternalServiceRecord,
+    ExternalService, TolaTable
+)
+from workflow.models import (
+    Program, SiteProfile, Country, Sector, TolaSites, FormGuidance
+)
 from django.shortcuts import render_to_response
 from django.contrib import messages
 from django.core.serializers.json import DjangoJSONEncoder
@@ -15,7 +21,7 @@ from django_tables2 import RequestConfig
 from workflow.forms import FilterForm
 from .forms import IndicatorForm, CollectedDataForm
 
-from django.db.models import Count, Sum, Max, Min
+from django.db.models import Count, Sum, Min
 from django.db.models import Q
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
@@ -26,76 +32,99 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
 from django.utils import timezone
-from django.urls import reverse, reverse_lazy
 
 from workflow.mixins import AjaxableResponseMixin
 import json
 
 import requests
 from export import IndicatorResource, CollectedDataResource
-# from reportlab.pdfgen import canvas
 from weasyprint import HTML, CSS
 from django.template.loader import get_template
-from django.http import HttpResponse
 from datetime import datetime
-from dateutil.relativedelta import relativedelta #('%Y-%m-%d') %b %d, %Y
+from dateutil.relativedelta import relativedelta  # ('%Y-%m-%d') %b %d, %Y
 from feed.serializers import FlatJsonSerializer
 import dateutil.parser
 
 
-def generate_periodic_target_single(tf, start_date, nthTargetPeriod, target_frequency_custom=''):
+def generate_periodic_target_single(tf, start_date, nthTargetPeriod,
+                                    target_frequency_custom=''):
     i = nthTargetPeriod
     j = i + 1
     target_period = ''
 
     if tf == Indicator.LOP:
         lop_target = Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]
-        return {'period': lop_target }
+        return {'period': lop_target}
     elif tf == Indicator.MID_END:
-        return [ {'period': 'Midline'}, {'period': 'Endline'} ]
+        return [{'period': 'Midline'}, {'period': 'Endline'}]
     elif tf == Indicator.EVENT:
-        return { 'period': target_frequency_custom }
-
+        return {'period': target_frequency_custom}
 
     if tf == Indicator.ANNUAL:
-        start = ( (start_date + relativedelta(years =+ i) ).replace(day=1) ).strftime('%Y-%m-%d')
-        end = ( (start_date + relativedelta(years =+ j) ) + relativedelta(days =- 1) ).strftime('%Y-%m-%d')
-        target_period = {'period': 'Year %s' % j, 'start_date': start, 'end_date': end }
+        start = ((start_date + relativedelta(years=+i)).replace(day=1))\
+            .strftime('%Y-%m-%d')
+
+        end = ((start_date + relativedelta(years=+j)) +
+               relativedelta(days=-1)).strftime('%Y-%m-%d')
+
+        target_period = {'period': 'Year %s' % j, 'start_date': start,
+                         'end_date': end}
     elif tf == Indicator.SEMI_ANNUAL:
-        start = ( ( start_date + relativedelta(months =+ (i*6)) ).replace(day=1) ).strftime('%Y-%m-%d')
-        end = ( (start_date + relativedelta(months =+ (j*6)) ) + relativedelta(days =- 1) ).strftime('%Y-%m-%d')
-        target_period = {'period': 'Semi-annual period %s' % j, 'start_date': start, 'end_date': end }
+        start = ((start_date + relativedelta(months=+(i*6)))
+                 .replace(day=1)).strftime('%Y-%m-%d')
+
+        end = ((start_date + relativedelta(months=+(j*6))) +
+               relativedelta(days=-1)).strftime('%Y-%m-%d')
+
+        target_period = {'period': 'Semi-annual period %s' % j,
+                         'start_date': start, 'end_date': end}
+
     elif tf == Indicator.TRI_ANNUAL:
-        start = ( ( start_date + relativedelta(months =+ (i*4))).replace(day=1) ).strftime('%Y-%m-%d')
-        end = ( (start_date + relativedelta(months =+ (j*4))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
-        target_period = {'period': 'Tri-annual period %s' % j, 'start_date': start, 'end_date': end }
+        start = ((start_date + relativedelta(months=+(i*4)))
+                 .replace(day=1)).strftime('%Y-%m-%d')
+
+        end = ((start_date + relativedelta(months=+(j*4))) +
+               relativedelta(days=-1)).strftime('%Y-%m-%d')
+
+        target_period = {'period': 'Tri-annual period %s' % j,
+                         'start_date': start, 'end_date': end}
 
     elif tf == Indicator.QUARTERLY:
-        start = ( (start_date + relativedelta(months =+ (i*3)) ).replace(day=1)).strftime('%Y-%m-%d')
-        end = ( ( start_date + relativedelta(months =+ (j*3))) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
-        target_period = {'period': 'Quarter %s' % j, 'start_date': start, 'end_date': end }
+        start = ((start_date + relativedelta(months=+(i*3)))
+                 .replace(day=1)).strftime('%Y-%m-%d')
+
+        end = ((start_date + relativedelta(months=+(j*3))) +
+               relativedelta(days=-1)).strftime('%Y-%m-%d')
+
+        target_period = {'period': 'Quarter %s' % j, 'start_date': start,
+                         'end_date': end}
     elif tf == Indicator.MONTHLY:
-        month = ( start_date + relativedelta(months =+ i) ).strftime("%B")
-        year = ( start_date + relativedelta(months =+ i )).strftime("%Y")
+        month = (start_date + relativedelta(months=+i)).strftime("%B")
+        year = (start_date + relativedelta(months=+i)).strftime("%Y")
         name = month + " " + year
-        start = (( start_date + relativedelta(months =+ i)).replace(day=1)).strftime('%Y-%m-%d')
-        #end =  ( ( start_date + relativedelta(months =+ j)) + relativedelta(day=1, months=+1, days=-1)).strftime('%Y-%m-%d')
-        end = ( ( start_date + relativedelta(months =+ j)) + relativedelta(days=-1) ).strftime('%Y-%m-%d')
-        target_period = {'period': name, 'start_date': start, 'end_date': end }
+
+        start = ((start_date + relativedelta(months=+i)).replace(day=1))\
+            .strftime('%Y-%m-%d')
+
+        end = ((start_date + relativedelta(months=+j)) +
+               relativedelta(days=-1)).strftime('%Y-%m-%d')
+        target_period = {'period': name, 'start_date': start, 'end_date': end}
     return target_period
 
 
-def generate_periodic_targets(tf, start_date, numTargets, target_frequency_custom=''):
+def generate_periodic_targets(tf, start_date, numTargets,
+                              target_frequency_custom=''):
     gentargets = []
     target_period = None
 
     if tf == Indicator.LOP or tf == Indicator.MID_END:
-        target_period = generate_periodic_target_single(tf, start_date, numTargets)
+        target_period = generate_periodic_target_single(tf, start_date,
+                                                        numTargets)
         return target_period
 
     for i in range(numTargets):
-        j = i + 1
-        target_period = generate_periodic_target_single(tf, start_date, i, target_frequency_custom)
+        target_period = generate_periodic_target_single(
+            tf, start_date, i, target_frequency_custom)
         gentargets.append(target_period)
     return gentargets
 
@@ -103,9 +132,6 @@ def generate_periodic_targets(tf, start_date, numTargets, target_frequency_custo
 def group_excluded(*group_names, **url):
     """
     If user is in the group passed in permission denied
-    :param group_names:
-    :param url:
-    :return: Bool True or False is users passes test
     """
     def in_groups(u):
         if u.is_authenticated():
@@ -117,25 +143,24 @@ def group_excluded(*group_names, **url):
 
 
 class IndicatorList(ListView):
-    """
-    Main Indicator Home Page, displays a list of Indicators Filterable by Program
-    """
     model = Indicator
     template_name = 'indicators/indicator_list.html'
 
     def get(self, request, *args, **kwargs):
-
-        # countries = getCountry(request.user)
         countries = request.user.tola_user.countries.all()
-        getPrograms = Program.objects.filter(funding_status="Funded", country__in=countries).distinct()
-        getIndicators = Indicator.objects.filter(program__country__in=countries)#.exclude(collecteddata__isnull=True)
+        getPrograms = Program.objects.filter(
+            funding_status="Funded", country__in=countries).distinct()
+
+        getIndicators = Indicator.objects.filter(
+            program__country__in=countries)
+
         getIndicatorTypes = IndicatorType.objects.all()
 
         program_id = int(self.kwargs['program'])
         indicator_id = int(self.kwargs['indicator'])
         type_id = int(self.kwargs['type'])
-
         filters = {'id__isnull': False}
+
         if program_id != 0:
             filters['id'] = program_id
             getIndicators = getIndicators.filter(program__in=[program_id])
@@ -154,57 +179,46 @@ class IndicatorList(ListView):
 
         return render(request, self.template_name, {
                         'getPrograms': getPrograms,
-                        'getIndicators':getIndicators,
+                        'getIndicators': getIndicators,
                         'getIndicatorTypes': getIndicatorTypes,
-                        'program_id':program_id,
+                        'program_id': program_id,
                         'indicator_id': indicator_id,
                         'type_id': type_id,
                         'programs': programs})
 
 
-def import_indicator(service=1,deserialize=True):
+def import_indicator(service=1, deserialize=True):
     """
-    Import a indicators from a web service (the dig only for now)
-    :param service:
-    :param deserialize:
-    :return:
+    Imports an indicator from a web service (the dig only for now)
     """
     service = ExternalService.objects.get(id=service)
     response = requests.get(service.feed_url)
 
-    if deserialize == True:
-        data = json.loads(response.content) # deserialises it
+    if deserialize is True:
+        data = json.loads(response.content)  # deserialises it
     else:
         # send json data back not deserialized data
         data = response
-    #debug the json data string uncomment dump and print
-    #data2 = json.dumps(json_data) # json formatted string
-    #print data2
-
     return data
 
 
 def indicator_create(request, id=0):
     """
-    Create an Indicator with a service template first, or custom.  Step one in Inidcator creation.
+    Step one in Inidcator creation.
     Passed on to IndicatorCreate to do the creation
-    :param request:
-    :param id:
-    :return:
     """
     getIndicatorTypes = IndicatorType.objects.all()
     getCountries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = Program.objects.all().filter(funding_status="Funded",country__in=countries).distinct()
+    getPrograms = Program.objects.filter(funding_status="Funded",
+                                         country__in=countries).distinct()
     getServices = ExternalService.objects.all()
     program_id = id
 
     if request.method == 'POST':
-        #set vars from form and get values from user
-
         type = IndicatorType.objects.get(indicator_type="custom")
-        country = Country.objects.get(id=request.POST['country'])
+        # country = Country.objects.get(id=request.POST['country'])
         program = Program.objects.get(id=request.POST['program'])
         service = request.POST['services']
         level = Level.objects.all()[0]
@@ -216,33 +230,42 @@ def indicator_create(request, id=0):
         definition = None
         external_service_record = None
 
-        #import recursive library for substitution
+        # import recursive library for substitution
         import re
 
-        #checkfor service indicator and update based on values
-        if node_id != None and int(node_id) != 0:
+        # checkfor service indicator and update based on values
+        if node_id is None and int(node_id) != 0:
             getImportedIndicators = import_indicator(service)
             for item in getImportedIndicators:
                 if item['nid'] == node_id:
-                    getSector, created = Sector.objects.get_or_create(sector=item['sector'])
-                    sector=getSector
-                    getLevel, created = Level.objects.get_or_create(name=item['level'].title())
-                    level=getLevel
-                    name=item['title']
-                    source=item['source']
-                    definition=item['definition']
-                    #replace HTML tags if they are in the string
-                    definition = re.sub("<.*?>", "", definition)
+                    getSector, created = Sector.objects.get_or_create(
+                        sector=item['sector'])
 
+                    sector = getSector
+                    getLevel, created = Level.objects.get_or_create(
+                        name=item['level'].title())
+
+                    level = getLevel
+                    name = item['title']
+                    source = item['source']
+                    definition = item['definition']
+                    # replace HTML tags if they are in the string
+                    definition = re.sub("<.*?>", "", definition)
                     getService = ExternalService.objects.get(id=service)
                     full_url = getService.url + "/" + item['nid']
-                    external_service_record = ExternalServiceRecord(record_id=item['nid'],external_service=getService,full_url=full_url)
+                    external_service_record = ExternalServiceRecord(
+                        record_id=item['nid'], external_service=getService,
+                        full_url=full_url
+                    )
                     external_service_record.save()
-                    getType, created = IndicatorType.objects.get_or_create(indicator_type=item['type'].title())
-                    type=getType
-
-        #save form
-        new_indicator = Indicator(sector=sector,name=name,source=source,definition=definition, external_service_record=external_service_record)
+                    getType, created = IndicatorType.objects.get_or_create(
+                        indicator_type=item['type'].title())
+                    type = getType
+        # save form
+        new_indicator = Indicator(
+            sector=sector, name=name, source=source, definition=definition,
+            external_service_record=external_service_record
+        )
         new_indicator.save()
         new_indicator.program.add(program)
         new_indicator.indicator_type.add(type)
@@ -250,31 +273,36 @@ def indicator_create(request, id=0):
 
         latest = new_indicator.id
 
-        #redirect to update page
+        # redirect to update page
         messages.success(request, 'Success, Basic Indicator Created!')
-        redirect_url = '/indicators/indicator_update/' + str(latest)+ '/'
+        redirect_url = '/indicators/indicator_update/' + str(latest) + '/'
         return HttpResponseRedirect(redirect_url)
 
-    # send the keys and vars from the json data to the template along with submitted feed info and silos for new form
-    return render(request, "indicators/indicator_create.html", {'country_id': country_id, 'program_id':int(program_id),'getCountries':getCountries,
-                                                                'getPrograms': getPrograms,'getIndicatorTypes':getIndicatorTypes, 'getServices': getServices})
+    # send the keys and vars from the json data to the template along with
+    # submitted feed info and silos for new form
+    return render(request, "indicators/indicator_create.html",
+                  {'country_id': country_id, 'program_id': int(program_id),
+                   'getCountries': getCountries, 'getPrograms': getPrograms,
+                   'getIndicatorTypes': getIndicatorTypes,
+                   'getServices': getServices})
 
 
 class IndicatorCreate(CreateView):
     """
-    Indicator Form for indicators not using a template or service indicator first as well as the post reciever
-    for creating an indicator.  Then redirect back to edit view in IndicatorUpdate.
+    Indicator Form not using a template or service indicator first as well as
+    the post reciever for creating an indicator.
+    Then redirect back to edit view in IndicatorUpdate.
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
 
-    #pre-populate parts of the form
+    # pre-populate parts of the form
     def get_initial(self):
-        user_profile = TolaUser.objects.get(user=self.request.user)
+        # user_profile = TolaUser.objects.get(user=self.request.user)
         initial = {
             'program': self.kwargs['id'],
             'unit_of_measure_type': 1
-            }
+        }
 
         return initial
 
@@ -291,7 +319,8 @@ class IndicatorCreate(CreateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        program = Indicator.objects.all().filter(id=self.kwargs['pk']).values("program__id")
+        program = Indicator.objects.all().filter(id=self.kwargs['pk'])\
+            .values("program__id")
         kwargs['program'] = program
         return kwargs
 
@@ -312,19 +341,25 @@ class IndicatorCreate(CreateView):
 
 class PeriodicTargetView(View):
     """
-    This view is responsible for generating periodic targets or deleting them (via POST)
+    This view generates periodic targets or deleting them (via POST)
     """
     model = PeriodicTarget
 
     def get(self, request, *args, **kwargs):
-        indicator = Indicator.objects.get(pk=self.kwargs.get('indicator', None))
+        indicator = Indicator.objects.get(
+            pk=self.kwargs.get('indicator', None))
+
         if request.GET.get('existingTargetsOnly'):
-            pts = FlatJsonSerializer().serialize(indicator.periodictarget_set.all().order_by('customsort','create_date', 'period'))
+            pts = FlatJsonSerializer().serialize(
+                indicator.periodictarget_set.all()
+                .order_by('customsort', 'create_date', 'period'))
+
             return HttpResponse(pts)
         try:
             numTargets = int(request.GET.get('numTargets', None))
-        except Exception as e:
-            numTargets = PeriodicTarget.objects.filter(indicator=indicator).count() + 1
+        except Exception:
+            numTargets = PeriodicTarget.objects.filter(
+                indicator=indicator).count() + 1
 
         pt_generated = generate_periodic_target_single(indicator.target_frequency, indicator.target_frequency_start, (numTargets-1), '')
         pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)

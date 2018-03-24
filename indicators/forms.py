@@ -52,7 +52,8 @@ class IndicatorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         indicator = kwargs.get('instance', None)
         if not indicator.unit_of_measure_type:
-            kwargs['initial']['unit_of_measure_type'] = Indicator.UNIT_OF_MEASURE_TYPES[0][0]
+            kwargs['initial']['unit_of_measure_type'] = \
+                Indicator.UNIT_OF_MEASURE_TYPES[0][0]
         self.request = kwargs.pop('request')
         self.programval = kwargs.pop('program')
 
