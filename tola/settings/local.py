@@ -77,7 +77,7 @@ LDAP_PASSWORD = app_settings['LDAP_PASSWORD']
 LDAP_USER_GROUP = app_settings['LDAP_USER_GROUP']
 LDAP_ADMIN_GROUP = app_settings['LDAP_ADMIN_GROUP']
 
-#AUTHENTICATION_BACKENDS = app_settings['AUTHENTICATION_BACKENDS']
+AUTHENTICATION_BACKENDS = app_settings['AUTHENTICATION_BACKENDS']
 
 # If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = app_settings['REPORT_SERVER']
