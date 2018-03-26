@@ -88,10 +88,10 @@ NON_LDAP = app_settings['NON_LDAP']
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'ssy@example.org'
-EMAIL_HOST_PASSWORD = 'XXXXXXX'
-DEFAULT_FROM_EMAIL = 'sys@example.org'
-SERVER_EMAIL = "tola@example.org"
+EMAIL_HOST_USER = app_settings['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = app_settings['EMAIL_HOST_PASSWORD']
+DEFAULT_FROM_EMAIL = 'systems@mercycorps.org'
+SERVER_EMAIL = app_settings['SERVER_EMAIL']
 #DEFAULT_TO_EMAIL = 'to email'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 

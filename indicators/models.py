@@ -297,6 +297,15 @@ class Indicator(models.Model):
         (PERCENTAGE, "Percentage (%)")
     )
 
+    DIRECTION_OF_CHANGE_NONE = 1
+    DIRECTION_OF_CHANGE_POSITIVE = 2
+    DIRECTION_OF_CHANGE_NEGATIVE = 3
+    DIRECTION_OF_CHANGE = (
+        (DIRECTION_OF_CHANGE_NONE, "Direction of change (none)"),
+        (DIRECTION_OF_CHANGE_POSITIVE, "Positive (+)"),
+        (DIRECTION_OF_CHANGE_NEGATIVE, "Negative (-)")
+    )
+
     indicator_key = models.UUIDField(
         default=uuid.uuid4, unique=True, help_text=" "),
 
@@ -353,6 +362,11 @@ class Indicator(models.Model):
         verbose_name="Life of Program (LoP) target*", max_length=255,
         null=True, blank=True, help_text=" "
     )
+    direction_of_change = models.IntegerField(
+        blank=False, null=True, choices=DIRECTION_OF_CHANGE,
+        default=DIRECTION_OF_CHANGE[0][0],
+        verbose_name="Direction of Chnage", help_text=" ")
+
     rationale_for_target = models.TextField(max_length=255, null=True,
                                             blank=True, help_text=" ")
     target_frequency = models.IntegerField(
