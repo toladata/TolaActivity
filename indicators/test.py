@@ -12,7 +12,9 @@ class IndicatorTestCase(TestCase):
 
     def setUp(self):
         self.program = factories.Program()
-        self.indicators = factories.RandomIndicatorFactory.create_batch(2, program=self.program, source="TEST")
+
+        self.indicators = factories.RandomIndicatorFactory.create_batch(
+            2, program=self.program, source="TEST")
 
         self.tola_user = factories.TolaUser()
 

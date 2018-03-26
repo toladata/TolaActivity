@@ -1,7 +1,9 @@
+{% load widget_tweaks %}
 {% load mytags %}
+
 {% if periodic_targets and indicator.target_frequency != 1%}
-    <div class="d-flex flex-column p-4" style="background-color: #F5F5F5; margin-left:-15px; margin-right:-15px;">
-        <div class="offset-sm-1">
+    <div class="d-flex flex-column p-4 inputs-in-a-box" style="margin-left:-15px; margin-right:-15px;">
+        <div class="offset-sm-1 col-sm-10">
             <h5>{{ indicator.get_target_frequency_label }} targets</h5>
         </div>
         <div id="periodic-targets-tablediv" class="offset-sm-1 col-sm-10">
@@ -63,10 +65,88 @@
                 </tfoot>
             </table>
         </div>
-        <div class="offset-sm-1">
+        <div class="offset-sm-1 col-sm-10">
             {% if indicator.target_frequency != 2 %}
                 <a href="#" id="addNewPeriodicTarget" style="padding-left: 1px;" class="btn btn-link"><i class="fas fa-plus"></i> Add a target</a>
             {% endif %}
+        </div>
+        <div class="offset-sm-1 col-sm-10">
+            <div class="card inputs-in-a-box" id="id_div_is_cumulative">
+                <div class="card-body p-1">
+                    <!-- UNIT_OF_MEASURE_TYPE = 1 IS NUMBER AND 2 IS PERCENTAGE -->
+                    {% if indicator.unit_of_measure_type == 1 %}
+                        <div class="d-flex flex-row px-2 pt-2">
+                            <strong>OPTIONS FOR NUMBER (#) INDICATORS</strong>
+                        </div>
+                        <div class="d-flex flex-row px-2 pb-2">
+                            <input
+                                type="radio"
+                                name="is_cumulative"
+                                value="0"
+                                required
+                                class="form-control mr-1"
+                                id="id_is_cumulative_1"
+                                style="width: 6%;">
+                            <label
+                                class="form-check-label"
+                                for="id_is_cumulative_1">
+                                NON-CUMULATIVE (NC): Target period results are automatically calculated from data collected during the period. The Life of Program result is the sum of target period values.
+                            </label>
+                        </div>
+
+                        <div class="d-flex flex-row px-2">
+                            <input
+                                type="radio"
+                                name="is_cumulative"
+                                value="1"
+                                required
+                                class="form-control mr-1"
+                                id="id_is_cumulative_2"
+                                style="width: 6%;">
+                            <label
+                                class="form-check-label"
+                                for="id_is_cumulative_2">
+                                CUMULATIVE (NC): Target period results automatically include data from previous periods. The Life of Program mirrors the latest period value.
+                            </label>
+                        </div>
+                    {% else %}
+                        <div class="d-flex flex-row px-2 pt-2">
+                            <strong>OPTIONS FOR PERCENTAGE (%) INDICATORS</strong>
+                        </div>
+                        <div class="d-flex flex-row px-2 pb-2">
+                            <input
+                                type="radio"
+                                name="is_cumulative"
+                                value="1"
+                                required
+                                class="form-control mr-1"
+                                id="id_is_cumulative_1"
+                                style="width: 6%;">
+                            <label
+                                class="form-check-label"
+                                for="id_is_cumulative_1">
+                                CUMULATIVE (C): The Life of Program result mirrors the latest periof value. No automatic calculations are performed with collected data.
+                            </label>
+                        </div>
+
+                        <div class="d-flex flex-row px-2">
+                            <input
+                                type="radio"
+                                name="is_cumulative"
+                                value="0"
+                                required
+                                class="form-control mr-1"
+                                id="id_is_cumulative_2"
+                                style="width: 6%;">
+                            <label
+                                class="form-check-label"
+                                for="id_is_cumulative_2">
+                                NON-CUMULATIVE (NC): The Life of Program result is the average of target period values. No other automatic calculations are performed.
+                            </label>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 {% endif %}

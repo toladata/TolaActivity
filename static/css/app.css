@@ -331,14 +331,6 @@ select.listoption_filters
   padding-bottom: 0px;
 }
 
-#periodic-targets-tablediv {
-  padding-left: 0px;
-  padding-right: 0px;
-  margin-bottom: 0px;
-  margin-top: 1px
-  background-color: #F5F5F5;
-}
-
 .periodic-target, #pt_sum_targets {
   border-bottom: 1px solid #DBDCDE;
   border-top: 1px solid #DBDCDE;
