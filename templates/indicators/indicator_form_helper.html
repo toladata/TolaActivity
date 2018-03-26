@@ -1,23 +1,27 @@
 {% load widget_tweaks %}
 {% load mytags %}
 <style>
- .input-symbol-percent {
-     position: relative;
-     display: inline-block;
-     width: 100%;
- }
- .input-symbol-percent input {
-     padding-right: 15px;
-     width: 100%;
- }
- .input-symbol-percent:after {
-     position: absolute;
-     top: 50%;
-     transform: translateY(-50%);
-     margin: auto;
-     content:"%";
-     right: 20px;
- }
+    .input-symbol-percent {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    .input-symbol-percent input {
+        padding-right: 15px;
+        width: 100%;
+    }
+    .input-symbol-percent:after {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: auto;
+        content:"%";
+        right: 20px;
+    }
+    .inputs-in-a-box {
+        background-color: #F5F5F5;
+    }
+
 </style>
     <form
         action="{% url 'indicator_update' indicator.id %}"
@@ -184,7 +188,7 @@
                     <div class="form-row mb-2" id="div_id_unit_of_measure">
                         <label for="id_unit_of_measure" class="col-sm-4 col-form-label" align="right">{{ form.unit_of_measure.label }} </label>
                         <div class="col-sm-7">
-                            <div class="card" id="id_fieldgroup_unit_of_measure" style="background-color: #F5F5F5;">
+                            <div class="card inputs-in-a-box" id="id_fieldgroup_unit_of_measure">
                                 <div class="card-body p-2">
                                     {% render_field form.unit_of_measure class+="form-control" %}
                                     {% for ut in form.unit_of_measure_type %}
@@ -210,7 +214,7 @@
                     <div class="form-row mb-2" id="div_id_lop_target">
                         <label for="id_lop_target" class="col-sm-4 col-form-label" align="right">{{ form.lop_target.label }} </label>
                         <div class="col-sm-7">
-                            <div class="card" id="id_fieldgroup_unit_of_measure" style="background-color: #F5F5F5;">
+                            <div class="card inputs-in-a-box" id="id_fieldgroup_unit_of_measure">
                                 <div class="card-body p-2">
                                     <!-- {% render_field form.lop_target class+="form-control" %} -->
                                     <span id="span_{{ form.lop_target.id_for_label }}">
