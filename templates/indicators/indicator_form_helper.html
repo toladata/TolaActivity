@@ -252,13 +252,15 @@
                         <label for="id_baseline" class="col-sm-4 col-form-label" align="right">{{ form.baseline.label }} </label>
                         <div class="col-sm-7">
                             <!-- {% render_field form.baseline class+="form-control" %} -->
-                            <input type="number"
-                                    name="{{ form.baseline.name }}"
-                                    id="{{ form.baseline.id_for_label }}"
-                                    class="form-control"
-                                    min="0"
-                                    {% if form.baseline.value != None %} value="{{ form.baseline.value|stringformat:'s' }}"{% endif %}
-                                    onblur="this.checkValidity();">
+                            <span id="span_{{ form.baseline.id_for_label }}">
+                                <input type="number"
+                                        name="{{ form.baseline.name }}"
+                                        id="{{ form.baseline.id_for_label }}"
+                                        class="form-control"
+                                        min="0"
+                                        {% if form.baseline.value != None %} value="{{ form.baseline.value|stringformat:'s' }}"{% endif %}
+                                        onblur="this.checkValidity();">
+                            </span>
                             {{ form.baseline_na }} <label for="id_baseline_na" class="col-form-label"> {{ form.baseline_na.label}}</label>
                             {% if form.baseline.help_text %}
                                 <small class="form-text text-muted">{{ form.baseline.help_text }}</small>
@@ -506,8 +508,10 @@
         unit_of_measure_type = parseInt(unit_of_measure_type);
         if (unit_of_measure_type == 2) { // 2 is for percente option
             $("#span_id_lop_target").addClass('input-symbol-percent')
+            $("#span_id_baseline").addClass('input-symbol-percent');
         } else {
             $("#span_id_lop_target").removeClass('input-symbol-percent')
+            $("#span_id_baseline").removeClass('input-symbol-percent');
         }
     }
 
