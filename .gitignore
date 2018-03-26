@@ -49,7 +49,6 @@ tola/settings/local_secret.py
 *.key
 error.log
 *.secret
-*.secret.yml
+settings.secret.yml
 assets/
-local.py
 templates/links.html

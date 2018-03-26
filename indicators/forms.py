@@ -1,3 +1,8 @@
+from datetime import datetime
+from functools import partial
+from django.db.models import Q
+from django import forms
+
 from indicators.models import (
     Indicator, PeriodicTarget, CollectedData, Objective, StrategicObjective,
     TolaTable, DisaggregationType
@@ -5,11 +10,7 @@ from indicators.models import (
 from workflow.models import (
     Program, SiteProfile, Documentation, ProjectComplete, TolaUser
 )
-from functools import partial
-from django import forms
 from tola.util import getCountry
-from django.db.models import Q
-from datetime import datetime
 
 
 class DatePicker(forms.DateInput):
@@ -52,7 +53,8 @@ class IndicatorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         indicator = kwargs.get('instance', None)
         if not indicator.unit_of_measure_type:
-            kwargs['initial']['unit_of_measure_type'] = Indicator.UNIT_OF_MEASURE_TYPES[0][0]
+            kwargs['initial']['unit_of_measure_type'] = \
+                Indicator.UNIT_OF_MEASURE_TYPES[0][0]
         self.request = kwargs.pop('request')
         self.programval = kwargs.pop('program')
 
