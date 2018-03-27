@@ -65,8 +65,6 @@ $ mkdir config
 $ # Place settings.secret.yml into config/ directory
 $ pip install -r requirements.txt
 $ pip install --upgrade google-api-python-client
-$ cp tola/settings/local-sample.py tola/settings/local.py
-$ vi tola/settings/local.py
 ```
 
 Edit the configuration file as described in
@@ -74,58 +72,33 @@ Edit the configuration file as described in
 
 ## Modify the config file
 
-Edit _tola/settings/local.py_. You will need to disable dependencies
-on local apps and set the TolaActivity's MySQL and password. First,
-find the section near the end of the file that looks like this:
+Edit _config/settings.secret.yml_. Find the node named DATABASES and set the 
+database `PASSWORD` as appropriate. The result should resemble the following:
 
 ```
-########## LOCAL APPS DEPENDING ON SERVER DEBUG FOR DEV BOXES, REPORT BUILDER FOR REPORT SERVER
-DEV_APPS = (
-    'debug_toolbar',
-)
-
-INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
-
-
-DEV_MIDDLEWARE = (
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
-
-MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + DEV_MIDDLEWARE"
+32 DATABASES:
+33  default:
+34    ENGINE: "django.db.backends.mysql"
+35    NAME: "tola_activity"
+36    USER: "admin"
+37    PASSWORD: "SekritWord"
+38    OPTIONS: {"init_command": "SET default_storage_engine=MYISAM",}
+39    HOST: "localhost"
+40    PORT: ""
 ```
 
-Comment out these sections as shown below:
+Don't change the `USER` entry unless you know why you need
+to do that. Save and exit.
 
-```
-# ########## LOCAL APPS DEPENDING ON SERVER DEBUG FOR DEV BOXES, REPORT BUILDER FOR REPORT SERVER
-# DEV_APPS = (
-#     'debug_toolbar',
-# )
-#
-# INSTALLED_APPS = INSTALLED_APPS + DEV_APPS
-#
-#
-# DEV\_MIDDLEWARE = (
-#     'debug_toolbar.middleware.DebugToolbarMiddleware',
-# )
-#
-# MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + DEV_MIDDLEWARE
-```
+## Set up Django's MySQL backing store
 
-In the database configuration section, set the appropriate value for
-`PASSWORD`. Don't change the `USER` entry unless you know why you need
-to do that.
-
-```
-        'USER': 'admin',
-        'PASSWORD': 'SekritWord',
-```
-
-Save your changes and exit the file.
+1. CREATE DATABASE 'tola_activity';
+1. CREATE USER 'admin';
+1. GRANT ALL ON tola_activity.* TO 'admin'@'localhost' IDENTIFIED BY 'SekritWord'
 
 ## Set up Django
 
-Next, Set up the Django database:
+Set up the Django database:
 
 ```
 $ python manage.py migrate
@@ -160,18 +133,59 @@ Quit the server with CONTROL-C.
 
 ## Configuring OAuth authentication
 
-When running a local instance, we use Google's OAuth API to for authentication to TolaActivity. Access control is an app-level administrative function not addressed in this doc. There exists a bug in the API library that requires an ugly manual workaround before you can actually log in and starting using TolaActivity. The approximate steps:
+When running a local instance, we use Google's OAuth API for
+authentication to TolaActivity. There exists a bug in the API library
+that requires an ugly manual workaround before you can actually log in
+and starting using TolaActivity. The approximate steps:
 
-1. Start the TA server
-1. Browse to the home page
+1. Start the TolaActivity server as described in the previous section
+1. Open the home page in a web browser
 1. Click the "Google+" link below the login button to authenticate with
-Google Auth.
-1. Select your username and login
-1. You'll get this error screen. That means you've hit the bug.
-1. Stop the TA server
-1. Log in to your MySQL instance
-1. Get the user ID google added
-1. Insert that into the the Workflow_tolauser table
+   Google OAuth (<a href="/login/google-oauth2/">Google+</a>)
+1. Login as normal using your MercyCorps SSO login
+1. What _should_ happen is that you'll get logged in and redirected to
+   to the TolaActivity home page.
+1. Likely as not, you'll get ![this error screen](docs/oauth_error.png)
+   instead, or one very much like it. That means you've hit the bug.
+1. Stop the TolaActivity server
+1. Open a MySQL shell and connect to the tola_activity database
+1. Get the id of the record Google OAuth added to the TolaActivity
+   user table:
+
+    ```
+    mysql> select id,username,first_name,last_name from auth_user;
+    +----+----------+------------+-----------+
+    | id | username | first_name | last_name |
+    +----+----------+------------+-----------+
+    |  1 | kwall    | Kurt       | Wall      |
+    +----+----------+------------+-----------+
+    ```
+    
+    Note the value for `id` to use in the next step.
+
+1. Insert the `id` value from the auth_user table into the `user_id` field
+   of the workflow_tolauser table:
+
+    ```
+    mysql> insert into workflow_tolauser (privacy_disclaimer_accepted, user_id) values (1,1);
+    Query OK, 1 row affected (0.00 sec)
+
+    mysql> 
+    ```
+
 1. Restart the TA server
-1. Refresh the browser window
+
+    ```
+    $ python manage.py runserver
+    Performing system checks...
+
+    System check identified no issues (0 silenced).
+    March 26, 2018 - 23:38:10
+    Django version 1.11.2, using settings 'tola.settings.local'
+    Starting development server at http://127.0.0.1:8000/
+    Quit the server with CONTROL-C.
+    ```
+
+1. Refresh the browser window and you should be at the logged in and immediately
+   redirected to the TolaActivity home page
 1. Rejoice!
