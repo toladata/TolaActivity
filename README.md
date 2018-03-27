@@ -128,7 +128,6 @@ Django version 1.11.2, using settings 'tola.settings.local'
 Starting development server at http://0.0.0.0:8000/
 Quit the server with CONTROL-C.
 
-
 ```
 
 ## Configuring OAuth authentication
@@ -136,17 +135,19 @@ Quit the server with CONTROL-C.
 When running a local instance, we use Google's OAuth API for
 authentication to TolaActivity. There exists a bug in the API library
 that requires an ugly manual workaround before you can actually log in
-and starting using TolaActivity. The approximate steps:
+and starting using TolaActivity. The following procedure is a workaround
+for this bug until the bug is well and truly crushed.
 
 1. Start the TolaActivity server as described in the previous section
 1. Open the home page in a web browser
 1. Click the "Google+" link below the login button to authenticate with
-   Google OAuth (<a href="/login/google-oauth2/">Google+</a>)
+   Google OAuth 
 1. Login as normal using your MercyCorps SSO login
-1. What _should_ happen is that you'll get logged in and redirected to
-   to the TolaActivity home page.
-1. Likely as not, you'll get ![this error screen](docs/oauth_error.png)
-   instead, or one very much like it. That means you've hit the bug.
+1. What _should_ happen is that you get logged in and redirected to
+   to the TolaActivity home page. Likely as not, though, you'll get 
+   a screen remarkably similar to the one in the following figure.
+   You guessed it, that means you've hit the bug.
+   ![ugly Django/Python traceback](docs/oauth_error.png)
 1. Stop the TolaActivity server
 1. Open a MySQL shell and connect to the tola_activity database
 1. Get the id of the record Google OAuth added to the TolaActivity
@@ -173,7 +174,7 @@ and starting using TolaActivity. The approximate steps:
     mysql> 
     ```
 
-1. Restart the TA server
+1. Restart the Tola Activity server
 
     ```
     $ python manage.py runserver
