@@ -26,7 +26,7 @@ TolaActivity requires Python 2. MC uses MySQL as Django's datastore.
 On macOS, you can use Homebrew to install Python 2 alongside the system
 Python 2 installation as shown in the following:
 
-```
+```bash
 $ brew install python@2
 $ brew install pip
 $ brew install mysql mysql-utilies
@@ -52,7 +52,7 @@ On Ubuntu and its derivatives, Python 2 is the default, so the
 following should get you going on any current Python 2 version for most
 Ubuntu-family distros (_Ubunten_):
 
-```
+```bash
 $ python --version
 $ # Make sure output from above indicates Python 2
 $ sudo apt install mysql-server libmysqld-dev mysql-utilities mysql-client
@@ -75,7 +75,7 @@ Edit the configuration file as described in
 Edit _config/settings.secret.yml_. Find the node named DATABASES and set the 
 database `PASSWORD` as appropriate. The result should resemble the following:
 
-```
+```yaml
 32 DATABASES:
 33  default:
 34    ENGINE: "django.db.backends.mysql"
@@ -92,15 +92,17 @@ to do that. Save and exit.
 
 ## Set up Django's MySQL backing store
 
-1. CREATE DATABASE 'tola_activity';
-1. CREATE USER 'admin';
-1. GRANT ALL ON tola_activity.* TO 'admin'@'localhost' IDENTIFIED BY 'SekritWord'
+```sql
+CREATE DATABASE 'tola_activity';
+CREATE USER 'admin';
+GRANT ALL ON tola_activity.* TO 'admin'@'localhost' IDENTIFIED BY 'SekritWord'
+```
 
 ## Set up Django
 
 Set up the Django database:
 
-```
+```shell
 $ python manage.py migrate
 
 Operations to perform:
@@ -118,7 +120,7 @@ Operations to perform:
 
 Start the server:
 
-```
+```shell
 $ python manage.py runserver
 Performing system checks...
 
@@ -153,7 +155,7 @@ for this bug until the bug is well and truly crushed.
 1. Get the id of the record Google OAuth added to the TolaActivity
    user table:
 
-    ```
+    ```sql
     mysql> select id,username,first_name,last_name from auth_user;
     +----+----------+------------+-----------+
     | id | username | first_name | last_name |
@@ -164,10 +166,10 @@ for this bug until the bug is well and truly crushed.
     
     Note the value for `id` to use in the next step.
 
-1. Insert the `id` value from the auth_user table into the `user_id` field
-   of the workflow_tolauser table:
+1. Insert the `id` value from the `auth_user` table into the `user_id` field
+   of the `workflow_tolauser` table:
 
-    ```
+    ```sql
     mysql> insert into workflow_tolauser (privacy_disclaimer_accepted, user_id) values (1,1);
     Query OK, 1 row affected (0.00 sec)
 
@@ -176,7 +178,7 @@ for this bug until the bug is well and truly crushed.
 
 1. Restart the Tola Activity server
 
-    ```
+    ```shell
     $ python manage.py runserver
     Performing system checks...
 
