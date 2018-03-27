@@ -99,9 +99,6 @@ urlpatterns = [
     # Index / Homepage
     url(r'^$', tola_views.IndexView.as_view(), name='index'),
 
-    # App include of workflow urls
-    url(r'^workflow/', include('workflow.urls')),
-
     # App include of indicator urls
     url(r'^indicators/', include('indicators.urls')),
 
