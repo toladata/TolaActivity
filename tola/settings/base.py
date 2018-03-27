@@ -197,9 +197,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'feed.permissions.IsSuperUserBrowseableAPI',
-    )
 }
 
 ########## END REST CONFIGURATION
@@ -248,7 +245,6 @@ LOCAL_APPS = (
     'workflow',
     'formlibrary',
     'tola',
-    'feed',
     'indicators',
     'customdashboard',
     'reports',
