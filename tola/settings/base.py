@@ -131,7 +131,6 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             normpath(join(SITE_ROOT, 'templates')),
-            normpath(join(SITE_ROOT, 'customdashboard','templates')),
         ],
         'OPTIONS': {
             'context_processors': [
@@ -246,7 +245,6 @@ LOCAL_APPS = (
     'formlibrary',
     'tola',
     'indicators',
-    'customdashboard',
     'reports',
     'gladmap',
     'search',

@@ -37,9 +37,6 @@ urlpatterns = [
     # App include of indicator urls
     url(r'^indicators/', include('indicators.urls')),
 
-    # App include of customdashboard urls
-    url(r'^customdashboard/', include('customdashboard.urls')),
-
     # App include of reports urls
     url(r'^reports/', include('reports.urls')),
 
