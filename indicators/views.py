@@ -607,13 +607,13 @@ class IndicatorUpdate(UpdateView):
             # pts = FlatJsonSerializer().serialize(periodic_targets)
 
             if generatedTargets:
-                params = {'indicator': indicatr,
+                params = {'indicator': self.object,
                           'periodic_targets': generatedTargets}
 
                 content = render_to_string(
                     'indicators/indicatortargets.html', params)
             else:
-                params = {'indicator': indicatr,
+                params = {'indicator': self.object,
                           'periodic_targets': periodic_targets}
 
                 content = render_to_string(

@@ -33,14 +33,14 @@ class IndicatorForm(forms.ModelForm):
         choices=Indicator.UNIT_OF_MEASURE_TYPES,
         widget=forms.RadioSelect(),
     )
-    cumulative_choices = (
-        (1, None),
-        (2, True),
-        (3, False)
-    )
-    is_cumulative = forms.ChoiceField(
-        choices=cumulative_choices,
-        widget=forms.RadioSelect())
+    # cumulative_choices = (
+    #     (1, None),
+    #     (2, True),
+    #     (3, False)
+    # )
+    # is_cumulative = forms.ChoiceField(
+    #     choices=cumulative_choices,
+    #     widget=forms.RadioSelect())
 
     program = forms.CharField(widget=forms.HiddenInput())
 

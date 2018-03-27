@@ -506,12 +506,31 @@
 
     function togglePercentSymbol(unit_of_measure_type){
         unit_of_measure_type = parseInt(unit_of_measure_type);
+
         if (unit_of_measure_type == 2) { // 2 is for percente option
             $("#span_id_lop_target").addClass('input-symbol-percent')
             $("#span_id_baseline").addClass('input-symbol-percent');
         } else {
             $("#span_id_lop_target").removeClass('input-symbol-percent')
             $("#span_id_baseline").removeClass('input-symbol-percent');
+        }
+    }
+
+    function toggleCummulativeOptions(unit_of_measure_type) {
+        // cumulative = 2 and non-cumululative = 3
+        $("#id_is_cumulative_1").prop('checked', 'checked');
+
+        if (unit_of_measure_type == 2) { // 2 is for percente option
+            $("#id_span_is_cumulative_header").text("OPTIONS FOR PERCENTAGE (%) INDICATORS");
+            $("#id_is_cumulative_1").val(2);
+            $("label[for=id_is_cumulative_1]").html("CUMULATIVE (C): The Life of Program result mirrors the latest period value. No automatic calculations are performed with collected data.");
+            $("label[for=id_is_cumulative_2]").html("NON-CUMULATIVE (NC): The Life of Program result is the average of target period values. No other automatic calculations are performed.");
+        } else {
+            $("#id_span_is_cumulative_header").text("OPTIONS FOR NUMBER (#) INDICATORS");
+            $("#id_is_cumulative_1").val(3);
+            $("label[for=id_is_cumulative_1]").html("NON-CUMULATIVE (NC): Target period results are automatically calculated from data collected during the period. The Life of Program result is the sum of target period values.");
+            $("label[for=id_is_cumulative_2]").html("CUMULATIVE (C): Target period results automatically include data from previous periods. The Life of Program result mirrors the latest period value.");
+
         }
     }
 
@@ -522,6 +541,7 @@
 
     $("#id_fieldgroup_unit_of_measure").on("change", ":input[name='unit_of_measure_type']", function(e){
         togglePercentSymbol(e.target.value);
+        toggleCummulativeOptions(e.target.value);
     })
     /*
     var alerts = {};

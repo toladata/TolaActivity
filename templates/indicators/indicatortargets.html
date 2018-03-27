@@ -74,77 +74,70 @@
             <div class="card inputs-in-a-box" id="id_div_is_cumulative">
                 <div class="card-body p-1">
                     <!-- UNIT_OF_MEASURE_TYPE = 1 IS NUMBER AND 2 IS PERCENTAGE -->
-                    {% if indicator.unit_of_measure_type == 1 %}
-                        <div class="d-flex flex-row px-2 pt-2">
-                            <strong>OPTIONS FOR NUMBER (#) INDICATORS</strong>
+                    <!-- IS_CUMULATIVE = 2 and NON_CUMULATIVE = 3 -->
+                    {% with unit_type=indicator.unit_of_measure_type %}
+                        <div id="id_is_cumulative_section_header" class="d-flex flex-row px-2 pt-2">
+                            <strong>
+                                <span id="id_span_is_cumulative_header">
+                                    {% if unit_type == 1 %}
+                                        OPTIONS FOR NUMBER (#) INDICATORS
+                                    {% else %}
+                                        OPTIONS FOR PERCENTAGE (%) INDICATORS
+                                    {% endif %}
+                                </span>
+                            </strong>
                         </div>
-                        <div class="d-flex flex-row px-2 pb-2">
+                        <div id="id_div_is_cumulative_section1" class="d-flex flex-row px-2 pb-2">
                             <input
                                 type="radio"
                                 name="is_cumulative"
-                                value="0"
+                                value="{% if unit_type == 1 %}3{% else %}2{% endif %}"
                                 required
+                                {% if unit_type == 1 %}
+                                    {% if indicator.is_cumulative is None or indicator.is_cumulative is False %} checked {% endif %}
+                                {% else %}
+                                    {% if indicator.is_cumulative is True %} checked {% endif %}
+                                {% endif %}
                                 class="form-control mr-1"
                                 id="id_is_cumulative_1"
                                 style="width: 6%;">
                             <label
                                 class="form-check-label"
                                 for="id_is_cumulative_1">
-                                NON-CUMULATIVE (NC): Target period results are automatically calculated from data collected during the period. The Life of Program result is the sum of target period values.
+                                {% if unit_type == 1 %}
+                                    NON-CUMULATIVE (NC): Target period results are automatically calculated from data collected during the period. The Life of Program result is the sum of target period values.
+                                {% else %}
+                                    CUMULATIVE (C): The Life of Program result mirrors the latest period value. No automatic calculations are performed with collected data.
+                                {% endif %}
                             </label>
                         </div>
 
-                        <div class="d-flex flex-row px-2">
+                        <div id="id_div_is_cumulative_section2" class="d-flex flex-row px-2">
                             <input
                                 type="radio"
                                 name="is_cumulative"
-                                value="1"
+                                value="{% if unit_type == 1 %}2{% else %}3{% endif %}"
                                 required
+                                {% if unit_type == 1 %}
+                                    {% if indicator.is_cumulative is True %} checked {% endif %}
+                                {% else %}
+                                    {% if indicator.is_cumulative is None or indicator.is_cumulative is False %} checked {% endif %}
+                                {% endif %}
                                 class="form-control mr-1"
                                 id="id_is_cumulative_2"
                                 style="width: 6%;">
                             <label
                                 class="form-check-label"
                                 for="id_is_cumulative_2">
-                                CUMULATIVE (NC): Target period results automatically include data from previous periods. The Life of Program mirrors the latest period value.
+                                {% if unit_type == 1 %}
+                                    CUMULATIVE (C): Target period results automatically include data from previous periods. The Life of Program result mirrors the latest period value.
+                                {% else %}
+                                    NON-CUMULATIVE (NC): The Life of Program result is the average of target period values. No other automatic calculations are performed.
+                                {% endif %}
                             </label>
                         </div>
-                    {% else %}
-                        <div class="d-flex flex-row px-2 pt-2">
-                            <strong>OPTIONS FOR PERCENTAGE (%) INDICATORS</strong>
-                        </div>
-                        <div class="d-flex flex-row px-2 pb-2">
-                            <input
-                                type="radio"
-                                name="is_cumulative"
-                                value="1"
-                                required
-                                class="form-control mr-1"
-                                id="id_is_cumulative_1"
-                                style="width: 6%;">
-                            <label
-                                class="form-check-label"
-                                for="id_is_cumulative_1">
-                                CUMULATIVE (C): The Life of Program result mirrors the latest periof value. No automatic calculations are performed with collected data.
-                            </label>
-                        </div>
+                    {% endwith %}
 
-                        <div class="d-flex flex-row px-2">
-                            <input
-                                type="radio"
-                                name="is_cumulative"
-                                value="0"
-                                required
-                                class="form-control mr-1"
-                                id="id_is_cumulative_2"
-                                style="width: 6%;">
-                            <label
-                                class="form-check-label"
-                                for="id_is_cumulative_2">
-                                NON-CUMULATIVE (NC): The Life of Program result is the average of target period values. No other automatic calculations are performed.
-                            </label>
-                        </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
