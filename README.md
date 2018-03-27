@@ -37,10 +37,9 @@ $ virtualenv TolaActivty --no-site-packages
 $ cd TolaActivity
 $ source bin/activate
 $ mkdir config
-$ # Place settings.secret.yml into config/ directory
+# Place settings.secret.yml into config/ directory
 $ pip install -r requirements.txt
 $ pip install --upgrade google-api-python-client
-$ cp tola/settings/local-sample.py tola/settings/local.py
 ```
 
 Edit the configuration file as described in
@@ -62,7 +61,7 @@ $ virtualenv TolaActivty --no-site-packages
 $ cd TolaActivity
 $ source bin/activate
 $ mkdir config
-$ # Place settings.secret.yml into config/ directory
+# Place settings.secret.yml into config/ directory
 $ pip install -r requirements.txt
 $ pip install --upgrade google-api-python-client
 ```
@@ -72,7 +71,7 @@ Edit the configuration file as described in
 
 ## Modify the config file
 
-Edit _config/settings.secret.yml_. Find the node named DATABASES and set the 
+Edit _config/settings.secret.yml_. Find the node named, "DATABASES" and set the 
 database `PASSWORD` as appropriate. The result should resemble the following:
 
 ```yaml
@@ -81,7 +80,7 @@ database `PASSWORD` as appropriate. The result should resemble the following:
 34    ENGINE: "django.db.backends.mysql"
 35    NAME: "tola_activity"
 36    USER: "admin"
-37    PASSWORD: "SekritWord"
+37    PASSWORD: "SooperSekritWord"
 38    OPTIONS: {"init_command": "SET default_storage_engine=MYISAM",}
 39    HOST: "localhost"
 40    PORT: ""
@@ -95,14 +94,14 @@ to do that. Save and exit.
 ```sql
 CREATE DATABASE 'tola_activity';
 CREATE USER 'admin';
-GRANT ALL ON tola_activity.* TO 'admin'@'localhost' IDENTIFIED BY 'SekritWord'
+GRANT ALL ON tola_activity.* TO 'admin'@'localhost' IDENTIFIED BY 'SooperSekritWord';
 ```
 
 ## Set up Django
 
 Set up the Django database:
 
-```shell
+```bash
 $ python manage.py migrate
 
 Operations to perform:
@@ -120,7 +119,7 @@ Operations to perform:
 
 Start the server:
 
-```shell
+```bash
 $ python manage.py runserver
 Performing system checks...
 
@@ -129,7 +128,6 @@ March 20, 2018 - 11:51:55
 Django version 1.11.2, using settings 'tola.settings.local'
 Starting development server at http://0.0.0.0:8000/
 Quit the server with CONTROL-C.
-
 ```
 
 ## Configuring OAuth authentication
@@ -146,7 +144,7 @@ for this bug until the bug is well and truly crushed.
    Google OAuth 
 1. Login as normal using your MercyCorps SSO login
 1. What _should_ happen is that you get logged in and redirected to
-   to the TolaActivity home page. Likely as not, though, you'll get 
+   to the TolaActivity home page. Likely as not, though, you'll get
    a screen remarkably similar to the one in the following figure.
    You guessed it, that means you've hit the bug.
    ![ugly Django/Python traceback](docs/oauth_error.png)
@@ -155,7 +153,7 @@ for this bug until the bug is well and truly crushed.
 1. Get the id of the record Google OAuth added to the TolaActivity
    user table:
 
-    ```sql
+    ```bash
     mysql> select id,username,first_name,last_name from auth_user;
     +----+----------+------------+-----------+
     | id | username | first_name | last_name |
@@ -170,15 +168,12 @@ for this bug until the bug is well and truly crushed.
    of the `workflow_tolauser` table:
 
     ```sql
-    mysql> insert into workflow_tolauser (privacy_disclaimer_accepted, user_id) values (1,1);
-    Query OK, 1 row affected (0.00 sec)
-
-    mysql> 
+    INSERT INTO workflow_tolauser (privacy_disclaimer_accepted, user_id) VALUES (1,1);
     ```
 
 1. Restart the Tola Activity server
 
-    ```shell
+    ```bash
     $ python manage.py runserver
     Performing system checks...
 
@@ -192,3 +187,21 @@ for this bug until the bug is well and truly crushed.
 1. Refresh the browser window and you should be at the logged in and immediately
    redirected to the TolaActivity home page
 1. Rejoice!
+
+## Loading demo data
+
+1. Get a recent dump from the demo instance from someone
+1. Kill the TolaActivity server
+1. Make a backup of the current tola_activity DB if it's precious
+1. Drop and recreate the tola_activity DB:
+
+   ```sql
+   DROP DATABASE 'tola_activity';
+   CREATE DATABASE 'tola_activity';
+   ```
+
+1. Execute the SQL script you were given to load the data:
+
+   ```bash
+   $ mysql -u root -p tola_activity < demo_data.sql
+   ```
