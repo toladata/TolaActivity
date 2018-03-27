@@ -25,8 +25,6 @@ from chargebee import APIError, InvalidRequestError, Subscription
 
 from tola import DEMO_BRANCH
 from tola.track_sync import register_user
-from feed.serializers import TolaUserSerializer, OrganizationSerializer, \
-    CountrySerializer
 from tola.forms import RegistrationForm, NewUserRegistrationForm, \
     NewTolaUserRegistrationForm, BookmarkForm
 from workflow.models import (Organization, TolaSites, TolaUser, TolaBookmarks,
@@ -346,23 +344,7 @@ def oauth_user_view(request):
 
 class OAuthUserEndpoint(ProtectedResourceView):
     def get(self, request, *args, **kwargs):
-        user = request.user
-        body = {
-            'username': user.username,
-            'email': user.email,
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-
-        }
-        tola_user = TolaUser.objects.all().filter(user=user)
-        if len(tola_user) == 1:
-            body["tola_user"] = TolaUserSerializer(instance=tola_user[0], context={'request': request}).data
-            body["organization"] = OrganizationSerializer(instance=tola_user[0].organization,
-                                                          context={'request': request}).data
-            body["country"] = CountrySerializer(instance=tola_user[0].country, context={'request': request}).data
-
-        return HttpResponse(json.dumps(body))
+        pass
 
 
 class TolaTrackSiloProxy(ProtectedResourceView):
