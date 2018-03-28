@@ -331,6 +331,27 @@ select.listoption_filters
   padding-bottom: 0px;
 }
 
+.input-symbol-percent {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+.input-symbol-percent input {
+    padding-right: 15px;
+    width: 100%;
+}
+.input-symbol-percent:after {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: auto;
+    content:"%";
+    right: 20px;
+}
+.inputs-in-a-box {
+    background-color: #F5F5F5;
+}
+
 .periodic-target, #pt_sum_targets {
   border-bottom: 1px solid #DBDCDE;
   border-top: 1px solid #DBDCDE;
@@ -343,6 +364,7 @@ select.listoption_filters
   border: none;
 }
 
+
 /* Don't define border property here.  Assigning here prevents red border
 from being applied when there is no value */
 .periodic-target .input-value {
@@ -350,9 +372,7 @@ from being applied when there is no value */
   padding-right: 10px;
   text-align: right;
   width: 150px;
-  box-shadow: none;
   display: table-cell;
-
 }
 
 /* Don't define border property here.  Assigning here prevents red border
