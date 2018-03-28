@@ -33,6 +33,15 @@ class IndicatorForm(forms.ModelForm):
         choices=Indicator.UNIT_OF_MEASURE_TYPES,
         widget=forms.RadioSelect(),
     )
+    # cumulative_choices = (
+    #     (1, None),
+    #     (2, True),
+    #     (3, False)
+    # )
+    # is_cumulative = forms.ChoiceField(
+    #     choices=cumulative_choices,
+    #     widget=forms.RadioSelect())
+
     program = forms.CharField(widget=forms.HiddenInput())
 
     class Meta:
@@ -79,6 +88,7 @@ class IndicatorForm(forms.ModelForm):
         self.fields['target_frequency'].required = True
         self.fields['target_frequency_start'].widget\
             .attrs['class'] = 'monthPicker'
+        # self.fields['is_cumulative'].widget = forms.RadioSelect()
         if self.instance.target_frequency and \
                 self.instance.target_frequency != Indicator.LOP:
             self.fields['target_frequency'].widget.attrs['readonly'] \

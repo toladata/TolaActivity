@@ -367,6 +367,9 @@ class Indicator(models.Model):
         default=DIRECTION_OF_CHANGE[0][0],
         verbose_name="Direction of Chnage", help_text=" ")
 
+    is_cumulative = models.NullBooleanField(
+        blank=False, verbose_name="C / NC", help_text=" ")
+
     rationale_for_target = models.TextField(max_length=255, null=True,
                                             blank=True, help_text=" ")
     target_frequency = models.IntegerField(

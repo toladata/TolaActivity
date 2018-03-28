@@ -47,6 +47,15 @@ body {
 .has-error {
   color: #dc3545;
 }
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
 /* do not change border color to green when form is validated */
 .was-validated .form-control:valid {
   border:1px solid #ced4da;
@@ -61,15 +70,6 @@ body {
   border-color: #80bdff;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-
-
-*/
-.navbar-tola {
-  /* TolaActivity Brand Color: */
-  background-color: rgb(232, 148, 36);
-  border: none;
 }
 
 
@@ -329,14 +329,6 @@ select.listoption_filters
 #indicator_modal_body
 {
   padding-bottom: 0px;
-}
-
-#periodic-targets-tablediv {
-  padding-left: 0px;
-  padding-right: 0px;
-  margin-bottom: 0px;
-  margin-top: 1px
-  background-color: #F5F5F5;
 }
 
 .periodic-target, #pt_sum_targets {
