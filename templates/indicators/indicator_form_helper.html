@@ -504,8 +504,16 @@
 
 <script>
 
+    /*
+    Adds/removes the percent symbol to the LOP_TARGET and BASELINE fields
+    if the UNIT_OF_MEASURE_TYPE is set to Number (#)
+    params:
+        - unit_of_measure_type:
+            1 = Number (#)
+            2 = Percentage (%)
+    */
     function togglePercentSymbol(unit_of_measure_type){
-        unit_of_measure_type = parseInt(unit_of_measure_type);
+        var unit_of_measure_type = parseInt(unit_of_measure_type);
 
         if (unit_of_measure_type == 2) { // 2 is for percente option
             $("#span_id_lop_target").addClass('input-symbol-percent')
@@ -516,33 +524,128 @@
         }
     }
 
+    /*
+    toggles the label text of the is_cumulative radio inputs depending on
+    whether the unit_of_measure_type of the indicator.
+    params:
+        - unit_of_measure_type: it can have two possible values
+            1 = Number (#)
+            2 = Percentage (%)
+
+    This function also uses is_cumulative, which has one of these values:
+        - 1 = None
+        - 2 = Cumulative
+        - 3 = Non-cumulative
+    */
     function toggleCummulativeOptions(unit_of_measure_type) {
-        // cumulative = 2 and non-cumululative = 3
+        // the top option is always the default option
         $("#id_is_cumulative_1").prop('checked', 'checked');
 
-        if (unit_of_measure_type == 2) { // 2 is for percente option
+        if (unit_of_measure_type == 2) {
             $("#id_span_is_cumulative_header").text("OPTIONS FOR PERCENTAGE (%) INDICATORS");
             $("#id_is_cumulative_1").val(2);
+            $("#id_is_cumulative_2").val(3);
             $("label[for=id_is_cumulative_1]").html("CUMULATIVE (C): The Life of Program result mirrors the latest period value. No automatic calculations are performed with collected data.");
             $("label[for=id_is_cumulative_2]").html("NON-CUMULATIVE (NC): The Life of Program result is the average of target period values. No other automatic calculations are performed.");
         } else {
             $("#id_span_is_cumulative_header").text("OPTIONS FOR NUMBER (#) INDICATORS");
             $("#id_is_cumulative_1").val(3);
+            $("#id_is_cumulative_2").val(2);
             $("label[for=id_is_cumulative_1]").html("NON-CUMULATIVE (NC): Target period results are automatically calculated from data collected during the period. The Life of Program result is the sum of target period values.");
             $("label[for=id_is_cumulative_2]").html("CUMULATIVE (C): Target period results automatically include data from previous periods. The Life of Program result mirrors the latest period value.");
 
         }
     }
 
+
+    function getTargetsSumAndNum() {
+        var sum = 0;
+        var num = 0;
+        $("#periodic_targets_table input[data-periodictarget]").each(function() {
+            sum += parseFloat($(this).val());
+            num += 1;
+        });
+        return [sum, num];
+    }
+
+    function getTargetsAverage() {
+        var sumAndNum = getTargetsSumAndNum();
+        var avgTargets = sumAndNum[0]/sumAndNum[1];
+        return avgTargets;
+    }
+
+    function toggleTargetsSumOrAvgRow(cumulative=null) {
+        var is_cumulative = cumulative == null ? $("input[type='radio'][name='is_cumulative']:checked").val() : cumulative;
+        if (is_cumulative == 2) {
+            $("#pt_sum_targets").hide();
+            return false;
+        } else {
+            $("#pt_sum_targets").show();
+            return true;
+        }
+    }
+
+    /*
+    Update the periodic_targets totals row depending on whether it a
+    Number (#) indicator or Percentage (%) indicator
+    */
+    function updateAggregateRowValueAndLabel(cumulative=null) {
+        // if the totals row is hidden then no need calculate the total values
+        if (toggleTargetsSumOrAvgRow() == false) {
+            return;
+        }
+        var unit_of_measure_type = $("#id_unit_of_measure_type_1").is(":checked") ? 2 : 1;
+        if (unit_of_measure_type == 2) {  // if unit_type is percent (%)
+            var targetsAvg = getTargetsAverage();
+            $("#id_span_label_targets_sum").text("Average of targets");
+            $("#id_span_targets_sum").text(targetsAvg);
+        } else { // if unit_type is Number (#)
+            var targetsSum = getTargetsSumAndNum()[0];
+            $("#id_span_label_targets_sum").text("Sum of targets");
+            $("#id_span_targets_sum").text(targetsSum);
+        }
+
+    }
+
     $( document ).ready(function() {
-        let val = $("#id_unit_of_measure_type_1").is(":checked") ? 2 : 1;
-        togglePercentSymbol(val);
+        var unit_of_measure_type = $("#id_unit_of_measure_type_1").is(":checked") ? 2 : 1;
+        togglePercentSymbol(unit_of_measure_type);
+        toggleTargetsSumOrAvgRow();
     });
 
-    $("#id_fieldgroup_unit_of_measure").on("change", ":input[name='unit_of_measure_type']", function(e){
-        togglePercentSymbol(e.target.value);
-        toggleCummulativeOptions(e.target.value);
-    })
+    /*
+    Listen for change event of the UNIT_OF_MEASURE_TYPE radio buttons and
+    toggle Percent sign and cumulative options accordingly.
+    #id_fieldgroup_unit_of_measure
+    */
+    $("#indicator_modal_content, #indicator_form").on("change", ":input[name='unit_of_measure_type']", function(e){
+        var unit_of_measure_type = parseInt(e.target.value);
+        togglePercentSymbol(unit_of_measure_type);
+        toggleCummulativeOptions(unit_of_measure_type);
+        updateAggregateRowValueAndLabel();
+    });
+
+
+    /*
+    Listen for value changes in periodic targets and recalculate the targets
+    sum or targets average
+    #periodic-targets-tablediv
+    */
+    $("#indicator_modal_content, #indicator_form").on("blur", "#periodic_targets_table input[data-periodictarget]", function(e) {
+        updateAggregateRowValueAndLabel();
+    });
+
+
+    /*
+    Listen for change event of the IS_CUMULATIVE radio buttons and toggle the
+    targets_sum row accordingly.
+    #id_div_is_cumulative
+    */
+    $("#indicator_modal_content, #indicator_form").on("change", ":input[type='radio'][name='is_cumulative']", function(e){
+        console.log('listening on cumulative radio buttons');
+        updateAggregateRowValueAndLabel(e.target.value);
+    });
+
     /*
     var alerts = {};
 

@@ -11,7 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.core import serializers
 
 from django.db import connection
-from django.db.models import Count, Min, Q, Sum
+from django.db.models import Count, Min, Q, Sum, Avg
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View
@@ -474,6 +474,9 @@ class IndicatorUpdate(UpdateView):
         context['targets_sum'] = PeriodicTarget.objects\
             .filter(indicator=getIndicator)\
             .aggregate(Sum('target'))['target__sum']
+        context['targets_avg'] = PeriodicTarget.objects\
+            .filter(indicator=getIndicator)\
+            .aggregate(Avg('target'))['target__avg']
 
         # get external service data if any
         try:
@@ -623,9 +626,14 @@ class IndicatorUpdate(UpdateView):
             if targets_sum is None:
                 targets_sum = "0"
 
+            targets_avg = self.get_context_data().get('targets_avg')
+            if targets_avg is None:
+                targets_avg = "0"
+
             data = {
                 "indicatorjson": str(indicatorjson),
                 "targets_sum": str(targets_sum),
+                "targets_avg": str(targets_avg),
                 "update_indicator_row": str(update_indicator_row),
                 "content": content
             }
