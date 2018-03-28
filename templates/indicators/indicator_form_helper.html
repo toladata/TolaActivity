@@ -518,9 +518,21 @@
         if (unit_of_measure_type == 2) { // 2 is for percente option
             $("#span_id_lop_target").addClass('input-symbol-percent')
             $("#span_id_baseline").addClass('input-symbol-percent');
+
+            // add the % sign to target values
+            $("#periodic_targets_table input[data-periodictarget]").each(function(index, element) {
+                $(element).addClass('pr-4');
+                $(element).parent().addClass('input-symbol-percent');
+            });
         } else {
             $("#span_id_lop_target").removeClass('input-symbol-percent')
             $("#span_id_baseline").removeClass('input-symbol-percent');
+
+            // remove the % sign from target values
+            $("#periodic_targets_table input[data-periodictarget]").each(function(index, element) {
+                $(element).removeClass('pr-4');
+                $(element).parent().removeClass('input-symbol-percent');
+            });
         }
     }
 
@@ -557,7 +569,9 @@
         }
     }
 
-
+    /*
+    Calculates the sum and count of all targets
+    */
     function getTargetsSumAndNum() {
         var sum = 0;
         var num = 0;
@@ -568,20 +582,26 @@
         return [sum, num];
     }
 
+    /*
+    Calculates the average of all targets
+    */
     function getTargetsAverage() {
         var sumAndNum = getTargetsSumAndNum();
         var avgTargets = sumAndNum[0]/sumAndNum[1];
+        avgTargets = parseFloat(avgTargets).toFixed(2).replace(/[.,]00$/, "")
         return avgTargets;
     }
 
+    /*
+    Toggles the Aggregate (Totals) row of the targets table depending on
+    whether the indicator is set as CUMULATIVE or NON-CUMULATIVE
+    */
     function toggleTargetsSumOrAvgRow(cumulative=null) {
         var is_cumulative = cumulative == null ? $("input[type='radio'][name='is_cumulative']:checked").val() : cumulative;
         if (is_cumulative == 2) {
             $("#pt_sum_targets").hide();
-            return false;
         } else {
             $("#pt_sum_targets").show();
-            return true;
         }
     }
 
@@ -590,19 +610,20 @@
     Number (#) indicator or Percentage (%) indicator
     */
     function updateAggregateRowValueAndLabel(cumulative=null) {
-        // if the totals row is hidden then no need calculate the total values
-        if (toggleTargetsSumOrAvgRow() == false) {
-            return;
-        }
+        toggleTargetsSumOrAvgRow();
         var unit_of_measure_type = $("#id_unit_of_measure_type_1").is(":checked") ? 2 : 1;
         if (unit_of_measure_type == 2) {  // if unit_type is percent (%)
             var targetsAvg = getTargetsAverage();
             $("#id_span_label_targets_sum").text("Average of targets");
-            $("#id_span_targets_sum").text(targetsAvg);
+            $("#id_span_targets_sum").text(targetsAvg );
+            $("#id_span_targtsaggregate_percent_sign").text("%");
+            $("#id_span_loptarget_percent_sign").text("%");
         } else { // if unit_type is Number (#)
             var targetsSum = getTargetsSumAndNum()[0];
             $("#id_span_label_targets_sum").text("Sum of targets");
             $("#id_span_targets_sum").text(targetsSum);
+            $("#id_span_targtsaggregate_percent_sign").text("");
+            $("#id_span_loptarget_percent_sign").text("");
         }
 
     }
@@ -642,7 +663,6 @@
     #id_div_is_cumulative
     */
     $("#indicator_modal_content, #indicator_form").on("change", ":input[type='radio'][name='is_cumulative']", function(e){
-        console.log('listening on cumulative radio buttons');
         updateAggregateRowValueAndLabel(e.target.value);
     });
 

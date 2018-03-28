@@ -343,6 +343,7 @@ select.listoption_filters
   border: none;
 }
 
+
 /* Don't define border property here.  Assigning here prevents red border
 from being applied when there is no value */
 .periodic-target .input-value {
@@ -352,7 +353,6 @@ from being applied when there is no value */
   width: 150px;
   box-shadow: none;
   display: table-cell;
-
 }
 
 /* Don't define border property here.  Assigning here prevents red border
