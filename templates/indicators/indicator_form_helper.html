@@ -1,28 +1,5 @@
 {% load widget_tweaks %}
 {% load mytags %}
-<style>
-    .input-symbol-percent {
-        position: relative;
-        display: inline-block;
-        width: 100%;
-    }
-    .input-symbol-percent input {
-        padding-right: 15px;
-        width: 100%;
-    }
-    .input-symbol-percent:after {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        margin: auto;
-        content:"%";
-        right: 20px;
-    }
-    .inputs-in-a-box {
-        background-color: #F5F5F5;
-    }
-
-</style>
     <form
         action="{% url 'indicator_update' indicator.id %}"
         id="indicator_update_form"
