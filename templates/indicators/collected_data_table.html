@@ -13,9 +13,9 @@
 {% load assign %}
 {% if indicator.target_frequency  %}
 
-    <table class="table table-bordered">
+    <table class="table table-sm table-bordered">
         <tr>
-            <th style="vertical-align:bottom; min-width:180px;">Target Period</th>
+            <th style="vertical-align:bottom; min-width:190px;">Target Period</th>
             <th style="vertical-align:bottom; text-align: right;">Target</th>
             <th style="vertical-align:bottom; min-width: 125px;">Date Collected</th>
             <th style="vertical-align:bottom; text-align: right;"">Actual</th>
@@ -31,7 +31,10 @@
                         <strong>{{ item.period }}</strong><br>
                         <small>{{ item.start_date_formatted|default_if_none:"" }} {% if item.start_date %} - {% endif %} {{ item.end_date_formatted|default_if_none:"" }}</small>
                     </td>
-                    <td {% if item.collecteddata_set.count %} rowspan="{{ item.collecteddata_set.count }}" {% endif %} align="right">
+                    <td {% if item.collecteddata_set.count %}
+                            rowspan="{{ item.collecteddata_set.count }}"
+                        {% endif %}
+                        align="right">
                         {% with target=item.target|floatformat:"-2" %}
                             {% if indicator.unit_of_measure_type == 2 %}
                                 {{ target }}%
@@ -45,9 +48,14 @@
                     {% if not forloop.first %}
                         <tr>
                     {% endif %}
-                    <td {% if cdata.periodic_target == None %} style="border: 3px solid red;" {% endif %}>
-                        <a href="{% url 'collecteddata_update' cdata.id %}" class="collecteddata-link" id="collected-{{cdata.id}}">
-                            {{ cdata.date_collected_formatted|default_if_none:"" }}
+                    <td {% if cdata.periodic_target == None %}
+                            style="border: 3px solid red;"
+                        {% endif %}>
+
+                        <a href="{% url 'collecteddata_update' cdata.id %}"
+                           class="collecteddata-link"
+                           id="collected-{{cdata.id}}">
+                                {{ cdata.date_collected_formatted|default_if_none:"" }}
                         </a>
                     </td>
                     <td align="right">
@@ -66,7 +74,7 @@
                                 <a href="{{cdata.evidence.url}}" target="_blank">
                             {% endif %}
                             {{ cdata.evidence|default_if_none:"" }}
-                            {% if cdata.evidence.url%}
+                            {% if cdata.evidence.url %}
                                 </a>
                             {% endif %}
                         {%endif%}
@@ -77,10 +85,10 @@
                     <td>{{ cdata.complete|default_if_none:cdata.agreement|default_if_none:'' }}</td>
                     <td align="right">
                         <a href="{% url 'collecteddata_delete' cdata.id %}" style="color:red; vertical-align: middle;">
-                            <span alt="Delete" class="glyphicon glyphicon-remove"></span>
+                            <i class="fas fa-trash-alt"></i>
                         </a>
                         <a href="{% url 'collecteddata_update' cdata.id %}" class="collecteddata-link" style="padding-left: 30px; vertical-align: middle">
-                            <span alt="Edit" class="glyphicon glyphicon-edit"></span>
+                            <i class="fas fa-edit"></i>
                         </a>
                     </td>
                     {% empty %}

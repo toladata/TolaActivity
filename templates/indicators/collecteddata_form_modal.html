@@ -60,7 +60,12 @@
     </script>
 
     <form
-        action="{% url 'collecteddata_update' object.id %}"
+        action="{% if object.id %}
+                    {% url 'collecteddata_update' object.id %}
+                {% else %}
+                    {% url 'collecteddata_add' program_id indicator.id %}
+                {% endif %}
+                "
         id="collecteddata_update_form"
         class="form-horizontal"
         method="post"
