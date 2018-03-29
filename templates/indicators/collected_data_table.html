@@ -59,13 +59,21 @@
                         </a>
                     </td>
                     <td align="right">
-                        {% with achieved=cdata.achieved|floatformat:"-2" %}
+                        {% if indicator.is_cumulative is True %}
                             {% if indicator.unit_of_measure_type == 2 %}
-                                {{ achieved }}%
+                                {{ item.cumulative_sum|floatformat:"-2" }}%
                             {% else %}
-                                {{ achievved }}
+                                {{ item.cumulative_sum|floatformat:"-2" }}
                             {% endif %}
-                        {% endwith %}
+                        {% else %}
+                            {% with achieved=cdata.achieved|floatformat:"-2" %}
+                                {% if indicator.unit_of_measure_type == 2 %}
+                                    {{ achieved }}%
+                                {% else %}
+                                    {{ achieved }}
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
                     </td>
                     <td align="right"> {% widthratio cdata.achieved cdata.periodic_target.target 100 %}%</td>
                     <td>

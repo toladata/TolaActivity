@@ -1,6 +1,7 @@
 from django.conf.urls import url
 
 from .views import (
+    indicator_create,
     CollectedDataList,
     CollectedDataCreate,
     CollectedDataUpdate,
@@ -12,21 +13,21 @@ from .views import (
     IndicatorExport,
     IndicatorReportData,
     CollectedDataReportData,
-    IndicatorReport,
-    IndicatorDataExport,
-    TVAReport, DisaggregationReport,
-    PeriodicTargetDeleteView,
-    indicator_create,
     collecteddata_import,
-    indicator_report,
-    programIndicatorReport,
-    indicator_data_report,
     service_json,
+    PeriodicTargetView,
+    PeriodicTargetDeleteView,
     collected_data_json,
     program_indicators_json,
+    programIndicatorReport,
+    indicator_data_report,
+    indicator_report,
+    IndicatorReport,
+    IndicatorDataExport,
+    TVAReport,
+    DisaggregationReport,
     TVAPrint,
-    DisaggregationPrint,
-    PeriodicTargetView
+    DisaggregationPrint
 )
 
 urlpatterns = [
@@ -121,26 +122,26 @@ urlpatterns = [
     url(r'^collected_data_table/(?P<indicator>\d+)/(?P<program>\d+)/',
         collected_data_json, name='collected_data_json'),
 
-    url(r'^program_indicators/(?P<program>\d+)/(?P<indicator>\d+)/\
-            (?P<type>\d+)',
+    url(r'^program_indicators/(?P<program>\d+)/(?P<indicator>\d+)/'
+        r'(?P<type>\d+)',
         program_indicators_json,
         name='program_indicators_json'),
 
     url(r'^report_data/(?P<id>\w+)/(?P<program>\d+)/(?P<type>\d+)/$',
         IndicatorReportData.as_view(), name='indicator_report_data'),
 
-    url(r'^report_data/(?P<id>\w+)/(?P<program>\d+)/(?P<indicator_type>\d+)/\
-            export/$',
+    url(r'^report_data/(?P<id>\w+)/(?P<program>\d+)/(?P<indicator_type>\d+)/'
+        r'export/$',
         IndicatorExport.as_view(),
         name='indicator_export'),
 
-    url(r'^collecteddata_report_data/(?P<program>\d+)/(?P<indicator>\d+)/\
-            (?P<type>\d+)/$',
+    url(r'^collecteddata_report_data/(?P<program>\d+)/(?P<indicator>\d+)/'
+        r'(?P<type>\d+)/$',
         CollectedDataReportData.as_view(),
         name='collecteddata_report_data'),
 
-    url(r'^collecteddata_report_data/(?P<program>\d+)/(?P<indicator>\d+)/\
-            (?P<type>\d+)/export/$',
+    url(r'^collecteddata_report_data/(?P<program>\d+)/(?P<indicator>\d+)/'
+        r'(?P<type>\d+)/export/$',
         IndicatorDataExport.as_view(),
         name='collecteddata_report_data'),
 ]
