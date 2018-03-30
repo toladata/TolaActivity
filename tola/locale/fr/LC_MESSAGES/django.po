@@ -1,0 +1,157 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-03-30 11:59-0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/base.html:80 templates/base.html:119
+msgid "Reports"
+msgstr "Rapports"
+
+#: templates/base.html:82 templates/base.html:121
+msgid "Program Report"
+msgstr "Rapport De Programme"
+
+#: templates/base.html:83
+msgid "Project Report"
+msgstr "Rapport De Projet"
+
+#: templates/base.html:84 templates/base.html:124
+msgid "Indicator Data Report"
+msgstr "Rapport De Données D'Indicateur"
+
+#: templates/base.html:85 templates/base.html:125
+msgid "Indicator Visual Report"
+msgstr "Rapport Visuel D'Indicateur"
+
+#: templates/base.html:86 templates/base.html:126
+msgid "Indicator Library"
+msgstr "Bibliothèque D'Indicateurs"
+
+#: templates/base.html:91
+msgid "Dashboards"
+msgstr "Tableaux De Bord"
+
+#: templates/base.html:93
+msgid "Public Dashboards"
+msgstr "Tableaux De Bord Bublics"
+
+#: templates/base.html:98
+msgid "Workflow"
+msgstr "Workflow"
+
+#: templates/base.html:100
+msgid "Program Index"
+msgstr "Index Du Programme"
+
+#: templates/base.html:101
+msgid "Documents"
+msgstr "Documents"
+
+#: templates/base.html:102
+msgid "Sites"
+msgstr "Des Sites"
+
+#: templates/base.html:103
+msgid "Stakeholders"
+msgstr "Les Parties Prenantes"
+
+#: templates/base.html:107
+msgid "Indicators"
+msgstr "Indicateurs"
+
+#: templates/base.html:110
+msgid "Form Library"
+msgstr "Bibliothèque De Formulaire"
+
+#: templates/base.html:112
+msgid "Training"
+msgstr "Entraînement"
+
+#: templates/base.html:113
+msgid "Distributions"
+msgstr "Distributions"
+
+#: templates/base.html:114
+msgid "Beneficiaries"
+msgstr "Les Bénéficiaires"
+
+#: templates/base.html:122
+msgid "Program Dashboards"
+msgstr "Tableaux De Bord Du Programme"
+
+#: templates/base.html:127
+msgid "Target vs Actual Report"
+msgstr "Cible vs Rapport Réel"
+
+#: templates/base.html:128
+msgid "Indicator Disaggregation Report"
+msgstr "Rapport De Désagrégation Des Indicateurs"
+
+#: templates/base.html:166
+msgid "Login with Tola account"
+msgstr "Connectez-vous avec votre compte Tola"
+
+#: templates/base.html:215
+msgid "Documentation"
+msgstr "Documentation"
+
+#: templates/base.html:217
+msgid "FAQ"
+msgstr "FAQ"
+
+#: templates/base.html:219
+msgid "Feedback"
+msgstr "Retour d'information"
+
+#: templates/base.html:221
+msgid "License"
+msgstr "Licence"
+
+#: templates/workflow/site_profile_list.html:138
+msgid "Previous"
+msgstr ""
+
+#: templates/workflow/site_profile_list.html:145
+#, python-format
+msgid ""
+"\n"
+"                <li>\n"
+"                    <a class=\"active\" href=\"\">%(site_num)s</a>\n"
+"                </li>\n"
+"            "
+msgstr ""
+
+#: templates/workflow/site_profile_list.html:163
+msgid "Next"
+msgstr ""
+
+#: tola/settings/base.py:89
+msgid "French"
+msgstr "Français"
+
+#: tola/settings/base.py:90
+msgid "Spanish"
+msgstr "Espanol"
+
+#: tola/settings/base.py:91
+msgid "Arabic"
+msgstr "Arabe"
+
+#: tola/settings/base.py:92
+msgid "English"
+msgstr "Anglais"

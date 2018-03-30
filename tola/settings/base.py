@@ -23,7 +23,7 @@ path.append(DJANGO_ROOT)
 
 # Add LOCALE_PATH , a list of directories where Django looks for translation
 # files
-LOCALE_PATH = [
+LOCALE_PATHS = [
     join(DJANGO_ROOT, 'locale'),
 ]
 
@@ -187,9 +187,9 @@ TEMPLATES = [
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE = (
     # Default Django middleware.
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware', # Activate locale middleware
+    'django.middleware.locale.LocaleMiddleware',  # Activate locale middleware
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.RemoteUserMiddleware',

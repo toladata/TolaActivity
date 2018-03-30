@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% load static %}
 {% load group_tag %}
+{% load i18n %}
 <!doctype html>
 <html lang="en">
     <head>
@@ -76,55 +77,55 @@
                             {% if report_server == True%}
                                 {% if user.is_authenticated  %}
                                     <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="navbarReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reports</a>
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Reports" %}</a>
                                         <div class="dropdown-menu" aria-labelledby="navbarReportsDropdown">
-                                            <a class="dropdown-item" href="/reports/report/"> Program Report</a>
-                                            <a class="dropdown-item" href="/workflow/report/0/0"> Project Report</a>
-                                            <a class="dropdown-item" href="/indicators/collecteddata/0/0/0/">Indicator Data Report</a>
-                                            <a class="dropdown-item" href="/indicators/data/0/">Indicator Visual Report</a>
-                                            <a class="dropdown-item" href="/indicators/report/0/0/0/">Indicator Library</a>
+                                            <a class="dropdown-item" href="/reports/report/"> {% trans "Program Report" %}</a>
+                                            <a class="dropdown-item" href="/workflow/report/0/0">{% trans "Project Report" %}</a>
+                                            <a class="dropdown-item" href="/indicators/collecteddata/0/0/0/">{% trans "Indicator Data Report" %}</a>
+                                            <a class="dropdown-item" href="/indicators/data/0/">{% trans "Indicator Visual Report" %}</a>
+                                            <a class="dropdown-item" href="/indicators/report/0/0/0/">{% trans "Indicator Library" %}</a>
                                         </div>
                                     </li>
                                 {% endif %}
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDashboardsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dashboards</a>
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDashboardsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{%trans "Dashboards" %}</a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDashboardsDropdown">
-                                        <a class="dropdown-item" href="/customdashboard/program_list/0/">Public Dashboards</a>
+                                        <a class="dropdown-item" href="/customdashboard/program_list/0/">{% trans "Public Dashboards" %}</a>
                                     </div>
                                 </li>
                             {% else %}
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarWorkflowDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Workflow</a>
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarWorkflowDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Workflow" %}</a>
                                     <div class="dropdown-menu" aria-labelledby="navbarWorkflowDropdown">
-                                        <a class="dropdown-item" href="/workflow/dashboard/0/">Program Index</a>
-                                        <a class="dropdown-item" href="/workflow/documentation_list/0/0/"> Documents</a>
-                                        <a class="dropdown-item" href="/workflow/siteprofile_list/0/0/">Sites</a>
-                                        <a class="dropdown-item" href="/workflow/stakeholder_list/0/0">Stakeholders</a>
+                                        <a class="dropdown-item" href="/workflow/dashboard/0/">{% trans "Program Index" %}</a>
+                                        <a class="dropdown-item" href="/workflow/documentation_list/0/0/">{% trans "Documents" %}</a>
+                                        <a class="dropdown-item" href="/workflow/siteprofile_list/0/0/">{% trans "Sites" %}</a>
+                                        <a class="dropdown-item" href="/workflow/stakeholder_list/0/0">{% trans "Stakeholders" %}</a>
                                     </div>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/indicators/home/0/0/0">Indicators</a>
+                                    <a class="nav-link" href="/indicators/home/0/0/0">{% trans "Indicators" %}</a>
                                 </li>
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarFormlibraryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Form Library</a>
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarFormlibraryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Form Library" %}</a>
                                     <div class="dropdown-menu" aria-labelledby="navbarFormlibraryDropdown">
-                                        <a class="dropdown-item" href="/formlibrary/training_list/0/">Training</a>
-                                        <a class="dropdown-item" href="/formlibrary/distribution_list/0/">Distributions</a>
-                                        <a class="dropdown-item" href="/formlibrary/beneficiary_list/0/">Beneficiaries</a>
+                                        <a class="dropdown-item" href="/formlibrary/training_list/0/">{% trans "Training" %}</a>
+                                        <a class="dropdown-item" href="/formlibrary/distribution_list/0/">{% trans "Distributions" %}</a>
+                                        <a class="dropdown-item" href="/formlibrary/beneficiary_list/0/">{% trans "Beneficiaries" %}</a>
                                     </div>
                                 </li>
 
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Reports</a>
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Reports" %}</a>
                                     <div class="dropdown-menu" aria-labelledby="navbarReportsDropdown">
-                                        <a class="dropdown-item" href="/reports/report/">Program Report</a>
-                                        <a class="dropdown-item" href="/customdashboard/program_list/0/">Program Dashboards</a>
-                                        <a class="dropdown-item" href="/workflow/report/0/none">Project Report</a>
-                                        <a class="dropdown-item" href="/indicators/collecteddata/0/0/0/">Indicator Data Report</a>
-                                        <a class="dropdown-item" href="/indicators/data/0/0/0/">Indicator Visual Report</a>
-                                        <a class="dropdown-item" href="/indicators/report/0/0/0/">Indicator Library</a>
-                                        <a class="dropdown-item" href="/indicators/tvareport/">Target vs Actual Report</a>
-                                        <a class="dropdown-item" href="/indicators/disrep/0">Indicator Disaggregation Report</a>
+                                        <a class="dropdown-item" href="/reports/report/">{% trans "Program Report" %}</a>
+                                        <a class="dropdown-item" href="/customdashboard/program_list/0/">{% trans "Program Dashboards" %}</a>
+                                        <a class="dropdown-item" href="/workflow/report/0/none">{% trans "Project Report" %}</a>
+                                        <a class="dropdown-item" href="/indicators/collecteddata/0/0/0/">{% trans "Indicator Data Report" %}</a>
+                                        <a class="dropdown-item" href="/indicators/data/0/0/0/">{% trans "Indicator Visual Report" %}</a>
+                                        <a class="dropdown-item" href="/indicators/report/0/0/0/">{% trans "Indicator Library" %}</a>
+                                        <a class="dropdown-item" href="/indicators/tvareport/">{% trans "Target vs Actual Report" %}</a>
+                                        <a class="dropdown-item" href="/indicators/disrep/0">{% trans "Indicator Disaggregation Report" %}</a>
                                     </div>
                                 </li>
                             {% endif %}
@@ -148,7 +149,7 @@
                                         {{ user.tola_user.name }}
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="navbarProfileDropdown">
-                                        <a class="dropdown-item" id="id_profile_link" href="{% url 'profile' %}">Profile</a>
+                                        <a class="dropdown-item" id="id_profile_link" href="{% url 'profile' %}">{% trans Profile %}</a>
                                         <a class="dropdown-item" id="id_profile_link2" href="{% url 'profile' %}">{{ user.tola_user.countries_list }}</a>
                                     </div>
                                 </li>
@@ -162,7 +163,7 @@
                                                 <a class="dropdown-item" id="id_socialloginLink" href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-go"><i class="fa fa-google"></i> Google</a>
                                             </div>
                                         {% endif %}
-                                        <a class="dropdown-item" id="id_tolaLoginLInk" href="{% url 'login' %}">Login with Tola account</a>
+                                        <a class="dropdown-item" id="id_tolaLoginLInk" href="{% url 'login' %}">{% trans "Login with Tola account" %}</a>
                                     </div>
                                 </li>
                             {% endif %}
@@ -211,13 +212,13 @@
                     <div class="col-md-6 text-right">
                         <a href="https://sites.google.com/mercycorps.org/tolauserguide/home"
                             class="text-muted"
-                            target="_blank">Documentation</a> |
+                            target="_blank">{% trans "Documentation" %}</a> |
                         <a href="https://thehub.mercycorps.org/page/7271"
-                            class="text-muted">FAQ</a> |
+                            class="text-muted">{% trans "FAQ" %}</a> |
                         <a href="https://goo.gl/forms/VuG2UjlBeTAGdJ503"
-                            class="text-muted">Feedback</a> |
+                            class="text-muted">{% trans "Feedback" %}</a> |
                         <a href="https://github.com/toladata/TolaActivity/blob/master/LICENSE"
-                            class="text-muted">License</a>
+                            class="text-muted">{% trans "License" %}</a>
                     </div>
                 </div>
             </div>
