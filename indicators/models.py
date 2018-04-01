@@ -3,6 +3,9 @@ from datetime import timedelta
 from decimal import Decimal
 
 from django.db import models
+from django.db.models import Sum
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 
 from django.contrib import admin
@@ -585,7 +588,11 @@ class CollectedData(models.Model):
         PeriodicTarget, null=True, blank=True, help_text=" ")
 
     achieved = models.DecimalField(
-        "Achieved", max_digits=20, decimal_places=2, help_text=" ")
+        verbose_name="Actual", max_digits=20, decimal_places=2, help_text=" ")
+
+    cumulative_achieved = models.DecimalField(
+        verbose_name='Cumulative Actuals', max_digits=20, decimal_places=2,
+        null=True, blank=True, help_text=" ")
 
     disaggregation_value = models.ManyToManyField(
         DisaggregationValue, blank=True, help_text=" ")
@@ -636,7 +643,7 @@ class CollectedData(models.Model):
     objects = CollectedDataManager()
 
     class Meta:
-        ordering = ('agreement', 'indicator', 'date_collected', 'create_date')
+        ordering = ('indicator', 'create_date', 'date_collected')
         verbose_name_plural = "Indicator Output/Outcome Collected Data"
 
     def __unicode__(self):
@@ -646,6 +653,19 @@ class CollectedData(models.Model):
         if self.create_date is None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
+
+        if self.achieved is not None:
+            # calculate the cumulative sum of achieved value
+            total_achieved = CollectedData.objects.filter(
+                    indicator=self.indicator,
+                    create_date__lt=self.create_date)\
+                .aggregate(Sum('achieved'))['achieved__sum']
+
+            if total_achieved is None:
+                total_achieved = 0
+
+            total_achieved = total_achieved + self.achieved
+            self.cumulative_achieved = total_achieved
         super(CollectedData, self).save()
 
     def achieved_sum(self):
@@ -664,6 +684,22 @@ class CollectedData(models.Model):
         disaggs = self.disaggregation_value.all()
         return ', '.join([y.disaggregation_label.label + ': ' + y.value for y
                          in disaggs])
+
+@receiver(post_delete, sender=CollectedData)
+def model_post_delete(sender, **kwargs):
+    instance = kwargs.get('instance', None)
+    # print('Deleted: {}'.format(kwargs['instance'].__dict__))
+
+    # the cumulative_achieved values need to be recalculated after an a
+    # CollectedData record is deleted
+    collecteddata = CollectedData.objects.filter(
+            indicator=instance.indicator)\
+        .order_by('id')
+
+    # by saving each data reecord the cumulative_achieved is recalculated in
+    # the save method of the CollectedData model class.
+    for c in collecteddata:
+        c.save()
 
 
 class CollectedDataAdmin(admin.ModelAdmin):
