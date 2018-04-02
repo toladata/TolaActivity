@@ -204,7 +204,7 @@
                                                 required
                                                 onblur="this.checkValidity();">
                                     </span>
-                                    {% render_field form.direction_of_change class+="form-control" style="width:60%;" %}
+                                    {% render_field form.direction_of_change class+="form-control" style="width:70%;" %}
                                 </div>
                             </div>
                             {% if form.lop_target.help_text %}
@@ -550,10 +550,15 @@
     Calculates the sum and count of all targets
     */
     function getTargetsSumAndNum() {
-        var sum = 0;
-        var num = 0;
+        let sum = 0;
+        let num = 0;
+        let targetValue;
         $("#periodic_targets_table input[data-periodictarget]").each(function() {
-            sum += parseFloat($(this).val());
+            targetValue = parseFloat($(this).val());
+            if (isNaN(targetValue)) {
+                targetValue = 0;
+            }
+            sum += targetValue;
             num += 1;
         });
         return [sum, num];

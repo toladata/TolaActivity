@@ -11,7 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.core import serializers
 
 from django.db import connection
-from django.db.models import Count, Min, Q, Sum, Avg
+from django.db.models import Count, Min, Q, Sum, Avg, DecimalField, Value
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View
@@ -1031,15 +1031,30 @@ def service_json(request,service):
     service_indicators = import_indicator(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
 
-
-def collected_data_json(AjaxableResponseMixin, indicator, program):
+# pts = PeriodicTarget.objects.filter(indicator=ind).prefetch_related('collecteddata_set').annotate(Sum('collecteddata__achieved'), cum_sum=Value(0, output_field=DecimalField()))
+def collected_data_json(request, indicator, program):
     ind = Indicator.objects.get(pk=indicator)
     template_name = 'indicators/collected_data_table.html'
 
     periodictargets = PeriodicTarget.objects.filter(indicator=indicator)\
         .prefetch_related('collecteddata_set')\
-        .annotate(Sum('collecteddata__achieved'))\
+        .annotate(Sum('collecteddata__achieved'),
+                  cumulative_sum=Value(None, output_field=DecimalField()))\
         .order_by('customsort')
+
+    for index, pt in enumerate(periodictargets):
+        if index == 0:
+            pt.cumulative_sum = pt.collecteddata__achieved__sum
+            prev = None
+
+        try:
+            pt.cumulative_sum = pt.collecteddata__achieved__sum +\
+                prev.cumulative_sum
+        except AttributeError:
+            pass
+        except TypeError:
+            pass
+        prev = pt
 
     collecteddata_without_periodictargets = CollectedData.objects\
         .filter(indicator=indicator, periodic_target__isnull=True)
@@ -1061,7 +1076,7 @@ def collected_data_json(AjaxableResponseMixin, indicator, program):
     )
 
 
-def program_indicators_json(AjaxableResponseMixin, program, indicator, type):
+def program_indicators_json(request, program, indicator, type):
     template_name = 'indicators/program_indicators_table.html'
 
     q = {'program__id__isnull': False}
@@ -1082,15 +1097,6 @@ def program_indicators_json(AjaxableResponseMixin, program, indicator, type):
         .order_by('levelmin', 'number')
 
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
-
-
-def tool(request):
-    """
-    Placeholder for Indicator planning Tool TBD
-    :param request:
-    :return:
-    """
-    return render(request, 'indicators/tool.html')
 
 
 # REPORT VIEWS
