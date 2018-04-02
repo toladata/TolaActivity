@@ -304,7 +304,7 @@ class Indicator(models.Model):
     DIRECTION_OF_CHANGE_POSITIVE = 2
     DIRECTION_OF_CHANGE_NEGATIVE = 3
     DIRECTION_OF_CHANGE = (
-        (DIRECTION_OF_CHANGE_NONE, "Direction of change (none)"),
+        (DIRECTION_OF_CHANGE_NONE, "Direction of change (not applicable)"),
         (DIRECTION_OF_CHANGE_POSITIVE, "Positive (+)"),
         (DIRECTION_OF_CHANGE_NEGATIVE, "Negative (-)")
     )

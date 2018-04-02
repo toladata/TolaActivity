@@ -44,7 +44,15 @@
                         </td>
                     </tr>
                     {% if forloop.last %}
-                        <tr id="pt_sum_targets">
+                        <tr id="pt_sum_targets"
+                            {% if indicator.unit_of_measure_type == 1 %}
+                                {% if indicator.is_cumulative is True %}
+
+                                {% endif %}
+                            {% else %}
+                                {% if indicator.is_cumulative is True or indicator.is_cumulative is None %} style="display: none";
+                                {% endif %}
+                            {% endif %}>
                             <td class="pt-delete-row"> </td>
                             <td align="left" class="align-middle">
                                 <strong>
@@ -129,7 +137,7 @@
                                 {% if unit_type == 1 %}
                                     {% if indicator.is_cumulative is None or indicator.is_cumulative is False %} checked {% endif %}
                                 {% else %}
-                                    {% if indicator.is_cumulative is True %} checked {% endif %}
+                                    {% if indicator.is_cumulative is True or indicator.is_cumulative is None %} checked {% endif %}
                                 {% endif %}
                                 class="form-control mr-1"
                                 id="id_is_cumulative_1"
@@ -154,7 +162,7 @@
                                 {% if unit_type == 1 %}
                                     {% if indicator.is_cumulative is True %} checked {% endif %}
                                 {% else %}
-                                    {% if indicator.is_cumulative is None or indicator.is_cumulative is False %} checked {% endif %}
+                                    {% if indicator.is_cumulative is False %} checked {% endif %}
                                 {% endif %}
                                 class="form-control mr-1"
                                 id="id_is_cumulative_2"

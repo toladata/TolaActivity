@@ -55,7 +55,7 @@ urlpatterns = [
     url(r'^periodic_target_generate/(?P<indicator>\d+)/$',
         PeriodicTargetView.as_view(), name='pt_generate'),
 
-    url(r'^periodic_target_deleteall/(?P<indicator>\d+)/(?P<deleteall>\d+)/$',
+    url(r'^periodic_target_deleteall/(?P<indicator>\d+)/(?P<deleteall>\w+)/$',
         PeriodicTargetView.as_view(), name='pt_deleteall'),
 
     url(r'^collecteddata/(?P<program>\d+)/(?P<indicator>\d+)/(?P<type>\d+)/$',
