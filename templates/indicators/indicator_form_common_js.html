@@ -417,99 +417,88 @@
 
 
     function reset_baseline_errors(){
-        $("#div_id_baseline").removeClass('has-error');
-        $("#div_id_baseline_na").removeClass('has-error');
-        $("#hint_id_baseline_na").html("");
+        $("#id_baseline").removeClass('is-invalid');
+        $("#id_baseline_na").removeClass('is-invalid');
+        $("label[for=id_baseline_na]").removeClass('has-error');
+        $("#validation_id_baseline").html("");
     }
 
     function validate_baseline() {
-        var baseline = $("#id_baseline");
-        var baseline_na = $("#id_baseline_na");
+        const baseline = $("#id_baseline");
+        const baseline_na = $("#id_baseline_na");
+        let errMsg = undefined;
+
         if (baseline_na.is(':checked') == true) {
             reset_baseline_errors();
             return true;
         }
-        // var indicator_form = $("#indicator_update_form")
-        // var sbmt = $("input[type=submit]", indicator_form);
 
         if (!baseline.val()) {
-            $("#div_id_baseline").addClass('has-error');
-            $("#div_id_baseline_na").addClass('has-error');
-            $("#hint_id_baseline_na").html("<small>Please complete this field. Your baseline can be zero.</small>");
-            // sbmt.attr("disabled", true);
-            return false;
+            errMsg = "Please complete this field. Your baseline can be zero.";
         } else if (!$.isNumeric(baseline.val()) || baseline.val() < 0 ) {
-            $("#div_id_baseline").addClass('has-error');
-            $("#div_id_baseline_na").addClass('has-error');
-            $("#hint_id_baseline_na").html("<small>Please enter a number with no letters or symbols.<small>");
-            // sbmt.attr("disabled", true);
+            errMsg = "Please complete this field. Your baseline can be zero.";
             return false;
+        }
+        if (errMsg){
+            baseline.addClass('is-invalid');
+            baseline_na.addClass('is-invalid');
+            $("#validation_id_baseline").html(errMsg);
+            $("label[for=id_baseline_na]").addClass('has-error');
         } else {
             reset_baseline_errors();
-            // sbmt.attr("disabled", false);
             return true;
         }
     }
 
     function validate_loptarget() {
-        var lop = $("#id_lop_target");
-        // var indicator_form = $("#indicator_update_form")
-        // var sbmt = $("input[type=submit]", indicator_form);
-
+        const lop = $("#id_lop_target");
+        let errMsg = undefined;
         if (!lop.val()) {
-            $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text("Please enter a number larger than zero.");
-            // sbmt.attr("disabled", true);
-            return false;
+            errMsg = "Please enter a number larger than zero.";
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
-            $("#div_id_lop_target").addClass('has-error');
-            $("#hint_id_lop_target").text(" Please enter a number larger than zero with no letters or symbols. If your target is a percentage, describe it in the unit of measure field.");
-            // sbmt.attr("disabled", true);
+            errMsg = "Please enter a number larger than zero with no letters or symbols. If your target is a percentage, describe it in the unit of measure field.";
+        }
+
+        if (errMsg) {
+            lop.addClass('is-invalid');
+            $("#div_id_lop_target").addClass("mb-3");
+            $("#validation_id_lop_target").text(errMsg);
             return false;
         } else {
-            $("#div_id_lop_target").removeClass('has-error');
-            $("#hint_id_lop_target").text(" ");
-            // sbmt.attr("disabled", false);
+            lop.removeClass('is-invalid');
+            $("#div_id_lop_target").removeClass("mb-3");
+            $("#validation_id_lop_target").text(" ");
             return true;
         }
     }
 
     function validateForEmptyField(fieldName) {
-        // var indicator_form = $("#indicator_update_form")
-        // var sbmt = $("input[type=submit]", indicator_form);
-        if ($.isEmptyObject($("#" + fieldName).val())) {
-            $("#div_" + fieldName).addClass('has-error');
-            $("#hint_" + fieldName).text("Please complete this field.");
-            // sbmt.attr("disabled", true);
+        const field = $("#" + fieldName);
+        if ($.isEmptyObject(field.val())) {
+            $(field).addClass('is-invalid');
+            $("#validation_" + fieldName).text("Please complete this field.");
             return false;
         } else {
-            $("#div_" + fieldName).removeClass('has-error');
-            $("#hint_" + fieldName).text(" ");
-            // sbmt.attr("disabled", false);
+            $(field).removeClass('is-invalid');
+            $("#validation_" + fieldName).text(" ");
             return true;
         }
     }
 
     function validateNumPeriods() {
-
-        // var indicator_form = $("#indicator_update_form")
-        // var sbmt = $("input[type=submit]", indicator_form);
         var numPeriodsField = $("#id_target_frequency_num_periods");
         if (numPeriodsField.is(":visible")) {
             if (numPeriodsField.val() > 12) {
                 $("#div_id_target_frequency_num_periods").addClass('has-error');
                 $("#hint_id_target_frequency_num_periods").text("You can start with up to 12 targets and add more later.");
-                // sbmt.attr("disabled", true);
                 return false;
             } else if (!numPeriodsField.val()) {
                 $("#div_id_target_frequency_num_periods").addClass('has-error');
                 $("#hint_id_target_frequency_num_periods").text("Please complete this field.");
-                // sbmt.attr("disabled", true);
                 return false;
             } else {
                 $("#div_id_target_frequency_num_periods").removeClass('has-error');
                 $("#hint_id_target_frequency_num_periods").text(" ");
-                // sbmt.attr("disabled", false);
                 return true;
             }
         }
