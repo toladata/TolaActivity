@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load i18n %}
 {% load group_tag %}
 {% block bread_crumb %}
 
@@ -135,18 +134,18 @@
         <ul class="paginate">
             {% if getSiteProfile.has_previous %}
                 <li>
-                    <a href="?user_list={{user_list}}&page={{ getSiteProfile.previous_page_number }}">{% trans "Previous" %}</a>
+                    <a href="?user_list={{user_list}}&page={{ getSiteProfile.previous_page_number }}">Previous</a>
                 </li>
                 <li>
                     <a href="?user_list={{user_list}}&page={{ getSiteProfile.previous_page_number }}"> {{getSiteProfile.previous_page_number}}</a>
                 </li>
             {% endif %}
 
-            {% blocktrans with getSiteProfile.number as site_num and getSiteProfile.paginator.num_pages as num_pages %}
+            {% with getSiteProfile.number as site_num %}
                 <li>
                     <a class="active" href="">{{ site_num }}</a>
                 </li>
-            {% endblocktrans %}
+            {% endwith %}
 
             {% if getSiteProfile.has_next %}
                 <li>
@@ -160,7 +159,7 @@
                     {% endwith %}
                 {% endifnotequal %}
                 <li>
-                    <a href="?user_list={{user_list}}&page={{ getSiteProfile.next_page_number }}">{% trans "Next" %}</a>
+                    <a href="?user_list={{user_list}}&page={{ getSiteProfile.next_page_number }}">Next</a>
                 </li>
             {% endif %}
         </ul>
