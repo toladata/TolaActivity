@@ -136,7 +136,7 @@
                 <div class="col-sm-7">
                     <span
                         id="id_span_achieved"
-                        {% if object.indicator.unit_of_measure_type == 2 %} class="input-symbol-percent" {% endif %}>
+                        {% if indicator.unit_of_measure_type == 2 or object.indicator.unit_of_measure_type == 2 %} class="input-symbol-percent" {% endif %}>
                         {% render_field form.achieved class+="form-control" %}
                     </span>
                     <small id="hint_id_achieved" class="form-text text-muted">{{ form.achieved.help_text }}</small>
