@@ -81,7 +81,7 @@ function getBaseline() {
  * @returns {string} The contents of the hint as a string
  */
 function getBaselineErrorHint() {
-  let errorBox = browser.$('span#hint_id_baseline_na.help-block');
+  let errorBox = browser.$('span#hint_id_baseline_na');
   let errorHint = errorBox.getText();
   return errorHint;
 }
@@ -102,7 +102,7 @@ function getIndicatorName() {
  * @returns {string} The contents of the hint as a string
  */
 function getLoPErrorHint() {
-  let errorBox = browser.$('span#hint_id_lop_target.help-block');
+  let errorBox = browser.$('span#hint_id_lop_target');
   let errorHint = errorBox.getText();
   return errorHint;
 }
@@ -123,7 +123,7 @@ function getLoPTarget() {
  */
 function getNumTargetEvents() {
   clickTargetsTab;
-  let val = $('input#id_target_frequency_num_periods').getValue();
+  let val = $('input#target_frequency_custom').getValue();
   return val;
 }
 
@@ -133,7 +133,7 @@ function getNumTargetEvents() {
  * @returns {string} The error text as a string
  */
 function getNumTargetEventsErrorHint() {
-  let errorBox = browser.$('span#hint_id_target_frequency_num_periods.help-block');
+  let errorBox = browser.$('span#validation_id_target_frequency_num_periods');
   let errorHint = errorBox.getText();
   return errorHint;
 }
@@ -145,9 +145,20 @@ function getNumTargetEventsErrorHint() {
  */
 function getNumTargetPeriods() {
   clickTargetsTab();
-  browser.waitForExist('input#id_target_frequency_num_periods');
-  let val = browser.$('input#id_target_frequency_num_periods').getValue();
+  browser.waitForExist('input#target_frequency_num_periods');
+  let val = browser.$('input#target_frequency_num_periods').getValue();
   return val;
+}
+
+/**
+ * Get the text, if any, from the error box beneath the number of
+ * events text bo
+ * @returns {string} The error text as a string
+ */
+function getNumTargetPeriodsErrorHint() {
+  let errorBox = browser.$('span#validation_target_frequency_num_periods');
+  let errorHint = errorBox.getText();
+  return errorHint;
 }
 
 /**
@@ -238,7 +249,7 @@ function getProgramsTable() {
  * @returns {string} The error text present, if any
  */
 function getTargetFirstEventErrorHint() {
-    let errorBox = browser.$('#hint_id_target_frequency_custom.help-block');
+    let errorBox = browser.$('#validation_id_target_frequency_custom');
     let errorHint = errorBox.getText();
     return errorHint;
 }
@@ -250,7 +261,7 @@ function getTargetFirstEventErrorHint() {
  * @returns {string} The error text present, if any
  */
 function getTargetFirstPeriodErrorHint() {
-  let errorBox = browser.$('#hint_id_target_frequency_start.help-block');
+  let errorBox = browser.$('#validation_id_target_frequency_start');
   let errorHint = errorBox.getText();
   return errorHint;
 }
@@ -262,11 +273,11 @@ function getTargetFirstPeriodErrorHint() {
  */
 function getTargetFrequency() {
   clickTargetsTab();
-  let val = $('select#id_target_frequency').getValue();
+  let val = $('select#target_frequency').getValue();
   if (val == 0) {
     return '---------';
   } else {
-    let list = $('select#id_target_frequency').getText();
+    let list = $('select#target_frequency').getText();
     let rows = list.split('\n');
     let result = rows[val];
     return result.trim();
@@ -320,8 +331,8 @@ function open(url = parms.baseurl) {
  * @returns {string} The title of the current page
  */
 function pageName() {
-  // On this page, the "title" is actually the <h2> caption
-  return browser.$('h2').getText();
+  // On this page, the "title" is actually the <h4> caption
+  return browser.$('h4').getText();
 }
 
 /**
@@ -393,8 +404,8 @@ function setFirstEventName(value) {
  * @returns Nothing
  */
 function setFirstTargetPeriod() {
-  browser.moveToObject('div.controls.col-sm-6>input#id_target_frequency_start');
-  browser.moveToObject('div.controls.col-sm-6>input#id_target_frequency_num_periods');
+  browser.moveToObject('input#target_frequency_start');
+  browser.moveToObject('input#target_frequency_num_periods');
 }
 
 /**
