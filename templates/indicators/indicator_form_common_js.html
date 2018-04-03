@@ -446,6 +446,7 @@
             $("label[for=id_baseline_na]").addClass('has-error');
         } else {
             reset_baseline_errors();
+            errMsg = undefined;
             return true;
         }
     }
@@ -468,6 +469,7 @@
             lop.removeClass('is-invalid');
             $("#div_id_lop_target").removeClass("mb-3");
             $("#validation_id_lop_target").text(" ");
+            errMsg = undefined;
             return true;
         }
     }
@@ -486,76 +488,76 @@
     }
 
     function validateNumPeriods() {
-        var numPeriodsField = $("#id_target_frequency_num_periods");
+        const fieldId = "id_target_frequency_num_periods";
+        const numPeriodsField = $("#" + fieldId);
+        let errMsg = undefined;
         if (numPeriodsField.is(":visible")) {
             if (numPeriodsField.val() > 12) {
-                $("#div_id_target_frequency_num_periods").addClass('has-error');
-                $("#hint_id_target_frequency_num_periods").text("You can start with up to 12 targets and add more later.");
-                return false;
+                errMsg = "You can start with up to 12 targets and add more later.";
             } else if (!numPeriodsField.val()) {
-                $("#div_id_target_frequency_num_periods").addClass('has-error');
-                $("#hint_id_target_frequency_num_periods").text("Please complete this field.");
+                errMsg = "Please complete this field.";
+            } else if (numPeriodsField.val() < 0) {
+                errMsg = "Please enter a number larger than zero.";
+            }
+
+            if (errMsg) {
+                numPeriodsField.addClass('is-invalid');
+                $("#validation_" + fieldId).text(errMsg);
                 return false;
             } else {
-                $("#div_id_target_frequency_num_periods").removeClass('has-error');
-                $("#hint_id_target_frequency_num_periods").text(" ");
+                numPeriodsField.removeClass('is-invalid');
+                $("#validation_" + fieldId).text(" ");
+                errMsg = undefined;
                 return true;
             }
         }
     }
 
     function validatePeriodStartField() {
-        var field = $("#id_target_frequency_start").val();
-        if ($.isEmptyObject(field)) {
-            $("#div_id_target_frequency_start").addClass('has-error');
-            $("#hint_id_target_frequency_start").text("Please complete this field.");
-        } else if (!isDate(field)) {
-            $("#div_id_target_frequency_start").addClass('has-error');
-            $("#hint_id_target_frequency_start").text("Please enter a valid date.");
+        const fieldId = "id_target_frequency_start";
+        const field = $("#" + fieldId);
+        let errMsg = undefined;
+
+        if ($.isEmptyObject(field.val())) {
+            errMsg = "Please complete this field.";
+        } else if (!isDate(field.val())) {
+            errMsg = "Please enter a valid date.";
+        }
+
+        if (errMsg) {
+            field.addClass('is-invalid');
+            $("#validation_" + fieldId).text(errMsg);
             return false;
         } else {
-            var val = formatDate(field, 1);
-            $("#id_target_frequency_start").val(val);
-            $("#div_id_target_frequency_start").removeClass('has-error');
-            $("#hint_id_target_frequency_start").text(" ");
+            var val = formatDate(field.val(), 1);
+            field.val(val);
+            errMsg = undefined;
+            field.removeClass('is-invalid');
+            $("#validation_" + fieldId).text(" ");
             return true;
         }
     }
 
     function validatePeriodicTargets(){
-        var errorFlag = false;
+        let errorFlag = false;
+        // validate target values (number fields)
         $("#periodic_targets_table input[type=number]").each(function(){
             if ($(this).attr('id').substr(0, 2) == "pt" ) {
                 if ($(this).val()) {
-                    $(this).parent().removeClass('has-error');
-                    $(this).parent().addClass('border-1px');
-                    // $(this).next('span:first').text('');
+                    $(this).removeClass('is-invalid');
                 } else {
-                    $(this).parent().addClass('has-error');
-                    $(this).parent().removeClass('border-1px');
+                    $(this).addClass('is-invalid');
                     errorFlag = true;
                 }
             }
-           if ($(this).attr('type') == 'number' && $(this).val() && $(this).val() >= 0) {
-                $(this).parent().removeClass('has-error');
-                $(this).parent().addClass('border-1px');
-                // $(this).next('span:first').text('');
-                $("#id_pt_errors").text('');
-            } else {
-                $(this).parent().addClass('has-error');
-                $(this).parent().removeClass('border-1px');
-                errorFlag = true;
-            }
         });
 
+        // validate target labels (text fields)
         $("#periodic_targets_table input[type=text]").each(function(){
-            // if ($(this).attr('id').substr(0, 2) == "pt" ) {
             if ($(this).val()) {
-                $(this).parent().removeClass('has-error');
-                $(this).parent().addClass('border-1px');
+                $(this).removeClass('is-invalid');
             } else {
-                $(this).parent().addClass('has-error');
-                $(this).parent().removeClass('border-1px');
+                $(this).addClass('is-invalid');
                 errorFlag = true;
             }
         });
@@ -622,7 +624,7 @@
         }
 
         // validate periodic targets
-        if ($("#id_div_periodic_tables_placeholder input").parent().hasClass('has-error')) {
+        if ($("#id_div_periodic_tables_placeholder input").hasClass('is-invalid')) {
             validationsTargetTab = false;
         }
 
@@ -652,29 +654,25 @@
 
     $("#indicator_modal_content, #indicator_form").on("input", "#periodic_targets_table input[type=number]", function(e){
         if ($(this).val() && $(this).val() >= 0) {
-            $(this).parent().removeClass('has-error');
-            $(this).parent().addClass('border-1px');
-            // $(this).next('span:first').text('');
+            $(this).removeClass('is-invalid');
             $("#id_pt_errors").text('');
         } else {
-            $(this).parent().addClass('has-error');
-            $(this).parent().removeClass('border-1px');
+            $(this).addClass('is-invalid');
         }
-        if ($("#id_div_periodic_tables_placeholder input[type=number], input[type=text]").parent().hasClass("has-error") ) {
+
+        if ($("#id_div_periodic_tables_placeholder input[type=number], input[type=text]").hasClass("is-invalid") ) {
             $("#id_pt_errors").html(`<span class="target-value-error"><small>${getPTMessage()}</small></span>`);
         }
     });
 
     $("#indicator_modal_content, #indicator_form").on("input", "#periodic_targets_table input[type=text]", function(e){
         if ($(this).val()) {
-            $(this).parent().removeClass('has-error');
-            $(this).parent().addClass('border-1px');
+            $(this).removeClass('is-invalid');
             $("#id_pt_errors").text('');
         } else {
-            $(this).parent().addClass('has-error');
-            $(this).parent().removeClass('border-1px');
+            $(this).addClass('is-invalid');
         }
-        if ($("#id_div_periodic_tables_placeholder input[type=text], input[type=number]").parent().hasClass("has-error") ) {
+        if ($("#id_div_periodic_tables_placeholder input[type=text], input[type=number]").hasClass("has-error") ) {
             $("#id_pt_errors").html(`<span class="target-value-error"><small>${getPTMessage()}</small></span>`);
         }
     });
@@ -713,7 +711,7 @@
         validateForEmptyField("id_target_frequency_custom");
     });
 
-    $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency_start", function(e){
+    $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_start", function(e){
         // validateForEmptyField("id_target_frequency_start");
         validatePeriodStartField();
     });
