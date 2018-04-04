@@ -12,38 +12,46 @@
 </script>
 {% load assign %}
 {% if indicator.target_frequency  %}
-
     <table class="table table-sm table-bordered">
         <tr>
-            <th style="vertical-align:bottom; min-width:190px;">Target Period</th>
-            <th style="vertical-align:bottom; text-align: right;">Target</th>
-            <th style="vertical-align:bottom; min-width: 125px;">Date Collected</th>
-            <th style="vertical-align:bottom; text-align: right;"">Actual</th>
-            <th style="vertical-align:bottom; text-align: right;"" width="70">% Met</th>
-            <th style="vertical-align:bottom;">Evidence</th>
-            <th style="vertical-align:bottom;">Project</th>
+            <th style="vertical-align:bottom; min-width:190px;">TARGET PERIOD</th>
+            <th style="vertical-align:bottom; text-align: right;">PERIODIC TARGET</th>
+            <th style="vertical-align:bottom; text-align: right;">ACTUAL</th>
+            <th style="vertical-align:bottom; text-align: right;">% MET</th>
+            <th style="vertical-align:bottom; min-width: 125px;">DATA COLLECTED</th>
+            <th style="vertical-align:bottom;">EVIDENCE</th>
             <th style="vertical-align:bottom;" width="80"></th>
         </tr>
         {% for item in periodictargets %}
             <tr>
                 {% ifchanged item %}
-                    <td {% if item.collecteddata_set.count %} rowspan="{{ item.collecteddata_set.count }}" {% endif %} min-width="190">
-                        <strong>{{ item.period }}</strong><br>
-                        <small>{{ item.start_date_formatted|default_if_none:"" }} {% if item.start_date %} - {% endif %} {{ item.end_date_formatted|default_if_none:"" }}</small>
-                    </td>
-                    <td {% if item.collecteddata_set.count %}
-                            rowspan="{{ item.collecteddata_set.count }}"
-                        {% endif %}
-                        align="right">
-                        {% with target=item.target|floatformat:"-2" %}
-                            {% if indicator.unit_of_measure_type == 2 %}
-                                {{ target }}%
-                            {% else %}
-                                {{ target }}
-                            {% endif %}
-                        {% endwith %}
-                    </td>
+                    {% with dataCount=item.collecteddata_set.count %}
+                        <td {% if dataCount %} rowspan="{{ dataCount }}" {% endif %} min-width="190">
+                            <strong>{{ item.period }}</strong><br>
+                            <small>
+                                {{ item.start_date_formatted|default_if_none:"" }}
+                                {% if item.start_date %} - {% endif %}
+                                {{ item.end_date_formatted|default_if_none:"" }}
+                            </small>
+                        </td>
+                        <td {% if dataCount %} rowspan="{{ dataCount }}" {% endif %} align="right">
+                            {% with target=item.target|floatformat:"-2" %}
+                                {% if indicator.unit_of_measure_type == 2 %}
+                                    {{ target }}%
+                                {% else %}
+                                    {{ target }}
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td {% if dataCount %} rowspan="{{ dataCount }}" {% endif %} align="right">
+                            {{ item.cumulative_sum|floatformat:"-2" }}
+                        </td>
+                        <td {% if dataCount %} rowspan="{{ dataCount }}" {% endif %} align="right">
+                            {% widthratio item.cumulative_sum item.target 100 %}%
+                        </td>
+                    {% endwith %}
                 {% endifchanged %}
+
                 {% for cdata in item.collecteddata_set.all %}
                     {% if not forloop.first %}
                         <tr>
@@ -57,15 +65,8 @@
                            id="collected-{{cdata.id}}">
                                 {{ cdata.date_collected_formatted|default_if_none:"" }}
                         </a>
-                    </td>
-                    <td align="right">
-                        {% if indicator.is_cumulative is True %}
-                            {% if indicator.unit_of_measure_type == 2 %}
-                                {{ item.cumulative_sum|floatformat:"-2" }}%
-                            {% else %}
-                                {{ item.cumulative_sum|floatformat:"-2" }}
-                            {% endif %}
-                        {% else %}
+
+                        <span class="float-right">
                             {% with achieved=cdata.achieved|floatformat:"-2" %}
                                 {% if indicator.unit_of_measure_type == 2 %}
                                     {{ achieved }}%
@@ -73,9 +74,8 @@
                                     {{ achieved }}
                                 {% endif %}
                             {% endwith %}
-                        {% endif %}
+                        </span>
                     </td>
-                    <td align="right"> {% widthratio cdata.achieved cdata.periodic_target.target 100 %}%</td>
                     <td>
                         {% if cdata.evidence %}
                             {% if cdata.evidence.url %}
@@ -85,12 +85,12 @@
                             {% if cdata.evidence.url %}
                                 </a>
                             {% endif %}
+                            {{ cdata.complete|default_if_none:cdata.agreement|default_if_none:'' }}
                         {%endif%}
                         {% if cdata.tola_table %}
                             <a href="{{ cdata.tola_table.detail_url }}" target="_blank">{{ cdata.tola_table }}</a>
                         {% endif %}
                     </td>
-                    <td>{{ cdata.complete|default_if_none:cdata.agreement|default_if_none:'' }}</td>
                     <td align="right">
                         <a href="{% url 'collecteddata_delete' cdata.id %}" style="color:red; vertical-align: middle;">
                             <i class="fas fa-trash-alt"></i>
