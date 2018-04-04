@@ -15,6 +15,7 @@
             onClose: function (dateText, inst) {
                 $(this).datepicker("setDate", new Date(inst.selectedYear, inst.selectedMonth, 1));
                 $(this).datepicker("widget").find(".ui-datepicker-calendar").hide();
+                $(this).trigger('change');
                 this.focus();
             },
         });
@@ -297,6 +298,7 @@
             var jsondata = $.parseJSON(data);
             var indicator = $.parseJSON(jsondata["indicatorjson"])[0];
             var targets_sum = jsondata["targets_sum"];
+            var targets_avg = jsondata["targets_avg"];
             var update_indicator_row = jsondata["update_indicator_row"];
             var content = jsondata["content"];
 
@@ -306,7 +308,12 @@
             if ($("#id_target_frequency").val() != 1) {
                 $("#id_div_periodic_tables_placeholder").empty();
                 $("#id_div_periodic_tables_placeholder").append(content);
-                $("#id_span_targets_sum").text(parseFloat(targets_sum).toFixed(2).replace(/[.,]00$/, ""));
+                if (indicator.fields.unit_of_measure_type == 1) {
+                    $("#id_span_targets_sum").text(parseFloat(targets_sum).toFixed(2).replace(/[.,]00$/, ""));
+                } else {
+                    $("#id_span_targets_sum").text(parseFloat(targets_avg).toFixed(2).replace(/[.,]00$/, ""));
+                }
+
             }
             if ($('#indicator_modal_div').length == 1) {
                 // for the modal version;
@@ -419,7 +426,6 @@
     function reset_baseline_errors(){
         $("#id_baseline").removeClass('is-invalid');
         $("#id_baseline_na").removeClass('is-invalid');
-        $("label[for=id_baseline_na]").removeClass('has-error');
         $("#validation_id_baseline").html("");
     }
 
@@ -443,7 +449,6 @@
             baseline.addClass('is-invalid');
             baseline_na.addClass('is-invalid');
             $("#validation_id_baseline").html(errMsg);
-            $("label[for=id_baseline_na]").addClass('has-error');
         } else {
             reset_baseline_errors();
             errMsg = undefined;
@@ -711,7 +716,7 @@
         validateForEmptyField("id_target_frequency_custom");
     });
 
-    $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_start", function(e){
+    $("#indicator_modal_content, #indicator_form").on("blur change", "#id_target_frequency_start", function(e){
         // validateForEmptyField("id_target_frequency_start");
         validatePeriodStartField();
     });
