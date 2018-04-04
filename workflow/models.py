@@ -1174,12 +1174,16 @@ class WorkflowLevel2(models.Model):
     PROGRESS_OPEN = "open"
     PROGRESS_AWAITING_APPROVAL = "awaitingapproval"
     PROGRESS_TRACKING = "tracking"
+    PROGRESS_IN_PROGRESS = "inprogress"
+    PROGRESS_INVOICED = "invoiced"
     PROGRESS_CLOSED = "closed"
 
     PROGRESS_CHOICES = (
         (PROGRESS_OPEN, "Open"),
         (PROGRESS_AWAITING_APPROVAL, "Awaiting Approval"),
         (PROGRESS_TRACKING, "Tracking"),
+        (PROGRESS_IN_PROGRESS, "In Progress"),
+        (PROGRESS_INVOICED, "Invoiced"),
         (PROGRESS_CLOSED, "Closed")
     )
 
