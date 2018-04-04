@@ -15,7 +15,7 @@
     <table class="table table-sm table-bordered">
         <tr>
             <th style="vertical-align:bottom; min-width:190px;">TARGET PERIOD</th>
-            <th style="vertical-align:bottom; text-align: right;">PERIODIC TARGET</th>
+            <th style="vertical-align:bottom; text-align: right;">TARGET</th>
             <th style="vertical-align:bottom; text-align: right;">ACTUAL</th>
             <th style="vertical-align:bottom; text-align: right;">% MET</th>
             <th style="vertical-align:bottom; min-width: 125px;">DATA COLLECTED</th>
@@ -85,8 +85,19 @@
                             {% if cdata.evidence.url %}
                                 </a>
                             {% endif %}
-                            {{ cdata.complete|default_if_none:cdata.agreement|default_if_none:'' }}
                         {%endif%}
+                        <span class="float-right">
+                            {% if cdata.complete %}
+                                <a href="{% url 'projectcomplete_update' cdata.complete.id %}"
+                                   target="_blank"
+                                   class="btn btn-sm btn-link">View Project</a>
+                            {% elif cdata.agreement %}
+                                <a href="{% url 'projectagreement_update' cdata.agreement.id %}"
+                                   target="_blank"
+                                   class="btn btn-sm btn-link">View agreement</a>
+                            {% endif %}
+                            {% comment {{ cdata.complete|default_if_none:cdata.agreement|default_if_none:'' }} %} {% endcomment %}
+                        </span>
                         {% if cdata.tola_table %}
                             <a href="{{ cdata.tola_table.detail_url }}" target="_blank">{{ cdata.tola_table }}</a>
                         {% endif %}
