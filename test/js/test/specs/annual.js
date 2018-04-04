@@ -34,6 +34,7 @@ describe('"Annual" target frequency', function() {
     assert(errorMessage.includes('Please complete this field.'));
   });
 
+/*
   it('should default number of periods to 1', function() {
     assert.equal(1, TargetsTab.getNumTargetPeriods(),
       'Did not find expected default value');
@@ -84,4 +85,6 @@ describe('"Annual" target frequency', function() {
     assert.equal(targetCount, errorCount, 'Received unexpected mismatch');
     TargetsTab.saveIndicatorChanges();
   });
+*/
+
 });
