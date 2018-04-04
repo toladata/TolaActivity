@@ -3,7 +3,6 @@ from tola.views import *
 from feed.views import *
 from django.conf.urls import include, url
 # Import i18n_patterns
-from django.conf.urls.i18n import i18n_patterns
 from django.views.generic import TemplateView
 from rest_framework import routers
 from django.conf import settings
@@ -133,9 +132,3 @@ urlpatterns = [ # rest framework
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-# urlpatterns += i18n_patterns(
-#     url(r'^$', views.index, name='index'),
-#     url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
-#     url(r'^$', TemplateView.as_view(template_name='base.html')),
-#     prefix_default_language=False
-# )
