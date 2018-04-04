@@ -15,6 +15,7 @@
             onClose: function (dateText, inst) {
                 $(this).datepicker("setDate", new Date(inst.selectedYear, inst.selectedMonth, 1));
                 $(this).datepicker("widget").find(".ui-datepicker-calendar").hide();
+                $(this).trigger('change');
                 this.focus();
             },
         });
@@ -717,7 +718,7 @@
         validateForEmptyField("id_target_frequency_custom");
     });
 
-    $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_start", function(e){
+    $("#indicator_modal_content, #indicator_form").on("blur change", "#id_target_frequency_start", function(e){
         // validateForEmptyField("id_target_frequency_start");
         validatePeriodStartField();
     });
