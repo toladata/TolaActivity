@@ -8,7 +8,7 @@ describe('TolaActivity Dashboard', function() {
     browser.windowHandleMaximize();
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
-    LoginPage.setUserName(parms.username);
+    LoginPage.setUsername(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
   });

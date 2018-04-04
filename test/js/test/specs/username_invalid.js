@@ -14,7 +14,7 @@ describe('TolaActivity login screen', function() {
     parms.username = 'HorseWithNoName';
 
     LoginPage.open(parms.baseurl);
-    LoginPage.setUserName(parms.username);
+    LoginPage.setUsername(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
 
