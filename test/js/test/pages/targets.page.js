@@ -112,7 +112,6 @@ function getLoPErrorHint() {
  * @returns {integer} The current value of the LoP target field
  */
 function getLoPTarget() {
-  clickTargetsTab;
   let val = $('input#id_lop_target').getValue();
   return val;
 }
@@ -122,7 +121,6 @@ function getLoPTarget() {
  * @returns {integer} The number of events specified
  */
 function getNumTargetEvents() {
-  clickTargetsTab;
   let val = $('input#target_frequency_custom').getValue();
   return val;
 }
@@ -144,9 +142,8 @@ function getNumTargetEventsErrorHint() {
  * @returns {integer} The value of the field, if any
  */
 function getNumTargetPeriods() {
-  clickTargetsTab();
-  browser.waitForExist('input#target_frequency_num_periods');
-  let val = browser.$('input#target_frequency_num_periods').getValue();
+  browser.waitForExist('input[name="target_frequency_num_periods"]');
+  let val = browser.$('input[name="target_frequency_num_periods"]').getValue();
   return val;
 }
 
@@ -310,7 +307,6 @@ function getTargetValueErrorHint() {
  * @returns {integer} The current value as an integer
  */
 function getUnitOfMeasure() {
-  clickTargetsTab();
   let val = $('input#id_unit_of_measure').getValue();
   return val;
 }
