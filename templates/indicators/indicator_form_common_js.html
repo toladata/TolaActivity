@@ -297,6 +297,7 @@
             var jsondata = $.parseJSON(data);
             var indicator = $.parseJSON(jsondata["indicatorjson"])[0];
             var targets_sum = jsondata["targets_sum"];
+            var targets_avg = jsondata["targets_avg"];
             var update_indicator_row = jsondata["update_indicator_row"];
             var content = jsondata["content"];
 
@@ -306,7 +307,12 @@
             if ($("#id_target_frequency").val() != 1) {
                 $("#id_div_periodic_tables_placeholder").empty();
                 $("#id_div_periodic_tables_placeholder").append(content);
-                $("#id_span_targets_sum").text(parseFloat(targets_sum).toFixed(2).replace(/[.,]00$/, ""));
+                if (indicator.fields.unit_of_measure_type == 1) {
+                    $("#id_span_targets_sum").text(parseFloat(targets_sum).toFixed(2).replace(/[.,]00$/, ""));
+                } else {
+                    $("#id_span_targets_sum").text(parseFloat(targets_avg).toFixed(2).replace(/[.,]00$/, ""));
+                }
+
             }
             if ($('#indicator_modal_div').length == 1) {
                 // for the modal version;

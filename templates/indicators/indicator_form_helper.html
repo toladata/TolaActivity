@@ -566,7 +566,7 @@
     function getTargetsAverage() {
         var sumAndNum = getTargetsSumAndNum();
         var avgTargets = sumAndNum[0]/sumAndNum[1];
-        avgTargets = parseFloat(avgTargets).toFixed(2).replace(/[.,]00$/, "")
+        avgTargets = parseFloat(avgTargets).toFixed(2).replace(/[.,]00$/, "");
         return avgTargets;
     }
 

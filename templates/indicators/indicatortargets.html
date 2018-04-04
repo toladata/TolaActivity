@@ -66,9 +66,9 @@
                                     <strong>
                                         <span id="id_span_targets_sum">
                                             {% if indicator.unit_of_measure_type == 1%}
-                                                {{targets_sum|floatformat:"-2"}}
+                                                {{ targets_sum|floatformat:"-2" }}
                                             {% else %}
-                                                {{targets_avg|floatformat:"-2"}}
+                                                {{ targets_avg|floatformat:"-2" }}
                                             {% endif %}
                                         </span>
                                         <span id="id_span_targtsaggregate_percent_sign">
