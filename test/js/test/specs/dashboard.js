@@ -53,14 +53,13 @@ describe('TolaActivity Dashboard', function() {
   });
 
   it('should have a Reports dropdown', function() {
-    let link = $('div#navbarReportsDropdown');
+    let link = $('a#navbarReportsDropdown');
     assert(link.getText() == 'Reports');
     link.click();
   });
 
   it('should have a Profile link', function() {
-    let xp = $('div#navbarProfileDropdown');
-    let link = $(xp);
+    let link = $('a#navbarProfileDropdown');
     link.click();
   });
 
