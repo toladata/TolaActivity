@@ -95,8 +95,8 @@ running chrome
 running firefox
 AssertionError: expected true to equal false
     at Context.<anonymous> (/home/kwall/Work/TolaActivity/test/js/test/specs/indicators_table.js:51:14)
-        at new Promise (<anonymous>)
-            at new F (/home/kwall/Work/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
+    at new Promise (<anonymous>)
+    at new F (/home/kwall/Work/TolaActivity/test/js/node_modules/core-js/library/modules/_export.js:35:28)
 
 ```
 
@@ -138,34 +138,21 @@ $ npm install
 ```
 
 ## Validate the Installation
-1. Edit `config.json` and change the _username_, _password_, and _baseurl_
-values to suit your needs. In particular:
-- _username_ and _password_ correspond to your MercyCorps SSO login
-- _baseurl_ points to the home page of the TolaActivity instance you
-  are testing
-- **Under no circumstances should this suite be run against the production
-  TolaActivity server. It will create bad data, result in a lot of work to
-  remove, and potentially result in losing known-good, live data.**
-
+1. Create and modify `config.json` as described previously.
 ```
 $ cd test/js
 $ cp config-example.json config.json
 ```
-
-1. Edit `config.json` and change the `username`, `password`, and `baseurl`
-values to suit your needs. In particular:
-* `username` and `password` correspond to your MercyCorps SSO login
-* `baseurl` points to the home page of the TolaActivity instance you
-  are testing
+**Under no circumstances should this suite be run against the
+production TolaActivity server. It will create bad data, result in
+a lot of work to remove, and potentially result in losing known-good,
+live data.**
 1. Start the Seleniuim server (targeting the Firefox browser):
-
 ```
 $ cd test/js
 $ java -jar -Dwebdriver.gecko.driver=./geckodriver selenium-server-standalone-3.9.1.jar &> selenium-server.log &
 ```
-
 1. Execute the test suite:
-
 ```
 $ cd test/js
 $ ./node_modules/.bin/wdio wdio.gecko.conf.js
