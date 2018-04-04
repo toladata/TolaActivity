@@ -81,7 +81,7 @@ function getBaseline() {
  * @returns {string} The contents of the hint as a string
  */
 function getBaselineErrorHint() {
-  let errorBox = browser.$('span#hint_id_baseline_na');
+  let errorBox = browser.$('span#validation_id_baseline_na');
   let errorHint = errorBox.getText();
   return errorHint;
 }
@@ -102,7 +102,7 @@ function getIndicatorName() {
  * @returns {string} The contents of the hint as a string
  */
 function getLoPErrorHint() {
-  let errorBox = browser.$('span#hint_id_lop_target');
+  let errorBox = browser.$('span#validation_id_lop_target');
   let errorHint = errorBox.getText();
   return errorHint;
 }
@@ -400,7 +400,7 @@ function setFirstEventName(value) {
  * @returns Nothing
  */
 function setFirstTargetPeriod() {
-  browser.moveToObject('input#target_frequency_start');
+  browser.moveToObject('input#id_target_frequency_start');
   browser.moveToObject('input#target_frequency_num_periods');
 }
 
