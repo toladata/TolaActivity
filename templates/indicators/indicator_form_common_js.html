@@ -426,7 +426,6 @@
     function reset_baseline_errors(){
         $("#id_baseline").removeClass('is-invalid');
         $("#id_baseline_na").removeClass('is-invalid');
-        $("label[for=id_baseline_na]").removeClass('has-error');
         $("#validation_id_baseline").html("");
     }
 
@@ -450,7 +449,6 @@
             baseline.addClass('is-invalid');
             baseline_na.addClass('is-invalid');
             $("#validation_id_baseline").html(errMsg);
-            $("label[for=id_baseline_na]").addClass('has-error');
         } else {
             reset_baseline_errors();
             errMsg = undefined;
