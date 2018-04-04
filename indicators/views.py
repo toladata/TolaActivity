@@ -1031,25 +1031,24 @@ def service_json(request,service):
     service_indicators = import_indicator(service,deserialize=False)
     return HttpResponse(service_indicators, content_type="application/json")
 
-# pts = PeriodicTarget.objects.filter(indicator=ind).prefetch_related('collecteddata_set').annotate(Sum('collecteddata__achieved'), cum_sum=Value(0, output_field=DecimalField()))
+
 def collected_data_json(request, indicator, program):
     ind = Indicator.objects.get(pk=indicator)
     template_name = 'indicators/collected_data_table.html'
 
     periodictargets = PeriodicTarget.objects.filter(indicator=indicator)\
         .prefetch_related('collecteddata_set')\
-        .annotate(Sum('collecteddata__achieved'),
-                  cumulative_sum=Value(None, output_field=DecimalField()))\
+        .annotate(achieved_sum=Sum('collecteddata__achieved', output_field=DecimalField()),
+                 cumulative_avg=Avg('collecteddata__achieved', output_field=DecimalField()))\
         .order_by('customsort')
 
     for index, pt in enumerate(periodictargets):
         if index == 0:
-            pt.cumulative_sum = pt.collecteddata__achieved__sum
+            pt.cumulative_sum = pt.achieved_sum
             prev = None
 
         try:
-            pt.cumulative_sum = pt.collecteddata__achieved__sum +\
-                prev.cumulative_sum
+            pt.cumulative_sum = pt.achieved_sum + prev.achieved_sum
         except AttributeError:
             pass
         except TypeError:
