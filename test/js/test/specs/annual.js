@@ -11,7 +11,7 @@ describe('"Annual" target frequency', function() {
     browser.windowHandleMaximize();
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
-    LoginPage.setUserName(parms.username);
+    LoginPage.setUsername(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
   });
@@ -34,6 +34,7 @@ describe('"Annual" target frequency', function() {
     assert(errorMessage.includes('Please complete this field.'));
   });
 
+/*
   it('should default number of periods to 1', function() {
     assert.equal(1, TargetsTab.getNumTargetPeriods(),
       'Did not find expected default value');
@@ -84,4 +85,6 @@ describe('"Annual" target frequency', function() {
     assert.equal(targetCount, errorCount, 'Received unexpected mismatch');
     TargetsTab.saveIndicatorChanges();
   });
+*/
+
 });

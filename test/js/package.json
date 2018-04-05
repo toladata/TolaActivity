@@ -24,5 +24,7 @@
 		"string_decoder": "^1.1.0"
 	},
 	"repository": "https://github.com/mercycorps/TolaActivity.git",
-	"license": "Apache-2.0"
+	"license": "Apache-2.0",
+    "name": "tats",
+    "version": "0.9.0"
 }

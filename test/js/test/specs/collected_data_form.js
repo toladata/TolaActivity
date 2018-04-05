@@ -14,7 +14,7 @@ describe('Collected data record: Actual value field for percentage indicator', f
         // Get login data and login
         let parms = util.readConfig();
         LoginPage.open(parms.baseurl);
-        LoginPage.setUserName(parms.username);
+        LoginPage.setUsername(parms.username);
         LoginPage.setPassword(parms.password);
         LoginPage.clickLoginButton();
     });

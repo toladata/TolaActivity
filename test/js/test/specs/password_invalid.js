@@ -14,7 +14,7 @@ describe('TolaActivity login screen', function() {
     parms.password = 'ThisBetterFail';
 
     LoginPage.open(parms.baseurl);
-    LoginPage.setUserName(parms.username);
+    LoginPage.setUsername(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
 
