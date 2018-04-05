@@ -8,7 +8,7 @@ describe('TolaActivity Dashboard', function() {
     browser.windowHandleMaximize();
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
-    LoginPage.setUserName(parms.username);
+    LoginPage.setUsername(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
   });
@@ -23,7 +23,7 @@ describe('TolaActivity Dashboard', function() {
   });
 
   it('should have a TolaActivity link', function() {
-    let xp = '/html/body/nav/div/div[1]/a/img';
+    let xp = '//*[@id="navbarSupportedContent"]/a/img';
     let link = $(xp);
     link.click();
   });
@@ -52,21 +52,14 @@ describe('TolaActivity Dashboard', function() {
     link.click();
   });
 
-  it('should have a Reports link', function() {
-    let navbar = $('div#navbar-collapse-1');
-    let link = navbar.$('=Reports');
+  it('should have a Reports dropdown', function() {
+    let link = $('a#navbarReportsDropdown');
     assert(link.getText() == 'Reports');
     link.click();
   });
 
   it('should have a Profile link', function() {
-    let xp = '/html/body/nav/div/div[2]/ul[2]/li[1]/a';
-    let link = $(xp);
-    link.click();
-  });
-
-  it('should have a Bookmarks link', function() {
-    let link = $('=Bookmarks');
+    let link = $('a#navbarProfileDropdown');
     link.click();
   });
 

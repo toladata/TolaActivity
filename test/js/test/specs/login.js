@@ -12,7 +12,7 @@ describe('TolaActivity Login screen', function() {
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
     assert.equal('Mercy Corps Sign-On', browser.getTitle());
-    LoginPage.setUserName(parms.username);
+    LoginPage.setUsername(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     // FIXME: Get the WebDriver code out of the test

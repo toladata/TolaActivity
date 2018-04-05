@@ -46,9 +46,9 @@ function clickIndicatorsDropdown() {
  * @returns Nothing
  */
 function clickIndicatorsLink() {
-  let indicatorsLink = browser.$('ul.nav.navbar-nav').$('=Indicators');
+  let indicatorsLink = browser.$('ul.navbar-nav').$('=Indicators');
   indicatorsLink.click();
-  browser.waitForVisible('h2=Program Indicators');
+  browser.waitForVisible('h4=Program Indicators');
 }
 
 /**
@@ -96,7 +96,7 @@ function clickResetButton() {
  * specific calls.
  */
 function createBasicIndicator() {
-  if ($('h2').getText() != 'Program Indicators') {
+  if ($('h4').getText() != 'Program Indicators') {
     clickIndicatorsLink();
   }
   clickNewIndicatorButton();
@@ -265,8 +265,8 @@ function open(url = parms.baseurl) {
  * @returns {string} The title of the current page
  */
 function getPageName() {
-  // On this page, the "title" is actually the <h2> caption
-  return browser.$('h2').getText();
+  // On this page, the "title" is actually the <h4> caption
+  return browser.$('h4').getText();
 }
 
 /**

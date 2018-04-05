@@ -27,7 +27,7 @@
                             {% endif %}
                         </td>
 
-                        <td class="align-middle align="right" width="150px">
+                        <td class="align-middle" align="right" width="150px">
                             <span id="id_span_{{ pt.id }}" class="{% if indicator.unit_of_measure_type == 2 %}input-symbol-percent{% endif %}"">
                                 <input
                                     type="number"
@@ -38,13 +38,22 @@
                                     data-start-date="{{pt.start_date|convert2dateobject|date:"M d, Y"|default:''}}"
                                     data-end-date="{{pt.end_date|convert2dateobject|date:"M d, Y"|default:''}}"
                                     placeholder="Enter target"
-                                    class="form-control input-value {% if indicator.unit_of_measure_type == 2 %} pr-4 {% endif %}">
+                                    class="form-control input-value {% if indicator.unit_of_measure_type == 2 %} pr-4{% endif %}">
                             </span>
                             <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
                         </td>
                     </tr>
                     {% if forloop.last %}
-                        <tr id="pt_sum_targets">
+                        <tr id="pt_sum_targets"
+                            {% if indicator.unit_of_measure_type == 1 %}
+                                {% if indicator.is_cumulative is True %}
+                                    style="display:block;"
+                                {% endif %}
+                            {% else %}
+                                {% if indicator.is_cumulative is True or indicator.is_cumulative is None %}
+                                    style="display: none";
+                                {% endif %}
+                            {% endif %}>
                             <td class="pt-delete-row"> </td>
                             <td align="left" class="align-middle">
                                 <strong>
@@ -58,9 +67,9 @@
                                     <strong>
                                         <span id="id_span_targets_sum">
                                             {% if indicator.unit_of_measure_type == 1%}
-                                                {{targets_sum|floatformat:"-2"}}
+                                                {{ targets_sum|floatformat:"-2" }}
                                             {% else %}
-                                                {{targets_avg|floatformat:"-2"}}
+                                                {{ targets_avg|floatformat:"-2" }}
                                             {% endif %}
                                         </span>
                                         <span id="id_span_targtsaggregate_percent_sign">
@@ -129,7 +138,7 @@
                                 {% if unit_type == 1 %}
                                     {% if indicator.is_cumulative is None or indicator.is_cumulative is False %} checked {% endif %}
                                 {% else %}
-                                    {% if indicator.is_cumulative is True %} checked {% endif %}
+                                    {% if indicator.is_cumulative is True or indicator.is_cumulative is None %} checked {% endif %}
                                 {% endif %}
                                 class="form-control mr-1"
                                 id="id_is_cumulative_1"
@@ -154,7 +163,7 @@
                                 {% if unit_type == 1 %}
                                     {% if indicator.is_cumulative is True %} checked {% endif %}
                                 {% else %}
-                                    {% if indicator.is_cumulative is None or indicator.is_cumulative is False %} checked {% endif %}
+                                    {% if indicator.is_cumulative is False %} checked {% endif %}
                                 {% endif %}
                                 class="form-control mr-1"
                                 id="id_is_cumulative_2"

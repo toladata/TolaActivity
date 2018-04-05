@@ -5,7 +5,7 @@
 
 /**
  * Opens a browser window and navigates to the requested URL
- * @param {string} url - The URL to which to navigate
+ * @param {string} url The URL to which to navigate
  * @returns Nothing
  */
 function open(url) {
@@ -14,17 +14,17 @@ function open(url) {
 
 /**
  * Types the specified username into the username text box
- * @param {string} username - The login name to use
+ * @param {string} username The login name to use
  * @returns Nothing
  */
-function setUserName(username) {
+function setUsername(username) {
   let loginBox = $('#login');
   loginBox.setValue(username);
 }
 
 /**
  * Types the specified password into the password text box
- * @param {string} password - The password to use
+ * @param {string} password The password to use
  * @returns Nothing
  */
 function setPassword(password) {
@@ -42,6 +42,6 @@ function clickLoginButton() {
 }
 
 exports.open = open;
-exports.setUserName = setUserName;
+exports.setUserName = setUsername;
 exports.setPassword = setPassword;
 exports.clickLoginButton = clickLoginButton;

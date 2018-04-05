@@ -14,7 +14,7 @@ describe('"Event" target frequency', function() {
   it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
     LoginPage.open(parms.baseurl);
-    LoginPage.setUserName(parms.username);
+    LoginPage.setUsername(parms.username);
     LoginPage.setPassword(parms.password);
     LoginPage.clickLoginButton();
     IndPage.open();
@@ -75,6 +75,8 @@ describe('"Event" target frequency', function() {
 
   it('should default "Number of events" to 1', function() {
     IndPage.createBasicIndicator();
+    TargetsTab.clickTargetsTab();
+    TargetsTab.setTargetFrequency('Event');
     assert.equal(1, TargetsTab.getNumTargetPeriods(),
       'Did not receive expected number of target events');
   });

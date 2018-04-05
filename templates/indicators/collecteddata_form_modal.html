@@ -60,7 +60,12 @@
     </script>
 
     <form
-        action="{% url 'collecteddata_update' object.id %}"
+        action="{% if object.id %}
+                    {% url 'collecteddata_update' object.id %}
+                {% else %}
+                    {% url 'collecteddata_add' program_id indicator.id %}
+                {% endif %}
+                "
         id="collecteddata_update_form"
         class="form-horizontal"
         method="post"
@@ -71,8 +76,9 @@
             {{ hidden_field }}
         {% endfor %}
 
+        <legend>Collected Data</legend>
+
         <fieldset>
-            <legend>Collected Data</legend>
             <div class="form-row mb-2" id="div_id_program2">
                 <label for="id_program2" class="col-sm-4 col-form-label" align="right">
                     {{ form.program.label }}*
@@ -130,7 +136,7 @@
                 <div class="col-sm-7">
                     <span
                         id="id_span_achieved"
-                        {% if object.indicator.unit_of_measure_type == 2 %} class="input-symbol-percent" {% endif %}>
+                        {% if indicator.unit_of_measure_type == 2 or object.indicator.unit_of_measure_type == 2 %} class="input-symbol-percent" {% endif %}>
                         {% render_field form.achieved class+="form-control" %}
                     </span>
                     <small id="hint_id_achieved" class="form-text text-muted">{{ form.achieved.help_text }}</small>

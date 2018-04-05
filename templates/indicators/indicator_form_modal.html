@@ -12,7 +12,7 @@
         var targetsactive = `{{targetsactive|safe}}`;
         if (targetsonly == 'True') {
             // $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                $('a[href="#targets"][data-toggle="tab"]').tab('show');
+                $('#indicatorTabs a[href="#targetsTab"][data-toggle="tab"]').tab('show');
                 // $('a[href!="#targets"][data-toggle="tab"]').hide();
                 // $('a[href="#targets"][data-toggle="tab"]').hide();
                 $('ul.nav.nav-tabs').hide();
@@ -23,7 +23,7 @@
         }
 
         if (targetsactive == 'True') {
-            $('a[href="#targets"][data-toggle="tab"]').tab('show');
+            $('#indicatorTabs a[href="#targetsTab"][data-toggle="tab"]').tab('show');
             $("#indicator_modal_body").data("targetsactive", "true");
         }
     });

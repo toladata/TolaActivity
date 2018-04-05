@@ -27,7 +27,7 @@ function loadCollected(indicator,program){
 *  Load the collected data for an indicator on the results page
 */
 function loadIndicators(program, indicator, type){
-    var program;
+    console.log(program);
     $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
         $('#hidden-' + program).html(data);
         $("body").removeClass("modal-open");

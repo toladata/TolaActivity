@@ -11,7 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.core import serializers
 
 from django.db import connection
-from django.db.models import Count, Min, Q, Sum, Avg
+from django.db.models import Count, Min, Q, Sum, Avg, DecimalField, Value
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View
@@ -1032,41 +1032,50 @@ def service_json(request,service):
     return HttpResponse(service_indicators, content_type="application/json")
 
 
-def collected_data_json(AjaxableResponseMixin, indicator, program):
+def collected_data_json(request, indicator, program):
     ind = Indicator.objects.get(pk=indicator)
     template_name = 'indicators/collected_data_table.html'
 
-    # collecteddata = CollectedData.objects\
-    #     .filter(indicator=indicator)\
-    #     .select_related('indicator')\
-    #     .prefetch_related('evidence', 'periodic_target', 'disaggregation_value')\
-    #     .order_by('periodic_target__customsort', 'date_collected')
+    periodictargets = PeriodicTarget.objects.filter(indicator=indicator)\
+        .prefetch_related('collecteddata_set')\
+        .annotate(achieved_sum=Sum('collecteddata__achieved', output_field=DecimalField()),
+                 cumulative_avg=Avg('collecteddata__achieved', output_field=DecimalField()))\
+        .order_by('customsort')
 
-    periodictargets = PeriodicTarget.objects.filter(indicator=indicator).prefetch_related('collecteddata_set').order_by('customsort')
-    collecteddata_without_periodictargets = CollectedData.objects.filter(indicator=indicator, periodic_target__isnull=True)
+    for index, pt in enumerate(periodictargets):
+        if index == 0:
+            pt.cumulative_sum = pt.achieved_sum
+            prev = None
 
-    detail_url = ''
-    try:
-        for data in collecteddata:
-            if data.tola_table:
-                data.tola_table.detail_url = const_table_det_url(str(data.tola_table.url))
-    except Exception, e:
-        pass
+        try:
+            pt.cumulative_sum = pt.achieved_sum + prev.achieved_sum
+        except AttributeError:
+            pass
+        except TypeError:
+            pass
+        prev = pt
+
+    collecteddata_without_periodictargets = CollectedData.objects\
+        .filter(indicator=indicator, periodic_target__isnull=True)
 
     collected_sum = CollectedData.objects\
         .select_related('periodic_target')\
         .filter(indicator=indicator)\
         .aggregate(Sum('periodic_target__target'),Sum('achieved'))
 
-    return render_to_response(template_name, {
-                'periodictargets': periodictargets,
-                'collecteddata_without_periodictargets': collecteddata_without_periodictargets,
-                'collected_sum': collected_sum,
-                'indicator': ind,
-                'program_id': program})
+    return render_to_response(
+        template_name, {
+            'periodictargets': periodictargets,
+            'collecteddata_without_periodictargets': \
+                collecteddata_without_periodictargets,
+            'collected_sum': collected_sum,
+            'indicator': ind,
+            'program_id': program
+        }
+    )
 
 
-def program_indicators_json(AjaxableResponseMixin, program, indicator, type):
+def program_indicators_json(request, program, indicator, type):
     template_name = 'indicators/program_indicators_table.html'
 
     q = {'program__id__isnull': False}
@@ -1079,7 +1088,6 @@ def program_indicators_json(AjaxableResponseMixin, program, indicator, type):
     if int(indicator) != 0:
         q['id'] = indicator
 
-        #
     indicators = Indicator.objects\
         .select_related('sector')\
         .prefetch_related('collecteddata_set', 'indicator_type', 'level', 'periodictarget_set')\
@@ -1088,15 +1096,6 @@ def program_indicators_json(AjaxableResponseMixin, program, indicator, type):
         .order_by('levelmin', 'number')
 
     return render_to_response(template_name, {'indicators': indicators, 'program_id': program})
-
-
-def tool(request):
-    """
-    Placeholder for Indicator planning Tool TBD
-    :param request:
-    :return:
-    """
-    return render(request, 'indicators/tool.html')
 
 
 # REPORT VIEWS

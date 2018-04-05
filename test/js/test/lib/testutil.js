@@ -3,15 +3,16 @@
  * @module testutil
  */
 
-/** Read the configuration file to get user session data (username,
+/**
+ * Read the configuration file to get user session data (username,
  * password, base URL)
  * @param {string} configFile - Path to config file; defaults to config.json
  * @returns {JSON} - JSON object containing user session data
  */
 function readConfig(configFile = 'config.json') {
-  let fs = require('fs');
-  let data = fs.readFileSync(configFile);
-  return JSON.parse(data);
+    let fs = require('fs');
+    let data = fs.readFileSync(configFile);
+    return JSON.parse(data);
 }
 
 /**
@@ -19,7 +20,7 @@ function readConfig(configFile = 'config.json') {
  * @param {string} s The string to print
  * @returns Nothing
  */
-function dp(s) { console.log('*** ' + s); }
+function dp(s) { console.log('***%s***', s); }
 
 exports.dp = dp;
 exports.readConfig = readConfig;
