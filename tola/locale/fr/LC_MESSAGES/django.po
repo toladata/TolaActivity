@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-04 12:11-0700\n"
+"POT-Creation-Date: 2018-04-05 09:08-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -304,3 +304,15 @@ msgstr "Arabe"
 #: tola/settings/base.py:92
 msgid "English"
 msgstr "Anglais"
+
+#~ msgid "indicator__lop_target"
+#~ msgstr "indicateur__lop_cible"
+
+#~ msgid "indicator__program__name"
+#~ msgstr "nom__programme_indicateur"
+
+#~ msgid "indicator__number"
+#~ msgstr "numéro__d`indicateur"
+
+#~ msgid "indicator__name"
+#~ msgstr "nom__d`indicateurs"

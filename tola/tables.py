@@ -1,5 +1,7 @@
 import django_tables2 as tables
-from indicators.models import Indicator, CollectedData
+
+from django.utils.translation import ugettext_lazy as _
+from indicators.models import CollectedData
 from django_tables2.utils import A
 from django.template.defaultfilters import floatformat
 
@@ -15,8 +17,8 @@ class IndicatorDataTable(tables.Table):
     class Meta:
         model = CollectedData
         attrs = {"class": "paleblue"}
-        fields = ('indicator__lop_target', 'actuals','indicator__program__name', 'indicator__number', 'indicator__name')
-        sequence = ('indicator__lop_target', 'actuals', 'indicator__program__name','indicator__number', 'indicator__name')
+        fields = ('indicator__lop_target', 'actuals', 'indicator__program__name', 'indicator__number', 'indicator__name')
+        sequence = ('indicator__lop_target', 'actuals', 'indicator__program__name', 'indicator__number', 'indicator__name')
 
 
 class CollectedDataTable(tables.Table):

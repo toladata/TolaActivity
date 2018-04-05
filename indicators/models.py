@@ -7,6 +7,7 @@ from django.db.models import Sum
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import admin
 
@@ -19,15 +20,15 @@ from workflow.models import (
 
 
 class TolaTable(models.Model):
-    name = models.CharField(max_length=255, blank=True)
-    table_id = models.IntegerField(blank=True, null=True)
-    owner = models.ForeignKey('auth.User')
-    remote_owner = models.CharField(max_length=255, blank=True)
-    country = models.ManyToManyField(Country, blank=True)
-    url = models.CharField(max_length=255, blank=True)
-    unique_count = models.IntegerField(blank=True, null=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(_("name"), max_length=255, blank=True)
+    table_id = models.IntegerField(_("table_id"), blank=True, null=True)
+    owner = models.ForeignKey('auth.User', verbose_name=_("owner"))
+    remote_owner = models.CharField(_("remote_owner"), max_length=255, blank=True)
+    country = models.ManyToManyField(Country, blank=True, verbose_name=_("country"))
+    url = models.CharField(_("url"), max_length=255, blank=True)
+    unique_count = models.IntegerField(_("unique_count"), blank=True, null=True)
+    create_date = models.DateTimeField(_("create_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -42,10 +43,13 @@ class TolaTableAdmin(admin.ModelAdmin):
 
 
 class IndicatorType(models.Model):
-    indicator_type = models.CharField(max_length=135, blank=True)
-    description = models.TextField(max_length=765, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    indicator_type = models.CharField(_("indicator_type"), max_length=135, blank=True)
+    description = models.TextField(_("description"), max_length=765, blank=True)
+    create_date = models.DateTimeField(_("create_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Indicator Type")
 
     def __unicode__(self):
         return self.indicator_type
@@ -58,13 +62,14 @@ class IndicatorTypeAdmin(admin.ModelAdmin):
 
 
 class StrategicObjective(models.Model):
-    name = models.CharField(max_length=135, blank=True)
-    country = models.ForeignKey(Country, null=True, blank=True)
-    description = models.TextField(max_length=765, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(_("name"), max_length=135, blank=True)
+    country = models.ForeignKey(Country, null=True, blank=True, verbose_name=_("country"))
+    description = models.TextField(_("description"), max_length=765, blank=True)
+    create_date = models.DateTimeField(_("create)_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
 
     class Meta:
+        verbose_name = _("Strategic Objectives")
         ordering = ('country', 'name')
 
     def __unicode__(self):
@@ -84,13 +89,14 @@ class StrategicObjectiveAdmin(admin.ModelAdmin):
 
 
 class Objective(models.Model):
-    name = models.CharField(max_length=135, blank=True)
-    program = models.ForeignKey(Program, null=True, blank=True)
-    description = models.TextField(max_length=765, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(_("name"), max_length=135, blank=True)
+    program = models.ForeignKey(Program, null=True, blank=True, verbose_name=_("program"))
+    description = models.TextField(_("description"), max_length=765, blank=True)
+    create_date = models.DateTimeField(_("create_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
 
     class Meta:
+        verbose_name = _("Objective")
         ordering = ('program', 'name')
 
     def __unicode__(self):
@@ -110,10 +116,13 @@ class ObjectiveAdmin(admin.ModelAdmin):
 
 
 class Level(models.Model):
-    name = models.CharField(max_length=135, blank=True)
-    description = models.TextField(max_length=765, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(_("name"), max_length=135, blank=True)
+    description = models.TextField(_("description"), max_length=765, blank=True)
+    create_date = models.DateTimeField(_("create_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = ("Level")
 
     def __unicode__(self):
         return self.name
@@ -189,24 +198,30 @@ class DisaggregationValueAdmin(admin.ModelAdmin):
 
 
 class ReportingFrequency(models.Model):
-    frequency = models.CharField(max_length=135, blank=True)
-    description = models.CharField(max_length=765, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    frequency = models.CharField(_("frequency"), max_length=135, blank=True)
+    description = models.CharField(_("description"), max_length=765, blank=True)
+    create_date = models.DateTimeField(_("create_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Reporting Frequency")
 
     def __unicode__(self):
         return self.frequency
 
 
 class DataCollectionFrequency(models.Model):
-    frequency = models.CharField(max_length=135, blank=True, null=True)
-    description = models.CharField(max_length=255, blank=True, null=True)
+    frequency = models.CharField(_("frequency"), max_length=135, blank=True, null=True)
+    description = models.CharField(_("description"), max_length=255, blank=True, null=True)
     numdays = models.PositiveIntegerField(
         default=0,
-        verbose_name="Frequency in number of days"
+        verbose_name=_("Frequency in number of days")
     )
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    create_date = models.DateTimeField(_("create_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Data Collection Frequency")
 
     def __unicode__(self):
         return self.frequency
@@ -218,9 +233,12 @@ class DataCollectionFrequencyAdmin(admin.ModelAdmin):
 
 
 class ReportingPeriod(models.Model):
-    frequency = models.ForeignKey(ReportingFrequency)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    frequency = models.ForeignKey(ReportingFrequency, verbose_name=_("frequency"))
+    create_date = models.DateTimeField(_("create_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Reporting Period")
 
     def __unicode__(self):
         return self.frequency
@@ -232,11 +250,14 @@ class ReportingPeriodAdmin(admin.ModelAdmin):
 
 
 class ExternalService(models.Model):
-    name = models.CharField(max_length=255, blank=True)
-    url = models.CharField(max_length=765, blank=True)
-    feed_url = models.CharField(max_length=765, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(_("name"), max_length=255, blank=True)
+    url = models.CharField(_("url"), max_length=765, blank=True)
+    feed_url = models.CharField(_("feed_url"), max_length=765, blank=True)
+    create_date = models.DateTimeField(_("create_date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("edit_date"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("External Service")
 
     def __unicode__(self):
         return self.name
@@ -249,12 +270,15 @@ class ExternalServiceAdmin(admin.ModelAdmin):
 
 class ExternalServiceRecord(models.Model):
     external_service = models.ForeignKey(
-        ExternalService, blank=True, null=True)
+        ExternalService, blank=True, null=True, verbose_name = _("external_service"))
 
-    full_url = models.CharField(max_length=765, blank=True)
-    record_id = models.CharField("Unique ID", max_length=765, blank=True)
+    full_url = models.CharField(_("full_url"), max_length=765, blank=True)
+    record_id = models.CharField(_("Unique ID"), max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("External Service Record")
 
     def __unicode__(self):
         return self.full_url
@@ -313,134 +337,133 @@ class Indicator(models.Model):
         default=uuid.uuid4, unique=True, help_text=" "),
 
     indicator_type = models.ManyToManyField(
-        IndicatorType, blank=True, help_text=" ")
+        IndicatorType, blank=True, help_text=" ", verbose_name=_("indicator_type"))
 
-    level = models.ManyToManyField(Level, blank=True, help_text=" ")
+    level = models.ManyToManyField(Level, blank=True, help_text=" ", verbose_name=_("level"))
 
     objectives = models.ManyToManyField(
-        Objective, blank=True, verbose_name="Program Objective",
+        Objective, blank=True, verbose_name=_("Program Objective"),
         related_name="obj_indicator", help_text=" "
     )
 
     strategic_objectives = models.ManyToManyField(
-        StrategicObjective, verbose_name="Country Strategic Objective",
+        StrategicObjective, verbose_name=_("Country Strategic Objective"),
         blank=True, related_name="strat_indicator", help_text=" "
     )
 
-    name = models.CharField(verbose_name="Name", max_length=255,
+    name = models.CharField(verbose_name=_("Name"), max_length=255,
                             null=False, help_text=" ")
 
-    number = models.CharField(max_length=255, null=True, blank=True,
+    number = models.CharField(_("number"), max_length=255, null=True, blank=True,
                               help_text=" ")
 
-    source = models.CharField(
-        max_length=255, null=True, blank=True, help_text=" ")
+    source = models.CharField(_("source"), max_length=255, null=True, blank=True, help_text=" ")
 
-    definition = models.TextField(null=True, blank=True, help_text=" ")
+    definition = models.TextField(_("definition"), null=True, blank=True, help_text=" ")
 
     justification = models.TextField(
         max_length=500, null=True, blank=True,
-        verbose_name="Rationale or Justification for Indicator", help_text=" "
+        verbose_name=_("Rationale or Justification for Indicator"), help_text=" "
     )
 
     unit_of_measure = models.CharField(
-        max_length=135, null=True, blank=True, verbose_name="Unit of measure*",
+        max_length=135, null=True, blank=True, verbose_name=_("Unit of measure*"),
         help_text=" "
     )
 
     unit_of_measure_type = models.IntegerField(
         blank=False, null=True, choices=UNIT_OF_MEASURE_TYPES,
         default=UNIT_OF_MEASURE_TYPES[0][0],
-        verbose_name="Unit Type", help_text=" "
+        verbose_name=_("Unit Type"), help_text=" "
     )
     disaggregation = models.ManyToManyField(DisaggregationType, blank=True,
-                                            help_text=" ")
+                                            help_text=" ", verbose_name=_("disaggregation"))
     baseline = models.CharField(
-        verbose_name="Baseline*", max_length=255, null=True, blank=True,
+        verbose_name=_("Baseline*"), max_length=255, null=True, blank=True,
         help_text=" "
     )
-    baseline_na = models.BooleanField(verbose_name="Not applicable",
+    baseline_na = models.BooleanField(verbose_name=_("Not applicable"),
                                       default=False, help_text=" ")
     lop_target = models.CharField(
-        verbose_name="Life of Program (LoP) target*", max_length=255,
+        verbose_name=_("Life of Program (LoP) target*"), max_length=255,
         null=True, blank=True, help_text=" "
     )
     direction_of_change = models.IntegerField(
         blank=False, null=True, choices=DIRECTION_OF_CHANGE,
         default=DIRECTION_OF_CHANGE[0][0],
-        verbose_name="Direction of Chnage", help_text=" ")
+        verbose_name=_("Direction of Chnage"), help_text=" ")
 
     is_cumulative = models.NullBooleanField(
-        blank=False, verbose_name="C / NC", help_text=" ")
+        blank=False, verbose_name=_("C / NC"), help_text=" ")
 
-    rationale_for_target = models.TextField(max_length=255, null=True,
+    rationale_for_target = models.TextField(_("rationale_for_target"), max_length=255, null=True,
                                             blank=True, help_text=" ")
     target_frequency = models.IntegerField(
         blank=False, null=True, choices=TARGET_FREQUENCIES,
-        verbose_name="Target frequency", help_text=" "
+        verbose_name=_("Target frequency"), help_text=" "
     )
     target_frequency_custom = models.CharField(
         null=True, blank=True, max_length=100,
-        verbose_name="First event name*", help_text=" "
+        verbose_name=_("First event name*"), help_text=" "
     )
     target_frequency_start = models.DateField(
         blank=True, null=True, auto_now=False,  auto_now_add=False,
-        verbose_name="First target period begins*", help_text=" "
+        verbose_name=_("First target period begins*"), help_text=" "
     )
     target_frequency_num_periods = models.IntegerField(
-        blank=True, null=True, verbose_name="Number of target periods*",
+        blank=True, null=True, verbose_name=_("Number of target periods*"),
         help_text=" "
     )
     means_of_verification = models.CharField(
         max_length=255, null=True, blank=True,
-        verbose_name="Means of Verification / Data Source", help_text=" "
+        verbose_name=_("Means of Verification / Data Source"), help_text=" "
     )
     data_collection_method = models.CharField(
         max_length=255, null=True, blank=True,
-        verbose_name="Data Collection Method", help_text=" "
+        verbose_name=_("Data Collection Method"), help_text=" "
     )
     data_collection_frequency = models.ForeignKey(
         DataCollectionFrequency, null=True, blank=True,
-        verbose_name="Frequency of Data Collection", help_text=" "
+        verbose_name=_("Frequency of Data Collection"), help_text=" "
     )
     data_points = models.TextField(
-        max_length=500, null=True, blank=True, verbose_name="Data Points",
+        max_length=500, null=True, blank=True, verbose_name=_("Data Points"),
         help_text=" "
     )
     responsible_person = models.CharField(
         max_length=255, null=True, blank=True,
-        verbose_name="Responsible Person(s) and Team", help_text=" "
+        verbose_name=_("Responsible Person(s) and Team"), help_text=" "
     )
     method_of_analysis = models.CharField(
         max_length=255, null=True, blank=True,
-        verbose_name="Method of Analysis", help_text=" "
+        verbose_name=_("Method of Analysis"), help_text=" "
     )
     information_use = models.CharField(
         max_length=255, null=True, blank=True,
-        verbose_name="Information Use", help_text=" "
+        verbose_name=_("Information Use"), help_text=" "
     )
     reporting_frequency = models.ForeignKey(
         ReportingFrequency, null=True, blank=True,
-        verbose_name="Frequency of Reporting", help_text=" "
+        verbose_name=_("Frequency of Reporting"), help_text=" "
     )
     quality_assurance = models.TextField(
         max_length=500, null=True, blank=True,
-        verbose_name="Quality Assurance Measures", help_text=" "
+        verbose_name=_("Quality Assurance Measures"), help_text=" "
     )
     data_issues = models.TextField(
-        max_length=500, null=True, blank=True, verbose_name="Data Issues",
+        max_length=500, null=True, blank=True, verbose_name=_("Data Issues"),
         help_text=" "
     )
     indicator_changes = models.TextField(
         max_length=500, null=True, blank=True,
-        verbose_name="Changes to Indicator", help_text=" "
+        verbose_name=_("Changes to Indicator"), help_text=" "
     )
-    comments = models.TextField(max_length=255, null=True, blank=True,
+    comments = models.TextField(_("comments"), max_length=255, null=True, blank=True,
                                 help_text=" ")
-    program = models.ManyToManyField(Program, help_text=" ")
-    sector = models.ForeignKey(Sector, null=True, blank=True, help_text=" ")
+    program = models.ManyToManyField(Program, help_text=" ", verbose_name=_("program"))
+    sector = models.ForeignKey(Sector, null=True, blank=True, help_text=" ", verbose_name=_("sector"))
     key_performance_indicator = models.BooleanField(
-        verbose_name="Key Performance Indicator for this program?",
+        verbose_name=_("Key Performance Indicator for this program?"),
         default=False, help_text=" "
     )
     approved_by = models.ForeignKey(
@@ -452,13 +475,13 @@ class Indicator(models.Model):
         help_text=" "
     )
     external_service_record = models.ForeignKey(
-        ExternalServiceRecord, verbose_name="External Service ID",
+        ExternalServiceRecord, verbose_name=_("External Service ID"),
         blank=True, null=True, help_text=" "
     )
     create_date = models.DateTimeField(null=True, blank=True, help_text=" ")
     edit_date = models.DateTimeField(null=True, blank=True, help_text=" ")
     history = HistoricalRecords()
-    notes = models.TextField(max_length=500, null=True, blank=True)
+    notes = models.TextField(_("notes"), max_length=500, null=True, blank=True)
     # optimize query for class based views etc.
     objects = IndicatorManager()
 
