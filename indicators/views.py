@@ -11,7 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.core import serializers
 
 from django.db import connection
-from django.db.models import Count, Min, Q, Sum, Avg, DecimalField, Value
+from django.db.models import Count, Min, Max, Q, Sum, Avg, DecimalField, Value, OuterRef, Subquery
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View
@@ -1036,39 +1036,66 @@ def collected_data_json(request, indicator, program):
     ind = Indicator.objects.get(pk=indicator)
     template_name = 'indicators/collected_data_table.html'
 
+    last_data_record = CollectedData.objects.filter(
+                        periodic_target=OuterRef('pk')).order_by('-id')
     periodictargets = PeriodicTarget.objects.filter(indicator=indicator)\
         .prefetch_related('collecteddata_set')\
-        .annotate(achieved_sum=Sum('collecteddata__achieved', output_field=DecimalField()),
-                 cumulative_avg=Avg('collecteddata__achieved', output_field=DecimalField()))\
+        .annotate(
+            achieved_sum=Sum(
+                'collecteddata__achieved', output_field=DecimalField()),
+            achieved_avg=Avg(
+                'collecteddata__achieved', output_field=DecimalField()),
+            last_data_row=Subquery(
+                last_data_record.values('achieved')[:1]))\
         .order_by('customsort')
 
+    # the total of achieved values across all periodic targets of an indicator
+    grand_achieved_sum = 0
+
+    # the avg of the periodic_targets "achieved_avg" values
+    grand_achieved_avg = 0
+
+    # the last achieved value reported against any target of an indicator
+    last_data_record_value = 0
+
+    # a pointer to refer to the previous periodic_target in the loop
+    prev_pt = None
+
+    # setup cumulative values for achieved across an indicator targets
     for index, pt in enumerate(periodictargets):
         if index == 0:
-            pt.cumulative_sum = pt.achieved_sum
-            prev = None
+            last_data_record_value = pt.last_data_row
+            grand_achieved_avg = pt.achieved_avg
+            grand_achieved_sum = pt.achieved_sum
+            pt.cumulative_sum = grand_achieved_sum
+        else:
+            try:
+                # update this variable only if there is a data value
+                last_data_record_value = pt.last_data_row if pt.last_data_row\
+                    is not None else last_data_record_value
 
-        try:
-            pt.cumulative_sum = pt.achieved_sum + prev.achieved_sum
-        except AttributeError:
-            pass
-        except TypeError:
-            pass
-        prev = pt
+                grand_achieved_avg = pt.achieved_avg + prev_pt.achieved_avg
+                grand_achieved_sum = pt.achieved_sum + prev_pt.achieved_sum
+                pt.cumulative_sum = grand_achieved_sum
+            except TypeError:
+                pass
+
+        prev_pt = pt
+
+    num_pts = periodictargets.filter(start_date__lte=timezone.now().date())
+    grand_achieved_avg = grand_achieved_avg / num_pts.count()
 
     collecteddata_without_periodictargets = CollectedData.objects\
         .filter(indicator=indicator, periodic_target__isnull=True)
-
-    collected_sum = CollectedData.objects\
-        .select_related('periodic_target')\
-        .filter(indicator=indicator)\
-        .aggregate(Sum('periodic_target__target'),Sum('achieved'))
 
     return render_to_response(
         template_name, {
             'periodictargets': periodictargets,
             'collecteddata_without_periodictargets': \
                 collecteddata_without_periodictargets,
-            'collected_sum': collected_sum,
+            'last_data_record_value': last_data_record_value,
+            'grand_achieved_sum': grand_achieved_sum,
+            'grand_achieved_avg': grand_achieved_avg,
             'indicator': ind,
             'program_id': program
         }
