@@ -44,10 +44,27 @@
                             {% endwith %}
                         </td>
                         <td {% if dataCount %} rowspan="{{ dataCount }}" {% endif %} align="right">
-                            {{ item.cumulative_sum|floatformat:"-2" }}
+                            {% if indicator.unit_of_measure_type == 1 %}
+                                {% if indicator.is_cumulative == True %}
+                                    {{ item.cumulative_sum|floatformat:"-2" }}
+                                {% else %}
+                                    {{ item.achieved_sum|floatformat:"-2" }}
+                                {% endif %}
+                            {% else %}
+                                {% if indicator.is_cumulative == True %}
+                                    {% if item.last_data_row %}
+                                        {{ item.last_data_row|floatformat:"-2" }}%
+                                    {% endif %}
+                                {% else %}
+                                    {% if item.achieved_avg %}
+                                        {{ item.achieved_avg|floatformat:"-2" }}%
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
                         </td>
                         <td {% if dataCount %} rowspan="{{ dataCount }}" {% endif %} align="right">
-                            {% widthratio item.cumulative_sum item.target 100 %}%
+                            {% widthratio item.cumulative_sum item.target 100 as percent_met %}
+                            {% if percent_met %} {{ percent_met }}% {% endif %}
                         </td>
                     {% endwith %}
                 {% endifchanged %}
@@ -94,7 +111,7 @@
                             {% elif cdata.agreement %}
                                 <a href="{% url 'projectagreement_update' cdata.agreement.id %}"
                                    target="_blank"
-                                   class="btn btn-sm btn-link">View agreement</a>
+                                   class="btn btn-sm btn-link">View Project</a>
                             {% endif %}
                             {% comment {{ cdata.complete|default_if_none:cdata.agreement|default_if_none:'' }} %} {% endcomment %}
                         </span>
@@ -180,23 +197,32 @@
                         {% endif %}
                     {% endwith %}
                 </strong>
-            </td><!-- {{ collected_sum.periodic_target__target__sum }} -->
-            <td></td>
+            </td>
             <td align="right">
-                <strong>
-                    {% with actual_sum=collected_sum.achieved__sum|floatformat:"-2" %}
-                        {% if indicator.unit_of_measure_type == 2 %}
-                            {{ actual_sum }}%
-                        {% else %}
-                            {{ actual_sum }}
-                        {% endif %}
-                    {% endwith %}
-                </strong>
+                {% if indicator.unit_of_measure_type == 1 %}
+                    {{ grand_achieved_sum|floatformat:"-2" }}
+                {% else %}
+                    {% if indicator.is_cumulative == True %}
+                        {{ last_data_record_value|floatformat:"-2" }}%
+                    {% else %}
+                        {{ grand_achieved_avg|floatformat:"-2" }}%
+                    {% endif %}
+                {% endif %}
             </td>
             <td align="right">
                 <strong>
-                    {% widthratio collected_sum.achieved__sum indicator.lop_target 100 %}%
+                    {% if indicator.unit_of_measure_type == 1 %}
+                        {% widthratio grand_achieved_sum indicator.lop_target 100 %}
+                    {% else %}
+                        {% if indicator.is_cumulative == True %}
+                            {% widthratio last_data_record_value indicator.lop_target 100 %}%
+                        {% else %}
+                            {% widthratio grand_achieved_avg indicator.lop_target 100 %}%
+                        {% endif %}
+                    {% endif %}
                 </strong>
+            </td>
+            <td align="right">
             </td>
             <td colspan="3" align="right">
                 <span class="{% if indicator.target_frequency == None or err == 'Error_1' %} disable-span {% endif %}">
