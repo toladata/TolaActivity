@@ -1,0 +1,21 @@
+describe('Target vs Actuals report: Filter panel', function() {
+    it('should filter per program');
+    it('should filter per target frequency');
+    it('should default to filtering on all target frequencies for Program impact overview');
+    it('should filter per time span (see #119)');
+    it('should filter by level');
+    it('should filter by type');
+    it('should filter by sector');
+    it('should filter by site');
+    it('should filter by indicator');
+    it('should be able to filter by multiple levels');
+    it('should be able to filter by multiple types');
+    it('should be able to filter by multiple sectors');
+    it('should be able to filter by multiple sites');
+    it('should be able to filter by multiple indicators');
+    it('should be able to include a given indicator that would otherwise be filtered');
+    it('should be able to filter a given indicator that would otherwise be included');
+    it('should apply filters cumulatively');
+    it('should have a Reset button');
+    it('should have a Create report button');
+});

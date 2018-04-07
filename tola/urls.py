@@ -2,6 +2,7 @@ from tola import views
 from tola.views import *
 from feed.views import *
 from django.conf.urls import include, url
+# Import i18n_patterns
 from django.views.generic import TemplateView
 from rest_framework import routers
 from django.conf import settings
@@ -66,16 +67,22 @@ urlpatterns = [ # rest framework
                 url(r'^api-token-auth/', auth_views.obtain_auth_token),
                 url(r'^bootstrap/', TemplateView.as_view(template_name="bootstrap4.html")),
 
+                # internationalization
+                url(r'^i18n/', include('django.conf.urls.i18n')),
+
                 # index
+                # included in i18n_patterns
                 url(r'^$', views.index, name='index'),
                 # enable the admin:
                 url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
                 url(r'^admin/', include(admin.site.urls)),
+                # included in i18n_patterns
                 url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
 
                 # index
                 url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', tolaviews.index, name='index'),
 
+                # included in i18n_patterns
                 # base template for layout
                 url(r'^$', TemplateView.as_view(template_name='base.html')),
 
@@ -123,4 +130,5 @@ urlpatterns = [ # rest framework
                 #url(r'^oauth/', include('social_django.urls', namespace='social')),
 
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
