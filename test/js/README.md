@@ -33,23 +33,23 @@ descriptions of each file.
 - **wdio.auto.conf.js** -- This configuration runs all of the tests
   against all of the browsers all of the time. If you feel impatient,
   this is the config for you. Read "The Big Green Button" to get started.
-- **wdio.chrome.conf.js** -- Runs all of the tests in the suite against the
-  Chrome browser.
-- **wdio.gecko.conf.js** -- Runs all of the tests in the suite against the
-  Firefox browser.
-- **wdio.headless.conf.js** -- This is an experimental option that runs the test
-  framework using Chrome's headless mode. I know, right? I didn't know Chrome _had_
-  a headless mode. This option executes all of the tests against the Chrome
-  browser.
-- **wdio.manual.conf.js** -- Runs all of the tests in the suite agsinst both the
-  Chrome and the Firefox browsers.
+- **wdio.chrome.conf.js** -- Runs all of the tests in the suite against
+  the Chrome browser.
+- **wdio.gecko.conf.js** -- Runs all of the tests in the suite against
+  the Firefox browser.
+- **wdio.headless.conf.js** -- This is an experimental option that runs
+  the test framework using Chrome's headless mode. I know, right? I didn't
+  know Chrome _had_ a headless mode. This option executes all of the tests
+  against the Chrome browser.
+- **wdio.manual.conf.js** -- Runs all of the tests in the suite agsinst
+  both the Chrome and the Firefox browsers.
 
 ## The Big Green Button<sup>©</sup>: Quickstart guide for the impatient
 
 ![](docs/big_green_button.jpg)
 
-If you have a functional development system with node and npm installed, the
-following sequence of steps and commands will get you going:
+If you have a functional development system with node and npm installed,
+the following sequence of steps and commands will get you going:
 
 ```
 $ git clone https://github.com/mercycorps.org/TolaActivity.git
@@ -83,7 +83,10 @@ output should resemble the following, hopefully without the test failures:
 $ cd test/js
 $ ./node_modules/.bin/wdio wdio.auto.conf.js 
 
-․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․F․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․F․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․
+․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․
+․․․․․․․․․․․․․․․․․․․․․F․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․
+․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․
+․․․․F․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․․
 
 144 passing (396.40s)
 140 skipped
@@ -212,21 +215,23 @@ Server started at <http://10.10.24.108:53285/>. Press <Ctrl+C> to exit
 ```
 ![](docs/tola_allure_report.png)
 
-If you have run a lot of tests, both the `make report` and `allure generate`
-command might take 20 or 30 seconds to complete, so please be patient. Alternatively,
-you can use the `allure serve` command, which will first generate the reports and then 
-open a browser window as described above. 
+If you have run a lot of tests, both the `make report` and `allure
+generate` command might take 20 or 30 seconds to complete, so please
+be patient. Alternatively, you can use the `allure serve` command,
+which will first generate the reports and then open a browser window as
+described above.
 
 
 ## Don't want to run everything?
-1. To run the tests in a single file, specify `--spec path/to/file`.
-   For example, to run only the dashboard tests in auto mode, the command would be
+To run the tests in a single file, specify `--spec path/to/file`.
+For example, to run only the dashboard tests in auto mode, the command
+would be
 
 ```
 $ ./node_modules/.bin/wdio wdio.auto.conf.js --spec test/specs/dashboard.js
 ```
 
-1. You can also the the `--spec` argument as a crude regex and spec
+You can also use the the `--spec` argument as a crude regex and spec
 filenames. For example, to run any test that contains _invalid_ in the
 filename, this command would do it:
 
@@ -234,11 +239,30 @@ filename, this command would do it:
 $ ./node_modules/.bin/wdio --spec invalid
 ```
 
+Better still, you can execute a suite of related tests by specifying
+`--suite _name_`, where `_name_` is one the names defined in the 
+_suites:_ section of the config file. For example, the _login_ suite
+is defined in the wdio.\*.conf.js files like so:
+
+```
+    suites: {
+        login: [
+            'test/specs/login.js',
+            'test/specs/password_invalid.js',
+            'test/specs/username_invalid.js'
+        ],
+```
+
+Execute it thus:
+```
+$ ./node_modules/.bin/wdio --suite login
+```
+
 ## Looking for framework documentation?
-To produce documentation for the test framework, the API is decorated with
-JSDoc decorators, so it will produce JSDoc-compatible documentation from the
-code itself. To do so, execute the command `make doc` at the top of the 
-testing directory:
+To produce documentation for the test framework, the API is decorated
+with JSDoc decorators, so it will produce JSDoc-compatible documentation
+from the code itself. To do so, execute the command `make doc` at the
+top of the testing directory:
 
 ```
 $ make doc
@@ -268,21 +292,20 @@ If you are a developer, this section is for you. It offers some suggestions
 for simple coding proactices that can make the job of testing your GUI code
 much, much simpler.
 
-* First and foremost, the single best practice that helps QA testing
-  the most is to **use either the _id_ or _name_ attribute on all UI
-  elements which require, which _might_ require, or which you are
-  even _thinking_ about requiring for user interaction.** These attributes
-  make it easier to write tests quickly because they have to be unique
-  per-page, so tests can rely on being able to access the page elements
-  they need. They also make element queries fast, because such lookups
-  are Selenium's happy path.
+* First and foremost, the single best practice that helps QA testing the
+  most is to **use either the _id_ or _name_ attribute on all UI elements
+  which require, which _might_ require, or which you are even _thinking_
+  about requiring for user interaction.** These attributes make it easier
+  to write tests quickly because they have to be unique per-page, so tests
+  can rely on being able to access the page elements they need. They also
+  make element queries fast, because such lookups are Selenium's happy path.
 
   [Semantic markup](https://en.wikipedia.org/wiki/Semantic_HTML) is
   arguably more correct, too, but the interest here is to create code
-  and tests that are easy to maintain, not demonstrate adherence to best
-  practices. Rather, the point is that using _id_ or _name_ reduces Selenium's
-  code fragility several orders of magnitude. The people who come after
-  us will thank us for using this small bit of semantic markup.
+  and tests that are easy to maintain, not demonstrate adherence to
+  best practices. Rather, the point is that using _id_ or _name_ reduces
+  Selenium's code fragility several orders of magnitude. The people who
+  come after us will thank us for using this small bit of semantic markup.
 
 * Similarly, it is helpful for each page to have its own unique
   title. Again, this makes programmatic access to page elements much
