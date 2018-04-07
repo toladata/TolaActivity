@@ -291,9 +291,9 @@ class ExternalServiceAdmin(admin.ModelAdmin):
 
 class ExternalServiceRecord(models.Model):
     external_service = models.ForeignKey(
-        ExternalService, blank=True, null=True, verbose_name = _("External service"))
-
-    full_url = models.CharField(_("Full url"), max_length=765, blank=True)
+        ExternalService, blank=True, null=True,
+        verbose_name=_("External service"))
+    full_url = models.CharField(_("Full URL"), max_length=765, blank=True)
     record_id = models.CharField(_("Unique ID"), max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
