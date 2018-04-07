@@ -11,7 +11,9 @@ from django.core.exceptions import PermissionDenied
 from django.core import serializers
 
 from django.db import connection
-from django.db.models import Count, Min, Max, Q, Sum, Avg, DecimalField, Value, OuterRef, Subquery
+from django.db.models import (
+    Count, Min, Q, Sum, Avg, DecimalField, OuterRef, Subquery
+)
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import View

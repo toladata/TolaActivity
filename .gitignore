@@ -20,6 +20,18 @@ build
 # Logs:
 *.log
 
+# Testing noise
+test/js/*.jar
+test/js/chromedriver
+test/js/config.json
+test/js/doc
+test/js/drivers
+test/js/errorShots
+test/js/geckodriver
+test/js/logs
+test/js/package-lock.json
+test/js/node_modules
+
 #allvritualenv
 venv/
 venv-ta/
@@ -32,6 +44,7 @@ conf/awstats.conf
 .DS_Store
 media/
 client_secrets.json
+tola/settings/local_secret.py
 *.crt
 *.key
 error.log
