@@ -1067,7 +1067,8 @@ def collected_data_json(request, indicator, program):
 
     last_data_record = CollectedData.objects.filter(
                         periodic_target=OuterRef('pk')).order_by('-id')
-    periodictargets = PeriodicTarget.objects.filter(indicator=indicator)\
+    periodictargets = PeriodicTarget.objects\
+        .filter(indicator=indicator)\
         .prefetch_related('collecteddata_set')\
         .annotate(
             achieved_sum=Sum(
@@ -1111,9 +1112,16 @@ def collected_data_json(request, indicator, program):
 
         prev_pt = pt
 
-    num_pts = periodictargets.filter(start_date__lte=timezone.now().date())
-    grand_achieved_avg = grand_achieved_avg / num_pts.count()
+    # for calculative the grand_achieved_avg only count those periodic_targets
+    # that are not in the future, i.e, their start is less than today's date.
+    num_pts = periodictargets\
+        .filter(start_date__lte=timezone.now().date()).count()
 
+    if grand_achieved_avg is not None and num_pts > 0:
+        grand_achieved_avg = grand_achieved_avg / num_pts
+
+    # show all of the data records that do not yet have periodic_targets
+    # associated with them.
     collecteddata_without_periodictargets = CollectedData.objects\
         .filter(indicator=indicator, periodic_target__isnull=True)
 
