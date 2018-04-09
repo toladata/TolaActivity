@@ -21,7 +21,10 @@
         });
 
         $(".monthPicker").focus(function () {
+            // hide the days part of the calendar
             $(".ui-datepicker-calendar").hide();
+            // hide the "Today" button
+            $("#ui-datepicker-div button.ui-datepicker-current").hide();
             $("#ui-datepicker-div").position({
                 my: "left top",
                 at: "left bottom",
@@ -716,7 +719,7 @@
         validateForEmptyField("id_target_frequency_custom");
     });
 
-    $("#indicator_modal_content, #indicator_form").on("blur change", "#id_target_frequency_start", function(e){
+    $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_start", function(e){
         // validateForEmptyField("id_target_frequency_start");
         validatePeriodStartField();
     });
