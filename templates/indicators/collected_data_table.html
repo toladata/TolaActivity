@@ -59,6 +59,7 @@
                                     {% endif %}
                                 {% else %}
                                     {% if item.achieved_avg %}
+                                        <small><abbr title="Average">avg.</abbr></small>
                                         {{ item.achieved_avg|floatformat:"-2" }}%
                                     {% endif %}
                                 {% endif %}
@@ -74,8 +75,14 @@
                                     {% if percent_met %} {{ percent_met }}% {% endif %}
                                 {% endif %}
                             {% else %}
-                                {% widthratio item.cumulative_sum item.target 100 as percent_met %}
-                                {% if percent_met %} {{ percent_met }}% {% endif %}
+                                {% if indicator.is_cumulative == True %}
+                                    {% widthratio item.last_data_row item.target 100 as percent_met %}
+                                    {% if percent_met %} {{ percent_met }}% {% endif %}
+                                {% else %}
+                                    {% widthratio item.achieved_avg item.target 100 as percent_met %}
+                                    {% if percent_met %} {{ percent_met }}% {% endif %}
+                                {% endif %}
+
                             {% endif %}
 
                         </td>
@@ -235,7 +242,9 @@
                     {% if indicator.is_cumulative == True %}
                         {{ last_data_record_value|floatformat:"-2" }}%
                     {% else %}
-                        {{ grand_achieved_avg|floatformat:"-2" }}%
+                        {% widthratio grand_achieved_avg 3 1 as avg_of_grand_achieved_avg %}
+                        <small><abbr title="Average">avg.</abbr></small>
+                        {{ avg_of_grand_achieved_avg|floatformat:"-2" }}%
                     {% endif %}
                 {% endif %}
             </td>
@@ -247,7 +256,8 @@
                         {% if indicator.is_cumulative == True %}
                             {% widthratio last_data_record_value indicator.lop_target 100 %}%
                         {% else %}
-                            {% widthratio grand_achieved_avg indicator.lop_target 100 %}%
+                            {% widthratio grand_achieved_avg 3 1 as avg_of_grand_achieved_avg %}
+                            {% widthratio avg_of_grand_achieved_avg indicator.lop_target 100 %}%
                         {% endif %}
                     {% endif %}
                 </strong>
