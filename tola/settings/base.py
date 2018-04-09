@@ -1,4 +1,5 @@
 """Common settings and globals."""
+from django.utils.translation import ugettext_lazy as _
 
 from os.path import abspath, basename, dirname, join, normpath
 from sys import path
@@ -19,6 +20,13 @@ SITE_NAME = basename(DJANGO_ROOT)
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
 path.append(DJANGO_ROOT)
+
+# Add LOCALE_PATH , a list of directories where Django looks for translation
+# files
+LOCALE_PATHS = [
+    join(DJANGO_ROOT, 'locale'),
+]
+
 ########## END PATH CONFIGURATION
 
 
@@ -75,6 +83,15 @@ USE_L10N = False
 USE_TZ = True
 
 DATE_FORMAT = 'Y-n-d'
+
+# Add list of languages available for selection.
+LANGUAGES = [
+    ('fr', _('French')),
+    ('es', _('Spanish')),
+    ('ar', _('Arabic')),
+    ('en', _('English')),
+]
+
 ########## END GENERAL CONFIGURATION
 
 
@@ -170,8 +187,9 @@ TEMPLATES = [
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE = (
     # Default Django middleware.
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # Activate locale middleware
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.RemoteUserMiddleware',

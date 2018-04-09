@@ -65,10 +65,12 @@ class Indicator(DjangoModelFactory):
             # Simple build, do nothing.
             return
 
-        if extracted:
-            # A list of program were passed in, use them
-            for program in extracted:
-                self.program.add(program)
+        if type(extracted) is not list:
+            extracted = [extracted]
+
+        # A list of program were passed in, use them
+        for program in extracted:
+            self.program.add(program)
 
 
 class Objective(DjangoModelFactory):
