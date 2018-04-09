@@ -211,7 +211,9 @@
             </div>
 
             <!-- Main body content -->
-            <p>{% block content %}{% endblock %}</p>
+            <div id="id_div_content">
+                {% block content %}{% endblock %}
+            </div>
             {% if not user.is_authenticated  %}
                 <a href="{% url "social:begin" "google-oauth2" %}">Google+</a>
             {% endif %}
