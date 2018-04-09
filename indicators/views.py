@@ -1061,7 +1061,7 @@ def service_json(request, service):
     return HttpResponse(service_indicators, content_type="application/json")
 
 
-def collected_data_json(request, indicator, program):
+def collected_data_view(request, indicator, program):
     ind = Indicator.objects.get(pk=indicator)
     template_name = 'indicators/collected_data_table.html'
 

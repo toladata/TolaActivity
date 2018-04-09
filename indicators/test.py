@@ -33,7 +33,7 @@ class IndicatorTestCase(TestCase):
     def test_program_exist(self):
         self.assertEqual(Program.objects.count(), 1)
 
-    def test_collected_data_json_view(self):
+    def test_collected_data_view(self):
         """
         Tests summary values are accurate for various configurations of an
         Indicator
@@ -41,7 +41,7 @@ class IndicatorTestCase(TestCase):
         indicator = factories.Indicator.create(
             program=self.program, source="TEST2")
 
-        url = reverse('collected_data_json',
+        url = reverse('collected_data_view',
                       kwargs={
                         'indicator': indicator.id,
                         'program': self.program.id
