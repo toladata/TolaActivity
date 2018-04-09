@@ -12,7 +12,7 @@
         //     return false;
         // }
         if ($("#collecteddata_update_form div").hasClass('has-error')) {
-            createAlert("danger", "Please complete all required.", true, "#modalmessages");
+            createAlert("danger", "Please complete all required fields.", true, "#modalmessages");
             $('#indicator_collecteddata_div').animate({ scrollTop: 0 }, 'slow');
             return;
         }

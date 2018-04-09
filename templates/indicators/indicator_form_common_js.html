@@ -51,18 +51,18 @@
          // $(e.target).closest("tr").prev("tr").find("a").show(); //.css("display", "block");
         var url = $(this).attr('href');
         var id = url.split('/')[url.split('/').length - 2];
-        var currnentRow = $(e.target).closest("tr");
-        var dataCount = parseInt(currnentRow.data("collectedCount"));
+        var currentRow = $(e.target).closest("tr");
+        var dataCount = parseInt(currentRow.data("collectedCount"));
         if ( dataCount != NaN && dataCount > 0) {
             if (!confirm(`Warning: This action cannot be undone. Removing this target means that ${dataCount} data record/s will no longer have targets associated with them. \n\nProceed anyway?`)) {
                 dataCount = NaN;
                 return;
             }
         }
-        var prevDeleteBtn = currnentRow.prev("tr").find("a");
+        var prevDeleteBtn = currentRow.prev("tr").find("a");
 
-        if (id == 'undefined') {
-            currnentRow.remove();
+        if (id == 'undefined' || id == undefined) {
+            currentRow.remove();
             if ($('#periodic_targets_table tbody tr.periodic-target').length == 0) {
                 $("#id_div_periodic_tables_placeholder").empty();
                 reset_frequency_fields();
@@ -74,7 +74,7 @@
         $.post(url)
             .done(function(data, textStatus, jqXHR){
                 if (data.status == "success") {
-                    currnentRow.remove();
+                    currentRow.remove();
                     prevDeleteBtn.show();
                     $("#indicator_update_form").data('indicatorchanged', true);
                     var targets_sum = data['targets_sum'];
