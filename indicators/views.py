@@ -1104,8 +1104,8 @@ def collected_data_json(request, indicator, program):
                 last_data_record_value = pt.last_data_row if pt.last_data_row\
                     is not None else last_data_record_value
 
-                grand_achieved_avg = pt.achieved_avg + prev_pt.achieved_avg
-                grand_achieved_sum = pt.achieved_sum + prev_pt.achieved_sum
+                grand_achieved_avg = pt.achieved_avg + grand_achieved_avg
+                grand_achieved_sum = pt.achieved_sum + grand_achieved_sum
                 pt.cumulative_sum = grand_achieved_sum
             except TypeError:
                 pass

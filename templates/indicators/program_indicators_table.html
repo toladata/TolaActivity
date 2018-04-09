@@ -1,4 +1,4 @@
-<table class="table table-striped hiddenTable">
+<table class="table hiddenTable">
     <tr>
         <th id="id_indicator_type_col_header">Indicator Type</th>
         <th id="id_indicator_level_col_header">Indicator Level</th>
@@ -31,7 +31,7 @@
         </td>
     </tr>
     <tr class="hiddenRow">
-        <td colspan="7">
+        <td colspan="6">
             <div id="hidden-indicator-{{ indicator.id }}" class="collapse">
                 <!-- Table -->
                 {% include "indicators/collected_data_table.html" %}
