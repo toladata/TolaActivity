@@ -11,16 +11,17 @@
     $("#id_indicator_data_span_count_" + `{{indicator.id}}`).text("{{ indicator.collecteddata_set.count|default:0 }}" );
 </script>
 {% load assign %}
+{% load i18n %}
 {% if indicator.target_frequency  %}
     <table class="table table-sm table-bordered">
         <thead>
             <tr>
-                <th style="vertical-align:bottom; min-width:190px;">TARGET PERIOD</th>
-                <th style="vertical-align:bottom; text-align: right;">TARGET</th>
-                <th style="vertical-align:bottom; text-align: right;">ACTUAL</th>
-                <th style="vertical-align:bottom; text-align: right;">% MET</th>
-                <th style="vertical-align:bottom; min-width: 125px;">DATA COLLECTED</th>
-                <th style="vertical-align:bottom;">EVIDENCE</th>
+                <th style="vertical-align:bottom; min-width:190px;">{% trans "TARGET PERIOD" %}</th>
+                <th style="vertical-align:bottom; text-align: right;">{% trans "TARGET" %}</th>
+                <th style="vertical-align:bottom; text-align: right;">{% trans "ACTUAL" %}</th>
+                <th style="vertical-align:bottom; text-align: right;">{% trans "% MET" %}</th>
+                <th style="vertical-align:bottom; min-width: 125px;">{% trans "DATA COLLECTED" %}</th>
+                <th style="vertical-align:bottom;">{% trans "EVIDENCE" %}</th>
                 <th style="vertical-align:bottom;" width="80"></th>
             </tr>
         </thead>
@@ -59,7 +60,7 @@
                                     {% endif %}
                                 {% else %}
                                     {% if item.achieved_avg %}
-                                        <small><abbr title="Average">avg.</abbr></small>
+                                        <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
                                         {{ item.achieved_avg|floatformat:"-2" }}%
                                     {% endif %}
                                 {% endif %}
@@ -127,11 +128,11 @@
                             {% if cdata.complete %}
                                 <a href="{% url 'projectcomplete_update' cdata.complete.id %}"
                                    target="_blank"
-                                   class="btn btn-sm btn-link">View Project</a>
+                                   class="btn btn-sm btn-link">{% trans "View Project" %}</a>
                             {% elif cdata.agreement %}
                                 <a href="{% url 'projectagreement_update' cdata.agreement.id %}"
                                    target="_blank"
-                                   class="btn btn-sm btn-link">View Project</a>
+                                   class="btn btn-sm btn-link">{% trans "View Project" %}</a>
                             {% endif %}
                             {% comment {{ cdata.complete|default_if_none:cdata.agreement|default_if_none:'' }} %} {% endcomment %}
                         </span>
@@ -148,9 +149,10 @@
                         </a>
                     </td>
                     {% empty %}
-                        <td style="white-space: nowrap; overflow: visible; max-width: 125px; border-right: 0px solid;">No data collected</td>
+                        <td style="white-space: nowrap; overflow: visible; max-width: 125px; border-right: 0px solid;">
+                            {% trans "No data collected" %}
+                        </td>
                         <td colspan="5" style="border-left: 0px solid;"></td>
-
                     {% if item.collecteddata_set.count > 1 %}
                         </tr>
                     {% endif %}
@@ -189,11 +191,11 @@
                         {% if coldata.complete %}
                             <a href="{% url 'projectcomplete_update' coldata.complete.id %}"
                                target="_blank"
-                               class="btn btn-sm btn-link">View Project</a>
+                               class="btn btn-sm btn-link">{% trans "View Project" %}</a>
                         {% elif coldata.agreement %}
                             <a href="{% url 'projectagreement_update' coldata.agreement.id %}"
                                target="_blank"
-                               class="btn btn-sm btn-link">View Project</a>
+                               class="btn btn-sm btn-link">{% trans "View Project" %}</a>
                         {% endif %}
                         {% comment {{ coldata.complete|default_if_none:coldata.agreement|default_if_none:'' }} %} {% endcomment %}
                     </span>
@@ -223,7 +225,7 @@
         {% endif %}
 
         <tr style="background-color: #f5f5f5;">
-            <td><strong>Life of Program</strong></td>
+            <td><strong>{% trans "Life of Program" %}</strong></td>
             <td align="right">
                 <strong>
                     {% with lop=indicator.lop_target|floatformat:"-2" %}
@@ -243,7 +245,7 @@
                         {{ last_data_record_value|floatformat:"-2" }}%
                     {% else %}
                         {% widthratio grand_achieved_avg 3 1 as avg_of_grand_achieved_avg %}
-                        <small><abbr title="Average">avg.</abbr></small>
+                        <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
                         {{ avg_of_grand_achieved_avg|floatformat:"-2" }}%
                     {% endif %}
                 {% endif %}
@@ -276,15 +278,17 @@
                 <td colspan="8" style="color:red; border-color: #f9f9f9; border-left: 0px solid; border-right: 0px solid; border-bottom: 0px solid;">
                     <small>
                         {% ifequal err 'Error_1' %}
-                            Targets are not set up for this indicator. <strong><a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Start by selecting a target frequency.</a></strong>
+                            {% trans "Targets are not set up for this indicator." %} <strong><a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link"> {% trans "Start by selecting a target frequency." %}</a></strong>
                         {% endifequal %}
 
                         {% ifequal err 'Error_2' %}
-                            This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
+                            {% blocktrans %}
+                                This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
+                            {% endblocktrans %}
                         {% endifequal %}
 
                         {% ifequal err 'Error_3' %}
-                            This date falls outside the range of your target periods. You can change the date or <strong><a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">create additional target periods.</a></strong>
+                            {% trans "This date falls outside the range of your target periods. You can change the date or" %} <strong><a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">{% trans "create additional target periods." %}</a></strong>
                         {% endifequal %}
                     </small>
                 </td>
@@ -297,8 +301,8 @@
             <td valign="top" style="padding:2px;">
                 <img src="/static/img/target.png" class="img-responsive center-block" height="85" width="85">
             </td>
-            <td valign="top" style="padding-left:10px; padding-top: 38px; font-size: 21px; color: #54585A;">
-                Organize your data for this indicator. <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Set a target frequency.</a>
+            <td valign="top" style="padding-left:10px; padding-top: 38px; font-size: 1.375rem; color: #54585A;">
+                {% trans "Organize your data for this indicator." %} <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Set a target frequency.</a>
             </td>
         </tr>
     </table>

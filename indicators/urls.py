@@ -17,7 +17,7 @@ from .views import (
     service_json,
     PeriodicTargetView,
     PeriodicTargetDeleteView,
-    collected_data_json,
+    collected_data_view,
     program_indicators_json,
     programIndicatorReport,
     indicator_data_report,
@@ -120,7 +120,7 @@ urlpatterns = [
         name='service_json'),
 
     url(r'^collected_data_table/(?P<indicator>\d+)/(?P<program>\d+)/',
-        collected_data_json, name='collected_data_json'),
+        collected_data_view, name='collected_data_view'),
 
     url(r'^program_indicators/(?P<program>\d+)/(?P<indicator>\d+)/'
         r'(?P<type>\d+)',
