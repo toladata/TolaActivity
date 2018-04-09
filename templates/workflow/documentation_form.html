@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
+{% load i18n %}
 <div>
 <ol class="breadcrumb">
   <li><a href="/workflow/dashboard/0/">Program Index</a></li>
@@ -8,6 +9,7 @@
 </ol>
 </div>
 {% block page_title %}Document Form{% endblock %}
+{% block title %} Document Form {% endblock %}
 
 {% block content %}
     <script>
@@ -86,22 +88,106 @@
                 var doc = data[google.picker.Response.DOCUMENTS][0];
                 var url = doc[google.picker.Document.URL];
                 var id = doc[google.picker.Document.ID];
-
                 console.log("URL: " + url);
-                console.log("ID: " + id);
-                console.log("name:" + doc['name']);
+                // console.log("ID: " + id);
+                // console.log("name:" + doc['name']);
 
-                document.getElementById('id_url').value = url;
-                document.getElementById('id_name').value = doc['name'];
+                // document.getElementById('id_url').value = url;
+                // document.getElementById('id_name').value = doc['name'];
             }
         }
+
+
+        function isValidUrl(url){
+            if(/^(http|https|ftp):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i.test(url)) {
+                return true;
+            }
+            return false;
+        }
+
+        function validateNameField() {
+            const nameFieldId = "id_name";
+            const nameField = $(`#${nameFieldId}`);
+            if (!nameField.val()) {
+                nameField.addClass('is-invalid');
+                $(`#validation_${nameFieldId}`).text('{% trans "Please complete this field." %}');
+                return false;
+            }
+            nameField.removeClass('is-invalid');
+            $(`#validation_${nameFieldId}`).text("");
+            return true;
+        }
+
+        function validateProgramField() {
+            const programFieldId = "id_program";
+            const programField = $(`#${programFieldId}`);
+            if (!programField.val()) {
+                programField.addClass('is-invalid');
+                $(`#validation_${programFieldId}`).text('{% trans "Please complete this field" %}');
+                return false;
+            }
+            programField.removeClass('is-invalid');
+            $(`#validation_${programFieldId}`).text("");
+            return true;
+        }
+
+
+        function validateUrlField() {
+            const urlFieldId = "id_url";
+            const urlField = $(`#${urlFieldId}`);
+            if (!urlField.val()) {
+                urlField.addClass('is-invalid');
+                $(`#validation_${urlFieldId}`).text('{% trans "Please complete this field." %}');
+                return false;
+            }
+            if (isValidUrl(urlField.val()) == false) {
+                urlField.addClass('is-invalid');
+                $(`#validation_${urlFieldId}`).text('{% trans "Please enter a valid URL." %}');
+                return false;
+            }
+            urlField.removeClass('is-invalid');
+            $(`#validation_${urlFieldId}`).text("");
+            return true;
+        }
+
+        $("#id_div_content").on("blur", "#id_name", function(e){
+            validateNameField();
+        });
+
+        $("#id_div_content").on("blur", "#id_url", function(e){
+            validateUrlField();
+        });
+
+        $("#id_div_content").on("blur", "#id_program", function(e){
+            validateProgramField();
+        });
+
+        $("body").on("submit", "#document_form", function(e){
+            let is_valid = true;
+            if (validateNameField() == false) {
+                is_valid = false;
+            }
+            if (validateUrlField() == false) {
+                is_valid = false;
+            }
+
+            if (validateProgramField() == false) {
+                is_valid = false;
+            }
+            if (is_valid == false) {
+                e.preventDefault();
+                return;
+            }
+        });
+
     </script>
     <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
 
     <form
-        id="collecteddata_update_form"
+        id="document_form"
         class="form-horizontal"
-        method="post">
+        method="post"
+        novalidate>
         {% csrf_token %}
 
         {% for hidden_field in form.hidden_fields %}
@@ -116,6 +202,7 @@
                 <div class="col-sm-7">
                     {% render_field form.name class+="form-control" %}
                     <small class="form-text text-muted">{{ form.name.help_text }}</small>
+                    <span id="validation_id_name" class="has-error"></span>
                 </div>
             </div>
 
@@ -126,6 +213,7 @@
                 <div class="col-sm-6">
                     {% render_field form.url class+="form-control" %}
                     <small class="form-text text-muted">{{ form.url.help_text }}</small>
+                    <span id="validation_id_url" class="has-error"></span>
                 </div>
                 <button type="button" class="col-sm-1 btn btn-sm btn-secondary" onclick="onApiLoad();">gdrive</button>
             </div>
@@ -157,6 +245,7 @@
                 <div class="col-sm-7">
                     {% render_field form.program class+="form-control" %}
                     <small class="form-text text-muted">{{ form.program.help_text }}</small>
+                    <span id="validation_id_program" class="has-error"></span>
                 </div>
             </div>
         </fieldset>
