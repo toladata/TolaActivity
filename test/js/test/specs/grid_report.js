@@ -1,15 +1,16 @@
-const assert = require('chai').assert;
+import { assert } from  'chai';
 import LoginPage from '../pages/login.page';
-const IndPage = require('../pages/indicators.page.js');
-const TargetsTab = require('../pages/targets.page.js');
-const util = require('../lib/testutil.js');
+import NavBar from '../pages/navbar.page';
+import IndPage from  '../pages/indicators.page';
+import TargetsTab from '../pages/targets.page';
+import Util from '../lib/testutil';
 const msec = 1000;
 
 describe('Grid/Print Report page', function() {
     before(function() {
         // Disable timeouts
         this.timeout(0);
-        let parms = util.readConfig();
+        let parms = Util.readConfig();
         
         LoginPage.open(parms.baseurl);
         if (parms.baseurl.includes('mercycorps.org')) {
@@ -26,7 +27,7 @@ describe('Grid/Print Report page', function() {
     });
 
     it('should have a Grid/Print Report button for each program', function() {
-        IndPage.open();
+        NavBar.Indicators.click();
         assert.equal('Program Indicators', IndPage.getPageName());
         let progList = IndPage.getProgramsDropdownList();
         let prog = progList[1];
@@ -35,7 +36,7 @@ describe('Grid/Print Report page', function() {
     });
 
     it('should open when the Grid/Print Report button is clicked', function() {
-        IndPage.clickIndicatorsLink();
+        NavBar.Indicators.click();
         let progList = IndPage.getProgramsDropdownList();
         let prog = progList[1];
         IndPage.selectProgram(prog);
@@ -46,7 +47,7 @@ describe('Grid/Print Report page', function() {
     });
 
     it('should have an Export All button', function() {
-        IndPage.clickIndicatorsLink();
+        NavBar.Indicators.click();
         let progList = IndPage.getProgramsDropdownList();
         let prog = progList[1];
         IndPage.selectProgram(prog);
@@ -60,7 +61,7 @@ describe('Grid/Print Report page', function() {
     });
 
     it('should export all report entries when Export All button is clicked', function() {
-        IndPage.clickIndicatorsLink();
+        NavBar.Indicators.click();
         let progList = IndPage.getProgramsDropdownList();
         let prog = progList[1];
         IndPage.selectProgram(prog);
