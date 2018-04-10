@@ -4,8 +4,9 @@
  * @module LoginPage
  */
 'use strict';
-const msecs = 1000;
 import Page from './page';
+const msecs = 1000;
+
 class LoginPage extends Page {
     // These are for authentication using MC's SSO
     get username() { return $('#login'); }
