@@ -42,6 +42,6 @@ function clickLoginButton() {
 }
 
 exports.open = open;
-exports.setUserName = setUsername;
+exports.setUsername = setUsername;
 exports.setPassword = setPassword;
 exports.clickLoginButton = clickLoginButton;

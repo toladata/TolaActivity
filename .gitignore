@@ -31,6 +31,7 @@ test/js/geckodriver
 test/js/logs
 test/js/package-lock.json
 test/js/node_modules
+test/js/allure-results/
 
 #allvritualenv
 venv/

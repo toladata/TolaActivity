@@ -45,16 +45,17 @@ $ pip install --upgrade google-api-python-client
 Edit the configuration file as described in
 [Modify the config file](#modify-the-config-file).
 
-### Ubunten
+### Ubuntu
 
 On Ubuntu and its derivatives, Python 2 is the default, so the
 following should get you going on any current Python 2 version for most
-Ubuntu-family distros (_Ubunten_):
+Ubuntu-family distros (_Ubuntu_):
 
 ```bash
 $ python --version
 $ # Make sure output from above indicates Python 2
 $ sudo apt install mysql-server libmysqld-dev mysql-utilities mysql-client
+$ sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
 $ git clone https://github.com/mercycorps.org/TolaActivity.git
 $ git checkout dev
 $ virtualenv TolaActivty --no-site-packages
