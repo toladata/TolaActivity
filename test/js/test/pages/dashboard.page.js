@@ -18,9 +18,8 @@ class DashboardPage extends Page {
     }
     get CountryDashboardDropdown() { return $('button#dropdownMenu1'); }
     get FilterByProgramDropdown() { return $('button#dropdownMenu3'); }
-    get IndicatorEvidencePanel() { return $('/html/body/div[1]/div[4]/div[1]/div[1]/div[1]'); }
-    get StrategicObjectivesPanel() { return $('/html/body/div[1]/div[4]/div[1]/div[2]/div[1]'); }
-    get SitesPanel() { return $('/html/body/div[1]/div[4]/div[2]/div[1]/div/p'); }
+    get IndicatorEvidencePanel() { return $('div=Indicator Evidence'); }
+    get SitesPanel() { return $('p=Sites'); }
     get SitesMap() { return $('#map'); }
     get ProgramProjectsByStatusPanel() { return $('div#highcharts-0'); }
     get ProgramProjectsByStatusChart() { return $('div#highcharts-0').$('svg'); }

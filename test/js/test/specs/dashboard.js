@@ -48,12 +48,6 @@ describe('TolaActivity Dashboard', function() {
         DashboardPage.FilterByProgramDropdown.click();
     });
 
-    it('should have a Form Library dropdown', function() {
-        assert(NavBar.FormLibrary != null);
-        assert(NavBar.FormLibrary != undefined);
-        NavBar.FormLibrary.click();
-    });
-
     it('should have a Reports dropdown', function() {
         assert(NavBar.Reports != null);
         assert(NavBar.Reports != undefined);
@@ -64,18 +58,6 @@ describe('TolaActivity Dashboard', function() {
         assert(NavBar.UserProfile != null);
         assert(NavBar.UserProfile != undefined);
         NavBar.UserProfile.click();
-    });
-
-    it('should have an Indicator Evidence panel', function() {
-        assert(DashboardPage.IndicatorEvidencePanel != null);
-        assert(DashboardPage.IndicatorEvidencePanel != undefined);
-        assert('Indicator Evidence' == DashboardPage.IndicatorEvidencePanel.getText());
-    });
-
-    it('should have a Strategic Objectives panel', function() {
-        assert(DashboardPage.StrategicObjectivesPanel != null);
-        assert(DashboardPage.StrategicObjectivesPanel != undefined);
-        assert('Strategic Objectives' == DashboardPage.StrategicObjectivesPanel.getText());
     });
 
     it('should have a Sites panel', function() {
