@@ -58,3 +58,14 @@ class IndicatorTestCase(TestCase):
 
         self.assertEqual(CollectedData.objects.filter(
             id=indicatorDataRecord.id).count(), 1)
+
+
+class IPTTReportQuickstartTestCase(TestCase):
+    def test_view_is_responsive(self):
+        """
+        Make sure the view is response and URL is correct
+        """
+        response = self.client.get(reverse('iptt_quickstart'))
+        self.assertEqual(response.status_code, 200)
+
+

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load i18n %}
+{% block page_title %}Indicator Performance Tracking Table{% endblock %}
+{% block title %}Indicator Performance Tracking Table{% endblock %}
+
+{% block content %}
+
+    <div id="id_div_top_quickstart_iptt" >
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Program indicator overview</h5>
+                        <p class="card-subtitle text-muted mb-2">View progress toward Life of Program targets for all of a program's indicators.</p>
+                        <form
+                            action="{% url 'iptt_quickstart' %}"
+                            id="indicator_update_form"
+                            method="post"
+                            novalidate>
+                            {% csrf_token %}
+                            {% for hidden_field in form.hidden_fields %}
+                                {{ hidden_field }}
+                            {% endfor %}
+                            <div class="form-group" id="div_id_program">
+                                <label for="id_program" class="col-form-label">
+                                    {{ form.program.label }}
+                                </label>
+                                {% render_field form.program class+="form-control" %}
+                            </div>
+
+                            <div class="form-group" id="div_id_timeperiods">
+                                <label for="id_timeperiods" class="col-form-label">
+                                    {{ form.timeperiods.label }}
+                                </label>
+                                {% render_field form.timeperiods class+="form-control" %}
+                            </div>
+
+                            <div class="form-group d-flex">
+                                {% for item in form.timeframe %}
+                                    {% with id=form.timeframe.auto_id %}
+                                        <div class="form-check form-check-inline pt-1"
+                                             id="div_{{ id }}_{{ forloop.counter0 }}">
+                                            <span class="form-check-input ">
+                                                {{ item.tag }}
+                                            </span>
+                                            <label class="form-check-label"
+                                                   for="{{ item.id_for_label }}">
+                                               {{ item.choice_label }}
+                                           </label>
+                                        </div>
+                                    {% endwith %}
+                                {% endfor %}
+                                <div id="id_div_numrecentperiods">
+                                    {% render_field form.numrecentperiods class+="form-control" %}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center mb-1">
+                                <button type="submit" class="btn btn-info" style="width:100%;">View Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Program target overview</h5>
+                        <p class="card-subtitle text-muted mb-2">View progress toward a program's periodic targets in addition to Life of Program targets.</p>
+                        <form
+                            action="{% url 'iptt_quickstart' %}"
+                            id="indicator_update_form"
+                            method="post"
+                            novalidate>
+                            {% csrf_token %}
+                            {% for hidden_field in form2.hidden_fields %}
+                                {{ hidden_field }}
+                            {% endfor %}
+
+                            <div class="form-group" id="div_id_program">
+                                <label for="{{ form2.program.id_for_label }}" class="col-form-label">
+                                    {{ form2.program.label }}
+                                </label>
+                                {% render_field form2.program class+="form-control" %}
+                            </div>
+
+                            <div class="form-group" id="div_id_targetperiodss">
+                                <label for="{{ form2.targetperiods.id_for_label }}" class="col-form-label">
+                                    {{ form2.targetperiods.label }}
+                                </label>
+                                {% render_field form2.targetperiods class+="form-control" %}
+                            </div>
+
+                            <div class="form-group d-flex">
+                                {% for item in form2.timeframe %}
+                                    {% with id=form2.timeframe.auto_id %}
+                                        <div class="form-check form-check-inline pt-1"
+                                             id="div_{{ id }}_{{ forloop.counter0 }}">
+                                            <span class="form-check-input ">
+                                                {{ item.tag }}
+                                            </span>
+                                            <label class="form-check-label"
+                                                   for="{{ item.id_for_label }}">
+                                               {{ item.choice_label }}
+                                           </label>
+                                        </div>
+                                    {% endwith %}
+                                {% endfor %}
+                                <div id="id_div_numrecentperiods">
+                                    {% render_field form2.numrecentperiods class+="form-control" %}
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center mb-1">
+                                <button type="submit" class="btn btn-info" style="width:100%;">View Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

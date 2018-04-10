@@ -30,6 +30,8 @@ from .views import (
     DisaggregationPrint
 )
 
+from .views_reports import IPTTReportQuickstartView
+
 urlpatterns = [
     url(r'^home/(?P<program>\d+)/(?P<indicator>\d+)/(?P<type>\d+)/$',
         IndicatorList.as_view(), name='indicator_list'),
@@ -144,4 +146,6 @@ urlpatterns = [
         r'(?P<type>\d+)/export/$',
         IndicatorDataExport.as_view(),
         name='collecteddata_report_data'),
+
+    url(r'^iptt_quickstart/', IPTTReportQuickstartView.as_view(), name='iptt_quickstart'),
 ]

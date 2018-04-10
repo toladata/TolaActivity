@@ -296,6 +296,7 @@ class IndicatorCreate(CreateView):
     """
     model = Indicator
     template_name = 'indicators/indicator_form.html'
+    form_class = IndicatorForm
 
     # pre-populate parts of the form
     def get_initial(self):
@@ -304,7 +305,6 @@ class IndicatorCreate(CreateView):
             'program': self.kwargs['id'],
             'unit_of_measure_type': 1
         }
-
         return initial
 
     def get_context_data(self, **kwargs):
@@ -336,8 +336,6 @@ class IndicatorCreate(CreateView):
         messages.success(self.request, 'Success, Indicator Created!')
         form = ""
         return self.render_to_response(self.get_context_data(form=form))
-
-    form_class = IndicatorForm
 
 
 class PeriodicTargetView(View):
