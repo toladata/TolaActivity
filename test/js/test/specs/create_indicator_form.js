@@ -1,6 +1,7 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
 import LoginPage from '../pages/login.page';
+import NavBar from '../pages/navbar.page';
 var IndPage = require('../pages/indicators.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
@@ -27,7 +28,7 @@ describe('Create an Indicator form', function() {
     });
 
   it('should exist', function() {
-    IndPage.open();
+    NavBar.Indicators.click();
     assert.equal('Program Indicators', IndPage.getPageName());
     IndPage.clickNewIndicatorButton();
     assert.equal('Create an Indicator', IndPage.getPageName());

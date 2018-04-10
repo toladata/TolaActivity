@@ -1,5 +1,6 @@
 var assert = require('chai').assert;
 import LoginPage from '../pages/login.page';
+import NavBar from '../pages/navbar.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
@@ -27,7 +28,7 @@ describe('Tri-annual target frequency', function() {
     });
 
   it('should require date that first target period begins', function() {
-    IndPage.open();
+    NavBar.Indicators.click();
     assert.equal('Program Indicators', IndPage.getPageName(),
       'Unexpected page name mismatch');
     IndPage.createBasicIndicator();

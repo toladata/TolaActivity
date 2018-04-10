@@ -1,5 +1,6 @@
 var assert = require('chai').assert;
 import LoginPage from '../pages/login.page';
+import NavBar from '../pages/navbar.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
@@ -26,7 +27,7 @@ describe('"Life of Program (LoP) only" target frequency', function() {
   });
 
   it('should permit only numeric values for LoP target', function() {
-    IndPage.open();
+    NavBar.Indicators.click();
     assert.equal('Program Indicators', IndPage.getPageName(),
       'Unexpected page name mismatch');
     IndPage.createBasicIndicator();

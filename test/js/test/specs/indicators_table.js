@@ -1,6 +1,7 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
 import LoginPage from '../pages/login.page';
+import NavBar from '../pages/navbar.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
@@ -30,7 +31,7 @@ describe('Program Indicators table', function() {
 
   // FIXME: Still need to get WebDriver code out of this test
   it('should toggle table when a PI button is clicked', function() {
-    IndPage.open();
+    NavBar.Indicators.click();
     if(browser.isVisible('div#ajaxloading')) {
       browser.waitForVisible('div#ajaxloading', delay, true);
     }
