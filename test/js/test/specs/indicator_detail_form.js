@@ -1,9 +1,9 @@
-var assert = require('chai').assert;
-var expect = require('chai').expect;
+import { assert, expect } from 'chai';
 import LoginPage from '../pages/login.page';
-var IndPage = require('../pages/indicators.page.js');
-var TargetsTab = require('../pages/targets.page.js');
-var util = require('../lib/testutil.js');
+import IndPage from '../pages/indicators.page';
+import TargetsTab from '../pages/targets.page';
+import NavBar from '../pages/navbar.page';
+import Util from '../lib/testutil';
 const msec = 1000;
 
 describe('Indicator creation detail form', function() {
@@ -11,7 +11,7 @@ describe('Indicator creation detail form', function() {
         // Disable timeouts
         this.timeout(0);
         //browser.windowHandleMaximize();
-        let parms = util.readConfig();
+        let parms = Util.readConfig();
         
         LoginPage.open(parms.baseurl);
         if (parms.baseurl.includes('mercycorps.org')) {
@@ -28,7 +28,7 @@ describe('Indicator creation detail form', function() {
     });
 
   it('should exist', function() {
-    IndPage.open();
+    NavBar.Indicators.click();
     assert.equal('Program Indicators', IndPage.getPageName());
     IndPage.createBasicIndicator();
     browser.waitForVisible('h4');
