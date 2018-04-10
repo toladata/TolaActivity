@@ -5,6 +5,8 @@ python:
   # maintainers to fix their pypy-dev package.
   - "pypy"
 # command to install dependencies
+before_install:
+  - sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
 install:
   - pip install -r requirements.txt
 
