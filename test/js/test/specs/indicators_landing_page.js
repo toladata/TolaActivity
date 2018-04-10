@@ -1,9 +1,9 @@
-var assert = require('chai').assert;
-var expect = require('chai').expect;
+import { assert, expect } from 'chai';
+import IndPage from '../pages/indicators.page';
 import LoginPage from '../pages/login.page';
-var IndPage = require('../pages/indicators.page.js');
-var TargetsTab = require('../pages/targets.page.js');
-var util = require('../lib/testutil.js');
+import NavBar from '../pages/navbar.page';
+import TargetsTab from '../pages/targets.page';
+import Util from '../lib/testutil';
 const msec = 1000;
 const delay = 10*msec;
 
@@ -12,7 +12,7 @@ describe('Program Indicators landing page', function() {
         // Disable timeouts
         this.timeout(0);
         //browser.windowHandleMaximize();
-        let parms = util.readConfig();
+        let parms = Util.readConfig();
         
         LoginPage.open(parms.baseurl);
         if (parms.baseurl.includes('mercycorps.org')) {
@@ -28,9 +28,9 @@ describe('Program Indicators landing page', function() {
         }
     });
   
-    describe("programs dropdown", function () {
+    describe("Programs dropdown", function () {
         it('does someting', function() {
-            IndPage.open();
+            NavBar.Indicators.click();
             // FIXME: pageName should be a property
             assert.equal('Program Indicators', IndPage.getPageName());
         });

@@ -241,10 +241,10 @@ function getProgramsDropdownList() {
  * program names in the programs table
  */
 function getProgramsTable() {
-  let rows = browser.$('div#toplevel_div').$$('div.panel-heading');
+  let rows = browser.$('div#toplevel_div').$$('div.card');
   let programs = new Array();
   for(let row of rows) {
-    let s = row.$('h4').getText();
+    let s = row.getText();
     programs.push(s);
   }
   return programs;
