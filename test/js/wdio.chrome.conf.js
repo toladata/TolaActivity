@@ -1,16 +1,14 @@
 exports.config = {
     execArgv: ['--inspect'],
     specs: [
-        './test/specs/**/*.js'
+        './test//specs/**/*.js'
     ],
     exclude: [
         //'./test/specs/**/busticated_test.js'
     ],
     suites: {
         login: [
-            'test/specs/login.js',
-            'test/specs/password_invalid.js',
-            'test/specs/username_invalid.js'
+            'test/specs/login.js'
         ],
         dashboard: [
             'test/specs/dashboard.js'
@@ -55,7 +53,7 @@ exports.config = {
         browserName: 'chrome',
         maxInstances: 1,
         chromeOptions: {
-            //[]
+            args: ["--user-data-dir=/tmp/tats"],
         }
     }],
     sync: true,
@@ -80,7 +78,7 @@ exports.config = {
     },
     mochaOpts: {
         ui: 'bdd',
-        compilers: ['js:babel-register']
-        //require: 'babel-register'
+        compilers: ['js:babel-register'],
+        require: 'babel-register'
     }
 }

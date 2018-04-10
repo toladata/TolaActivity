@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var LoginPage = require('../pages/login.page.js');
+import LoginPage from '../pages/login.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
@@ -9,14 +9,22 @@ describe('Collected data record: Actual value field for percentage indicator', f
     before(function() {
         // Disable timeouts
         this.timeout(0);
-        // Full screen
-        browser.windowHandleMaximize();
+        //browser.windowHandleMaximize(); 
+
         // Get login data and login
         let parms = util.readConfig();
         LoginPage.open(parms.baseurl);
-        LoginPage.setUsername(parms.username);
-        LoginPage.setPassword(parms.password);
-        LoginPage.clickLoginButton();
+        if (parms.baseurl.includes('mercycorps.org')) {
+            LoginPage.username = parms.username;
+            LoginPage.password = parms.password;
+            LoginPage.login.click();
+        } else if (parms.baseurl.includes('localhost')) {
+            LoginPage.googleplus.click();
+            if (LoginPage.title != 'TolaActivity') {
+                LoginPage.gUsername = parms.username + '@mercycorps.org';
+                LoginPage.gPassword = parms.password;
+            }
+        }
     });
 
     it('should append a % sign to numbers types in the field');

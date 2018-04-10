@@ -9,7 +9,7 @@ const util = require('../lib/testutil.js');
 // milliseconds
 const msec = 1000;
 var parms = util.readConfig();
-parms.baseurl += '/indicators/home/0/0/0';
+parms.baseurl += 'indicators/home/0/0/0';
 
 /*
  * dropdowns = $$('span.select2-selection--single');
@@ -275,7 +275,8 @@ function getPageName() {
  */
 function saveNewIndicator() {
   // Accept the default values
-  let saveNew = $('form').$('input[value="save"]');
+  //browser.debug();
+  let saveNew = $('form[name="most"]').$('input[value="save"]');
   saveNew.click();
 }
 
@@ -321,4 +322,3 @@ exports.open = open;
 exports.getPageName = getPageName;
 exports.saveNewIndicator = saveNewIndicator;
 exports.selectProgram = selectProgram;
-

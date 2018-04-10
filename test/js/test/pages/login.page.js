@@ -1,47 +1,41 @@
 /**
- * Page model and methods for testing the login page
- * @module login
+ * Page model and methods for dealing with the MercyCorps
+ * SSO login page
+ * @module LoginPage
  */
+'use strict';
+const msecs = 1000;
+import Page from './page';
+class LoginPage extends Page {
+    // These are for authentication using MC's SSO
+    get username() { return $('#login'); }
+    get password() { return $('#password'); }
+    get login() { return $('.inputsub'); }
+    get error() { return browser.getText('#error'); }
 
-/**
- * Opens a browser window and navigates to the requested URL
- * @param {string} url The URL to which to navigate
- * @returns Nothing
- */
-function open(url) {
-  browser.url(url);
+    set username(val) { return $('#login').setValue(val); }
+    set password(val) { return $('#password').setValue(val); }
+
+    // These are for authenticating using GoogleAuth on a local instance
+    get gUsername() { return $('form').$('input#identifierId'); }
+    get gPassword() { return $('form').$('input.whsOnd.zHQkBf'); }
+    get googleplus() { return $('=Google+'); }
+    get gError() { return $('div.dEOOab.RxsGPe').getText(); }
+
+    set gUsername(val) {
+        browser.pause(msecs);
+        browser.$('form').$('input#identifierId').setValue(val);
+        browser.$('form').$('input#identifierId').keys('Enter');
+    }
+    set gPassword(val) {
+        browser.pause(msecs);
+        browser.$('form').$('input.whsOnd.zHQkBf').setValue(val);
+        browser.$('form').$('input.whsOnd.zHQkBf').keys('Enter');
+    }
+
+    // Works everywhere (or at least it better)
+    get title() { return browser.getTitle(); }
+
+    open(url) { super.open(url); }
 }
-
-/**
- * Types the specified username into the username text box
- * @param {string} username The login name to use
- * @returns Nothing
- */
-function setUsername(username) {
-  let loginBox = $('#login');
-  loginBox.setValue(username);
-}
-
-/**
- * Types the specified password into the password text box
- * @param {string} password The password to use
- * @returns Nothing
- */
-function setPassword(password) {
-  let passwordBox = $('#password');
-  passwordBox.setValue(password);
-}
-
-/**
- * Clicks the login button on the sign-in page
- * @returns Nothing
- */
-function clickLoginButton() {
-  let loginButton = $('.inputsub');
-  loginButton.click();
-}
-
-exports.open = open;
-exports.setUsername = setUsername;
-exports.setPassword = setPassword;
-exports.clickLoginButton = clickLoginButton;
+export default new LoginPage();

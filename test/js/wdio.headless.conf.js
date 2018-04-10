@@ -7,9 +7,7 @@ exports.config = {
     ],
     suites: {
         login: [
-            'test/specs/login.js',
-            'test/specs/password_invalid.js',
-            'test/specs/username_invalid.js'
+            'test/specs/login.js'
         ],
         dashboard: [
             'test/specs/dashboard.js'

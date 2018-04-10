@@ -1,23 +1,33 @@
-var assert = require('chai').assert;
-var LoginPage = require('../pages/login.page.js');
-var IndPage = require('../pages/indicators.page.js');
-var TargetsTab = require('../pages/targets.page.js');
-var util = require('../lib/testutil.js');
+import { assert } from 'chai';
+import IndPage from '../pages/indicators.page';
+import LoginPage from '../pages/login.page';
+import NavBar from '../pages/navbar.page';
+import TargetsTab from '../pages/targets.page';
+import Util from '../lib/testutil';
 
 describe('"Annual" target frequency', function() {
-  before(function() {
-    // Disable timeouts
-    this.timeout(0);
-    browser.windowHandleMaximize();
-    let parms = util.readConfig();
-    LoginPage.open(parms.baseurl);
-    LoginPage.setUsername(parms.username);
-    LoginPage.setPassword(parms.password);
-    LoginPage.clickLoginButton();
-  });
+    before(function() {
+        // Disable timeouts
+        this.timeout(0);
+        //browser.windowHandleMaximize();
+    
+        let parms = Util.readConfig();
+        LoginPage.open(parms.baseurl);
+        if (parms.baseurl.includes('mercycorps.org')) {
+            LoginPage.username = parms.username;
+            LoginPage.password = parms.password;
+            LoginPage.login.click();
+        } else if (parms.baseurl.includes('localhost')) {
+            LoginPage.googleplus.click();
+            if (LoginPage.title != 'TolaActivity') {
+                LoginPage.gUsername = parms.username + '@mercycorps.org';
+                LoginPage.gPassword = parms.password;
+            }
+        }
+    });
 
   it('should require date that first target period begins', function() {
-    IndPage.open();
+    NavBar.Indicators.click();
     assert.equal('Program Indicators', IndPage.getPageName(),
       'Unexpected page name mismatch on program indicators page');
     IndPage.createBasicIndicator();
@@ -34,13 +44,13 @@ describe('"Annual" target frequency', function() {
     assert(errorMessage.includes('Please complete this field.'));
   });
 
-/*
   it('should default number of periods to 1', function() {
     assert.equal(1, TargetsTab.getNumTargetPeriods(),
       'Did not find expected default value');
   });
 
   it('should create target periods for each period requested', function() {
+    NavBar.Indicators.click();
     IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Annual target, create target periods');
@@ -57,6 +67,7 @@ describe('"Annual" target frequency', function() {
   });
 
   it('should require entering targets for each target period', function() {
+    NavBar.Indicators.click();
     IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('Annual target, target period value(s) required');
@@ -85,6 +96,4 @@ describe('"Annual" target frequency', function() {
     assert.equal(targetCount, errorCount, 'Received unexpected mismatch');
     TargetsTab.saveIndicatorChanges();
   });
-*/
-
 });

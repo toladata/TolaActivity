@@ -1,22 +1,31 @@
 var assert = require('chai').assert;
-var LoginPage = require('../pages/login.page.js');
+import LoginPage from '../pages/login.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
 
 describe('Program Indicators page', function() {
-  before(function() {
-    // Disable timeouts
-    this.timeout(0);
-    browser.windowHandleMaximize();
-    let parms = util.readConfig();
-    LoginPage.open(parms.baseurl);
-    LoginPage.setUsername(parms.username);
-    LoginPage.setPassword(parms.password);
-    LoginPage.clickLoginButton();
-  });
-
+    before(function() {
+        // Disable timeouts
+        this.timeout(0);
+        //browser.windowHandleMaximize();
+        let parms = util.readConfig();
+        
+        LoginPage.open(parms.baseurl);
+        if (parms.baseurl.includes('mercycorps.org')) {
+            LoginPage.username = parms.username;
+            LoginPage.password = parms.password;
+            LoginPage.login.click();
+        } else if (parms.baseurl.includes('localhost')) {
+            LoginPage.googleplus.click();
+            if (LoginPage.title != 'TolaActivity') {
+                LoginPage.gUsername = parms.username + '@mercycorps.org';
+                LoginPage.gPassword = parms.password;
+            }
+        }
+    });
+  
   describe('Indicator evidence dropdown', function() {
     it('should be able to view PI evidence table by clicking its Data button');
     it('should decrease evidence count when PI evidence deleted');

@@ -1,5 +1,5 @@
 var assert = require('chai').assert;
-var LoginPage = require('../pages/login.page.js');
+import LoginPage from '../pages/login.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
@@ -9,20 +9,26 @@ describe('"Life of Program (LoP) only" target frequency', function() {
     // Disable timeouts
     this.timeout(0);
     browser.windowHandleMaximize();
-  });
-
-  it('should require unauthenticated users to login', function() {
     let parms = util.readConfig();
+
     LoginPage.open(parms.baseurl);
-    LoginPage.setUsername(parms.username);
-    LoginPage.setPassword(parms.password);
-    LoginPage.clickLoginButton();
-    IndPage.open();
-    assert.equal('Program Indicators', IndPage.getPageName(),
-      'Unexpected page name mismatch');
+    if (parms.baseurl.includes('mercycorps.org')) {
+        LoginPage.username = parms.username;
+        LoginPage.password = parms.password;
+        LoginPage.login.click();
+    } else if (parms.baseurl.includes('localhost')) {
+        LoginPage.googleplus.click();
+        if (LoginPage.title != 'TolaActivity') {
+            LoginPage.gUsername = parms.username + '@mercycorps.org';
+            LoginPage.gPassword = parms.password;
+        }
+    }
   });
 
   it('should permit only numeric values for LoP target', function() {
+    IndPage.open();
+    assert.equal('Program Indicators', IndPage.getPageName(),
+      'Unexpected page name mismatch');
     IndPage.createBasicIndicator();
 
     TargetsTab.setIndicatorName('LoP only target testing');

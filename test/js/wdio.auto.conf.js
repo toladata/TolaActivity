@@ -1,17 +1,15 @@
 exports.config = {
     // Specify Test Files
     specs: [
-        './test/specs/**/*.js'
+        './tests/**/*.js'
     ],
     // Patterns to exclude.
     exclude: [
-        //'./test/specs/**/*.js'
+        //'./tests/**/*.js'
     ],
     suites: {
         login: [
-            'test/specs/login.js',
-            'test/specs/password_invalid.js',
-            'test/specs/username_invalid.js'
+            'test/specs/login.js'
         ],
         dashboard: [
             'test/specs/dashboard.js'
@@ -65,7 +63,7 @@ exports.config = {
     logLevel: 'verbose',
     logOutput: './log',
     coloredLogs: true,
-    deprecationWarnings: false,
+    deprecationWarnings: true,
     bail: 0,
     screenshotPath: './errorShots/',
     baseUrl: 'http://localhost',
@@ -75,7 +73,7 @@ exports.config = {
     services: ['selenium-standalone'],
     seleniumLogs: './log',
     framework: 'mocha',
-    reporters: ['dot', 'allure'],
+    reporters: ['spec', 'allure'],
     reporterOptions: {
         allure: {
             outputDir: './allure-results'
@@ -84,5 +82,6 @@ exports.config = {
     mochaOpts: {
         ui: 'bdd',
         compilers: ['js:babel-register']
+        //require: ['babel-register']
     }
 }

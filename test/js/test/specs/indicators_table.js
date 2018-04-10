@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
-var LoginPage = require('../pages/login.page.js');
+import LoginPage from '../pages/login.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
@@ -8,16 +8,24 @@ const msec = 1000;
 const delay = 10*msec;
 
 describe('Program Indicators table', function() {
-  this.timeout(0);
   before(function() {
-    // Disable timeouts
-    browser.windowHandleMaximize();
-
-    let parms = util.readConfig();
-    LoginPage.open(parms.baseurl);
-    LoginPage.setUsername(parms.username);
-    LoginPage.setPassword(parms.password);
-    LoginPage.clickLoginButton();
+      // Disable timeouts
+      this.timeout(0);
+      //browser.windowHandleMaximize();
+      let parms = util.readConfig();
+  
+      LoginPage.open(parms.baseurl);
+      if (parms.baseurl.includes('mercycorps.org')) {
+          LoginPage.username = parms.username;
+          LoginPage.password = parms.password;
+          LoginPage.login.click();
+      } else if (parms.baseurl.includes('localhost')) {
+          LoginPage.googleplus.click();
+          if (LoginPage.title != 'TolaActivity') {
+              LoginPage.gUsername = parms.username + '@mercycorps.org';
+              LoginPage.gPassword = parms.password;
+          }
+      }
   });
 
   // FIXME: Still need to get WebDriver code out of this test

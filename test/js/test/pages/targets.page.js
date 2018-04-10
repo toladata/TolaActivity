@@ -2,6 +2,8 @@
  * Page model for testing the Program Indicators screen.
  * @module targets
  */
+'use strict';
+
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
 var util = require('../lib/testutil.js');
@@ -142,8 +144,8 @@ function getNumTargetEventsErrorHint() {
  * @returns {integer} The value of the field, if any
  */
 function getNumTargetPeriods() {
-  browser.waitForExist('input[name="target_frequency_num_periods"]');
-  let val = browser.$('input[name="target_frequency_num_periods"]').getValue();
+  browser.waitForExist('input#id_target_frequency_num_periods');
+  let val = browser.$('input#id_target_frequency_num_periods').getValue();
   return val;
 }
 
@@ -400,8 +402,10 @@ function setFirstEventName(value) {
  * @returns Nothing
  */
 function setFirstTargetPeriod() {
-  browser.moveToObject('input#id_target_frequency_start');
-  browser.moveToObject('input#target_frequency_num_periods');
+  // Defaults to the current month
+  browser.$('input#id_target_frequency_start').click();
+  browser.$('button.ui-datepicker-close').click();
+  //browser.moveToObject('input#target_frequency_num_periods');
 }
 
 /**

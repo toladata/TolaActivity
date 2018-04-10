@@ -1,26 +1,35 @@
 var assert = require('chai').assert;
-var LoginPage = require('../pages/login.page.js');
+import LoginPage from '../pages/login.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 
 describe('Tri-annual target frequency', function() {
-  before(function() {
-    // Disable timeouts
-    this.timeout(0);
-    browser.windowHandleMaximize();
+    before(function() {
+      // Disable timeouts
+      this.timeout(0);
+      //browser.windowHandleMaximize();
+  
+      let parms = util.readConfig();
+      
+      LoginPage.open(parms.baseurl);
+      if (parms.baseurl.includes('mercycorps.org')) {
+          LoginPage.username = parms.username;
+          LoginPage.password = parms.password;
+          LoginPage.login.click();
+      } else if (parms.baseurl.includes('localhost')) {
+          LoginPage.googleplus.click();
+          if (LoginPage.title != 'TolaActivity') {
+              LoginPage.gUsername = parms.username + '@mercycorps.org';
+              LoginPage.gPassword = parms.password;
+          }
+      }
+    });
 
-    let parms = util.readConfig();
-    LoginPage.open(parms.baseurl);
-    LoginPage.setUsername(parms.username);
-    LoginPage.setPassword(parms.password);
-    LoginPage.clickLoginButton();
+  it('should require date that first target period begins', function() {
     IndPage.open();
     assert.equal('Program Indicators', IndPage.getPageName(),
       'Unexpected page name mismatch');
-  });
-
-  it('should require date that first target period begins', function() {
     IndPage.createBasicIndicator();
 
     // This should succeed

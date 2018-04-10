@@ -1,16 +1,14 @@
 exports.config = {
     execArgv: ['--inspect'],
     specs: [
-        './test/specs/**/*.js'
+        './tests/**/*.js'
     ],
     exclude: [
-        //'./test/specs/indicators_*.js'
+        // 'path/to/excluded/files'
     ],
     suites: {
         login: [
-            'test/specs/login.js',
-            'test/specs/password_invalid.js',
-            'test/specs/username_invalid.js'
+            'test/specs/login.js'
         ],
         dashboard: [
             'test/specs/dashboard.js'
@@ -82,7 +80,7 @@ exports.config = {
     },
     mochaOpts: {
         ui: 'bdd',
-        compilers: ['js:babel-register']
-        //require: 'babel-register'
+        compilers: ['js:babel-register'],
+        require: 'babel-register'
     }
 }
