@@ -39,7 +39,7 @@ DATABASES:
    ENGINE: "django.db.backends.mysql"
    NAME: "tola_activity"
    USER: "root"
-   PASSWORD: "pass"
+   PASSWORD: ""
    OPTIONS: {"init_command": "SET default_storage_engine=MYISAM",}
    HOST: "localhost"
    PORT: ""
