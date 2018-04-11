@@ -88,6 +88,22 @@ function getBaselineErrorHint() {
   return errorHint;
 }
 
+function getTargetDateRanges() {
+    browser.pause(msec);
+    browser.scroll('h5');
+    let placeholder = browser.$('div#id_div_periodic_tables_placeholder');
+    let targetsDiv = placeholder.$('div#periodic-targets-tablediv');
+    let targetsTable = targetsDiv.$('table#periodic_targets_table');
+    let rows = targetsTable.$$('tbody>tr.periodic-target');
+
+    let dateRanges = new Array();
+    for (let row of rows) {
+        let dateRange = row.$('div').getText();
+        dateRanges.push(dateRange.trim());
+    }
+    return dateRanges;
+}
+
 /**
  * Get the current indicator name (from the Performance tab)
  * @returns {string} The current value of the indicator name from the Performance
@@ -421,9 +437,9 @@ function setFirstEventName(value) {
  */
 function setFirstTargetPeriod() {
   // Defaults to the current month
+  browser.scroll('input#id_target_frequency_start');
   browser.$('input#id_target_frequency_start').click();
   browser.$('button.ui-datepicker-close').click();
-  //browser.moveToObject('input#target_frequency_num_periods');
 }
 
 /**
@@ -536,6 +552,7 @@ exports.getIndicatorName = getIndicatorName;
 exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
 exports.getNumTargetEvents = getNumTargetEvents;
+exports.getNumTargetEventsErrorHint = getNumTargetEventsErrorHint;
 exports.getNumTargetPeriods = getNumTargetPeriods;
 exports.getProgramIndicatorsTable = getProgramIndicatorsTable;
 exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
@@ -543,11 +560,11 @@ exports.getProgramIndicatorDeleteButtons = getProgramIndicatorDeleteButtons;
 exports.getProgramIndicatorEditButtons = getProgramIndicatorEditButtons;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
 exports.getProgramsTable = getProgramsTable;
+exports.getTargetDateRanges = getTargetDateRanges;
 exports.getTargetFirstEventErrorHint = getTargetFirstEventErrorHint;
 exports.getTargetFirstPeriodErrorHint = getTargetFirstPeriodErrorHint;
 exports.getTargetFrequency = getTargetFrequency;
 exports.getTargetInputBoxes = getTargetInputBoxes;
-exports.getNumTargetEventsErrorHint = getNumTargetEventsErrorHint;
 exports.getTargetValueErrorHint = getTargetValueErrorHint;
 exports.getUnitOfMeasure = getUnitOfMeasure;
 exports.open = open;
