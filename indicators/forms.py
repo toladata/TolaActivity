@@ -181,7 +181,7 @@ class CollectedDataForm(forms.ModelForm):
 
 
 class IPTTReportQuickstartForm(forms.Form):
-    prefix = 'timerperiods'
+    prefix = 'timeperiods'
 
     EMPTY = 0
     YEARS = 1
@@ -211,14 +211,12 @@ class IPTTReportQuickstartForm(forms.Form):
     program = forms.ModelChoiceField(queryset=Program.objects.none())
     timeperiods = forms.ChoiceField(choices=TIMEPERIODS_CHOICES,
                                     required=False)
-
     targetperiods = forms.ChoiceField(choices=TARGETPERIODS_CHOICES,
                                       required=False)
-
     timeframe = forms.ChoiceField(choices=TIMEFRAME_CHOCIES,
                                   widget=forms.RadioSelect())
-
     numrecentperiods = forms.IntegerField(required=False)
+    formprefix = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -226,6 +224,7 @@ class IPTTReportQuickstartForm(forms.Form):
         self.prefix = prefix if prefix else self.prefix
         countries = getCountry(self.request.user)
         super(IPTTReportQuickstartForm, self).__init__(*args, **kwargs)
+        self.fields['formprefix'].initial = prefix
         self.fields['program'].queryset = Program.objects.filter(country__in=countries)
         self.fields['program'].label = _("PROGRAM")
         self.fields['timeperiods'].label = _("TIME PERIODS")
