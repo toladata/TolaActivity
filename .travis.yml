@@ -6,7 +6,7 @@ python:
 services: mysql
 
 before_install:
-  - export DJANGO_SETTINGS_MODULE=tola.settings.local
+  - export DJANGO_SETTINGS_MODULE=tola.settings.travis-ci
   - export PYTHONPATH=$HOME/builds/mercycorps/TolaActivity
   - export PIP_USE_MIRRORS=true
   - mysql -e 'CREATE DATABASE tola_activity;'
