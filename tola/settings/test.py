@@ -1,21 +1,20 @@
 from base import *
-import sys
 
-TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
-if TESTING:
-    print('=========================')
-    print('In TEST Mode - Disableling Migrations')
-    print('=========================')
-
-    class DisableMigrations(object):
-
-        def __contains__(self, item):
-            return True
-
-        def __getitem__(self, item):
-            return None
-
-    MIGRATION_MODULES = DisableMigrations()
+# TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+# if TESTING:
+#     print('=========================')
+#     print('In TEST Mode - Disableling Migrations')
+#     print('=========================')
+#
+#     class DisableMigrations(object):
+#
+#         def __contains__(self, item):
+#             return True
+#
+#         def __getitem__(self, item):
+#             return None
+#
+#     MIGRATION_MODULES = DisableMigrations()
 
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
@@ -24,21 +23,17 @@ PASSWORD_HASHERS = (
 ########## IN-MEMORY TEST DATABASE
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
-        "USER": "",
-        "PASSWORD": "",
-        "HOST": "",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "tola_activity",
+        "USER": "root",
+        "PASSWORD": "pass",
+        "HOST": "localhost",
         "PORT": "",
     },
 }
 
 """Development settings and globals."""
 
-from os.path import join, normpath
-
-
-#from mongoengine import connect
 
 ########## MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
