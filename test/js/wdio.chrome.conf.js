@@ -1,7 +1,7 @@
 exports.config = {
     execArgv: ['--inspect'],
     specs: [
-        './test//specs/**/*.js'
+        './test/specs/**/*.js'
     ],
     exclude: [
         //'./test/specs/**/busticated_test.js'

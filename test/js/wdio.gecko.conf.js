@@ -1,7 +1,7 @@
 exports.config = {
     execArgv: ['--inspect'],
     specs: [
-        './tests/**/*.js'
+        './test/specs/**/*.js'
     ],
     exclude: [
         // 'path/to/excluded/files'
@@ -62,7 +62,7 @@ exports.config = {
     logLevel: 'verbose',
     logOutput: './log',
     coloredLogs: true,
-    deprecationWarnings: false,
+    deprecationWarnings: true,
     bail: 0,
     screenshotPath: './errorShots',
     baseUrl: 'http://localhost',
