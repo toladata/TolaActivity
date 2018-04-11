@@ -12,20 +12,32 @@
                 $(input).parent().append($('#ui-datepicker-div'));
                 $('#ui-datepicker-div').hide();
             },
+            /*
             onClose: function (dateText, inst) {
-                $(this).datepicker("setDate", new Date(inst.selectedYear, inst.selectedMonth, 1));
+                const field = $(this);
+                field.datepicker("setDate", new Date(inst.selectedYear, inst.selectedMonth, 1));
                 $(this).datepicker("widget").find(".ui-datepicker-calendar").hide();
-                $(this).trigger('change');
-                this.focus();
             },
-        });
-
-        $(".monthPicker").focus(function () {
+            */
+        }).focus(function(){
+            const field = $(this);
+            // hide the days part of the calendar
             $(".ui-datepicker-calendar").hide();
+            // hide the "Today" button
+            $("#ui-datepicker-div button.ui-datepicker-current").hide();
             $("#ui-datepicker-div").position({
                 my: "left top",
                 at: "left bottom",
                 of: $(this)
+            });
+            // detach it from the field so that onclose the field is not populated automatically
+            $('.ui-datepicker-calendar').detach();
+            $('.ui-datepicker-close').click(function() {
+                // this is only called when the done button is clicked.
+                const month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                const year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                field.datepicker('setDate', new Date(year, month, 1));
+                field.trigger('change');
             });
         });
     }
@@ -447,7 +459,7 @@
         }
         if (errMsg){
             baseline.addClass('is-invalid');
-            baseline_na.addClass('is-invalid');
+            // baseline_na.addClass('is-invalid');
             $("#validation_id_baseline").html(errMsg);
         } else {
             reset_baseline_errors();
@@ -716,8 +728,7 @@
         validateForEmptyField("id_target_frequency_custom");
     });
 
-    $("#indicator_modal_content, #indicator_form").on("blur change", "#id_target_frequency_start", function(e){
-        // validateForEmptyField("id_target_frequency_start");
+    $("#indicator_modal_content, #indicator_form").on("blur, change", "#id_target_frequency_start", function(e){
         validatePeriodStartField();
     });
 

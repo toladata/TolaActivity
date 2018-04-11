@@ -2,6 +2,7 @@ from datetime import datetime
 from functools import partial
 from django.db.models import Q
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from indicators.models import (
     Indicator, PeriodicTarget, CollectedData, Objective, StrategicObjective,
@@ -177,3 +178,59 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['periodic_target'].label = 'Measure against target*'
         self.fields['achieved'].label = 'Actual value'
         self.fields['date_collected'].help_text = ' '
+
+
+class IPTTReportQuickstartForm(forms.Form):
+    prefix = 'timerperiods'
+
+    EMPTY = 0
+    YEARS = 1
+    SEMIANNUAL = 2
+    TRIANNUAL = 3
+    QUARTERS = 4
+    MONTHS = 5
+    TIMEPERIODS_CHOICES = (
+        (EMPTY, _("---------")),
+        (YEARS, _("Years")),
+        (SEMIANNUAL, _("Semi-annual periods")),
+        (TRIANNUAL, _("Tri-annual periods")),
+        (QUARTERS, _("Quarters")),
+        (MONTHS, _("Months"))
+    )
+
+    SHOW_ALL = 1
+    MOST_RECENT = 2
+    TIMEFRAME_CHOCIES = (
+        (SHOW_ALL, _("Show all")),
+        (MOST_RECENT, _("Most recent"))
+    )
+
+    EMPTY_OPTION = (EMPTY, _("---------"))
+    TARGETPERIODS_CHOICES = (EMPTY_OPTION,) + Indicator.TARGET_FREQUENCIES
+
+    program = forms.ModelChoiceField(queryset=Program.objects.none())
+    timeperiods = forms.ChoiceField(choices=TIMEPERIODS_CHOICES,
+                                    required=False)
+
+    targetperiods = forms.ChoiceField(choices=TARGETPERIODS_CHOICES,
+                                      required=False)
+
+    timeframe = forms.ChoiceField(choices=TIMEFRAME_CHOCIES,
+                                  widget=forms.RadioSelect())
+
+    numrecentperiods = forms.IntegerField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        prefix = kwargs.pop('prefix')
+        self.prefix = prefix if prefix else self.prefix
+        countries = getCountry(self.request.user)
+        super(IPTTReportQuickstartForm, self).__init__(*args, **kwargs)
+        self.fields['program'].queryset = Program.objects.filter(country__in=countries)
+        self.fields['program'].label = _("PROGRAM")
+        self.fields['timeperiods'].label = _("TIME PERIODS")
+        self.fields['numrecentperiods'].widget.attrs['placeholder'] = _("enter a number")
+        self.fields['targetperiods'].label = _("TARGET PERIODS")
+        self.fields['timeframe'].initial = self.SHOW_ALL
+
+
