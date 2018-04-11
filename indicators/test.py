@@ -18,9 +18,7 @@ from workflow.models import (
 import factories
 
 class IndicatorTestCase(TestCase):
-
     def setUp(self):
-        print(".............................%s............................" % 'insetup' )
         """
         Create a couple indicators and a program
         """

@@ -1347,7 +1347,7 @@ import json
 
 
 class LoggedUser(models.Model):
-
+    # TODO: Tis does not seem to be used anywhere; perhaps it should be deelted
     username = models.CharField(max_length=30, primary_key=True)
     country = models.CharField(max_length=100, blank=False)
     email = models.CharField(max_length=100, blank=False, default='user@mercycorps.com')
@@ -1356,6 +1356,7 @@ class LoggedUser(models.Model):
         return self.username
 
     def login_user(sender, request, user, **kwargs):
+        print("login_user...........%s............................" % user )
         country = get_user_country(request)
         active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
 
@@ -1380,7 +1381,7 @@ class LoggedUser(models.Model):
 
 
     def logout_user(sender, request, user, **kwargs):
-
+        print("logout_user...........%s............................" % user )
         try:
             user = LoggedUser.objects.get(pk=user.username)
             user.delete()
@@ -1388,8 +1389,8 @@ class LoggedUser(models.Model):
         except LoggedUser.DoesNotExist:
             pass
 
-    user_logged_in.connect(login_user)
-    user_logged_out.connect(logout_user)
+    # user_logged_in.connect(login_user)
+    # user_logged_out.connect(logout_user)
 
 
 def get_user_country(request):
