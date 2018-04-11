@@ -53,3 +53,5 @@ error.log
 settings.secret.yml
 assets/
 templates/links.html
+coverage_html
+.coverage
