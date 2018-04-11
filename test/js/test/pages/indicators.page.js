@@ -46,6 +46,9 @@ function clickIndicatorsDropdown() {
  * @returns Nothing
  */
 function clickIndicatorsLink() {
+  if (browser.isVisible('div#ajaxloading')) {
+    browser.waitForVisible('div#ajaxloading', 10*msec, true);
+  }
   let indicatorsLink = browser.$('ul.navbar-nav').$('=Indicators');
   indicatorsLink.click();
   browser.waitForVisible('h4=Program Indicators');
@@ -114,7 +117,7 @@ function deleteIndicator(indName = 'default') {
     let indButtons = TargetsTab.getProgramIndicatorButtons();
     let indButton = indButtons[0];
     indButton.click();
-    let deleteBtns = TargetsTab.getProgramIndicatorsTable();
+    let deleteBtns = TargetsTab.getProgramIndicatorDeleteButtons();
     let deleteBtn = deleteBtns[0];
     deleteBtn.click();
     let confirmBtn = $('input[value="Confirm"]');
