@@ -1,6 +1,7 @@
 {
 	"scripts": {
-		"test": "mocha --require babel-register --es_staging --harmony"
+        "test": "mocha --require babel-register --es_staging --harmony",
+        "wdio": "node -r babel-register ./node_modules/.bin/wdio"
 	},
 	"devDependencies": {
 		"allure-commandline": "^2.5.0",
