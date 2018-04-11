@@ -53,7 +53,7 @@ describe('"Midline and endline" target frequency', function() {
  
     // This should succeed
     TargetsTab.setIndicatorName('Endline target required testing');
-    TargetsTab.setUnitOfMeasure('Gargoyles per parapet');
+    TargetsTab.setUnitOfMeasure('Gargoyles per gable');
     TargetsTab.setLoPTarget(249);
     TargetsTab.setBaseline(250);
     TargetsTab.setTargetFrequency('Midline and endline');

@@ -408,10 +408,10 @@ function setBaselineNA() {
  */
 function setEndlineTarget(value) {
   clickTargetsTab();
-  if (! browser.isVisible('div>input[name="Endline"]')) {
-    browser.waitForVisible('div>input[name="Endline"]');
+  if (! browser.isVisible('input[name="Endline"]')) {
+    browser.waitForVisible('input[name="Endline"]');
   }
-  let endline = $('div>input[name="Endline"]');
+  let endline = $('input[name="Endline"]');
   endline.setValue(value);
 }
 
@@ -478,10 +478,10 @@ function setLoPTarget(value) {
  */
 function setMidlineTarget(value) {
   clickTargetsTab();
-  if (! browser.isVisible('div>input[name="Midline"]')) {
-    browser.waitForVisible('div>input[name="Midline"]');
+  if (! browser.isVisible('input[name="Midline"]')) {
+    browser.waitForVisible('input[name="Midline"]');
   }
-  let midline = $('div>input[name="Midline"]');
+  let midline = $('input[name="Midline"]');
   midline.setValue(value);
 }
 
