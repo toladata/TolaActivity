@@ -26,6 +26,11 @@ SERVER_EMAIL: "tola@mercycorps.org"
 EMAIL_BACKEND: "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH: "/tmp/tola-messages"
 
+GOOGLE_STEP2_URI: "http://tola.mercycorps.org/gwelcome"
+GOOGLE_CLIENT_ID: "617113120802.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET: "notarealtoken"
+
+
 DEV_APPS:
  - 'debug_toolbar'
 
