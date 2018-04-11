@@ -13,7 +13,7 @@ CONFIG_DIR = os.path.abspath(os.path.join(SETTINGS_DIR,
                                           os.pardir,
                                           os.pardir,
                                           'config'))
-app_settings = read_yaml(os.path.join(CONFIG_DIR, 'settings.travis-ci.yml'))
+app_settings = read_yaml(os.path.join(CONFIG_DIR, 'settings.travis.yml'))
 
 # MANAGER CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#admins
