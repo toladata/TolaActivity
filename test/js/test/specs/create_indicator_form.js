@@ -1,24 +1,34 @@
 var assert = require('chai').assert;
 var expect = require('chai').expect;
-var LoginPage = require('../pages/login.page.js');
+import LoginPage from '../pages/login.page';
+import NavBar from '../pages/navbar.page';
 var IndPage = require('../pages/indicators.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
 
 describe('Create an Indicator form', function() {
-  before(function() {
-    // Disable timeouts
-    this.timeout(0);
-    browser.windowHandleMaximize();
-    let parms = util.readConfig();
-    LoginPage.open(parms.baseurl);
-    LoginPage.setUsername(parms.username);
-    LoginPage.setPassword(parms.password);
-    LoginPage.clickLoginButton();
-  });
+    before(function() {
+        // Disable timeouts
+        this.timeout(0);
+        //browser.windowHandleMaximize();
+    
+        let parms = util.readConfig();
+        LoginPage.open(parms.baseurl);
+        if (parms.baseurl.includes('mercycorps.org')) {
+            LoginPage.username = parms.username;
+            LoginPage.password = parms.password;
+            LoginPage.login.click();
+        } else if (parms.baseurl.includes('localhost')) {
+            LoginPage.googleplus.click();
+            if (LoginPage.title != 'TolaActivity') {
+                LoginPage.gUsername = parms.username + '@mercycorps.org';
+                LoginPage.gPassword = parms.password;
+            }
+        }
+    });
 
   it('should exist', function() {
-    IndPage.open();
+    NavBar.Indicators.click();
     assert.equal('Program Indicators', IndPage.getPageName());
     IndPage.clickNewIndicatorButton();
     assert.equal('Create an Indicator', IndPage.getPageName());
@@ -59,9 +69,9 @@ describe('Create an Indicator form', function() {
   it('should have a save button', function() {
     IndPage.clickIndicatorsLink();
     IndPage.clickNewIndicatorButton();
-    let control = $('form').$('input[value="save"]');
-    assert.equal(true, control.isVisible(),
-      'Save button is not visible');
+    //let control = $('form').$('input[value="save"]');
+    let control = $('form[name="most"]').$('input[value="save"]');
+    assert.equal(true, control.isVisible(), 'Save button is not visible');
     control.click();
   });
 
@@ -88,8 +98,8 @@ describe('Create an Indicator form', function() {
     IndPage.clickIndicatorsLink();
     IndPage.clickNewIndicatorButton();
     IndPage.saveNewIndicator();
-    let control = $('form').$('input[value="Reset"]');
+    let control = $('form#indicator_update_form').$('input[value="Reset"]');
     assert.equal(true, control.isVisible(), 'Reset button is not visible');
     control.click();
   });
-}); // end create new indicator form tests
+});

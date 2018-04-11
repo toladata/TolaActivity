@@ -2,6 +2,8 @@
  * Page model for testing the Program Indicators screen.
  * @module targets
  */
+'use strict';
+
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
 var util = require('../lib/testutil.js');
@@ -142,8 +144,8 @@ function getNumTargetEventsErrorHint() {
  * @returns {integer} The value of the field, if any
  */
 function getNumTargetPeriods() {
-  browser.waitForExist('input[name="target_frequency_num_periods"]');
-  let val = browser.$('input[name="target_frequency_num_periods"]').getValue();
+  browser.waitForExist('input#id_target_frequency_num_periods');
+  let val = browser.$('input#id_target_frequency_num_periods').getValue();
   return val;
 }
 
@@ -159,19 +161,36 @@ function getNumTargetPeriodsErrorHint() {
 }
 
 /**
+ * Get a list of the program indicator Delete buttons for the program 
+ * currently displayed in the program indicators table
+ * @returns {Array<clickable>} An array of clickable program indicator
+ * "Delete" button objects
+ */
+function getProgramIndicatorDeleteButtons() {
+  let link = browser.$('div#toplevel_div').$('div.card-body').$('a');
+  let dataTarget = link.getAttribute('data-target');
+  if (browser.isVisible('div#ajaxloading')) {
+    browser.waitForVisible('div#ajaxloading', 10*msec, true);
+  }
+  let table = $('div'+dataTarget).$('table');
+  let rows = table.$$('a[href*=indicator_delete]');
+  return rows;
+}
+
+/**
  * Get a list of the program indicators Edit buttons for the program 
  * currently displayed in the program indicators table
  * @returns {Array<clickable>} An array of clickable program indicator
  * "Edit" button objects
  */
 function getProgramIndicatorEditButtons() {
-  let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
+  let link = browser.$('div#toplevel_div').$('div.card-body').$('a');
   let dataTarget = link.getAttribute('data-target');
   if (browser.isVisible('div#ajaxloading')) {
     browser.waitForVisible('div#ajaxloading', 10*msec, true);
   }
   let table = $('div'+dataTarget).$('table');
-  let rows = table.$$('=Edit');
+  let rows = table.$$('a[href*=indicator_update]');
   return rows;
 }
 
@@ -183,7 +202,7 @@ function getProgramIndicatorEditButtons() {
  */
 // FIXME: should probably returns linkage to all the buttons and links?
 function getProgramIndicatorsTable() {
-  let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
+  let link = browser.$('div#toplevel_div').$('div.card-body').$('a');
   let dataTarget = link.getAttribute('data-target');
   if (browser.isVisible('div#ajaxloading')) {
     browser.waitForVisible('div#ajaxloading', 10*msec, true);
@@ -201,7 +220,7 @@ function getProgramIndicatorsTable() {
  */
 // FIXME: should probably returns linkage to all the buttons and links?
 function getProgramIndicatorsTableCount() {
-  let link = browser.$('div#toplevel_div').$('div.panel-body').$('a');
+  let link = browser.$('div#toplevel_div').$('div.card-body').$('a');
   let dataTarget = link.getAttribute('data-target');
   if (browser.isVisible('div#ajaxloading')) {
     browser.waitForVisible('div#ajaxloading', 10*msec, true);
@@ -217,10 +236,10 @@ function getProgramIndicatorsTableCount() {
  * which are actually anchor (<a />) elements, from the programs table
  */
 function getProgramIndicatorButtons() {
-  let rows = browser.$('div#toplevel_div').$$('div.panel-body');
+  let rows = browser.$('div#toplevel_div').$$('div.card-body');
   let buttons = new Array();
   for (let row of rows) {
-    buttons.push(row.$('a.btn.btn-sm.btn-success'));
+    buttons.push(row.$('*=Indicators'));
   }
   return buttons;
 }
@@ -336,6 +355,7 @@ function pageName() {
  * @returns Nothing
  */
 function saveIndicatorChanges() {
+  browser.scroll('input[value="Save changes"]');
   let saveChanges = $('input[value="Save changes"]');
   saveChanges.click();
 }
@@ -400,8 +420,10 @@ function setFirstEventName(value) {
  * @returns Nothing
  */
 function setFirstTargetPeriod() {
-  browser.moveToObject('input#id_target_frequency_start');
-  browser.moveToObject('input#target_frequency_num_periods');
+  // Defaults to the current month
+  browser.$('input#id_target_frequency_start').click();
+  browser.$('button.ui-datepicker-close').click();
+  //browser.moveToObject('input#target_frequency_num_periods');
 }
 
 /**
@@ -517,6 +539,7 @@ exports.getNumTargetEvents = getNumTargetEvents;
 exports.getNumTargetPeriods = getNumTargetPeriods;
 exports.getProgramIndicatorsTable = getProgramIndicatorsTable;
 exports.getProgramIndicatorsTableCount = getProgramIndicatorsTableCount;
+exports.getProgramIndicatorDeleteButtons = getProgramIndicatorDeleteButtons;
 exports.getProgramIndicatorEditButtons = getProgramIndicatorEditButtons;
 exports.getProgramIndicatorButtons = getProgramIndicatorButtons;
 exports.getProgramsTable = getProgramsTable;

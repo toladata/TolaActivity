@@ -1,116 +1,98 @@
-let assert = require('chai').assert;
-let LoginPage = require('../pages/login.page.js');
-let util = require('../lib/testutil.js');
+import { assert } from 'chai';
+import Util from '../lib/testutil';
+import LoginPage from '../pages/login.page';
+import DashboardPage from '../pages/dashboard.page';
+import NavBar from '../pages/navbar.page';
 
 describe('TolaActivity Dashboard', function() {
-  before(function() {
-    this.timeout(0);
-    browser.windowHandleMaximize();
-    let parms = util.readConfig();
-    LoginPage.open(parms.baseurl);
-    LoginPage.setUsername(parms.username);
-    LoginPage.setPassword(parms.password);
-    LoginPage.clickLoginButton();
-  });
+    before(function() {
+        this.timeout(0);
+        //browser.windowHandleMaximize();
+        let parms = Util.readConfig();
 
-  it('should have a page header', function() {
-    browser.waitForVisible('div.panel.panel-default');
+        LoginPage.open(parms.baseurl); 
+        if (parms.baseurl.includes('mercycorps.org')) {
+            LoginPage.username = parms.username;
+            LoginPage.password = parms.password;
+            LoginPage.login.click();
+        } else if (parms.baseurl.includes('localhost')) {
+            LoginPage.googleplus.click();
+            if ('TolaActivity' != LoginPage.title) {
+                LoginPage.gUsername = parms.username + '@mercycorps.org';
+                LoginPage.gPassword = parms.password;
+            }
+        }
+    });
 
-    let panel = browser.$('div.panel.panel-default');
-    let header = panel.$('div.panel-heading');
-    let h4 = header.$('div.row').$('div.col-md-4').$('h4');
-    assert(h4.getText() == 'Tola-Activity Dashboard');
-  });
+    it('should have a page header', function() {
+        assert('Tola-Activity Dashboard' == DashboardPage.title);
+    });
 
-  it('should have a TolaActivity link', function() {
-    let xp = '//*[@id="navbarSupportedContent"]/a/img';
-    let link = $(xp);
-    link.click();
-  });
+    it('should have a TolaActivity link', function() {
+        assert(NavBar.TolaActivity != null);
+        assert(NavBar.TolaActivity != undefined);
+        NavBar.TolaActivity.click();
+    });
 
-  it('should have a Workflow dropdown', function() {
-    let link = browser.$('=Workflow');
-    assert(link.getText() == 'Workflow');
-    link.click();
-  });
+    it('should have a Workflow dropdown', function() {
+        assert(NavBar.Workflow != null);
+        assert(NavBar.Workflow != undefined);
+        NavBar.Workflow.click();
+    });
 
-  it('should have a Country Dashboard dropdown', function() {
-    let link = $('button#dropdownMenu1');
-    assert(link.getText() == 'Country Dashboard');
-    link.click();
-  });
+    it('should have a Country Dashboard dropdown', function() {
+        DashboardPage.CountryDashboardDropdown.click();
+    });
 
-  it('should have a Filter by Program link', function() {
-    let link = $('button#dropdownMenu3');
-    assert(link.getText() == 'Filter by Program');
-    link.click();
-  });
+    it('should have a Filter by Program link', function() {
+        DashboardPage.FilterByProgramDropdown.click();
+    });
 
-  it('should have a Form Library dropdown', function() {
-    let link = $('=Form Library');
-    assert(link.getText() == 'Form Library');
-    link.click();
-  });
+    it('should have a Reports dropdown', function() {
+        assert(NavBar.Reports != null);
+        assert(NavBar.Reports != undefined);
+        NavBar.Reports.click();
+    });
 
-  it('should have a Reports dropdown', function() {
-    let link = $('a#navbarReportsDropdown');
-    assert(link.getText() == 'Reports');
-    link.click();
-  });
+    it('should have a Profile link', function() {
+        assert(NavBar.UserProfile != null);
+        assert(NavBar.UserProfile != undefined);
+        NavBar.UserProfile.click();
+    });
 
-  it('should have a Profile link', function() {
-    let link = $('a#navbarProfileDropdown');
-    link.click();
-  });
+    it('should have a Sites panel', function() {
+        assert(DashboardPage.SitesPanel != null);
+        assert(DashboardPage.SitesPanel != undefined);
+        assert('Sites' == DashboardPage.SitesPanel.getText());
+    });
 
-  it('should have an Indicator Evidence panel', function() {
-    let xp = '/html/body/div[1]/div[4]/div[1]/div[1]/div[1]';
-    let panel = $(xp);
-    assert(panel.getText() == 'Indicator Evidence');
-  }); // end indicator evidence panel tests
+    it('should show map of country sites', function() {
+        assert(DashboardPage.SitesMap != null);
+        assert(DashboardPage.SitesMap != undefined);
+    });
 
-  it('should have a Strategic Objectives panel', function() {
-    let xp = '/html/body/div[1]/div[4]/div[1]/div[2]/div[1]';
-    let panel = $(xp);
-    assert(panel.getText() == 'Strategic Objectives');
-  }); // end strategic objectives panel tests
+    it('should have a Program Projects by Status panel', function() {
+        assert(DashboardPage.ProgramProjectsByStatusPanel != null);
+        assert(DashboardPage.ProgramProjectsByStatusPanel != undefined);
+    });
 
-  it('should have a sites panel', function() {
-    let xp = '/html/body/div[1]/div[4]/div[2]/div[1]/div/p';
-    let panel = $(xp);
-    assert(panel.getText() == 'Sites');
-  });
+    it('should have a project status chart', function() {
+        assert(DashboardPage.ProgramProjectsByStatusChart != null);
+        assert(DashboardPage.ProgramProjectsByStatusChart != undefined);
+    });
 
-  it('should show map of country sites', function() {
-    let map = $('#map');
-    assert(map.isVisible);
-  });
+    it('should have a KPI Targets vs Actuals panel', function() {
+        assert(DashboardPage.KpiTargetsVsActualsPanel != null);
+        assert(DashboardPage.KpiTargetsVsActualsPanel != undefined);
+    });
 
-  it('should have a Program Projects by Status panel', function() {
-    let panel = $('div.highcharts-0');
-    assert(panel.isVisible);
-  });
+    it('should have a KPI Targets vs Actuals chart', function() {
+        assert(DashboardPage.KpiTargetsVsActualsChart != null);
+        assert(DashboardPage.KpiTargetsVsActualsChart != undefined);
+    });
 
-  it('should have a project status chart', function() {
-    let panel = $('svg');
-    assert(panel.isVisible);
-  });
-
-  it('should have an Indicators performance panel', function() {
-    let xp = '/html/body/div[1]/div[5]/div/div/div[1]';
-    let panel = $(xp);
-    assert(panel.getText() == 'Indicators');
-  });
-
-  it('should have a KPI status chart', function() {
-    let panel = $('div.highcharts-2');
-    assert(panel.isVisible);
-    let svg = $('svg');
-    assert(svg.isVisible);
-  });
-
-  // Enhancements?
-  it('should be able to zoom in on the map');
-  it('should be able to zoom out on the map');
-  it('should display data points on the Sites map');
+    // Enhancements?
+    it('should be able to zoom in on the map');
+    it('should be able to zoom out on the map');
+    it('should display data points on the Sites map');
 });

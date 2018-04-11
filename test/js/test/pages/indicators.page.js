@@ -9,7 +9,7 @@ const util = require('../lib/testutil.js');
 // milliseconds
 const msec = 1000;
 var parms = util.readConfig();
-parms.baseurl += '/indicators/home/0/0/0';
+parms.baseurl += 'indicators/home/0/0/0';
 
 /*
  * dropdowns = $$('span.select2-selection--single');
@@ -46,6 +46,9 @@ function clickIndicatorsDropdown() {
  * @returns Nothing
  */
 function clickIndicatorsLink() {
+  if (browser.isVisible('div#ajaxloading')) {
+    browser.waitForVisible('div#ajaxloading', 10*msec, true);
+  }
   let indicatorsLink = browser.$('ul.navbar-nav').$('=Indicators');
   indicatorsLink.click();
   browser.waitForVisible('h4=Program Indicators');
@@ -114,7 +117,7 @@ function deleteIndicator(indName = 'default') {
     let indButtons = TargetsTab.getProgramIndicatorButtons();
     let indButton = indButtons[0];
     indButton.click();
-    let deleteBtns = TargetsTab.getProgramIndicatorsTable();
+    let deleteBtns = TargetsTab.getProgramIndicatorDeleteButtons();
     let deleteBtn = deleteBtns[0];
     deleteBtn.click();
     let confirmBtn = $('input[value="Confirm"]');
@@ -241,10 +244,10 @@ function getProgramsDropdownList() {
  * program names in the programs table
  */
 function getProgramsTable() {
-  let rows = browser.$('div#toplevel_div').$$('div.panel-heading');
+  let rows = browser.$('div#toplevel_div').$$('div.card');
   let programs = new Array();
   for(let row of rows) {
-    let s = row.$('h4').getText();
+    let s = row.getText();
     programs.push(s);
   }
   return programs;
@@ -275,7 +278,8 @@ function getPageName() {
  */
 function saveNewIndicator() {
   // Accept the default values
-  let saveNew = $('form').$('input[value="save"]');
+  //browser.debug();
+  let saveNew = $('form[name="most"]').$('input[value="save"]');
   saveNew.click();
 }
 
@@ -321,4 +325,3 @@ exports.open = open;
 exports.getPageName = getPageName;
 exports.saveNewIndicator = saveNewIndicator;
 exports.selectProgram = selectProgram;
-
