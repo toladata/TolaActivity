@@ -371,6 +371,9 @@ function pageName() {
  * @returns Nothing
  */
 function saveIndicatorChanges() {
+  if (! browser.isVisible('input[value="Save changes"]')) {
+    browser.waitForVisible('input[value="Save changes"]');
+  }
   browser.scroll('input[value="Save changes"]');
   let saveChanges = $('input[value="Save changes"]');
   saveChanges.click();

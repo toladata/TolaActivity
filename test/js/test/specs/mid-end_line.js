@@ -1,11 +1,11 @@
-var assert = require('chai').assert;
+import { assert, expect } from 'chai';
 import LoginPage from '../pages/login.page';
 import NavBar from '../pages/navbar.page';
 var IndPage = require('../pages/indicators.page.js');
 var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 
-describe('"Midline and endline" target frequency', function() {
+describe('Midline and endline target frequency', function() {
   before(function() {
       // Disable timeouts
       this.timeout(0);
@@ -28,20 +28,19 @@ describe('"Midline and endline" target frequency', function() {
 
   it('should require value in Midline target field', function() {
     NavBar.Indicators.click();
-    assert.equal('Program Indicators', IndPage.getPageName(),
-      'Unexpected page name mismatch');
+    expect('Program Indicators' == IndPage.getPageName());
     IndPage.createBasicIndicator();
  
-    // This shold succeed
+    // This should succeed
     TargetsTab.setIndicatorName('Midline target required testing');
     TargetsTab.setUnitOfMeasure('Furlongs per fortnight');
-    TargetsTab.setLoPTarget(228);
-    TargetsTab.setBaseline(229);
+    TargetsTab.setLoPTarget(38);
+    TargetsTab.setBaseline(39);
     TargetsTab.setTargetFrequency('Midline and endline');
     TargetsTab.saveIndicatorChanges();
  
     // This should fail without midline target
-    TargetsTab.setEndlineTarget(234);
+    TargetsTab.setEndlineTarget(44);
     TargetsTab.saveIndicatorChanges();
     let errorMessage = TargetsTab.getTargetValueErrorHint();
     assert(errorMessage.includes('Please enter a target value. Your target value can be zero.'));
@@ -49,18 +48,19 @@ describe('"Midline and endline" target frequency', function() {
   });
  
   it('should require value in Endline target field', function() {
+    NavBar.Indicators.click();
     IndPage.createBasicIndicator();
  
     // This should succeed
     TargetsTab.setIndicatorName('Endline target required testing');
     TargetsTab.setUnitOfMeasure('Gargoyles per gable');
-    TargetsTab.setLoPTarget(249);
-    TargetsTab.setBaseline(250);
+    TargetsTab.setLoPTarget(57);
+    TargetsTab.setBaseline(58);
     TargetsTab.setTargetFrequency('Midline and endline');
     TargetsTab.saveIndicatorChanges();
  
     // This should fail without endline target
-    TargetsTab.setMidlineTarget(255);
+    TargetsTab.setMidlineTarget(63);
     TargetsTab.saveIndicatorChanges();
     let errorMessage = TargetsTab.getTargetValueErrorHint();
     assert(errorMessage.includes('Please enter a target value. Your target value can be zero.'));
