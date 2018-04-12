@@ -1,7 +1,8 @@
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
-from .models import Indicator, PeriodicTarget, CollectedData
+from workflow.models import Program
+from .models import Indicator
 from .forms import IPTTReportQuickstartForm
 
 
@@ -97,9 +98,11 @@ class IPTT_ReportView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         program_id = kwargs.get('program_id')
+        program = Program.objects.get(pk=program_id)
 
         indicators = Indicator.objects.filter(program__in=[program_id])
         context['indicators'] = indicators
+        context['program'] = program
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
