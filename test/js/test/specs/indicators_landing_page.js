@@ -11,7 +11,7 @@ describe('Program Indicators landing page', function() {
     before(function() {
         // Disable timeouts
         this.timeout(0);
-        //browser.windowHandleMaximize();
+        browser.windowHandleMaximize();
         let parms = Util.readConfig();
         
         LoginPage.open(parms.baseurl);

@@ -6,7 +6,7 @@ import reporter from 'wdio-allure-reporter';
 describe('TolaActivity Login screen', function() {
     before(function() {
         this.timeout(0);
-        //browser.windowHandleMaximize();
+        browser.windowHandleMaximize();
     });
 
     it('should deny access if username is invalid', function() {
