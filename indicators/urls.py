@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^home/(?P<program>\d+)/(?P<indicator>\d+)/(?P<type>\d+)/$',
         IndicatorList.as_view(), name='indicator_list'),
 
-    url(r'^indicator_list/(?P<pk>\d+)/$', IndicatorList.as_view(),
+    url(r'^indicator_list/(?P<program>\d+)/$', IndicatorList.as_view(),
         name='indicator_list'),
 
     url(r'^indicator_create/(?P<id>\d+)/$', indicator_create,

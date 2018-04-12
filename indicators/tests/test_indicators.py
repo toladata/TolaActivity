@@ -19,11 +19,11 @@ class IndicatorTestCase(TestCase):
         Create a couple indicators and a program
         """
         self.client = Client()
-        self.program = factories.Program()
+        self.program = factories.ProgramFactory()
         self.indicators = factories.RandomIndicatorFactory.create_batch(
             2, program=self.program, source="TEST")
         self.user = User.objects.create_user('joe', 'joe@example.org', 'mercy')
-        self.indicator = factories.Indicator.create(
+        self.indicator = factories.IndicatorFactory.create(
             program=self.program, source="TEST2")
 
     def test_indicator_exists(self):
@@ -37,7 +37,7 @@ class IndicatorTestCase(TestCase):
         Tests summary values are accurate for various configurations of an
         Indicator
         """
-        indicator = factories.Indicator.create(
+        indicator = factories.IndicatorFactory.create(
             program=self.program, source="TEST2")
 
         url = reverse('collected_data_view',

@@ -1,6 +1,6 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation
+    SubFactory, post_generation, Sequence
 
 import random
 
@@ -57,7 +57,7 @@ class SiteProfile(DjangoModelFactory):
     name = 'MC Site'
 
 
-class TolaUser(DjangoModelFactory):
+class TolaUserFactory(DjangoModelFactory):
     class Meta:
         model = TolaUserM
         django_get_or_create = ('user',)
@@ -68,13 +68,12 @@ class TolaUser(DjangoModelFactory):
     country = SubFactory(Country, country='United States', code='US')
 
 
-
-
-class Program(DjangoModelFactory):
+class ProgramFactory(DjangoModelFactory):
     class Meta:
         model = ProgramM
 
     name = 'Health and Survival for Syrians in Affected Regions'
+    gaitid = Sequence(lambda n: "%0030d" % n)
 
     @post_generation
     def country(self, create, extracted, **kwargs):
@@ -95,7 +94,7 @@ class Documentation(DjangoModelFactory):
         model = DocumentationM
 
     name = 'Strengthening access and demand in Mandera County'
-    program = SubFactory(Program)
+    program = SubFactory(ProgramFactory)
 
 
 class Sector(DjangoModelFactory):

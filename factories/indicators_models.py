@@ -3,7 +3,7 @@ import faker
 from random import randint
 from django.utils import timezone
 
-from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy, lazy_attribute
+from factory import DjangoModelFactory, create, post_generation, SubFactory, fuzzy, lazy_attribute
 
 from indicators.models import (
     CollectedData as CollectedDataM,
@@ -20,6 +20,7 @@ from workflow.models import Organization, Program
 
 FAKER = faker.Faker(locale='en_US')
 
+
 class ReportingFrequency(DjangoModelFactory):
     class Meta:
         model = ReportingFrequencyM
@@ -27,6 +28,7 @@ class ReportingFrequency(DjangoModelFactory):
     frequency = 'Bi-weekly'
     description = 'Every two weeks'
     organization = SubFactory(Organization)
+
 
 class RandomIndicatorFactory(DjangoModelFactory):
 
@@ -53,7 +55,7 @@ class RandomIndicatorFactory(DjangoModelFactory):
             pass
 
 
-class Indicator(DjangoModelFactory):
+class IndicatorFactory(DjangoModelFactory):
     class Meta:
         model = IndicatorM
 
@@ -93,10 +95,10 @@ class CollectedData(DjangoModelFactory):
         model = CollectedDataM
 
     program = SubFactory(Program)
-    indicator = SubFactory(Indicator)
+    indicator = SubFactory(IndicatorFactory)
 
 
-class IndicatorType(DjangoModelFactory):
+class IndicatorTypeFactory(DjangoModelFactory):
     class Meta:
         model = IndicatorTypeM
         django_get_or_create = ('indicator_type',)
