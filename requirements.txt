@@ -37,6 +37,6 @@ PyYAML==3.12
 reportlab==3.4.0
 WeasyPrint==0.39
 ldap==1.0.2
-python-ldap==2.4.44
+python-ldap==3.0.0
 Faker==0.8.12
 factory-boy==2.10.0
