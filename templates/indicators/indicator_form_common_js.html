@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <script>
     var validation_msgs = {};
 
@@ -66,7 +68,7 @@
         var currentRow = $(e.target).closest("tr");
         var dataCount = parseInt(currentRow.data("collectedCount"));
         if ( dataCount != NaN && dataCount > 0) {
-            if (!confirm(`Warning: This action cannot be undone. Removing this target means that ${dataCount} data record/s will no longer have targets associated with them. \n\nProceed anyway?`)) {
+            if (!confirm(`{% trans "Warning: This action cannot be undone. Removing this target means that" %} ${dataCount} {% trans "data record/s will no longer have targets associated with them. \n\nProceed anyway?" %}`)) {
                 dataCount = NaN;
                 return;
             }
@@ -183,9 +185,9 @@
         var msg = '';
 
         if (typeof dataCountAttribute !== typeof undefined && dataCountAttribute !== false) {
-            msg = 'Warning: This action cannot be undone. Any data records assigned to a target will need to be reassigned.\n\n Are you sure you want to remove all targets?';
+            msg = '{% trans "Warning: This action cannot be undone. Any data records assigned to a target will need to be reassigned.\n\n Are you sure you want to remove all targets?" %}';
         } else {
-            msg = 'Warning: This action cannot be undone. Are you sure you want to remove all targets?';
+            msg = '{% trans "Warning: This action cannot be undone. Are you sure you want to remove all targets?" %}';
         }
         if (!confirm(msg)){
             return;
@@ -233,7 +235,7 @@
         // console.log("numDataPoints: ", numDataPoints, " initalTargetFrequency: ", initalTargetFrequency, " target_Frequency: ", target_frequency);
 
         if (numDataPoints > 0 && initalTargetFrequency == 1 && target_frequency != 1) {
-            if (!confirm(`Warning: This action cannot be undone. If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
+            if (!confirm(`{% trans "Warning: This action cannot be undone. If we make these changes," %} ${numDataPoints} {% trans "data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?" %}`)) {
                 initalTargetFrequency = undefined;
                 return;
             }
@@ -414,19 +416,19 @@
     function getNewTargetBtnLabel(index) {
         var label = '';
         if (index == 3 ) {
-            label += 'Add a year';
+            label += '{% trans "Add a year" %}';
         } else if (index == 4) {
-            label += 'Add a semi-annual period';
+            label += '{% trans "Add a semi-annual period" %}';
         } else if (index == 5) {
-            label += 'Add a tri-annual period';
+            label += '{% trans "Add a tri-annual period" %}';
         } else if (index == 6) {
-            label += 'Add a quarter';
+            label += '{% trans "Add a quarter" %}';
         } else if (index == 7) {
-            label += 'Add a month';
+            label += '{% trans "Add a month" %}';
         } else if (index == 8) {
-            label += 'Add an event';
+            label += '{% trans "Add an event" %}';
         } else {
-            label = 'Add a target';
+            label = '{% trans "Add a target" %}';
         }
         return label;
     }
@@ -452,9 +454,9 @@
         }
 
         if (!baseline.val()) {
-            errMsg = "Please complete this field. Your baseline can be zero.";
+            errMsg = "{% trans 'Please complete this field. Your baseline can be zero.' %}";
         } else if (!$.isNumeric(baseline.val()) || baseline.val() < 0 ) {
-            errMsg = "Please complete this field. Your baseline can be zero.";
+            errMsg = "{% trans 'Please complete this field. Your baseline can be zero.' %}";
             return false;
         }
         if (errMsg){
@@ -472,9 +474,9 @@
         const lop = $("#id_lop_target");
         let errMsg = undefined;
         if (!lop.val()) {
-            errMsg = "Please enter a number larger than zero.";
+            errMsg = "{% trans 'Please enter a number larger than zero.' %}";
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
-            errMsg = "Please enter a number larger than zero with no letters or symbols. If your target is a percentage, describe it in the unit of measure field.";
+            errMsg = "{% trans 'Please enter a number larger than zero with no letters or symbols. If your target is a percentage, describe it in the unit of measure field.' %}";
         }
 
         if (errMsg) {
@@ -495,7 +497,7 @@
         const field = $("#" + fieldName);
         if ($.isEmptyObject(field.val())) {
             $(field).addClass('is-invalid');
-            $("#validation_" + fieldName).text("Please complete this field.");
+            $("#validation_" + fieldName).text("{% trans 'Please complete this field.' %}");
             return false;
         } else {
             $(field).removeClass('is-invalid');
@@ -510,11 +512,11 @@
         let errMsg = undefined;
         if (numPeriodsField.is(":visible")) {
             if (numPeriodsField.val() > 12) {
-                errMsg = "You can start with up to 12 targets and add more later.";
+                errMsg = "{% trans 'You can start with up to 12 targets and add more later.' %}";
             } else if (!numPeriodsField.val()) {
-                errMsg = "Please complete this field.";
+                errMsg = "{% trans 'Please complete this field.' %}";
             } else if (numPeriodsField.val() < 0) {
-                errMsg = "Please enter a number larger than zero.";
+                errMsg = "{% trans 'Please enter a number larger than zero.' %}";
             }
 
             if (errMsg) {
@@ -536,9 +538,9 @@
         let errMsg = undefined;
 
         if ($.isEmptyObject(field.val())) {
-            errMsg = "Please complete this field.";
+            errMsg = "{% trans 'Please complete this field.' %}";
         } else if (!isDate(field.val())) {
-            errMsg = "Please enter a valid date.";
+            errMsg = "{% trans 'Please enter a valid date.' %}";
         }
 
         if (errMsg) {
@@ -587,10 +589,10 @@
 
     function getPTMessage () {
         if ($("#periodic_targets_table input[type=text]").length > 0){
-            return ("Please enter a name and target number for every event. Your target value can be zero.");
+            return ("{% trans 'Please enter a name and target number for every event. Your target value can be zero.' %}");
         }
         else {
-            return ("Please enter a target value. Your target value can be zero.");
+            return ("{% trans 'Please enter a target value. Your target value can be zero.' %}");
         }
     }
 
@@ -646,7 +648,7 @@
         }
 
         if (validationsTargetTab == false) {
-            validation_msgs['target'] = 'Please complete all required fields in the Targets tab.';
+            validation_msgs['target'] = '{% trans "Please complete all required fields in the Targets tab." %}';
         } else {
             delete validation_msgs['target'];
         }
@@ -656,7 +658,7 @@
             validationsPerformanceTab = false
         }
         if (validationsPerformanceTab == false) {
-            validation_msgs['performance'] = 'Please complete all required fields in the Performance tab.';
+            validation_msgs['performance'] = '{% trans "Please complete all required fields in the Performance tab." %}';
         } else {
             delete validation_msgs['performance'];
         }

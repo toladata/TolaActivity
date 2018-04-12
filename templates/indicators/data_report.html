@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block bread_crumb %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/indicators/home/0/0/0/">Indicators</a></li>
-        <li class="breadcrumb-item active">Reports</li>
+        <li class="breadcrumb-item"><a href="/indicators/home/0/0/0/">{% trans "Indicators" %}</a></li>
+        <li class="breadcrumb-item active">{% trans "Reports" %}</li>
     </ol>
 </nav>
     {% include "indicators/filter.html"%}
@@ -11,16 +12,16 @@
     <div class="row">
         <div class="col-sm-12 clearfix">
             <div class="btn-group" role="group">
-                <button class="btn btn-sm btn-secondary {% if 'table' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/table/'" name="table">Table</button>&nbsp;
-                <button class="btn btn-sm btn-secondary {% if 'map' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/map/'" name="map">Map</button>&nbsp;
-                <button class="btn btn-sm btn-secondary {% if 'graph' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/graph/'" name="graph">Graph</button>
+                <button class="btn btn-sm btn-secondary {% if 'table' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/table/'" name="table">{% trans "Table" %}</button>&nbsp;
+                <button class="btn btn-sm btn-secondary {% if 'map' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/map/'" name="map">{% trans "Map" %}</button>&nbsp;
+                <button class="btn btn-sm btn-secondary {% if 'graph' in request.get_full_path %} active{%endif%}" onClick="location.href='/indicators/data/{{ id }}/{{ program }}/{{ type }}/graph/'" name="graph">{% trans "Graph" %}</button>
             </div>
         </div>
     </div>
 
 {% endblock bread_crumb %}
 
-{% block page_title %}Indicator Report{% endblock %}
+{% block page_title %}{% trans "Indicator Report" %}{% endblock %}
 
 {% block content %}
 
@@ -28,7 +29,7 @@
     <style>
         #map { height: 350px; }
     </style>
-    <p><b>Sites</b></p>
+    <p><b>{% trans "Sites" %}</b></p>
     <div id="map"></div>
     {% include "small_site_profile_map.html" %}
 {% elif "graph" in request.get_full_path %}
@@ -88,28 +89,28 @@
                 retrieve: true,
                 data: indicator_records,
                 "columnDefs": [
-                    { "visible": false, "targets": 0 },
-                    { "visible": false, "targets": 1 },
-                    { "visible": false, "targets": 2 },
+                    { "{% trans 'visible' %}": false, "{% trans 'targets' %}": 0 },
+                    { "{% trans 'visible' %}": false, "{% trans 'targets' %}": 1 },
+                    { "{% trans 'visible' %}": false, "t{% trans 'targets' %}": 2 },
                 ],
                 columns: [
-                    { title: "PID", class: "noExport", data: "program__id"},
-                    { title: "IID", class: "noExport", data: "id"},
-                    { title: "ITID", class: "noExport", data: "indicator_type__id"},
-                    { title: "Program", data: "program__name"},
-                    { title: "Indicator", data: "name",
+                    { title: "{% trans 'PID' %}", class: "noExport", data: "program__id"},
+                    { title: "{% trans 'IID' %}", class: "noExport", data: "id"},
+                    { title: "{% trans 'ITID' %}", class: "noExport", data: "indicator_type__id"},
+                    { title: "{% trans 'Program' %}", data: "program__name"},
+                    { title: "{% trans 'Indicator" %}, data: "{% trans 'name' %}",
                             "mRender": function (data, type, row) {
                                 return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
                             }
                         },
-                    { title: "Level", data: "level__name", "defaultContent": "<i>Not set</i>"},
-                    { title: "Type", data: "indicator_type__indicator_type"},
-                    { title: "Sector", data: "sector__sector"},
-                    { title: "Baseline", data: "baseline", "defaultContent": "<i>Not set</i>"},
-                    { title: "LOP Target", data: "lop_target", "defaultContent": "<i>Not set</i>"},
-                    { title: "External", data: "external_service_record__external_service__name",
-                    "defaultContent": "<i>Not set</i>"},
-                    { title: "Supporting Data", data: "collecteddata",
+                    { title: "{% trans 'Level' %}", data: "level__name", "defaultContent": "<i>Not set</i>"},
+                    { title: "{% trans 'Type' %}", data: "indicator_type__indicator_type"},
+                    { title: "{% trans 'Sector' %}", data: "sector__sector"},
+                    { title: "{% trans 'Baseline' %}", data: "baseline", "defaultContent": "<i>{% trans 'Not set' %}</i>"},
+                    { title: "{% trans 'LOP Target' %}", data: "lop_target", "defaultContent": "<i>{% trans 'Not set' %}</i>"},
+                    { title: "{% trans 'External' %}", data: "external_service_record__external_service__name",
+                    "defaultContent": "<i>{% trans 'Not set' %}</i>"},
+                    { title: "{% trans 'Supporting Data' %}", data: "collecteddata",
                               "mRender": function (data, type, row) {
                                 return '<a class="collecteddata" name=' + row.id + ' href="/indicators/collecteddata/0/' + row.id + '/0/">Collected Data</a>';
                               }

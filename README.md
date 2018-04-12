@@ -15,8 +15,8 @@ excel files.
 Running a local instance of TolaActivity makes development much faster and
 eliminates your dependence on access to any of MC's TolaActivity instances.
 These instructions should get you up and running with a minimum of fuss if
-you have [macOS](#macos) or one of the man [Ubunten](#ubunten). If they do
-not, pull requests accepted.
+you have [macOS](#macos) or one of the main [Ubunten](#ubunten). If you do
+not, pull requests are accepted.
 
 ## Install the bits
 
@@ -170,7 +170,7 @@ for this bug until the bug is well and truly crushed.
    of the `workflow_tolauser` table:
 
     ```sql
-    INSERT INTO workflow_tolauser (privacy_disclaimer_accepted, user_id) VALUES (1,1);
+    INSERT INTO workflow_tolauser (name, privacy_disclaimer_accepted, user_id) VALUES (YOURNAME, 1,1);
     ```
 
 1. Restart the Tola Activity server

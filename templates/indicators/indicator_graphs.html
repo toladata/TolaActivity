@@ -1,4 +1,4 @@
-
+{% load i18n %}
 
 <script src="{{ STATIC_URL }}js/highcharts/js/highcharts.js"></script>
 <script src="{{ STATIC_URL }}js/highcharts/js/modules/exporting.js"></script>
@@ -15,7 +15,7 @@ $(function () {
         },
 
         title: {
-            text: 'Targets vs Actuals',
+            text: '{% trans "Targets vs Actuals" %}',
             x: -80
         },
 
@@ -48,12 +48,12 @@ $(function () {
         },
 
         series: [{
-            name: 'Targets',
+            name: '{% trans "Targets" %}',
             // add 0 to convert to int
             data: [ {% for indicator in getQuantitativeData %}  {{ indicator.targeted|add:"0" }}, {% endfor %}  ],
             pointPlacement: 'on'
         }, {
-            name: 'Actuals',
+            name: '{% trans "Actuals" %}',
             data: [ {% for indicator in getQuantitativeData %}  {{ indicator.achieved|add:"0" }}, {% endfor %}   ],
             pointPlacement: 'on'
         }]

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block bread_crumb %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
-            <a href="/indicators/home/{{ program|default_if_none:0 }}/0/0/">Indicators</a>
+            <a href="/indicators/home/{{ program|default_if_none:0 }}/0/0/">{% trans "Indicators" %}</a>
         </li>
-        <li class="breadcrumb-item active">Collected Indicator Data Report</li>
+        <li class="breadcrumb-item active">{% trans "Collected Indicator Data Report" %}</li>
     </ol>
 </nav>
 {% endblock %}
@@ -13,7 +14,7 @@
 
 
 
-{% block page_title %}Collected Indicator Data{% endblock %}
+{% block page_title %}{% trans "Collected Indicator Data" %}{% endblock %}
 
 {% block content %}
 
@@ -114,37 +115,37 @@
                     retrieve: true,
                     data: indicator_records,
                     "columnDefs": [
-                        { "visible": false, "targets": 0 },
-                        { "visible": false, "targets": 1 },
-                        { "visible": false, "targets": 2 },
+                        { "{% trans 'visible' %}": false, "{% trans 'targets' %}": 0 },
+                        { "{% trans 'visible' %}": false, "{% trans 'targets' %}": 1 },
+                        { "{% trans 'visible' %}": false, "{% trans 'targets' %}": 2 },
                     ],
                     columns: [
-                        { title: "PID", class: "noExport", data: "indicator__program__id"},
-                        { title: "IID", class: "noExport", data: "indicator__id"},
-                        { title: "ITID", class: "noExport", data: "indicator__indicator_type__id"},
-                        { title: "Program", data: "indicator__program__name"},
-                        { title: "Indicator", data: "name",
+                        { title: "{% trans 'PID' %}", class: "noExport", data: "indicator__program__id"},
+                        { title: "{% trans 'IID' %}", class: "noExport", data: "indicator__id"},
+                        { title: "{% trans 'ITID' %}", class: "noExport", data: "indicator__indicator_type__id"},
+                        { title: "{% trans 'Program' %}", data: "indicator__program__name"},
+                        { title: "{% trans 'Indicator' %}", data: "{% trans 'name' %}",
                                 "mRender": function (data, type, row) {
                                     return '<a class="collecteddata" name=' + row.indicator__id + ' href="/indicators/collecteddata/{{ program }}/' + row.indicator__id + '/0/">' + row.indicator__name + '</a>';
                                 }
                             },
-                        { title: "Level", data: "indicator__level__name"},
-                        { title: "Type", data: "indicator__indicator_type__indicator_type"},
-                        { title: "Sector", data: "indicator__sector__sector"},
-                        { title: "Baseline", data: "indicator__baseline"},
-                        { title: "LOP Target", data: "indicator__lop_target"},
-                        { title: "KPI",data: "indicator__key_performance_indicator"},
-                        { title: "Date Collected", data: "date_collected",
+                        { title: "{% trans 'Level' %}", data: "indicator__level__name"},
+                        { title: "{% trans 'Type' %}", data: "indicator__indicator_type__indicator_type"},
+                        { title: "{% trans 'Sector' %}", data: "indicator__sector__sector"},
+                        { title: "{% trans 'Baseline' %}", data: "indicator__baseline"},
+                        { title: "{% trans 'LOP Target' %}", data: "indicator__lop_target"},
+                        { title: "{% trans 'KPI' %}",data: "indicator__key_performance_indicator"},
+                        { title: "{% trans 'Date Collected' %}", data: "date_collected",
                                 "mRender": function ( data, type, row ) {
                                 var javascriptDate = new Date(row.date_collected).toISOString().slice(0, 10);
                                 return "<div class='date'>"+ formatDate(javascriptDate)+"<div>";}},
-                        { title: "Target", data: "periodic_target",
+                        { title: "{% trans 'Target' %}", data: "periodic_target",
                             "mRender": function(data, type, row) {
                                 var target = parseFloat(row.periodic_target).toFixed(2).replace(/[.,]00$/, "");
                                 return target;
                             }
                         },
-                        { title: "Actual", data: "achieved",
+                        { title: "{% trans 'Actual' %}", data: "{% trans 'achieved' %}",
                             "mRender": function(data, type, row) {
                                 var actual = parseFloat(row.achieved).toFixed(2).replace(/[.,]00$/, "");
                                 return actual;
@@ -156,8 +157,8 @@
                     buttons: [
                         {
                             extend: 'csv',
-                            title: 'Collected Indicator Data Report',
-                            text: 'Export to CSV',
+                            title: '{% trans "Collected Indicator Data Report" %}',
+                            text: '{% trans "Export to CSV" %}',
                             exportOptions: { columns: "thead th:not(.noExport)" }
                         }
                     ]
@@ -238,19 +239,19 @@
     </script>
     <div id="sum1" style="display: none; float: right;">
         <p>
-            <b>Targeted Total:</b> <span class="badge" id="targeted1"></span>&nbsp;
-            <b>Achieved Total:</b> <span class="badge" id="achieved1"></span>
+            <b>{% trans "Targeted Total:" %}</b> <span class="badge" id="targeted1"></span>&nbsp;
+            <b>{% trans "Achieved Total:" %}</b> <span class="badge" id="achieved1"></span>
         </p>
     </div>
     <div>&nbsp;</div>
     <div id="program_table_div">
         <table border="2" cellspacing="5" cellpadding="5">
             <tbody><tr>
-                <td>Start Date: </td>
+                <td>{% trans "Start Date:" %}" </td>
                 <td><input type="text" id="dt1" class="datepicker"></td>
             </tr>
             <tr>
-                <td>End Date: </td>
+                <td>{% trans "End Date:" %}</td>
                 <td><input type="text" id="dt2" class="datepicker"></td>
             </tr>
         </tbody>
@@ -261,8 +262,8 @@
     </div>
     <div id="sum2" style="display: none; float: right;">
         <p>
-            <b>Targeted Total:</b> <span class="badge" id="targeted2"></span>&nbsp;
-            <b>Achieved Total:</b> <span class="badge" id="achieved2"></span>
+            <b>{% trans "Targeted Total:" %}</b> <span class="badge" id="targeted2"></span>&nbsp;
+            <b>{% trans "Achieved Total:" %}</b> <span class="badge" id="achieved2"></span>
         </p>
     </div>
     <br/>

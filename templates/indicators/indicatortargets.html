@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load widget_tweaks %}
 {% load mytags %}
 
@@ -84,7 +85,7 @@
                 <tr style="background-color:#F5F5F5">
                     <td class="pt-delete-row"> </td>
                     <td align="left" class="align-middle">
-                        <strong>Life of Program (LoP) target</strong>
+                        <strong>{% trans "Life of Program (LoP) target" %}</strong>
                     </td>
                     <td align="right" class="align-middle">
                         <div class="m-2 pr-1">
@@ -122,9 +123,9 @@
                             <strong>
                                 <span id="id_span_is_cumulative_header">
                                     {% if unit_type == 1 %}
-                                        OPTIONS FOR NUMBER (#) INDICATORS
+                                        {% trans "OPTIONS FOR NUMBER (#) INDICATORS" %}
                                     {% else %}
-                                        OPTIONS FOR PERCENTAGE (%) INDICATORS
+                                        {% trans "OPTIONS FOR PERCENTAGE (%) INDICATORS" %}
                                     {% endif %}
                                 </span>
                             </strong>
@@ -147,9 +148,9 @@
                                 class="form-check-label"
                                 for="id_is_cumulative_1">
                                 {% if unit_type == 1 %}
-                                    NON-CUMULATIVE (NC): Target period results are automatically calculated from data collected during the period. The Life of Program result is the sum of target period values.
+                                    {% trans "NON-CUMULATIVE (NC): Target period results are automatically calculated from data collected during the period. The Life of Program result is the sum of target period values." %}
                                 {% else %}
-                                    CUMULATIVE (C): The Life of Program result mirrors the latest period value. No automatic calculations are performed with collected data.
+                                    {% trans "CUMULATIVE (C): The Life of Program result mirrors the latest period value. No automatic calculations are performed with collected data." %}
                                 {% endif %}
                             </label>
                         </div>
@@ -172,9 +173,9 @@
                                 class="form-check-label"
                                 for="id_is_cumulative_2">
                                 {% if unit_type == 1 %}
-                                    CUMULATIVE (C): Target period results automatically include data from previous periods. The Life of Program result mirrors the latest period value.
+                                    {% trans "CUMULATIVE (C): Target period results automatically include data from previous periods. The Life of Program result mirrors the latest period value." %}
                                 {% else %}
-                                    NON-CUMULATIVE (NC): The Life of Program result is the average of target period values. No other automatic calculations are performed.
+                                    {% trans "NON-CUMULATIVE (NC): The Life of Program result is the average of target period values. No other automatic calculations are performed." %}
                                 {% endif %}
                             </label>
                         </div>

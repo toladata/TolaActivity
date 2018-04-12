@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
 <script src="https://maps.google.com/maps/api/js?v=3.2&sensor=false"></script>
 <script src="{{ STATIC_URL }}js/leaflet-google.js"></script>
@@ -165,12 +167,12 @@
 
 
     {% for item in getSiteProfile %}
-        L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Project Site<br><a href='/workflow/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/>");
+        L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: projectIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>{% trans 'Project Site' %}<br><a href='/workflow/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>{% trans 'Province:' %} {{ item.province }} <br/>District: {{ item.district }} <br/> {% trans 'Village:' %} {{ item.village }} <br/>");
     {%   endfor %}
 
     {% if getSiteProfileIndicator %}
         {% for item in getSiteProfileIndicator %}
-            L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>Collected Indicator Data Site<br> <a href='/workflow/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>District: {{ item.district }} <br/> Village: {{ item.village }} <br/>");
+            L.marker([{{ item.latitude }}, {{ item.longitude }}], {icon: indicatorIcon}).addTo(map).bindPopup("" + "<b>{{ item.country }}</b><br/>{% trans 'Collected Indicator Data Site' %}<br> <a href='/workflow/siteprofile_update/{{ item.id }}'>{{ item.name }}</a> <br/>Province: {{ item.province }} <br/>{% trans 'District:' %} {{ item.district }} <br/> {% trans 'Village:' %} {{ item.village }} <br/>");
         {%   endfor %}
     {% endif %}
 

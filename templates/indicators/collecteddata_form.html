@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block bread_crumb %}
 <ol class="breadcrumb">
-  <li><a href="/indicators/home/0/0/0/#hidden-{{ self.program }}">Indicators</a></li>
-  <li class="active">Output Form</li>
+  <li><a href="/indicators/home/0/0/0/#hidden-{{ self.program }}">{% trans "Indicators" %}</a></li>
+  <li class="active">{% trans "Output Form" %}</li>
 </ol>
 
 {% endblock %}
-{% block page_title %}Collected Indicator Data{% endblock %}
+{% block page_title %}{% trans "Collected Indicator Data" %} {% endblock %}
 
 {% block content %}
     {% include "form_guidance.html" %}

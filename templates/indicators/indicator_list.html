@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block page_title %}Program Indicators{% endblock %}
 
 {% block content %}
@@ -51,14 +52,14 @@ function loadIndicators(program, indicator, type){
             <div class='card-header'>
                 {{ program.name|truncatechars:85 }}
                 <span style="float: right;" class="btn-group" role="group">
-                    <a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-sm btn-secondary"><i class="fas fa-plus-circle"></i> New Indicator</a>
-                    <a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">Grid/Print Report</a>
+                    <a href="/indicators/indicator_create/{{ program.id }}/" class="btn btn-sm btn-secondary"><i class="fas fa-plus-circle"></i> {% trans "New Indicator" %}</a>
+                    <a href="/indicators/program_report/{{ program.id }}/" class="btn btn-sm btn-info">{% trans "Grid/Print Report" %}</a>
                 </span>
             </div>
             {% if not program.indicator_set.all %}
                 <div class='card-body'>
-                    <div class="card-title">No Indicators have been entered for this program</div>
-                    <p class="card-text">Add a new indicator via the "<a href="/indicators/indicator_create/{{ program.id }}/">New Indicator</a>" button above.</p>
+                    <div class="card-title">{% trans "No Indicators have been entered for this program" %}</div>
+                    <p class="card-text">{% trans "Add a new indicator via the" %} "<a href="/indicators/indicator_create/{{ program.id }}/">{% trans 'New Indicator' %}</a>" {% trans 'button above' %}.</p>
                 </div>
             {% else %}
                 <div class='card-body'>
@@ -71,7 +72,7 @@ function loadIndicators(program, indicator, type){
         </div>
         <br>
     {% empty %}
-        <p>No Programs</p>
+        <p>{% trans "No Programs" %}</p>
     {% endfor %}
 </div>
 
@@ -84,14 +85,14 @@ function loadIndicators(program, indicator, type){
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Warning</h4>
+                <h4 class="modal-title" id="myModalLabel">{% trans "Warning" %}</h4>
             </div>
             <div class="modal-body" id="confirm_modal_body">
-                Are you sure?
+                {% trans "Are you sure?" %}"
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" id="modal-btn-yes">Yes</button>
-                <button type="button" class="btn btn-primary" id="modal-btn-no">No</button>
+                <button type="button" class="btn btn-default" id="modal-btn-yes">{% trans "Yes" %}</button>
+                <button type="button" class="btn btn-primary" id="modal-btn-no">{% trans "No" %}</button>
             </div>
         </div>
     </div>
