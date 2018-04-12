@@ -56,8 +56,7 @@ exports.config = {
         'moz:firefoxOptions': {
             //[]
        }
-   }
-    ],
+    }],
     sync: true,
     logLevel: 'verbose',
     logOutput: './log',
@@ -82,5 +81,9 @@ exports.config = {
         ui: 'bdd',
         compilers: ['js:babel-register'],
         require: 'babel-register'
+    },
+    onComplete: function(exitCode, config, capabilities) {
+        var proc = require('child_process');
+        proc.execSync('/bin/rm -rfv /tmp/tats');
     }
 }
