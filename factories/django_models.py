@@ -2,7 +2,7 @@ from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute
 
 
-class User(DjangoModelFactory):
+class UserFactory(DjangoModelFactory):
     class Meta:
         model = 'auth.User'
         django_get_or_create = ('username',)

@@ -20,7 +20,7 @@ from workflow.models import (
     TolaUser as TolaUserM,
     Program as ProgramM,
 )
-from .django_models import User, Group, Site
+from .django_models import UserFactory, Group, Site
 
 
 class Country(DjangoModelFactory):
@@ -62,7 +62,7 @@ class TolaUser(DjangoModelFactory):
         model = TolaUserM
         django_get_or_create = ('user',)
 
-    user = SubFactory(User)
+    user = SubFactory(UserFactory)
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
     organization = SubFactory(Organization)
     country = SubFactory(Country, country='United States', code='US')
