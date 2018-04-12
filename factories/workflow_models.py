@@ -43,7 +43,7 @@ class Contact(DjangoModelFactory):
     country = SubFactory(Country)
 
 
-class Organization(DjangoModelFactory):
+class OrganizationFactory(DjangoModelFactory):
     class Meta:
         model = OrganizationM
 
@@ -64,7 +64,7 @@ class TolaUserFactory(DjangoModelFactory):
 
     user = SubFactory(UserFactory)
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
     country = SubFactory(Country, country='United States', code='US')
 
 
@@ -109,7 +109,7 @@ class Stakeholder(DjangoModelFactory):
         model = StakeholderM
 
     name = 'Stakeholder A'
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
 
     @post_generation
     def program(self, create, extracted, **kwargs):
@@ -128,7 +128,7 @@ class FundCode(DjangoModelFactory):
         model = FundCodeM
 
     name = 'Fund Code A'
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
 
 
 class ProjectType(DjangoModelFactory):
