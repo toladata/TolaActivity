@@ -7,6 +7,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.urlresolvers import reverse_lazy
 from django.core.exceptions import PermissionDenied
 from django.core import serializers
 
@@ -276,7 +277,7 @@ def indicator_create(request, id=0):
 
         # redirect to update page
         messages.success(request, 'Success, Basic Indicator Created!')
-        redirect_url = '/indicators/indicator_update/' + str(latest) + '/'
+        redirect_url = reverse_lazy('indicator_update', kwargs={'pk': latest})
         return HttpResponseRedirect(redirect_url)
 
     # send the keys and vars from the json data to the template along with
@@ -646,7 +647,8 @@ class IndicatorUpdate(UpdateView):
 class IndicatorDelete(DeleteView):
     model = Indicator
     form_class = IndicatorForm
-    success_url = '/indicators/home/0/0/0/'
+    success_url = reverse_lazy(
+        'indicator_list', kwargs={'program': 0, 'indicator': 0, 'type': 0})
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -940,7 +942,8 @@ class CollectedDataUpdate(UpdateView):
 
 class CollectedDataDelete(DeleteView):
     model = CollectedData
-    success_url = '/indicators/home/0/0/0/'
+    success_url = reverse_lazy(
+        'indicator_list', kwargs={'program': 0, 'indicator': 0, 'type': 0})
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):

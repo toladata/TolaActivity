@@ -221,10 +221,10 @@ class IPTTReportQuickstartForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         prefix = kwargs.pop('prefix')
-        self.prefix = prefix if prefix else self.prefix
+        self.prefix = prefix if prefix is not None else self.prefix
         countries = getCountry(self.request.user)
         super(IPTTReportQuickstartForm, self).__init__(*args, **kwargs)
-        self.fields['formprefix'].initial = prefix
+        self.fields['formprefix'].initial = self.prefix
         self.fields['program'].queryset = Program.objects.filter(country__in=countries)
         self.fields['program'].label = _("PROGRAM")
         self.fields['timeperiods'].label = _("TIME PERIODS")

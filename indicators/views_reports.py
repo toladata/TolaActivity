@@ -1,10 +1,9 @@
-
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.views.generic.list import ListView
-from django.views.generic.detail import View
+from django.core.urlresolvers import reverse_lazy
 from django.views.generic import TemplateView, FormView
+from django.http import HttpResponseRedirect
 from .models import Indicator, PeriodicTarget, CollectedData
 from .forms import IPTTReportQuickstartForm
+
 
 class IPTTReportQuickstartView(FormView):
     template_name = 'indicators/iptt_quickstart.html'
@@ -13,7 +12,9 @@ class IPTTReportQuickstartView(FormView):
     FORM_PREFIX_TARGET = 'targetperiods'
 
     def get_context_data(self, **kwargs):
-        context = super(IPTTReportQuickstartView, self).get_context_data(**kwargs)
+        context = super(IPTTReportQuickstartView, self)\
+            .get_context_data(**kwargs)
+        # Add two instances of the same form to context if they're not present
         if 'form' not in context:
             context['form'] = self.form_class(request=self.request,
                                               prefix=self.FORM_PREFIX_TIME)
@@ -28,11 +29,12 @@ class IPTTReportQuickstartView(FormView):
         return kwargs
 
     def post(self, request, *args, **kwargs):
-        targetprefix = request.POST.get('%s-formprefix' % self.FORM_PREFIX_TARGET)
-
+        targetprefix = request.POST.get(
+            '%s-formprefix' % self.FORM_PREFIX_TARGET)
         timeprefix = request.POST.get('%s-formprefix' % self.FORM_PREFIX_TIME)
         prefix = None
 
+        # populate the correct form with POST data
         if targetprefix is not None:
             form = IPTTReportQuickstartForm(self.request.POST,
                                             prefix=self.FORM_PREFIX_TARGET,
@@ -43,24 +45,37 @@ class IPTTReportQuickstartView(FormView):
                                             prefix=self.FORM_PREFIX_TIME,
                                             request=self.request)
             prefix = timeprefix
-        if form.is_valid():
-            return self.form_valid(**{'form': form, 'prefix': prefix })
-        else:
-            return self.form_invalid(**{'form': form, 'prefix': prefix })
 
+        # call the form_valid/invalid with the correct prefix and form
+        if form.is_valid():
+            return self.form_valid(**{'form': form, 'prefix': prefix})
+        else:
+            return self.form_invalid(**{'form': form, 'prefix': prefix})
 
     def form_valid(self, **kwargs):
         context = self.get_context_data()
         form = kwargs.get('form')
-        if kwargs.get('prefix') == self.FORM_PREFIX_TARGET:
+        prefix = kwargs.get('prefix')
+
+        if prefix == self.FORM_PREFIX_TARGET:
+            period = form.cleaned_data.get('targetperiods')
             context['form2'] = form
             context['form'] = self.form_class(request=self.request,
                                               prefix=self.FORM_PREFIX_TIME)
         else:
+            prefix = self.FORM_PREFIX_TIME
+            period = form.cleaned_data.get('timeperiods')
             context['form'] = form
             context['form2'] = self.form_class(request=self.request,
                                                prefix=self.FORM_PREFIX_TARGET)
-        return self.render_to_response(context)
+
+        program = form.cleaned_data.get('program')
+        redirect_url = reverse_lazy('iptt_report',
+                                    kwargs={'program_id': program.id,
+                                            'reporttype': prefix})
+
+        redirect_url = "{}?period={}".format(redirect_url, period)
+        return HttpResponseRedirect(redirect_url)
 
     def form_invalid(self, form, **kwargs):
         context = self.get_context_data()
@@ -76,3 +91,16 @@ class IPTTReportQuickstartView(FormView):
         return self.render_to_response(context)
 
 
+class IPTT_ReportView(TemplateView):
+    template_name = 'indicators/iptt_report.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        program_id = kwargs.get('program_id')
+
+        indicators = Indicator.objects.filter(program__in=[program_id])
+        context['indicators'] = indicators
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        pass
