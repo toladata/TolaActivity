@@ -5,25 +5,25 @@
 {% block title %}Indicator Performance Tracking Table{% endblock %}
 
 {% block content %}
-
     <div id="id_div_top_quickstart_iptt" >
-
         <div class="row">
             <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Program indicator overview</h5>
-                        <p class="card-subtitle text-muted mb-2">View progress toward Life of Program targets for all of a program's indicators.</p>
+                        <p class="card-subtitle text-muted mb-2">
+                            View progress toward Life of Program targets for all of a program’s indicators.
+                        </p>
                         <form
                             action="{% url 'iptt_quickstart' %}"
-                            id="indicator_update_form"
+                            id="id_form_program_indicator_overview"
                             method="post"
                             novalidate>
                             {% csrf_token %}
                             {% for hidden_field in form.hidden_fields %}
                                 {{ hidden_field }}
                             {% endfor %}
-                            <div class="form-group" id="div_id_program">
+                            <div class="form-group" id="divid_timeperiods_program">
                                 <label for="id_program" class="col-form-label">
                                     {{ form.program.label }}
                                 </label>
@@ -52,12 +52,17 @@
                                         </div>
                                     {% endwith %}
                                 {% endfor %}
-                                <div id="id_div_numrecentperiods">
+                                <div id="id_div_timeperiods_numrecentperiods">
                                     {% render_field form.numrecentperiods class+="form-control" %}
+                                    <div id="id_validation_numrecent_timeperiods" class="has-error"></div>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center mb-1">
-                                <button type="submit" class="btn btn-info" style="width:100%;">View Report</button>
+                                <button
+                                    type="submit"
+                                    id="id_submit_timeperiods_button"
+                                    class="btn btn-info"
+                                    style="width:100%;">View Report</button>
                             </div>
                         </form>
                     </div>
@@ -67,10 +72,12 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Program target overview</h5>
-                        <p class="card-subtitle text-muted mb-2">View progress toward a program's periodic targets in addition to Life of Program targets.</p>
+                        <p class="card-subtitle text-muted mb-2">
+                            View progress toward a program’s periodic targets in addition to Life of Program targets.
+                        </p>
                         <form
                             action="{% url 'iptt_quickstart' %}"
-                            id="indicator_update_form"
+                            id="id_form_program_target_overview"
                             method="post"
                             novalidate>
                             {% csrf_token %}
@@ -78,7 +85,7 @@
                                 {{ hidden_field }}
                             {% endfor %}
 
-                            <div class="form-group" id="div_id_program">
+                            <div class="form-group" id="div_id_targets_program">
                                 <label for="{{ form2.program.id_for_label }}" class="col-form-label">
                                     {{ form2.program.label }}
                                 </label>
@@ -107,12 +114,17 @@
                                         </div>
                                     {% endwith %}
                                 {% endfor %}
-                                <div id="id_div_numrecentperiods">
+                                <div id="id_div_target_numrecentperiods">
                                     {% render_field form2.numrecentperiods class+="form-control" %}
+                                    <div id="id_validation_numrecent_targets" class="has-error"></div>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center mb-1">
-                                <button type="submit" class="btn btn-info" style="width:100%;">View Report</button>
+                                <button
+                                    type="submit"
+                                    id="id_submit_targetperiods_button"
+                                    class="btn btn-info"
+                                    style="width:100%;">View Report</button>
                             </div>
                         </form>
                     </div>
@@ -120,4 +132,106 @@
             </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            const submitBtnTimeperiods = $("#id_submit_timeperiods_button");
+            const programTimeperiods = $("#id_timeperiods-program");
+            const timeperiods = $("#id_timeperiods-timeperiods");
+            const mostRecentTimeperiods = $("#id_timeperiods-timeframe_1");
+            const numRecentPeriods = $("#id_timeperiods-numrecentperiods");
+
+            function setNumRecentNumberField(is_disabled){
+                if (is_disabled == true) {
+                    numRecentPeriods.val(undefined);
+                }
+                numRecentPeriods.attr("disabled", is_disabled);
+            }
+
+            // when first loaded disable the dependent controls on the form
+            submitBtnTimeperiods.attr("disabled", true);
+            mostRecentTimeperiods.attr("disabled", true);
+            setNumRecentNumberField(true);
+
+            // every time a select input changes, lock / unlock fields
+            $("#id_form_program_indicator_overview").on("change", "select", function(e) {
+                if (programTimeperiods.val() > 0 && timeperiods.val() > 0) {
+                    submitBtnTimeperiods.attr("disabled", false);
+                    mostRecentTimeperiods.attr("disabled", false);
+                } else {
+                    submitBtnTimeperiods.attr("disabled", true);
+                    mostRecentTimeperiods.attr("disabled", true);
+                    setNumRecentNumberField(true);
+                }
+            });
+
+            // everytime the radio buttons value changes, lock or unlock
+            $("#id_form_program_indicator_overview").on("change", "input[type=radio][name='timeperiods-timeframe']", function(e) {
+                if ($(e.target).val() == 2 ) {
+                    numRecentPeriods.attr("disabled", false);
+                } else {
+                    numRecentPeriods.val(undefined);
+                    numRecentPeriods.attr("disabled", true);
+                }
+            });
+
+            //// ........................................................
+            const submitBtnTargets = $("#id_submit_targetperiods_button");
+            const programTargets = $("#id_targetperiods-program");
+            const targetperiods = $("#id_targetperiods-targetperiods");
+            const mostRecentTargets = $("#id_targetperiods-timeframe_1");
+            const numRecentPeriodsTargets = $("#id_targetperiods-numrecentperiods");
+
+            function setNumRecentPeriodsTargets(isDisabled){
+                if (isDisabled == true) {
+                    numRecentPeriodsTargets.val(undefined);
+                }
+                numRecentPeriodsTargets.attr("disabled", isDisabled);
+            }
+
+            // when first loaded disable the dependent controls on the form
+            submitBtnTargets.attr("disabled", true);
+            mostRecentTargets.attr("disabled", true);
+            setNumRecentPeriodsTargets(true);
+
+            // every time a select input changes, lock / unlock fields
+            $("#id_form_program_target_overview").on("change", "select", function(e) {
+                if (programTargets.val() > 0 && targetperiods.val() > 0) {
+                    submitBtnTargets.attr("disabled", false);
+                    mostRecentTargets.attr("disabled", false);
+                } else {
+                    submitBtnTargets.attr("disabled", true);
+                    mostRecentTargets.attr("disabled", true);
+                    setNumRecentPeriodsTargets(true);
+                }
+            });
+
+            // everytime the radio buttons value changes, lock or unlock
+            $("#id_form_program_target_overview").on("change", "input[type=radio][name='targetperiods-timeframe']", function(e) {
+                if ($(e.target).val() == 2 ) {
+                    numRecentPeriodsTargets.attr("disabled", false);
+                } else {
+                    numRecentPeriodsTargets.val(undefined);
+                    numRecentPeriodsTargets.attr("disabled", true);
+                }
+            });
+
+
+            $("#id_div_top_quickstart_iptt").on("submit", "#id_form_program_indicator_overview, #id_form_program_target_overview", function(e){
+                if (this.id == 'id_form_program_target_overview') {
+                    if (numRecentPeriodsTargets.attr('disabled') == null && !numRecentPeriodsTargets.val()){
+                        e.preventDefault();
+                        $("#id_validation_numrecent_targets").text("Please complete this field.");
+                        return;
+                    }
+                } else {
+                    if (numRecentPeriods.attr('disabled') == null && !numRecentPeriods.val()){
+                        e.preventDefault();
+                        $("#id_validation_numrecent_timeperiods").text("Please complete this field.");
+                        return;
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock content %}
