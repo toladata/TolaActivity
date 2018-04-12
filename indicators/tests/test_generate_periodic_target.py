@@ -1,10 +1,10 @@
 import datetime
 
-from dateutil.relativedelta import relativedelta
 from django.test import TestCase
 
 from indicators.models import Indicator
-from indicators.views import generate_periodic_target_single
+from indicators.views import generate_periodic_target_single, \
+    generate_periodic_targets
 
 
 class GeneratePeriodicTargetTests(TestCase):
@@ -104,3 +104,42 @@ class GeneratePeriodicTargetTests(TestCase):
                                                  self.nth_target_period,
                                         target_frequency_custom='')
         self.assertDictEqual(expected, result)
+
+
+class GenerateTargetsTests(TestCase):
+
+    def setUp(self):
+        self.start_date = datetime.datetime(2018, 10, 5, 18, 00)
+        self.total_targets = 10
+        self.target_frequency_custom = ''
+
+    def test_generate(self):
+        """Can we bulk generate periodic targets?"""
+
+        tf = Indicator.MONTHLY
+        result = generate_periodic_targets(tf, self.start_date, self.total_targets,
+                                           self.target_frequency_custom)
+
+        self.assertTrue(len(result) == 10)
+
+    def test_lop(self):
+        """Do we get back the correct response if we are doing
+        Life of Project?"""
+
+        tf = Indicator.LOP
+        expected = {'period': u'Life of Program (LoP) only'}
+        result = generate_periodic_targets(tf, self.start_date,
+                                           self.total_targets,
+                                           self.target_frequency_custom)
+        self.assertDictEqual(expected, result)
+
+    def test_mid(self):
+        """Do we get back the correct response if we are doing MID?"""
+
+        tf = Indicator.MID_END
+        expected = [{'period': 'Midline'}, {'period': 'Endline'}]
+        result = generate_periodic_targets(tf, self.start_date,
+                                           self.total_targets,
+                                           self.target_frequency_custom)
+
+        self.assertEqual(expected, result)

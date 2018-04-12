@@ -116,7 +116,6 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod,
 def generate_periodic_targets(tf, start_date, numTargets,
                               target_frequency_custom=''):
     gentargets = []
-    target_period = None
 
     if tf == Indicator.LOP or tf == Indicator.MID_END:
         target_period = generate_periodic_target_single(tf, start_date,
