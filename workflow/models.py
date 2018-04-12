@@ -621,7 +621,7 @@ class Milestone(models.Model):
 
 
 class WorkflowLevel1(models.Model):
-    level1_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel1 UUID', default=uuid.uuid4, unique=True)
+    level1_uuid = models.CharField(max_length=255, editable=False, verbose_name='WorkflowLevel1 UUID', default=uuid.uuid4, unique=True)
     unique_id = models.CharField("ID", max_length=255, blank=True, null=True, help_text="User facing unique ID field if needed")
     name = models.CharField("Name", max_length=255, blank=True)
     funding_status = models.CharField("Funding Status", max_length=255, blank=True, help_text='Funds have been approved to start working')
