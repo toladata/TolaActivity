@@ -9,7 +9,7 @@ describe('Midline and endline target frequency', function() {
   before(function() {
       // Disable timeouts
       this.timeout(0);
-      //browser.windowHandleMaximize();
+      browser.windowHandleMaximize();
       let parms = util.readConfig();
       
       LoginPage.open(parms.baseurl);

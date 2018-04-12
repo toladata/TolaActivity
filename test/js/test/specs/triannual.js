@@ -9,7 +9,7 @@ describe('Tri-annual target frequency', function() {
     before(function() {
       // Disable timeouts
       this.timeout(0);
-      //browser.windowHandleMaximize();
+      browser.windowHandleMaximize();
   
       let parms = util.readConfig();
       
