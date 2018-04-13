@@ -8,15 +8,18 @@
     <div id="id_div_top_iptt_report">
         <span>{{ period }} PERIOD WILL GO HERE...</span>
         <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
-        <table id="iptt_table" class="table table-sm table-bordered table-hover">
+        <table id="iptt_table"
+            class="table table-sm table-bordered table-hover">
+            <caption>Indicator Performance Tracking Table</caption>
             <thead class="thead-light">
-                <th scope="col">NO.</th>
-                <th scope="col">INDICATOR</th>
-                <th scope="col">LEVEL</th>
+                <th scope="col" style="min-width:80px">NO.</th>
+                <th scope="col" class="td-no-side-borders" style="min-width:600px">INDICATOR</th>
+                <th scope="col" class="td-no-side-borders"></th>
+                <th scope="col" style="min-width:90px">LEVEL</th>
                 <th scope="col">UNIT OF MEASURE</th>
                 <th scope="col">CHANGE</th>
-                <th scope="col">C / NC</th>
-                <th scope="col"># / %</th>
+                <th scope="col" style="min-width:60px">C / NC</th>
+                <th scope="col" style="min-width:50px"># / %</th>
                 <th scope="col">BASELINE</th>
                 <th scope="col">TARGET</th>
             </thead>
@@ -24,14 +27,21 @@
                 {% for indicator in indicators %}
                     <tr>
                         <td>{{ indicator.number|default_if_none:'' }}</td>
-                        <td>{{ indicator.name }}</td>
+                        <td class="td-no-side-borders">{{ indicator.name }}</td>
+                        <td class="td-no-side-borders">
+                            <a href="{% url 'indicator_update' indicator.id %}"
+                               data-programid="{{ program.id }}"
+                               class="indicator-link float-right">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                        </td>
                         <td>{{ indicator.level.all.0|default_if_none:'' }}</td>
                         <td>{{ indicator.unif_of_measure }}</td>
-                        <td>{{ indicator.direction_of_change }}</td>
+                        <td align="right">{{ indicator.get_direction_of_change }}</td>
                         <td>{{ indicator.is_cumulative|yesno:"Cumulative,Non-cumulative," }}</td>
                         <td>{{ indicator.get_unit_of_measure_type }}</td>
-                        <td>{{ indicator.baseline }}</td>
-                        <td>{{ indicator.lop_target }}</td>
+                        <td align="right">{{ indicator.baseline|default_if_none:'' }}</td>
+                        <td align="right">{{ indicator.lop_target|default_if_none:'' }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

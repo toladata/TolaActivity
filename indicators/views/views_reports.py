@@ -103,6 +103,7 @@ class IPTT_ReportView(TemplateView):
         indicators = Indicator.objects.filter(program__in=[program_id])
         context['indicators'] = indicators
         context['program'] = program
+        context['reporttype'] =kwargs.get('reporttype')
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
