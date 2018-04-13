@@ -15,6 +15,23 @@ var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /**
+ * Add num target periods to the targets list
+ * @param {integer} num The number of target periods
+ * to add
+ * @returns {integer} The total number of target periods
+ */
+function addTarget(num = 1) {
+    let link = browser.$('a#addNewPeriodicTarget');
+    let cnt = 0;
+
+    while (cnt < num) {
+        link.click();
+        cnt++;
+    }
+    return cnt;
+}
+
+/**
  * Click the indicator name link for the specified indicator
  * to show its detail/edit screen
  * @param {string} indicatorName - The name of the indicator whose
@@ -545,6 +562,8 @@ function setUnitOfMeasure(unit) {
   bucket.setValue(unit);
 }
 
+exports.addTarget = addTarget;
+exports.addTargets = addTarget;
 exports.clickProgramIndicator = clickProgramIndicator;
 exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;
