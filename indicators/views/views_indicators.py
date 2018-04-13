@@ -32,13 +32,13 @@ from weasyprint import HTML, CSS
 from django_tables2 import RequestConfig
 
 from tola.util import getCountry, get_table
-from tables import IndicatorDataTable
+from ..tables import IndicatorDataTable
 from feed.serializers import FlatJsonSerializer
-from export import IndicatorResource, CollectedDataResource
+from ..export import IndicatorResource, CollectedDataResource
 from workflow.forms import FilterForm
 from workflow.mixins import AjaxableResponseMixin
-from indicators.forms import IndicatorForm, CollectedDataForm
-from .models import (
+from ..forms import IndicatorForm, CollectedDataForm
+from ..models import (
     Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue,
     CollectedData, IndicatorType, Level, ExternalServiceRecord,
     ExternalService, TolaTable
@@ -615,13 +615,13 @@ class IndicatorUpdate(UpdateView):
                           'periodic_targets': generatedTargets}
 
                 content = render_to_string(
-                    'indicators/indicatortargets.html', params)
+                        'indicators/indicatortargets.html', params)
             else:
                 params = {'indicator': self.object,
                           'periodic_targets': periodic_targets}
 
                 content = render_to_string(
-                    'indicators/indicatortargets.html', params)
+                        'indicators/indicatortargets.html', params)
 
             targets_sum = self.get_context_data().get('targets_sum')
             if targets_sum is None:

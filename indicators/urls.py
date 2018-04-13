@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from .views import (
+from .views.views_indicators import (
     indicator_create,
     CollectedDataList,
     CollectedDataCreate,
@@ -30,7 +30,7 @@ from .views import (
     DisaggregationPrint
 )
 
-from .views_reports import IPTTReportQuickstartView, IPTT_ReportView
+from .views.views_reports import IPTTReportQuickstartView, IPTT_ReportView
 
 urlpatterns = [
     url(r'^home/(?P<program>\d+)/(?P<indicator>\d+)/(?P<type>\d+)/$',

@@ -1,6 +1,9 @@
+from unittest import skip
+
 from django.test import TestCase
 
 
+@skip("test not implemented")
 class FilterPanelTests(TestCase):
 
     def setUp(self):
