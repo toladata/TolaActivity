@@ -3,7 +3,7 @@ import datetime
 from django.test import TestCase
 
 from indicators.models import Indicator
-from indicators.views import generate_periodic_target_single, \
+from indicators.views.views_indicators import generate_periodic_target_single, \
     generate_periodic_targets
 
 

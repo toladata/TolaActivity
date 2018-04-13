@@ -7,7 +7,7 @@ from factories.indicators_models import (IndicatorTypeFactory,
                                          ExternalServiceFactory)
 from factories.workflow_models import (CountryFactory, ProgramFactory,
                                        TolaUserFactory)
-from indicators.views import indicator_create
+from indicators.views.views_indicators import indicator_create
 
 
 class IndicatorCreateFunctionTests(TestCase):

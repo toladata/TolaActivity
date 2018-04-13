@@ -3,7 +3,7 @@ from django.test import TestCase, RequestFactory
 from factories.indicators_models import IndicatorFactory, IndicatorTypeFactory
 from factories.django_models import UserFactory
 from factories.workflow_models import TolaUserFactory, ProgramFactory
-from indicators.views import IndicatorList
+from indicators.views.views_indicators import IndicatorList
 
 
 class IndicatorListTests(TestCase):

@@ -2,8 +2,8 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
-from .models import Indicator
-from .forms import IPTTReportQuickstartForm
+from ..models import Indicator
+from ..forms import IPTTReportQuickstartForm
 
 
 class IPTTReportQuickstartView(FormView):

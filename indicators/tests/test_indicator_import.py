@@ -2,12 +2,12 @@ import mock
 from django.test import TestCase
 
 from factories.indicators_models import ExternalServiceFactory
-from indicators.views import import_indicator
+from indicators.views.views_indicators import import_indicator
 
 
 class ImportIndicatorTests(TestCase):
 
-    @mock.patch("indicators.views.requests.get")
+    @mock.patch("indicators.views.views_indicators.requests.get")
     def test_remote_resource_true(self, mock_get):
         """
         It should deserialize the response content if deserialize is left
@@ -22,7 +22,7 @@ class ImportIndicatorTests(TestCase):
 
         self.assertDictEqual(result, {'hello': 1})
 
-    @mock.patch("indicators.views.requests.get")
+    @mock.patch("indicators.views.views_indicators.requests.get")
     def test_remote_resource_false(self, mock_get):
         """
         It should return the response object if deserialize is set to anything

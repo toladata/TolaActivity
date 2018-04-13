@@ -112,7 +112,6 @@ class ExternalServiceFactory(DjangoModelFactory):
 
     name = 'External Service A'
 
-
 class StrategicObjective(DjangoModelFactory):
     class Meta:
         model = StrategicObjectiveM
