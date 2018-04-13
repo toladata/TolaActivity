@@ -31,7 +31,7 @@ describe('Adding target date ranges', function() {
       }
     });
 
-    it('for annual periodic targets should work correctly', function() {
+    it('to pre-existing annual periodic targets should produce valid data ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
         TargetsTab.setTargetFrequency('Annual');
@@ -40,39 +40,66 @@ describe('Adding target date ranges', function() {
         // Set number of target periods to 1
         TargetsTab.setNumTargetPeriods(1);
         // Set other required values
-        //TargetsTab.setUnitOfMeasure('Apples per apiary');
+        TargetsTab.setUnitOfMeasure('Faeries per field');
         TargetsTab.setLoPTarget(43);
         TargetsTab.setBaseline(44);
         // Save changes
         TargetsTab.saveIndicatorChanges();
 
-        // Validation:
+        // Scrape a list of date ranges off the screen
         let dateRanges = TargetsTab.getTargetDateRanges();
         let rangeStart, rangeEnd, diff;
+        // Add a target and verify date ranges
+        TargetsTab.addTarget();
         for (let dateRange of dateRanges) {
+            // Split dates into start and end data objects
             rangeStart = new Date(dateRange.split(' - ')[0]);
             rangeEnd = new Date(dateRange.split(' - ')[1]);
             //FIXME: code smell
+            // This calculates elapsed time in units of a year, but
+            // also returns a floating point value (dafuq?) that needs
+            // to be rounded to an integer because there's a bug in the
+            // DateMath package
             diff = DateMath.diff(rangeStart, rangeEnd, 'year', true);
             expect(Math.round(diff) == 1);
         }
+
+        // Save the added target and verify date ranges
+        TargetsTab.saveIndicatorChanges();
+        dateRanges = TargetsTab.getTargetDateRanges();
+        for (let dateRange of dateRanges) {
+            rangeStart = new Date(dateRange.split(' - ')[0]);
+            rangeEnd = new Date(dateRange.split(' - ')[1]);
+            diff = DateMath.diff(rangeStart, rangeEnd, 'year', true);
+            expect(Math.round(diff) == 1);
+        }
+
+        // Make sure all the target fields are populated
+        let inputBoxes = TargetsTab.getTargetInputBoxes();
+        let targetCount = inputBoxes.length;
+        for(let inputBox of inputBoxes) {
+            if (inputBox.getValue() == '') {
+                inputBox.setValue(1);
+            }
+        }
+        // This should succeed, but we don't care so not asserting
+        TargetsTab.saveIndicatorChanges();
     });
 
-    it('for semi-annual periodic targets should be correct', function() {
+    it('to pre-existing semi-annual periodic targets should produce valid data ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
         TargetsTab.setTargetFrequency('Semi-annual');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(1);
-        //TargetsTab.setUnitOfMeasure('Bees per bonnet');
-        TargetsTab.setLoPTarget(70);
-        TargetsTab.setBaseline(71);
-        // Save changes
+        TargetsTab.setUnitOfMeasure('Gorgons per garrison');
+        TargetsTab.setLoPTarget(85);
+        TargetsTab.setBaseline(86);
         TargetsTab.saveIndicatorChanges();
 
-        // Validation:
         let dateRanges = TargetsTab.getTargetDateRanges();
         let rangeStart, rangeEnd, diff;
+        TargetsTab.addTarget();
         for (let dateRange of dateRanges) {
             rangeStart = new Date(dateRange.split(' - ')[0]);
             rangeEnd = new Date(dateRange.split(' - ')[1]);
@@ -80,23 +107,40 @@ describe('Adding target date ranges', function() {
             diff = DateMath.diff(rangeStart, rangeEnd, 'month', true);
             expect(Math.round(diff) == 6);
         }
+
+        TargetsTab.saveIndicatorChanges();
+        dateRanges = TargetsTab.getTargetDateRanges();
+        for (let dateRange of dateRanges) {
+            rangeStart = new Date(dateRange.split(' - ')[0]);
+            rangeEnd = new Date(dateRange.split(' - ')[1]);
+            diff = DateMath.diff(rangeStart, rangeEnd, 'year', true);
+            expect(Math.round(diff) == 1);
+        }
+
+        let inputBoxes = TargetsTab.getTargetInputBoxes();
+        let targetCount = inputBoxes.length;
+        for(let inputBox of inputBoxes) {
+            if (inputBox.getValue() == '') {
+                inputBox.setValue(1);
+            }
+        }
+        TargetsTab.saveIndicatorChanges();
     });
 
-    it('for tri-annual periodic targets should be correct', function() {
+    it('to pre-existing tri-annual periodic targets should produce valid data ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
         TargetsTab.setTargetFrequency('Tri-annual');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(1);
-        //TargetsTab.setUnitOfMeasure('Cats per cradle');
+        TargetsTab.setUnitOfMeasure('Jackalopes per juggler');
         TargetsTab.setLoPTarget(92);
         TargetsTab.setBaseline(93);
-        // Save changes
         TargetsTab.saveIndicatorChanges();
 
-        // Validation:
         let dateRanges = TargetsTab.getTargetDateRanges();
         let rangeStart, rangeEnd, diff;
+        TargetsTab.addTarget();
         for (let dateRange of dateRanges) {
             rangeStart = new Date(dateRange.split(' - ')[0]);
             rangeEnd = new Date(dateRange.split(' - ')[1]);
@@ -104,23 +148,40 @@ describe('Adding target date ranges', function() {
             diff = DateMath.diff(rangeStart, rangeEnd, 'month', true);
             expect(Math.round(diff) == 4);
         }
+
+        TargetsTab.saveIndicatorChanges();
+        dateRanges = TargetsTab.getTargetDateRanges();
+        for (let dateRange of dateRanges) {
+            rangeStart = new Date(dateRange.split(' - ')[0]);
+            rangeEnd = new Date(dateRange.split(' - ')[1]);
+            diff = DateMath.diff(rangeStart, rangeEnd, 'year', true);
+            expect(Math.round(diff) == 1);
+        }
+
+        let inputBoxes = TargetsTab.getTargetInputBoxes();
+        let targetCount = inputBoxes.length;
+        for(let inputBox of inputBoxes) {
+            if (inputBox.getValue() == '') {
+                inputBox.setValue(1);
+            }
+        }
+        TargetsTab.saveIndicatorChanges();
     });
 
-    it('for quarterly periodic targets should be correct', function() {
+    it('to pre-existing quarterly periodic targets should produce valid data ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
         TargetsTab.setTargetFrequency('Quarterly');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(1);
-        //TargetsTab.setUnitOfMeasure('Doodles per desk');
+        TargetsTab.setUnitOfMeasure('Hairballs per hatrack');
         TargetsTab.setLoPTarget(116);
         TargetsTab.setBaseline(117);
-        // Save changes
         TargetsTab.saveIndicatorChanges();
 
-        // Validation:
         let dateRanges = TargetsTab.getTargetDateRanges();
         let rangeStart, rangeEnd, diff;
+        TargetsTab.addTarget();
         for (let dateRange of dateRanges) {
             rangeStart = new Date(dateRange.split(' - ')[0]);
             rangeEnd = new Date(dateRange.split(' - ')[1]);
@@ -128,23 +189,40 @@ describe('Adding target date ranges', function() {
             diff = DateMath.diff(rangeStart, rangeEnd, 'month', true);
             expect(Math.round(diff) == 3);
         }
+
+        TargetsTab.saveIndicatorChanges();
+        dateRanges = TargetsTab.getTargetDateRanges();
+        for (let dateRange of dateRanges) {
+            rangeStart = new Date(dateRange.split(' - ')[0]);
+            rangeEnd = new Date(dateRange.split(' - ')[1]);
+            diff = DateMath.diff(rangeStart, rangeEnd, 'year', true);
+            expect(Math.round(diff) == 1);
+        }
+
+        let inputBoxes = TargetsTab.getTargetInputBoxes();
+        let targetCount = inputBoxes.length;
+        for(let inputBox of inputBoxes) {
+            if (inputBox.getValue() == '') {
+                inputBox.setValue(1);
+            }
+        }
+        TargetsTab.saveIndicatorChanges();
     });
 
-    it('for monthly periodic targets should be correct', function() {
+    it('to pre-existing monthly periodic targets should produce valid data ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
         TargetsTab.setTargetFrequency('Tri-annual');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(1);
-        //TargetsTab.setUnitOfMeasure('Egrets per egress');
+        TargetsTab.setUnitOfMeasure('Imps per invocation');
         TargetsTab.setLoPTarget(140);
         TargetsTab.setBaseline(141);
-        // Save changes
         TargetsTab.saveIndicatorChanges();
 
-        // Validation:
         let dateRanges = TargetsTab.getTargetDateRanges();
         let rangeStart, rangeEnd, diff;
+        TargetsTab.addTarget();
         for (let dateRange of dateRanges) {
             rangeStart = new Date(dateRange.split(' - ')[0]);
             rangeEnd = new Date(dateRange.split(' - ')[1]);
@@ -152,6 +230,24 @@ describe('Adding target date ranges', function() {
             diff = DateMath.diff(rangeStart, rangeEnd, 'month', true);
             expect(Math.round(diff) == 1);
         }
+
+        TargetsTab.saveIndicatorChanges();
+        dateRanges = TargetsTab.getTargetDateRanges();
+        for (let dateRange of dateRanges) {
+            rangeStart = new Date(dateRange.split(' - ')[0]);
+            rangeEnd = new Date(dateRange.split(' - ')[1]);
+            diff = DateMath.diff(rangeStart, rangeEnd, 'year', true);
+            expect(Math.round(diff) == 1);
+        }
+
+        let inputBoxes = TargetsTab.getTargetInputBoxes();
+        let targetCount = inputBoxes.length;
+        for(let inputBox of inputBoxes) {
+            if (inputBox.getValue() == '') {
+                inputBox.setValue(1);
+            }
+        }
+        TargetsTab.saveIndicatorChanges();
     });
 });
 
