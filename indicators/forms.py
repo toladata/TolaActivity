@@ -190,7 +190,7 @@ class IPTTReportQuickstartForm(forms.Form):
     QUARTERS = 4
     MONTHS = 5
     TIMEPERIODS_CHOICES = (
-        (EMPTY, _("---------")),
+        (EMPTY, "---------"),
         (YEARS, _("Years")),
         (SEMIANNUAL, _("Semi-annual periods")),
         (TRIANNUAL, _("Tri-annual periods")),
@@ -205,7 +205,7 @@ class IPTTReportQuickstartForm(forms.Form):
         (MOST_RECENT, _("Most recent"))
     )
 
-    EMPTY_OPTION = (EMPTY, _("---------"))
+    EMPTY_OPTION = (EMPTY, "---------")
     TARGETPERIODS_CHOICES = (EMPTY_OPTION,) + Indicator.TARGET_FREQUENCIES
 
     program = forms.ModelChoiceField(queryset=Program.objects.none())

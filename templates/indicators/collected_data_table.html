@@ -283,9 +283,7 @@
                         {% endifequal %}
 
                         {% ifequal err 'Error_2' %}
-                            {% blocktrans %}
-                                This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
-                            {% endblocktrans %}
+                                {% trans 'This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.' %}
                         {% endifequal %}
 
                         {% ifequal err 'Error_3' %}

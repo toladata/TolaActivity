@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-06 11:27-0700\n"
+"POT-Creation-Date: 2018-04-13 11:38-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,53 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: indicators/forms.py:194
+msgid "Years"
+msgstr "Années"
+
+#: indicators/forms.py:195
+msgid "Semi-annual periods"
+msgstr "Périodes semi-annuelles"
+
+#: indicators/forms.py:196
+msgid "Tri-annual periods"
+msgstr "Périodes tri-annuelles"
+
+#: indicators/forms.py:197
+msgid "Quarters"
+msgstr "Trimestres"
+
+#: indicators/forms.py:198
+msgid "Months"
+msgstr "Mois"
+
+#: indicators/forms.py:204
+msgid "Show all"
+msgstr "Montre tout"
+
+#: indicators/forms.py:205
+msgid "Most recent"
+msgstr "Le plus récent"
+
+#: indicators/forms.py:230
+msgid "PROGRAM"
+msgstr "PROGRAMME"
+
+#: indicators/forms.py:231
+msgid "TIME PERIODS"
+msgstr "PÉRIODES DE TEMPS"
+
+#: indicators/forms.py:232
+msgid "enter a number"
+msgstr "entrez un nombre"
+
+#: indicators/forms.py:233
+msgid "TARGET PERIODS"
+msgstr "PERIODES CIBLES"
+
 #: indicators/models.py:23 indicators/models.py:70 indicators/models.py:99
 #: indicators/models.py:128 indicators/models.py:274 indicators/models.py:379
+#: templates/indicators/grid_report.html:29 templates/indicators/home.html:38
 msgid "Name"
 msgstr "Nom"
 
@@ -37,6 +82,7 @@ msgstr "Propriétaire à distance"
 
 #: indicators/models.py:29 indicators/models.py:72 templates/index.html:291
 #: templates/index.html:333 templates/index.html:355
+#: templates/indicators/indicator_create.html:72
 msgid "Country"
 msgstr "Pays"
 
@@ -54,7 +100,7 @@ msgstr "Compte unique"
 #: indicators/models.py:239 indicators/models.py:258 indicators/models.py:277
 #: indicators/models.py:553 indicators/models.py:651
 msgid "Create date"
-msgstr "date de création"
+msgstr "Date de création"
 
 #: indicators/models.py:34 indicators/models.py:54 indicators/models.py:76
 #: indicators/models.py:105 indicators/models.py:132 indicators/models.py:163
@@ -65,6 +111,7 @@ msgid "Edit date"
 msgstr "Date d'édition"
 
 #: indicators/models.py:50 indicators/models.py:362
+#: templates/indicators/grid_report.html:24
 msgid "Indicator type"
 msgstr "Type d`indicateur"
 
@@ -74,15 +121,21 @@ msgstr "Type d`indicateur"
 msgid "Description"
 msgstr "La description"
 
-#: indicators/models.py:57
+#: indicators/models.py:57 templates/indicators/home.html:37
+#: templates/indicators/program_indicators_table.html:5
 msgid "Indicator Type"
 msgstr "Type d`indicateur"
 
 #: indicators/models.py:79 templates/index.html:376
+#: templates/indicators/grid_report.html:27
 msgid "Strategic Objectives"
 msgstr "Objectifs stratégiques"
 
 #: indicators/models.py:101 indicators/models.py:525 indicators/models.py:737
+#: templates/indicators/collecteddata_list.html:126
+#: templates/indicators/data_report.html:100
+#: templates/indicators/indicator_create.html:82
+#: templates/indicators/report.html:98
 msgid "Program"
 msgstr "Programme"
 
@@ -98,7 +151,8 @@ msgstr "Type de désagrégation"
 msgid "Standard (TolaData Admins Only)"
 msgstr "Standard (Administrateurs TolaData uniquement)"
 
-#: indicators/models.py:179
+#: indicators/models.py:179 templates/indicators/disaggregation_print.html:58
+#: templates/indicators/disaggregation_report.html:38
 msgid "Label"
 msgstr "Label"
 
@@ -110,7 +164,8 @@ msgstr "Tri personnalisé"
 msgid "Disaggregation label"
 msgstr "Label de désagrégation"
 
-#: indicators/models.py:197
+#: indicators/models.py:197 templates/indicators/disaggregation_print.html:59
+#: templates/indicators/disaggregation_report.html:39
 msgid "Value"
 msgstr "Valeur"
 
@@ -118,7 +173,8 @@ msgstr "Valeur"
 msgid "Frequency"
 msgstr "Fréquence"
 
-#: indicators/models.py:224
+#: indicators/models.py:224 templates/indicators/grid_report.html:41
+#: templates/indicators/report.html:110
 msgid "Reporting Frequency"
 msgstr "Fréquence de Déclaration"
 
@@ -142,12 +198,14 @@ msgstr "Feed url"
 msgid "External Service"
 msgstr "Service Externe"
 
-#: indicators/models.py:294
+#: indicators/models.py:295
 msgid "External service"
 msgstr "Service externe"
 
 #: indicators/models.py:296
-msgid "Full url"
+#, fuzzy
+#| msgid "Full url"
+msgid "Full URL"
 msgstr "URL complète"
 
 #: indicators/models.py:297
@@ -160,7 +218,7 @@ msgstr "Record de service externe"
 
 #: indicators/models.py:331
 msgid "Life of Program (LoP) only"
-msgstr "Durée de vie du programme (LoP) seulement"
+msgstr "Vie du programme (VdP) seulement"
 
 #: indicators/models.py:332
 msgid "Midline and endline"
@@ -210,7 +268,11 @@ msgstr "Positif (+)"
 msgid "Negative (-)"
 msgstr "Négatif (-)"
 
-#: indicators/models.py:366
+#: indicators/models.py:366 templates/indicators/collecteddata_list.html:132
+#: templates/indicators/data_report.html:106
+#: templates/indicators/grid_report.html:25
+#: templates/indicators/report.html:104 templates/indicators/tva_print.html:50
+#: templates/indicators/tva_report.html:29
 msgid "Level"
 msgstr "Niveau"
 
@@ -222,15 +284,18 @@ msgstr "Objectif du programme"
 msgid "Country Strategic Objective"
 msgstr "Objectifs stratégiques du pays"
 
-#: indicators/models.py:383
+#: indicators/models.py:383 templates/indicators/disaggregation_report.html:30
+#: templates/indicators/grid_report.html:28 templates/indicators/home.html:39
 msgid "Number"
 msgstr "Nombre"
 
-#: indicators/models.py:387
+#: indicators/models.py:387 templates/indicators/grid_report.html:31
+#: templates/indicators/home.html:40
 msgid "Source"
 msgstr "Source"
 
-#: indicators/models.py:391
+#: indicators/models.py:391 templates/indicators/grid_report.html:32
+#: templates/indicators/home.html:41
 msgid "Definition"
 msgstr "Définition"
 
@@ -246,7 +311,10 @@ msgstr "Unité de mesure*"
 msgid "Unit Type"
 msgstr "Type d`Unité"
 
-#: indicators/models.py:414
+#: indicators/models.py:414 templates/indicators/disaggregation_print.html:54
+#: templates/indicators/disaggregation_report.html:34
+#: templates/indicators/grid_report.html:33
+#: templates/indicators/report.html:107
 msgid "Disaggregation"
 msgstr "Désagrégation"
 
@@ -260,7 +328,7 @@ msgstr "N'est pas applicable"
 
 #: indicators/models.py:426
 msgid "Life of Program (LoP) target*"
-msgstr "Cible de la durée de vie du programme (LoP)"
+msgstr "Cible de la vie du programme (VdP)"
 
 #: indicators/models.py:433
 msgid "Direction of Change"
@@ -294,7 +362,7 @@ msgstr "Nombre de périodes cibles*"
 msgid "Means of Verification / Data Source"
 msgstr "Moyens de vérification / source de données"
 
-#: indicators/models.py:472
+#: indicators/models.py:472 templates/indicators/grid_report.html:37
 msgid "Data Collection Method"
 msgstr "Méthode de collecte de données"
 
@@ -310,11 +378,12 @@ msgstr "Points de données"
 msgid "Responsible Person(s) and Team"
 msgstr "Personne(s) responsable(s) et équipe"
 
-#: indicators/models.py:492
+#: indicators/models.py:492 templates/indicators/grid_report.html:39
+#: templates/indicators/report.html:108
 msgid "Method of Analysis"
 msgstr "Méthode d'Analyse"
 
-#: indicators/models.py:497
+#: indicators/models.py:497 templates/indicators/grid_report.html:40
 msgid "Information Use"
 msgstr "Utilisation de l'Information"
 
@@ -334,11 +403,14 @@ msgstr "Problèmes de données"
 msgid "Changes to Indicator"
 msgstr "Changements à l'indicateur"
 
-#: indicators/models.py:521
+#: indicators/models.py:521 templates/indicators/grid_report.html:42
 msgid "Comments"
 msgstr "Commentaires"
 
-#: indicators/models.py:529
+#: indicators/models.py:529 templates/indicators/collecteddata_list.html:134
+#: templates/indicators/data_report.html:108
+#: templates/indicators/program_indicators_table.html:9
+#: templates/indicators/report.html:106 templates/indicators/tva_report.html:30
 msgid "Sector"
 msgstr "Secteur"
 
@@ -363,6 +435,11 @@ msgid "Notes"
 msgstr "Commentaire"
 
 #: indicators/models.py:568 indicators/models.py:629 indicators/models.py:722
+#: templates/indicators/collecteddata_list.html:127
+#: templates/indicators/disaggregation_print.html:52
+#: templates/indicators/disaggregation_report.html:31
+#: templates/indicators/report.html:99 templates/indicators/tva_print.html:48
+#: templates/indicators/tva_report.html:27
 msgid "Indicator"
 msgstr "Indicateurs"
 
@@ -371,6 +448,8 @@ msgid "Period"
 msgstr "Période"
 
 #: indicators/models.py:637 templates/index.html:246
+#: templates/indicators/collected_data_report_table.html:7
+#: templates/indicators/collecteddata_list.html:142
 msgid "Target"
 msgstr "Cible"
 
@@ -391,12 +470,14 @@ msgid "Periodic target"
 msgstr "Cible périodique"
 
 #: indicators/models.py:706
+#: templates/indicators/collected_data_report_table.html:8
+#: templates/indicators/collecteddata_list.html:148
 msgid "Actual"
 msgstr "Rapport Réel"
 
 #: indicators/models.py:710
 msgid "Cumulative Actuals"
-msgstr "Rapport réel cumulatifs"
+msgstr "Rapports réels cumulés"
 
 #: indicators/models.py:715
 msgid "Disaggregation Value"
@@ -404,7 +485,7 @@ msgstr "Valeur de désagrégation"
 
 #: indicators/models.py:719
 msgid "Remarks/comments"
-msgstr "Remarques / commentaires"
+msgstr "Remarques/commentaires"
 
 #: indicators/models.py:727 templates/index.html:274
 msgid "Project Initiation"
@@ -432,33 +513,35 @@ msgstr "Originaire de"
 
 #: indicators/models.py:758
 msgid ""
-"Would you like to update the achieved total with the row count from "
+"Would you like to update the achieved total with the         row count from "
 "TolaTables?"
 msgstr ""
 "Souhaitez-vous mettre à jour le total atteint avec le nombre de lignes de "
 "TolaTables?"
 
-#: templates/base.html:96 templates/base.html:135
+#: templates/base.html:96 templates/base.html:127
+#: templates/indicators/data_report.html:7
+#: templates/indicators/grid_report.html:6 templates/indicators/report.html:9
 msgid "Reports"
 msgstr "Rapports"
 
-#: templates/base.html:98 templates/base.html:137
+#: templates/base.html:98 templates/base.html:129
 msgid "Program Report"
 msgstr "Rapport De Programme"
 
-#: templates/base.html:99 templates/base.html:139
+#: templates/base.html:99 templates/base.html:131
 msgid "Project Report"
 msgstr "Rapport De Projet"
 
-#: templates/base.html:100 templates/base.html:140
+#: templates/base.html:100 templates/base.html:132
 msgid "Indicator Data Report"
 msgstr "Rapport De Données D'Indicateur"
 
-#: templates/base.html:101 templates/base.html:141
+#: templates/base.html:101 templates/base.html:133
 msgid "Indicator Visual Report"
 msgstr "Rapport Visuel D'Indicateur"
 
-#: templates/base.html:102 templates/base.html:142
+#: templates/base.html:102 templates/base.html:134
 msgid "Indicator Library"
 msgstr "Bibliothèque D'Indicateurs"
 
@@ -483,6 +566,7 @@ msgid "Documents"
 msgstr "Documents"
 
 #: templates/base.html:118 templates/index.html:438
+#: templates/indicators/data_report.html:32
 msgid "Sites"
 msgstr "Des Sites"
 
@@ -491,54 +575,48 @@ msgid "Stakeholders"
 msgstr "Les Parties Prenantes"
 
 #: templates/base.html:123 templates/index.html:463
+#: templates/indicators/collecteddata_form.html:5
+#: templates/indicators/collecteddata_list.html:7
+#: templates/indicators/data_report.html:6
+#: templates/indicators/disaggregation_report.html:7
+#: templates/indicators/filter.html:97 templates/indicators/grid_report.html:5
+#: templates/indicators/home.html:5 templates/indicators/home.html:27
+#: templates/indicators/indicator_create.html:5
+#: templates/indicators/report.html:7 templates/indicators/tva_report.html:8
 msgid "Indicators"
 msgstr "Indicateurs"
 
-#: templates/base.html:126
-msgid "Form Library"
-msgstr "Bibliothèque De Formulaire"
-
-#: templates/base.html:128
-msgid "Training"
-msgstr "Entraînement"
-
-#: templates/base.html:129
-msgid "Distributions"
-msgstr "Distributions"
-
 #: templates/base.html:130
-msgid "Beneficiaries"
-msgstr "Les Bénéficiaires"
-
-#: templates/base.html:138
 msgid "Program Dashboards"
 msgstr "Tableaux De Bord Du Programme"
 
-#: templates/base.html:143
+#: templates/base.html:135
 msgid "Target vs Actual Report"
 msgstr "Cible vs Rapport Réel"
 
-#: templates/base.html:144
+#: templates/base.html:136 templates/indicators/disaggregation_report.html:8
+#: templates/indicators/disaggregation_report.html:13
+#: templates/indicators/disaggregation_report.html:123
 msgid "Indicator Disaggregation Report"
 msgstr "Rapport De Désagrégation Des Indicateurs"
 
-#: templates/base.html:182
+#: templates/base.html:174
 msgid "Login with Tola account"
 msgstr "Connectez-vous avec votre compte Tola"
 
-#: templates/base.html:231
+#: templates/base.html:225
 msgid "Documentation"
 msgstr "Documentation"
 
-#: templates/base.html:233
+#: templates/base.html:227
 msgid "FAQ"
 msgstr "FAQ"
 
-#: templates/base.html:235
+#: templates/base.html:229
 msgid "Feedback"
 msgstr "Retour d'information"
 
-#: templates/base.html:237
+#: templates/base.html:231
 msgid "License"
 msgstr "Licence"
 
@@ -580,19 +658,26 @@ msgstr "Ouvert"
 
 #: templates/index.html:75
 msgid "KPI Targets v. Actuals"
-msgstr "IPC Cible vs Rapport Réel"
+msgstr "KPI Cibles vs Rapports Réels"
 
 #: templates/index.html:83
 msgid "Results"
 msgstr "Résultats"
 
-#: templates/index.html:97
+#: templates/index.html:97 templates/indicators/indicator_form_helper.html:26
+#: templates/indicators/indicator_graphs.html:51
 msgid "Targets"
 msgstr "Cibles"
 
 #: templates/index.html:100 templates/index.html:246
+#: templates/indicators/collecteddata_form_modal.html:254
+#: templates/indicators/collecteddata_form_modal.html:290
+#: templates/indicators/collecteddata_form_modal.html:321
+#: templates/indicators/indicator_graphs.html:56
+#: templates/indicators/tva_print.html:53
+#: templates/indicators/tva_report.html:32
 msgid "Actuals"
-msgstr "Rapport Réel"
+msgstr "Rapports Réels"
 
 #: templates/index.html:274
 msgid "is awaiting your"
@@ -606,7 +691,7 @@ msgstr "approbation"
 msgid "Tola-Activity Dashboard"
 msgstr "Tableaux De Bord Tola-Activity"
 
-#: templates/index.html:291
+#: templates/index.html:291 templates/indicators/dashboard.html:3
 msgid "Dashboard"
 msgstr "Tableaux De Bord"
 
@@ -646,7 +731,7 @@ msgstr "# d'indicateurs"
 
 #: templates/index.html:389
 msgid "Target/Actuals"
-msgstr "Cible/Rapport Réel"
+msgstr "Cible/Rapports Réels"
 
 #: templates/index.html:401
 msgid "No indicators currently aligned with country strategic objectives."
@@ -671,7 +756,7 @@ msgstr "Total des programmes"
 
 #: templates/index.html:422
 msgid "Using Workflow"
-msgstr "En utilisant Flux de travail"
+msgstr "En utilisant flux de travail"
 
 #: templates/index.html:425
 msgid "Adoption of Indicator"
@@ -693,6 +778,859 @@ msgstr "Total des données collectées"
 msgid "Offline (No map provided)"
 msgstr "Hors ligne (aucune carte fournie)"
 
+#: templates/indicators/collected_data_report_table.html:5
+#: templates/indicators/collecteddata_list.html:138
+msgid "Date Collected"
+msgstr "Date de collecte"
+
+#: templates/indicators/collected_data_report_table.html:6
+#, fuzzy
+#| msgid "W/Evidence"
+msgid "Evidence"
+msgstr "Avec des preuves"
+
+#: templates/indicators/collected_data_report_table.html:19
+msgid "Sum:"
+msgstr "Somme"
+
+#: templates/indicators/collected_data_table.html:20
+msgid "TARGET PERIOD"
+msgstr "PÉRIODE CIBLE"
+
+#: templates/indicators/collected_data_table.html:21
+msgid "TARGET"
+msgstr "CIBLE"
+
+#: templates/indicators/collected_data_table.html:22
+msgid "ACTUAL"
+msgstr "RAPPORT RÉEL"
+
+#: templates/indicators/collected_data_table.html:23
+msgid "%% MET"
+msgstr "%% ATTEINT"
+
+#: templates/indicators/collected_data_table.html:24
+msgid "DATA COLLECTED"
+msgstr "DONNÉES COLLECTÉES"
+
+#: templates/indicators/collected_data_table.html:25
+msgid "EVIDENCE"
+msgstr "PREUVE"
+
+#: templates/indicators/collected_data_table.html:64
+#: templates/indicators/collected_data_table.html:249
+msgid "Average"
+msgstr "Moyenne"
+
+#: templates/indicators/collected_data_table.html:64
+#: templates/indicators/collected_data_table.html:249
+msgid "avg."
+msgstr "moy."
+
+#: templates/indicators/collected_data_table.html:132
+#: templates/indicators/collected_data_table.html:136
+#: templates/indicators/collected_data_table.html:195
+#: templates/indicators/collected_data_table.html:199
+msgid "View Project"
+msgstr "Voir le projet"
+
+#: templates/indicators/collected_data_table.html:154
+msgid "No data collected"
+msgstr "Aucune donnée collectée"
+
+#: templates/indicators/collected_data_table.html:229
+msgid "Life of Program"
+msgstr "Vie du programme"
+
+#: templates/indicators/collected_data_table.html:282
+#: templates/indicators/collecteddata_form_common_js.html:64
+msgid "Targets are not set up for this indicator."
+msgstr "Les cibles ne sont pas configurées pour cet indicateur."
+
+#: templates/indicators/collected_data_table.html:282
+#: templates/indicators/collecteddata_form_common_js.html:64
+msgid "Start by selecting a target frequency."
+msgstr "Commencez par sélectionner une fréquence cible."
+
+#: templates/indicators/collected_data_table.html:286
+msgid ""
+"This record is not associated with a target. Open the data record and select "
+"an option from the \"Measure against target\" menu."
+msgstr ""
+"Cet enregistrement n'est pas associé à une cible. Ouvrir l'enregistrement et "
+"sélectionner une option du menu \"Mesurer par rapport à la cible\"."
+
+#: templates/indicators/collected_data_table.html:290
+#: templates/indicators/collecteddata_form_common_js.html:67
+msgid ""
+"This date falls outside the range of your target periods. You can change the "
+"date or"
+msgstr ""
+"Cette date est en dehors de la plage de vos périodes cibles. Vous pouvez "
+"changer la date ou"
+
+#: templates/indicators/collected_data_table.html:290
+msgid "create additional target periods."
+msgstr "créer des périodes cibles supplémentaires."
+
+#: templates/indicators/collected_data_table.html:304
+msgid "Organize your data for this indicator."
+msgstr "Organisez vos données pour cet indicateur."
+
+#: templates/indicators/collecteddata_confirm_delete.html:4
+msgid "Collected Indicator Data Confirm Delete"
+msgstr "Données de l'indicateur collecté Confirmer Confirmer Supprimir"
+
+#: templates/indicators/collecteddata_confirm_delete.html:9
+msgid "Are you sure you want to delete the collected data?"
+msgstr "Êtes-vous sûr de vouloir supprimer les données collectées?"
+
+#: templates/indicators/collecteddata_form.html:6
+msgid "Output Form"
+msgstr "Formulaire de sortie"
+
+#: templates/indicators/collecteddata_form.html:10
+#: templates/indicators/collecteddata_list.html:17
+msgid "Collected Indicator Data"
+msgstr "Données de l'indicateur collecté"
+
+#: templates/indicators/collecteddata_form_common_js.html:17
+#: templates/indicators/collecteddata_form_common_js.html:37
+msgid "danger"
+msgstr "danger"
+
+#: templates/indicators/collecteddata_form_common_js.html:17
+msgid "Please complete all required fields."
+msgstr "S'il-vous-plaît complétez tous les champs requis."
+
+#: templates/indicators/collecteddata_form_common_js.html:34
+msgid "Success, form data saved."
+msgstr "Succès, les données de formulaire enregistrées."
+
+#: templates/indicators/collecteddata_form_common_js.html:37
+msgid "Could not save form."
+msgstr "Impossible d'enregistrer le formulaire."
+
+#: templates/indicators/collecteddata_form_common_js.html:43
+#: templates/indicators/collecteddata_form_common_js.html:51
+#: templates/indicators/collecteddata_form_common_js.html:55
+msgid "change"
+msgstr "change"
+
+#: templates/indicators/collecteddata_form_common_js.html:89
+msgid "Please enter a number with no letters or symbols."
+msgstr "Veuillez entrer un nombre sans lettres ou symboles."
+
+#: templates/indicators/collecteddata_form_common_js.html:102
+#: templates/indicators/indicator_form_common_js.html:500
+#: templates/indicators/indicator_form_common_js.html:517
+#: templates/indicators/indicator_form_common_js.html:541
+#: templates/workflow/documentation_form.html:113
+#: templates/workflow/documentation_form.html:140
+msgid "Please complete this field."
+msgstr "Merci de compléter ce champ."
+
+#: templates/indicators/collecteddata_form_common_js.html:105
+#: templates/indicators/indicator_form_common_js.html:543
+msgid "Please enter a valid date."
+msgstr "Veuillez entrer une date valide."
+
+#: templates/indicators/collecteddata_form_modal.html:217
+#: templates/indicators/collecteddata_form_modal.html:253
+#: templates/indicators/collecteddata_form_modal.html:289
+#: templates/indicators/collecteddata_form_modal.html:320
+msgid "Disaggregation Level"
+msgstr "Niveau de désagrégation"
+
+#: templates/indicators/collecteddata_form_modal.html:236
+msgid "Standard Disaggregation Levels Not Entered"
+msgstr "Niveaux de désagrégation standard non renseignés"
+
+#: templates/indicators/collecteddata_form_modal.html:237
+msgid ""
+"Standard disaggregations are entered by the administrator for the entire "
+"organizations.  If you are not seeing any here, please contact your system "
+"administrator."
+msgstr ""
+"Les désagrégations standard sont entrées par l'administrateur pour "
+"l'ensembleorganisations. Si vous n'en voyez pas ici, veuillez contacter "
+"votre systèmeadministrateur."
+
+#: templates/indicators/collecteddata_form_modal.html:248
+msgid "New Disaggregations"
+msgstr "Nouvelles Désagrégation"
+
+#: templates/indicators/collecteddata_form_modal.html:271
+msgid "Disaggregation Levels Not Entered For This Indicator"
+msgstr "Niveaux de désagrégation non renseignés pour cet indicateur"
+
+#: templates/indicators/collecteddata_form_modal.html:272
+msgid "Add a Disaggregation"
+msgstr "Ajouter une désagrégation"
+
+#: templates/indicators/collecteddata_form_modal.html:284
+msgid "Existing Disaggregations"
+msgstr "Désagrégations existantes"
+
+#: templates/indicators/collecteddata_form_modal.html:315
+msgid "Existing Standard Disaggregations"
+msgstr "Désagrégations standard existantes"
+
+#: templates/indicators/collecteddata_import.html:7
+msgid "Import from Tola Tables"
+msgstr "Importer des tables Tola"
+
+#: templates/indicators/collecteddata_import.html:69
+msgid "Import Indicator Evidence from"
+msgstr "Preuve d'indicateur d'importation de"
+
+#: templates/indicators/collecteddata_import.html:69
+#: templates/indicators/collecteddata_import.html:75
+msgid "Tola Tables"
+msgstr "Tola Tables"
+
+#: templates/indicators/collecteddata_import.html:70
+msgid ""
+"Link one of your Tola Tables or a Table shared with you as your indicator "
+"evidence."
+msgstr ""
+"Liez une de vos Tola Tables ou une Table partagée avec vous comme "
+"indicateurpreuve."
+
+#: templates/indicators/collecteddata_import.html:81
+msgid "Type the name of the Table in the box above to search."
+msgstr "Tapez le nom de la Table dans la boîte ci-dessus pour rechercher."
+
+#: templates/indicators/collecteddata_list.html:9
+#: templates/indicators/collecteddata_list.html:160
+#, fuzzy
+#| msgid "Indicator Data Report"
+msgid "Collected Indicator Data Report"
+msgstr "Rapport de données d'indicateur collectées"
+
+#: templates/indicators/collecteddata_list.html:118
+#: templates/indicators/collecteddata_list.html:119
+#: templates/indicators/collecteddata_list.html:120
+#: templates/indicators/data_report.html:92
+#: templates/indicators/data_report.html:93
+#: templates/indicators/data_report.html:94
+msgid "visible"
+msgstr "visible"
+
+#: templates/indicators/collecteddata_list.html:118
+#: templates/indicators/collecteddata_list.html:119
+#: templates/indicators/collecteddata_list.html:120
+#: templates/indicators/data_report.html:92
+#: templates/indicators/data_report.html:93
+#: templates/indicators/data_report.html:94
+msgid "targets"
+msgstr "cibles"
+
+#: templates/indicators/collecteddata_list.html:123
+#: templates/indicators/data_report.html:97 templates/indicators/report.html:95
+#: templates/indicators/tva_report.html:23
+msgid "PID"
+msgstr "PID"
+
+#: templates/indicators/collecteddata_list.html:124
+#: templates/indicators/data_report.html:98 templates/indicators/report.html:96
+#: templates/indicators/tva_report.html:24
+msgid "IID"
+msgstr "IID"
+
+#: templates/indicators/collecteddata_list.html:125
+#: templates/indicators/data_report.html:99 templates/indicators/report.html:97
+#: templates/indicators/tva_report.html:25
+msgid "ITID"
+msgstr "ITID"
+
+#: templates/indicators/collecteddata_list.html:127
+#: templates/indicators/data_report.html:101
+msgid "name"
+msgstr "nom"
+
+#: templates/indicators/collecteddata_list.html:133
+#: templates/indicators/data_report.html:107
+#: templates/indicators/disaggregation_print.html:57
+#: templates/indicators/disaggregation_report.html:37
+#: templates/indicators/report.html:105 templates/indicators/tva_report.html:28
+msgid "Type"
+msgstr "Type"
+
+#: templates/indicators/collecteddata_list.html:135
+#: templates/indicators/data_report.html:109
+#: templates/indicators/grid_report.html:34
+#: templates/indicators/report.html:111
+msgid "Baseline"
+msgstr "Baseline"
+
+#: templates/indicators/collecteddata_list.html:136
+#: templates/indicators/data_report.html:110
+#: templates/indicators/disaggregation_report.html:32
+#: templates/indicators/grid_report.html:35
+#: templates/indicators/report.html:112 templates/indicators/tva_print.html:52
+#: templates/indicators/tva_report.html:31
+msgid "LOP Target"
+msgstr "DVP Cible"
+
+#: templates/indicators/collecteddata_list.html:137
+#: templates/indicators/grid_report.html:30
+msgid "KPI"
+msgstr "KPI"
+
+#: templates/indicators/collecteddata_list.html:148
+msgid "achieved"
+msgstr "atteint"
+
+#: templates/indicators/collecteddata_list.html:161
+#: templates/indicators/disaggregation_report.html:124
+msgid "Export to CSV"
+msgstr "Exporter au format CSV"
+
+#: templates/indicators/collecteddata_list.html:242
+#: templates/indicators/collecteddata_list.html:265
+msgid "Targeted Total:"
+msgstr "Total ciblé:"
+
+#: templates/indicators/collecteddata_list.html:243
+#: templates/indicators/collecteddata_list.html:266
+msgid "Achieved Total:"
+msgstr "Total atteint:"
+
+#: templates/indicators/collecteddata_list.html:250
+msgid "Start Date:"
+msgstr "Date de début"
+
+#: templates/indicators/collecteddata_list.html:254
+msgid "End Date:"
+msgstr "Date de fin"
+
+#: templates/indicators/dashboard.html:6
+msgid "Dashboard report on indicator status by Country and Program"
+msgstr ""
+"Rapport de tableau de bord sur l'état des indicateurs par pays et par "
+"programme"
+
+#: templates/indicators/data_report.html:15
+msgid "Table"
+msgstr "Table"
+
+#: templates/indicators/data_report.html:16
+msgid "Map"
+msgstr "Carte"
+
+#: templates/indicators/data_report.html:17
+msgid "Graph"
+msgstr "Graphique"
+
+#: templates/indicators/data_report.html:24 templates/indicators/report.html:15
+msgid "Indicator Report"
+msgstr "Rapport D'Indicateur"
+
+#: templates/indicators/data_report.html:109
+#: templates/indicators/data_report.html:110
+#: templates/indicators/data_report.html:112
+#: templates/indicators/report.html:98 templates/indicators/report.html:99
+#: templates/indicators/report.html:104 templates/indicators/report.html:106
+#: templates/indicators/report.html:107 templates/indicators/report.html:108
+#: templates/indicators/report.html:109 templates/indicators/report.html:110
+#: templates/indicators/report.html:111 templates/indicators/report.html:112
+#: templates/indicators/report.html:113 templates/indicators/report.html:119
+#: templates/indicators/report.html:120 templates/indicators/report.html:121
+#: templates/indicators/report.html:122
+msgid "Not set"
+msgstr "Pas encore défini"
+
+#: templates/indicators/data_report.html:111
+#: templates/indicators/report.html:113
+msgid "External"
+msgstr "Externe"
+
+#: templates/indicators/data_report.html:113
+#: templates/indicators/report.html:114
+msgid "Supporting Data"
+msgstr "Données à l'appui"
+
+#: templates/indicators/disaggregation_print.html:4
+#: templates/indicators/tva_print.html:3
+#: templates/indicators/tva_report.html:10
+msgid "TvA Report"
+msgstr "Rapports TvA"
+
+#: templates/indicators/disaggregation_print.html:43
+msgid "Indicator Disaggregation Report for"
+msgstr "Rapport De Désagrégation Des Indicateurs pour"
+
+#: templates/indicators/disaggregation_print.html:51
+msgid "IndicatorID"
+msgstr "IndicateurID"
+
+#: templates/indicators/disaggregation_print.html:53
+msgid "Overall"
+msgstr "Globale "
+
+#: templates/indicators/disaggregation_report.html:33
+msgid "Actual Total"
+msgstr "Total réel"
+
+#: templates/indicators/disaggregation_report.html:64
+msgid "No Disaggregation"
+msgstr "Pas de désagrégation"
+
+#: templates/indicators/disaggregation_report.html:148
+#: templates/indicators/tva_report.html:118
+msgid "Select a program before exporting it to PDF"
+msgstr "Sélectionnez un programme avant de l'exporter en PDF"
+
+#: templates/indicators/filter.html:26 templates/indicators/filter.html:37
+#: templates/indicators/filter.html:48 templates/indicators/home.html:18
+msgid "-- All --"
+msgstr "-- Tout --"
+
+#: templates/indicators/filter.html:61
+msgid "Export to PDF"
+msgstr "Exporter au format PDF"
+
+#: templates/indicators/filter.html:80 templates/indicators/home.html:14
+msgid "Programs"
+msgstr "Programmes"
+
+#: templates/indicators/filter.html:115
+msgid "Types"
+msgstr "Les types"
+
+#: templates/indicators/grid_report.html:26
+msgid "Objectives"
+msgstr "Objectifs"
+
+#: templates/indicators/grid_report.html:36
+#: templates/indicators/report.html:120
+msgid "Means of Verification"
+msgstr "Moyens de vérification"
+
+#: templates/indicators/grid_report.html:38
+msgid "Responsible Person"
+msgstr "Personne responsable"
+
+#: templates/indicators/grid_report.html:72
+msgid "Export All"
+msgstr "Exporter tout"
+
+#: templates/indicators/home.html:8
+msgid "Indicator Planning Tool"
+msgstr "Outil de planification des indicateurs"
+
+#: templates/indicators/home.html:23
+#: templates/indicators/indicator_list.html:55
+#: templates/indicators/indicator_list.html:62
+msgid "New Indicator"
+msgstr "Nouvel indicateur"
+
+#: templates/indicators/home.html:36
+msgid "Date Created"
+msgstr "Date créée"
+
+#: templates/indicators/home.html:51 templates/indicators/report.html:94
+msgid "Edit"
+msgstr "Modifier"
+
+#: templates/indicators/home.html:51
+msgid "Delete"
+msgstr "Supprime?"
+
+#: templates/indicators/home.html:56
+msgid "No Indicators"
+msgstr "Aucun indicateur"
+
+#: templates/indicators/indicator_confirm_delete.html:3
+msgid "Indicator Confirm Delete"
+msgstr "Indicateur Confirmer Supprimer"
+
+#: templates/indicators/indicator_confirm_delete.html:8
+msgid "Are you sure you want to delete?"
+msgstr "Etes-vous sûr que vous voulez supprimer?"
+
+#: templates/indicators/indicator_create.html:6
+#: templates/indicators/indicator_form.html:6
+msgid "Indicator Form"
+msgstr "Formulaire des indicateurs"
+
+#: templates/indicators/indicator_create.html:9
+msgid "Create an Indicator"
+msgstr "Créer un indicateur"
+
+#: templates/indicators/indicator_create.html:28
+msgid "Form Help/Guidance"
+msgstr "Formulaire d'aide/d'orientation"
+
+#: templates/indicators/indicator_create.html:47
+msgid "Create an Indicator from an External Template."
+msgstr "Créer un indicateur à partir d'un modèle externe."
+
+#: templates/indicators/indicator_create.html:48
+msgid ""
+"External template indicators include agency standard indicator feeds or "
+"donor required indicators from a web service.  Skip The service section if "
+"creating a "
+msgstr ""
+"Les indicateurs de modèles externes incluent les flux d'indicateurs standard de l'agence ou"
+"donneur requis des indicateurs d'un service Web. Sauter la section de service si "
+"créer un "
+
+#: templates/indicators/indicator_create.html:53
+msgid "Indicator Service Templates (leave blank for custom indicators)"
+msgstr "Indicateurs de service de modèle (laissez vide pour les indicateurs personnalisés)"
+
+#: templates/indicators/indicator_create.html:55
+#: templates/indicators/indicator_create.html:66
+#: templates/indicators/indicator_create.html:74
+#: templates/indicators/indicator_create.html:84
+msgid "-- select --"
+msgstr "-- sélectionner --"
+
+#: templates/indicators/indicator_create.html:60
+msgid "Select an indicator service to select a pre-defined indicator from."
+msgstr "Sélectionnez un service d'indicateur pour sélectionner un indicateur prédéfini de"
+
+#: templates/indicators/indicator_create.html:64
+msgid "Service Indicator (leave blank for custom indicators)"
+msgstr "Indicateur de service (laisser vide pour les indicateurs personnalisés)"
+
+#: templates/indicators/indicator_create.html:68
+msgid ""
+"Type the name of the Indicator in the box above to search, starting with "
+"type then level then title."
+msgstr ""
+"Tapez le nom de l'indicateur dans la boîte ci-dessus pour rechercher, en commençant par"
+"tapez puis niveau puis titre."
+
+#: templates/indicators/indicator_form_common_js.html:71
+msgid "Warning: This action cannot be undone. Removing this target means that"
+msgstr "Attention: Cette action ne peut pas être annulée. Supprimer cette cible signifie que"
+
+#: templates/indicators/indicator_form_common_js.html:71
+msgid ""
+"data record/s will no longer have targets associated with them. \\n"
+"\\nProceed anyway?"
+msgstr ""
+"Les enregistrements de données n'auront plus de cibles associées. \\ n"
+"\\nContinuer malgré tout?"
+
+#: templates/indicators/indicator_form_common_js.html:188
+msgid ""
+"Warning: This action cannot be undone. Any data records assigned to a target "
+"will need to be reassigned.\\n\\n Are you sure you want to remove all "
+"targets?"
+msgstr ""
+
+#: templates/indicators/indicator_form_common_js.html:190
+msgid ""
+"Warning: This action cannot be undone. Are you sure you want to remove all "
+"targets?"
+msgstr ""
+"Attention: Cette action ne peut pas être annulée. Tous les enregistrements de données affectés à une cible "
+"devra être réaffecté.\\n \n Êtes-vous sûr de vouloir tout supprimer"
+"cibles?"
+
+#: templates/indicators/indicator_form_common_js.html:238
+msgid "Warning: This action cannot be undone. If we make these changes,"
+msgstr "Attention: Cette action ne peut pas être annulée. Si nous faisons ces changements,"
+
+#: templates/indicators/indicator_form_common_js.html:238
+msgid ""
+"data record/s will no longer be associated with the Life of Program target, "
+"and will need to be reassigned to new targets. \\n\\nProceed anyway?"
+msgstr ""
+"les enregistrements de données ne seront plus associés à la cible de la vie du programme "
+"et devra être réaffecté à de nouvelles cibles. \\n\\nProceed de toute façon?"
+
+#: templates/indicators/indicator_form_common_js.html:419
+msgid "Add a year"
+msgstr "Ajouter une année"
+
+#: templates/indicators/indicator_form_common_js.html:421
+msgid "Add a semi-annual period"
+msgstr "Ajouter une période semestrielle"
+
+#: templates/indicators/indicator_form_common_js.html:423
+msgid "Add a tri-annual period"
+msgstr "Ajouter une période tri-annuelle"
+
+#: templates/indicators/indicator_form_common_js.html:425
+msgid "Add a quarter"
+msgstr "Ajouter un trimestre"
+
+#: templates/indicators/indicator_form_common_js.html:427
+msgid "Add a month"
+msgstr "Ajouter un mois"
+
+#: templates/indicators/indicator_form_common_js.html:429
+msgid "Add an event"
+msgstr "Ajouter un événement"
+
+#: templates/indicators/indicator_form_common_js.html:431
+msgid "Add a target"
+msgstr "Ajouter une cible"
+
+#: templates/indicators/indicator_form_common_js.html:457
+#: templates/indicators/indicator_form_common_js.html:459
+msgid "Please complete this field. Your baseline can be zero."
+msgstr "Merci de compléter ce champ. Votre ligne de base peut être zéro."
+
+#: templates/indicators/indicator_form_common_js.html:477
+#: templates/indicators/indicator_form_common_js.html:519
+msgid "Please enter a number larger than zero."
+msgstr "Veuillez entrer un nombre supérieur à zéro."
+
+#: templates/indicators/indicator_form_common_js.html:479
+msgid ""
+"Please enter a number larger than zero with no letters or symbols. If your "
+"target is a percentage, describe it in the unit of measure field."
+msgstr ""
+"Veuillez entrer un nombre supérieur à zéro sans lettres ni symboles. Si ton "
+"target est un pourcentage, décrivez-le dans le champ de l'unité de mesure."
+
+#: templates/indicators/indicator_form_common_js.html:515
+msgid "You can start with up to 12 targets and add more later."
+msgstr "Vous pouvez commencer avec jusqu'à 12 cibles et en ajouter plus tard."
+
+#: templates/indicators/indicator_form_common_js.html:592
+msgid ""
+"Please enter a name and target number for every event. Your target value can "
+"be zero."
+msgstr ""
+"Veuillez entrer un nom et un numéro de cible pour chaque événement, votre valeur cible peut"
+"être zéro."
+
+#: templates/indicators/indicator_form_common_js.html:595
+msgid "Please enter a target value. Your target value can be zero."
+msgstr "Veuillez entrer une valeur cible. Votre valeur cible peut être zéro."
+
+#: templates/indicators/indicator_form_common_js.html:651
+msgid "Please complete all required fields in the Targets tab."
+msgstr ""
+
+#: templates/indicators/indicator_form_common_js.html:661
+msgid "Please complete all required fields in the Performance tab."
+msgstr "Veuillez compléter tous les champs requis dans l'onglet Cibles."
+
+#: templates/indicators/indicator_form_helper.html:20
+msgid "Summary"
+msgstr "Résumé"
+
+#: templates/indicators/indicator_form_helper.html:23
+msgid "Performance"
+msgstr "Performance"
+
+#: templates/indicators/indicator_form_helper.html:29
+msgid "Data Acquisition"
+msgstr "L'Acquisition des données"
+
+#: templates/indicators/indicator_form_helper.html:32
+msgid "Analysis and Reporting"
+msgstr "Analyse et rapport"
+
+#: templates/indicators/indicator_form_helper.html:35
+msgid "Approval"
+msgstr "Approbation"
+
+#: templates/indicators/indicator_form_helper.html:307
+msgid "Create targets"
+msgstr "Créer des cibles"
+
+#: templates/indicators/indicator_form_helper.html:308
+msgid "Remove all targets"
+msgstr "Supprimer toutes les cibles"
+
+#: templates/indicators/indicator_graphs.html:18
+msgid "Targets vs Actuals"
+msgstr "Cibles vs Rapports Réels"
+
+#: templates/indicators/indicator_list.html:56
+msgid "Grid/Print Report"
+msgstr "Grille/Imprimer le rapport"
+
+#: templates/indicators/indicator_list.html:61
+msgid "No Indicators have been entered for this program"
+msgstr "Aucun indicateur n'a été entré pour ce programme"
+
+#: templates/indicators/indicator_list.html:62
+msgid "Add a new indicator via the"
+msgstr "Ajouter un nouvel indicateur via le"
+
+#: templates/indicators/indicator_list.html:62
+msgid "button above"
+msgstr "bouton ci-dessus"
+
+#: templates/indicators/indicator_list.html:75
+msgid "No Programs"
+msgstr "Pas de programmes"
+
+#: templates/indicators/indicator_list.html:88
+msgid "Warning"
+msgstr "Attention"
+
+#: templates/indicators/indicator_list.html:91
+msgid "Are you sure?"
+msgstr "Êtes-vous sûr?"
+
+#: templates/indicators/indicator_list.html:94
+msgid "Yes"
+msgstr "Qui"
+
+#: templates/indicators/indicator_list.html:95
+#: templates/indicators/tva_print.html:47
+#: templates/indicators/tva_report.html:26
+msgid "No"
+msgstr "Non"
+
+#: templates/indicators/indicatortargets.html:88
+msgid "Life of Program (LoP) target"
+msgstr "Cible de la vie du programme (VdP)"
+
+#: templates/indicators/indicatortargets.html:126
+msgid "OPTIONS FOR NUMBER (#) INDICATORS"
+msgstr "OPTIONS POUR LES NUMÉROS (#) INDICATEURS"
+
+#: templates/indicators/indicatortargets.html:128
+#, python-format
+msgid "OPTIONS FOR PERCENTAGE (%%) INDICATORS"
+msgstr "OPTIONS POUR LES INDICATEURS EN POURCENTAGE (%%)"
+
+#: templates/indicators/indicatortargets.html:151
+msgid ""
+"NON-CUMULATIVE (NC): Target period results are automatically calculated from "
+"data collected during the period. The Life of Program result is the sum of "
+"target period values."
+msgstr ""
+"NON-CUMULATIF (NC): Les résultats de la période cible sont automatiquement calculés à partir de"
+"données collectées au cours de la période. Le résultat de la"
+"vie du programme est la somme de "
+"valeurs de période cible."
+
+#: templates/indicators/indicatortargets.html:153
+msgid ""
+"CUMULATIVE (C): The Life of Program result mirrors the latest period value. "
+"No automatic calculations are performed with collected data."
+msgstr ""
+"CUMULATIVE (C): Le résultat de la vie du programme"
+"reflète la dernière valeur de période."
+"Aucun calcul automatique n'est effectué avec les données collectées."
+
+#: templates/indicators/indicatortargets.html:176
+msgid ""
+"CUMULATIVE (C): Target period results automatically include data from "
+"previous periods. The Life of Program result mirrors the latest period value."
+msgstr ""
+"CUMULATIVE (C): Les résultats de la période cible incluent" 
+"automatiquement les données de périodes précédentes." 
+"Le résultat de la vie du programme reflète la"
+"dernière valeur de période."
+
+
+#: templates/indicators/indicatortargets.html:178
+msgid ""
+"NON-CUMULATIVE (NC): The Life of Program result is the average of target "
+"period values. No other automatic calculations are performed."
+msgstr ""
+"NON-CUMULATIF (NC): Le résultat de la vie du programme"
+"est la moyenne des valeurs de la période cible. Aucun autre"
+"calcul automatique n'est effectué."
+
+#: templates/indicators/iptt_quickstart.html:4
+#: templates/indicators/iptt_quickstart.html:5
+msgid "Indicator Performance Tracking Table"
+msgstr "Tableau de suivi des performances de l'indicateur"
+
+#: templates/indicators/iptt_quickstart.html:15
+msgid "Program indicator overview"
+msgstr "Aperçu de l'indicateur de programme"
+
+#: templates/indicators/iptt_quickstart.html:16
+msgid ""
+"View progress toward Life of Program targets for all of a program's "
+"indicators."
+msgstr "Voir les progrès vers des objectifs de la vie du programme pour tous les programmes"
+"indicateurs."
+
+#: templates/indicators/iptt_quickstart.html:70
+msgid ""
+"View progress toward a program's periodic targets in addition to Life of "
+"Program targets."
+msgstr ""
+"Voir les progrès vers les objectifs périodiques d'un programme en plus des objectifs de la vie du programme"
+
+#: templates/indicators/program_indicators_table.html:6
+msgid "Indicator Level"
+msgstr "Niveau de l'indicateur"
+
+#: templates/indicators/program_indicators_table.html:7
+msgid "Indicator Name"
+msgstr "Nom de l'indicateur"
+
+#: templates/indicators/program_indicators_table.html:8
+msgid "Indicator Number"
+msgstr "Numéro de l'indicateur"
+
+#: templates/indicators/report.html:109
+msgid "source"
+msgstr "source"
+
+#: templates/indicators/report.html:119
+msgid "Key Performance Indicators"
+msgstr "IIndicateurs de performance clés"
+
+#: templates/indicators/report.html:121
+msgid "Create Date"
+msgstr "Date de création"
+
+#: templates/indicators/report.html:122
+msgid "Edit Date"
+msgstr "Date d'édition"
+
+#: templates/indicators/site_profile_map.html:170
+msgid "Project Site"
+msgstr "Site du projet"
+
+#: templates/indicators/site_profile_map.html:170
+msgid "Province:"
+msgstr "Province:"
+
+#: templates/indicators/site_profile_map.html:170
+#: templates/indicators/site_profile_map.html:175
+msgid "Village:"
+msgstr "Village:"
+
+#: templates/indicators/site_profile_map.html:175
+msgid "Collected Indicator Data Site"
+msgstr "Site de données des indicateurs collectés"
+
+#: templates/indicators/site_profile_map.html:175
+msgid "District:"
+msgstr "District:"
+
+#: templates/indicators/tva_print.html:42
+#, fuzzy, python-format
+#| msgid "Target vs Actual Report"
+msgid "Indicator Target vs Actual Report for %(program)s "
+msgstr "Indicateur Cible vs Rapport réel pour %(programme)s"
+
+#: templates/indicators/tva_report.html:15
+msgid "Indicator Targets vs Actuals Report"
+msgstr "Rapport sur les indicateurs et les résultats réels"
+
+#: templates/indicators/tva_report.html:91
+msgid "Target vs Actuals Report"
+msgstr "Cible vs Rapport Réel"
+
+#: templates/workflow/documentation_form.html:126
+msgid "Please complete this field"
+msgstr "Merci de compléter ce champ"
+
+#: templates/workflow/documentation_form.html:145
+msgid "Please enter a valid URL."
+msgstr "Veuillez entrer une URL valide"
+
 #: tola/settings/base.py:89
 msgid "French"
 msgstr "Français"
@@ -709,3 +1647,13 @@ msgstr "Arabe"
 msgid "English"
 msgstr "Anglais"
 
+#, fuzzy
+#~| msgid "Indicator Disaggregation Report"
+#~ msgid "Indicator Disaggregation Report for %(program_selected)s"
+#~ msgstr "Rapport De Désagrégation Des Indicateurs pour"
+
+#~ msgid "Form Library"
+#~ msgstr "Bibliothèque De Formulaire"
+
+#~ msgid "Beneficiaries"
+#~ msgstr "Les Bénéficiaires"

@@ -1,6 +1,6 @@
 {% load i18n %}
 <html>
-    <head><title>TvA Report</title>
+    <head><title>{% trans "TvA Report" %}</title>
         <style>
             table {
                 background-color: transparent;
@@ -39,7 +39,7 @@
 
         <div style="float:right;">{% now "F j, Y" %}</div>
         <div style="clear:both; text-align: center">
-            <h3>{% blocktrans %}Indicator Target vs Actual Report for {{ program }} {% endblocktrans 5}</h3>
+            <h3>{% blocktrans %}Indicator Target vs Actual Report for {{ program }} {% endblocktrans %}</h3>
         </div>
         <div id="tva_table_div" class="table-responsive">
             <table id="tva_table" class="table table-hover table-striped table-bordered">
