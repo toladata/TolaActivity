@@ -5,27 +5,17 @@ from urlparse import urlparse
 
 import dateutil.parser
 import requests
-import dateutil.parser
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import reverse_lazy
-from django.core.exceptions import PermissionDenied
-from django.core import serializers
-
 from django.db import connection
 from django.db.models import (
     Count, Min, Q, Sum, Avg, DecimalField, OuterRef, Subquery
 )
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.views.generic.list import ListView
-from django.views.generic.detail import View
-from django.views.generic import TemplateView
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, render_to_response
-from django.utils.decorators import method_decorator
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -35,7 +25,6 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_tables2 import RequestConfig
 from weasyprint import HTML, CSS
-from django_tables2 import RequestConfig
 
 from export import IndicatorResource, CollectedDataResource
 from feed.serializers import FlatJsonSerializer
@@ -51,9 +40,6 @@ from .models import (
     Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue,
     CollectedData, IndicatorType, Level, ExternalServiceRecord,
     ExternalService, TolaTable
-)
-from workflow.models import (
-    Program, SiteProfile, Country, Sector, TolaSites, FormGuidance
 )
 
 
@@ -323,7 +309,6 @@ class IndicatorCreate(CreateView):
         return kwargs
 
     def form_invalid(self, form):
-
         messages.error(self.request, 'Invalid Form', fail_silently=False)
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -348,7 +333,7 @@ class PeriodicTargetView(View):
         if request.GET.get('existingTargetsOnly'):
             pts = FlatJsonSerializer().serialize(
                 indicator.periodictarget_set.all()
-                    .order_by('customsort', 'create_date', 'period'))
+                .order_by('customsort', 'create_date', 'period'))
 
             return HttpResponse(pts)
         try:
@@ -406,7 +391,6 @@ def handleDataCollectedRecords(indicatr, lop, existing_target_frequency,
     # this single LOP periodic_target
     if existing_target_frequency != Indicator.LOP and \
             new_target_frequency == Indicator.LOP:
-
         lop_pt = PeriodicTarget.objects.create(
             indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1],
             target=lop, create_date=timezone.now()
@@ -728,7 +712,7 @@ class CollectedDataCreate(CreateView):
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'getDisaggregationLabelStandard':
-                            getDisaggregationLabelStandard})
+                        getDisaggregationLabelStandard})
 
         context.update({'indicator_id': self.kwargs['indicator']})
         context.update({'indicator': indicator})
@@ -845,22 +829,22 @@ class CollectedDataUpdate(UpdateView):
             getDisaggregationValue = DisaggregationValue.objects \
                 .filter(collecteddata=self.kwargs['pk']) \
                 .exclude(
-                disaggregation_label__disaggregation_type__standard=True)
+                    disaggregation_label__disaggregation_type__standard=True)
 
             getDisaggregationValueStandard = DisaggregationValue.objects \
                 .filter(collecteddata=self.kwargs['pk']) \
                 .filter(
-                disaggregation_label__disaggregation_type__standard=True)
+                    disaggregation_label__disaggregation_type__standard=True)
 
         except DisaggregationLabel.DoesNotExist:
             getDisaggregationValue = None
             getDisaggregationValueStandard = None
 
         context.update({'getDisaggregationLabelStandard':
-                            getDisaggregationLabelStandard})
+                        getDisaggregationLabelStandard})
 
         context.update({'getDisaggregationValueStandard':
-                            getDisaggregationValueStandard})
+                        getDisaggregationValueStandard})
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
@@ -1068,12 +1052,12 @@ def collected_data_view(request, indicator, program):
         .filter(indicator=indicator) \
         .prefetch_related('collecteddata_set') \
         .annotate(
-        achieved_sum=Sum(
-            'collecteddata__achieved', output_field=DecimalField()),
-        achieved_avg=Avg(
-            'collecteddata__achieved', output_field=DecimalField()),
-        last_data_row=Subquery(
-            last_data_record.values('achieved')[:1])) \
+            achieved_sum=Sum(
+                'collecteddata__achieved', output_field=DecimalField()),
+            achieved_avg=Avg(
+                'collecteddata__achieved', output_field=DecimalField()),
+            last_data_row=Subquery(
+                last_data_record.values('achieved')[:1])) \
         .order_by('customsort')
 
     # the total of achieved values across all periodic targets of an indicator
@@ -1099,7 +1083,7 @@ def collected_data_view(request, indicator, program):
             try:
                 # update this variable only if there is a data value
                 last_data_record_value = pt.last_data_row if pt.last_data_row \
-                                                             is not None else last_data_record_value
+                                        is not None else last_data_record_value
 
                 grand_achieved_avg = pt.achieved_avg + grand_achieved_avg
                 grand_achieved_sum = pt.achieved_sum + grand_achieved_sum
@@ -1482,15 +1466,15 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             .filter(**q) \
             .order_by('indicator__program__name', 'indicator__number') \
             .values(
-            'id', 'indicator__id', 'indicator__name',
-            'indicator__program__id', 'indicator__program__name',
-            'indicator__indicator_type__indicator_type',
-            'indicator__indicator_type__id', 'indicator__level__name',
-            'indicator__sector__sector', 'date_collected',
-            'indicator__baseline', 'indicator__lop_target',
-            'indicator__key_performance_indicator',
-            'indicator__external_service_record__external_service__name',
-            'evidence', 'tola_table', 'periodic_target', 'achieved')
+                'id', 'indicator__id', 'indicator__name',
+                'indicator__program__id', 'indicator__program__name',
+                'indicator__indicator_type__indicator_type',
+                'indicator__indicator_type__id', 'indicator__level__name',
+                'indicator__sector__sector', 'date_collected',
+                'indicator__baseline', 'indicator__lop_target',
+                'indicator__key_performance_indicator',
+                'indicator__external_service_record__external_service__name',
+                'evidence', 'tola_table', 'periodic_target', 'achieved')
 
         collected_sum = CollectedData.objects \
             .select_related('periodic_target') \
@@ -1795,15 +1779,15 @@ class CollectedDataList(ListView):
             .filter(**q) \
             .order_by('indicator__program__name', 'indicator__number') \
             .values(
-            'indicator__id', 'indicator__name',
-            'indicator__program__name',
-            'indicator__indicator_type__indicator_type',
-            'indicator__level__name', 'indicator__sector__sector',
-            'date_collected', 'indicator__baseline',
-            'indicator__lop_target',
-            'indicator__key_performance_indicator',
-            'indicator__external_service_record__external_service__name',
-            'evidence', 'tola_table', 'periodic_target', 'achieved')
+                'indicator__id', 'indicator__name',
+                'indicator__program__name',
+                'indicator__indicator_type__indicator_type',
+                'indicator__level__name', 'indicator__sector__sector',
+                'date_collected', 'indicator__baseline',
+                'indicator__lop_target',
+                'indicator__key_performance_indicator',
+                'indicator__external_service_record__external_service__name',
+                'evidence', 'tola_table', 'periodic_target', 'achieved')
 
         if self.request.GET.get('export'):
             dataset = CollectedDataResource().export(indicators)
