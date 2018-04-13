@@ -87,7 +87,6 @@ describe('"Annual" target frequency', function() {
     let errorCount = 0;
     for(let inputBox of inputBoxes) {
         inputBox.setValue(86);
-        browser.saveScreenshot('./shot'+errorCount+'.png');
         TargetsTab.saveIndicatorChanges();
         // Did we fail successfully?
         let errMsg = TargetsTab.getTargetValueErrorHint();
