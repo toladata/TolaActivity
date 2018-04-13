@@ -190,21 +190,21 @@ def indicator_create(request, id=0):
     Step one in Inidcator creation.
     Passed on to IndicatorCreate to do the creation
     """
-    getIndicatorTypes = IndicatorType.objects.all()
-    getCountries = Country.objects.all()
+    get_indicator_types = IndicatorType.objects.all()
+    get_countries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = Program.objects.filter(funding_status="Funded",
-                                         country__in=countries).distinct()
-    getServices = ExternalService.objects.all()
+    get_programs = Program.objects.filter(funding_status="Funded",
+                                          country__in=countries).distinct()
+    get_services = ExternalService.objects.all()
     program_id = id
 
     if request.method == 'POST':
-        type = IndicatorType.objects.get(indicator_type="custom")
+        indicator_type = IndicatorType.objects.get(indicator_type="custom")
         # country = Country.objects.get(id=request.POST['country'])
         program = Program.objects.get(id=request.POST['program'])
         service = request.POST['services']
-        level = Level.objects.all()[0]
+        level = Level.objects.first()
         node_id = request.POST['service_indicator']
         sector = None
         # add a temp name for custom indicators
@@ -218,8 +218,8 @@ def indicator_create(request, id=0):
 
         # checkfor service indicator and update based on values
         if node_id is None and int(node_id) != 0:
-            getImportedIndicators = import_indicator(service)
-            for item in getImportedIndicators:
+            get_imported_indicators = import_indicator(service)
+            for item in get_imported_indicators:
                 if item['nid'] == node_id:
                     getSector, created = Sector.objects.get_or_create(
                         sector=item['sector'])
@@ -243,7 +243,7 @@ def indicator_create(request, id=0):
                     external_service_record.save()
                     getType, created = IndicatorType.objects.get_or_create(
                         indicator_type=item['type'].title())
-                    type = getType
+                    indicator_type = getType
         # save form
         new_indicator = Indicator(
             sector=sector, name=name, source=source, definition=definition,
@@ -251,7 +251,7 @@ def indicator_create(request, id=0):
         )
         new_indicator.save()
         new_indicator.program.add(program)
-        new_indicator.indicator_type.add(type)
+        new_indicator.indicator_type.add(indicator_type)
         new_indicator.level.add(level)
 
         latest = new_indicator.id
@@ -265,9 +265,9 @@ def indicator_create(request, id=0):
     # submitted feed info and silos for new form
     return render(request, "indicators/indicator_create.html",
                   {'country_id': country_id, 'program_id': int(program_id),
-                   'getCountries': getCountries, 'getPrograms': getPrograms,
-                   'getIndicatorTypes': getIndicatorTypes,
-                   'getServices': getServices})
+                   'getCountries': get_countries, 'getPrograms': get_programs,
+                   'getIndicatorTypes': get_indicator_types,
+                   'getServices': get_services})
 
 
 class IndicatorCreate(CreateView):

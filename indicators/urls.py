@@ -36,11 +36,6 @@ urlpatterns = [
     url(r'^home/(?P<program>\d+)/(?P<indicator>\d+)/(?P<type>\d+)/$',
         IndicatorList.as_view(), name='indicator_list'),
 
-    # TODO: This url might be defunct. If it ever gets called it will
-    # fail 100% of the time.
-    url(r'^indicator_list/(?P<program>\d+)/$', IndicatorList.as_view(),
-        name='indicator_list'),
-
     # where "id" is the primary key of an existing program
     url(r'^indicator_create/(?P<id>\d+)/$', indicator_create,
         name='indicator_create'),

@@ -23,7 +23,7 @@ from workflow.models import (
 from .django_models import UserFactory, Group, Site
 
 
-class Country(DjangoModelFactory):
+class CountryFactory(DjangoModelFactory):
     class Meta:
         model = CountryM
         django_get_or_create = ('code',)
@@ -40,7 +40,7 @@ class Contact(DjangoModelFactory):
     city = 'Kabul'
     email = lazy_attribute(lambda o: slugify(o.name) + "@external-contact.com")
     phone = '+93 555444333'
-    country = SubFactory(Country)
+    country = SubFactory(CountryFactory)
 
 
 class OrganizationFactory(DjangoModelFactory):
@@ -65,7 +65,7 @@ class TolaUserFactory(DjangoModelFactory):
     user = SubFactory(UserFactory)
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
     organization = SubFactory(OrganizationFactory)
-    country = SubFactory(Country, country='United States', code='US')
+    country = SubFactory(CountryFactory, country='United States', code='US')
 
 
 class ProgramFactory(DjangoModelFactory):
@@ -86,7 +86,7 @@ class ProgramFactory(DjangoModelFactory):
             for country in extracted:
                 self.country.add(country)
         else:
-            self.country.add(Country(country='Syria', code='SY'))
+            self.country.add(CountryFactory(country='Syria', code='SY'))
 
 
 class Documentation(DjangoModelFactory):
