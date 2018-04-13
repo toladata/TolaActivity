@@ -47,4 +47,31 @@
             </tbody>
         </table>
     </div>
+
+    <div id="indicator_modal_div" class="modal fade" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" id="indicator_modal_content">
+
+            </div> <!-- modal content -->
+        </div>
+    </div>
+
+    <script>
+        // Open the IndicatorUpdate Form in a modal
+        $("#id_div_top_iptt_report").on("click", ".indicator-link", function(e) {
+            e.preventDefault();
+            let url = $(this).attr("href");
+            url += "?modal=1";
+            const programId = $(this).data("programid");
+
+            $("#indicator_modal_content").empty();
+            $("#modalmessages").empty();
+
+            $("#indicator_modal_content").load(url);
+            $("#indicator_modal_div").modal('show');
+
+        });
+    </script>
+
+    {% include 'indicators/indicator_form_common_js.html' %}
 {% endblock content %}
