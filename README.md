@@ -1,5 +1,6 @@
 # [Tola Activity](http://toladata.com/products/activity/)
-[![Build Satus](https://travis-ci.org/toladata/TolaActivity.svg?branch=master)](https://travis-ci.org/toladata/TolaActivity)
+### The build status of the bootstrap4 branch is:
+[![Build Status](https://travis-ci.org/mercycorps/TolaActivity.svg?branch=bootstrap4)](https://travis-ci.org/mercycorps/TolaActivity)
 
 [TolaActivity](http://www.github.com/toladata/TolaActivity) extends
 the functionality of [TolaData](https://www.toladata.com/) to include a

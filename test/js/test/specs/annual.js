@@ -9,7 +9,7 @@ describe('"Annual" target frequency', function() {
     before(function() {
         // Disable timeouts
         this.timeout(0);
-        //browser.windowHandleMaximize();
+        browser.windowHandleMaximize();
     
         let parms = Util.readConfig();
         LoginPage.open(parms.baseurl);
@@ -87,13 +87,14 @@ describe('"Annual" target frequency', function() {
     let errorCount = 0;
     for(let inputBox of inputBoxes) {
         inputBox.setValue(86);
+        browser.saveScreenshot('./shot'+errorCount+'.png');
         TargetsTab.saveIndicatorChanges();
         // Did we fail successfully?
         let errMsg = TargetsTab.getTargetValueErrorHint();
         assert(errMsg.includes('Please enter a target value. Your target value can be zero.'));
         errorCount++;
     }
-    assert.equal(targetCount, errorCount, 'Received unexpected mismatch');
+    assert.equal(targetCount, errorCount, 'Invalid target or error count');
     TargetsTab.saveIndicatorChanges();
   });
 });

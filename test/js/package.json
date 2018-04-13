@@ -1,31 +1,32 @@
 {
-	"scripts": {
-		"test": "mocha --require babel-register --es_staging --harmony"
-	},
-	"devDependencies": {
-		"allure-commandline": "^2.5.0",
-		"babel-cli": "^6.26.0",
-		"babel-preset-env": "^1.6.1",
-		"babel-preset-es2015": "^6.24.1",
-		"babel-register": "^6.26.0",
-		"chai": "^4.1.2",
-		"date-arithmetic": "^3.1.0",
-		"jsdoc": "^3.5.5",
-		"mocha": "^4.1.0",
-		"selenium-webdriver": "^3.6.0",
-		"wdio-allure-reporter": "^0.3.2",
-		"wdio-mocha-framework": "^0.5.13",
-		"wdio-selenium-standalone-service": "0.0.9",
-		"wdio-spec-reporter": "^0.1.4",
-		"wdio-sync": "^0.7.1",
-		"webdriverio": "^4.12.0"
-	},
-	"dependencies": {
-		"readable-stream": "^2.3.3",
-		"string_decoder": "^1.1.1"
-	},
-	"repository": "https://github.com/mercycorps/TolaActivity.git",
-	"license": "Apache-2.0",
-	"name": "tats",
-	"version": "0.9.1"
+    "scripts": {
+        "test": "mocha --require babel-register --es_staging --harmony",
+        "wdio": "node -r babel-register ./node_modules/.bin/wdio"
+    },
+    "devDependencies": {
+        "allure-commandline": "^2.5.0",
+        "babel-cli": "^6.26.0",
+        "babel-preset-env": "^1.6.1",
+        "babel-preset-es2015": "^6.24.1",
+        "babel-register": "^6.26.0",
+        "chai": "^4.1.2",
+        "date-arithmetic": "^3.1.0",
+        "jsdoc": "^3.5.5",
+        "mocha": "^4.1.0",
+        "selenium-webdriver": "^3.6.0",
+        "wdio-allure-reporter": "^0.3.2",
+        "wdio-mocha-framework": "^0.5.13",
+        "wdio-selenium-standalone-service": "0.0.9",
+        "wdio-spec-reporter": "^0.1.4",
+        "wdio-sync": "^0.7.1",
+        "webdriverio": "^4.12.0"
+    },
+    "dependencies": {
+        "readable-stream": "^2.3.3",
+        "string_decoder": "^1.1.1"
+    },
+    "repository": "https://github.com/mercycorps/TolaActivity.git",
+    "license": "Apache-2.0",
+    "name": "tats",
+    "version": "0.9.1"
 }

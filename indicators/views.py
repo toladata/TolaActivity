@@ -5,16 +5,27 @@ from urlparse import urlparse
 
 import dateutil.parser
 import requests
+import dateutil.parser
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.urlresolvers import reverse_lazy
+from django.core.exceptions import PermissionDenied
+from django.core import serializers
+
 from django.db import connection
 from django.db.models import (
     Count, Min, Q, Sum, Avg, DecimalField, OuterRef, Subquery
 )
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView
+from django.views.generic.detail import View
+from django.views.generic import TemplateView
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, render_to_response
+from django.utils.decorators import method_decorator
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -24,6 +35,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django_tables2 import RequestConfig
 from weasyprint import HTML, CSS
+from django_tables2 import RequestConfig
 
 from export import IndicatorResource, CollectedDataResource
 from feed.serializers import FlatJsonSerializer
@@ -39,6 +51,9 @@ from .models import (
     Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue,
     CollectedData, IndicatorType, Level, ExternalServiceRecord,
     ExternalService, TolaTable
+)
+from workflow.models import (
+    Program, SiteProfile, Country, Sector, TolaSites, FormGuidance
 )
 
 
@@ -258,7 +273,7 @@ def indicator_create(request, id=0):
 
         # redirect to update page
         messages.success(request, 'Success, Basic Indicator Created!')
-        redirect_url = '/indicators/indicator_update/' + str(latest) + '/'
+        redirect_url = reverse_lazy('indicator_update', kwargs={'pk': latest})
         return HttpResponseRedirect(redirect_url)
 
     # send the keys and vars from the json data to the template along with
@@ -308,6 +323,7 @@ class IndicatorCreate(CreateView):
         return kwargs
 
     def form_invalid(self, form):
+
         messages.error(self.request, 'Invalid Form', fail_silently=False)
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -390,6 +406,7 @@ def handleDataCollectedRecords(indicatr, lop, existing_target_frequency,
     # this single LOP periodic_target
     if existing_target_frequency != Indicator.LOP and \
             new_target_frequency == Indicator.LOP:
+
         lop_pt = PeriodicTarget.objects.create(
             indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1],
             target=lop, create_date=timezone.now()
@@ -626,7 +643,8 @@ class IndicatorUpdate(UpdateView):
 class IndicatorDelete(DeleteView):
     model = Indicator
     form_class = IndicatorForm
-    success_url = '/indicators/home/0/0/0/'
+    success_url = reverse_lazy(
+        'indicator_list', kwargs={'program': 0, 'indicator': 0, 'type': 0})
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -920,7 +938,8 @@ class CollectedDataUpdate(UpdateView):
 
 class CollectedDataDelete(DeleteView):
     model = CollectedData
-    success_url = '/indicators/home/0/0/0/'
+    success_url = reverse_lazy(
+        'indicator_list', kwargs={'program': 0, 'indicator': 0, 'type': 0})
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
