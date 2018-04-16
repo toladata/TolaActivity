@@ -1,59 +1,13 @@
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import OuterRef, Sum, Avg, Subquery
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
-from ..models import Indicator
+from ..models import Indicator, CollectedData
 from ..forms import IPTTReportQuickstartForm, IPTTReportFilterForm
 
 
-class ReportMixin(object):
-
-    def form_valid(self, **kwargs):
-        """
-        Args:
-            **kwargs : Keyword arguments. The code is looking for two arguments
-                form
-                prefix
-        """
-        context = self.get_context_data()
-        form = kwargs.get('form')
-        prefix = kwargs.get('prefix')
-
-        if prefix == self.FORM_PREFIX_TARGET:
-            period = form.cleaned_data.get('targetperiods')
-            context['form2'] = form
-            context['form'] = self.form_class(request=self.request,
-                                              prefix=self.FORM_PREFIX_TIME)
-        else:
-            prefix = self.FORM_PREFIX_TIME
-            period = form.cleaned_data.get('timeperiods')
-            context['form'] = form
-            context['form2'] = self.form_class(request=self.request,
-                                               prefix=self.FORM_PREFIX_TARGET)
-
-        program = form.cleaned_data.get('program')
-        redirect_url = reverse_lazy('iptt_report',
-                                    kwargs={'program_id': program.id,
-                                            'reporttype': prefix})
-
-        redirect_url = "{}?period={}".format(redirect_url, period)
-        return HttpResponseRedirect(redirect_url)
-
-    def form_invalid(self, form, **kwargs):
-        context = self.get_context_data()
-        form = kwargs.get('form')
-        if kwargs.get('prefix') == self.FORM_PREFIX_TARGET:
-            context['form2'] = form
-            context['form'] = self.form_class(request=self.request,
-                                              prefix=self.FORM_PREFIX_TIME)
-        else:
-            context['form'] = form
-            context['form2'] = self.form_class(request=self.request,
-                                               prefix=self.FORM_PREFIX_TARGET)
-        return self.render_to_response(context)
-
-
-class IPTTReportQuickstartView(ReportMixin, FormView):
+class IPTTReportQuickstartView(FormView):
     template_name = 'indicators/iptt_quickstart.html'
     form_class = IPTTReportQuickstartForm
     FORM_PREFIX_TIME = 'timeperiods'
@@ -162,5 +116,5 @@ class IPTT_ReportView(TemplateView):
 
         elif not form.is_valid():
             pass
-            
+
 

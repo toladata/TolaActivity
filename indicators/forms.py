@@ -6,11 +6,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from indicators.models import (
     Indicator, PeriodicTarget, CollectedData, Objective, StrategicObjective,
-    TolaTable, DisaggregationType
-)
+    TolaTable, DisaggregationType,
+    Level, IndicatorType)
 from workflow.models import (
-    Program, SiteProfile, Documentation, ProjectComplete, TolaUser
-)
+    Program, SiteProfile, Documentation, ProjectComplete, TolaUser,
+    Sector)
 from tola.util import getCountry
 
 
@@ -180,7 +180,7 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['date_collected'].help_text = ' '
 
 
-class ReportFormMixin(object):
+class ReportFormCommon(forms.Form):
     EMPTY = 0
     YEARS = 1
     SEMIANNUAL = 2
@@ -213,7 +213,7 @@ class ReportFormMixin(object):
     numrecentperiods = forms.IntegerField(required=False)
 
 
-class IPTTReportQuickstartForm(ReportFormMixin, forms.Form):
+class IPTTReportQuickstartForm(ReportFormCommon):
     prefix = 'timeperiods'
     formprefix = forms.CharField(widget=forms.HiddenInput(), required=False)
 
@@ -231,19 +231,23 @@ class IPTTReportQuickstartForm(ReportFormMixin, forms.Form):
         self.fields['targetperiods'].label = _("TARGET PERIODS")
         self.fields['timeframe'].initial = self.SHOW_ALL
 
-LEVELS = []
-INDICATOR_TYPES = []
-SECTORS = []
-SITES = []
-INDICATORS = []
 
+class IPTTReportFilterForm(ReportFormCommon):
 
-class IPTTReportFilterForm(ReportFormMixin, forms.Form):
+    level = forms.ModelChoiceField(queryset=Level.objects.none(), required=False, label='LEVEL')
+    ind_type = forms.ModelChoiceField(queryset=IndicatorType.objects.none(), required=False, label='TYPE')
+    sector = forms.ModelChoiceField(queryset=Sector.objects.none(), required=False, label='SECTOR')
+    site = forms.ModelChoiceField(queryset=SiteProfile.objects.none(), required=False, label='SITE')
+    indicators = forms.ModelChoiceField(queryset=Indicator.objects.none(), required=False, label='INDICATORS')
 
-    level = forms.ChoiceField(choices=LEVELS, required=False, label='LEVEL')
-    ind_type = forms.ChoiceField(choices=INDICATOR_TYPES, required=False, label='TYPE')
-    sector = forms.ChoiceField(choices=SECTORS, required=False, label='SECTOR')
-    site = forms.ChoiceField(choices=SITES, required=False, label='SITE')
-    indicators = forms.ChoiceField(choices=INDICATORS, required=False, label='INDICATORS')
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.get('request', None)
+        super(IPTTReportFilterForm, self).__init__(*args, **kwargs)
+        self.fields['sector'].queryset = Sector.objects.all()
+        self.fields['level'].queryset = Level.objects.all()
+        self.fields['ind_type'].queryset = IndicatorType.objects.all()
+        self.fields['site'].queryset = SiteProfile.objects.all()
+        self.fields['indicators'].queryset = Indicator.objects.all()
+
 
 
