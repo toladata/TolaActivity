@@ -8,6 +8,8 @@ from decimal import Decimal
 from datetime import datetime
 import uuid
 
+from django.utils.translation import ugettext_lazy as _
+
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -29,20 +31,20 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 
 class TolaSites(models.Model):
-    name = models.CharField(blank=True, null=True, max_length=255)
-    agency_name = models.CharField(blank=True, null=True, max_length=255)
-    agency_url = models.CharField(blank=True, null=True, max_length=255)
-    tola_report_url = models.CharField(blank=True, null=True, max_length=255)
-    tola_tables_url = models.CharField(blank=True, null=True, max_length=255)
-    tola_tables_user = models.CharField(blank=True, null=True, max_length=255)
-    tola_tables_token = models.CharField(blank=True, null=True, max_length=255)
-    site = models.ForeignKey(Site)
-    privacy_disclaimer = models.TextField(blank=True, null=True)
-    created = models.DateTimeField(auto_now=False, blank=True, null=True)
-    updated = models.DateTimeField(auto_now=False, blank=True, null=True)
+    name = models.CharField(_("Name"), blank=True, null=True, max_length=255)
+    agency_name = models.CharField(_("Agency name"), blank=True, null=True, max_length=255)
+    agency_url = models.CharField(_("Agency url"), blank=True, null=True, max_length=255)
+    tola_report_url = models.CharField(_("Tola report url"), blank=True, null=True, max_length=255)
+    tola_tables_url = models.CharField(_("Tola tables url"), blank=True, null=True, max_length=255)
+    tola_tables_user = models.CharField(_("Tola tables user"), blank=True, null=True, max_length=255)
+    tola_tables_token = models.CharField(_("Tola tables token"), blank=True, null=True, max_length=255)
+    site = models.ForeignKey(Site, verbose_name=_("Site"))
+    privacy_disclaimer = models.TextField(_("Privacy disclaimer"), blank=True, null=True)
+    created = models.DateTimeField(_("Created"), auto_now=False, blank=True, null=True)
+    updated = models.DateTimeField(_("Updated"), auto_now=False, blank=True, null=True)
 
     class Meta:
-        verbose_name_plural = "Tola Sites"
+        verbose_name_plural = _("Tola Sites")
 
     def __unicode__(self):
         return self.name
@@ -64,19 +66,19 @@ class TolaSitesAdmin(admin.ModelAdmin):
 
 
 class Organization(models.Model):
-    name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
-    description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
-    organization_url = models.CharField(blank=True, null=True, max_length=255)
-    level_1_label = models.CharField("Project/Program Organization Level 1 label", default="Program", max_length=255, blank=True)
-    level_2_label = models.CharField("Project/Program Organization Level 2 label", default="Project", max_length=255, blank=True)
-    level_3_label = models.CharField("Project/Program Organization Level 3 label", default="Component", max_length=255, blank=True)
-    level_4_label = models.CharField("Project/Program Organization Level 4 label", default="Activity", max_length=255, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(_("Organization Name"), max_length=255, blank=True, default="TolaData")
+    description = models.TextField(_("Description/Notes"), max_length=765, null=True, blank=True)
+    organization_url = models.CharField(_("Organization url"), blank=True, null=True, max_length=255)
+    level_1_label = models.CharField(_("Project/Program Organization Level 1 label"), default="Program", max_length=255, blank=True)
+    level_2_label = models.CharField(_("Project/Program Organization Level 2 label"), default="Project", max_length=255, blank=True)
+    level_3_label = models.CharField(_("Project/Program Organization Level 3 label"), default="Component", max_length=255, blank=True)
+    level_4_label = models.CharField(_("Project/Program Organization Level 4 label"), default="Activity", max_length=255, blank=True)
+    create_date = models.DateTimeField(_("Create date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("Edit date"), null=True, blank=True)
 
     class Meta:
         ordering = ('name',)
-        verbose_name_plural = "Organizations"
+        verbose_name_plural = _("Organizations")
         app_label = 'workflow'
 
     # on save add create date or update edit date
@@ -97,19 +99,19 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 
 class Country(models.Model):
-    country = models.CharField("Country Name", max_length=255, blank=True)
-    organization = models.ForeignKey(Organization, blank=True, null=True)
-    code = models.CharField("2 Letter Country Code", max_length=4, blank=True)
-    description = models.TextField("Description/Notes", max_length=765,blank=True)
-    latitude = models.CharField("Latitude", max_length=255, null=True, blank=True)
-    longitude = models.CharField("Longitude", max_length=255, null=True, blank=True)
-    zoom = models.IntegerField("Zoom", default=5)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
+    country = models.CharField(_("Country Name"), max_length=255, blank=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True, verbose_name=_("organization"))
+    code = models.CharField(_("2 Letter Country Code"), max_length=4, blank=True)
+    description = models.TextField(_("Description/Notes"), max_length=765,blank=True)
+    latitude = models.CharField(_("Latitude"), max_length=255, null=True, blank=True)
+    longitude = models.CharField(_("Longitude"), max_length=255, null=True, blank=True)
+    zoom = models.IntegerField(_("Zoom"), default=5)
+    create_date = models.DateTimeField(_("Create date"), null=True, blank=True)
+    edit_date = models.DateTimeField(_("Edit date"), null=True, blank=True)
 
     class Meta:
         ordering = ('country',)
-        verbose_name_plural = "Countries"
+        verbose_name_plural = _("Countries")
         app_label = 'workflow'
 
     # on save add create date or update edit date
@@ -125,20 +127,20 @@ class Country(models.Model):
 
 
 TITLE_CHOICES = (
-    ('mr', 'Mr.'),
-    ('mrs', 'Mrs.'),
-    ('ms', 'Ms.'),
+    (_('mr'), _('Mr.')),
+    (_('mrs'), _('Mrs.')),
+    (_('ms'), _('Ms.')),
 )
 
 
 class TolaUser(models.Model):
-    title = models.CharField(blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
-    name = models.CharField("Given Name", blank=True, null=True, max_length=100)
-    employee_number = models.IntegerField("Employee Number", blank=True, null=True)
-    user = models.OneToOneField(User, unique=True, related_name='tola_user')
-    organization = models.ForeignKey(Organization, default=1, blank=True, null=True)
-    country = models.ForeignKey(Country, blank=True, null=True)
-    countries = models.ManyToManyField(Country, verbose_name="Accessible Countries", related_name='countries', blank=True)
+    title = models.CharField(_("Title"), blank=True, null=True, max_length=3, choices=TITLE_CHOICES)
+    name = models.CharField(_("Given Name"), blank=True, null=True, max_length=100)
+    employee_number = models.IntegerField(_("Employee Number"), blank=True, null=True)
+    user = models.OneToOneField(User, unique=True, related_name='tola_user', verbose_name=_("User"))
+    organization = models.ForeignKey(Organization, default=1, blank=True, null=True, verbose_name=_("Organization"))
+    country = models.ForeignKey(Country, blank=True, null=True, verbose_name=_("Country"))
+    countries = models.ManyToManyField(Country, verbose_name=_("Accessible Countries"), related_name='countries', blank=True)
     tables_api_token = models.CharField(blank=True, null=True, max_length=255)
     activity_api_token = models.CharField(blank=True, null=True, max_length=255)
     privacy_disclaimer_accepted = models.BooleanField(default=False)
@@ -164,7 +166,7 @@ class TolaUser(models.Model):
 
 
 class TolaBookmarks(models.Model):
-    user = models.ForeignKey(TolaUser, related_name='tolabookmark')
+    user = models.ForeignKey(TolaUser, related_name='tolabookmark', verbose_name=_("User"))
     name = models.CharField(blank=True, null=True, max_length=255)
     bookmark_url = models.CharField(blank=True, null=True, max_length=255)
     program = models.ForeignKey("Program", blank=True, null=True)

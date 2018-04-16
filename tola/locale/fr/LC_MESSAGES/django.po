@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-13 11:38-0700\n"
+"POT-Creation-Date: 2018-04-16 08:27-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,7 +113,7 @@ msgstr "Date d'édition"
 #: indicators/models.py:50 indicators/models.py:362
 #: templates/indicators/grid_report.html:24
 msgid "Indicator type"
-msgstr "Type d`indicateur"
+msgstr "Type d'indicateur"
 
 #: indicators/models.py:52 indicators/models.py:74 indicators/models.py:103
 #: indicators/models.py:130 indicators/models.py:155 indicators/models.py:219
@@ -124,7 +124,7 @@ msgstr "La description"
 #: indicators/models.py:57 templates/indicators/home.html:37
 #: templates/indicators/program_indicators_table.html:5
 msgid "Indicator Type"
-msgstr "Type d`indicateur"
+msgstr "Type d'indicateur"
 
 #: indicators/models.py:79 templates/index.html:376
 #: templates/indicators/grid_report.html:27
@@ -301,7 +301,7 @@ msgstr "Définition"
 
 #: indicators/models.py:396
 msgid "Rationale or Justification for Indicator"
-msgstr "Justification ou justification de l`indicateur"
+msgstr "Justification ou justification de l'indicateur"
 
 #: indicators/models.py:402
 msgid "Unit of measure*"
@@ -309,7 +309,7 @@ msgstr "Unité de mesure*"
 
 #: indicators/models.py:409
 msgid "Unit Type"
-msgstr "Type d`Unité"
+msgstr "Type d'Unité"
 
 #: indicators/models.py:414 templates/indicators/disaggregation_print.html:54
 #: templates/indicators/disaggregation_report.html:34
@@ -650,7 +650,7 @@ msgstr "En attendant"
 
 #: templates/index.html:54
 msgid "Awaiting Approval"
-msgstr "En attente d`approbation"
+msgstr "En attente d'approbation"
 
 #: templates/index.html:58
 msgid "Open"
@@ -806,6 +806,7 @@ msgid "ACTUAL"
 msgstr "RAPPORT RÉEL"
 
 #: templates/indicators/collected_data_table.html:23
+#, python-format
 msgid "%% MET"
 msgstr "%% ATTEINT"
 
@@ -1268,18 +1269,25 @@ msgid "Create an Indicator from an External Template."
 msgstr "Créer un indicateur à partir d'un modèle externe."
 
 #: templates/indicators/indicator_create.html:48
+#, fuzzy
+#| msgid ""
+#| "External template indicators include agency standard indicator feeds or "
+#| "donor required indicators from a web service.  Skip The service section "
+#| "if creating a "
 msgid ""
 "External template indicators include agency standard indicator feeds or "
 "donor required indicators from a web service.  Skip The service section if "
-"creating a "
+"creating a 'custom' indicator."
 msgstr ""
-"Les indicateurs de modèles externes incluent les flux d'indicateurs standard de l'agence ou"
-"donneur requis des indicateurs d'un service Web. Sauter la section de service si "
-"créer un "
+"Les indicateurs de modèles externes incluent les flux d'indicateurs standard "
+"de l'agence oudonneur requis des indicateurs d'un service Web. Sauter la "
+"section de service si créer un "
 
 #: templates/indicators/indicator_create.html:53
 msgid "Indicator Service Templates (leave blank for custom indicators)"
-msgstr "Indicateurs de service de modèle (laissez vide pour les indicateurs personnalisés)"
+msgstr ""
+"Indicateurs de service de modèle (laissez vide pour les indicateurs "
+"personnalisés)"
 
 #: templates/indicators/indicator_create.html:55
 #: templates/indicators/indicator_create.html:66
@@ -1290,23 +1298,32 @@ msgstr "-- sélectionner --"
 
 #: templates/indicators/indicator_create.html:60
 msgid "Select an indicator service to select a pre-defined indicator from."
-msgstr "Sélectionnez un service d'indicateur pour sélectionner un indicateur prédéfini de"
+msgstr ""
+"Sélectionnez un service d'indicateur pour sélectionner un indicateur "
+"prédéfini de"
 
 #: templates/indicators/indicator_create.html:64
 msgid "Service Indicator (leave blank for custom indicators)"
-msgstr "Indicateur de service (laisser vide pour les indicateurs personnalisés)"
+msgstr ""
+"Indicateur de service (laisser vide pour les indicateurs personnalisés)"
 
 #: templates/indicators/indicator_create.html:68
 msgid ""
 "Type the name of the Indicator in the box above to search, starting with "
 "type then level then title."
 msgstr ""
-"Tapez le nom de l'indicateur dans la boîte ci-dessus pour rechercher, en commençant par"
-"tapez puis niveau puis titre."
+"Tapez le nom de l'indicateur dans la boîte ci-dessus pour rechercher, en "
+"commençant par le type puis le niveau puis le titre."
+
+#: templates/indicators/indicator_create.html:91
+msgid "save"
+msgstr "enregistrer"
 
 #: templates/indicators/indicator_form_common_js.html:71
 msgid "Warning: This action cannot be undone. Removing this target means that"
-msgstr "Attention: Cette action ne peut pas être annulée. Supprimer cette cible signifie que"
+msgstr ""
+"Attention: Cette action ne peut pas être annulée. Supprimer cette cible "
+"signifie que"
 
 #: templates/indicators/indicator_form_common_js.html:71
 msgid ""
@@ -1317,32 +1334,49 @@ msgstr ""
 "\\nContinuer malgré tout?"
 
 #: templates/indicators/indicator_form_common_js.html:188
+#, fuzzy
+#| msgid ""
+#| "Warning: This action cannot be undone. Any data records assigned to a "
+#| "target will need to be reassigned.\n"
+#| "\n"
+#| " Are you sure you want to remove all targets?"
 msgid ""
 "Warning: This action cannot be undone. Any data records assigned to a target "
 "will need to be reassigned.\\n\\n Are you sure you want to remove all "
 "targets?"
 msgstr ""
+"Attention: Cette action ne peut pas être annulée. Tous les enregistrements "
+"de données affectés à une cible devra être réaffecté.\n"
+"\n"
+" Êtes-vous sûr de vouloir supprimer toutes les cibles?"
 
 #: templates/indicators/indicator_form_common_js.html:190
 msgid ""
 "Warning: This action cannot be undone. Are you sure you want to remove all "
 "targets?"
 msgstr ""
-"Attention: Cette action ne peut pas être annulée. Tous les enregistrements de données affectés à une cible "
-"devra être réaffecté.\\n \n Êtes-vous sûr de vouloir tout supprimer"
-"cibles?"
+"Attention: Cette action ne peut pas être annulée. Êtes-vous sûr de vouloir "
+"supprimer toutes les cibles?"
 
 #: templates/indicators/indicator_form_common_js.html:238
 msgid "Warning: This action cannot be undone. If we make these changes,"
-msgstr "Attention: Cette action ne peut pas être annulée. Si nous faisons ces changements,"
+msgstr ""
+"Attention: Cette action ne peut pas être annulée. Si nous faisons ces "
+"changements,"
 
 #: templates/indicators/indicator_form_common_js.html:238
+#, fuzzy
+#| msgid ""
+#| "data record/s will no longer be associated with the Life of Program "
+#| "target, and will need to be reassigned to new targets. \n"
+#| "\\nProceed anyway?"
 msgid ""
 "data record/s will no longer be associated with the Life of Program target, "
 "and will need to be reassigned to new targets. \\n\\nProceed anyway?"
 msgstr ""
-"les enregistrements de données ne seront plus associés à la cible de la vie du programme "
-"et devra être réaffecté à de nouvelles cibles. \\n\\nProceed de toute façon?"
+"les enregistrements de données ne seront plus associés à la cible de la vie "
+"du programme et devra être réaffecté à de nouvelles cibles. \n"
+"\\nProceed de toute façon?"
 
 #: templates/indicators/indicator_form_common_js.html:419
 msgid "Add a year"
@@ -1399,8 +1433,8 @@ msgid ""
 "Please enter a name and target number for every event. Your target value can "
 "be zero."
 msgstr ""
-"Veuillez entrer un nom et un numéro de cible pour chaque événement, votre valeur cible peut"
-"être zéro."
+"Veuillez entrer un nom et un numéro de cible pour chaque événement, votre "
+"valeur cible peutêtre zéro."
 
 #: templates/indicators/indicator_form_common_js.html:595
 msgid "Please enter a target value. Your target value can be zero."
@@ -1412,7 +1446,7 @@ msgstr ""
 
 #: templates/indicators/indicator_form_common_js.html:661
 msgid "Please complete all required fields in the Performance tab."
-msgstr "Veuillez compléter tous les champs requis dans l'onglet Cibles."
+msgstr "Veuillez compléter tous les champs requis dans l'onglet cibles."
 
 #: templates/indicators/indicator_form_helper.html:20
 msgid "Summary"
@@ -1503,39 +1537,35 @@ msgid ""
 "data collected during the period. The Life of Program result is the sum of "
 "target period values."
 msgstr ""
-"NON-CUMULATIF (NC): Les résultats de la période cible sont automatiquement calculés à partir de"
-"données collectées au cours de la période. Le résultat de la"
-"vie du programme est la somme de "
-"valeurs de période cible."
+"NON-CUMULATIF (NC): Les résultats de la période cible sont automatiquement "
+"calculés à partir dedonnées collectées au cours de la période. Le résultat "
+"de lavie du programme est la somme de valeurs de période cible."
 
 #: templates/indicators/indicatortargets.html:153
 msgid ""
 "CUMULATIVE (C): The Life of Program result mirrors the latest period value. "
 "No automatic calculations are performed with collected data."
 msgstr ""
-"CUMULATIVE (C): Le résultat de la vie du programme"
-"reflète la dernière valeur de période."
-"Aucun calcul automatique n'est effectué avec les données collectées."
+"CUMULATIVE (C): Le résultat de la vie du programmereflète la dernière valeur "
+"de période.Aucun calcul automatique n'est effectué avec les données "
+"collectées."
 
 #: templates/indicators/indicatortargets.html:176
 msgid ""
 "CUMULATIVE (C): Target period results automatically include data from "
 "previous periods. The Life of Program result mirrors the latest period value."
 msgstr ""
-"CUMULATIVE (C): Les résultats de la période cible incluent" 
-"automatiquement les données de périodes précédentes." 
-"Le résultat de la vie du programme reflète la"
-"dernière valeur de période."
-
+"CUMULATIVE (C): Les résultats de la période cible incluentautomatiquement "
+"les données de périodes précédentes.Le résultat de la vie du programme "
+"reflète ladernière valeur de période."
 
 #: templates/indicators/indicatortargets.html:178
 msgid ""
 "NON-CUMULATIVE (NC): The Life of Program result is the average of target "
 "period values. No other automatic calculations are performed."
 msgstr ""
-"NON-CUMULATIF (NC): Le résultat de la vie du programme"
-"est la moyenne des valeurs de la période cible. Aucun autre"
-"calcul automatique n'est effectué."
+"NON-CUMULATIF (NC): Le résultat de la vie du programmeest la moyenne des "
+"valeurs de la période cible. Aucun autrecalcul automatique n'est effectué."
 
 #: templates/indicators/iptt_quickstart.html:4
 #: templates/indicators/iptt_quickstart.html:5
@@ -1550,15 +1580,17 @@ msgstr "Aperçu de l'indicateur de programme"
 msgid ""
 "View progress toward Life of Program targets for all of a program's "
 "indicators."
-msgstr "Voir les progrès vers des objectifs de la vie du programme pour tous les programmes"
-"indicateurs."
+msgstr ""
+"Voir les progrès vers des objectifs de la vie du programme pour tous les "
+"programmesindicateurs."
 
 #: templates/indicators/iptt_quickstart.html:70
 msgid ""
 "View progress toward a program's periodic targets in addition to Life of "
 "Program targets."
 msgstr ""
-"Voir les progrès vers les objectifs périodiques d'un programme en plus des objectifs de la vie du programme"
+"Voir les progrès vers les objectifs périodiques d'un programme en plus des "
+"objectifs de la vie du programme"
 
 #: templates/indicators/program_indicators_table.html:6
 msgid "Indicator Level"

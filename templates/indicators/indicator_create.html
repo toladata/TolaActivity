@@ -45,7 +45,7 @@
     <div class='jumbotron'>
 
         <h4>{% trans "Create an Indicator from an External Template." %}</h4>
-        <p>{% trans "External template indicators include agency standard indicator feeds or donor required indicators from a web service.  Skip The service section if creating a "custom" indicator." %}</p>
+        <p>{% trans "External template indicators include agency standard indicator feeds or donor required indicators from a web service.  Skip The service section if creating a 'custom' indicator." %}</p>
         <div class="panel-body">
             <form class="form-horizontal" method="post" enctype="multipart/form-data" name="most" action="/indicators/indicator_create/{{ program_id }}/" role="form">
               {% csrf_token %}
@@ -88,7 +88,7 @@
               </select>
               </div>
               <br/>
-              <input type="submit" name="submit" value="save" class="btn btn-success">
+              <input type="submit" name="submit" value="{% trans 'save' %}" class="btn btn-success">
             </form>
         </div>
     </div>
