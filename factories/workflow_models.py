@@ -50,11 +50,12 @@ class OrganizationFactory(DjangoModelFactory):
     name = 'MC Org'
 
 
-class SiteProfile(DjangoModelFactory):
+class SiteProfileFactory(DjangoModelFactory):
     class Meta:
         model = SiteProfileM
 
-    name = 'MC Site'
+    name = Sequence(lambda n: 'Site Profile {0}'.format(n))
+    country = SubFactory(CountryFactory, country='United States', code='US')
 
 
 class TolaUserFactory(DjangoModelFactory):
@@ -97,11 +98,11 @@ class Documentation(DjangoModelFactory):
     program = SubFactory(ProgramFactory)
 
 
-class Sector(DjangoModelFactory):
+class SectorFactory(DjangoModelFactory):
     class Meta:
         model = SectorM
 
-    sector = 'Basic Needs'
+    sector = Sequence(lambda n: 'Sector {0}'.format(n))
 
 
 class Stakeholder(DjangoModelFactory):
