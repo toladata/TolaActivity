@@ -22,6 +22,8 @@
                 <th scope="col" style="min-width:50px"># / %</th>
                 <th scope="col">BASELINE</th>
                 <th scope="col">TARGET</th>
+                <th scope="col">ACTUAL</th>
+                <th scope="col" style="min-width: 70px;">% MET</th>
             </thead>
             <tbody>
                 {% for indicator in indicators %}
@@ -42,6 +44,32 @@
                         <td>{{ indicator.get_unit_of_measure_type }}</td>
                         <td align="right">{{ indicator.baseline|default_if_none:'' }}</td>
                         <td align="right">{{ indicator.lop_target|default_if_none:'' }}</td>
+                        <td align="right">
+                            {% if indicator.unit_of_measure_type == 1 %}
+                                {{ indicator.actualsum|floatformat:"-2"|default_if_none:"" }}
+                            {% elif indicator.unit_of_measure_type == 2 %}
+                                {% if indicator.is_cumulative == True %}
+                                    {{ indicator.lastdata|floatformat:"-2"|default_if_none:"" }}%
+                                {% else %}
+                                    <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
+                                    {{ indicator.actualavg|floatformat:"-2"|default_if_none:"" }}%
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td align="right">
+                            {% if indicator.unit_of_measure_type == 1 %}
+                                {% widthratio indicator.actualsum indicator.lop_target 100 as percent_met %}
+                                {% if percent_met %} {{ percent_met }}% {% endif %}
+                            {% elif indicator.unit_of_measure_type == 2 %}
+                                {% if indicator.is_cumulative == True %}
+                                    {% widthratio indicator.lastdata indicator.lop_target 100 as percent_met %}
+                                    {% if percent_met %} {{ percent_met }}% {% endif %}
+                                {% else %}
+                                    {% widthratio indicator.actualavg indicator.lop_target 100 as percent_met %}
+                                    {% if percent_met %} {{ percent_met }}% {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

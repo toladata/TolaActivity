@@ -1,8 +1,9 @@
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import Sum, Avg, Subquery, OuterRef
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
-from ..models import Indicator
+from ..models import Indicator, CollectedData
 from ..forms import IPTTReportQuickstartForm
 
 
@@ -13,15 +14,13 @@ class IPTTReportQuickstartView(FormView):
     FORM_PREFIX_TARGET = 'targetperiods'
 
     def get_context_data(self, **kwargs):
-        context = super(IPTTReportQuickstartView, self)\
-            .get_context_data(**kwargs)
+        context = super(IPTTReportQuickstartView, self).get_context_data(**kwargs)
+
         # Add two instances of the same form to context if they're not present
         if 'form' not in context:
-            context['form'] = self.form_class(request=self.request,
-                                              prefix=self.FORM_PREFIX_TIME)
+            context['form'] = self.form_class(request=self.request, prefix=self.FORM_PREFIX_TIME)
         if 'form2' not in context:
-            context['form2'] = self.form_class(request=self.request,
-                                               prefix=self.FORM_PREFIX_TARGET)
+            context['form2'] = self.form_class(request=self.request, prefix=self.FORM_PREFIX_TARGET)
         return context
 
     def get_form_kwargs(self):
@@ -30,22 +29,16 @@ class IPTTReportQuickstartView(FormView):
         return kwargs
 
     def post(self, request, *args, **kwargs):
-        targetprefix = request.POST.get(
-            '%s-formprefix' % self.FORM_PREFIX_TARGET)
+        targetprefix = request.POST.get('%s-formprefix' % self.FORM_PREFIX_TARGET)
         timeprefix = request.POST.get('%s-formprefix' % self.FORM_PREFIX_TIME)
-        prefix = None
 
-        # populate the correct form with POST data
+        # set prefix to the current form
         if targetprefix is not None:
-            form = IPTTReportQuickstartForm(self.request.POST,
-                                            prefix=self.FORM_PREFIX_TARGET,
-                                            request=self.request)
             prefix = targetprefix
         else:
-            form = IPTTReportQuickstartForm(self.request.POST,
-                                            prefix=self.FORM_PREFIX_TIME,
-                                            request=self.request)
             prefix = timeprefix
+
+        form = IPTTReportQuickstartForm(self.request.POST, prefix=prefix, request=self.request)
 
         # call the form_valid/invalid with the correct prefix and form
         if form.is_valid():
@@ -71,9 +64,7 @@ class IPTTReportQuickstartView(FormView):
                                                prefix=self.FORM_PREFIX_TARGET)
 
         program = form.cleaned_data.get('program')
-        redirect_url = reverse_lazy('iptt_report',
-                                    kwargs={'program_id': program.id,
-                                            'reporttype': prefix})
+        redirect_url = reverse_lazy('iptt_report', kwargs={'program_id': program.id, 'reporttype': prefix})
 
         redirect_url = "{}?period={}".format(redirect_url, period)
         return HttpResponseRedirect(redirect_url)
@@ -83,12 +74,10 @@ class IPTTReportQuickstartView(FormView):
         form = kwargs.get('form')
         if kwargs.get('prefix') == self.FORM_PREFIX_TARGET:
             context['form2'] = form
-            context['form'] = self.form_class(request=self.request,
-                                              prefix=self.FORM_PREFIX_TIME)
+            context['form'] = self.form_class(request=self.request, prefix=self.FORM_PREFIX_TIME)
         else:
             context['form'] = form
-            context['form2'] = self.form_class(request=self.request,
-                                               prefix=self.FORM_PREFIX_TARGET)
+            context['form2'] = self.form_class(request=self.request, prefix=self.FORM_PREFIX_TARGET)
         return self.render_to_response(context)
 
 
@@ -100,10 +89,15 @@ class IPTT_ReportView(TemplateView):
         program_id = kwargs.get('program_id')
         program = Program.objects.get(pk=program_id)
 
-        indicators = Indicator.objects.filter(program__in=[program_id])
+        last_data_record = CollectedData.objects.filter(indicator=OuterRef('pk')).order_by('-id')
+        indicators = Indicator.objects.filter(program__in=[program_id])\
+            .annotate(actualsum=Sum('collecteddata__achieved'),
+                      actualavg=Avg('collecteddata__achieved'),
+                      lastdata=Subquery(last_data_record.values('achieved')[:1]))
+
         context['indicators'] = indicators
         context['program'] = program
-        context['reporttype'] =kwargs.get('reporttype')
+        context['reporttype'] = kwargs.get('reporttype')
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
