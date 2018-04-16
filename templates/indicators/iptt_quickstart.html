@@ -60,7 +60,7 @@
                                     type="submit"
                                     id="id_submit_timeperiods_button"
                                     class="btn btn-info"
-                                    style="width:100%;">View Report</button>
+                                    style="width:100%;">{% trans "View Report" %}</button>
                             </div>
                         </form>
                     </div>
@@ -69,7 +69,7 @@
             <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Program target overview</h5>
+                        <h5 class="card-title">{% trans "Program target overview" %}</h5>
                         <p class="card-subtitle text-muted mb-2">{% trans "View progress toward a program's periodic targets in addition to Life of Program targets." %}</p>
                         <form
                             action="{% url 'iptt_quickstart' %}"

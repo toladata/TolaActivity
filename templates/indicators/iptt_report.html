@@ -10,20 +10,20 @@
         <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
         <table id="iptt_table"
             class="table table-sm table-bordered table-hover">
-            <caption>Indicator Performance Tracking Table</caption>
+            <caption>{% trans "Indicator Performance Tracking Table" %}</caption>
             <thead class="thead-light">
-                <th scope="col" style="min-width:80px">NO.</th>
-                <th scope="col" class="td-no-side-borders" style="min-width:600px">INDICATOR</th>
+                <th scope="col" style="min-width:80px">{% trans "NO." %}</th>
+                <th scope="col" class="td-no-side-borders" style="min-width:600px">{% trans "INDICATOR" %}</th>
                 <th scope="col" class="td-no-side-borders"></th>
-                <th scope="col" style="min-width:90px">LEVEL</th>
-                <th scope="col">UNIT OF MEASURE</th>
-                <th scope="col">CHANGE</th>
+                <th scope="col" style="min-width:90px">{% trans "LEVEL" %}</th>
+                <th scope="col">{% trans "UNIT OF MEASURE" %}</th>
+                <th scope="col">{% trans "CHANGE" %}</th>
                 <th scope="col" style="min-width:60px">C / NC</th>
                 <th scope="col" style="min-width:50px"># / %</th>
-                <th scope="col">BASELINE</th>
-                <th scope="col">TARGET</th>
-                <th scope="col">ACTUAL</th>
-                <th scope="col" style="min-width: 70px;">% MET</th>
+                <th scope="col">{% trans "BASELINE" %}</th>
+                <th scope="col">{% trans "TARGET" %}</th>
+                <th scope="col">{% trans "ACTUAL" %}</th>
+                <th scope="col" style="min-width: 70px;">{% trans "% MET" %}</th>
             </thead>
             <tbody>
                 {% for indicator in indicators %}
