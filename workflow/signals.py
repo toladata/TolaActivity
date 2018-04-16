@@ -101,6 +101,12 @@ def check_seats_save_team(sender, instance, **kwargs):
         role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
     ).count()
 
+    sub_id = org.chargebee_subscription_id
+    if not sub_id:
+        logger.info('The organization {} does not have a '
+                    'subscription'.format(org.name))
+        return
+
     # If the user is a Program Admin or Member
     # They should have a seat in the subscription
     if count == 0 and instance.role.name in [ROLE_PROGRAM_ADMIN,
@@ -113,12 +119,6 @@ def check_seats_save_team(sender, instance, **kwargs):
     org.save()
 
     # Load subscription data from ChargeBee
-    sub_id = org.chargebee_subscription_id
-    if not sub_id:
-        logger.info('The organization {} does not have a '
-                    'subscription'.format(org.name))
-        return
-
     try:
         result = Subscription.retrieve(sub_id)
         subscription = result.subscription
@@ -128,7 +128,7 @@ def check_seats_save_team(sender, instance, **kwargs):
         # Validate the amount of available seats based on the subscription
         available_seats = subscription.plan_quantity
         used_seats = org.chargebee_used_seats
-        if used_seats>  available_seats:
+        if used_seats > available_seats:
             user_email = instance.workflow_user.user.email
             email = EmailMessage(
                 subject='Exceeded the number of editors',
