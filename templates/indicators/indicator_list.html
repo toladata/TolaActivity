@@ -2,50 +2,10 @@
 {% block page_title %}Program Indicators{% endblock %}
 
 {% block content %}
-<style>
-#div_id_baseline_na {
-    padding-top: 0;
-    margin-top: 10px;
-}
-</style>
-<script>
-/*
-*  Load the collected data for an indicator on the results page
-*/
-function loadCollected(indicator,program){
-    var url = '/indicators/collected_data_table/' + indicator + '/' + program + '/';
-    var div_name = '#hidden-indicator-' + indicator;
-    $(div_name).empty();
-    $.get(url, function(data){
-        $(div_name).html(data);
-        $("body").removeClass("modal-open");
-    });
-    $("#id_indicator_data_count_btn_"+indicator).blur();
-};
-
-/*
-*  Load the collected data for an indicator on the results page
-*/
-function loadIndicators(program, indicator, type){
-    console.log(program);
-    $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
-        $('#hidden-' + program).html(data);
-        $("body").removeClass("modal-open");
-      });
-    $('#hidden-' + program).on('shown', function () {
-       $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
-    });
-
-    $('#hidden-' + program).on('hidden', function () {
-       $(".icon-chevron-up").removeClass("icon-chevron-up").addClass("icon-chevron-down");
-    });
-};
-</script>
 
 {% include "indicators/filter.html"%}
 <br>
 <div id="toplevel_div">
-<!-- Default panel contents -->
     {% for program in programs %}
         <div class='card'>
             <div class='card-header'>
@@ -74,10 +34,6 @@ function loadIndicators(program, indicator, type){
         <p>No Programs</p>
     {% endfor %}
 </div>
-
-<!--
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#indicator_modal_div">Large modal</button>
--->
 
 <div class="modal fade" role="dialog" id="conform_modal_div" aria-labelledby="mySmallModalLabel">
     <div class="modal-dialog modal-sm">
@@ -129,6 +85,37 @@ function loadIndicators(program, indicator, type){
 </div> <!-- /.modal -->
 
 <script type="text/javascript">
+    /*
+    *  Load the collected data for an indicator on the results page
+    */
+    function loadCollected(indicator,program){
+        var url = '/indicators/collected_data_table/' + indicator + '/' + program + '/';
+        var div_name = '#hidden-indicator-' + indicator;
+        $(div_name).empty();
+        $.get(url, function(data){
+            $(div_name).html(data);
+            $("body").removeClass("modal-open");
+        });
+        $("#id_indicator_data_count_btn_"+indicator).blur();
+    };
+
+    /*
+    *  Load the collected data for an indicator on the results page
+    */
+    function loadIndicators(program, indicator, type){
+        $.get('/indicators/program_indicators/' + program + '/' + indicator + '/' + type + '/', function(data){
+            $('#hidden-' + program).html(data);
+            $("body").removeClass("modal-open");
+          });
+        $('#hidden-' + program).on('shown', function () {
+           $(".icon-chevron-down").removeClass("icon-chevron-down").addClass("icon-chevron-up");
+        });
+
+        $('#hidden-' + program).on('hidden', function () {
+           $(".icon-chevron-up").removeClass("icon-chevron-up").addClass("icon-chevron-down");
+        });
+    };
+
     $("#indicator_collecteddata_div").on("click", "#targetsTabLink", function(e){
         e.preventDefault();
         $("#indicator_modal_content").empty();
@@ -145,7 +132,7 @@ function loadIndicators(program, indicator, type){
         $("#indicator_modal_content").empty();
         $("#modalmessages").empty();
         $("#indicator_collecteddata_div").modal('show');
-        // var url = '/indicators/periodic_target_generate/2470/?existingTargetsOnly=true';
+
         var url = $(e.target).attr('href') + '?existingTargetsOnly=true';
         $.getJSON(url, function( data ) {
             $("#id_periodic_target").children('option:not(:first)').remove();
@@ -169,8 +156,6 @@ function loadIndicators(program, indicator, type){
 
             var targetsactive = $(this).find("#indicator_modal_body").data("targetsactive");
             var indicatorchanged = form.data('indicatorchanged');
-
-
 
             if (form.data('update_indicator_row') == 1) {
                 var indicator_type = form.find("#id_indicator_type option:selected").text();

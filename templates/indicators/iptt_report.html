@@ -8,33 +8,98 @@
     <div id="id_div_top_iptt_report">
         <span>{{ period }} PERIOD WILL GO HERE...</span>
         <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
-        <table id="iptt_table" class="table table-sm table-bordered table-hover">
+        <table id="iptt_table"
+            class="table table-sm table-bordered table-hover">
+            <caption>Indicator Performance Tracking Table</caption>
             <thead class="thead-light">
-                <th scope="col">NO.</th>
-                <th scope="col">INDICATOR</th>
-                <th scope="col">LEVEL</th>
+                <th scope="col" style="min-width:80px">NO.</th>
+                <th scope="col" class="td-no-side-borders" style="min-width:600px">INDICATOR</th>
+                <th scope="col" class="td-no-side-borders"></th>
+                <th scope="col" style="min-width:90px">LEVEL</th>
                 <th scope="col">UNIT OF MEASURE</th>
                 <th scope="col">CHANGE</th>
-                <th scope="col">C / NC</th>
-                <th scope="col"># / %</th>
+                <th scope="col" style="min-width:60px">C / NC</th>
+                <th scope="col" style="min-width:50px"># / %</th>
                 <th scope="col">BASELINE</th>
                 <th scope="col">TARGET</th>
+                <th scope="col">ACTUAL</th>
+                <th scope="col" style="min-width: 70px;">% MET</th>
             </thead>
             <tbody>
                 {% for indicator in indicators %}
                     <tr>
                         <td>{{ indicator.number|default_if_none:'' }}</td>
-                        <td>{{ indicator.name }}</td>
+                        <td class="td-no-side-borders">{{ indicator.name }}</td>
+                        <td class="td-no-side-borders">
+                            <a href="{% url 'indicator_update' indicator.id %}"
+                               data-programid="{{ program.id }}"
+                               class="indicator-link float-right">
+                                <i class="fas fa-cog"></i>
+                            </a>
+                        </td>
                         <td>{{ indicator.level.all.0|default_if_none:'' }}</td>
                         <td>{{ indicator.unif_of_measure }}</td>
-                        <td>{{ indicator.direction_of_change }}</td>
+                        <td align="right">{{ indicator.get_direction_of_change }}</td>
                         <td>{{ indicator.is_cumulative|yesno:"Cumulative,Non-cumulative," }}</td>
                         <td>{{ indicator.get_unit_of_measure_type }}</td>
-                        <td>{{ indicator.baseline }}</td>
-                        <td>{{ indicator.lop_target }}</td>
+                        <td align="right">{{ indicator.baseline|default_if_none:'' }}</td>
+                        <td align="right">{{ indicator.lop_target|default_if_none:'' }}</td>
+                        <td align="right">
+                            {% if indicator.unit_of_measure_type == 1 %}
+                                {{ indicator.actualsum|floatformat:"-2"|default_if_none:"" }}
+                            {% elif indicator.unit_of_measure_type == 2 %}
+                                {% if indicator.is_cumulative == True %}
+                                    {{ indicator.lastdata|floatformat:"-2"|default_if_none:"" }}%
+                                {% else %}
+                                    <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
+                                    {{ indicator.actualavg|floatformat:"-2"|default_if_none:"" }}%
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td align="right">
+                            {% if indicator.unit_of_measure_type == 1 %}
+                                {% widthratio indicator.actualsum indicator.lop_target 100 as percent_met %}
+                                {% if percent_met %} {{ percent_met }}% {% endif %}
+                            {% elif indicator.unit_of_measure_type == 2 %}
+                                {% if indicator.is_cumulative == True %}
+                                    {% widthratio indicator.lastdata indicator.lop_target 100 as percent_met %}
+                                    {% if percent_met %} {{ percent_met }}% {% endif %}
+                                {% else %}
+                                    {% widthratio indicator.actualavg indicator.lop_target 100 as percent_met %}
+                                    {% if percent_met %} {{ percent_met }}% {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <div id="indicator_modal_div" class="modal fade" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" id="indicator_modal_content">
+
+            </div> <!-- modal content -->
+        </div>
+    </div>
+
+    <script>
+        // Open the IndicatorUpdate Form in a modal
+        $("#id_div_top_iptt_report").on("click", ".indicator-link", function(e) {
+            e.preventDefault();
+            let url = $(this).attr("href");
+            url += "?modal=1";
+            const programId = $(this).data("programid");
+
+            $("#indicator_modal_content").empty();
+            $("#modalmessages").empty();
+
+            $("#indicator_modal_content").load(url);
+            $("#indicator_modal_div").modal('show');
+
+        });
+    </script>
+
+    {% include 'indicators/indicator_form_common_js.html' %}
 {% endblock content %}
