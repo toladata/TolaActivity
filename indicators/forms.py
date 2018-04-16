@@ -180,9 +180,7 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['date_collected'].help_text = ' '
 
 
-class IPTTReportQuickstartForm(forms.Form):
-    prefix = 'timeperiods'
-
+class ReportFormMixin(object):
     EMPTY = 0
     YEARS = 1
     SEMIANNUAL = 2
@@ -209,13 +207,14 @@ class IPTTReportQuickstartForm(forms.Form):
     TARGETPERIODS_CHOICES = (EMPTY_OPTION,) + Indicator.TARGET_FREQUENCIES
 
     program = forms.ModelChoiceField(queryset=Program.objects.none())
-    timeperiods = forms.ChoiceField(choices=TIMEPERIODS_CHOICES,
-                                    required=False)
-    targetperiods = forms.ChoiceField(choices=TARGETPERIODS_CHOICES,
-                                      required=False)
-    timeframe = forms.ChoiceField(choices=TIMEFRAME_CHOCIES,
-                                  widget=forms.RadioSelect())
+    timeperiods = forms.ChoiceField(choices=TIMEPERIODS_CHOICES, required=False)
+    targetperiods = forms.ChoiceField(choices=TARGETPERIODS_CHOICES, required=False)
+    timeframe = forms.ChoiceField(choices=TIMEFRAME_CHOCIES, widget=forms.RadioSelect())
     numrecentperiods = forms.IntegerField(required=False)
+
+
+class IPTTReportQuickstartForm(ReportFormMixin, forms.Form):
+    prefix = 'timeperiods'
     formprefix = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     def __init__(self, *args, **kwargs):
@@ -231,5 +230,20 @@ class IPTTReportQuickstartForm(forms.Form):
         self.fields['numrecentperiods'].widget.attrs['placeholder'] = _("enter a number")
         self.fields['targetperiods'].label = _("TARGET PERIODS")
         self.fields['timeframe'].initial = self.SHOW_ALL
+
+LEVELS = []
+INDICATOR_TYPES = []
+SECTORS = []
+SITES = []
+INDICATORS = []
+
+
+class IPTTReportFilterForm(ReportFormMixin, forms.Form):
+
+    level = forms.ChoiceField(choices=LEVELS, required=False, label='LEVEL')
+    ind_type = forms.ChoiceField(choices=INDICATOR_TYPES, required=False, label='TYPE')
+    sector = forms.ChoiceField(choices=SECTORS, required=False, label='SECTOR')
+    site = forms.ChoiceField(choices=SITES, required=False, label='SITE')
+    indicators = forms.ChoiceField(choices=INDICATORS, required=False, label='INDICATORS')
 
 

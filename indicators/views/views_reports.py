@@ -3,57 +3,18 @@ from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
 from ..models import Indicator
-from ..forms import IPTTReportQuickstartForm
+from ..forms import IPTTReportQuickstartForm, IPTTReportFilterForm
 
 
-class IPTTReportQuickstartView(FormView):
-    template_name = 'indicators/iptt_quickstart.html'
-    form_class = IPTTReportQuickstartForm
-    FORM_PREFIX_TIME = 'timeperiods'
-    FORM_PREFIX_TARGET = 'targetperiods'
-
-    def get_context_data(self, **kwargs):
-        context = super(IPTTReportQuickstartView, self)\
-            .get_context_data(**kwargs)
-        # Add two instances of the same form to context if they're not present
-        if 'form' not in context:
-            context['form'] = self.form_class(request=self.request,
-                                              prefix=self.FORM_PREFIX_TIME)
-        if 'form2' not in context:
-            context['form2'] = self.form_class(request=self.request,
-                                               prefix=self.FORM_PREFIX_TARGET)
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super(IPTTReportQuickstartView, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def post(self, request, *args, **kwargs):
-        targetprefix = request.POST.get(
-            '%s-formprefix' % self.FORM_PREFIX_TARGET)
-        timeprefix = request.POST.get('%s-formprefix' % self.FORM_PREFIX_TIME)
-        prefix = None
-
-        # populate the correct form with POST data
-        if targetprefix is not None:
-            form = IPTTReportQuickstartForm(self.request.POST,
-                                            prefix=self.FORM_PREFIX_TARGET,
-                                            request=self.request)
-            prefix = targetprefix
-        else:
-            form = IPTTReportQuickstartForm(self.request.POST,
-                                            prefix=self.FORM_PREFIX_TIME,
-                                            request=self.request)
-            prefix = timeprefix
-
-        # call the form_valid/invalid with the correct prefix and form
-        if form.is_valid():
-            return self.form_valid(**{'form': form, 'prefix': prefix})
-        else:
-            return self.form_invalid(**{'form': form, 'prefix': prefix})
+class ReportMixin(object):
 
     def form_valid(self, **kwargs):
+        """
+        Args:
+            **kwargs : Keyword arguments. The code is looking for two arguments
+                form
+                prefix
+        """
         context = self.get_context_data()
         form = kwargs.get('form')
         prefix = kwargs.get('prefix')
@@ -92,7 +53,54 @@ class IPTTReportQuickstartView(FormView):
         return self.render_to_response(context)
 
 
-class IPTT_ReportView(TemplateView):
+class IPTTReportQuickstartView(ReportMixin, FormView):
+    template_name = 'indicators/iptt_quickstart.html'
+    form_class = IPTTReportQuickstartForm
+    FORM_PREFIX_TIME = 'timeperiods'
+    FORM_PREFIX_TARGET = 'targetperiods'
+
+    def get_context_data(self, **kwargs):
+        context = super(IPTTReportQuickstartView, self)\
+            .get_context_data(**kwargs)
+        # Add two instances of the same form to context if they're not present
+        if 'form' not in context:
+            context['form'] = self.form_class(request=self.request,
+                                              prefix=self.FORM_PREFIX_TIME)
+        if 'form2' not in context:
+            context['form2'] = self.form_class(request=self.request,
+                                               prefix=self.FORM_PREFIX_TARGET)
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super(IPTTReportQuickstartView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        targetprefix = request.POST.get(
+            '%s-formprefix' % self.FORM_PREFIX_TARGET)
+        timeprefix = request.POST.get('%s-formprefix' % self.FORM_PREFIX_TIME)
+
+        # populate the correct form with POST data
+        if targetprefix is not None:
+            form = IPTTReportQuickstartForm(self.request.POST,
+                                            prefix=self.FORM_PREFIX_TARGET,
+                                            request=self.request)
+            prefix = targetprefix
+        else:
+            form = IPTTReportQuickstartForm(self.request.POST,
+                                            prefix=self.FORM_PREFIX_TIME,
+                                            request=self.request)
+            prefix = timeprefix
+
+        # call the form_valid/invalid with the correct prefix and form
+        if form.is_valid():
+            return self.form_valid(**{'form': form, 'prefix': prefix})
+        else:
+            return self.form_invalid(**{'form': form, 'prefix': prefix})
+
+
+class IPTT_ReportView(ReportMixin, TemplateView):
     template_name = 'indicators/iptt_report.html'
 
     def get(self, request, *args, **kwargs):
@@ -106,4 +114,13 @@ class IPTT_ReportView(TemplateView):
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        pass
+
+        form = IPTTReportFilterForm(request.POST, request=request)
+
+        if form.is_valid():
+            pass
+
+        elif not form.is_valid():
+            pass
+            
+
