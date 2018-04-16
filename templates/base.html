@@ -71,7 +71,7 @@
             <input type="submit" value="Go" />
     </form>
 
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark"> <!-- navbar navbar-expand-lg navbar-tola -->
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
             <div class="container">
                 <button
                     class="navbar-toggler"
@@ -90,53 +90,33 @@
                         </a>
 
                         <ul class="navbar-nav">
-                            {% if report_server == True%}
-                                {% if user.is_authenticated  %}
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="navbarReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Reports" %}</a>
-                                        <div class="dropdown-menu" aria-labelledby="navbarReportsDropdown">
-                                            <a class="dropdown-item" href="/reports/report/"> {% trans "Program Report" %}</a>
-                                            <a class="dropdown-item" href="/workflow/report/0/0">{% trans "Project Report" %}</a>
-                                            <a class="dropdown-item" href="/indicators/collecteddata/0/0/0/">{% trans "Indicator Data Report" %}</a>
-                                            <a class="dropdown-item" href="/indicators/data/0/">{% trans "Indicator Visual Report" %}</a>
-                                            <a class="dropdown-item" href="/indicators/report/0/0/0/">{% trans "Indicator Library" %}</a>
-                                        </div>
-                                    </li>
-                                {% endif %}
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDashboardsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{%trans "Dashboards" %}</a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDashboardsDropdown">
-                                        <a class="dropdown-item" href="/customdashboard/program_list/0/">{% trans "Public Dashboards" %}</a>
-                                    </div>
-                                </li>
-                            {% else %}
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarWorkflowDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Workflow" %}</a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarWorkflowDropdown">
-                                        <a class="dropdown-item" href="/workflow/dashboard/0/">{% trans "Program Index" %}</a>
-                                        <a class="dropdown-item" href="/workflow/documentation_list/0/0/">{% trans "Documents" %}</a>
-                                        <a class="dropdown-item" href="/workflow/siteprofile_list/0/0/">{% trans "Sites" %}</a>
-                                        <a class="dropdown-item" href="/workflow/stakeholder_list/0/0">{% trans "Stakeholders" %}</a>
-                                    </div>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="/indicators/home/0/0/0">{% trans "Indicators" %}</a>
-                                </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarWorkflowDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Workflow" %}</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarWorkflowDropdown">
+                                    <a class="dropdown-item" href="/workflow/dashboard/0/">{% trans "Program Index" %}</a>
+                                    <a class="dropdown-item" href="/workflow/documentation_list/0/0/">{% trans "Documents" %}</a>
+                                    <a class="dropdown-item" href="/workflow/siteprofile_list/0/0/">{% trans "Sites" %}</a>
+                                    <a class="dropdown-item" href="/workflow/stakeholder_list/0/0">{% trans "Stakeholders" %}</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'indicator_list' 0 0 0 %}">{% trans "Indicators" %}</a>
+                            </li>
 
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Reports" %}</a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarReportsDropdown">
-                                        <a class="dropdown-item" href="/reports/report/">{% trans "Program Report" %}</a>
-                                        <a class="dropdown-item" href="/customdashboard/program_list/0/">{% trans "Program Dashboards" %}</a>
-                                        <a class="dropdown-item" href="/workflow/report/0/none">{% trans "Project Report" %}</a>
-                                        <a class="dropdown-item" href="/indicators/collecteddata/0/0/0/">{% trans "Indicator Data Report" %}</a>
-                                        <a class="dropdown-item" href="/indicators/data/0/0/0/">{% trans "Indicator Visual Report" %}</a>
-                                        <a class="dropdown-item" href="/indicators/report/0/0/0/">{% trans "Indicator Library" %}</a>
-                                        <a class="dropdown-item" href="/indicators/tvareport/">{% trans "Target vs Actual Report" %}</a>
-                                        <a class="dropdown-item" href="/indicators/disrep/0">{% trans "Indicator Disaggregation Report" %}</a>
-                                    </div>
-                                </li>
-                            {% endif %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarReportsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Reports" %}</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarReportsDropdown">
+                                    <a class="dropdown-item" href="{% url 'iptt_quickstart' %}">{% trans "Indicator Performance Tracking Table" %}</a>
+                                    <a class="dropdown-item" href="/reports/report/">{% trans "Program Report" %}</a>
+                                    <a class="dropdown-item" href="/customdashboard/program_list/0/">{% trans "Program Dashboards" %}</a>
+                                    <a class="dropdown-item" href="/workflow/report/0/none">{% trans "Project Report" %}</a>
+                                    <a class="dropdown-item" href="{% url 'collecteddata_list' 0 0 0 %}">{% trans "Indicator Data Report" %}</a>
+                                    <a class="dropdown-item" href="{% url 'indicator_data_report' 0 0 0 %}">{% trans "Indicator Visual Report" %}</a>
+                                    <a class="dropdown-item" href="{% url 'indicator_report' 0 0 0 %}">{% trans "Indicator Library" %}</a>
+                                    <a class="dropdown-item" href="{% url 'tvareport' %}">{% trans "Target vs Actual Report" %}</a>
+                                    <a class="dropdown-item" href="{% url 'disrep' 0 %}">{% trans "Indicator Disaggregation Report" %}</a>
+                                </div>
+                            </li>
                         </ul>
 
                         <ul class="navbar-nav ml-auto">
@@ -183,10 +163,9 @@
             </div>
         </nav>
 
-        <div class="container" style="margin-top:5px;">
-            <br/>
-            <div>{% block bread_crumb %}{% endblock %}</div>
-            <div id = "alerts">
+        <div class="container mt-3">
+            <div id="id_div_breadcrumb">{% block bread_crumb %}{% endblock %}</div>
+            <div id="alerts">
                 <!-- Any messages for users -->
                 {% block messages %}
                     {% if messages %}
@@ -197,7 +176,7 @@
                                         <div class="alert alert-{{message.tags}}">{{ message|safe }}</div>
                                     {% endif %}
                             {% endfor %}
-                    <br/>
+                    <br>
                     {% endif %}
                 {% endblock messages %}
             </div>

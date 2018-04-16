@@ -1,49 +1,45 @@
-import re
-from urlparse import urlparse
 import json
-import requests
-import dateutil.parser
+import re
 from datetime import datetime
+from urlparse import urlparse
+
+import dateutil.parser
+import requests
 from dateutil.relativedelta import relativedelta
-
-from django.core.serializers.json import DjangoJSONEncoder
-from django.core.exceptions import PermissionDenied
+from django.contrib import messages
 from django.core import serializers
-
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.urlresolvers import reverse_lazy
 from django.db import connection
 from django.db.models import (
     Count, Min, Q, Sum, Avg, DecimalField, OuterRef, Subquery
 )
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.views.generic.list import ListView
-from django.views.generic.detail import View
-from django.views.generic import TemplateView
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, render_to_response
-from django.utils.decorators import method_decorator
 from django.template.loader import render_to_string
 from django.utils import timezone
-
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib import messages
-
-from weasyprint import HTML, CSS
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
+from django.views.generic.detail import View
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView
 from django_tables2 import RequestConfig
+from weasyprint import HTML, CSS
 
-from tola.util import getCountry, get_table
-from tables import IndicatorDataTable
 from feed.serializers import FlatJsonSerializer
-from export import IndicatorResource, CollectedDataResource
+from util import getCountry, group_excluded, get_table
 from workflow.forms import FilterForm
 from workflow.mixins import AjaxableResponseMixin
-from indicators.forms import IndicatorForm, CollectedDataForm
-from .models import (
+from workflow.models import (
+    Program, SiteProfile, Country, Sector, TolaSites, FormGuidance
+)
+from ..export import IndicatorResource, CollectedDataResource
+from ..forms import IndicatorForm, CollectedDataForm
+from ..tables import IndicatorDataTable
+from ..models import (
     Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue,
     CollectedData, IndicatorType, Level, ExternalServiceRecord,
     ExternalService, TolaTable
-)
-from workflow.models import (
-    Program, SiteProfile, Country, Sector, TolaSites, FormGuidance
 )
 
 
@@ -54,7 +50,7 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod,
     target_period = ''
 
     if tf == Indicator.LOP:
-        lop_target = Indicator.TARGET_FREQUENCIES[Indicator.LOP-1][1]
+        lop_target = Indicator.TARGET_FREQUENCIES[Indicator.LOP - 1][1]
         return {'period': lop_target}
     elif tf == Indicator.MID_END:
         return [{'period': 'Midline'}, {'period': 'Endline'}]
@@ -62,7 +58,7 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod,
         return {'period': target_frequency_custom}
 
     if tf == Indicator.ANNUAL:
-        start = ((start_date + relativedelta(years=+i)).replace(day=1))\
+        start = ((start_date + relativedelta(years=+i)).replace(day=1)) \
             .strftime('%Y-%m-%d')
 
         end = ((start_date + relativedelta(years=+j)) +
@@ -71,30 +67,30 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod,
         target_period = {'period': 'Year %s' % j, 'start_date': start,
                          'end_date': end}
     elif tf == Indicator.SEMI_ANNUAL:
-        start = ((start_date + relativedelta(months=+(i*6)))
+        start = ((start_date + relativedelta(months=+(i * 6)))
                  .replace(day=1)).strftime('%Y-%m-%d')
 
-        end = ((start_date + relativedelta(months=+(j*6))) +
+        end = ((start_date + relativedelta(months=+(j * 6))) +
                relativedelta(days=-1)).strftime('%Y-%m-%d')
 
         target_period = {'period': 'Semi-annual period %s' % j,
                          'start_date': start, 'end_date': end}
 
     elif tf == Indicator.TRI_ANNUAL:
-        start = ((start_date + relativedelta(months=+(i*4)))
+        start = ((start_date + relativedelta(months=+(i * 4)))
                  .replace(day=1)).strftime('%Y-%m-%d')
 
-        end = ((start_date + relativedelta(months=+(j*4))) +
+        end = ((start_date + relativedelta(months=+(j * 4))) +
                relativedelta(days=-1)).strftime('%Y-%m-%d')
 
         target_period = {'period': 'Tri-annual period %s' % j,
                          'start_date': start, 'end_date': end}
 
     elif tf == Indicator.QUARTERLY:
-        start = ((start_date + relativedelta(months=+(i*3)))
+        start = ((start_date + relativedelta(months=+(i * 3)))
                  .replace(day=1)).strftime('%Y-%m-%d')
 
-        end = ((start_date + relativedelta(months=+(j*3))) +
+        end = ((start_date + relativedelta(months=+(j * 3))) +
                relativedelta(days=-1)).strftime('%Y-%m-%d')
 
         target_period = {'period': 'Quarter %s' % j, 'start_date': start,
@@ -104,7 +100,7 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod,
         year = (start_date + relativedelta(months=+i)).strftime("%Y")
         name = month + " " + year
 
-        start = ((start_date + relativedelta(months=+i)).replace(day=1))\
+        start = ((start_date + relativedelta(months=+i)).replace(day=1)) \
             .strftime('%Y-%m-%d')
 
         end = ((start_date + relativedelta(months=+j)) +
@@ -116,7 +112,6 @@ def generate_periodic_target_single(tf, start_date, nthTargetPeriod,
 def generate_periodic_targets(tf, start_date, numTargets,
                               target_frequency_custom=''):
     gentargets = []
-    target_period = None
 
     if tf == Indicator.LOP or tf == Indicator.MID_END:
         target_period = generate_periodic_target_single(tf, start_date,
@@ -130,32 +125,19 @@ def generate_periodic_targets(tf, start_date, numTargets,
     return gentargets
 
 
-def group_excluded(*group_names, **url):
-    """
-    If user is in the group passed in permission denied
-    """
-    def in_groups(u):
-        if u.is_authenticated():
-            if not bool(u.groups.filter(name__in=group_names)):
-                return True
-            raise PermissionDenied
-        return False
-    return user_passes_test(in_groups)
-
-
 class IndicatorList(ListView):
     model = Indicator
     template_name = 'indicators/indicator_list.html'
 
     def get(self, request, *args, **kwargs):
         countries = request.user.tola_user.countries.all()
-        getPrograms = Program.objects.filter(
+        get_programs = Program.objects.filter(
             funding_status="Funded", country__in=countries).distinct()
 
-        getIndicators = Indicator.objects.filter(
+        get_indicators = Indicator.objects.filter(
             program__country__in=countries)
 
-        getIndicatorTypes = IndicatorType.objects.all()
+        get_indicator_types = IndicatorType.objects.all()
 
         program_id = int(self.kwargs['program'])
         indicator_id = int(self.kwargs['indicator'])
@@ -164,28 +146,29 @@ class IndicatorList(ListView):
 
         if program_id != 0:
             filters['id'] = program_id
-            getIndicators = getIndicators.filter(program__in=[program_id])
+            get_indicators = get_indicators.filter(program__in=[program_id])
 
         if type_id != 0:
             filters['indicator__indicator_type__id'] = type_id
-            getIndicators = getIndicators.filter(indicator_type=type_id)
+            get_indicators = get_indicators.filter(indicator_type=type_id)
 
         if indicator_id != 0:
             filters['indicator'] = indicator_id
 
-        programs = Program.objects.prefetch_related('indicator_set')\
-            .filter(funding_status="Funded", country__in=countries)\
-            .filter(**filters).order_by('name')\
+        programs = Program.objects.prefetch_related('indicator_set') \
+            .filter(funding_status="Funded", country__in=countries) \
+            .filter(**filters).order_by('name') \
             .annotate(indicator_count=Count('indicator'))
 
-        return render(request, self.template_name, {
-                        'getPrograms': getPrograms,
-                        'getIndicators': getIndicators,
-                        'getIndicatorTypes': getIndicatorTypes,
-                        'program_id': program_id,
-                        'indicator_id': indicator_id,
-                        'type_id': type_id,
-                        'programs': programs})
+        c_data = {
+            'getPrograms': get_programs,
+            'getIndicators': get_indicators,
+            'getIndicatorTypes': get_indicator_types,
+            'program_id': program_id,
+            'indicator_id': indicator_id,
+            'type_id': type_id,
+            'programs': programs}
+        return render(request, self.template_name, c_data)
 
 
 def import_indicator(service=1, deserialize=True):
@@ -208,21 +191,21 @@ def indicator_create(request, id=0):
     Step one in Inidcator creation.
     Passed on to IndicatorCreate to do the creation
     """
-    getIndicatorTypes = IndicatorType.objects.all()
-    getCountries = Country.objects.all()
+    get_indicator_types = IndicatorType.objects.all()
+    get_countries = Country.objects.all()
     countries = getCountry(request.user)
     country_id = Country.objects.get(country=countries[0]).id
-    getPrograms = Program.objects.filter(funding_status="Funded",
-                                         country__in=countries).distinct()
-    getServices = ExternalService.objects.all()
+    get_programs = Program.objects.filter(funding_status="Funded",
+                                          country__in=countries).distinct()
+    get_services = ExternalService.objects.all()
     program_id = id
 
     if request.method == 'POST':
-        type = IndicatorType.objects.get(indicator_type="custom")
+        indicator_type = IndicatorType.objects.get(indicator_type="custom")
         # country = Country.objects.get(id=request.POST['country'])
         program = Program.objects.get(id=request.POST['program'])
         service = request.POST['services']
-        level = Level.objects.all()[0]
+        level = Level.objects.first()
         node_id = request.POST['service_indicator']
         sector = None
         # add a temp name for custom indicators
@@ -236,8 +219,8 @@ def indicator_create(request, id=0):
 
         # checkfor service indicator and update based on values
         if node_id is None and int(node_id) != 0:
-            getImportedIndicators = import_indicator(service)
-            for item in getImportedIndicators:
+            get_imported_indicators = import_indicator(service)
+            for item in get_imported_indicators:
                 if item['nid'] == node_id:
                     getSector, created = Sector.objects.get_or_create(
                         sector=item['sector'])
@@ -261,7 +244,7 @@ def indicator_create(request, id=0):
                     external_service_record.save()
                     getType, created = IndicatorType.objects.get_or_create(
                         indicator_type=item['type'].title())
-                    type = getType
+                    indicator_type = getType
         # save form
         new_indicator = Indicator(
             sector=sector, name=name, source=source, definition=definition,
@@ -269,23 +252,23 @@ def indicator_create(request, id=0):
         )
         new_indicator.save()
         new_indicator.program.add(program)
-        new_indicator.indicator_type.add(type)
+        new_indicator.indicator_type.add(indicator_type)
         new_indicator.level.add(level)
 
         latest = new_indicator.id
 
         # redirect to update page
         messages.success(request, 'Success, Basic Indicator Created!')
-        redirect_url = '/indicators/indicator_update/' + str(latest) + '/'
+        redirect_url = reverse_lazy('indicator_update', kwargs={'pk': latest})
         return HttpResponseRedirect(redirect_url)
 
     # send the keys and vars from the json data to the template along with
     # submitted feed info and silos for new form
     return render(request, "indicators/indicator_create.html",
                   {'country_id': country_id, 'program_id': int(program_id),
-                   'getCountries': getCountries, 'getPrograms': getPrograms,
-                   'getIndicatorTypes': getIndicatorTypes,
-                   'getServices': getServices})
+                   'getCountries': get_countries, 'getPrograms': get_programs,
+                   'getIndicatorTypes': get_indicator_types,
+                   'getServices': get_services})
 
 
 class IndicatorCreate(CreateView):
@@ -320,13 +303,12 @@ class IndicatorCreate(CreateView):
     def get_form_kwargs(self):
         kwargs = super(IndicatorCreate, self).get_form_kwargs()
         kwargs['request'] = self.request
-        program = Indicator.objects.all().filter(id=self.kwargs['pk'])\
+        program = Indicator.objects.all().filter(id=self.kwargs['pk']) \
             .values("program__id")
         kwargs['program'] = program
         return kwargs
 
     def form_invalid(self, form):
-
         messages.error(self.request, 'Invalid Form', fail_silently=False)
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -362,7 +344,7 @@ class PeriodicTargetView(View):
 
         pt_generated = generate_periodic_target_single(
             indicator.target_frequency, indicator.target_frequency_start,
-            (numTargets-1), ''
+            (numTargets - 1), ''
         )
 
         pt_generated_json = json.dumps(pt_generated, cls=DjangoJSONEncoder)
@@ -399,7 +381,7 @@ def handleDataCollectedRecords(indicatr, lop, existing_target_frequency,
     and new_target_frequency != Indicator.LOP:
     """
     if existing_target_frequency != new_target_frequency:
-        CollectedData.objects.filter(indicator=indicatr)\
+        CollectedData.objects.filter(indicator=indicatr) \
             .update(periodic_target=None)
 
         PeriodicTarget.objects.filter(indicator=indicatr).delete()
@@ -414,7 +396,7 @@ def handleDataCollectedRecords(indicatr, lop, existing_target_frequency,
             indicator=indicatr, period=Indicator.TARGET_FREQUENCIES[0][1],
             target=lop, create_date=timezone.now()
         )
-        CollectedData.objects.filter(indicator=indicatr)\
+        CollectedData.objects.filter(indicator=indicatr) \
             .update(periodic_target=lop_pt)
 
     if generated_pt_ids:
@@ -423,8 +405,8 @@ def handleDataCollectedRecords(indicatr, lop, existing_target_frequency,
         for pt in pts:
             CollectedData.objects.filter(
                 indicator=indicatr,
-                date_collected__range=[pt.start_date, pt.end_date])\
-                    .update(periodic_target=pt)
+                date_collected__range=[pt.start_date, pt.end_date]) \
+                .update(periodic_target=pt)
 
 
 class IndicatorUpdate(UpdateView):
@@ -468,19 +450,19 @@ class IndicatorUpdate(UpdateView):
         context.update({'i_name': getIndicator.name})
         context['programId'] = getIndicator.program.all()[0].id
         context['periodic_targets'] = PeriodicTarget.objects.filter(
-            indicator=getIndicator)\
-            .annotate(num_data=Count('collecteddata'))\
+            indicator=getIndicator) \
+            .annotate(num_data=Count('collecteddata')) \
             .order_by('customsort', 'create_date', 'period')
-        context['targets_sum'] = PeriodicTarget.objects\
-            .filter(indicator=getIndicator)\
+        context['targets_sum'] = PeriodicTarget.objects \
+            .filter(indicator=getIndicator) \
             .aggregate(Sum('target'))['target__sum']
-        context['targets_avg'] = PeriodicTarget.objects\
-            .filter(indicator=getIndicator)\
+        context['targets_avg'] = PeriodicTarget.objects \
+            .filter(indicator=getIndicator) \
             .aggregate(Avg('target'))['target__avg']
 
         # get external service data if any
         try:
-            getExternalServiceRecord = ExternalServiceRecord.objects\
+            getExternalServiceRecord = ExternalServiceRecord.objects \
                 .filter(indicator__id=self.kwargs['pk'])
         except ExternalServiceRecord.DoesNotExist:
             getExternalServiceRecord = None
@@ -492,7 +474,7 @@ class IndicatorUpdate(UpdateView):
         return context
 
     def get_initial(self):
-        target_frequency_num_periods = self.get_object()\
+        target_frequency_num_periods = self.get_object() \
             .target_frequency_num_periods
         if not target_frequency_num_periods:
             target_frequency_num_periods = 1
@@ -572,7 +554,7 @@ class IndicatorUpdate(UpdateView):
                     'edit_date': timezone.now()
                 }
 
-                periodic_target, created = PeriodicTarget.objects\
+                periodic_target, created = PeriodicTarget.objects \
                     .update_or_create(indicator=indicatr, id=pk,
                                       defaults=defaults)
 
@@ -589,7 +571,7 @@ class IndicatorUpdate(UpdateView):
 
         # check to see if values of any of these fields have changed.
         fields_to_watch = set(['indicator_type', 'level', 'name', 'number',
-                              'sector'])
+                               'sector'])
 
         changed_fields = set(form.changed_data)
         if fields_to_watch.intersection(changed_fields):
@@ -601,8 +583,8 @@ class IndicatorUpdate(UpdateView):
         self.object = form.save()
 
         # fetch all existing periodic_targets for this indicator
-        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr)\
-            .annotate(num_data=Count('collecteddata'))\
+        periodic_targets = PeriodicTarget.objects.filter(indicator=indicatr) \
+            .annotate(num_data=Count('collecteddata')) \
             .order_by('customsort', 'create_date', 'period')
 
         if self.request.is_ajax():
@@ -646,7 +628,8 @@ class IndicatorUpdate(UpdateView):
 class IndicatorDelete(DeleteView):
     model = Indicator
     form_class = IndicatorForm
-    success_url = '/indicators/home/0/0/0/'
+    success_url = reverse_lazy(
+        'indicator_list', kwargs={'program': 0, 'indicator': 0, 'type': 0})
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -681,7 +664,7 @@ class PeriodicTargetDeleteView(DeleteView):
             indicator.target_frequency_custom = None
             indicator.save()
 
-        targets_sum = PeriodicTarget.objects.filter(indicator=indicator)\
+        targets_sum = PeriodicTarget.objects.filter(indicator=indicator) \
             .aggregate(Sum('target'))['target__sum']
 
         indicator = None
@@ -715,7 +698,7 @@ class CollectedDataCreate(CreateView):
             getDisaggregationLabel = DisaggregationLabel.objects.filter(
                 disaggregation_type__indicator__id=self.kwargs['indicator'])
 
-            getDisaggregationLabelStandard = DisaggregationLabel.objects\
+            getDisaggregationLabelStandard = DisaggregationLabel.objects \
                 .filter(disaggregation_type__standard=True)
 
         except DisaggregationLabel.DoesNotExist:
@@ -730,7 +713,7 @@ class CollectedDataCreate(CreateView):
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
         context.update({'getDisaggregationLabelStandard':
-                       getDisaggregationLabelStandard})
+                        getDisaggregationLabelStandard})
 
         context.update({'indicator_id': self.kwargs['indicator']})
         context.update({'indicator': indicator})
@@ -805,8 +788,8 @@ class CollectedDataCreate(CreateView):
             return HttpResponse(data)
 
         messages.success(self.request, 'Success, Data Created!')
-        redirect_url = '/indicators/home/0/0/0/#hidden-%s' %\
-            str(self.kwargs['program'])
+        redirect_url = '/indicators/home/0/0/0/#hidden-%s' % \
+                       str(self.kwargs['program'])
         return HttpResponseRedirect(redirect_url)
 
 
@@ -836,7 +819,7 @@ class CollectedDataUpdate(UpdateView):
             getDisaggregationLabel = DisaggregationLabel.objects.filter(
                 disaggregation_type__indicator__id=getIndicator.indicator_id)
 
-            getDisaggregationLabelStandard = DisaggregationLabel.objects\
+            getDisaggregationLabelStandard = DisaggregationLabel.objects \
                 .filter(disaggregation_type__standard=True)
 
         except DisaggregationLabel.DoesNotExist:
@@ -844,13 +827,13 @@ class CollectedDataUpdate(UpdateView):
             getDisaggregationLabelStandard = None
 
         try:
-            getDisaggregationValue = DisaggregationValue.objects\
-                .filter(collecteddata=self.kwargs['pk'])\
+            getDisaggregationValue = DisaggregationValue.objects \
+                .filter(collecteddata=self.kwargs['pk']) \
                 .exclude(
                     disaggregation_label__disaggregation_type__standard=True)
 
-            getDisaggregationValueStandard = DisaggregationValue.objects\
-                .filter(collecteddata=self.kwargs['pk'])\
+            getDisaggregationValueStandard = DisaggregationValue.objects \
+                .filter(collecteddata=self.kwargs['pk']) \
                 .filter(
                     disaggregation_label__disaggregation_type__standard=True)
 
@@ -859,10 +842,10 @@ class CollectedDataUpdate(UpdateView):
             getDisaggregationValueStandard = None
 
         context.update({'getDisaggregationLabelStandard':
-                       getDisaggregationLabelStandard})
+                        getDisaggregationLabelStandard})
 
         context.update({'getDisaggregationValueStandard':
-                       getDisaggregationValueStandard})
+                        getDisaggregationValueStandard})
 
         context.update({'getDisaggregationValue': getDisaggregationValue})
         context.update({'getDisaggregationLabel': getDisaggregationLabel})
@@ -932,15 +915,16 @@ class CollectedDataUpdate(UpdateView):
             return HttpResponse(data)
 
         messages.success(self.request, 'Success, Data Updated!')
-        redirect_url = '/indicators/home/0/0/0/#hidden-%s'\
-            % str(getIndicator.program.id)
+        redirect_url = '/indicators/home/0/0/0/#hidden-%s' \
+                       % str(getIndicator.program.id)
 
         return HttpResponseRedirect(redirect_url)
 
 
 class CollectedDataDelete(DeleteView):
     model = CollectedData
-    success_url = '/indicators/home/0/0/0/'
+    success_url = reverse_lazy(
+        'indicator_list', kwargs={'program': 0, 'indicator': 0, 'type': 0})
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
@@ -996,11 +980,11 @@ def collecteddata_import(request):
     service = TolaSites.objects.get(site_id=1)
 
     # add filter to get just the users tables only
-    user_filter_url = "%s&owner__username=%s"\
-        % (service.tola_tables_url, str(owner))
+    user_filter_url = "%s&owner__username=%s" \
+                      % (service.tola_tables_url, str(owner))
 
-    shared_filter_url = "%s&shared__username=%s"\
-        % (service.tola_tables_url, str(owner))
+    shared_filter_url = "%s&shared__username=%s" \
+                        % (service.tola_tables_url, str(owner))
 
     user_json = get_table(user_filter_url)
     shared_json = get_table(shared_filter_url)
@@ -1064,17 +1048,17 @@ def collected_data_view(request, indicator, program):
     template_name = 'indicators/collected_data_table.html'
 
     last_data_record = CollectedData.objects.filter(
-                        periodic_target=OuterRef('pk')).order_by('-id')
-    periodictargets = PeriodicTarget.objects\
-        .filter(indicator=indicator)\
-        .prefetch_related('collecteddata_set')\
+        periodic_target=OuterRef('pk')).order_by('-id')
+    periodictargets = PeriodicTarget.objects \
+        .filter(indicator=indicator) \
+        .prefetch_related('collecteddata_set') \
         .annotate(
             achieved_sum=Sum(
                 'collecteddata__achieved', output_field=DecimalField()),
             achieved_avg=Avg(
                 'collecteddata__achieved', output_field=DecimalField()),
             last_data_row=Subquery(
-                last_data_record.values('achieved')[:1]))\
+                last_data_record.values('achieved')[:1])) \
         .order_by('customsort')
 
     # the total of achieved values across all periodic targets of an indicator
@@ -1099,8 +1083,8 @@ def collected_data_view(request, indicator, program):
         else:
             try:
                 # update this variable only if there is a data value
-                last_data_record_value = pt.last_data_row if pt.last_data_row\
-                    is not None else last_data_record_value
+                last_data_record_value = pt.last_data_row if pt.last_data_row \
+                                        is not None else last_data_record_value
 
                 grand_achieved_avg = pt.achieved_avg + grand_achieved_avg
                 grand_achieved_sum = pt.achieved_sum + grand_achieved_sum
@@ -1112,7 +1096,7 @@ def collected_data_view(request, indicator, program):
 
     # for calculative the grand_achieved_avg only count those periodic_targets
     # that are not in the future, i.e, their start is less than today's date.
-    num_pts = periodictargets\
+    num_pts = periodictargets \
         .filter(start_date__lte=timezone.now().date()).count()
 
     if grand_achieved_avg is not None and num_pts > 0:
@@ -1120,7 +1104,7 @@ def collected_data_view(request, indicator, program):
 
     # show all of the data records that do not yet have periodic_targets
     # associated with them.
-    collecteddata_without_periodictargets = CollectedData.objects\
+    collecteddata_without_periodictargets = CollectedData.objects \
         .filter(indicator=indicator, periodic_target__isnull=True)
 
     return render_to_response(
@@ -1150,13 +1134,13 @@ def program_indicators_json(request, program, indicator, type):
     if int(indicator) != 0:
         q['id'] = indicator
 
-    indicators = Indicator.objects\
-        .select_related('sector')\
+    indicators = Indicator.objects \
+        .select_related('sector') \
         .prefetch_related('collecteddata_set', 'indicator_type', 'level',
-                          'periodictarget_set')\
-        .filter(**q)\
+                          'periodictarget_set') \
+        .filter(**q) \
         .annotate(data_count=Count('collecteddata'),
-                  levelmin=Min('level__id'))\
+                  levelmin=Min('level__id')) \
         .order_by('levelmin', 'number')
 
     return render_to_response(
@@ -1181,11 +1165,11 @@ def indicator_report(request, program=0, indicator=0, type=0):
 
     filters['program__country__in'] = countries
 
-    indicator_data = Indicator.objects.filter(**filters)\
-        .prefetch_related('sector')\
+    indicator_data = Indicator.objects.filter(**filters) \
+        .prefetch_related('sector') \
         .select_related(
-            'program', 'external_service_record', 'indicator_type',
-            'disaggregation', 'reporting_frequency')\
+        'program', 'external_service_record', 'indicator_type',
+        'disaggregation', 'reporting_frequency') \
         .values('id', 'program__name', 'baseline', 'level__name',
                 'lop_target', 'program__id',
                 'external_service_record__external_service__name',
@@ -1201,11 +1185,11 @@ def indicator_report(request, program=0, indicator=0, type=0):
     # send the keys and vars from the json data to the template along with
     # submitted feed info and silos for new form
     return render(request, "indicators/report.html", {
-                  'program': program,
-                  'getPrograms': getPrograms,
-                  'getIndicatorTypes': getIndicatorTypes,
-                  'getIndicators': indicator_data,
-                  'data': data})
+        'program': program,
+        'getPrograms': getPrograms,
+        'getIndicatorTypes': getIndicatorTypes,
+        'getIndicators': indicator_data,
+        'data': data})
 
 
 class IndicatorReport(View, AjaxableResponseMixin):
@@ -1225,11 +1209,11 @@ class IndicatorReport(View, AjaxableResponseMixin):
         if program == 0 and type == 0:
             filters['program__country__in'] = countries
 
-        getIndicators = Indicator.objects.filter(**filters)\
-            .prefetch_related('sector')\
+        getIndicators = Indicator.objects.filter(**filters) \
+            .prefetch_related('sector') \
             .select_related('program', 'external_service_record',
                             'indicator_type', 'disaggregation',
-                            'reporting_frequency')\
+                            'reporting_frequency') \
             .values('id', 'program__name', 'baseline', 'level__name',
                     'lop_target', 'program__id',
                     'external_service_record__external_service__name',
@@ -1265,7 +1249,7 @@ def programIndicatorReport(request, program=0):
     getPrograms = Program.objects.filter(funding_status="Funded",
                                          country__in=countries).distinct()
 
-    getIndicators = Indicator.objects.filter(program__id=program)\
+    getIndicators = Indicator.objects.filter(program__id=program) \
         .select_related().order_by('level', 'number')
 
     getProgram = Program.objects.get(id=program)
@@ -1277,12 +1261,12 @@ def programIndicatorReport(request, program=0):
         # for obj in filtered:
         #    list1.append(obj)
         getIndicators = Indicator.objects.filter(
-                Q(indicator_type__icontains=request.GET["search"]) |
-                Q(name__icontains=request.GET["search"]) |
-                Q(number__icontains=request.GET["search"]) |
-                Q(definition__startswith=request.GET["search"]))\
-            .filter(program__id=program)\
-            .select_related()\
+            Q(indicator_type__icontains=request.GET["search"]) |
+            Q(name__icontains=request.GET["search"]) |
+            Q(number__icontains=request.GET["search"]) |
+            Q(definition__startswith=request.GET["search"])) \
+            .filter(program__id=program) \
+            .select_related() \
             .order_by('level', 'number')
 
     # send the keys and vars from the json data to the template along with
@@ -1308,8 +1292,8 @@ def indicator_data_report(request, id=0, program=0, type=0):
     type_name = None
     q = {'indicator__id__isnull': False}
 
-    getSiteProfile = SiteProfile.objects\
-        .filter(projectagreement__program__country__in=countries)\
+    getSiteProfile = SiteProfile.objects \
+        .filter(projectagreement__program__country__in=countries) \
         .select_related('country', 'district', 'province')
 
     if int(id) != 0:
@@ -1319,14 +1303,14 @@ def indicator_data_report(request, id=0, program=0, type=0):
         q['indicator__program__country__in'] = countries
 
     if int(program) != 0:
-        getSiteProfile = SiteProfile.objects\
-            .filter(projectagreement__program__id=program)\
+        getSiteProfile = SiteProfile.objects \
+            .filter(projectagreement__program__id=program) \
             .select_related('country', 'district', 'province')
 
         program_name = Program.objects.get(id=program).name
         q = {'program__id': program}
         getIndicators = Indicator.objects.select_related().filter(
-                                                            program=program)
+            program=program)
 
     if int(type) != 0:
         type_name = IndicatorType.objects.get(id=type).indicator_type
@@ -1334,9 +1318,9 @@ def indicator_data_report(request, id=0, program=0, type=0):
 
     if request.method == "GET" and "search" in request.GET:
         queryset = CollectedData.objects.filter(**q).filter(
-                Q(agreement__project_name__contains=request.GET["search"]) |
-                Q(description__icontains=request.GET["search"]) |
-                Q(indicator__name__contains=request.GET["search"]))\
+            Q(agreement__project_name__contains=request.GET["search"]) |
+            Q(description__icontains=request.GET["search"]) |
+            Q(indicator__name__contains=request.GET["search"])) \
             .select_related()
     else:
         queryset = CollectedData.objects.all().filter(**q).select_related()
@@ -1348,9 +1332,9 @@ def indicator_data_report(request, id=0, program=0, type=0):
     RequestConfig(request).configure(table)
 
     filters = {'status': 1, 'country__in': countries}
-    getSiteProfileIndicator = SiteProfile.objects\
-        .select_related('country', 'district', 'province')\
-        .prefetch_related('collecteddata_set')\
+    getSiteProfileIndicator = SiteProfile.objects \
+        .select_related('country', 'district', 'province') \
+        .prefetch_related('collecteddata_set') \
         .filter(**filters)
 
     # send the keys and vars from the json data to the template along with
@@ -1372,7 +1356,7 @@ def indicator_data_report(request, id=0, program=0, type=0):
         'type_name': type_name,
         'program_name': program_name,
         'getSiteProfileIndicator': getSiteProfileIndicator,
-        })
+    })
 
 
 class IndicatorReportData(View, AjaxableResponseMixin):
@@ -1399,7 +1383,7 @@ class IndicatorReportData(View, AjaxableResponseMixin):
 
         countries = getCountry(request.user)
 
-        indicator = Indicator.objects.filter(program__country__in=countries)\
+        indicator = Indicator.objects.filter(program__country__in=countries) \
             .filter(**q).values(
                 'id', 'program__name', 'baseline', 'level__name', 'lop_target',
                 'program__id',
@@ -1408,17 +1392,17 @@ class IndicatorReportData(View, AjaxableResponseMixin):
                 'indicator_type__indicator_type', 'sector__sector')\
             .order_by('create_date')
 
-        indicator_count = Indicator.objects\
-            .filter(program__country__in=countries)\
-            .filter(**q)\
-            .filter(collecteddata__isnull=True)\
-            .distinct()\
+        indicator_count = Indicator.objects \
+            .filter(program__country__in=countries) \
+            .filter(**q) \
+            .filter(collecteddata__isnull=True) \
+            .distinct() \
             .count()
 
-        indicator_data_count = Indicator.objects\
-            .filter(program__country__in=countries)\
-            .filter(**q).filter(collecteddata__isnull=False)\
-            .distinct()\
+        indicator_data_count = Indicator.objects \
+            .filter(program__country__in=countries) \
+            .filter(**q).filter(collecteddata__isnull=False) \
+            .distinct() \
             .count()
 
         indicator_serialized = json.dumps(list(indicator))
@@ -1474,14 +1458,14 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
             }
             q.update(s)
 
-        getCollectedData = CollectedData.objects\
-            .select_related('periodic_target')\
+        getCollectedData = CollectedData.objects \
+            .select_related('periodic_target') \
             .prefetch_related('evidence', 'indicator', 'program',
                               'indicator__objectives',
-                              'indicator__strategic_objectives')\
-            .filter(program__country__in=countries)\
-            .filter(**q)\
-            .order_by('indicator__program__name', 'indicator__number')\
+                              'indicator__strategic_objectives') \
+            .filter(program__country__in=countries) \
+            .filter(**q) \
+            .order_by('indicator__program__name', 'indicator__number') \
             .values(
                 'id', 'indicator__id', 'indicator__name',
                 'indicator__program__id', 'indicator__program__name',
@@ -1493,10 +1477,10 @@ class CollectedDataReportData(View, AjaxableResponseMixin):
                 'indicator__external_service_record__external_service__name',
                 'evidence', 'tola_table', 'periodic_target', 'achieved')
 
-        collected_sum = CollectedData.objects\
-            .select_related('periodic_target')\
-            .filter(program__country__in=countries)\
-            .filter(**q)\
+        collected_sum = CollectedData.objects \
+            .select_related('periodic_target') \
+            .filter(program__country__in=countries) \
+            .filter(**q) \
             .aggregate(Sum('periodic_target__target'), Sum('achieved'))
 
         # datetime encoding breaks without using this
@@ -1521,7 +1505,7 @@ def dictfetchall(cursor):
 
 class DisaggregationReportMixin(object):
     def get_context_data(self, **kwargs):
-        context = super(DisaggregationReportMixin, self)\
+        context = super(DisaggregationReportMixin, self) \
             .get_context_data(**kwargs)
 
         countries = getCountry(self.request.user)
@@ -1644,10 +1628,10 @@ class TVAPrint(TemplateView):
         program = Program.objects.filter(
             id=kwargs.get('program', None)).first()
 
-        indicators = Indicator.objects\
-            .select_related('sector')\
-            .prefetch_related('indicator_type', 'level', 'program')\
-            .filter(program=program)\
+        indicators = Indicator.objects \
+            .select_related('sector') \
+            .prefetch_related('indicator_type', 'level', 'program') \
+            .filter(program=program) \
             .annotate(actuals=Sum('collecteddata__achieved'))
 
         # hmtl_string = render_to_string('indicators/tva_print.html',
@@ -1710,18 +1694,18 @@ class TVAReport(TemplateView):
         if indicator:
             filters['indicator'] = indicator.pk
 
-        indicators = Indicator.objects\
-            .select_related('sector')\
-            .prefetch_related('indicator_type', 'level', 'program')\
-            .filter(**filters)\
+        indicators = Indicator.objects \
+            .select_related('sector') \
+            .prefetch_related('indicator_type', 'level', 'program') \
+            .filter(**filters) \
             .annotate(actuals=Sum('collecteddata__achieved'))
 
         context['data'] = indicators
-        context['getIndicators'] = Indicator.objects\
-            .filter(program__country__in=countries)\
+        context['getIndicators'] = Indicator.objects \
+            .filter(program__country__in=countries) \
             .exclude(collecteddata__isnull=True)
 
-        context['getPrograms'] = Program.objects\
+        context['getPrograms'] = Program.objects \
             .filter(funding_status="Funded", country__in=countries).distinct()
 
         context['getIndicatorTypes'] = IndicatorType.objects.all()
@@ -1745,8 +1729,8 @@ class CollectedDataList(ListView):
         getPrograms = Program.objects.filter(funding_status="Funded",
                                              country__in=countries).distinct()
 
-        getIndicators = Indicator.objects\
-            .filter(program__country__in=countries)\
+        getIndicators = Indicator.objects \
+            .filter(program__country__in=countries) \
             .exclude(collecteddata__isnull=True)
 
         getIndicatorTypes = IndicatorType.objects.all()
@@ -1764,7 +1748,7 @@ class CollectedDataList(ListView):
                 'program__id': program,
             }
             # redress the indicator list based on program
-            getIndicators = Indicator.objects.select_related()\
+            getIndicators = Indicator.objects.select_related() \
                 .filter(program=program)
 
             program_name = Program.objects.get(id=program)
@@ -1775,8 +1759,8 @@ class CollectedDataList(ListView):
             q.update(r)
 
             # redress the indicator list based on type
-            getIndicators = Indicator.objects\
-                .select_related()\
+            getIndicators = Indicator.objects \
+                .select_related() \
                 .filter(indicator_type__id=type)
 
             type_name = IndicatorType.objects.get(id=type).indicator_type
@@ -1787,14 +1771,14 @@ class CollectedDataList(ListView):
             q.update(s)
             indicator_name = Indicator.objects.get(id=indicator)
 
-        indicators = CollectedData.objects\
-            .select_related('periodic_target')\
+        indicators = CollectedData.objects \
+            .select_related('periodic_target') \
             .prefetch_related('evidence', 'indicator', 'program',
                               'indicator__objectives',
-                              'indicator__strategic_objectives')\
-            .filter(program__country__in=countries)\
-            .filter(**q)\
-            .order_by('indicator__program__name', 'indicator__number')\
+                              'indicator__strategic_objectives') \
+            .filter(program__country__in=countries) \
+            .filter(**q) \
+            .order_by('indicator__program__name', 'indicator__number') \
             .values(
                 'indicator__id', 'indicator__name',
                 'indicator__program__name',
@@ -1838,6 +1822,7 @@ class IndicatorExport(View):
     """
     Export all indicators to a CSV file
     """
+
     def get(self, request, *args, **kwargs):
         if int(kwargs['id']) == 0:
             del kwargs['id']
@@ -1847,8 +1832,8 @@ class IndicatorExport(View):
             del kwargs['program']
 
         countries = getCountry(request.user)
-        queryset = Indicator.objects\
-            .filter(**kwargs)\
+        queryset = Indicator.objects \
+            .filter(**kwargs) \
             .filter(program__country__in=countries)
 
         indicator = IndicatorResource().export(queryset)
@@ -1862,6 +1847,7 @@ class IndicatorDataExport(View):
     """
     Export all indicators to a CSV file
     """
+
     def get(self, request, *args, **kwargs):
         if int(kwargs['indicator']) == 0:
             del kwargs['indicator']
@@ -1874,8 +1860,8 @@ class IndicatorDataExport(View):
             del kwargs['type']
 
         countries = getCountry(request.user)
-        queryset = CollectedData.objects\
-            .filter(**kwargs)\
+        queryset = CollectedData.objects \
+            .filter(**kwargs) \
             .filter(indicator__program__country__in=countries)
 
         dataset = CollectedDataResource().export(queryset)
@@ -1907,6 +1893,7 @@ def const_table_det_url(url):
     for c in components:
         s.append(c)
 
-    new_url = str(root)+'://'+str(org_host)+'/silo_detail/'+str(s[3])+'/'
+    new_url = str(root) + '://' + str(org_host) + '/silo_detail/' + str(
+        s[3]) + '/'
 
     return new_url

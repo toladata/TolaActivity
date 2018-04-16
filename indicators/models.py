@@ -405,7 +405,7 @@ class Indicator(models.Model):
 
     unit_of_measure_type = models.IntegerField(
         blank=False, null=True, choices=UNIT_OF_MEASURE_TYPES,
-        default=UNIT_OF_MEASURE_TYPES[0][0],
+        default=NUMBER,
         verbose_name=_("Unit Type"), help_text=" "
     )
 
@@ -429,7 +429,7 @@ class Indicator(models.Model):
 
     direction_of_change = models.IntegerField(
         blank=False, null=True, choices=DIRECTION_OF_CHANGE,
-        default=DIRECTION_OF_CHANGE[0][0],
+        default=DIRECTION_OF_CHANGE_NONE,
         verbose_name=_("Direction of Change"), help_text=" "
     )
 
@@ -622,6 +622,24 @@ class Indicator(models.Model):
         if self.target_frequency:
             return Indicator.TARGET_FREQUENCIES[self.target_frequency-1][1]
         return None
+
+    @property
+    def get_unit_of_measure_type(self):
+        if self.unit_of_measure_type == self.NUMBER:
+            return _("#")
+        elif self.unit_of_measure_type == self.PERCENTAGE:
+            return _("%")
+        else:
+            return ""
+
+    @property
+    def get_direction_of_change(self):
+        if self.direction_of_change == self.DIRECTION_OF_CHANGE_NEGATIVE:
+            return _("-")
+        elif self.direction_of_change == self.DIRECTION_OF_CHANGE_POSITIVE:
+            return _("+")
+        else:
+            return "N/A"
 
 
 class PeriodicTarget(models.Model):

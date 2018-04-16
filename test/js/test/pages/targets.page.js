@@ -15,6 +15,23 @@ var parms = util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /**
+ * Add num target periods to the targets list
+ * @param {integer} num The number of target periods
+ * to add
+ * @returns {integer} The total number of target periods
+ */
+function addTarget(num = 1) {
+    let link = browser.$('a#addNewPeriodicTarget');
+    let cnt = 0;
+
+    while (cnt < num) {
+        link.click();
+        cnt++;
+    }
+    return cnt;
+}
+
+/**
  * Click the indicator name link for the specified indicator
  * to show its detail/edit screen
  * @param {string} indicatorName - The name of the indicator whose
@@ -371,8 +388,12 @@ function pageName() {
  * @returns Nothing
  */
 function saveIndicatorChanges() {
-  browser.scroll('input[value="Save changes"]');
-  let saveChanges = $('input[value="Save changes"]');
+  let elem = 'input[value="Save changes"]';
+  if (! browser.isVisible(elem)) {
+    browser.waitForVisible(elem);
+  }
+  let saveChanges = $(elem);
+  browser.scroll(elem);
   saveChanges.click();
 }
 
@@ -408,10 +429,10 @@ function setBaselineNA() {
  */
 function setEndlineTarget(value) {
   clickTargetsTab();
-  if (! browser.isVisible('div>input[name="Endline"]')) {
-    browser.waitForVisible('div>input[name="Endline"]');
+  if (! browser.isVisible('input[name="Endline"]')) {
+    browser.waitForVisible('input[name="Endline"]');
   }
-  let endline = $('div>input[name="Endline"]');
+  let endline = $('input[name="Endline"]');
   endline.setValue(value);
 }
 
@@ -478,10 +499,10 @@ function setLoPTarget(value) {
  */
 function setMidlineTarget(value) {
   clickTargetsTab();
-  if (! browser.isVisible('div>input[name="Midline"]')) {
-    browser.waitForVisible('div>input[name="Midline"]');
+  if (! browser.isVisible('input[name="Midline"]')) {
+    browser.waitForVisible('input[name="Midline"]');
   }
-  let midline = $('div>input[name="Midline"]');
+  let midline = $('input[name="Midline"]');
   midline.setValue(value);
 }
 
@@ -541,6 +562,8 @@ function setUnitOfMeasure(unit) {
   bucket.setValue(unit);
 }
 
+exports.addTarget = addTarget;
+exports.addTargets = addTarget;
 exports.clickProgramIndicator = clickProgramIndicator;
 exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;

@@ -32,6 +32,7 @@ test/js/logs
 test/js/package-lock.json
 test/js/node_modules
 test/js/allure-results/
+test/js/allure-report/
 
 #allvritualenv
 venv/
@@ -53,3 +54,5 @@ error.log
 settings.secret.yml
 assets/
 templates/links.html
+coverage_html
+.coverage

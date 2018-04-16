@@ -1,9 +1,9 @@
-import factory
-import faker
 from random import randint
-from django.utils import timezone
 
-from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy, lazy_attribute
+import faker
+from django.utils import timezone
+from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy, \
+    lazy_attribute
 
 from indicators.models import (
     CollectedData as CollectedDataM,
@@ -16,9 +16,10 @@ from indicators.models import (
     PeriodicTarget as PeriodicTargetM,
     StrategicObjective as StrategicObjectiveM,
 )
-from workflow.models import Organization, Program
+from workflow_models import OrganizationFactory, ProgramFactory
 
 FAKER = faker.Faker(locale='en_US')
+
 
 class ReportingFrequency(DjangoModelFactory):
     class Meta:
@@ -26,15 +27,16 @@ class ReportingFrequency(DjangoModelFactory):
 
     frequency = 'Bi-weekly'
     description = 'Every two weeks'
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
+
 
 class RandomIndicatorFactory(DjangoModelFactory):
-
     class Meta:
         model = IndicatorM
 
     name = lazy_attribute(lambda n: FAKER.sentence(nb_words=8))
-    number = lazy_attribute(lambda n: "%s.%s.%s" % (randint(1,2), randint(1,4), randint(1,5)))
+    number = lazy_attribute(
+        lambda n: "%s.%s.%s" % (randint(1, 2), randint(1, 4), randint(1, 5)))
     create_date = lazy_attribute(lambda t: timezone.now())
 
     @post_generation
@@ -53,7 +55,7 @@ class RandomIndicatorFactory(DjangoModelFactory):
             pass
 
 
-class Indicator(DjangoModelFactory):
+class IndicatorFactory(DjangoModelFactory):
     class Meta:
         model = IndicatorM
 
@@ -85,18 +87,18 @@ class Level(DjangoModelFactory):
         model = LevelM
 
     name = 'Output'
-    program = SubFactory(Program)
+    program = SubFactory(ProgramFactory)
 
 
 class CollectedData(DjangoModelFactory):
     class Meta:
         model = CollectedDataM
 
-    program = SubFactory(Program)
-    indicator = SubFactory(Indicator)
+    program = SubFactory(ProgramFactory)
+    indicator = SubFactory(IndicatorFactory)
 
 
-class IndicatorType(DjangoModelFactory):
+class IndicatorTypeFactory(DjangoModelFactory):
     class Meta:
         model = IndicatorTypeM
         django_get_or_create = ('indicator_type',)
@@ -104,13 +106,11 @@ class IndicatorType(DjangoModelFactory):
     indicator_type = fuzzy.FuzzyText()
 
 
-class ExternalService(DjangoModelFactory):
+class ExternalServiceFactory(DjangoModelFactory):
     class Meta:
         model = ExternalServiceM
 
     name = 'External Service A'
-    organization = SubFactory(Organization)
-
 
 class StrategicObjective(DjangoModelFactory):
     class Meta:

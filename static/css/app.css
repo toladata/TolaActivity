@@ -73,7 +73,10 @@ body {
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-
+.td-no-side-borders {
+  border-left: 0px !important;
+  border-right: 0px !important;
+}
 
 /* - End Bootstrap Overrides */
 

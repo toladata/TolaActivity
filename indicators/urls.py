@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from .views import (
+from .views.views_indicators import (
     indicator_create,
     CollectedDataList,
     CollectedDataCreate,
@@ -30,15 +30,13 @@ from .views import (
     DisaggregationPrint
 )
 
-from .views_reports import IPTTReportQuickstartView
+from .views.views_reports import IPTTReportQuickstartView, IPTT_ReportView
 
 urlpatterns = [
     url(r'^home/(?P<program>\d+)/(?P<indicator>\d+)/(?P<type>\d+)/$',
         IndicatorList.as_view(), name='indicator_list'),
 
-    url(r'^indicator_list/(?P<pk>\d+)/$', IndicatorList.as_view(),
-        name='indicator_list'),
-
+    # where "id" is the primary key of an existing program
     url(r'^indicator_create/(?P<id>\d+)/$', indicator_create,
         name='indicator_create'),
 
@@ -101,16 +99,16 @@ urlpatterns = [
         indicator_data_report, name='indicator_data_report'),
 
     url(r'^data/(?P<id>\d+)/(?P<program>\d+)/(?P<type>\d+)/map/$',
-        indicator_data_report, name='indicator_data_report'),
+        indicator_data_report, name='indicator_data_report_map'),
 
     url(r'^data/(?P<id>\d+)/(?P<program>\d+)/(?P<type>\d+)/graph/$',
-        indicator_data_report, name='indicator_data_report'),
+        indicator_data_report, name='indicator_data_report_graph'),
 
     url(r'^data/(?P<id>\d+)/(?P<program>\d+)/(?P<type>\d+)/table/$',
-        indicator_data_report, name='indicator_data_report'),
+        indicator_data_report, name='indicator_data_report_table'),
 
-    url(r'^data/(?P<id>\d+)/(?P<program>\d+)/$', indicator_data_report,
-        name='indicator_data_report'),
+    # url(r'^data/(?P<id>\d+)/(?P<program>\d+)/$', indicator_data_report,
+    #     name='indicator_data_report'),
 
     url(r'^data/(?P<id>\d+)/$', indicator_data_report,
         name='indicator_data_report'),
@@ -145,7 +143,12 @@ urlpatterns = [
     url(r'^collecteddata_report_data/(?P<program>\d+)/(?P<indicator>\d+)/'
         r'(?P<type>\d+)/export/$',
         IndicatorDataExport.as_view(),
-        name='collecteddata_report_data'),
+        name='collecteddata_report_data_export'),
 
-    url(r'^iptt_quickstart/', IPTTReportQuickstartView.as_view(), name='iptt_quickstart'),
+    url(r'^iptt_quickstart/', IPTTReportQuickstartView.as_view(),
+        name='iptt_quickstart'),
+
+    url(r'^iptt_report/(?P<program_id>\d+)/(?P<reporttype>\w+)/$',
+        IPTT_ReportView.as_view(),
+        name='iptt_report'),
 ]

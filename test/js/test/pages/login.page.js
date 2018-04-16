@@ -25,13 +25,18 @@ class LoginPage extends Page {
 
     set gUsername(val) {
         browser.pause(msecs);
+        // Works on chrome and firefox
         browser.$('form').$('input#identifierId').setValue(val);
-        browser.$('form').$('input#identifierId').keys('Enter');
+        browser.waitForVisible('div#identifierNext');
+        browser.$('div#identifierNext').click();
     }
     set gPassword(val) {
         browser.pause(msecs);
-        browser.$('form').$('input.whsOnd.zHQkBf').setValue(val);
-        browser.$('form').$('input.whsOnd.zHQkBf').keys('Enter');
+        // Works on chrome and firefox
+        browser.$('input[name="password"]').setValue(val);
+        browser.waitForVisible('div#passwordNext');
+        browser.$('div#passwordNext').click();
+        browser.waitForText('h4');
     }
 
     // Works everywhere (or at least it better)

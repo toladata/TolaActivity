@@ -9,7 +9,7 @@ describe('Collected data record: Actual value field for percentage indicator', f
     before(function() {
         // Disable timeouts
         this.timeout(0);
-        //browser.windowHandleMaximize(); 
+        browser.windowHandleMaximize(); 
 
         // Get login data and login
         let parms = util.readConfig();
