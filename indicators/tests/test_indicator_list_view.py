@@ -28,14 +28,11 @@ class IndicatorListTests(TestCase):
                 'type': indicator_type.id}
         path = "/indicator_list/{0}/{1}/{2}/".format(program.id, indicator.id,
                                                      indicator_type.id)
-        request = self.request_factory.get('/', data=data)
+        request = self.request_factory.get(path=path, data=data)
         request.user = self.user
 
         view = IndicatorList.as_view()
 
         result = view(request, **data)
-
         self.assertIn(program.name, result.content)
-        self.assertIn(indicator.name, result.content)
-        self.assertIn(indicator_type.indicator_type,
-                      result.content.decode('utf-8'))
+        self.assertIn(indicator_type.indicator_type, result.content.decode('utf-8'))
