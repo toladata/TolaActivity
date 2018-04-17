@@ -6,12 +6,11 @@
 
 // Methods are listed in alphabetical order; please help
 // keep them that way. Thanks!
-var util = require('../lib/testutil.js');
-var dp = require('../lib/testutil.js').dp;
-var IndPage = require('../pages/indicators.page.js');
+import Util from '../lib/testutil';
+import IndPage from '../pages/indicators.page';
 const msec = 1000;
 
-var parms = util.readConfig();
+var parms = Util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /**
@@ -29,6 +28,22 @@ function addTarget(num = 1) {
         cnt++;
     }
     return cnt;
+}
+
+/**
+ * Click the percent radio button to set an indicator as a percentage indicator
+ */
+function clickNumberType() {
+    let control = browser.$('div#div_id_unit_of_measure_type_0');
+    control.click();
+}
+
+/**
+ * Click the number radio button to set an indicator as a number indicator
+ */
+function clickPercentType() {
+    let control = browser.$('div#div_id_unit_of_measure_type_1');
+    control.click();
 }
 
 /**
@@ -151,6 +166,17 @@ function getLoPTarget() {
   return val;
 }
 
+function getNumberType() {
+    let val = browser.$('div#div_id_unit_of_measure_type_0').getText();
+    return val;
+}
+
+function getPercentType() {
+    let val = browser.$('div#div_id_unit_of_measure_type_1').getText();
+    Util.dp('val='+val);
+    return val;
+}
+
 /**
  * Get the number of events specified for event-based targets
  * @returns {integer} The number of events specified
@@ -162,7 +188,7 @@ function getNumTargetEvents() {
 
 /**
  * Get the text, if any, from the error box beneath the number of
- * events text bo
+ * events text box
  * @returns {string} The error text as a string
  */
 function getNumTargetEventsErrorHint() {
@@ -563,7 +589,8 @@ function setUnitOfMeasure(unit) {
 }
 
 exports.addTarget = addTarget;
-exports.addTargets = addTarget;
+exports.clickNumberType = clickNumberType;
+exports.clickPercentType = clickPercentType;
 exports.clickProgramIndicator = clickProgramIndicator;
 exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;
