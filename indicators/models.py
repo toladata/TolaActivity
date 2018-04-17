@@ -132,7 +132,7 @@ class Level(models.Model):
     edit_date = models.DateTimeField(_("Edit date"), null=True, blank=True)
 
     class Meta:
-        verbose_name = ("Level")
+        verbose_name = _("Level")
 
     def __unicode__(self):
         return self.name

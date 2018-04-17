@@ -50,7 +50,7 @@ urlpatterns = [
         name='indicator_delete'),
 
     url(r'^periodic_target_delete/(?P<pk>\d+)/$',
-        PeriodicTargetDeleteView.as_view(),  name='pt_delete'),
+        PeriodicTargetDeleteView.as_view(), name='pt_delete'),
 
     url(r'^periodic_target_generate/(?P<indicator>\d+)/$',
         PeriodicTargetView.as_view(), name='pt_generate'),

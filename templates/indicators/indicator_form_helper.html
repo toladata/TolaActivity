@@ -471,8 +471,8 @@
     <div class="modal-footer justify-content-between" style="background-color: #d7d7d7;">
         <div>
             <!-- <input type="submit" class="btn btn-primary" value="Save changes"> -->
-            <input type="submit" name="submit" value="Save changes" class="btn btn-primary" id="submit-id-submit">
-            <input type="reset" class="btn btn-secondary" value="Reset">
+            <input type="submit" name="submit" value="{% trans 'Save changes' %}" class="btn btn-primary" id="submit-id-submit">
+            <input type="reset" class="btn btn-secondary" value="{% trans 'Reset' %}">
         </div>
         <div class="text-muted">{% include "form_guidance.html" %}</div>
     </div>

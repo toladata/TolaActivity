@@ -620,7 +620,7 @@ class SiteProfile(models.Model):
     male_35_49 = models.IntegerField(_("Male age 35-49"), null=True, blank=True)
     female_35_49 = models.IntegerField(_("Female age 35-49"), null=True, blank=True)
     male_over_50 = models.IntegerField(_("Male Over 50"), null=True, blank=True)
-    female_over_50 = models.IntegerField("Female Over 50", null=True, blank=True)
+    female_over_50 = models.IntegerField(_("Female Over 50"), null=True, blank=True)
     total_population = models.IntegerField(null=True, blank=True, verbose_name=_("Total population"))
     total_male = models.IntegerField(null=True, blank=True, verbose_name=_("Total male"))
     total_female = models.IntegerField(null=True, blank=True, verbose_name=_("Total female"))
@@ -1067,7 +1067,7 @@ class ProjectComplete(models.Model):
     office = models.ForeignKey(Office, null=True, blank=True, verbose_name=_("Office"))
     sector = models.ForeignKey("Sector", blank=True, null=True, verbose_name=_("Sector"))
     expected_start_date = models.DateTimeField(_("Expected start date"), help_text=_("Imported from Project Initiation"), blank=True, null=True)
-    expected_end_date = models.DateTimeField(_("Exprected end date"), help_text=_("Imported Project Initiation"), blank=True, null=True)
+    expected_end_date = models.DateTimeField(_("Expected end date"), help_text=_("Imported Project Initiation"), blank=True, null=True)
     expected_duration = models.CharField(_("Expected Duration"), max_length=255, help_text=_("Imported from Project Initiation"), blank=True, null=True)
     actual_start_date = models.DateTimeField(_("Actual start date"), help_text=_("Imported from Project Initiation"), blank=True, null=True)
     actual_end_date = models.DateTimeField(_("Actual end date"), blank=True, null=True)
@@ -1104,7 +1104,7 @@ class ProjectComplete(models.Model):
     """
     End Clean Up
     """
-    community_handover = models.BooleanField(_("CommunityHandover/Sustainability Maintenance Plan"), help_text=_('(Check box if it was completed'), default=None)
+    community_handover = models.BooleanField(_("CommunityHandover/Sustainability Maintenance Plan"), help_text=_('Check box if it was completed'), default=None)
     capacity_built = models.TextField(_("Describe how sustainability was ensured for this project?"), max_length=755, blank=True, null=True)
     quality_assured = models.TextField(_("How was quality assured for this project"), max_length=755, blank=True, null=True)
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)", blank=True, null=True)
