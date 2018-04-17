@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
 {% load i18n %}
+{% load mytags %}
 {% block page_title %}Indicator Performance Tracking Table{% endblock %}
 {% block title %}Indicator Performance Tracking Table{% endblock %}
 
@@ -24,6 +25,7 @@
                 <th scope="col">TARGET</th>
                 <th scope="col">ACTUAL</th>
                 <th scope="col" style="min-width: 70px;">% MET</th>
+                <th>Q1</th>
             </thead>
             <tbody>
                 {% for indicator in indicators %}
@@ -37,11 +39,11 @@
                                 <i class="fas fa-cog"></i>
                             </a>
                         </td>
-                        <td>{{ indicator.level.all.0|default_if_none:'' }}</td>
-                        <td>{{ indicator.unif_of_measure }}</td>
-                        <td align="right">{{ indicator.get_direction_of_change }}</td>
+                        <td>{{ indicator.lastlevel|default_if_none:'' }}</td>
+                        <td>{{ indicator.unit_of_measure|default_if_none:'' }}</td>
+                        <td align="right">{{ indicator.direction_of_change|symbolize_change }}</td>
                         <td>{{ indicator.is_cumulative|yesno:"Cumulative,Non-cumulative," }}</td>
-                        <td>{{ indicator.get_unit_of_measure_type }}</td>
+                        <td>{{ indicator.unit_of_measure_type|symbolize_measuretype }}</td>
                         <td align="right">{{ indicator.baseline|default_if_none:'' }}</td>
                         <td align="right">{{ indicator.lop_target|default_if_none:'' }}</td>
                         <td align="right">
@@ -51,25 +53,30 @@
                                 {% if indicator.is_cumulative == True %}
                                     {{ indicator.lastdata|floatformat:"-2"|default_if_none:"" }}%
                                 {% else %}
-                                    <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
-                                    {{ indicator.actualavg|floatformat:"-2"|default_if_none:"" }}%
+                                    {% if indicator.actualavg is not None %}
+                                        <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
+                                        {{ indicator.actualavg|floatformat:"-2"|default_if_none:"" }}%
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         </td>
                         <td align="right">
                             {% if indicator.unit_of_measure_type == 1 %}
-                                {% widthratio indicator.actualsum indicator.lop_target 100 as percent_met %}
-                                {% if percent_met %} {{ percent_met }}% {% endif %}
+                                {% widthratio indicator.actualsum indicator.lop_target 100 as percent_met1 %}
+                                {% if percent_met1 %} {{ percent_met1 }}% {% endif %}
                             {% elif indicator.unit_of_measure_type == 2 %}
                                 {% if indicator.is_cumulative == True %}
-                                    {% widthratio indicator.lastdata indicator.lop_target 100 as percent_met %}
-                                    {% if percent_met %} {{ percent_met }}% {% endif %}
+                                    {% widthratio indicator.lastdata indicator.lop_target 100 as percent_met2 %}
+                                    {% if percent_met2 %} {{ percent_met2 }}% {% endif %}
                                 {% else %}
-                                    {% widthratio indicator.actualavg indicator.lop_target 100 as percent_met %}
-                                    {% if percent_met %} {{ percent_met }}% {% endif %}
+                                    {% if indicator.actualavg is not None %}
+                                        {% widthratio indicator.actualavg indicator.lop_target 100 as percent_met3 %}
+                                        {% if percent_met3 %} {{ percent_met3 }}% {% endif %}
+                                    {% endif %}
                                 {% endif %}
                             {% endif %}
                         </td>
+                        <td> {{ indicator.q1 }}
                     </tr>
                 {% endfor %}
             </tbody>

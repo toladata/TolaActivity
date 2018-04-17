@@ -1,9 +1,10 @@
+from dateutil import rrule
 from django.core.urlresolvers import reverse_lazy
-from django.db.models import Sum, Avg, Subquery, OuterRef
+from django.db.models import Sum, Avg, Subquery, OuterRef, Case, When, Q, F, Min, Max, Count
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
-from ..models import Indicator, CollectedData
+from ..models import Indicator, CollectedData, Level
 from ..forms import IPTTReportQuickstartForm
 
 
@@ -84,16 +85,63 @@ class IPTTReportQuickstartView(FormView):
 class IPTT_ReportView(TemplateView):
     template_name = 'indicators/iptt_report.html'
 
+    @staticmethod
+    def getCase():
+            return Sum(Case(When(Q(collecteddata__date_collected__gte='2016-01-01') &
+                                 Q(collecteddata__date_collected__lte='2019-04-01'),
+                                 then=F('collecteddata__achieved'))))
+
+    @staticmethod
+    def getMaxLoopNumber(mind, maxd, period):
+            # datetime.strptime('2017-01-01', '%Y-%m-%d')
+            # datetime.strptime('2018-02-01', '%Y-%m-%d')
+            num_months = len(list(rrule.rrule(rrule.MONTHLY,
+                                        dtstart=mind,
+                                        until=maxd)))
+            num_periods = num_months / period
+            if num_months % period > 0:
+                num_periods += 1
+            return num_periods
+
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         program_id = kwargs.get('program_id')
+        period = request.GET.get('period', None)
+        period = int(period) if period is not None else 0
         program = Program.objects.get(pk=program_id)
 
+        value_dict = {
+            "collecteddata__date_collected__gte": '2017-01-01',
+            "collecteddata__date_collected__lte": '2017-04-01'
+        }
+
+        data_date_range = Indicator.objects.filter(program__in=[program_id])\
+            .aggregate(maxd=Max('collecteddata__date_collected'),
+                       mind=Min('collecteddata__date_collected'))
+
+        print(".............................%s............................" % data_date_range['maxd'] )
+        print(".............................%s............................" % data_date_range['mind'] )
+
+        lastlevel = Level.objects.filter(indicator__id=OuterRef('pk')).order_by('-id')
         last_data_record = CollectedData.objects.filter(indicator=OuterRef('pk')).order_by('-id')
         indicators = Indicator.objects.filter(program__in=[program_id])\
             .annotate(actualsum=Sum('collecteddata__achieved'),
                       actualavg=Avg('collecteddata__achieved'),
-                      lastdata=Subquery(last_data_record.values('achieved')[:1]))
+                      lastlevel=Subquery(lastlevel.values('name')[:1]),
+                      lastdata=Subquery(last_data_record.values('achieved')[:1]),
+                      mincollected_date=Min('collecteddata__date_collected'),
+                      maxcollected_date=Max('collecteddata__date_collected'))\
+            .values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
+                   'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
+                   'lastdata')\
+            .order_by('number', 'name')
+
+        #TODO: calculate aggregated actuals (sum, avg, last) per reporting period
+        # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
+
+        inds = Indicator.objects.filter(program__in=[program_id]).prefetch_related('collecteddata_set').values('id', 'collecteddata__achieved')
+        for indicator in inds:
+            print(indicator)
 
         context['indicators'] = indicators
         context['program'] = program
