@@ -2,7 +2,8 @@ import logging
 import os
 
 try:
-    from chargebee import Addon, Subscription
+    from chargebee import APIError
+    from chargebee.models import Subscription
 except ImportError:
     pass
 from django.core import mail
@@ -130,11 +131,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         def __init__(self, values):
             self.subscription = Subscription(values)
             self.subscription.status = 'active'
-
-            addon = Addon(values)
-            addon.id = 'user'
-            addon.quantity = 1
-            self.subscription.addons = [addon]
+            self.subscription.plan_quantity = 1
 
     def setUp(self):
         os.environ['APP_BRANCH'] = ''
@@ -268,17 +265,40 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
                          'out!\nCurrent amount of editors: 2.\nSelected '
                          'amount of editors: 1.')
 
+    def test_check_seats_save_team_retrieve_subscription_fails(self):
+        """
+        The number of seats will be increased in the system but it's not
+        possible to check the quantity of the plan because the retrieve
+        failed.
+        """
+        self.tola_user.user.groups.add(self.group_org_admin)
+        self.tola_user.user.save()
+        self.org = Organization.objects.get(pk=self.org.id)
+        user = factories.User(first_name='John', last_name='Lennon')
+        tolauser = factories.TolaUser(user=user, organization=self.org)
+
+        json_obj = {
+            'message': "Sorry, we couldn't find that resource",
+            'error_code': 'resource_not_found'
+        }
+        sub_response = APIError(404, json_obj)
+        Subscription.retrieve = Mock(side_effect=sub_response)
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1')
+        factories.WorkflowTeam(workflow_user=tolauser,
+                               workflowlevel1=wflvl1,
+                               role=self.group_program_admin)
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 2)
+        self.assertEqual(len(mail.outbox), 0)
+
 
 class CheckSeatsDeleteWFTeamsTest(TestCase):
     class ExternalResponse:
         def __init__(self, values):
             self.subscription = Subscription(values)
             self.subscription.status = 'active'
-
-            addon = Addon(values)
-            addon.id = 'user'
-            addon.quantity = 1
-            self.subscription.addons = [addon]
+            self.subscription.plan_quantity = 1
 
     def setUp(self):
         os.environ['APP_BRANCH'] = ''
@@ -359,11 +379,7 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         def __init__(self, values):
             self.subscription = Subscription(values)
             self.subscription.status = 'active'
-
-            addon = Addon(values)
-            addon.id = 'user'
-            addon.quantity = 1
-            self.subscription.addons = [addon]
+            self.subscription.plan_quantity = 1
 
     def setUp(self):
         os.environ['APP_BRANCH'] = ''
@@ -455,6 +471,31 @@ class CheckSeatsSaveUserGroupTest(TestCase):
                          'users set in your Subscription. Please check it '
                          'out!\nCurrent amount of editors: 2.\nSelected '
                          'amount of editors: 1.')
+
+    def test_check_seats_save_user_groups_retrieve_subscription_fails(self):
+        """
+        The number of seats will be increased in the system but it's not
+        possible to check the quantity of the plan because the retrieve
+        failed.
+        """
+        json_obj = {
+            'message': "Sorry, we couldn't find that resource",
+            'error_code': 'resource_not_found'
+        }
+        sub_response = APIError(404, json_obj)
+        Subscription.retrieve = Mock(side_effect=sub_response)
+        self.tola_user.user.groups.add(self.group_org_admin)
+        self.tola_user.user.save()
+
+        self.org = Organization.objects.get(pk=self.org.id)
+        user = factories.User(first_name='John', last_name='Lennon')
+        tolauser = factories.TolaUser(user=user, organization=self.org)
+        tolauser.user.groups.add(self.group_org_admin)
+        tolauser.user.save()
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 2)
+        self.assertEqual(len(mail.outbox), 0)
 
 
 class SignalSyncTrackTest(TestCase):
