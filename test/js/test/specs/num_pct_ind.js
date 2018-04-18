@@ -3,7 +3,7 @@ import NavBar from '../pages/navbar.page';
 import IndPage from '../pages/indicators.page';
 import TargetsTab from '../pages/targets.page';
 import Util from '../lib/testutil';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 'use strict';
 
 /**
@@ -31,18 +31,57 @@ describe('Number indicators config and display', function() {
         }
     });
 
-    it('should default to number indicators');
-    it('should default number indicators to non-cumulative indicators');
-    it('should default percentage indicators to cumulative indicators');
+    it('should allow to set percentage indicators', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.setMeasureType('percent');
+        let indType = TargetsTab.getMeasureType();
+        expect(indType == 1);
+    });
+
+    it('should default to number indicators', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
+        let indType = TargetsTab.getMeasureType();
+        expect(indType == 0);
+    });
+
+    it('should default number indicators to non-cumulative indicators', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
+        TargetsTab.setMeasureType('number');
+        let indType = TargetsTab.getMeasureType();
+        expect(indType == 1);
+        TargetsTab.setUnitOfMeasure('castles');
+        TargetsTab.setLoPTarget(60);
+        TargetsTab.setBaseline(61);
+        TargetsTab.setTargetFrequency('annual');
+        TargetsTab.setFirstTargetPeriod();
+        TargetsTab.saveChanges();
+        expect(false == TargetsTab.getMeasureIsCumulative());
+    });
+
+    it('should default percentage indicators to cumulative indicators', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
+        TargetsTab.setMeasureType('percent');
+        let indType = TargetsTab.getMeasureType();
+        expect(indType == 2);
+        expect(true == TargetsTab.getMeasureIsCumulative());
+
+    });
+
     it('should add “%” to LoP target and Baseline text boxes');
 
     it('should have direction of change option', function() {
-        TargetsTab.setDirectionOfChange('none');
-        expect(TargetsTab.getDirectionOfChange() == 'none');
-        TargetsTab.setDirectionOfChange('pos');
-        expect(TargetsTab.setDirectionOfChange() == 'pos');
-        TargetsTab.setDirectionOfChange('net');
-        expect(TargetsTab.setDirectionOfChange() == 'neg');
+        expect(TargetsTab.getDirectionOfChange() != undefined);
+        expect(TargetsTab.getDirectionOfChange() != null);
     });
-    it('should default to no direction of change');
-}); 
+
+    it('should default to no direction of change', function() {
+        expect(TargetsTab.getDirectionOfChange() == 'none');
+    });
+});

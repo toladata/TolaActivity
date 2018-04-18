@@ -2,12 +2,10 @@
  * Page model for testing the Program Indicators screen.
  * @module targets
  */
-'use strict';
-
-// Methods are listed in alphabetical order; please help
-// keep them that way. Thanks!
 import Util from '../lib/testutil';
 import IndPage from '../pages/indicators.page';
+'use strict';
+
 const msec = 1000;
 
 var parms = Util.readConfig();
@@ -30,6 +28,10 @@ function addTarget(num = 1) {
     return cnt;
 }
 
+/**
+ * Click the Direction of change dropdown
+ * @returns {Nothing}
+ */
 function clickDirectionOfChange() {
     $('select#id_direction_of_change').click();
 }
@@ -94,11 +96,11 @@ function clickTargetsTab() {
  * Return the Direction of change dropdown
  */
  function setDirectionOfChange(dir = 'none') {
-    let val, dropdown = $('select#id_direction_of_change');
+    let val;
     if (dir == 'none') { val = 1};
-    if (dir == 'pos')  { val = 2};
-    if (dir == 'bet')  { val = 3};
-    dropdown.setValue(val);
+    if (dir == 'pos') { val = 2};
+    if (dir == 'neg') { val = 3};
+    $('select#id_direction_of_change').selectByValue(val);
  }
 
 /**
@@ -135,14 +137,22 @@ function getBaselineErrorHint() {
   return errorHint;
 }
 
+/**
+ * Get the direction of change fom the direction of change dropdown
+ * @returns String representation of value of the dropdown
+ */
 function getDirectionOfChange() {
     let dropdown = $('select#id_direction_of_change');
-    let dir = dropdown.getValue(); 
-    if (dir == 'none') { return 1};
-    if (dir == 'pos')  { return 2};
-    if (dir == 'bet')  { return 3};
+    let changeDir = dropdown.getValue();
+    if (changeDir == 1) { return 'none' };
+    if (changeDir == 2) { return 'pos' };
+    if (changeDir == 3) { return 'neg' };
 }
 
+/**
+ * Get the target date ranges created for given indicator
+ * @returns {Array<string>} an array of hyphen-separated start and end dates
+ */
 function getTargetDateRanges() {
     browser.pause(msec);
     browser.scroll('h5');
@@ -243,7 +253,7 @@ function getNumTargetPeriodsErrorHint() {
 }
 
 /**
- * Get a list of the program indicator Delete buttons for the program 
+ * Get a list of the program indicator Delete buttons for the program
  * currently displayed in the program indicators table
  * @returns {Array<clickable>} An array of clickable program indicator
  * "Delete" button objects
@@ -260,7 +270,7 @@ function getProgramIndicatorDeleteButtons() {
 }
 
 /**
- * Get a list of the program indicators Edit buttons for the program 
+ * Get a list of the program indicators Edit buttons for the program
  * currently displayed in the program indicators table
  * @returns {Array<clickable>} An array of clickable program indicator
  * "Edit" button objects
@@ -412,6 +422,18 @@ function getUnitOfMeasure() {
   return val;
 }
 
+function getMeasureIsCumulative() {
+    let cum = $('input#id_is_cumulative_1').getValue();
+    let noncum = $('input#id_is_cumulative_2').getValue();
+    return val;
+}
+
+function getMeasureType() {
+    let element = $('input[name="unit_of_measure_type"]');
+    let val = element.getValue();
+    return val;
+}
+
 /**
  * Open the specified page in the browser
  * @param {string} url The URL to display in the browser; defaults
@@ -540,6 +562,12 @@ function setLoPTarget(value) {
   lopTarget.setValue(value);
 }
 
+function setMeasureType(type) {
+    clickTargetsTab();
+    if (type == 'number') { browser.$('input#id_unit_of_measure_type_0').click(); }
+    if (type == 'percent') { browser.$('input#id_unit_of_measure_type_1').click(); }
+}
+
 /**
  * Set the midline target on the targets detail screen to the
  * specifed value
@@ -626,6 +654,8 @@ exports.getDirectionOfChange = getDirectionOfChange;
 exports.getIndicatorName = getIndicatorName;
 exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
+exports.getMeasureIsCumulative = getMeasureIsCumulative;
+exports.getMeasureType = getMeasureType;
 exports.getNumTargetEvents = getNumTargetEvents;
 exports.getNumTargetEventsErrorHint = getNumTargetEventsErrorHint;
 exports.getNumTargetPeriods = getNumTargetPeriods;
@@ -653,6 +683,7 @@ exports.setFirstEventName = setFirstEventName;
 exports.setFirstTargetPeriod = setFirstTargetPeriod;
 exports.setIndicatorName = setIndicatorName;
 exports.setLoPTarget = setLoPTarget;
+exports.setMeasureType = setMeasureType;
 exports.setMidlineTarget = setMidlineTarget;
 exports.setNumTargetEvents = setNumTargetEvents;
 exports.setNumTargetPeriods = setNumTargetPeriods;
