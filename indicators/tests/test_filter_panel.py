@@ -50,12 +50,12 @@ class FilterPanelTests(TestCase):
         stuff = str(view)
         print stuff
         for i in range(2):
-            continue
+
             self.assertIn(sectors[i].sector, stuff)
             self.assertIn(levels[i].name, stuff)
             self.assertIn(ind_types[i].indicator_type, stuff)
             self.assertIn(sites[i].name, stuff)
-            self.assertIn(indicators[i].name, stuff)
+            self.assertIn(indicators[i].name, stuff, indicators[i].name)
 
         self.assertIn(program.name, stuff)
 

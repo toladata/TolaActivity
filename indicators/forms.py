@@ -244,7 +244,7 @@ class IPTTReportFilterForm(ReportFormCommon):
     ind_type = forms.ModelChoiceField(queryset=IndicatorType.objects.none(), required=False, label='TYPE')
     sector = forms.ModelChoiceField(queryset=Sector.objects.none(), required=False, label='SECTOR')
     site = forms.ModelChoiceField(queryset=SiteProfile.objects.none(), required=False, label='SITE')
-    indicators = forms.ModelChoiceField(queryset=Indicator.objects.none(), required=False, label='INDICATORS')
+    indicators = forms.ModelChoiceField(queryset=Indicator.objects.none(), required=False, label='SELECT INDICATORS')
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.get('request', None)
