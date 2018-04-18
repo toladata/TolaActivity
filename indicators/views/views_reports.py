@@ -90,23 +90,30 @@ class IPTT_ReportView(TemplateView):
 
     @staticmethod
     def get_num_months(period):
+        """
+        Returns the number of months for a given time-period
+        """
         return {'1': 12, '2': 6, '3': 4, '4': 3, '5': 1}[period]
 
-    def getCase(self, period):
-        interval = self.get_num_months(period)
+    def get_period_annotation(self, period):
+        num_months_in_period = self.get_num_months(period)
         while self.start_date < self.end_date:
-            next_period = self.start_date + relativedelta.relativedelta(months=interval)
-            print(".........start_date={}..............".format(self.start_date))
+            next_period = self.start_date + relativedelta.relativedelta(months=num_months_in_period)
             yield Sum(Case(When(Q(collecteddata__date_collected__gte=datetime.strftime(self.start_date, '%Y-%m-%d')) &
                                 Q(collecteddata__date_collected__lte=datetime.strftime(next_period, '%Y-%m-%d')),
                                 then=F('collecteddata__achieved'))))
             self.start_date = next_period
 
-    def getMaxLoopNumber(self, mind, maxd, period):
-        interval = self.get_num_months(period)
-        num_months = len(list(rrule.rrule(rrule.MONTHLY, dtstart=mind, until=maxd)))
-        num_periods = num_months / interval
-        if num_months % interval > 0:
+
+    def get_num_periods(self, start_date, end_date, period):
+        """
+        Returns the number of periods depending on the period is in terms of months
+        """
+        num_months_in_period = self.get_num_months(period)
+        total_num_months = len(list(rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date)))
+        num_periods = total_num_months / num_months_in_period
+        remainder_months = total_num_months % num_months_in_period
+        if remainder_months > 0:
             num_periods += 1
         return num_periods
 
@@ -114,21 +121,23 @@ class IPTT_ReportView(TemplateView):
         context = self.get_context_data(**kwargs)
         program_id = kwargs.get('program_id')
         period = request.GET.get('period', None)
-        period = period if period is not None else 0
         program = Program.objects.get(pk=program_id)
 
+        # determine the full date range of data collection for this program
         data_date_range = Indicator.objects.filter(program__in=[program_id])\
-            .aggregate(maxd=Max('collecteddata__date_collected'),
-                       mind=Min('collecteddata__date_collected'))
-        self.start_date = data_date_range['mind']
-        self.end_date = data_date_range['maxd']
-        nump = self.getMaxLoopNumber(self.start_date, self.end_date, period)
-        print('...........................{}---------------------{}'.format(period, nump))
-        # print(".{} --> {}.......".format(data_date_range['maxd'], data_date_range['mind']))
+            .aggregate(sdate=Min('collecteddata__date_collected'),
+                       edate=Max('collecteddata__date_collected'))
+        self.start_date = data_date_range['sdate']
+        self.end_date = data_date_range['edate']
 
-        mygen = self.getCase(period)
-        # for i in range(1, nump):
-        #     print(next(mygen))
+        #  find out the total number of periods (quarters, months, years, etc) for this program
+        nump = self.get_num_periods(self.start_date, self.end_date, period)
+
+        # handle for generating periodic annotation in the queryset
+        annotation_generator = self.get_period_annotation(period)
+
+        # calculate aggregated actuals (sum, avg, last) per reporting period
+        # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
         lastlevel = Level.objects.filter(indicator__id=OuterRef('pk')).order_by('-id')
         last_data_record = CollectedData.objects.filter(indicator=OuterRef('pk')).order_by('-id')
         indicators = Indicator.objects.filter(program__in=[program_id])\
@@ -141,28 +150,10 @@ class IPTT_ReportView(TemplateView):
             .values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
                     'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
                     'lastdata')\
-            .annotate(q0=Sum(
-                Case(
-                    When(
-                        Q(collecteddata__date_collected__gte='2016-01-01') &
-                        Q(collecteddata__date_collected__lte='2019-04-01'),
-                        then=F('collecteddata__achieved')
-                    )
-                )
-            ))\
-            .annotate(**{"q{}".format(i): next(mygen) for i in range(1, nump)})\
+            .annotate(**{"q{}".format(i): next(annotation_generator) for i in range(1, nump)})\
             .order_by('number', 'name')
-        # TODO: calculate aggregated actuals (sum, avg, last) per reporting period
-        # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
-        """
-        inds = Indicator.objects.filter(program__in=[program_id])\
-            .prefetch_related('collecteddata_set').values('id')\
-            .annotate(**{"q{}".format(i): IPTT_ReportView.getCase(F("collecteddata__date_collected")) for i in range(1, 2)})
 
-        for indicator in inds:
-            # print(indicator['q0'])
-            pass
-        """
+        context['nump'] = range(1, nump)
         context['indicators'] = indicators
         context['program'] = program
         context['reporttype'] = kwargs.get('reporttype')

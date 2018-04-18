@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.template import Variable, VariableDoesNotExist
 from django import template
 from django.utils.translation import ugettext_lazy as _
 from indicators.models import Indicator
@@ -27,6 +28,7 @@ def jsonify(object):
     if isinstance(object, QuerySet):
         return serialize('json', object)
     return simplejson.dumps(object)
+
 
 @register.filter('symbolize_change')
 def symbolize_change(value):
@@ -57,3 +59,21 @@ def symbolize_measuretype(value):
         return _("%")
 
     return ""
+
+@register.filter('hash')
+def hash(object, attr):
+    """
+    Loops a key in a dictionary
+    Usage:
+    {% for user in result.users %}
+        {{user.name}}
+        {% for item in result.items %}
+            {{ user|hash:item }}
+        {% endfor %}
+    {% endfor %}
+    """
+    pseudo_context = {'object': object }
+    try:
+        value = Variable('object.{}{}'.format(prefix, attr)).resolve(pseudo_context)
+    except VariableDoesNotExist:
+        value = None
