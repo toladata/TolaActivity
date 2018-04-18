@@ -1,4 +1,5 @@
-from dateutil import rrule
+from dateutil import rrule, relativedelta
+from datetime import datetime
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Sum, Avg, Subquery, OuterRef, Case, When, Q, F, Min, Max, Count
 from django.views.generic import TemplateView, FormView
@@ -84,44 +85,50 @@ class IPTTReportQuickstartView(FormView):
 
 class IPTT_ReportView(TemplateView):
     template_name = 'indicators/iptt_report.html'
+    start_date = None
+    end_date = None
 
     @staticmethod
-    def getCase():
-            return Sum(Case(When(Q(collecteddata__date_collected__gte='2016-01-01') &
-                                 Q(collecteddata__date_collected__lte='2019-04-01'),
-                                 then=F('collecteddata__achieved'))))
+    def get_num_months(period):
+        return {'1': 12, '2': 6, '3': 4, '4': 3, '5': 1}[period]
 
-    @staticmethod
-    def getMaxLoopNumber(mind, maxd, period):
-            # datetime.strptime('2017-01-01', '%Y-%m-%d')
-            # datetime.strptime('2018-02-01', '%Y-%m-%d')
-            num_months = len(list(rrule.rrule(rrule.MONTHLY,
-                                        dtstart=mind,
-                                        until=maxd)))
-            num_periods = num_months / period
-            if num_months % period > 0:
-                num_periods += 1
-            return num_periods
+    def getCase(self, period):
+        interval = self.get_num_months(period)
+        while self.start_date < self.end_date:
+            next_period = self.start_date + relativedelta.relativedelta(months=interval)
+            print(".........start_date={}..............".format(self.start_date))
+            yield Sum(Case(When(Q(collecteddata__date_collected__gte=datetime.strftime(self.start_date, '%Y-%m-%d')) &
+                                Q(collecteddata__date_collected__lte=datetime.strftime(next_period, '%Y-%m-%d')),
+                                then=F('collecteddata__achieved'))))
+            self.start_date = next_period
+
+    def getMaxLoopNumber(self, mind, maxd, period):
+        interval = self.get_num_months(period)
+        num_months = len(list(rrule.rrule(rrule.MONTHLY, dtstart=mind, until=maxd)))
+        num_periods = num_months / interval
+        if num_months % interval > 0:
+            num_periods += 1
+        return num_periods
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         program_id = kwargs.get('program_id')
         period = request.GET.get('period', None)
-        period = int(period) if period is not None else 0
+        period = period if period is not None else 0
         program = Program.objects.get(pk=program_id)
-
-        value_dict = {
-            "collecteddata__date_collected__gte": '2017-01-01',
-            "collecteddata__date_collected__lte": '2017-04-01'
-        }
 
         data_date_range = Indicator.objects.filter(program__in=[program_id])\
             .aggregate(maxd=Max('collecteddata__date_collected'),
                        mind=Min('collecteddata__date_collected'))
+        self.start_date = data_date_range['mind']
+        self.end_date = data_date_range['maxd']
+        nump = self.getMaxLoopNumber(self.start_date, self.end_date, period)
+        print('...........................{}---------------------{}'.format(period, nump))
+        # print(".{} --> {}.......".format(data_date_range['maxd'], data_date_range['mind']))
 
-        print(".............................%s............................" % data_date_range['maxd'] )
-        print(".............................%s............................" % data_date_range['mind'] )
-
+        mygen = self.getCase(period)
+        # for i in range(1, nump):
+        #     print(next(mygen))
         lastlevel = Level.objects.filter(indicator__id=OuterRef('pk')).order_by('-id')
         last_data_record = CollectedData.objects.filter(indicator=OuterRef('pk')).order_by('-id')
         indicators = Indicator.objects.filter(program__in=[program_id])\
@@ -132,17 +139,30 @@ class IPTT_ReportView(TemplateView):
                       mincollected_date=Min('collecteddata__date_collected'),
                       maxcollected_date=Max('collecteddata__date_collected'))\
             .values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
-                   'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
-                   'lastdata')\
+                    'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
+                    'lastdata')\
+            .annotate(q0=Sum(
+                Case(
+                    When(
+                        Q(collecteddata__date_collected__gte='2016-01-01') &
+                        Q(collecteddata__date_collected__lte='2019-04-01'),
+                        then=F('collecteddata__achieved')
+                    )
+                )
+            ))\
+            .annotate(**{"q{}".format(i): next(mygen) for i in range(1, nump)})\
             .order_by('number', 'name')
-
-        #TODO: calculate aggregated actuals (sum, avg, last) per reporting period
+        # TODO: calculate aggregated actuals (sum, avg, last) per reporting period
         # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
+        """
+        inds = Indicator.objects.filter(program__in=[program_id])\
+            .prefetch_related('collecteddata_set').values('id')\
+            .annotate(**{"q{}".format(i): IPTT_ReportView.getCase(F("collecteddata__date_collected")) for i in range(1, 2)})
 
-        inds = Indicator.objects.filter(program__in=[program_id]).prefetch_related('collecteddata_set').values('id', 'collecteddata__achieved')
         for indicator in inds:
-            print(indicator)
-
+            # print(indicator['q0'])
+            pass
+        """
         context['indicators'] = indicators
         context['program'] = program
         context['reporttype'] = kwargs.get('reporttype')
