@@ -38,14 +38,8 @@ class IPTTReportQuickstartView(FormView):
 
         # populate the correct form with POST data
         if targetprefix is not None:
-            form = IPTTReportQuickstartForm(self.request.POST,
-                                            prefix=self.FORM_PREFIX_TARGET,
-                                            request=self.request)
             prefix = targetprefix
         else:
-            form = IPTTReportQuickstartForm(self.request.POST,
-                                            prefix=self.FORM_PREFIX_TIME,
-                                            request=self.request)
             prefix = timeprefix
 
         form = IPTTReportQuickstartForm(self.request.POST, prefix=prefix, request=self.request)
