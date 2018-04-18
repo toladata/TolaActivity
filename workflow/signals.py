@@ -87,6 +87,7 @@ def check_seats_save_team(sender, instance, **kwargs):
     Validate, increase or decrease the amount of used seats
     based on the roles
     """
+    instance.full_clean()
     if os.getenv('APP_BRANCH') == DEMO_BRANCH:
         return
 

@@ -723,6 +723,12 @@ class WorkflowTeam(models.Model):
         verbose_name = "Workflow Team"
         verbose_name_plural = "Workflow Teams"
 
+    def clean(self):
+        if self.role and self.role.name == ROLE_ORGANIZATION_ADMIN:
+            raise ValidationError(
+                'Workflowteam role can not be ROLE_ORGANIZATION_ADMIN'
+            )
+
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
