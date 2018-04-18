@@ -1,5 +1,8 @@
 from datetime import datetime
+from django.template import Variable, VariableDoesNotExist
 from django import template
+from django.utils.translation import ugettext_lazy as _
+from indicators.models import Indicator
 
 register = template.Library()
 
@@ -25,3 +28,52 @@ def jsonify(object):
     if isinstance(object, QuerySet):
         return serialize('json', object)
     return simplejson.dumps(object)
+
+
+@register.filter('symbolize_change')
+def symbolize_change(value):
+    """
+    Returns corresponding math symbol for Direction of change
+    Usage:
+    {{ indicator.direction_of_change|symbolize_change}}
+    """
+    if value == Indicator.DIRECTION_OF_CHANGE_NEGATIVE:
+        return _("-")
+
+    if value == Indicator.DIRECTION_OF_CHANGE_POSITIVE:
+        return _("+")
+
+    return _("NA")
+
+@register.filter('symbolize_measuretype')
+def symbolize_measuretype(value):
+    """
+    Returns corresponding math symbol for Direction of change
+    Usage:
+    {{ indicator.direction_of_change|symbolize_measuretype}}
+    """
+    if value == Indicator.NUMBER:
+        return _("#")
+
+    if value == Indicator.PERCENTAGE:
+        return _("%")
+
+    return ""
+
+@register.filter('hash')
+def hash(dic, attr):
+    """
+    Loops a key in a dictionary
+    Usage:
+    {% for user in result.users %}
+        {{user.name}}
+        {% for item in result.items %}
+            {{ user|hash:item }}
+        {% endfor %}
+    {% endfor %}
+    """
+    try:
+        return dic.get(attr)
+    except Exception:
+        return None
+

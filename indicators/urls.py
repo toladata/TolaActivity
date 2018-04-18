@@ -148,7 +148,5 @@ urlpatterns = [
     url(r'^iptt_quickstart/', IPTTReportQuickstartView.as_view(),
         name='iptt_quickstart'),
 
-    url(r'^iptt_report/(?P<program_id>\d+)/(?P<reporttype>\w+)/$',
-        IPTT_ReportView.as_view(),
-        name='iptt_report'),
+    url(r'^iptt_report/(?P<program_id>\d+)/(?P<reporttype>\w+)/$', IPTT_ReportView.as_view(), name='iptt_report'),
 ]
