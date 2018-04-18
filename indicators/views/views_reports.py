@@ -107,17 +107,54 @@ class IPTT_ReportView(TemplateView):
             '5': 'Month'
         }[period]
 
-    def _period_annotation_generator(self, start_date, end_date, period):
+    def _generate_timperiod_annotations(self, timeperiods):
         """
-        Generates queryset annotation for periods
+        Generates queryset annotation(sum, avg, last data record). All three annotations are calculated
+        because one of these three values will be used depending on how an indicator is configured.
         """
-        num_months_in_period = self._get_num_months(period)
-        while start_date < end_date:
-            next_period = start_date + relativedelta.relativedelta(months=num_months_in_period)
-            yield Sum(Case(When(Q(collecteddata__date_collected__gte=datetime.strftime(start_date, '%Y-%m-%d')) &
-                                Q(collecteddata__date_collected__lte=datetime.strftime(next_period, '%Y-%m-%d')),
-                                then=F('collecteddata__achieved'))))
-            start_date = next_period
+        annotations = {}
+        last_data_record = CollectedData.objects.filter(indicator=OuterRef('pk')).order_by('-id')
+        for k, v in timeperiods.items():
+            annotation_sum = Sum(
+                Case(
+                    When(
+                        Q(collecteddata__date_collected__gte=datetime.strftime(v[0], '%Y-%m-%d')) &
+                        Q(collecteddata__date_collected__lte=datetime.strftime(v[1], '%Y-%m-%d')),
+                        then=F('collecteddata__achieved')
+                        )
+                    )
+                )
+
+            annotation_avg = Avg(
+                Case(
+                    When(
+                        Q(collecteddata__date_collected__gte=datetime.strftime(v[0], '%Y-%m-%d')) &
+                        Q(collecteddata__date_collected__lte=datetime.strftime(v[1], '%Y-%m-%d')),
+                        then=F('collecteddata__achieved')
+                        )
+                    )
+                )
+
+            annotation_last = Max(
+                Case(
+                    When(
+                        Q(collecteddata__date_collected__gte=datetime.strftime(v[0], '%Y-%m-%d')) &
+                        Q(collecteddata__date_collected__lte=datetime.strftime(v[1], '%Y-%m-%d')),
+                        then=Subquery(last_data_record.values('achieved')[:1])
+                        )
+                    )
+                )
+
+            # the following becomes annotations for the queryset
+            # e.g.
+            # Year 1_sum, Year2_sum, ...
+            # Year 1_avg, Year2_avg, ...
+            # Year 1_last, Year2_last, ...
+            #
+            annotations["{}_sum".format(k)] = annotation_sum
+            annotations["{}_avg".format(k)] = annotation_avg
+            annotations["{}_last".format(k)] = annotation_last
+        return annotations
 
     def _get_num_periods(self, start_date, end_date, period):
         """
@@ -131,7 +168,7 @@ class IPTT_ReportView(TemplateView):
             num_periods += 1
         return num_periods
 
-    def _setup_periods(self, start_date, period, num_periods):
+    def _generate_timeperiods(self, start_date, period, num_periods):
         """
         Create the time-periods for which data will be annotated
         """
@@ -156,17 +193,15 @@ class IPTT_ReportView(TemplateView):
 
         # determine the full date range of data collection for this program
         data_date_range = Indicator.objects.filter(program__in=[program_id])\
-            .aggregate(sdate=Min('collecteddata__date_collected'),
-                       edate=Max('collecteddata__date_collected'))
+            .aggregate(sdate=Min('collecteddata__date_collected'), edate=Max('collecteddata__date_collected'))
         start_date = data_date_range['sdate']
         end_date = data_date_range['edate']
 
-        #  find out the total number of periods (quarters, months, years, etc) for this program
+        #  find out the total number of periods (quarters, months, years, or etc) for this program
         num_periods = self._get_num_periods(start_date, end_date, period)
 
-        timeperiods = self._setup_periods(start_date, period, num_periods)
-        # handle for generating periodic annotation in the queryset
-        annotation_generator = self._period_annotation_generator(start_date, end_date, period)
+        timeperiods = self._generate_timeperiods(start_date, period, num_periods)
+        timeperiod_annotations = self._generate_timperiod_annotations(timeperiods)
 
         # calculate aggregated actuals (sum, avg, last) per reporting period
         # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
@@ -182,10 +217,9 @@ class IPTT_ReportView(TemplateView):
             .values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
                     'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
                     'lastdata')\
-            .annotate(**{"q{}".format(i): next(annotation_generator) for i in range(1, num_periods)})\
+            .annotate(**timeperiod_annotations)\
             .order_by('number', 'name')
 
-        context['nump'] = range(1, num_periods)
         context['timeperiods'] = timeperiods
         context['indicators'] = indicators
         context['program'] = program

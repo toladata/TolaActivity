@@ -25,8 +25,8 @@
                 <th scope="col">TARGET</th>
                 <th scope="col">ACTUAL</th>
                 <th scope="col" style="min-width: 70px;">% MET</th>
-                {% for i in nump %}
-                    <th>Q{{i}}</th>
+                {% for k, v in timeperiods.items %}
+                    <th>{{ k }}</th>
                 {% endfor %}
             </thead>
             <tbody>
@@ -78,8 +78,10 @@
                                 {% endif %}
                             {% endif %}
                         </td>
-                        {% for i in nump %}
-                            <td> {{ indicator|hash:"q"|add:i }}</td>
+                        {% for k, v in timeperiods.items %}
+                            {% with k|concat_string:"_sum" as m %}
+                                <td>{{ indicator|hash:m|floatformat:"-2"|default_if_none:'' }}</td>
+                            {% endwith %}
                         {% endfor %}
                     </tr>
                 {% endfor %}

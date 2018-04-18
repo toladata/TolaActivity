@@ -61,7 +61,7 @@ def symbolize_measuretype(value):
     return ""
 
 @register.filter('hash')
-def hash(object, attr):
+def hash(dic, attr):
     """
     Loops a key in a dictionary
     Usage:
@@ -72,8 +72,8 @@ def hash(object, attr):
         {% endfor %}
     {% endfor %}
     """
-    pseudo_context = {'object': object }
     try:
-        value = Variable('object.{}'.format(attr)).resolve(pseudo_context)
-    except VariableDoesNotExist:
-        value = None
+        return dic.get(attr)
+    except Exception:
+        return None
+
