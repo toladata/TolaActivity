@@ -5,6 +5,7 @@
 {% block title %}Indicator Performance Tracking Table{% endblock %}
 
 {% block content %}
+  {% include 'formlibrary/report_filter_form.html' %}
     <div id="id_div_top_iptt_report">
         <span>{{ period }} PERIOD WILL GO HERE...</span>
         <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>

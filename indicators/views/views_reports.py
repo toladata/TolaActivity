@@ -105,6 +105,8 @@ class IPTT_ReportView(TemplateView):
         context['indicators'] = indicators
         context['program'] = program
         context['reporttype'] = kwargs.get('reporttype')
+        context['form'] = IPTTReportFilterForm()
+
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
@@ -112,9 +114,23 @@ class IPTT_ReportView(TemplateView):
         form = IPTTReportFilterForm(request.POST, request=request)
 
         if form.is_valid():
-            pass
+            return self.form_valid(form)
 
         elif not form.is_valid():
-            pass
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        context.update(form.cleaned_data)
+
+        redirect_url = reverse_lazy('ippt_report', **context)
+        return HttpResponseRedirect(redirect_url)
+
+    def form_invalid(self, form):
+
+        context = self.get_context_data()
+        context['form'] = form
+        self.render_to_response(context=context)
+
 
 

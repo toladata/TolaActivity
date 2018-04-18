@@ -242,6 +242,8 @@ class IPTTReportFilterForm(ReportFormCommon):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.get('request', None)
+        if self.request is not None:
+            kwargs.pop('request')
         super(IPTTReportFilterForm, self).__init__(*args, **kwargs)
         self.fields['sector'].queryset = Sector.objects.all()
         self.fields['level'].queryset = Level.objects.all()

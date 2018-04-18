@@ -1,17 +1,25 @@
 from unittest import skip
 
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
+
+from TolaActivity.factories import ProgramFactory
+from indicators.views.views_reports import IPTT_ReportView
 
 
-@skip("test not implemented")
 class FilterPanelTests(TestCase):
 
     def setUp(self):
-        pass
+        self.request_factory = RequestFactory()
 
     def test_filter_by_program(self):
         """It should only show indicators associated with a given program"""
-        self.fail("test not implemented")
+        program = ProgramFactory()
+        data = {'program_id': program.id, 'timeframe': 1}
+        request = self.request_factory.get(path='/?program_id={0}&timeframe=1'.format(program.id), data=data)
+
+        view = IPTT_ReportView.as_view()(request, **data)
+        view.render()
+        print(view)
 
     def test_filter_show_all(self):
         """It should show all indicators for a given project"""
