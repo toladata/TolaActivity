@@ -411,8 +411,24 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 1)
 
+        self.tola_user.user.groups.remove(self.group_org_admin)
+
+        # The user doesn't have any WorkflowTeam and isn't Org Admin anymore
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 0)
+
+    def test_check_seats_save_user_groups_viewonly_doent_affect(self):
+        external_response = self.ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+
         self.tola_user.user.groups.add(self.group_view_only)
         self.tola_user.user.save()
+
+        # It should have only one seat because of the Org Admin role
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 0)
+
+        self.tola_user.user.groups.remove(self.group_view_only)
 
         # The user doesn't have any WorkflowTeam and isn't Org Admin anymore
         organization = Organization.objects.get(pk=self.org.id)

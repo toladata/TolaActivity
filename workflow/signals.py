@@ -177,9 +177,9 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
     Validate, increase or decrease the amount of used seats
     based on the roles
     """
-    if kwargs['model'] != Group or kwargs['action'] != 'post_add':
-        return
-    if os.getenv('APP_BRANCH') == DEMO_BRANCH:
+    if (os.getenv('APP_BRANCH') == DEMO_BRANCH or
+            kwargs['action'] not in ['post_add', 'post_remove'] or
+            kwargs['model'] != Group):
         return
 
     try:
@@ -187,7 +187,7 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
     except TolaUser.DoesNotExist as e:
         logger.info(e)
     else:
-        added_groups = Group.objects.values_list('name', flat=True).filter(
+        changed_groups = Group.objects.values_list('name', flat=True).filter(
             id__in=kwargs['pk_set'])
         count = WorkflowTeam.objects.filter(
             workflow_user=tola_user,
@@ -198,12 +198,13 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
         org = tola_user.organization
         used_seats = org.chargebee_used_seats
 
-        # If the user is a Org Admin, he's able to edit the program.
+        # If the user is an Org Admin, he's able to edit the program.
         # Therefore, he should have a seat in the subscription
-        if count == 0 and ROLE_ORGANIZATION_ADMIN in added_groups:
-            used_seats += 1
-        elif count == 0 and ROLE_VIEW_ONLY in added_groups:
-            used_seats -= 1
+        if count == 0 and ROLE_ORGANIZATION_ADMIN in changed_groups:
+            if kwargs['action'] == 'post_add':
+                used_seats += 1
+            elif kwargs['action'] == 'post_remove':
+                used_seats -= 1
 
         org.chargebee_used_seats = used_seats
         org.save()
