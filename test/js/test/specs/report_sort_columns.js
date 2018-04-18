@@ -1,18 +1,17 @@
-var assert = require('chai').assert;
+import { assert } from 'chai';
+import IndPage from '../pages/indicators.page';
 import LoginPage from '../pages/login.page';
-var IndPage = require('../pages/indicators.page.js');
-var TargetsTab = require('../pages/targets.page.js');
-var util = require('../lib/testutil.js');
-const msec = 1000;
+import NavBar from '../pages/navbar.page';
+import TargetsTab from '../pages/targets.page';
+import Util from '../lib/testutil';
 
-describe('Collected data record: Actual value field for percentage indicator', function() {
+describe('Report filter panel', function() {
     before(function() {
         // Disable timeouts
         this.timeout(0);
-        browser.windowHandleMaximize(); 
-
-        // Get login data and login
-        let parms = util.readConfig();
+        browser.windowHandleMaximize();
+    
+        let parms = Util.readConfig();
         LoginPage.open(parms.baseurl);
         if (parms.baseurl.includes('mercycorps.org')) {
             LoginPage.username = parms.username;
@@ -26,6 +25,10 @@ describe('Collected data record: Actual value field for percentage indicator', f
             }
         }
     });
-    it('should append a % sign to numbers types in the field');
-    it('should not permit non-numeric values to typed in the field');
+
+    it('should have default sort order of level, number, and name');
+    it('should be manually sortable by level');
+    it('should be manually sortable by name');
+    it('should be manually sortable by number');
+    it('should be sortable by clicking a column header');
 });
