@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from dateutil import rrule, relativedelta
 from datetime import datetime
 from django.core.urlresolvers import reverse_lazy
@@ -85,37 +86,67 @@ class IPTTReportQuickstartView(FormView):
 
 class IPTT_ReportView(TemplateView):
     template_name = 'indicators/iptt_report.html'
-    start_date = None
-    end_date = None
 
     @staticmethod
-    def get_num_months(period):
+    def _get_num_months(period):
         """
         Returns the number of months for a given time-period
         """
         return {'1': 12, '2': 6, '3': 4, '4': 3, '5': 1}[period]
 
-    def get_period_annotation(self, period):
-        num_months_in_period = self.get_num_months(period)
-        while self.start_date < self.end_date:
-            next_period = self.start_date + relativedelta.relativedelta(months=num_months_in_period)
-            yield Sum(Case(When(Q(collecteddata__date_collected__gte=datetime.strftime(self.start_date, '%Y-%m-%d')) &
+    @staticmethod
+    def _get_period_name(period):
+        """
+        Returns the name of the period
+        """
+        return {
+            '1': 'Year',
+            '2': 'Semi-annual',
+            '3': 'Tri-annual',
+            '4': 'Quarter',
+            '5': 'Month'
+        }[period]
+
+    def _period_annotation_generator(self, start_date, end_date, period):
+        """
+        Generates queryset annotation for periods
+        """
+        num_months_in_period = self._get_num_months(period)
+        while start_date < end_date:
+            next_period = start_date + relativedelta.relativedelta(months=num_months_in_period)
+            yield Sum(Case(When(Q(collecteddata__date_collected__gte=datetime.strftime(start_date, '%Y-%m-%d')) &
                                 Q(collecteddata__date_collected__lte=datetime.strftime(next_period, '%Y-%m-%d')),
                                 then=F('collecteddata__achieved'))))
-            self.start_date = next_period
+            start_date = next_period
 
-
-    def get_num_periods(self, start_date, end_date, period):
+    def _get_num_periods(self, start_date, end_date, period):
         """
         Returns the number of periods depending on the period is in terms of months
         """
-        num_months_in_period = self.get_num_months(period)
+        num_months_in_period = self._get_num_months(period)
         total_num_months = len(list(rrule.rrule(rrule.MONTHLY, dtstart=start_date, until=end_date)))
         num_periods = total_num_months / num_months_in_period
         remainder_months = total_num_months % num_months_in_period
         if remainder_months > 0:
             num_periods += 1
         return num_periods
+
+    def _setup_periods(self, start_date, period, num_periods):
+        """
+        Create the time-periods for which data will be annotated
+        """
+        timeperiods = OrderedDict()
+        period_name = self._get_period_name(period)
+        num_months_in_period = self._get_num_months(period)
+
+        period_start_date = start_date
+        period_end_date = period_start_date + relativedelta.relativedelta(months=num_months_in_period)
+
+        for i in range(1, num_periods):
+            timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
+            period_start_date = period_end_date
+            period_end_date = period_end_date + relativedelta.relativedelta(months=num_months_in_period)
+        return timeperiods
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -127,14 +158,15 @@ class IPTT_ReportView(TemplateView):
         data_date_range = Indicator.objects.filter(program__in=[program_id])\
             .aggregate(sdate=Min('collecteddata__date_collected'),
                        edate=Max('collecteddata__date_collected'))
-        self.start_date = data_date_range['sdate']
-        self.end_date = data_date_range['edate']
+        start_date = data_date_range['sdate']
+        end_date = data_date_range['edate']
 
         #  find out the total number of periods (quarters, months, years, etc) for this program
-        nump = self.get_num_periods(self.start_date, self.end_date, period)
+        num_periods = self._get_num_periods(start_date, end_date, period)
 
+        timeperiods = self._setup_periods(start_date, period, num_periods)
         # handle for generating periodic annotation in the queryset
-        annotation_generator = self.get_period_annotation(period)
+        annotation_generator = self._period_annotation_generator(start_date, end_date, period)
 
         # calculate aggregated actuals (sum, avg, last) per reporting period
         # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
@@ -150,10 +182,11 @@ class IPTT_ReportView(TemplateView):
             .values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
                     'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
                     'lastdata')\
-            .annotate(**{"q{}".format(i): next(annotation_generator) for i in range(1, nump)})\
+            .annotate(**{"q{}".format(i): next(annotation_generator) for i in range(1, num_periods)})\
             .order_by('number', 'name')
 
-        context['nump'] = range(1, nump)
+        context['nump'] = range(1, num_periods)
+        context['timeperiods'] = timeperiods
         context['indicators'] = indicators
         context['program'] = program
         context['reporttype'] = kwargs.get('reporttype')
