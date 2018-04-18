@@ -74,6 +74,6 @@ def hash(object, attr):
     """
     pseudo_context = {'object': object }
     try:
-        value = Variable('object.{}{}'.format(prefix, attr)).resolve(pseudo_context)
+        value = Variable('object.{}'.format(attr)).resolve(pseudo_context)
     except VariableDoesNotExist:
         value = None

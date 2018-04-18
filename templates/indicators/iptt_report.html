@@ -25,7 +25,9 @@
                 <th scope="col">TARGET</th>
                 <th scope="col">ACTUAL</th>
                 <th scope="col" style="min-width: 70px;">% MET</th>
-                <th>Q1</th>
+                {% for i in nump %}
+                    <th>Q{{i}}</th>
+                {% endfor %}
             </thead>
             <tbody>
                 {% for indicator in indicators %}
@@ -76,7 +78,9 @@
                                 {% endif %}
                             {% endif %}
                         </td>
-                        <td> {{ indicator.q1 }}
+                        {% for i in nump %}
+                            <td> {{ indicator|hash:"q"|add:i }}</td>
+                        {% endfor %}
                     </tr>
                 {% endfor %}
             </tbody>
