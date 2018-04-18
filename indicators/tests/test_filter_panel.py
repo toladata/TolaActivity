@@ -1,7 +1,9 @@
+import datetime
+
 from django.test import TestCase, RequestFactory
 
 from TolaActivity.factories import (ProgramFactory, IndicatorFactory, SiteProfileFactory, IndicatorTypeFactory,
-                                    LevelFactory, SectorFactory, UserFactory, TolaUserFactory)
+                                    LevelFactory, SectorFactory, UserFactory, TolaUserFactory, CollectedDataFactory)
 from indicators.views.views_reports import IPTT_ReportView
 
 
@@ -18,8 +20,13 @@ class FilterPanelTests(TestCase):
         program = ProgramFactory()
         program.country.add(user.country)
         program.save()
-        data = {'program': program.id, 'timeframe': 1, 'formprefix': 'filter'}
-        request = self.request_factory.post(path='/?program={0}&timeframe=1'.format(program.id), data=data)
+        data = {'program': program.id, 'timeframe': 1, 'formprefix': 'filter', 'period': 1}
+
+
+
+
+
+        request = self.request_factory.post(path='/?program={0}&timeframe=1&period=1'.format(program.id), data=data)
 
         request.user = user.user
         sectors = SectorFactory.create_batch(3)
@@ -27,11 +34,23 @@ class FilterPanelTests(TestCase):
         ind_types = IndicatorTypeFactory.create_batch(3)
         sites = SiteProfileFactory.create_batch(3)
         indicators = IndicatorFactory.create_batch(3)
+        min_date_collected = datetime.datetime(2018, 1, 1)
+        max_date_collected = datetime.datetime(2018, 2, 2)
+        for i in range(len(indicators)):
+            indicators[i].program.add(program)
+            indicators[i].save()
+            if i % 2:
+                date = min_date_collected
+            else:
+                date = max_date_collected
+            CollectedDataFactory(indicator=indicators[i], program=program, date_collected=date)
+
         view = IPTT_ReportView.as_view()(request, **data)
         view.render()
         stuff = str(view)
-
+        print stuff
         for i in range(2):
+            continue
             self.assertIn(sectors[i].sector, stuff)
             self.assertIn(levels[i].name, stuff)
             self.assertIn(ind_types[i].indicator_type, stuff)
@@ -39,7 +58,6 @@ class FilterPanelTests(TestCase):
             self.assertIn(indicators[i].name, stuff)
 
         self.assertIn(program.name, stuff)
-
 
     def test_filter_show_all(self):
         """It should show all indicators for a given project"""

@@ -77,12 +77,13 @@ class LevelFactory(DjangoModelFactory):
     name = Sequence(lambda n: 'Level: {0}'.format(n))
 
 
-class CollectedData(DjangoModelFactory):
+class CollectedDataFactory(DjangoModelFactory):
     class Meta:
         model = CollectedDataM
 
     program = SubFactory(ProgramFactory)
     indicator = SubFactory(IndicatorFactory)
+    achieved = 10
 
 
 class IndicatorTypeFactory(DjangoModelFactory):

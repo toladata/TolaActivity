@@ -214,7 +214,10 @@ class ReportFormCommon(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(ReportFormCommon, self).__init__(*args, **kwargs)
-        countries = getCountry(self.request.user)
+        if self.request is not None:
+            countries = getCountry(self.request.user)
+        else:
+            countries = []
         self.fields['program'].queryset = Program.objects.all().filter(country__in=countries)
         self.fields['program'].label = _("PROGRAM")
         self.fields['timeperiods'].label = _("TIME PERIODS")
