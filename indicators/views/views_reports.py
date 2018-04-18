@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import OuterRef, Sum, Avg, Subquery
+from django.views import View
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
@@ -121,16 +122,15 @@ class IPTT_ReportView(TemplateView):
 
     def form_valid(self, form):
         context = self.get_context_data()
-        context.update(form.cleaned_data)
+        context['form'] = form
 
-        redirect_url = reverse_lazy('ippt_report', **context)
-        return HttpResponseRedirect(redirect_url)
+        return self.render_to_response(context=context)
 
     def form_invalid(self, form):
 
         context = self.get_context_data()
         context['form'] = form
-        self.render_to_response(context=context)
+        return self.render_to_response(context=context)
 
 
 

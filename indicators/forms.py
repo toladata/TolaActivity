@@ -212,6 +212,16 @@ class ReportFormCommon(forms.Form):
     timeframe = forms.ChoiceField(choices=TIMEFRAME_CHOCIES, widget=forms.RadioSelect())
     numrecentperiods = forms.IntegerField(required=False)
 
+    def __init__(self, *args, **kwargs):
+        super(ReportFormCommon, self).__init__(*args, **kwargs)
+        countries = getCountry(self.request.user)
+        self.fields['program'].queryset = Program.objects.all().filter(country__in=countries)
+        self.fields['program'].label = _("PROGRAM")
+        self.fields['timeperiods'].label = _("TIME PERIODS")
+        self.fields['numrecentperiods'].widget.attrs['placeholder'] = _("enter a number")
+        self.fields['targetperiods'].label = _("TARGET PERIODS")
+        self.fields['timeframe'].initial = self.SHOW_ALL
+
 
 class IPTTReportQuickstartForm(ReportFormCommon):
     prefix = 'timeperiods'
@@ -221,15 +231,8 @@ class IPTTReportQuickstartForm(ReportFormCommon):
         self.request = kwargs.pop('request')
         prefix = kwargs.pop('prefix')
         self.prefix = prefix if prefix is not None else self.prefix
-        countries = getCountry(self.request.user)
         super(IPTTReportQuickstartForm, self).__init__(*args, **kwargs)
         self.fields['formprefix'].initial = self.prefix
-        self.fields['program'].queryset = Program.objects.filter(country__in=countries)
-        self.fields['program'].label = _("PROGRAM")
-        self.fields['timeperiods'].label = _("TIME PERIODS")
-        self.fields['numrecentperiods'].widget.attrs['placeholder'] = _("enter a number")
-        self.fields['targetperiods'].label = _("TARGET PERIODS")
-        self.fields['timeframe'].initial = self.SHOW_ALL
 
 
 class IPTTReportFilterForm(ReportFormCommon):

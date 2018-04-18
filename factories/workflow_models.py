@@ -1,6 +1,6 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation, Sequence
+    SubFactory, post_generation, Sequence, RelatedFactory
 
 import random
 
@@ -67,6 +67,7 @@ class TolaUserFactory(DjangoModelFactory):
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
     organization = SubFactory(OrganizationFactory)
     country = SubFactory(CountryFactory, country='United States', code='US')
+    countries = RelatedFactory(CountryFactory, country='United States', code='US')
 
 
 class ProgramFactory(DjangoModelFactory):
@@ -75,19 +76,7 @@ class ProgramFactory(DjangoModelFactory):
 
     name = 'Health and Survival for Syrians in Affected Regions'
     gaitid = Sequence(lambda n: "%0030d" % n)
-
-    @post_generation
-    def country(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if type(extracted) is list:
-            # A list of country were passed in, use them
-            for country in extracted:
-                self.country.add(country)
-        else:
-            self.country.add(CountryFactory(country='Syria', code='SY'))
+    country = RelatedFactory(CountryFactory, country='United States', code='US')
 
 
 class Documentation(DjangoModelFactory):
