@@ -2,7 +2,7 @@ from collections import OrderedDict
 from dateutil import rrule, relativedelta
 from datetime import datetime
 from django.core.urlresolvers import reverse_lazy
-from django.db.models import Sum, Avg, Subquery, OuterRef, Case, When, Q, F, Min, Max, Count
+from django.db.models import Sum, Avg, Subquery, OuterRef, Case, When, Q, F, Min, Max
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
@@ -68,9 +68,10 @@ class IPTTReportQuickstartView(FormView):
                                                prefix=self.FORM_PREFIX_TARGET)
 
         program = form.cleaned_data.get('program')
+        num_recents = form.cleaned_data.get('numrecentperiods')
         redirect_url = reverse_lazy('iptt_report', kwargs={'program_id': program.id, 'reporttype': prefix})
 
-        redirect_url = "{}?period={}".format(redirect_url, period)
+        redirect_url = "{}?period={}&numrecents={}".format(redirect_url, period, num_recents)
         return HttpResponseRedirect(redirect_url)
 
     def form_invalid(self, form, **kwargs):
@@ -148,9 +149,9 @@ class IPTT_ReportView(TemplateView):
 
             # the following becomes annotations for the queryset
             # e.g.
-            # Year 1_sum, Year2_sum, ...
-            # Year 1_avg, Year2_avg, ...
-            # Year 1_last, Year2_last, ...
+            # Year 1_sum=..., Year2_sum=..., etc.
+            # Year 1_avg=..., Year2_avg=..., etc.
+            # Year 1_last=..., Year2_last=..., etc.
             #
             annotations["{}_sum".format(k)] = annotation_sum
             annotations["{}_avg".format(k)] = annotation_avg
@@ -169,7 +170,7 @@ class IPTT_ReportView(TemplateView):
             num_periods += 1
         return num_periods
 
-    def _generate_timeperiods(self, start_date, period, num_periods):
+    def _generate_timeperiods(self, start_date, period, num_periods, num_recents):
         """
         Create the time-periods for which data will be annotated
         """
@@ -179,8 +180,9 @@ class IPTT_ReportView(TemplateView):
 
         period_start_date = start_date
         period_end_date = period_start_date + relativedelta.relativedelta(months=num_months_in_period)
+        num_recents = num_periods - num_recents
 
-        for i in range(1, num_periods):
+        for i in range(num_recents, num_periods):
             timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
             period_start_date = period_end_date
             period_end_date = period_end_date + relativedelta.relativedelta(months=num_months_in_period)
@@ -190,6 +192,10 @@ class IPTT_ReportView(TemplateView):
         context = self.get_context_data(**kwargs)
         program_id = kwargs.get('program_id')
         period = request.GET.get('period', None)
+        try:
+            num_recents = int(request.GET.get('numrecents', 1))
+        except Exception:
+            num_recents = 1
         program = Program.objects.get(pk=program_id)
 
         # determine the full date range of data collection for this program
@@ -201,7 +207,7 @@ class IPTT_ReportView(TemplateView):
         #  find out the total number of periods (quarters, months, years, or etc) for this program
         num_periods = self._get_num_periods(start_date, end_date, period)
 
-        timeperiods = self._generate_timeperiods(start_date, period, num_periods)
+        timeperiods = self._generate_timeperiods(start_date, period, num_periods, num_recents)
         timeperiod_annotations = self._generate_timperiod_annotations(timeperiods)
 
         # calculate aggregated actuals (sum, avg, last) per reporting period
@@ -221,6 +227,8 @@ class IPTT_ReportView(TemplateView):
             .annotate(**timeperiod_annotations) \
             .order_by('number', 'name')
 
+        context['start_date'] = start_date
+        context['end_date'] = end_date
         context['timeperiods'] = timeperiods
         context['indicators'] = indicators
         context['program'] = program
