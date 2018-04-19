@@ -6,7 +6,17 @@
 {% block title %}Indicator Performance Tracking Table{% endblock %}
 
 {% block content %}
+
+<div class="filter-wrapper">
+   {% include 'formlibrary/report_filter_form.html' %}
+
+
     <div id="id_div_top_iptt_report" class="table-responsive2">
+    <div>
+      <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+              <i class="glyphicon glyphicon-align-left"></i>
+              Toggle Sidebar
+      </button>
         <span id="id_span_iptt_date_range">
           <strong>{{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }}</strong>
         </span>
@@ -137,7 +147,7 @@
             </div> <!-- modal content -->
         </div>
     </div>
-
+</div>
     <script>
         // Open the IndicatorUpdate Form in a modal
         $("#id_div_top_iptt_report").on("click", ".indicator-link", function(e) {

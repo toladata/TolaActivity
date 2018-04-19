@@ -1,0 +1,114 @@
+{% load widget_tweaks %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
+<script type="application/javascript">
+
+  $(document).ready(function () {
+
+    $('#id_iptt_report_filter').mCustomScrollbar({theme: "minimal"});
+
+    $('#sidebarCollapse').on('click', function () {
+        $('#id_iptt_report_filter').toggleClass('active');
+        $('.collapse.in').toggleClass('in');
+
+    });
+
+});
+
+</script>
+  <nav id="id_iptt_report_filter">
+    <h5 class="card-title">Program indicator overview</h5>
+    <p class="card-subtitle text-muted mb-2">
+      View progress toward Life of Program targets for all of a program’s indicators.
+    </p>
+    <form
+      action="{% url 'iptt_quickstart' %}"
+      id="id_form_program_indicator_overview"
+      method="post"
+      novalidate>
+      {% csrf_token %}
+      {% for hidden_field in form.hidden_fields %}
+        {{ hidden_field }}
+      {% endfor %}
+      <div class="form-group" id="divid_timeperiods_program">
+        <label for="id_program" class="col-form-label">
+          {{ form.program.label }}
+        </label>
+        {% render_field form.program class+="form-control" %}
+      </div>
+
+      <div class="form-group" id="div_id_timeperiods">
+        <label for="id_timeperiods" class="col-form-label">
+          {{ form.timeperiods.label }}
+        </label>
+        {% render_field form.timeperiods class+="form-control" %}
+      </div>
+
+      <div class="form-group d-flex">
+        {% for item in form.timeframe %}
+          {% with id=form.timeframe.auto_id %}
+            <div class="form-check form-check-inline pt-1"
+                 id="div_{{ id }}_{{ forloop.counter0 }}">
+                                            <span class="form-check-input ">
+                                                {{ item.tag }}
+                                            </span>
+              <label class="form-check-label"
+                     for="{{ item.id_for_label }}">
+                {{ item.choice_label }}
+              </label>
+            </div>
+          {% endwith %}
+        {% endfor %}
+        <div id="id_div_timeperiods_numrecentperiods">
+          {% render_field form.numrecentperiods class+="form-control" %}
+          <div id="id_validation_numrecent_timeperiods" class="has-error"></div>
+        </div>
+        <div id="id_daterange">
+          {% render_field form.start_date class+="form-control"%}
+          {% render_field form.end_date class+="form-control"%}
+        </div>
+      </div>
+      <div class="form-group" id="id_level">
+        <label for="id_level" class="col-form-label">
+          {{ form.level.label }}
+        </label>
+        {% render_field form.level class+="form-control" %}
+      </div>
+      <div class="form-group" id="id_type">
+        <label for="id_type" class="col-form-label">
+          {{ form.ind_type.label }}
+        </label>
+        {% render_field form.ind_type class+="form-control" %}
+      </div>
+      <div class="form-group" id="id_sector">
+        <label for="id_sector" class="col-form-label">
+          {{ form.sector.label }}
+        </label>
+        {% render_field form.sector class+="form-control" %}
+      </div>
+      <div class="form-group" id="id_site">
+        <label for="id_site" class="col-form-label">
+          {{ form.site.label }}
+        </label>
+        {% render_field form.site class+="form-control" %}
+      </div>
+      <div class="form-group" id="id_indicators">
+        <label for="id_indicators" class="col-form-label">
+          {{ form.indicators.label }}
+        </label>
+        {% render_field form.indicators class+="form-control" %}
+      </div>
+      <div class="d-flex justify-content-center mb-1">
+        <button
+          type="submit"
+          id="id_submit_timeperiods_button"
+          class="btn btn-info"
+          style="width:100%;">SAVE CHANGES
+        </button>
+        <button type="reset"
+                class="btn btn-frozen"
+                style="...">CANCEL
+        </button>
+      </div>
+    </form>
+  </nav>
