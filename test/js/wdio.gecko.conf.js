@@ -1,5 +1,5 @@
 exports.config = {
-    execArgv: ['--inspect'],
+    //execArgv: ['--inspect'],
     specs: [
         './test/specs/**/*.js'
     ],
@@ -8,7 +8,7 @@ exports.config = {
     ],
     suites: {
         login: [
-            'test/specs/login.js'
+            'test/specs/00_login.js'
         ],
         dashboard: [
             'test/specs/dashboard.js'

@@ -58,3 +58,4 @@ assets/
 templates/links.html
 coverage_html
 .coverage
+tola/settings/test_local.py
