@@ -147,9 +147,9 @@ class IPTT_ReportView(TemplateView):
 
             # the following becomes annotations for the queryset
             # e.g.
-            # Year 1_sum, Year2_sum, ...
-            # Year 1_avg, Year2_avg, ...
-            # Year 1_last, Year2_last, ...
+            # Year 1_sum=..., Year2_sum=..., etc.
+            # Year 1_avg=..., Year2_avg=..., etc.
+            # Year 1_last=..., Year2_last=..., etc.
             #
             annotations["{}_sum".format(k)] = annotation_sum
             annotations["{}_avg".format(k)] = annotation_avg

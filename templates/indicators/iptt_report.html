@@ -6,13 +6,32 @@
 {% block title %}Indicator Performance Tracking Table{% endblock %}
 
 {% block content %}
+<style>
+  #lop_cols {
+	  background-color:#efede4;
+	}
+</style>
     <div id="id_div_top_iptt_report" class="table-responsive2">
         <span>{{ period }} PERIOD WILL GO HERE...</span>
         <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
-        <table id="iptt_table"
-            class="table table-sm table-bordered table-hover">
+        <table id="iptt_table" class="table table-sm table-bordered table-hover">
             <caption>Indicator Performance Tracking Table</caption>
+            <colgroup scope="col" span="9"></colgroup>
+            <colgroup scope="col" span="3" id="lop_cols"></colgroup>
+            <colgroup scope="col" span="{{ timeperiods|length }}"></colgroup>
             <thead class="thead-light">
+              <tr>
+                <td colspan="9"></td>
+                <th scope="colgroup" colspan="3" class="text-center">
+                  Life of Program
+                </th>
+                {% for k, v in timeperiods.items %}
+                  <th scope="col" class="text-center" style="min-width: 180px;">
+                    {{ k }}<br> <small>{{ v.0|date:"M d, Y" }}  - {{ v.1|date:"M d, Y" }}</small>
+                  </th>
+                {% endfor %}
+              </tr>
+              </tr>
                 <th scope="col" style="min-width:80px">NO.</th>
                 <th scope="col" class="td-no-side-borders" style="min-width:600px">INDICATOR</th>
                 <th scope="col" class="td-no-side-borders"></th>
@@ -26,8 +45,9 @@
                 <th scope="col">ACTUAL</th>
                 <th scope="col" style="min-width: 70px;">% MET</th>
                 {% for k, v in timeperiods.items %}
-                    <th>{{ k }}</th>
+                    <th scope="col" class="text-right">ACTUALS</th>
                 {% endfor %}
+              </tr>
             </thead>
             <tbody>
                 {% for indicator in indicators %}
@@ -79,9 +99,30 @@
                             {% endif %}
                         </td>
                         {% for k, v in timeperiods.items %}
-                            {% with k|concat_string:"_sum" as m %}
-                                <td>{{ indicator|hash:m|floatformat:"-2"|default_if_none:'' }}</td>
-                            {% endwith %}
+                            <td align="right">
+                                <!-- if it is a NUMBER indicator -->
+                                {% if indicator.unit_of_measure_type == 1 %}
+                                    {% with k|concat_string:"_sum" as sum %}
+                                        {{ indicator|hash:sum|floatformat:"-2"|default_if_none:'' }}
+                                    {% endwith %}
+                                <!-- if indicator is a PERCENT idnicator -->
+                                {% elif indicator.unit_of_measure_type == 2 %}
+                                    {% if indicator.is_cumulative == True %}
+                                        <!-- if it is PERCENT and CUMULATIVE indicator then show the last data record's value -->
+                                        {% with k|concat_string:"_last" as last %}
+                                            {{ indicator|hash:last|floatformat:"-2"|default_if_none:'' }}%
+                                        {% endwith %}
+                                    {% else %}
+                                        <!-- if it is a PERCENT and NON-CUMULATIVE indicator -->
+                                        {% with k|concat_string:"_avg" as avg %}
+                                            {% if indicator|hash:avg is not None %}
+                                                <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
+                                                {{ indicator|hash:avg|floatformat:"-2"|default_if_none:'' }}%
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
