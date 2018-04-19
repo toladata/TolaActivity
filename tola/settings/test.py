@@ -95,6 +95,7 @@ CACHES = {
 ########## END CACHE CONFIGURATION
 
 
-
-
-
+try:
+    from .test_local import *
+except ImportError:
+    pass
