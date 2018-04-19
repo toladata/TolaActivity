@@ -1,5 +1,6 @@
 {% load widget_tweaks %}
 {% load mytags %}
+{% load i18n %}
     <form
         action="{% url 'indicator_update' indicator.id %}"
         id="indicator_update_form"
@@ -39,7 +40,7 @@
             <div role="tabpanel" class="tab-pane active" id="summaryTab">
                 <br>
                 <fieldset>
-                    <div class="form-row mb-2" id="div_id_program">
+                    <div class="form-row mb-3" id="div_id_program">
                         <label for="id_program2" class="col-sm-4 col-form-label" align="right">{{ form.program.label }}</label>
                         <div class="col-sm-7">
                             {% render_field form.program2 class+="form-control" %}
@@ -56,7 +57,7 @@
                         </div>
                     </div> -->
 
-                    <div class="form-row mb-2" id="div_id_sector">
+                    <div class="form-row mb-3" id="div_id_sector">
                         <label for="id_sector" class="col-sm-4 col-form-label" align="right">{{ form.sector.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.sector class+="form-control" %}
@@ -65,7 +66,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_objectives">
+                    <div class="form-row mb-3" id="div_id_objectives">
                         <label for="id_objectives" class="col-sm-4 col-form-label" align="right">{{ form.objectives.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.objectives class+="form-control" %}
@@ -74,7 +75,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_strategic_objectives">
+                    <div class="form-row mb-3" id="div_id_strategic_objectives">
                         <label for="id_strategic_objectives" class="col-sm-4 col-form-label" align="right">{{ form.strategic_objectives.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.strategic_objectives class+="form-control" %}
@@ -88,7 +89,7 @@
             <div role="tabpanel" class="tab-pane" id="performanceTab" name="Performance tab">
                 <br>
                 <fieldset>
-                    <div class="form-row mb-2" id="div_id_name">
+                    <div class="form-row mb-3" id="div_id_name">
                         <label for="id_name" class="col-sm-4 col-form-label" align="right">{{ form.name.label }}* </label>
                         <div class="col-sm-7">
                             {% render_field form.name class+="form-control" %}
@@ -97,7 +98,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_level">
+                    <div class="form-row mb-3" id="div_id_level">
                         <label for="id_level" class="col-sm-4 col-form-label" align="right">{{ form.level.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.level class+="form-control" %}
@@ -106,7 +107,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_number">
+                    <div class="form-row mb-3" id="div_id_number">
                         <label for="id_number" class="col-sm-4 col-form-label" align="right">{{ form.number.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.number class+="form-control" %}
@@ -115,7 +116,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_source">
+                    <div class="form-row mb-3" id="div_id_source">
                         <label for="id_source" class="col-sm-4 col-form-label" align="right">{{ form.source.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.source class+="form-control" %}
@@ -124,7 +125,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_definition">
+                    <div class="form-row mb-3" id="div_id_definition">
                         <label for="id_definition" class="col-sm-4 col-form-label" align="right">{{ form.definition.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.definition class+="form-control" %}
@@ -133,7 +134,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_justification">
+                    <div class="form-row mb-3" id="div_id_justification">
                         <label for="id_justification" class="col-sm-4 col-form-label" align="right">{{ form.justification.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.justification class+="form-control" %}
@@ -142,7 +143,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_disaggregation">
+                    <div class="form-row mb-3" id="div_id_disaggregation">
                         <label for="id_disaggregation" class="col-sm-4 col-form-label" align="right">{{ form.disaggregation.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.disaggregation class+="form-control" %}
@@ -151,7 +152,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_indicator_type">
+                    <div class="form-row mb-3" id="div_id_indicator_type">
                         <label for="id_indicator_type" class="col-sm-4 col-form-label" align="right">{{ form.indicator_type.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.indicator_type class+="form-control" %}
@@ -160,7 +161,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_key_performance_indicator">
+                    <div class="form-row mb-3" id="div_id_key_performance_indicator">
                         <label for="id_key_performance_indicator" class="col-sm-4 col-form-label" align="right"></label>
                         <div class="col-sm-7">
                             {{ form.key_performance_indicator }}
@@ -175,7 +176,7 @@
             <div role="tabpanel" class="tab-pane" id="targetsTab" name="Targets tab">
                 <br>
                 <fieldset>
-                    <div class="form-row mb-1" id="parent_div_id_unit_of_measure">
+                    <div class="form-row mb-3" id="parent_div_id_unit_of_measure">
                         <label for="id_unit_of_measure" class="col-sm-4 col-form-label" align="right">{{ form.unit_of_measure.label }} </label>
                         <div class="col-sm-7">
                             <div class="card inputs-in-a-box" id="fieldgroup_id_unit_of_measure">
@@ -204,7 +205,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="parent_div_id_lop_target">
+                    <div class="form-row mb-3" id="parent_div_id_lop_target">
                         <label for="id_lop_target" class="col-sm-4 col-form-label" align="right">{{ form.lop_target.label }} </label>
                         <div class="col-sm-7">
                             <div class="card inputs-in-a-box" id="fieldgroup_id_lop_target">
@@ -230,7 +231,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_rationale_for_target">
+                    <div class="form-row mb-3" id="div_id_rationale_for_target">
                         <label for="id_rationale_for_target" class="col-sm-4 col-form-label" align="right">{{ form.rationale_for_target.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.rationale_for_target class+="form-control" %}
@@ -239,7 +240,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_baseline">
+                    <div class="form-row mb-3" id="div_id_baseline">
                         <label for="id_baseline" class="col-sm-4 col-form-label" align="right">{{ form.baseline.label }} </label>
                         <div class="col-sm-7">
                             <div class="card inputs-in-a-box"  id="groupfield_id_baseline">
@@ -263,7 +264,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_target_frequency">
+                    <div class="form-row mb-3" id="div_id_target_frequency">
                         <label for="id_target_frequency" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency.label }}* </label>
                         <div class="col-sm-7">
                             {% render_field form.target_frequency class+="form-control" %}
@@ -272,7 +273,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_target_frequency_start">
+                    <div class="form-row mb-3" id="div_id_target_frequency_start">
                         <label for="id_target_frequency_start" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_start.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.target_frequency_start class+="form-control" %}
@@ -281,7 +282,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_target_frequency_custom">
+                    <div class="form-row mb-3" id="div_id_target_frequency_custom">
                         <label for="id_target_frequency_custom" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_custom.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.target_frequency_custom class+="form-control" %}
@@ -291,7 +292,7 @@
                     </div>
 
 
-                    <div class="form-row mb-2" id="div_id_target_frequency_num_periods">
+                    <div class="form-row mb-3" id="div_id_target_frequency_num_periods">
                         <label for="id_target_frequency_num_periods" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_num_periods.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.target_frequency_num_periods class+="form-control" %}
@@ -300,7 +301,7 @@
                         </div>
                     </div>
 
-                    <div id="div_id_create_targets_btn" class="form-row mb-2">
+                    <div id="div_id_create_targets_btn" class="form-row mb-3">
                          <label for="id_create_targets_btn" class="col-sm-4 col-form-label"></label>
                         <div class="col-sm-7">
                             <button type="button" id="id_create_targets_btn" class="btn btn-sm btn-primary">Create targets</button>
@@ -317,7 +318,7 @@
             <div role="tabpanel" class="tab-pane" id="dataAcquisitionTab">
                 <fieldset>
                     <br>
-                    <div class="form-row mb-2" id="div_id_means_of_verification">
+                    <div class="form-row mb-3" id="div_id_means_of_verification">
                         <label for="id_means_of_verification" class="col-sm-4 col-form-label" align="right">{{ form.means_of_verification.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.means_of_verification class+="form-control" %}
@@ -326,7 +327,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_data_collection_method">
+                    <div class="form-row mb-3" id="div_id_data_collection_method">
                         <label for="id_data_collection_method" class="col-sm-4 col-form-label" align="right">{{ form.data_collection_method.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.data_collection_method class+="form-control" %}
@@ -335,7 +336,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_data_collection_frequency">
+                    <div class="form-row mb-3" id="div_id_data_collection_frequency">
                         <label for="id_data_collection_frequency" class="col-sm-4 col-form-label" align="right">{{ form.data_collection_frequency.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.data_collection_frequency class+="form-control" %}
@@ -344,7 +345,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_data_points">
+                    <div class="form-row mb-3" id="div_id_data_points">
                         <label for="id_data_points" class="col-sm-4 col-form-label" align="right">{{ form.data_points.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.data_points class+="form-control" %}
@@ -353,7 +354,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_responsible_person">
+                    <div class="form-row mb-3" id="div_id_responsible_person">
                         <label for="id_responsible_person" class="col-sm-4 col-form-label" align="right">{{ form.responsible_person.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.responsible_person class+="form-control" %}
@@ -367,7 +368,7 @@
             <div role="tabpanel" class="tab-pane" id="analysisReportingTab">
                 <br>
                 <fieldset>
-                    <div class="form-row mb-2" id="div_id_method_of_analysis">
+                    <div class="form-row mb-3" id="div_id_method_of_analysis">
                         <label for="id_method_of_analysis" class="col-sm-4 col-form-label" align="right">{{ form.method_of_analysis.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.method_of_analysis class+="form-control" %}
@@ -376,7 +377,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_information_use">
+                    <div class="form-row mb-3" id="div_id_information_use">
                         <label for="id_information_use" class="col-sm-4 col-form-label" align="right">{{ form.information_use.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.information_use class+="form-control" %}
@@ -385,7 +386,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_reporting_frequency">
+                    <div class="form-row mb-3" id="div_id_reporting_frequency">
                         <label for="id_reporting_frequency" class="col-sm-4 col-form-label" align="right">{{ form.reporting_frequency.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.reporting_frequency class+="form-control" %}
@@ -394,7 +395,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_quality_assurance">
+                    <div class="form-row mb-3" id="div_id_quality_assurance">
                         <label for="id_quality_assurance" class="col-sm-4 col-form-label" align="right">{{ form.quality_assurance.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.quality_assurance class+="form-control" %}
@@ -403,7 +404,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_data_issues">
+                    <div class="form-row mb-3" id="div_id_data_issues">
                         <label for="id_data_issues" class="col-sm-4 col-form-label" align="right">{{ form.data_issues.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.data_issues class+="form-control" %}
@@ -412,7 +413,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_indicator_changes">
+                    <div class="form-row mb-3" id="div_id_indicator_changes">
                         <label for="id_indicator_changes" class="col-sm-4 col-form-label" align="right">{{ form.indicator_changes.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.indicator_changes class+="form-control" %}
@@ -421,7 +422,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_comments">
+                    <div class="form-row mb-3" id="div_id_comments">
                         <label for="id_comments" class="col-sm-4 col-form-label" align="right">{{ form.comments.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.comments class+="form-control" %}
@@ -430,7 +431,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_notes">
+                    <div class="form-row mb-3" id="div_id_notes">
                         <label for="id_notes" class="col-sm-4 col-form-label" align="right">{{ form.notes.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.notes class+="form-control" %}
@@ -445,7 +446,7 @@
                 <br>
                 <fieldset>
 
-                    <div class="form-row mb-2" id="div_id_approval_submitted_by">
+                    <div class="form-row mb-3" id="div_id_approval_submitted_by">
                         <label for="id_approval_submitted_by" class="col-sm-4 col-form-label" align="right">{{ form.approval_submitted_by.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.approval_submitted_by class+="form-control" %}
@@ -454,7 +455,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_approved_by">
+                    <div class="form-row mb-3" id="div_id_approved_by">
                         <label for="id_approved_by" class="col-sm-4 col-form-label" align="right">{{ form.approved_by.label }} </label>
                         <div class="col-sm-7">
                             {% render_field form.approved_by class+="form-control" %}
@@ -467,11 +468,11 @@
         </div>
 
     </div> <!-- modal body -->
-    <div class="modal-footer justify-content-between" style="background-color: #d7d7d7;">
+    <div class="modal-footer justify-content-between" style="background-color: #DBDCDE;">
         <div>
             <!-- <input type="submit" class="btn btn-primary" value="Save changes"> -->
-            <input type="submit" name="submit" value="Save changes" class="btn btn-primary" id="submit-id-submit">
-            <input type="reset" class="btn btn-secondary" value="Reset">
+            <input type="submit" name="submit" value="{% trans "SAVE CHANGES" %}" class="btn btn-primary mx-2" id="submit-id-submit">
+            <input type="reset" class="btn btn-light" value="{% trans "RESET" %}">
         </div>
         <div class="text-muted">{% include "form_guidance.html" %}</div>
     </div>
