@@ -12,7 +12,8 @@ var parms = Util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /**
- * Add num target periods to the targets list
+ * Add num target periods to the targets list, or
+ * 1 target period if num not specified
  * @param {integer} num The number of target periods
  * to add
  * @returns {integer} The total number of target periods
@@ -402,6 +403,7 @@ function getTargetInputBoxes() {
     let inputBoxes = browser.$$('input#pt-undefined.form-control.input-value');
     return inputBoxes;
 }
+
 /**
  * Get the current error string, if any, from the target creation
  * screen on the Targets tab
