@@ -528,7 +528,7 @@ function setFirstEventName(value) {
  */
 function setFirstTargetPeriod() {
   // Defaults to the current month
-  browser.scroll('input#id_target_frequency_start');
+  browser.scroll('input#submit-id-submit');
   browser.$('input#id_target_frequency_start').click();
   browser.$('button.ui-datepicker-close').click();
 }
