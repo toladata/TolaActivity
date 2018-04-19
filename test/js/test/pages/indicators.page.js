@@ -1,9 +1,7 @@
 /**
  * Page model for testing the Program Indicators screen.
- * @module indicators
+ * @module Indicators
  */
-// Methods are listed in alphabetical order; please help
-// keep them that way. Thanks!
 const TargetsTab = require('../pages/targets.page.js');
 const util = require('../lib/testutil.js');
 // milliseconds

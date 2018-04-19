@@ -1,6 +1,6 @@
 /**
  * Page model for testing the Program Indicators screen.
- * @module targets
+ * @module Targets
  */
 import Util from '../lib/testutil';
 import IndPage from '../pages/indicators.page';
