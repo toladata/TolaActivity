@@ -63,32 +63,36 @@
           {% render_field form.numrecentperiods class+="form-control" %}
           <div id="id_validation_numrecent_timeperiods" class="has-error"></div>
         </div>
+        <div id="id_daterange">
+          {% render_field form.start_date class+="form-control"%}
+          {% render_field form.end_date class+="form-control"%}
+        </div>
       </div>
-      <div class="form-group" id="divid_timeperiods_program">
+      <div class="form-group" id="id_level">
         <label for="id_level" class="col-form-label">
           {{ form.level.label }}
         </label>
         {% render_field form.level class+="form-control" %}
       </div>
-      <div class="form-group" id="divid_timeperiods_program">
+      <div class="form-group" id="id_type">
         <label for="id_type" class="col-form-label">
           {{ form.ind_type.label }}
         </label>
         {% render_field form.ind_type class+="form-control" %}
       </div>
-      <div class="form-group" id="divid_timeperiods_program">
+      <div class="form-group" id="id_sector">
         <label for="id_sector" class="col-form-label">
           {{ form.sector.label }}
         </label>
         {% render_field form.sector class+="form-control" %}
       </div>
-      <div class="form-group" id="divid_timeperiods_program">
+      <div class="form-group" id="id_site">
         <label for="id_site" class="col-form-label">
           {{ form.site.label }}
         </label>
         {% render_field form.site class+="form-control" %}
       </div>
-      <div class="form-group" id="divid_timeperiods_program">
+      <div class="form-group" id="id_indicators">
         <label for="id_indicators" class="col-form-label">
           {{ form.indicators.label }}
         </label>
