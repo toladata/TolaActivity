@@ -188,7 +188,7 @@ class IPTT_ReportView(TemplateView):
 
     def _generate_context(self, request, **kwargs):
         context = self.get_context_data(**kwargs)
-        program_id = kwargs.get('program')
+        program_id = kwargs.get('program_id')
         period = request.GET.get('period', None)
         program = Program.objects.get(pk=program_id)
 
