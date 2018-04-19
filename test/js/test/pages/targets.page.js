@@ -423,9 +423,12 @@ function getUnitOfMeasure() {
 }
 
 function getMeasureIsCumulative() {
-    let cum = $('input#id_is_cumulative_1').getValue();
-    let noncum = $('input#id_is_cumulative_2').getValue();
-    return val;
+    browser.pause(1000);
+    browser.scroll('input#submit-id-submit');
+
+    let val = $('input#id_is_cumulative_1').getValue();
+    if (val == 3) { return true; }
+    if (val == 4) { return false; }
 }
 
 function getMeasureType() {
@@ -459,13 +462,9 @@ function pageName() {
  * @returns Nothing
  */
 function saveIndicatorChanges() {
-  let elem = 'input[value="Save changes"]';
-  if (! browser.isVisible(elem)) {
-    browser.waitForVisible(elem);
-  }
-  let saveChanges = $(elem);
-  browser.scroll(elem);
-  saveChanges.click();
+  let elem = $('input#submit-id-submit');
+  browser.scroll('input#submit-id-submit');
+  browser.$('input#submit-id-submit').click();
 }
 
 /**
@@ -562,10 +561,17 @@ function setLoPTarget(value) {
   lopTarget.setValue(value);
 }
 
+/**
+ * Set the type of the unit of measure (number or percent)
+ * @returns {Nothing}
+ */
 function setMeasureType(type) {
-    clickTargetsTab();
-    if (type == 'number') { browser.$('input#id_unit_of_measure_type_0').click(); }
-    if (type == 'percent') { browser.$('input#id_unit_of_measure_type_1').click(); }
+  clickTargetsTab();
+  let element;
+  browser.pause(1000);
+  if (type == 'number') { element = browser.$('input#id_unit_of_measure_type_0'); }
+  if (type == 'percent') { element = browser.$('input#id_unit_of_measure_type_1'); }
+  element.click();
 }
 
 /**
@@ -605,8 +611,6 @@ function setNumTargetEvents(value) {
  * @returns Nothing
  */
 function setNumTargetPeriods(value) {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
   browser.$('input#id_target_frequency_num_periods').setValue(value);
 }
 
@@ -617,8 +621,6 @@ function setNumTargetPeriods(value) {
  * @returns Nothing
  */
 function setTargetFrequency(freqName) {
-  clickTargetsTab();
-
   let frequencies = ['', 'Life of Program (LoP) only',
     'Midline and endline', 'Annual', 'Semi-annual',
     'Tri-annual', 'Quarterly', 'Monthly', 'Event'];

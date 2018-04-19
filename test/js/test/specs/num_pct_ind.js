@@ -8,9 +8,9 @@ import { expect } from 'chai';
 
 /**
  * General number and percentage indicator tests
- * Tests from mc/issues/114, mc/issues/117, ms/issues/144
+ * Tests from mc/issues/114, mc/issues/117, and mc/issues/144
  */
-describe('Number indicators config and display', function() {
+describe('Defining number and percent indicators', function() {
     before(function() {
         // Disable timeouts
         this.timeout(0);
@@ -51,15 +51,13 @@ describe('Number indicators config and display', function() {
         NavBar.Indicators.click();
         IndPage.createBasicIndicator();
         TargetsTab.clickTargetsTab();
-        TargetsTab.setMeasureType('number');
-        let indType = TargetsTab.getMeasureType();
-        expect(indType == 1);
-        TargetsTab.setUnitOfMeasure('castles');
-        TargetsTab.setLoPTarget(60);
-        TargetsTab.setBaseline(61);
-        TargetsTab.setTargetFrequency('annual');
+        TargetsTab.setUnitOfMeasure('Soup per spoon');
+        TargetsTab.setLoPTarget(55);
+        TargetsTab.setBaseline(56);
+        TargetsTab.setTargetFrequency('Annual');
         TargetsTab.setFirstTargetPeriod();
-        TargetsTab.saveChanges();
+        TargetsTab.setNumTargetPeriods(2);
+        TargetsTab.saveIndicatorChanges();
         expect(false == TargetsTab.getMeasureIsCumulative());
     });
 
@@ -67,14 +65,19 @@ describe('Number indicators config and display', function() {
         NavBar.Indicators.click();
         IndPage.createBasicIndicator();
         TargetsTab.clickTargetsTab();
+        TargetsTab.setUnitOfMeasure('Ticks per tail');
         TargetsTab.setMeasureType('percent');
-        let indType = TargetsTab.getMeasureType();
-        expect(indType == 2);
+        TargetsTab.setLoPTarget(69);
+        TargetsTab.setBaseline(70);
+        TargetsTab.setTargetFrequency('Annual');
+        TargetsTab.setFirstTargetPeriod();
+        TargetsTab.setNumTargetPeriods(2);
+        TargetsTab.saveIndicatorChanges();
         expect(true == TargetsTab.getMeasureIsCumulative());
 
     });
 
-    it('should add “%” to LoP target and Baseline text boxes');
+    it('should add “%” to LoP target and Baseline fields of percentage indicators');
 
     it('should have direction of change option', function() {
         expect(TargetsTab.getDirectionOfChange() != undefined);
