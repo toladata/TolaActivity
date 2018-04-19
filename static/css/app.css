@@ -398,6 +398,12 @@ select.listoption_filters
     color: #54585A;
 }
 
+#indicator-header {
+    font-size: 21px;
+    color: #94979c;
+    margin-top: 30px;
+}
+
 /* Don't define border property here.  Assigning here prevents red border
 from being applied when there is no value */
 .periodic-target .input-value {
