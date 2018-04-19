@@ -179,6 +179,7 @@ class IPTT_ReportView(TemplateView):
 
         period_start_date = start_date
         period_end_date = period_start_date + relativedelta.relativedelta(months=num_months_in_period)
+        num_recents = num_periods - num_recents
 
         for i in range(num_recents, num_periods):
             timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
