@@ -6,11 +6,21 @@
 {% block title %}Indicator Performance Tracking Table{% endblock %}
 
 {% block content %}
-  {% include 'formlibrary/report_filter_form.html' %}
+
+<div class="filter-wrapper">
+   {% include 'formlibrary/report_filter_form.html' %}
+
 
     <div id="id_div_top_iptt_report" class="table-responsive2">
+    <div>
+      <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+              <i class="glyphicon glyphicon-align-left"></i>
+              Toggle Sidebar
+      </button>
+    </div>
         <span>{{ period }} PERIOD WILL GO HERE...</span>
         <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
+
         <table id="iptt_table"
             class="table table-sm table-bordered table-hover">
             <caption>Indicator Performance Tracking Table</caption>
@@ -98,7 +108,7 @@
             </div> <!-- modal content -->
         </div>
     </div>
-
+</div>
     <script>
         // Open the IndicatorUpdate Form in a modal
         $("#id_div_top_iptt_report").on("click", ".indicator-link", function(e) {
