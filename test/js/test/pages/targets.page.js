@@ -53,29 +53,6 @@ function clickPercentType() {
     control.click();
 }
 
-/**
- * Click the indicator name link for the specified indicator
- * to show its detail/edit screen
- * @param {string} indicatorName - The name of the indicator whose
- * detail screen you want to view
- * @returns Nothing
- */
-function clickProgramIndicator(indicatorName) {
-  let link = browser.$('=' + indicatorName);
-  link.click();
-}
-
-/**
- * Click the specified program's indicators button to toggle the corresponding
- * table of indicators
- * @param {string} programName - The program name whose indicators button
- * you want to click
- * @returns Nothing
- */
-function clickProgramIndicatorsButton(programName) {
-  IndPage.selectProgram(programName);
-}
-
 /***
  * Click the Reset button on the current form to clear any changes
  * @returns Nothing

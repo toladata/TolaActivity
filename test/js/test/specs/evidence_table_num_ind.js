@@ -1,3 +1,4 @@
+import Evidence from '../pages/evidence.page';
 import LoginPage from '../pages/login.page';
 import NavBar from '../pages/navbar.page';
 import IndPage from '../pages/indicators.page';
@@ -32,10 +33,10 @@ describe('Number indicators in the indicator evidence table', function() {
       }
     });
 
-    it('should take LoP target of NC number indicator from LoP target field', function() {
+    it('should take LoP target of NC number indicators from LoP target field', function() {
         NavBar.Indicators.click();
         IndPage.createBasicIndicator();
-        TargetsTab.setIndicatorName('Scenario 1');
+        TargetsTab.setIndicatorName('Scenario 1.1');
         TargetsTab.clickTargetsTab();
         TargetsTab.setUnitOfMeasure('Things');
         TargetsTab.setMeasureType('number');
@@ -47,11 +48,30 @@ describe('Number indicators in the indicator evidence table', function() {
         TargetsTab.saveIndicatorChanges();
 
         let reqTarget = TargetsTab.getLoPTarget();
-        let actTarget = TargetsTab.getLoPTarget();
+        let actTarget = Evidence.getLoPTarget();
         expect(reqTarget == actTarget);
     });
 
-    it('should calculate the LoP actual of NC number indicators as sum of target actuals');
-    it('should take the LoP target of a C number indicators from LoP target field');
-    it('should take the LoP actual of C number indicators from the latest target actual');
+    it('should make LoP actual of NC number indicators the sum of target actuals', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.setIndicatorName('Scenario 1.2');
+        TargetsTab.clickTargetsTab();
+        TargetsTab.setUnitOfMeasure('Things');
+        TargetsTab.setMeasureType('number');
+        TargetsTab.setLoPTarget(600);
+        TargetsTab.setBaseline(0);
+        TargetsTab.setTargetFrequency('Annual');
+        TargetsTab.setFirstTargetPeriod();
+        TargetsTab.setNumTargetPeriods(3);
+        TargetsTab.saveIndicatorChanges();
+
+        let progList = IndPage.getProgramsDropdownList();
+        let prog = progList[1];
+        IndPage.selectProgram(prog);
+        IndPage.clickProgramIndicatorsButton(prog);
+    });
+
+    it('should take LoP target of C number indicators from LoP target field');
+    it('should take LoP actual of C number indicators from the latest target actual');
 }); 
