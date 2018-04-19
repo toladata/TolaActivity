@@ -1,16 +1,10 @@
 {% extends "base.html" %}
-{% block bread_crumb %}
-<ol class="breadcrumb">
-  <li><a href="/indicators/home/{{ programId|default:0 }}/0/0/">Indicators</a></li>
-  <li class="active">Indicator Form</li>
-</ol>
-{% endblock %}
 
 {% block content %}
     <div id="numDataPoints" style="display: none;">{{ object.collecteddata_set.all.count }}</div>
     <div id="initialTargetFrequencyValue" style="display:none;">{{ object.target_frequency }}</div>
     {% if i_name %}
-    <h4 style="font-size:21px; color:#94979c; margin-bottom: 38px; margin-left: 17px; margin-top: 25px;">
+    <h4 class="mb-4 font-weight-light" style="font-size:21px; color:#94979c; margin-left: 17px; margin-top: 25px;">
         {% if indicator.level.all %}
             {{ indicator.level.all|join:', ' }} indicator:
         {% endif %}
