@@ -37,6 +37,5 @@ class IndicatorListTests(TestCase):
         view = IndicatorList.as_view()
 
         result = view(request, **data)
-        print result.content
         self.assertIn(program.name, result.content)
         self.assertIn(indicator_type.indicator_type, result.content.decode('utf-8'))

@@ -60,7 +60,21 @@ class IndicatorFactory(DjangoModelFactory):
         model = IndicatorM
 
     name = Sequence(lambda n: 'Indicator {0}'.format(n))
-    program = RelatedFactory(ProgramFactory, name=Sequence(lambda n: 'Program {0}'.format(n)))
+
+    @post_generation
+    def program(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if type(extracted) is list:
+            # A list of program were passed in, use them
+            for program in extracted:
+                self.program.add(program)
+        elif extracted:
+            self.program.add(extracted)
+        else:
+            pass
 
 
 class Objective(DjangoModelFactory):
