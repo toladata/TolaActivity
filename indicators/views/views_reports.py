@@ -220,6 +220,8 @@ class IPTT_ReportView(TemplateView):
             .annotate(**timeperiod_annotations)\
             .order_by('number', 'name')
 
+        context['start_date'] = start_date
+        context['end_date'] = end_date
         context['timeperiods'] = timeperiods
         context['indicators'] = indicators
         context['program'] = program

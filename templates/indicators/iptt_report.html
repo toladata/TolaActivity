@@ -6,24 +6,22 @@
 {% block title %}Indicator Performance Tracking Table{% endblock %}
 
 {% block content %}
-<style>
-  #lop_cols {
-	  background-color:#efede4;
-	}
-</style>
     <div id="id_div_top_iptt_report" class="table-responsive2">
-        <span>{{ period }} PERIOD WILL GO HERE...</span>
-        <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
+        <span id="id_span_iptt_date_range">
+          <strong>{{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }}</strong>
+        </span>
         <table id="iptt_table" class="table table-sm table-bordered table-hover">
             <caption>Indicator Performance Tracking Table</caption>
             <colgroup scope="col" span="9"></colgroup>
-            <colgroup scope="col" span="3" id="lop_cols"></colgroup>
+            <colgroup scope="col" span="3" class="lopCols"></colgroup>
             <colgroup scope="col" span="{{ timeperiods|length }}"></colgroup>
             <thead class="thead-light">
               <tr>
-                <td colspan="9"></td>
+                <td colspan="9" id="id_td_iptt_program_name">
+                  <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
+                </td>
                 <th scope="colgroup" colspan="3" class="text-center">
-                  Life of Program
+                  {% trans "LIFE OF PROGRAM" %}
                 </th>
                 {% for k, v in timeperiods.items %}
                   <th scope="col" class="text-center" style="min-width: 180px;">
@@ -32,20 +30,20 @@
                 {% endfor %}
               </tr>
               </tr>
-                <th scope="col" style="min-width:80px">NO.</th>
-                <th scope="col" class="td-no-side-borders" style="min-width:600px">INDICATOR</th>
+                <th scope="col" style="min-width:80px">{% trans "NO." %}</th>
+                <th scope="col" class="td-no-side-borders" style="min-width:600px">{% trans "INDICATOR" %}</th>
                 <th scope="col" class="td-no-side-borders"></th>
-                <th scope="col" style="min-width:90px">LEVEL</th>
-                <th scope="col">UNIT OF MEASURE</th>
-                <th scope="col">CHANGE</th>
-                <th scope="col" style="min-width:60px">C / NC</th>
-                <th scope="col" style="min-width:50px"># / %</th>
-                <th scope="col">BASELINE</th>
-                <th scope="col">TARGET</th>
-                <th scope="col">ACTUAL</th>
-                <th scope="col" style="min-width: 70px;">% MET</th>
-                {% for k, v in timeperiods.items %}
-                    <th scope="col" class="text-right">ACTUALS</th>
+                <th scope="col" style="min-width:90px">{% trans "LEVEL" %}</th>
+                <th scope="col">{% trans "UNIT OF MEASURE" %}</th>
+                <th scope="col">{% trans "CHANGE" %}</th>
+                <th scope="col" style="min-width:60px">{% trans "C / NC" %}</th>
+                <th scope="col" style="min-width:50px">{% trans "# / %" %}</th>
+                <th scope="col">{% trans "BASELINE" %}</th>
+                <th scope="col">{% trans "TARGET" %}</th>
+                <th scope="col">{% trans "ACTUAL" %}</th>
+                <th scope="col" style="min-width: 70px;">{% trans "% MET" %}</th>
+                {% for _ in timeperiods.items %}
+                    <th scope="col" class="text-right">{% trans "ACTUALS" %}</th>
                 {% endfor %}
               </tr>
             </thead>
@@ -110,7 +108,9 @@
                                     {% if indicator.is_cumulative == True %}
                                         <!-- if it is PERCENT and CUMULATIVE indicator then show the last data record's value -->
                                         {% with k|concat_string:"_last" as last %}
+                                          {% if indicator|hash:last is not None %}
                                             {{ indicator|hash:last|floatformat:"-2"|default_if_none:'' }}%
+                                          {% endif %}
                                         {% endwith %}
                                     {% else %}
                                         <!-- if it is a PERCENT and NON-CUMULATIVE indicator -->
