@@ -169,7 +169,7 @@ class IPTT_ReportView(TemplateView):
             num_periods += 1
         return num_periods
 
-    def _generate_timeperiods(self, start_date, period, num_periods, num_recents):
+    def _generate_timeperiods(self, period_start_date, period, num_periods, num_recents):
         """
         Create the time-periods for which data will be annotated
         """
@@ -177,14 +177,20 @@ class IPTT_ReportView(TemplateView):
         period_name = self._get_period_name(period)
         num_months_in_period = self._get_num_months(period)
 
-        period_start_date = start_date
-        period_end_date = period_start_date + relativedelta.relativedelta(months=num_months_in_period)
-        num_recents = num_periods - num_recents
+        period_end_date = period_start_date
+        # if uesr specified num_recents periods then set it to retrieve only the last N entries
+        if num_recents > 0:
+            num_recents = num_periods - num_recents
 
-        for i in range(num_recents, num_periods):
-            timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
+        for i in range(1, num_periods):
             period_start_date = period_end_date
             period_end_date = period_end_date + relativedelta.relativedelta(months=num_months_in_period)
+            # if the current iteration(period) is smaller than num_recent entreis requested by user
+            # then skip over it.
+            if i < num_recents:
+                continue
+            timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
+
         return timeperiods
 
     def get(self, request, *args, **kwargs):
@@ -192,9 +198,9 @@ class IPTT_ReportView(TemplateView):
         program_id = kwargs.get('program_id')
         period = request.GET.get('period', None)
         try:
-            num_recents = int(request.GET.get('numrecents', 1))
+            num_recents = int(request.GET.get('numrecents', 0))
         except Exception:
-            num_recents = 1
+            num_recents = 0
         program = Program.objects.get(pk=program_id)
 
         # determine the full date range of data collection for this program
