@@ -10,7 +10,7 @@ describe('Create an Indicator form', function() {
     before(function() {
         // Disable timeouts
         this.timeout(0);
-        //browser.windowHandleMaximize();
+        browser.windowHandleMaximize();
     
         let parms = util.readConfig();
         LoginPage.open(parms.baseurl);

@@ -5,11 +5,11 @@ var TargetsTab = require('../pages/targets.page.js');
 var util = require('../lib/testutil.js');
 const msec = 1000;
 
-describe('Program Indicators page', function() {
+describe('Indicator evidence dropdown', function() {
     before(function() {
         // Disable timeouts
         this.timeout(0);
-        //browser.windowHandleMaximize();
+        browser.windowHandleMaximize();
         let parms = util.readConfig();
         
         LoginPage.open(parms.baseurl);
@@ -26,7 +26,6 @@ describe('Program Indicators page', function() {
         }
     });
   
-  describe('Indicator evidence dropdown', function() {
     it('should be able to view PI evidence table by clicking its Data button');
     it('should decrease evidence count when PI evidence deleted');
     it('should increase evidence count when PI evidence added');
@@ -38,5 +37,4 @@ describe('Program Indicators page', function() {
     it('should be able to delete evidence line item by clicking its Delete button');
     it('should be able to add evidence line item by clicking the New Data button');
     it('should open blank Collected Data form when the New Data button is clicked');
-  });
 });

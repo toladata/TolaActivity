@@ -35,6 +35,7 @@ test/js/allure-results/
 test/js/allure-report/
 
 #allvritualenv
+.env/
 venv/
 venv-ta/
 
@@ -43,6 +44,7 @@ conf/awstats.conf
 
 #Misc.
 .idea/
+.vscode/
 .DS_Store
 media/
 client_secrets.json
@@ -54,3 +56,5 @@ error.log
 settings.secret.yml
 assets/
 templates/links.html
+coverage_html
+.coverage

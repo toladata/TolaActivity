@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from .views import (
+from .views.views_indicators import (
     indicator_create,
     CollectedDataList,
     CollectedDataCreate,
@@ -30,15 +30,13 @@ from .views import (
     DisaggregationPrint
 )
 
-from .views_reports import IPTTReportQuickstartView, IPTT_ReportView
+from .views.views_reports import IPTTReportQuickstartView, IPTT_ReportView
 
 urlpatterns = [
     url(r'^home/(?P<program>\d+)/(?P<indicator>\d+)/(?P<type>\d+)/$',
         IndicatorList.as_view(), name='indicator_list'),
 
-    url(r'^indicator_list/(?P<pk>\d+)/$', IndicatorList.as_view(),
-        name='indicator_list'),
-
+    # where "id" is the primary key of an existing program
     url(r'^indicator_create/(?P<id>\d+)/$', indicator_create,
         name='indicator_create'),
 
@@ -150,7 +148,5 @@ urlpatterns = [
     url(r'^iptt_quickstart/', IPTTReportQuickstartView.as_view(),
         name='iptt_quickstart'),
 
-    url(r'^iptt_report/(?P<program_id>\d+)/(?P<reporttype>\w+)/$',
-        IPTT_ReportView.as_view(),
-        name='iptt_report'),
+    url(r'^iptt_report/(?P<program_id>\d+)/(?P<reporttype>\w+)/$', IPTT_ReportView.as_view(), name='iptt_report'),
 ]

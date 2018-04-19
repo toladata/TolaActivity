@@ -1,6 +1,6 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation
+    SubFactory, post_generation, Sequence
 
 import random
 
@@ -20,10 +20,10 @@ from workflow.models import (
     TolaUser as TolaUserM,
     Program as ProgramM,
 )
-from .django_models import User, Group, Site
+from .django_models import UserFactory, Group, Site
 
 
-class Country(DjangoModelFactory):
+class CountryFactory(DjangoModelFactory):
     class Meta:
         model = CountryM
         django_get_or_create = ('code',)
@@ -40,10 +40,10 @@ class Contact(DjangoModelFactory):
     city = 'Kabul'
     email = lazy_attribute(lambda o: slugify(o.name) + "@external-contact.com")
     phone = '+93 555444333'
-    country = SubFactory(Country)
+    country = SubFactory(CountryFactory)
 
 
-class Organization(DjangoModelFactory):
+class OrganizationFactory(DjangoModelFactory):
     class Meta:
         model = OrganizationM
 
@@ -57,24 +57,23 @@ class SiteProfile(DjangoModelFactory):
     name = 'MC Site'
 
 
-class TolaUser(DjangoModelFactory):
+class TolaUserFactory(DjangoModelFactory):
     class Meta:
         model = TolaUserM
         django_get_or_create = ('user',)
 
-    user = SubFactory(User)
+    user = SubFactory(UserFactory)
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
-    organization = SubFactory(Organization)
-    country = SubFactory(Country, country='United States', code='US')
+    organization = SubFactory(OrganizationFactory)
+    country = SubFactory(CountryFactory, country='United States', code='US')
 
 
-
-
-class Program(DjangoModelFactory):
+class ProgramFactory(DjangoModelFactory):
     class Meta:
         model = ProgramM
 
     name = 'Health and Survival for Syrians in Affected Regions'
+    gaitid = Sequence(lambda n: "%0030d" % n)
 
     @post_generation
     def country(self, create, extracted, **kwargs):
@@ -87,7 +86,7 @@ class Program(DjangoModelFactory):
             for country in extracted:
                 self.country.add(country)
         else:
-            self.country.add(Country(country='Syria', code='SY'))
+            self.country.add(CountryFactory(country='Syria', code='SY'))
 
 
 class Documentation(DjangoModelFactory):
@@ -95,7 +94,7 @@ class Documentation(DjangoModelFactory):
         model = DocumentationM
 
     name = 'Strengthening access and demand in Mandera County'
-    program = SubFactory(Program)
+    program = SubFactory(ProgramFactory)
 
 
 class Sector(DjangoModelFactory):
@@ -110,7 +109,7 @@ class Stakeholder(DjangoModelFactory):
         model = StakeholderM
 
     name = 'Stakeholder A'
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
 
     @post_generation
     def program(self, create, extracted, **kwargs):
@@ -129,7 +128,7 @@ class FundCode(DjangoModelFactory):
         model = FundCodeM
 
     name = 'Fund Code A'
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
 
 
 class ProjectType(DjangoModelFactory):

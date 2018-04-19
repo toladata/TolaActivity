@@ -9,10 +9,7 @@ def read_yaml(path):
     return data
 
 SETTINGS_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_DIR = os.path.abspath(os.path.join(SETTINGS_DIR,
-                                          os.pardir,
-                                          os.pardir,
-                                          'config'))
+CONFIG_DIR = os.path.abspath(os.path.join(SETTINGS_DIR, os.pardir, os.pardir, 'config'))
 app_settings = read_yaml(os.path.join(CONFIG_DIR, 'settings.secret.yml'))
 
 # MANAGER CONFIGURATION
@@ -101,5 +98,3 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8000',
     'http://localhost:8000',
 )
-
-

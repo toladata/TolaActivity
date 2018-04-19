@@ -7,7 +7,7 @@ import NavBar from '../pages/navbar.page';
 describe('TolaActivity Dashboard', function() {
     before(function() {
         this.timeout(0);
-        //browser.windowHandleMaximize();
+        browser.windowHandleMaximize();
         let parms = Util.readConfig();
 
         LoginPage.open(parms.baseurl); 

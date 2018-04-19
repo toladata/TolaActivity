@@ -1,4 +1,4 @@
-# [Tola Activity](http://toladata.com/products/activity/)
+# Tola Activity
 ### The build status of the bootstrap4 branch is:
 [![Build Status](https://travis-ci.org/mercycorps/TolaActivity.svg?branch=bootstrap4)](https://travis-ci.org/mercycorps/TolaActivity)
 
@@ -15,7 +15,7 @@ excel files.
 Running a local instance of TolaActivity makes development much faster and
 eliminates your dependence on access to any of MC's TolaActivity instances.
 These instructions should get you up and running with a minimum of fuss if
-you have [macOS](#macos) or one of the man [Ubunten](#ubunten). If they do
+you have [macOS](#macos) or one of the many [Ubunten](#ubuntu). If they do
 not, pull requests accepted.
 
 ## Install the bits
@@ -50,13 +50,13 @@ Edit the configuration file as described in
 
 On Ubuntu and its derivatives, Python 2 is the default, so the
 following should get you going on any current Python 2 version for most
-Ubuntu-family distros (_Ubuntu_):
+Ubuntu-family distros (_Ubunten_):
 
 ```bash
 $ python --version
 $ # Make sure output from above indicates Python 2
 $ sudo apt install mysql-server libmysqld-dev mysql-utilities mysql-client
-$ sudo apt-get install libsasl2-dev python-dev libldap2-dev libssl-dev
+$ sudo apt install libsasl2-dev python-dev libldap2-dev libssl-dev
 $ git clone https://github.com/mercycorps.org/TolaActivity.git
 $ git checkout dev
 $ virtualenv TolaActivty --no-site-packages
@@ -156,7 +156,7 @@ for this bug until the bug is well and truly crushed.
    user table:
 
     ```bash
-    mysql> select id,username,first_name,last_name from auth_user;
+    mysql> SELECT id,username,first_name,last_name FROM auth_user;
     +----+----------+------------+-----------+
     | id | username | first_name | last_name |
     +----+----------+------------+-----------+
