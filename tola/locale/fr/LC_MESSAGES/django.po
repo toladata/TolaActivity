@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-17 13:05-0700\n"
+"POT-Creation-Date: 2018-04-18 09:32-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: indicators/forms.py:115 indicators/forms.py:159 indicators/models.py:101
+#: indicators/models.py:525 indicators/models.py:755
+#: templates/indicators/collecteddata_list.html:126
+#: templates/indicators/data_report.html:100
+#: templates/indicators/indicator_create.html:82
+#: templates/indicators/report.html:98 workflow/models.py:173
+#: workflow/models.py:343 workflow/models.py:904 workflow/models.py:1060
+#: workflow/models.py:1166
+msgid "Program"
+msgstr "Programme"
+
+#: indicators/forms.py:120 indicators/forms.py:168 indicators/models.py:568
+#: indicators/models.py:647 indicators/models.py:740
+#: templates/indicators/collecteddata_list.html:127
+#: templates/indicators/disaggregation_print.html:52
+#: templates/indicators/disaggregation_report.html:31
+#: templates/indicators/report.html:99 templates/indicators/tva_print.html:48
+#: templates/indicators/tva_report.html:27
+msgid "Indicator"
+msgstr "Indicateurs"
+
+#: indicators/forms.py:142 workflow/models.py:1165
+msgid "Project"
+msgstr "Projet"
+
+#: indicators/forms.py:178
+msgid "Measure against target*"
+msgstr "Mesurer par rapport à la cible"
+
+#: indicators/forms.py:179
+msgid "Actual value"
+msgstr "Valeur actuelle"
 
 #: indicators/forms.py:194
 msgid "Years"
@@ -138,16 +171,6 @@ msgstr "Type d'indicateur"
 #: templates/indicators/grid_report.html:27
 msgid "Strategic Objectives"
 msgstr "Objectifs stratégiques"
-
-#: indicators/models.py:101 indicators/models.py:525 indicators/models.py:755
-#: templates/indicators/collecteddata_list.html:126
-#: templates/indicators/data_report.html:100
-#: templates/indicators/indicator_create.html:82
-#: templates/indicators/report.html:98 workflow/models.py:173
-#: workflow/models.py:343 workflow/models.py:904 workflow/models.py:1060
-#: workflow/models.py:1166
-msgid "Program"
-msgstr "Programme"
 
 #: indicators/models.py:108
 msgid "Objective"
@@ -447,15 +470,6 @@ msgstr "ID de Service Externe"
 msgid "Notes"
 msgstr "Commentaire"
 
-#: indicators/models.py:568 indicators/models.py:647 indicators/models.py:740
-#: templates/indicators/collecteddata_list.html:127
-#: templates/indicators/disaggregation_print.html:52
-#: templates/indicators/disaggregation_report.html:31
-#: templates/indicators/report.html:99 templates/indicators/tva_print.html:48
-#: templates/indicators/tva_report.html:27
-msgid "Indicator"
-msgstr "Indicateurs"
-
 #: indicators/models.py:629
 msgid "#"
 msgstr "#"
@@ -678,7 +692,7 @@ msgstr "En attendant"
 
 #: templates/index.html:54
 msgid "Awaiting Approval"
-msgstr "En attente d'approbation"
+msgstr "En attente d`approbation"
 
 #: templates/index.html:58
 msgid "Open"
@@ -1012,7 +1026,8 @@ msgid "Existing Standard Disaggregations"
 msgstr "Désagrégations standard existantes"
 
 #: templates/indicators/collecteddata_form_modal.html:340
-#: templates/indicators/indicator_form_helper.html:475
+#: templates/indicators/indicator_form_helper.html:475 tola/forms.py:44
+#: tola/forms.py:122
 msgid "Reset"
 msgstr "réinitialiser"
 
@@ -1721,6 +1736,10 @@ msgstr "Merci de compléter ce champ"
 #: templates/workflow/documentation_form.html:145
 msgid "Please enter a valid URL."
 msgstr "Veuillez entrer une URL valide"
+
+#: tola/forms.py:43 tola/forms.py:121
+msgid "Submit"
+msgstr "Envoyer"
 
 #: tola/settings/base.py:89
 msgid "French"
@@ -2756,10 +2775,6 @@ msgstr "Suivi de projet"
 #: workflow/models.py:1161
 msgid "URL (Link to document or document repository)"
 msgstr "URL (lien vers le référentiel de documents ou de documents)"
-
-#: workflow/models.py:1165
-msgid "Project"
-msgstr "Projet"
 
 #: workflow/models.py:1204
 #, fuzzy, python-format

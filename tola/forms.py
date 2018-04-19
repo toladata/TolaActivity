@@ -6,6 +6,7 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from workflow.models import TolaUser, TolaBookmarks
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
 
 
@@ -39,8 +40,8 @@ class RegistrationForm(UserChangeForm):
     helper.html5_required = True
     helper.layout = Layout(Fieldset('','title', 'name', 'employee_number', 'user', 'username',
                                     'country', 'countries','modified_by','created','updated'),
-                           Submit('submit', 'Submit', css_class='btn-default'),
-                           Reset('reset', 'Reset', css_class='btn-warning'))
+                           Submit('submit', _('Submit'), css_class='btn-default'),
+                           Reset('reset', _('Reset'), css_class='btn-warning'))
 
 
 class NewUserRegistrationForm(UserCreationForm):
@@ -117,7 +118,7 @@ class BookmarkForm(forms.ModelForm):
     helper.form_tag = True
     helper.layout = Layout(
         Fieldset('','name','bookmark_url'),
-        Submit('submit', 'Submit', css_class='btn-default'),
-        Reset('reset', 'Reset', css_class='btn-warning'))
+        Submit('submit', _('Submit'), css_class='btn-default'),
+        Reset('reset', _('Reset'), css_class='btn-warning'))
 
 

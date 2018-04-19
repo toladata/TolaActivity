@@ -112,12 +112,12 @@ class CollectedDataForm(forms.ModelForm):
 
     program2 = forms.CharField(
         widget=forms.TextInput(
-            attrs={'readonly': 'readonly', 'label': 'Program'}
+            attrs={'readonly': 'readonly', 'label': _('Program')}
         )
     )
     indicator2 = forms.CharField(
         widget=forms.TextInput(
-            attrs={'readonly': 'readonly', 'label': 'Indicator'}
+            attrs={'readonly': 'readonly', 'label': _('Indicator')}
         )
     )
     target_frequency = forms.CharField()
@@ -139,7 +139,7 @@ class CollectedDataForm(forms.ModelForm):
         # override the program queryset to use request.user for country
         self.fields['complete'].queryset = ProjectComplete.objects\
             .filter(program=self.program)
-        self.fields['complete'].label = "Project"
+        self.fields['complete'].label = _("Project")
 
         # override the program queryset to use request.user for country
         countries = getCountry(self.request.user)
@@ -156,7 +156,7 @@ class CollectedDataForm(forms.ModelForm):
             .order_by('customsort', 'create_date', 'period')
 
         self.fields['program2'].initial = self.program
-        self.fields['program2'].label = "Program"
+        self.fields['program2'].label = _("Program")
 
         try:
             int(self.indicator)
@@ -165,7 +165,7 @@ class CollectedDataForm(forms.ModelForm):
             pass
 
         self.fields['indicator2'].initial = self.indicator.name
-        self.fields['indicator2'].label = "Indicator"
+        self.fields['indicator2'].label = _("Indicator")
         self.fields['program'].widget = forms.HiddenInput()
         self.fields['indicator'].widget = forms.HiddenInput()
         self.fields['target_frequency'].initial = self.indicator\
@@ -175,8 +175,8 @@ class CollectedDataForm(forms.ModelForm):
             .filter(country__in=countries)
         self.fields['tola_table'].queryset = TolaTable.objects\
             .filter(Q(owner=self.request.user) | Q(id=self.tola_table))
-        self.fields['periodic_target'].label = 'Measure against target*'
-        self.fields['achieved'].label = 'Actual value'
+        self.fields['periodic_target'].label = _('Measure against target*')
+        self.fields['achieved'].label = _('Actual value')
         self.fields['date_collected'].help_text = ' '
 
 

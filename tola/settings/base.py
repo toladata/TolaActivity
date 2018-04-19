@@ -77,7 +77,7 @@ SITE_ID = 1
 USE_I18N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-l10n
-USE_L10N = False
+USE_L10N = True
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
 USE_TZ = True
@@ -86,10 +86,10 @@ DATE_FORMAT = 'Y-n-d'
 
 # Add list of languages available for selection.
 LANGUAGES = [
+    ('en', _('English')),
     ('fr', _('French')),
     ('es', _('Spanish')),
     ('ar', _('Arabic')),
-    ('en', _('English')),
 ]
 
 ########## END GENERAL CONFIGURATION
