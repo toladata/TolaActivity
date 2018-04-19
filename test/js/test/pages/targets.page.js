@@ -626,6 +626,7 @@ function setTargetFrequency(freqName) {
     'Tri-annual', 'Quarterly', 'Monthly', 'Event'];
   let freqValue = frequencies.indexOf(freqName);
   let targetFreq = $('select#id_target_frequency');
+  browser.scroll('select#id_target_frequency');
   targetFreq.selectByValue(freqValue);
 }
 
