@@ -3,7 +3,7 @@ from random import randint
 import faker
 from django.utils import timezone
 from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy, \
-    lazy_attribute, Sequence, RelatedFactory
+    lazy_attribute
 
 from indicators.models import (
     CollectedData as CollectedDataM,
@@ -59,7 +59,7 @@ class IndicatorFactory(DjangoModelFactory):
     class Meta:
         model = IndicatorM
 
-    name = Sequence(lambda n: 'Indicator {0}'.format(n))
+    name = 'Building resilience in Mali'
 
     @post_generation
     def program(self, create, extracted, **kwargs):
@@ -67,14 +67,12 @@ class IndicatorFactory(DjangoModelFactory):
             # Simple build, do nothing.
             return
 
-        if type(extracted) is list:
-            # A list of program were passed in, use them
-            for program in extracted:
-                self.program.add(program)
-        elif extracted:
-            self.program.add(extracted)
-        else:
-            pass
+        if type(extracted) is not list:
+            extracted = [extracted]
+
+        # A list of program were passed in, use them
+        for program in extracted:
+            self.program.add(program)
 
 
 class Objective(DjangoModelFactory):
@@ -84,20 +82,20 @@ class Objective(DjangoModelFactory):
     name = 'Get Tola rocking!'
 
 
-class LevelFactory(DjangoModelFactory):
+class Level(DjangoModelFactory):
     class Meta:
         model = LevelM
 
-    name = Sequence(lambda n: 'Level: {0}'.format(n))
+    name = 'Output'
+    program = SubFactory(ProgramFactory)
 
 
-class CollectedDataFactory(DjangoModelFactory):
+class CollectedData(DjangoModelFactory):
     class Meta:
         model = CollectedDataM
 
     program = SubFactory(ProgramFactory)
     indicator = SubFactory(IndicatorFactory)
-    achieved = 10
 
 
 class IndicatorTypeFactory(DjangoModelFactory):
@@ -105,21 +103,20 @@ class IndicatorTypeFactory(DjangoModelFactory):
         model = IndicatorTypeM
         django_get_or_create = ('indicator_type',)
 
-    indicator_type = Sequence(lambda n: 'Indicator Type {0}'.format(n))
+    indicator_type = fuzzy.FuzzyText()
 
 
 class ExternalServiceFactory(DjangoModelFactory):
     class Meta:
         model = ExternalServiceM
 
-    name = Sequence(lambda n: 'External Service {0}'.format(n))
-
+    name = 'External Service A'
 
 class StrategicObjective(DjangoModelFactory):
     class Meta:
         model = StrategicObjectiveM
 
-    name = Sequence(lambda n: 'Stratigic Objective {0}'.format(n))
+    name = 'Strategic Objective A'
 
 
 class PeriodicTarget(DjangoModelFactory):
