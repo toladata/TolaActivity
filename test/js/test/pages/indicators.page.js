@@ -103,7 +103,7 @@ function clickProgramIndicator(indicatorName) {
  * @returns Nothing
  */
 function clickProgramIndicatorsButton(programName) {
-  IndPage.selectProgram(programName);
+  selectProgram(programName);
 }
 
 

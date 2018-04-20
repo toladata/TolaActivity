@@ -624,8 +624,6 @@ function setUnitOfMeasure(unit) {
 exports.addTarget = addTarget;
 exports.clickNumberType = clickNumberType;
 exports.clickPercentType = clickPercentType;
-exports.clickProgramIndicator = clickProgramIndicator;
-exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;
 exports.clickTargetsTab = clickTargetsTab;
 exports.clickDirectionOfChange = clickDirectionOfChange;
