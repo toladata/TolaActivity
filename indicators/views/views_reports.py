@@ -218,7 +218,7 @@ class IPTT_ReportView(TemplateView):
         num_months_in_period = self._get_num_months(period)
 
         # convert datetime to date object to avoid timezone issues in templates
-        period_start_date = period_start_date.date()
+        period_start_date = period_start_date.date() + relativedelta(days=-1)
 
         # if uesr specified num_recents periods then set it to retrieve only the last N entries
         if num_recents > 0:
@@ -228,18 +228,18 @@ class IPTT_ReportView(TemplateView):
 
             if i == 1:
                 # deal with special cases for the first time
-                num_months_in_period = num_months_in_period + 1
-                if num_months_in_period >= 12:
-                    num_months_in_period = 12
+                # num_months_in_period = num_months_in_period + 1
+                # if num_months_in_period >= 12:
+                #     num_months_in_period = 12
 
                 period_end_date = period_start_date + \
-                    relativedelta(months=+num_months_in_period) + relativedelta(days=-1)
+                    relativedelta(months=+num_months_in_period) # + relativedelta(days=-1)
 
-                if period_end_date.year > period_start_date.year:
-                    period_end_date = period_end_date + relativedelta(months=-1)
+                # if period_end_date.year > period_start_date.year:
+                #     period_end_date = period_end_date + relativedelta(months=-1)
 
-                if num_months_in_period < 12:
-                    num_months_in_period = num_months_in_period - 1
+                # if num_months_in_period < 12:
+                #     num_months_in_period = num_months_in_period - 1
 
             elif i > 1:
                 # num_months_in_period = num_months_in_period - 1
