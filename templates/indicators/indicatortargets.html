@@ -5,7 +5,7 @@
 {% if periodic_targets and indicator.target_frequency != 1%}
     <div class="d-flex flex-column p-4 inputs-in-a-box" style="margin-left:-15px; margin-right:-15px;">
         <div class="col-sm-11 mx-auto">
-            <h5>{{ indicator.get_target_frequency_label }} { trans "targets" %}</h5>
+            <h5>{{ indicator.get_target_frequency_label }} {% trans "targets" %}</h5>
         </div>
         <div id="periodic-targets-tablediv" class="col-sm-11 mx-auto">
             <table class="table table-sm mb-0" id="periodic_targets_table">

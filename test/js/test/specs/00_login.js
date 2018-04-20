@@ -1,7 +1,6 @@
 import { expect } from 'chai';
-import util from '../lib/testutil';
+import Util from '../lib/testutil';
 import LoginPage from '../pages/login.page';
-import reporter from 'wdio-allure-reporter';
 
 describe('TolaActivity Login screen', function() {
     before(function() {
@@ -10,7 +9,7 @@ describe('TolaActivity Login screen', function() {
     });
 
     it('should deny access if username is invalid', function() {
-        let parms = util.readConfig();
+        let parms = Util.readConfig();
         // inject bogus username
         parms.username = 'HorseWithNoName';
 
@@ -30,7 +29,7 @@ describe('TolaActivity Login screen', function() {
     });
 
     it('should deny access if password is invalid', function() {
-        let parms = util.readConfig();
+        let parms = Util.readConfig();
         // Inject bogus password
         parms.password = 'ThisBetterFail';
 
@@ -51,7 +50,7 @@ describe('TolaActivity Login screen', function() {
     });
 
     it('should require unauthenticated user to authenticate', function() {
-        let parms = util.readConfig();
+        let parms = Util.readConfig();
 
         LoginPage.open(parms.baseurl);
         if (parms.baseurl.includes('mercycorps.org')) {
