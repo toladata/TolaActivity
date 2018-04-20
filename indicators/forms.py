@@ -243,8 +243,8 @@ class IPTTReportFilterForm(ReportFormCommon):
     level = forms.ModelChoiceField(queryset=Level.objects.none(), required=False, label='LEVEL')
     ind_type = forms.ModelChoiceField(queryset=IndicatorType.objects.none(), required=False, label='TYPE')
     sector = forms.ModelChoiceField(queryset=Sector.objects.none(), required=False, label='SECTOR')
-    site = forms.ModelChoiceField(queryset=SiteProfile.objects.none(), required=False, label='SITE')
-    indicators = forms.ModelChoiceField(queryset=Indicator.objects.none(), required=False, label='SELECT INDICATORS')
+    site = forms.ChoiceField(choices=(), required=False, label='SITE')
+    indicators = forms.ChoiceField(choices=(), required=False, label='SELECT INDICATORS')
     start_date = forms.DateField(label='START')
     end_date = forms.DateField(label='END')
 
@@ -256,8 +256,8 @@ class IPTTReportFilterForm(ReportFormCommon):
         self.fields['sector'].queryset = Sector.objects.all()
         self.fields['level'].queryset = Level.objects.all()
         self.fields['ind_type'].queryset = IndicatorType.objects.all()
-        self.fields['site'].queryset = SiteProfile.objects.all()
-        self.fields['indicators'].queryset = Indicator.objects.all()
+        self.fields['site'].choices = list(SiteProfile.objects.values_list('id', 'name'))
+        self.fields['indicators'].choices = list(Indicator.objects.values_list('id', 'name'))
 
 
 
