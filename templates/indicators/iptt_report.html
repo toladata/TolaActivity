@@ -1,12 +1,11 @@
-{% extends "base.html" %}
+{% extends "iptt_base.html" %}
 {% load widget_tweaks %}
 {% load i18n %}
 {% load mytags %}
 {% block content %}
-<div class="container-fluid" style="margin-left: -71px; margin-top: -16px">
-    <div class="row d-flex d-md-block flex-nowrap wrapper">
+    <div class="row d-flex d-md-block flex-nowrap wrapper" style="margin-left: 0px">
         <div class="col-md-3 float-left col-1 pl-0 pr-0 collapse width show" id="sidebar">
-          {% include 'formlibrary/report_filter_form.html' %}
+          {% include 'indicators/iptt_filter_form.html' %}
         </div>
         <main class="col-md-9 float-left col px-5 pl-md-2 pt-2 main">
             <a href="#" data-target="#sidebar" data-toggle="collapse"><i class="fa fa-navicon fa-2x py-2 p-1"></i></a>
@@ -161,5 +160,4 @@
     {% include 'indicators/indicator_form_common_js.html' %}
         </main>
     </div>
-</div>
 {% endblock content %}

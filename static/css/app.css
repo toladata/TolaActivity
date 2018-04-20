@@ -462,19 +462,38 @@ input[type=number]::-webkit-outer-spin-button {
     display: flex;
 }
 
+
 #filter-top {
-    background-color: #343a40!important;
-    color:#ffffff80;
+    background-color: #54585A!important;
+    color:#fff;
+    margin-bottom: -20px;
 
 }
 
+#filter-middle {
+    background-color: #DBDCDE;
+    color: #54585A;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding-bottom: 4px;
+}
+
 #filter-bottom {
-    background-color: #343a40!important;
-    color:#ffffff80;
+    background-color: #54585A!important;
+    color:#fff;
     font-size: smaller;
     height: 20vh;
-    margin: auto;
+    margin-top: -16px;
+    padding-top: 10px;
+}
 
+.filter-form-label{
+    font-size: .010rem;
+}
+
+#id_iptt_report_filter {
+    min-width: 330px;
+    max-width: 330px;
 }
 
 
