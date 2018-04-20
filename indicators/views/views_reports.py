@@ -1,5 +1,7 @@
+import bisect
 from collections import OrderedDict
-from dateutil import rrule, relativedelta
+from dateutil import rrule
+from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Sum, Avg, Subquery, OuterRef, Case, When, Q, F, Min, Max
@@ -87,13 +89,24 @@ class IPTTReportQuickstartView(FormView):
 
 class IPTT_ReportView(TemplateView):
     template_name = 'indicators/iptt_report.html'
+    MONTHS_PER_MONTH = 1
+    MONTHS_PER_QUARTER = 3
+    MONTHS_PER_TRIANNUAL = 4
+    MONTHS_PER_SEMIANNUAL = 6
+    MONTHS_PER_YEAR = 12
 
     @staticmethod
     def _get_num_months(period):
         """
         Returns the number of months for a given time-period
         """
-        return {'1': 12, '2': 6, '3': 4, '4': 3, '5': 1}[period]
+        return {
+            '1': IPTT_ReportView.MONTHS_PER_YEAR,
+            '2': IPTT_ReportView.MONTHS_PER_SEMIANNUAL,
+            '3': IPTT_ReportView.MONTHS_PER_TRIANNUAL,
+            '4': IPTT_ReportView.MONTHS_PER_QUARTER,
+            '5': IPTT_ReportView.MONTHS_PER_MONTH
+            }[period]
 
     @staticmethod
     def _get_period_name(period):
@@ -107,6 +120,33 @@ class IPTT_ReportView(TemplateView):
             '4': 'Quarter',
             '5': 'Month'
         }[period]
+
+    def _get_first_period(self, start_date, num_months_in_period):
+        if num_months_in_period == IPTT_ReportView.MONTHS_PER_MONTH:
+            # if interval is monthly, set the start_date to the first of the month
+            period_start_date = start_date.replace(day=1)
+        elif num_months_in_period == IPTT_ReportView.MONTHS_PER_QUARTER:
+            # if interval is quarterly, set period_start_date to first calendar quarter
+            quarter_start = [start_date.replace(month=month, day=1) for month in (1, 4, 7, 10)]
+            index = bisect.bisect(quarter_start, start_date)
+            period_start_date = quarter_start[index-1]
+        elif num_months_in_period == IPTT_ReportView.MONTHS_PER_TRIANNUAL:
+            # if interval is tri-annual, set period_start_date to first calendar tri-annual
+            tri_annual_start = [start_date.replace(month=month, day=1) for month in (1, 5, 9)]
+            index = bisect.bisect(tri_annual_start, start_date)
+            period_start_date = tri_annual_start[index-1]
+        elif num_months_in_period == IPTT_ReportView.MONTHS_PER_SEMIANNUAL:
+            # if interval is semi-annual, set period_start_date to first calendar semi-annual
+            semi_annual = [start_date.replace(month=month, day=1) for month in (1, 6)]
+            index = bisect.bisect(semi_annual, start_date)
+            period_start_date = semi_annual[index-1]
+        elif num_months_in_period == IPTT_ReportView.MONTHS_PER_YEAR:
+            # if interval is annual, set period_start_date to first calendar year
+            period_start_date = start_date.replace(month=1, day=1)
+        else:
+            period_start_date = None
+
+        return period_start_date
 
     def _generate_timperiod_annotations(self, timeperiods):
         """
@@ -177,18 +217,41 @@ class IPTT_ReportView(TemplateView):
         period_name = self._get_period_name(period)
         num_months_in_period = self._get_num_months(period)
 
-        period_end_date = period_start_date
+        # convert datetime to date object to avoid timezone issues in templates
+        period_start_date = period_start_date.date()
+
         # if uesr specified num_recents periods then set it to retrieve only the last N entries
         if num_recents > 0:
             num_recents = num_periods - num_recents
 
         for i in range(1, num_periods):
-            period_start_date = period_end_date
-            period_end_date = period_end_date + relativedelta.relativedelta(months=num_months_in_period)
-            # if the current iteration(period) is smaller than num_recent entreis requested by user
-            # then skip over it.
+
+            if i == 1:
+                # deal with special cases for the first time
+                num_months_in_period = num_months_in_period + 1
+                if num_months_in_period >= 12:
+                    num_months_in_period = 12
+
+                period_end_date = period_start_date + \
+                    relativedelta(months=+num_months_in_period) + relativedelta(days=-1)
+
+                if period_end_date.year > period_start_date.year:
+                    period_end_date = period_end_date + relativedelta(months=-1)
+
+                if num_months_in_period < 12:
+                    num_months_in_period = num_months_in_period - 1
+
+            elif i > 1:
+                # num_months_in_period = num_months_in_period - 1
+                period_start_date = period_end_date + relativedelta(days=+1)
+
+                period_end_date = period_start_date + \
+                    relativedelta(months=+num_months_in_period) + relativedelta(days=-1)
+
+            # do not include periods that are earlier than most_recent specified by user
             if i < num_recents:
                 continue
+            print('{}....{}...{}'.format(num_months_in_period, period_start_date, period_end_date))
             timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
 
         return timeperiods
@@ -212,7 +275,11 @@ class IPTT_ReportView(TemplateView):
         #  find out the total number of periods (quarters, months, years, or etc) for this program
         num_periods = self._get_num_periods(start_date, end_date, period)
 
-        timeperiods = self._generate_timeperiods(start_date, period, num_periods, num_recents)
+        num_months_in_period = self._get_num_months(period)
+        period_start_date = self._get_first_period(start_date, num_months_in_period)
+        print('.start_date={}..num_months_in_period={}.....period_start_date={}..'.format(start_date, num_months_in_period, period_start_date))
+
+        timeperiods = self._generate_timeperiods(period_start_date, period, num_periods, num_recents)
         timeperiod_annotations = self._generate_timperiod_annotations(timeperiods)
 
         # calculate aggregated actuals (sum, avg, last) per reporting period
