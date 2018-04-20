@@ -328,7 +328,7 @@ ul.paginate li a:hover:not(.active) {background-color: #ddd;}
   float: right;
 }
 /* Keep the picker on top of other elements */
-.ui-datepicker{z-index: 10000 !important}
+.ui-datepicker{z-index: 10000 !important};
 
 /*Indicator line graph with slider*/
 .clear-fix
@@ -453,30 +453,4 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-
-/* Hidable side bar filter */
-
-.filter-wrapper {
-    display: flex;
-}
-
-#id_iptt_report_filter {
-    min-width: 250px;
-    max-width: 250px;
-    height: 300vh;
-}
-
-#id_iptt_report_filter.active {
-    margin-left: -315px;
-}
-
-@media (max-width: 768px) {
-    #id_iptt_report_filter {
-        margin-left: -315px;
-    }
-    #id_iptt_report_filter.active {
-        margin-left: 0;
-    }
 }

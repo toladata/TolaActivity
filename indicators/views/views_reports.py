@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
 from ..models import Indicator, CollectedData, Level
-from ..forms import IPTTReportQuickstartForm, IPTTReportFilterForm
+from ..forms import IPTTReportQuickstartForm
 
 
 class IPTTReportQuickstartView(FormView):
@@ -34,9 +34,8 @@ class IPTTReportQuickstartView(FormView):
     def post(self, request, *args, **kwargs):
         targetprefix = request.POST.get('%s-formprefix' % self.FORM_PREFIX_TARGET)
         timeprefix = request.POST.get('%s-formprefix' % self.FORM_PREFIX_TIME)
-        prefix = None
 
-        # populate the correct form with POST data
+        # set prefix to the current form
         if targetprefix is not None:
             prefix = targetprefix
         else:
@@ -194,7 +193,7 @@ class IPTT_ReportView(TemplateView):
 
         return timeperiods
 
-    def _generate_context(self, request, **kwargs):
+    def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         program_id = kwargs.get('program_id')
         period = request.GET.get('period', None)
@@ -205,7 +204,7 @@ class IPTT_ReportView(TemplateView):
         program = Program.objects.get(pk=program_id)
 
         # determine the full date range of data collection for this program
-        data_date_range = Indicator.objects.filter(program__in=[program_id]) \
+        data_date_range = Indicator.objects.filter(program__in=[program_id])\
             .aggregate(sdate=Min('collecteddata__date_collected'), edate=Max('collecteddata__date_collected'))
         start_date = data_date_range['sdate']
         end_date = data_date_range['edate']
@@ -220,17 +219,17 @@ class IPTT_ReportView(TemplateView):
         # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
         lastlevel = Level.objects.filter(indicator__id=OuterRef('pk')).order_by('-id')
         last_data_record = CollectedData.objects.filter(indicator=OuterRef('pk')).order_by('-id')
-        indicators = Indicator.objects.filter(program__in=[program_id]) \
+        indicators = Indicator.objects.filter(program__in=[program_id])\
             .annotate(actualsum=Sum('collecteddata__achieved'),
                       actualavg=Avg('collecteddata__achieved'),
                       lastlevel=Subquery(lastlevel.values('name')[:1]),
                       lastdata=Subquery(last_data_record.values('achieved')[:1]),
                       mincollected_date=Min('collecteddata__date_collected'),
-                      maxcollected_date=Max('collecteddata__date_collected')) \
+                      maxcollected_date=Max('collecteddata__date_collected'))\
             .values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
                     'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
-                    'lastdata') \
-            .annotate(**timeperiod_annotations) \
+                    'lastdata')\
+            .annotate(**timeperiod_annotations)\
             .order_by('number', 'name')
 
         context['start_date'] = start_date
@@ -239,34 +238,7 @@ class IPTT_ReportView(TemplateView):
         context['indicators'] = indicators
         context['program'] = program
         context['reporttype'] = kwargs.get('reporttype')
-
-        return context
-
-    def get(self, request, *args, **kwargs):
-
-        context = self._generate_context(request, **kwargs)
-        context['form'] = IPTTReportFilterForm()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-
-        form = IPTTReportFilterForm(request.POST, request=request)
-
-        if form.is_valid():
-            return self.form_valid(form, request, **kwargs)
-
-        elif not form.is_valid():
-            return self.form_invalid(form, request, **kwargs)
-
-    def form_valid(self, form, request, **kwargs):
-
-        context = self._generate_context(request, **kwargs)
-        context['form'] = form
-
-        return self.render_to_response(context=context)
-
-    def form_invalid(self, form, request, **kwargs):
-
-        context = self._generate_context(request, **kwargs)
-        context['form'] = form
-        return self.render_to_response(context=context)
+        pass
