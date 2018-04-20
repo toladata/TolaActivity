@@ -3,161 +3,166 @@
 {% load i18n %}
 {% load mytags %}
 {% block content %}
-    <div class="row d-flex d-md-block flex-nowrap wrapper" style="margin-left: 0px">
-        <div class="float-left collapse width show" id="sidebar">
-          {% include 'indicators/iptt_filter_form.html' %}
-        </div>
-        <main class="col-md-9 float-left col px-5 pl-md-2 pt-2 main">
-            <a href="#" data-target="#sidebar" data-toggle="collapse"><i class="fa fa-navicon fa-2x py-2 p-1"></i></a>
-            <div>
+  <div class="row d-flex d-md-block flex-nowrap wrapper" style="margin-left: 0px">
+    <div class="float-left collapse width show" id="sidebar">
+      {% include 'indicators/iptt_filter_form.html' %}
+    </div>
+    <div class="row" style="margin-top:0px; margin-left:0px; background-color:#00A49F; color: #fff;">
+      <a href="#" data-target="#sidebar" data-toggle="collapse" style="color: white;">
+        <i class="fa fa-cog"></i>
+      </a>Options
+    </div>
+    <main class="col-md-9 float-left col px-5 pl-md-2 pt-2 main">
+      <div>
         <span id="id_span_iptt_date_range">
           <strong>{{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }}</strong>
         </span>
         <table id="iptt_table" class="table table-sm table-bordered table-hover">
-            <caption>Indicator Performance Tracking Table</caption>
-            <colgroup scope="col" span="9"></colgroup>
-            <colgroup scope="col" span="3" class="lopCols"></colgroup>
-            <colgroup scope="col" span="{{ timeperiods|length }}"></colgroup>
-            <thead class="thead-light">
-              <tr>
-                <td colspan="9" id="id_td_iptt_program_name">
-                  <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
+          <caption>Indicator Performance Tracking Table</caption>
+          <colgroup scope="col" span="9"></colgroup>
+          <colgroup scope="col" span="3" class="lopCols"></colgroup>
+          <colgroup scope="col" span="{{ timeperiods|length }}"></colgroup>
+          <thead class="thead-light">
+          <tr>
+            <td colspan="9" id="id_td_iptt_program_name">
+              <h5>{{ program.name|wordwrap:100|linebreaks }}</h5>
+            </td>
+            <th scope="colgroup" colspan="3" class="text-center">
+              {% trans "LIFE OF PROGRAM" %}
+            </th>
+            {% for k, v in timeperiods.items %}
+              <th scope="col" class="text-center" style="min-width: 180px;">
+                {{ k }}<br>
+                <small>{{ v.0|date:"M d, Y" }} - {{ v.1|date:"M d, Y" }}</small>
+              </th>
+            {% endfor %}
+          </tr>
+          </tr>
+          <th scope="col" style="min-width:80px">{% trans "NO." %}</th>
+          <th scope="col" class="td-no-side-borders" style="min-width:600px">{% trans "INDICATOR" %}</th>
+          <th scope="col" class="td-no-side-borders"></th>
+          <th scope="col" style="min-width:90px">{% trans "LEVEL" %}</th>
+          <th scope="col">{% trans "UNIT OF MEASURE" %}</th>
+          <th scope="col">{% trans "CHANGE" %}</th>
+          <th scope="col" style="min-width:60px">{% trans "C / NC" %}</th>
+          <th scope="col" style="min-width:50px">{% trans "# / %" %}</th>
+          <th scope="col">{% trans "BASELINE" %}</th>
+          <th scope="col">{% trans "TARGET" %}</th>
+          <th scope="col">{% trans "ACTUAL" %}</th>
+          <th scope="col" style="min-width: 70px;">{% trans "% MET" %}</th>
+          {% for _ in timeperiods.items %}
+            <th scope="col" class="text-right">{% trans "ACTUALS" %}</th>
+          {% endfor %}
+          </tr>
+          </thead>
+          <tbody>
+          {% for indicator in indicators %}
+            <tr>
+              <td>{{ indicator.number|default_if_none:'' }}</td>
+              <td class="td-no-side-borders">{{ indicator.name }}</td>
+              <td class="td-no-side-borders">
+                <a href="{% url 'indicator_update' indicator.id %}"
+                   data-programid="{{ program.id }}"
+                   class="indicator-link float-right">
+                  <i class="fas fa-cog"></i>
+                </a>
+              </td>
+              <td>{{ indicator.lastlevel|default_if_none:'' }}</td>
+              <td>{{ indicator.unit_of_measure|default_if_none:'' }}</td>
+              <td align="right">{{ indicator.direction_of_change|symbolize_change }}</td>
+              <td>{{ indicator.is_cumulative|yesno:"Cumulative,Non-cumulative," }}</td>
+              <td>{{ indicator.unit_of_measure_type|symbolize_measuretype }}</td>
+              <td align="right">{{ indicator.baseline|default_if_none:'' }}</td>
+              <td align="right">{{ indicator.lop_target|default_if_none:'' }}</td>
+              <td align="right">
+                {% if indicator.unit_of_measure_type == 1 %}
+                  {{ indicator.actualsum|floatformat:"-2"|default_if_none:"" }}
+                {% elif indicator.unit_of_measure_type == 2 %}
+                  {% if indicator.is_cumulative == True %}
+                    {{ indicator.lastdata|floatformat:"-2"|default_if_none:"" }}%
+                  {% else %}
+                    {% if indicator.actualavg is not None %}
+                      <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
+                      {{ indicator.actualavg|floatformat:"-2"|default_if_none:"" }}%
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+              </td>
+              <td align="right">
+                {% if indicator.unit_of_measure_type == 1 %}
+                  {% widthratio indicator.actualsum indicator.lop_target 100 as percent_met1 %}
+                  {% if percent_met1 %} {{ percent_met1 }}% {% endif %}
+                {% elif indicator.unit_of_measure_type == 2 %}
+                  {% if indicator.is_cumulative == True %}
+                    {% widthratio indicator.lastdata indicator.lop_target 100 as percent_met2 %}
+                    {% if percent_met2 %} {{ percent_met2 }}% {% endif %}
+                  {% else %}
+                    {% if indicator.actualavg is not None %}
+                      {% widthratio indicator.actualavg indicator.lop_target 100 as percent_met3 %}
+                      {% if percent_met3 %} {{ percent_met3 }}% {% endif %}
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+              </td>
+              {% for k, v in timeperiods.items %}
+                <td align="right">
+                  <!-- if it is a NUMBER indicator -->
+                  {% if indicator.unit_of_measure_type == 1 %}
+                    {% with k|concat_string:"_sum" as sum %}
+                      {{ indicator|hash:sum|floatformat:"-2"|default_if_none:'' }}
+                    {% endwith %}
+                    <!-- if indicator is a PERCENT idnicator -->
+                  {% elif indicator.unit_of_measure_type == 2 %}
+                    {% if indicator.is_cumulative == True %}
+                      <!-- if it is PERCENT and CUMULATIVE indicator then show the last data record's value -->
+                      {% with k|concat_string:"_last" as last %}
+                        {% if indicator|hash:last is not None %}
+                          {{ indicator|hash:last|floatformat:"-2"|default_if_none:'' }}%
+                        {% endif %}
+                      {% endwith %}
+                    {% else %}
+                      <!-- if it is a PERCENT and NON-CUMULATIVE indicator -->
+                      {% with k|concat_string:"_avg" as avg %}
+                        {% if indicator|hash:avg is not None %}
+                          <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
+                          {{ indicator|hash:avg|floatformat:"-2"|default_if_none:'' }}%
+                        {% endif %}
+                      {% endwith %}
+                    {% endif %}
+                  {% endif %}
                 </td>
-                <th scope="colgroup" colspan="3" class="text-center">
-                  {% trans "LIFE OF PROGRAM" %}
-                </th>
-                {% for k, v in timeperiods.items %}
-                  <th scope="col" class="text-center" style="min-width: 180px;">
-                    {{ k }}<br> <small>{{ v.0|date:"M d, Y" }}  - {{ v.1|date:"M d, Y" }}</small>
-                  </th>
-                {% endfor %}
-              </tr>
-              </tr>
-                <th scope="col" style="min-width:80px">{% trans "NO." %}</th>
-                <th scope="col" class="td-no-side-borders" style="min-width:600px">{% trans "INDICATOR" %}</th>
-                <th scope="col" class="td-no-side-borders"></th>
-                <th scope="col" style="min-width:90px">{% trans "LEVEL" %}</th>
-                <th scope="col">{% trans "UNIT OF MEASURE" %}</th>
-                <th scope="col">{% trans "CHANGE" %}</th>
-                <th scope="col" style="min-width:60px">{% trans "C / NC" %}</th>
-                <th scope="col" style="min-width:50px">{% trans "# / %" %}</th>
-                <th scope="col">{% trans "BASELINE" %}</th>
-                <th scope="col">{% trans "TARGET" %}</th>
-                <th scope="col">{% trans "ACTUAL" %}</th>
-                <th scope="col" style="min-width: 70px;">{% trans "% MET" %}</th>
-                {% for _ in timeperiods.items %}
-                    <th scope="col" class="text-right">{% trans "ACTUALS" %}</th>
-                {% endfor %}
-              </tr>
-            </thead>
-            <tbody>
-                {% for indicator in indicators %}
-                    <tr>
-                        <td>{{ indicator.number|default_if_none:'' }}</td>
-                        <td class="td-no-side-borders">{{ indicator.name }}</td>
-                        <td class="td-no-side-borders">
-                            <a href="{% url 'indicator_update' indicator.id %}"
-                               data-programid="{{ program.id }}"
-                               class="indicator-link float-right">
-                                <i class="fas fa-cog"></i>
-                            </a>
-                        </td>
-                        <td>{{ indicator.lastlevel|default_if_none:'' }}</td>
-                        <td>{{ indicator.unit_of_measure|default_if_none:'' }}</td>
-                        <td align="right">{{ indicator.direction_of_change|symbolize_change }}</td>
-                        <td>{{ indicator.is_cumulative|yesno:"Cumulative,Non-cumulative," }}</td>
-                        <td>{{ indicator.unit_of_measure_type|symbolize_measuretype }}</td>
-                        <td align="right">{{ indicator.baseline|default_if_none:'' }}</td>
-                        <td align="right">{{ indicator.lop_target|default_if_none:'' }}</td>
-                        <td align="right">
-                            {% if indicator.unit_of_measure_type == 1 %}
-                                {{ indicator.actualsum|floatformat:"-2"|default_if_none:"" }}
-                            {% elif indicator.unit_of_measure_type == 2 %}
-                                {% if indicator.is_cumulative == True %}
-                                    {{ indicator.lastdata|floatformat:"-2"|default_if_none:"" }}%
-                                {% else %}
-                                    {% if indicator.actualavg is not None %}
-                                        <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
-                                        {{ indicator.actualavg|floatformat:"-2"|default_if_none:"" }}%
-                                    {% endif %}
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                        <td align="right">
-                            {% if indicator.unit_of_measure_type == 1 %}
-                                {% widthratio indicator.actualsum indicator.lop_target 100 as percent_met1 %}
-                                {% if percent_met1 %} {{ percent_met1 }}% {% endif %}
-                            {% elif indicator.unit_of_measure_type == 2 %}
-                                {% if indicator.is_cumulative == True %}
-                                    {% widthratio indicator.lastdata indicator.lop_target 100 as percent_met2 %}
-                                    {% if percent_met2 %} {{ percent_met2 }}% {% endif %}
-                                {% else %}
-                                    {% if indicator.actualavg is not None %}
-                                        {% widthratio indicator.actualavg indicator.lop_target 100 as percent_met3 %}
-                                        {% if percent_met3 %} {{ percent_met3 }}% {% endif %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                        {% for k, v in timeperiods.items %}
-                            <td align="right">
-                                <!-- if it is a NUMBER indicator -->
-                                {% if indicator.unit_of_measure_type == 1 %}
-                                    {% with k|concat_string:"_sum" as sum %}
-                                        {{ indicator|hash:sum|floatformat:"-2"|default_if_none:'' }}
-                                    {% endwith %}
-                                <!-- if indicator is a PERCENT idnicator -->
-                                {% elif indicator.unit_of_measure_type == 2 %}
-                                    {% if indicator.is_cumulative == True %}
-                                        <!-- if it is PERCENT and CUMULATIVE indicator then show the last data record's value -->
-                                        {% with k|concat_string:"_last" as last %}
-                                          {% if indicator|hash:last is not None %}
-                                            {{ indicator|hash:last|floatformat:"-2"|default_if_none:'' }}%
-                                          {% endif %}
-                                        {% endwith %}
-                                    {% else %}
-                                        <!-- if it is a PERCENT and NON-CUMULATIVE indicator -->
-                                        {% with k|concat_string:"_avg" as avg %}
-                                            {% if indicator|hash:avg is not None %}
-                                                <small><abbr title='{% trans "Average" %}'>{% trans "avg." %}</abbr></small>
-                                                {{ indicator|hash:avg|floatformat:"-2"|default_if_none:'' }}%
-                                            {% endif %}
-                                        {% endwith %}
-                                    {% endif %}
-                                {% endif %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+          </tbody>
         </table>
-    </div>
+      </div>
 
-    <div id="indicator_modal_div" class="modal fade" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div id="indicator_modal_div" class="modal fade" role="dialog" aria-labelledby="myLargeModalLabel">
         <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content" id="indicator_modal_content">
+          <div class="modal-content" id="indicator_modal_content">
 
-            </div> <!-- modal content -->
+          </div> <!-- modal content -->
         </div>
-    </div>
-    <script>
+      </div>
+      <script>
         // Open the IndicatorUpdate Form in a modal
-        $("#id_div_top_iptt_report").on("click", ".indicator-link", function(e) {
-            e.preventDefault();
-            let url = $(this).attr("href");
-            url += "?modal=1";
-            const programId = $(this).data("programid");
+        $("#id_div_top_iptt_report").on("click", ".indicator-link", function (e) {
+          e.preventDefault();
+          let url = $(this).attr("href");
+          url += "?modal=1";
+          const programId = $(this).data("programid");
 
-            $("#indicator_modal_content").empty();
-            $("#modalmessages").empty();
+          $("#indicator_modal_content").empty();
+          $("#modalmessages").empty();
 
-            $("#indicator_modal_content").load(url);
-            $("#indicator_modal_div").modal('show');
+          $("#indicator_modal_content").load(url);
+          $("#indicator_modal_div").modal('show');
 
         });
-    </script>
+      </script>
 
-    {% include 'indicators/indicator_form_common_js.html' %}
-        </main>
-    </div>
+      {% include 'indicators/indicator_form_common_js.html' %}
+    </main>
+  </div>
 {% endblock content %}
