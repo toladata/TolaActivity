@@ -327,7 +327,7 @@ select.listoption_filters
   border: none;
 }
 
-#indicator_modal_body .form-row label{
+#indicator_modal_body .form-row > label{
     font-weight: bold;
     color: #54585A;
 }

@@ -1,10 +1,10 @@
 {% load i18n %}
 {% if view.guidance %}
     {% if view.guidance.guidance_link %}
-        <span style="float: right;"><a onclick="newPopup('{{ view.guidance.guidance_link }}','Form Help/Guidance'); return false;" href="#" style="color: #54585A; font-size: .875rem" class="btn btn-link">{% trans "Help" %}</a></span>
+        <span style="float: right;"><a onclick="newPopup('{{ view.guidance.guidance_link }}','Form Help/Guidance'); return false;" href="#" class="btn btn-link help-link px-1">{% trans "Help" %}</a></span>
     {% endif %}
     {% if view.guidance.guidance %}
-        <span style="float: right;" onclick="document.getElementById('guidance').style.display = 'block'"><a href="#" style="color: #54585A; font-size: .875rem" class="btn btn-link">{% trans "Help" %}</a></span>
+        <span style="float: right;" onclick="document.getElementById('guidance').style.display = 'block'"><a href="#" class="btn btn-link help-link">{% trans "Help" %}</a></span>
         <span id="guidance">
             {{ view.guidance.guidance }}
             <br/>

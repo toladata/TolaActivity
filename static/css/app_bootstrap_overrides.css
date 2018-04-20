@@ -47,7 +47,6 @@ h3 {
 
 body > .container {
     height: 100%;
-    margin-top: 40px;
 }
 
 #footer > .container {
@@ -67,4 +66,9 @@ body > .container {
 .btn-light {
     background-color: transparent;
     border-color: #54585A;
+}
+
+.help-link {
+    color: #54585A;
+    font-size: .875rem;
 }
