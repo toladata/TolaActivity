@@ -2,7 +2,7 @@ from collections import OrderedDict
 from dateutil import rrule, relativedelta
 from datetime import datetime
 from django.core.urlresolvers import reverse_lazy
-from django.db.models import Sum, Avg, Subquery, OuterRef, Case, When, Q, F, Min, Max, Count
+from django.db.models import Sum, Avg, Subquery, OuterRef, Case, When, Q, F, Min, Max
 from django.views.generic import TemplateView, FormView
 from django.http import HttpResponseRedirect
 from workflow.models import Program
@@ -67,9 +67,10 @@ class IPTTReportQuickstartView(FormView):
                                                prefix=self.FORM_PREFIX_TARGET)
 
         program = form.cleaned_data.get('program')
+        num_recents = form.cleaned_data.get('numrecentperiods')
         redirect_url = reverse_lazy('iptt_report', kwargs={'program_id': program.id, 'reporttype': prefix})
 
-        redirect_url = "{}?period={}".format(redirect_url, period)
+        redirect_url = "{}?period={}&numrecents={}".format(redirect_url, period, num_recents)
         return HttpResponseRedirect(redirect_url)
 
     def form_invalid(self, form, **kwargs):
@@ -168,7 +169,7 @@ class IPTT_ReportView(TemplateView):
             num_periods += 1
         return num_periods
 
-    def _generate_timeperiods(self, start_date, period, num_periods):
+    def _generate_timeperiods(self, period_start_date, period, num_periods, num_recents):
         """
         Create the time-periods for which data will be annotated
         """
@@ -176,19 +177,30 @@ class IPTT_ReportView(TemplateView):
         period_name = self._get_period_name(period)
         num_months_in_period = self._get_num_months(period)
 
-        period_start_date = start_date
-        period_end_date = period_start_date + relativedelta.relativedelta(months=num_months_in_period)
+        period_end_date = period_start_date
+        # if uesr specified num_recents periods then set it to retrieve only the last N entries
+        if num_recents > 0:
+            num_recents = num_periods - num_recents
 
         for i in range(1, num_periods):
-            timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
             period_start_date = period_end_date
             period_end_date = period_end_date + relativedelta.relativedelta(months=num_months_in_period)
+            # if the current iteration(period) is smaller than num_recent entreis requested by user
+            # then skip over it.
+            if i < num_recents:
+                continue
+            timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
+
         return timeperiods
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         program_id = kwargs.get('program_id')
         period = request.GET.get('period', None)
+        try:
+            num_recents = int(request.GET.get('numrecents', 0))
+        except Exception:
+            num_recents = 0
         program = Program.objects.get(pk=program_id)
 
         # determine the full date range of data collection for this program
@@ -200,7 +212,7 @@ class IPTT_ReportView(TemplateView):
         #  find out the total number of periods (quarters, months, years, or etc) for this program
         num_periods = self._get_num_periods(start_date, end_date, period)
 
-        timeperiods = self._generate_timeperiods(start_date, period, num_periods)
+        timeperiods = self._generate_timeperiods(start_date, period, num_periods, num_recents)
         timeperiod_annotations = self._generate_timperiod_annotations(timeperiods)
 
         # calculate aggregated actuals (sum, avg, last) per reporting period
