@@ -5,16 +5,13 @@ import NavBar from '../pages/navbar.page';
 import TargetsTab from '../pages/targets.page';
 import Util from '../lib/testutil';
 import DateMath from 'date-arithmetic';
-
-const msec = 1000;
-const delay = 10*msec;
 'use strict';
 
 describe('Adding target date ranges', function() {
     before(function() {
       // Disable timeouts
       this.timeout(0);
-      //browser.windowHandleMaximize();
+      browser.windowHandleMaximize();
       let parms = Util.readConfig();
                           
       LoginPage.open(parms.baseurl);

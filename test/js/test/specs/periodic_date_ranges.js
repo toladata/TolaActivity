@@ -5,9 +5,6 @@ import NavBar from '../pages/navbar.page';
 import TargetsTab from '../pages/targets.page';
 import Util from '../lib/testutil';
 import DateMath from 'date-arithmetic';
-
-const msec = 1000;
-const delay = 10*msec;
 'use strict';
 
 describe('Periodic target date ranges', function() {
@@ -159,4 +156,3 @@ describe('Periodic target date ranges', function() {
         }
     });
 });
-

@@ -85,7 +85,7 @@ describe('Program Indicators table', function() {
             browser.waitForVisible('div#ajaxloading', delay, true);
         }
         let indicatorName = indicatorNameList[0];
-        TargetsTab.clickProgramIndicatorsButton(indicatorName);
+        IndPage.clickProgramIndicatorsButton(indicatorName);
     });
 
     it('should be able to create PI by clicking the New Indicator button', function() {

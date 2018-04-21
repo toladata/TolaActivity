@@ -1,6 +1,6 @@
 /**
  * Page model for testing the Program Indicators screen.
- * @module targets
+ * @module Targets
  */
 import Util from '../lib/testutil';
 import IndPage from '../pages/indicators.page';
@@ -12,7 +12,8 @@ var parms = Util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /**
- * Add num target periods to the targets list
+ * Add num target periods to the targets list, or
+ * 1 target period if num not specified
  * @param {integer} num The number of target periods
  * to add
  * @returns {integer} The total number of target periods
@@ -50,29 +51,6 @@ function clickNumberType() {
 function clickPercentType() {
     let control = browser.$('div#div_id_unit_of_measure_type_1');
     control.click();
-}
-
-/**
- * Click the indicator name link for the specified indicator
- * to show its detail/edit screen
- * @param {string} indicatorName - The name of the indicator whose
- * detail screen you want to view
- * @returns Nothing
- */
-function clickProgramIndicator(indicatorName) {
-  let link = browser.$('=' + indicatorName);
-  link.click();
-}
-
-/**
- * Click the specified program's indicators button to toggle the corresponding
- * table of indicators
- * @param {string} programName - The program name whose indicators button
- * you want to click
- * @returns Nothing
- */
-function clickProgramIndicatorsButton(programName) {
-  IndPage.selectProgram(programName);
 }
 
 /***
@@ -402,6 +380,7 @@ function getTargetInputBoxes() {
     let inputBoxes = browser.$$('input#pt-undefined.form-control.input-value');
     return inputBoxes;
 }
+
 /**
  * Get the current error string, if any, from the target creation
  * screen on the Targets tab
@@ -645,8 +624,6 @@ function setUnitOfMeasure(unit) {
 exports.addTarget = addTarget;
 exports.clickNumberType = clickNumberType;
 exports.clickPercentType = clickPercentType;
-exports.clickProgramIndicator = clickProgramIndicator;
-exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickResetButton = clickResetButton;
 exports.clickTargetsTab = clickTargetsTab;
 exports.clickDirectionOfChange = clickDirectionOfChange;
