@@ -137,7 +137,7 @@ class IPTT_ReportView(TemplateView):
             period_start_date = tri_annual_start[index-1]
         elif num_months_in_period == IPTT_ReportView.MONTHS_PER_SEMIANNUAL:
             # if interval is semi-annual, set period_start_date to first calendar semi-annual
-            semi_annual = [start_date.replace(month=month, day=1) for month in (1, 6)]
+            semi_annual = [start_date.replace(month=month, day=1) for month in (1, 7)]
             index = bisect.bisect(semi_annual, start_date)
             period_start_date = semi_annual[index-1]
         elif num_months_in_period == IPTT_ReportView.MONTHS_PER_YEAR:
@@ -211,47 +211,32 @@ class IPTT_ReportView(TemplateView):
 
     def _generate_timeperiods(self, period_start_date, period, num_periods, num_recents):
         """
-        Create the time-periods for which data will be annotated
+        Create date ranges for time-periods.
         """
         timeperiods = OrderedDict()
         period_name = self._get_period_name(period)
         num_months_in_period = self._get_num_months(period)
 
         # convert datetime to date object to avoid timezone issues in templates
-        period_start_date = period_start_date.date() + relativedelta(days=-1)
+        period_start_date = period_start_date.date()  # + relativedelta(days=-1)
 
         # if uesr specified num_recents periods then set it to retrieve only the last N entries
         if num_recents > 0:
             num_recents = num_periods - num_recents
 
+        # calculate each period's start and end date
         for i in range(1, num_periods):
+            if i > 1:
+                # if it is not the first period then advance the
+                # period_start_date by the correct number of months.
+                period_start_date = period_start_date + relativedelta(months=+num_months_in_period)
 
-            if i == 1:
-                # deal with special cases for the first time
-                # num_months_in_period = num_months_in_period + 1
-                # if num_months_in_period >= 12:
-                #     num_months_in_period = 12
-
-                period_end_date = period_start_date + \
-                    relativedelta(months=+num_months_in_period) # + relativedelta(days=-1)
-
-                # if period_end_date.year > period_start_date.year:
-                #     period_end_date = period_end_date + relativedelta(months=-1)
-
-                # if num_months_in_period < 12:
-                #     num_months_in_period = num_months_in_period - 1
-
-            elif i > 1:
-                # num_months_in_period = num_months_in_period - 1
-                period_start_date = period_end_date + relativedelta(days=+1)
-
-                period_end_date = period_start_date + \
-                    relativedelta(months=+num_months_in_period) + relativedelta(days=-1)
+            period_end_date = period_start_date + \
+                relativedelta(months=+num_months_in_period) + relativedelta(days=-1)
 
             # do not include periods that are earlier than most_recent specified by user
             if i < num_recents:
                 continue
-            print('{}....{}...{}'.format(num_months_in_period, period_start_date, period_end_date))
             timeperiods["{} {}".format(period_name, i)] = [period_start_date, period_end_date]
 
         return timeperiods
