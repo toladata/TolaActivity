@@ -224,6 +224,9 @@ class IPTT_ReportView(TemplateView):
         if num_recents > 0:
             num_recents = num_periods - num_recents
 
+        # bump up num_periods by 1 because the loop starts from 1 instead of 0
+        num_periods += 1
+
         # calculate each period's start and end date
         for i in range(1, num_periods):
             if i > 1:
