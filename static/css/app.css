@@ -332,6 +332,31 @@ select.listoption_filters
     color: #54585A;
 }
 
+#id_level {
+    min-height: 7.75rem
+}
+
+#id_indicator_type {
+    height: 5.35rem
+}
+
+/* This helps with the predictability of spacing between
+inputs on the indicator setup page/modal */
+#indicator_modal_body .div-input-container > textarea,
+#indicator_modal_body .div-input-container > input,
+#indicator_modal_body .div-input-container > select,
+#indicator_modal_body .div-input-container > .inputs-in-a-box,
+#indicator_modal_body .div-input-container .select2 {
+    height: 100%
+}
+
+/* In each case, the hieght of these divs changes when the has-error class is
+applied.  This keeps the inputs from getting taller when there is an error. */
+#div_id_target_frequency,
+#div_id_target_frequency_start,
+#div_id_target_frequency_custom {
+    height: 2.25rem;
+}
 
 /* Don't define border property here.  Assigning here prevents red border
 from being applied when there is no value */
