@@ -6,7 +6,9 @@ from datetime import datetime
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Sum, Avg, Subquery, OuterRef, Case, When, Q, F, Min, Max
 from django.views.generic import TemplateView, FormView
+from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from workflow.models import Program
 from ..models import Indicator, CollectedData, Level
 from ..forms import IPTTReportQuickstartForm
@@ -308,7 +310,13 @@ class IPTT_ReportView(TemplateView):
             num_recents = int(self.request.GET.get('numrecents', 0))
         except ValueError:
             num_recents = 0  # default to 0, which is all periods or targets
-        program = Program.objects.get(pk=program_id)
+
+        try:
+            program = Program.objects.get(pk=program_id)
+        except Program.DoesNotExist:
+            context['redirect'] = reverse_lazy('iptt_quickstart')
+            messages.info(self.request, _("Please select a valid program."))
+            return context
 
         # determine the full date range of data collection for this program
         data_date_range = Indicator.objects.filter(program__in=[program_id])\
@@ -342,8 +350,9 @@ class IPTT_ReportView(TemplateView):
             report_start_date = period_start_date
             report_end_date = None
         else:
-            pass
-            # TODO: redirect back to quickstart_form
+            context['redirect'] = reverse_lazy('iptt_quickstart')
+            messages.info(self.request, _("Please select a valid report type."))
+            return context
 
         # calculate aggregated actuals (sum, avg, last) per reporting period
         # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
@@ -370,6 +379,8 @@ class IPTT_ReportView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+        if context['redirect']:
+            return HttpResponseRedirect(reverse_lazy('iptt_quickstart'))
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
