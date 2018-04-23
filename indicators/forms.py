@@ -243,21 +243,22 @@ class IPTTReportFilterForm(ReportFormCommon):
     level = forms.ModelChoiceField(queryset=Level.objects.none(), required=False, label='LEVEL')
     ind_type = forms.ModelChoiceField(queryset=IndicatorType.objects.none(), required=False, label='TYPE')
     sector = forms.ModelChoiceField(queryset=Sector.objects.none(), required=False, label='SECTOR')
-    site = forms.ChoiceField(choices=(), required=False, label='SITE')
-    indicators = forms.ChoiceField(choices=(), required=False, label='SELECT INDICATORS')
+    site = forms.ModelChoiceField(queryset=SiteProfile.objects.none(), required=False, label='SITE')
+    indicators = forms.ModelChoiceField(queryset=Indicator.objects.none(), required=False, label='SELECT INDICATORS')
     start_date = forms.DateField(label='START')
     end_date = forms.DateField(label='END')
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.get('request', None)
-        if self.request is not None:
-            kwargs.pop('request')
+        self.request = args[0]
+        args = args[1:]
+        program = kwargs['program']
+        del kwargs['program']
         super(IPTTReportFilterForm, self).__init__(*args, **kwargs)
         self.fields['sector'].queryset = Sector.objects.all()
         self.fields['level'].queryset = Level.objects.all()
         self.fields['ind_type'].queryset = IndicatorType.objects.all()
-        self.fields['site'].choices = list(SiteProfile.objects.values_list('id', 'name'))
-        self.fields['indicators'].choices = list(Indicator.objects.values_list('id', 'name'))
+        self.fields['site'].queryset = program.get_sites()
+        self.fields['indicators'].queryset = Indicator.objects.filter(program=program)
 
 
 

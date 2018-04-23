@@ -71,7 +71,7 @@ class IPTTReportQuickstartView(FormView):
         num_recents = form.cleaned_data.get('numrecentperiods')
         redirect_url = reverse_lazy('iptt_report', kwargs={'program_id': program.id, 'reporttype': prefix})
 
-        redirect_url = "{}?period={}&numrecents={}".format(redirect_url, period, num_recents)
+        redirect_url = "{}?period={}&numrecentperiods={}".format(redirect_url, period, num_recents)
         return HttpResponseRedirect(redirect_url)
 
     def form_invalid(self, form, **kwargs):
@@ -243,9 +243,9 @@ class IPTT_ReportView(TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
-
+        # from pdb import set_trace; set_trace()
         context = self._generate_context(request, **kwargs)
-        context['form'] = IPTTReportFilterForm()
+        context['form'] = IPTTReportFilterForm(*[request], program=context['program'])
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
