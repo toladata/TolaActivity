@@ -1070,9 +1070,6 @@ def collected_data_view(request, indicator, program):
     # the last achieved value reported against any target of an indicator
     last_data_record_value = 0
 
-    # a pointer to refer to the previous periodic_target in the loop
-    prev_pt = None
-
     # setup cumulative values for achieved across an indicator targets
     for index, pt in enumerate(periodictargets):
         if index == 0:
@@ -1091,8 +1088,6 @@ def collected_data_view(request, indicator, program):
                 pt.cumulative_sum = grand_achieved_sum
             except TypeError:
                 pass
-
-        prev_pt = pt
 
     # for calculative the grand_achieved_avg only count those periodic_targets
     # that are not in the future, i.e, their start is less than today's date.
