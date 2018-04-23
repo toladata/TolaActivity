@@ -159,11 +159,17 @@ class Level(models.Model):
 
 
 class DisaggregationType(models.Model):
+    AVAILABLE_ORG = 'org'
+    AVAILABLE_WFL1 = 'wfl1'
+    AVAILABILITY_CHOICES = (
+        (AVAILABLE_ORG, 'Organization Level'),
+        (AVAILABLE_WFL1, 'Only for this WFL1')
+    )
+
+    availability = models.CharField(choices=AVAILABILITY_CHOICES, max_length=5, null=True, blank=True)
     disaggregation_type = models.CharField(max_length=135, blank=True, help_text="Data disaggregation by age,gender,location etc.")
     description = models.CharField(max_length=765, blank=True)
     organization = models.ForeignKey(Organization, default=0)
-    standard = models.BooleanField(default=False, verbose_name="Standard")
-    default_global = models.BooleanField(default=False)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
@@ -179,8 +185,8 @@ class DisaggregationType(models.Model):
 
 
 class DisaggregationTypeAdmin(admin.ModelAdmin):
-    list_display = ('disaggregation_type','organization','standard','description')
-    list_filter = ('organization','standard','disaggregation_type')
+    list_display = ('disaggregation_type', 'organization', 'availability', 'description')
+    list_filter = ('organization', 'availability', 'disaggregation_type')
     display = 'Disaggregation Type'
 
 
