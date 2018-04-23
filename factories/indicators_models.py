@@ -2,6 +2,7 @@ from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy
 
 from indicators.models import (
     CollectedData as CollectedDataM,
+    DisaggregationType as DisaggregationTypeM,
     ExternalService as ExternalServiceM,
     Frequency as FrequencyM,
     Indicator as IndicatorM,
@@ -12,6 +13,14 @@ from indicators.models import (
     StrategicObjective as StrategicObjectiveM,
 )
 from .workflow_models import (Organization, WorkflowLevel1)
+
+
+class DisaggregationType(DjangoModelFactory):
+    class Meta:
+        model = DisaggregationTypeM
+        django_get_or_create = ('disaggregation_type',)
+
+    organization = SubFactory(Organization)
 
 
 class Frequency(DjangoModelFactory):
