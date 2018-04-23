@@ -265,7 +265,6 @@ class IPTT_ReportView(TemplateView):
 
         num_months_in_period = self._get_num_months(period)
         period_start_date = self._get_first_period(start_date, num_months_in_period)
-        print('.start_date={}..num_months_in_period={}.....period_start_date={}..'.format(start_date, num_months_in_period, period_start_date))
 
         timeperiods = self._generate_timeperiods(period_start_date, period, num_periods, num_recents)
         timeperiod_annotations = self._generate_timperiod_annotations(timeperiods)
@@ -287,8 +286,8 @@ class IPTT_ReportView(TemplateView):
             .annotate(**timeperiod_annotations)\
             .order_by('number', 'name')
 
-        context['start_date'] = start_date
-        context['end_date'] = end_date
+        context['start_date'] = timeperiods[timeperiods.keys()[0]][0]
+        context['end_date'] = timeperiods[timeperiods.keys()[-1]][1]
         context['timeperiods'] = timeperiods
         context['indicators'] = indicators
         context['program'] = program
