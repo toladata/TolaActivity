@@ -1,9 +1,7 @@
 /**
  * Page model for testing the Program Indicators screen.
- * @module indicators
+ * @module Indicators
  */
-// Methods are listed in alphabetical order; please help
-// keep them that way. Thanks!
 const TargetsTab = require('../pages/targets.page.js');
 const util = require('../lib/testutil.js');
 // milliseconds
@@ -84,6 +82,30 @@ function clickProgramsDropdown() {
   let programsDropdown = span.$('span#select2-id_programs_filter_dropdown-container');
   programsDropdown.click();
 }
+
+/**
+ * Click the indicator name link for the specified indicator
+ * to show its detail/edit screen
+ * @param {string} indicatorName - The name of the indicator whose
+ * detail screen you want to view
+ * @returns Nothing
+ */
+function clickProgramIndicator(indicatorName) {
+  let link = browser.$('=' + indicatorName);
+  link.click();
+}
+
+/**
+ * Click the specified program's indicators button to toggle the corresponding
+ * table of indicators
+ * @param {string} programName - The program name whose indicators button
+ * you want to click
+ * @returns Nothing
+ */
+function clickProgramIndicatorsButton(programName) {
+  selectProgram(programName);
+}
+
 
 /**
  * Click the Reset button on the current form
@@ -309,6 +331,8 @@ exports.clickIndicatorsDropdown = clickIndicatorsDropdown;
 exports.clickIndicatorsLink = clickIndicatorsLink;
 exports.clickIndicatorTypeDropdown = clickIndicatorTypeDropdown;
 exports.clickNewIndicatorButton = clickNewIndicatorButton;
+exports.clickProgramIndicator = clickProgramIndicator;
+exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
 exports.clickProgramsDropdown = clickProgramsDropdown;
 exports.clickResetButton = clickResetButton;
 exports.createBasicIndicator = createBasicIndicator;
