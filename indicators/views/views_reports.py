@@ -330,6 +330,16 @@ class IPTT_ReportView(TemplateView):
         except AttributeError:
             period_start_date = None
 
+        # calculate aggregated actuals (sum, avg, last) per reporting period
+        # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
+        lastlevel = Level.objects.filter(indicator__id=OuterRef('pk')).order_by('-id')
+        last_data_record = CollectedData.objects.filter(indicator=OuterRef('pk')).order_by('-id')
+        indicators = Indicator.objects.filter(program__in=[program_id])\
+            .annotate(actualsum=Sum('collecteddata__achieved'),
+                      actualavg=Avg('collecteddata__achieved'),
+                      lastlevel=Subquery(lastlevel.values('name')[:1]),
+                      lastdata=Subquery(last_data_record.values('achieved')[:1]))
+
         if reporttype == 'timeperiods':
             self.annotations = {}
             timeperiods = []
@@ -344,8 +354,17 @@ class IPTT_ReportView(TemplateView):
                 timeperiods = self._generate_timeperiods(report_start_date, period, num_periods, num_recents)
                 report_end_date = timeperiods[timeperiods.keys()[-1]][1]
                 self.annotations = self._generate_timperiod_annotations(timeperiods)
+
+                # update the queryset with annotations for timeperiods
+                indicators = indicators.values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
+                                               'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
+                                               'lastdata').annotate(**self.annotations)
         elif reporttype == 'targetperiods':
             self.annotations = self._generate_targetperiod_annotations()
+            # for indicator in indicators:
+            #     # for each indicator, setup the right annotations based on its periodictargets
+            #     indicators = indicators.prefetch_related('periodictarget_set')
+            #     print(indicator.periodictarget_set.all().count())
             timeperiods = []
             report_start_date = period_start_date
             report_end_date = None
@@ -354,20 +373,7 @@ class IPTT_ReportView(TemplateView):
             messages.info(self.request, _("Please select a valid report type."))
             return context
 
-        # calculate aggregated actuals (sum, avg, last) per reporting period
-        # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
-        lastlevel = Level.objects.filter(indicator__id=OuterRef('pk')).order_by('-id')
-        last_data_record = CollectedData.objects.filter(indicator=OuterRef('pk')).order_by('-id')
-        indicators = Indicator.objects.filter(program__in=[program_id])\
-            .annotate(actualsum=Sum('collecteddata__achieved'),
-                      actualavg=Avg('collecteddata__achieved'),
-                      lastlevel=Subquery(lastlevel.values('name')[:1]),
-                      lastdata=Subquery(last_data_record.values('achieved')[:1]))\
-            .values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
-                    'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
-                    'lastdata')\
-            .annotate(**self.annotations)\
-            .order_by('number', 'name')
+        indicators = indicators.order_by('number', 'name')
 
         context['start_date'] = report_start_date
         context['end_date'] = report_end_date
@@ -379,7 +385,7 @@ class IPTT_ReportView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        if context['redirect']:
+        if context.get('redirect', None):
             return HttpResponseRedirect(reverse_lazy('iptt_quickstart'))
         return self.render_to_response(context)
 
