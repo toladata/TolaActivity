@@ -31,6 +31,7 @@
             crossorigin="anonymous">
 
         <!-- Custom CSS -->
+        <link href="{% static 'css/app_bootstrap_overrides.css' %}" rel="stylesheet" type="text/css">
         <link href="{% static 'css/app.css' %}" rel="stylesheet" type="text/css">
 
         <!--- Django Tables2 css -->
@@ -72,6 +73,7 @@
     </form>
 
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+            <div class="container">
                 <button
                     class="navbar-toggler"
                     type="button"
@@ -159,10 +161,13 @@
                     <h4 class="mt-2 mb-0" style="color:#ffffff80;">{% block page_title %}{% endblock %}</h4>
                 </div>
 
-
+            </div>
         </nav>
-
-        <div>
+        {% if report_wide %}
+          <div>
+        {% else %}
+        <div class="container mt-3">
+        {% endif %}
             <div id="id_div_breadcrumb">{% block bread_crumb %}{% endblock %}</div>
             <div id="alerts">
                 <!-- Any messages for users -->

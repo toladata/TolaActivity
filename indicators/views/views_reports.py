@@ -246,6 +246,7 @@ class IPTT_ReportView(TemplateView):
         # from pdb import set_trace; set_trace()
         context = self._generate_context(request, **kwargs)
         context['form'] = IPTTReportFilterForm(*[request], program=context['program'])
+        context['report_wide'] = True
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
@@ -262,11 +263,12 @@ class IPTT_ReportView(TemplateView):
 
         context = self._generate_context(request, **kwargs)
         context['form'] = form
-
+        context['report_wide'] = True
         return self.render_to_response(context=context)
 
     def form_invalid(self, form, request, **kwargs):
 
         context = self._generate_context(request, **kwargs)
         context['form'] = form
+        context['report_wide'] = True
         return self.render_to_response(context=context)
