@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings, tag
 
 import factories
@@ -7,7 +9,7 @@ from workflow.models import TolaUser, Office
 @tag('pkg')
 class TolaUserTest(TestCase):
     def setUp(self):
-        self.organization =  factories.Organization()
+        self.organization = factories.Organization()
         self.user = factories.User()
 
     @override_settings(TOLAUSER_OBFUSCATED_NAME='Fake Name')
@@ -55,6 +57,13 @@ class WorkflowTeamTest(TestCase):
 
 
 @tag('pkg')
+class ProductTest(TestCase):
+    def test_print_instance(self):
+        product = factories.Product()
+        self.assertEqual(unicode(product), u'Próduct P <Help Syrians>')
+
+
+@tag('pkg')
 class OfficeTest(TestCase):
     def test_print_instance(self):
         office = Office(name="Office", code="Code")
@@ -63,7 +72,6 @@ class OfficeTest(TestCase):
     def test_print_instance_without_code(self):
         office = Office(name="Office", code=None)
         self.assertEqual(unicode(office), u'Office')
-
 
 
 @tag('pkg')
@@ -82,3 +90,24 @@ class WorkflowLevel2Test(TestCase):
     def test_print_instance(self):
         wflvl2 = factories.WorkflowLevel2.build()
         self.assertEqual(unicode(wflvl2), u'Help Syrians')
+
+    def test_save_address_fail(self):
+        wflvl2 = factories.WorkflowLevel2()
+        wflvl2.address = {
+            'street': None,
+        }
+        self.assertRaises(ValidationError, wflvl2.save)
+
+        wflvl2.address = {
+            'house_number': 'a'*21,
+        }
+        self.assertRaises(ValidationError, wflvl2.save)
+
+    def test_save_address(self):
+        factories.WorkflowLevel2(address={
+            'street': 'Oderberger Straße',
+            'house_number': '16A',
+            'postal_code': '10435',
+            'city': 'Berlin',
+            'country': 'Germany',
+        })

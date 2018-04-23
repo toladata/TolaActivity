@@ -2,7 +2,7 @@ import logging
 import sys
 
 from django.contrib.auth.models import Group, User
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
 from django.db import IntegrityError, connection
 from django.test import TestCase, override_settings, tag
@@ -109,7 +109,7 @@ class LoadInitialDataTest(TestCase):
 
         User.objects.all().delete()
 
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError):
             call_command('loadinitialdata', *args, **opts)
 
         self.assertRaises(User.DoesNotExist, User.objects.get,

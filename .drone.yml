@@ -4,6 +4,7 @@ pipeline:
     image: python:${PYTHON_VERSION}
     commands:
       - pip install -r requirements/ci.txt
+      - ./tcp-port-wait.sh postgres 5432
       - python manage.py test
     when:
       event: [push, tag]

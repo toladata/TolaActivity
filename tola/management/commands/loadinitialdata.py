@@ -6,7 +6,7 @@ import os
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction, IntegrityError, connection
@@ -2961,7 +2961,7 @@ class Command(BaseCommand):
                 self._create_collected_data()
                 self._create_workflowlevel1_sectors()
                 self._create_workflowteams()
-            except IntegrityError:
+            except (IntegrityError, ValidationError):
                 msg = ("Error: the data could not be populated in the "
                        "database. Check that the affected database tables are "
                        "empty.")

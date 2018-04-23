@@ -2,7 +2,8 @@ import logging
 import os
 
 try:
-    from chargebee import Subscription
+    from chargebee import APIError
+    from chargebee.models import Subscription
 except ImportError:
     pass
 from django.conf import settings
@@ -14,11 +15,16 @@ from django.dispatch import receiver
 from tola import DEMO_BRANCH, track_sync as tsync
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Organization, TolaUser, WorkflowLevel1,
-                             WorkflowTeam, ROLE_ORGANIZATION_ADMIN,
-                             ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM,
-                             ROLE_VIEW_ONLY)
+                             WorkflowTeam, WorkflowLevel2,
+                             ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
+                             ROLE_PROGRAM_TEAM, ROLE_VIEW_ONLY)
 
 logger = logging.getLogger(__name__)
+
+
+@receiver(signals.pre_save, sender=WorkflowLevel2)
+def pre_save_handler(sender, instance, *args, **kwargs):
+    instance.full_clean()
 
 
 def get_addon_by_id(addon_id, addons):
@@ -62,6 +68,18 @@ def add_users_to_default_wflvl1(sender, instance, **kwargs):
                                     workflowlevel1=wflvl1_1)
 
 
+@receiver(signals.post_save, sender=Organization)
+def create_default_program(sender, instance, **kwargs):
+    if not settings.CREATE_DEFAULT_PROGRAM:
+        return
+
+    if kwargs.get('created') is False:
+        return
+
+    WorkflowLevel1.objects.create(
+        name='Default program', organization=instance)
+
+
 # WORKFLOWTEAM SIGNALS
 @receiver(signals.pre_save, sender=WorkflowTeam)
 def check_seats_save_team(sender, instance, **kwargs):
@@ -82,15 +100,12 @@ def check_seats_save_team(sender, instance, **kwargs):
         workflow_user=instance.workflow_user,
         role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
     ).count()
-    # Load subscription data from ChargeBee
 
     sub_id = org.chargebee_subscription_id
     if not sub_id:
         logger.info('The organization {} does not have a '
                     'subscription'.format(org.name))
         return
-    result = Subscription.retrieve(sub_id)
-    sub_addons = result.subscription.addons
 
     # If the user is a Program Admin or Member
     # They should have a seat in the subscription
@@ -103,11 +118,17 @@ def check_seats_save_team(sender, instance, **kwargs):
     org.chargebee_used_seats = used_seats
     org.save()
 
-    # Validate the amount of available seats based on the subscription
-    user_addon = get_addon_by_id('user', sub_addons)
-    if user_addon:
-        available_seats = user_addon.quantity
-        if available_seats < org.chargebee_used_seats:
+    # Load subscription data from ChargeBee
+    try:
+        result = Subscription.retrieve(sub_id)
+        subscription = result.subscription
+    except APIError as e:
+        logger.warn(e)
+    else:
+        # Validate the amount of available seats based on the subscription
+        available_seats = subscription.plan_quantity
+        used_seats = org.chargebee_used_seats
+        if used_seats > available_seats:
             user_email = instance.workflow_user.user.email
             email = EmailMessage(
                 subject='Exceeded the number of editors',
@@ -173,16 +194,9 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
             role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
         ).count()
 
-        # Load subscription data from ChargeBee
+        # Update the amount of used seats
         org = tola_user.organization
         used_seats = org.chargebee_used_seats
-        sub_id = org.chargebee_subscription_id
-        if not sub_id:
-            logger.info('The organization {} does not have a '
-                        'subscription'.format(tola_user.organization.name))
-            return
-        result = Subscription.retrieve(sub_id)
-        sub_addons = result.subscription.addons
 
         # If the user is a Org Admin, he's able to edit the program.
         # Therefore, he should have a seat in the subscription
@@ -191,15 +205,26 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
         elif count == 0 and ROLE_VIEW_ONLY in added_groups:
             used_seats -= 1
 
-            # Update the amount of used seats
         org.chargebee_used_seats = used_seats
         org.save()
 
-        # Validate the amount of available seats based on the subscription
-        user_addon = get_addon_by_id('user', sub_addons)
-        if user_addon:
-            available_seats = user_addon.quantity
-            if available_seats < org.chargebee_used_seats:
+        # Load subscription data from ChargeBee
+        sub_id = org.chargebee_subscription_id
+        if not sub_id:
+            logger.info('The organization {} does not have a '
+                        'subscription'.format(tola_user.organization.name))
+            return
+
+        try:
+            result = Subscription.retrieve(sub_id)
+            subscription = result.subscription
+        except APIError as e:
+            logger.warn(e)
+        else:
+            # Validate the amount of available seats based on the subscription
+            available_seats = subscription.plan_quantity
+            used_seats = org.chargebee_used_seats
+            if used_seats > available_seats:
                 user_email = instance.email
                 email = EmailMessage(
                     subject='Exceeded the number of editors',
