@@ -71,18 +71,16 @@ urlpatterns = [ # rest framework
                 url(r'^i18n/', include('django.conf.urls.i18n')),
 
                 # index
-                # included in i18n_patterns
                 url(r'^$', views.index, name='index'),
                 # enable the admin:
                 url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
                 url(r'^admin/', include(admin.site.urls)),
-                # included in i18n_patterns
+
                 url(r'^(?P<selected_countries>\w+)/$', views.index, name='index'),
 
                 # index
                 url(r'^dashboard/(?P<id>\w+)/(?P<sector>\w+)/$', tolaviews.index, name='index'),
 
-                # included in i18n_patterns
                 # base template for layout
                 url(r'^$', TemplateView.as_view(template_name='base.html')),
 
