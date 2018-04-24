@@ -243,7 +243,6 @@ class IPTT_ReportView(TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
-        # from pdb import set_trace; set_trace()
         context = self._generate_context(request, **kwargs)
         context['form'] = IPTTReportFilterForm(*[request], program=context['program'])
         context['report_wide'] = True
