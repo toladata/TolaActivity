@@ -723,6 +723,12 @@ class WorkflowTeam(models.Model):
         verbose_name = "Workflow Team"
         verbose_name_plural = "Workflow Teams"
 
+    def clean(self):
+        if self.role and self.role.name == ROLE_ORGANIZATION_ADMIN:
+            raise ValidationError(
+                'Workflowteam role can not be ROLE_ORGANIZATION_ADMIN'
+            )
+
     def save(self, *args, **kwargs):
         if self.create_date == None:
             self.create_date = timezone.now()
@@ -1123,7 +1129,7 @@ class WorkflowLevel2(models.Model):
     issues_and_challenges = models.TextField("List any issues or challenges faced (include reasons for delays)", blank=True, null=True, help_text="Descriptive, what are some of the issues and challenges")
     justification_background = models.TextField("General Background and Problem Statement", blank=True, null=True, help_text="Descriptive, why are we starting this effort")
     lessons_learned = models.TextField("Lessons learned", blank=True, null=True, help_text="Descriptive, when completed what lessons were learned")
-    level2_uuid = models.CharField(max_length=255, verbose_name='WorkflowLevel2 UUID', default=uuid.uuid4, unique=True, blank=True, help_text="Unique ID")
+    level2_uuid = models.CharField(max_length=255, editable=False, verbose_name='WorkflowLevel2 UUID', default=uuid.uuid4, unique=True, blank=True, help_text="Unique ID")
     name = models.CharField("Name", max_length=255)
     notes = models.TextField(blank=True, null=True)
     parent_workflowlevel2 = models.IntegerField("Parent", default=0, blank=True)
