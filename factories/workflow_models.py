@@ -6,6 +6,7 @@ from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
 import random
 
 from workflow.models import (
+    ApprovalWorkflow as ApprovalWorkflowM,
     ApprovalType as ApprovalTypeM,
     Award as AwardM,
     Budget as BudgetM,
@@ -52,6 +53,13 @@ class ApprovalType(DjangoModelFactory):
         model = ApprovalTypeM
 
     name = 'Approval Type A'
+
+
+class ApprovalWorkflow(DjangoModelFactory):
+    class Meta:
+        model = ApprovalWorkflowM
+
+    approval_type = SubFactory(ApprovalType)
 
 
 class Budget(DjangoModelFactory):
