@@ -47,7 +47,6 @@ Generated in the [Microsoft Application Registration Portal](https://apps.dev.mi
 
 ### Chargebee
 Configuration necessary to work with Chargebee integration
-* `CHARGEBEE_SIGNUP_ORG_URL` The signup url for the organization in chargebee
 * `CHARGEBEE_SITE_API_KEY` API Key obtained by Chargebee
 * `CHARGEBEE_SITE` Sitename for Chargebee
 
