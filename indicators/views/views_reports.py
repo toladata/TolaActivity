@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from workflow.models import Program
-from ..models import Indicator, CollectedData, Level
+from ..models import Indicator, CollectedData, Level, PeriodicTarget
 from ..forms import IPTTReportQuickstartForm
 
 
@@ -318,18 +318,6 @@ class IPTT_ReportView(TemplateView):
             messages.info(self.request, _("Please select a valid program."))
             return context
 
-        # determine the full date range of data collection for this program
-        data_date_range = Indicator.objects.filter(program__in=[program_id])\
-            .aggregate(sdate=Min('collecteddata__date_collected'), edate=Max('collecteddata__date_collected'))
-        start_date = data_date_range['sdate']
-        end_date = data_date_range['edate']
-
-        try:
-            # convert datetime to date object to avoid timezone issues in templates
-            period_start_date = start_date.date()
-        except AttributeError:
-            period_start_date = None
-
         # calculate aggregated actuals (sum, avg, last) per reporting period
         # (monthly, quarterly, tri-annually, seminu-annualy, and yearly) for each indicator
         lastlevel = Level.objects.filter(indicator__id=OuterRef('pk')).order_by('-id')
@@ -341,33 +329,49 @@ class IPTT_ReportView(TemplateView):
                       lastdata=Subquery(last_data_record.values('achieved')[:1]))
 
         if reporttype == 'timeperiods':
-            self.annotations = {}
-            timeperiods = []
-            report_start_date = None
-            report_end_date = None
+            # determine the full date range of data collection for this program
+            data_date_range = Indicator.objects.filter(program__in=[program_id])\
+                .aggregate(sdate=Min('collecteddata__date_collected'), edate=Max('collecteddata__date_collected'))
+            start_date = data_date_range['sdate']
+            end_date = data_date_range['edate']
 
-            # if there is start_date then there is collecteddata so do some calculations
-            if period_start_date is not None:
+            try:
+                # convert datetime to date object to avoid timezone issues in templates
+                first_datacollected_date = start_date.date()
+            except AttributeError:
+                first_datacollected_date = None
+                self.annotations = {}
+                timeperiods = []
+                report_start_date = None
+                report_end_date = None
+
+            if first_datacollected_date:
                 num_periods = self._get_num_periods(start_date, end_date, period)
                 num_months_in_period = self._get_num_months(period)
-                report_start_date = self._get_first_period(period_start_date, num_months_in_period)
+                report_start_date = self._get_first_period(first_datacollected_date, num_months_in_period)
                 timeperiods = self._generate_timeperiods(report_start_date, period, num_periods, num_recents)
                 report_end_date = timeperiods[timeperiods.keys()[-1]][1]
                 self.annotations = self._generate_timperiod_annotations(timeperiods)
 
                 # update the queryset with annotations for timeperiods
-                indicators = indicators.values('id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
-                                               'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
-                                               'lastdata').annotate(**self.annotations)
+                indicators = indicators\
+                    .values(
+                        'id', 'number', 'name', 'program', 'lastlevel', 'unit_of_measure', 'direction_of_change',
+                        'unit_of_measure_type', 'is_cumulative', 'baseline', 'lop_target', 'actualsum', 'actualavg',
+                        'lastdata')\
+                    .annotate(**self.annotations)
+
         elif reporttype == 'targetperiods':
-            self.annotations = self._generate_targetperiod_annotations()
-            # for indicator in indicators:
-            #     # for each indicator, setup the right annotations based on its periodictargets
-            #     indicators = indicators.prefetch_related('periodictarget_set')
-            #     print(indicator.periodictarget_set.all().count())
-            timeperiods = []
-            report_start_date = period_start_date
-            report_end_date = None
+            # get the full date range for periodic_targets setup for this program and period
+            date_range = Indicator.objects.filter(program__in=[program_id], target_frequency=period).aggregate(
+                sdate=Min('periodictarget__start_date'), edate=Max('periodictarget__end_date'))
+            indicator_ids = indicators.values('id')
+            pts = PeriodicTarget.objects.filter(indicator__in=indicator_ids)\
+                .prefetch_related('indicator')\
+                .values('id', 'period', 'target', 'indicator__name')\
+                .annotate(actual_s=Sum('collecteddata__achieved'))
+            report_start_date = date_range['sdate']
+            report_end_date = date_range['edate']
         else:
             context['redirect'] = reverse_lazy('iptt_quickstart')
             messages.info(self.request, _("Please select a valid report type."))

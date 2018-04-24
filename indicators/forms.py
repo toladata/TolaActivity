@@ -225,7 +225,7 @@ class IPTTReportQuickstartForm(forms.Form):
         countries = getCountry(self.request.user)
         super(IPTTReportQuickstartForm, self).__init__(*args, **kwargs)
         self.fields['formprefix'].initial = self.prefix
-        self.fields['program'].queryset = Program.objects.filter(country__in=countries)
+        self.fields['program'].queryset = Program.objects.filter(country__in=countries).exclude(indicator=None)
         self.fields['program'].label = _("PROGRAM")
         self.fields['timeperiods'].label = _("TIME PERIODS")
         self.fields['numrecentperiods'].widget.attrs['placeholder'] = _("enter a number")
