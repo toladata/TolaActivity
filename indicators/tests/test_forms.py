@@ -1,8 +1,7 @@
 from django.test import TestCase, RequestFactory
-from TolaActivity.factories import (
-    IndicatorTypeFactory, IndicatorFactory, LevelFactory, SiteProfileFactory,
-    SectorFactory, ProgramFactory, CollectedDataFactory, UserFactory
-)
+
+from TolaActivity.factories import (IndicatorTypeFactory, IndicatorFactory, LevelFactory, SiteProfileFactory,
+                                    SectorFactory, ProgramFactory, CollectedDataFactory, UserFactory)
 from indicators.forms import IPTTReportFilterForm
 
 
@@ -26,7 +25,7 @@ class TestFilterForm(TestCase):
         collected_data.site.add(expected2)
         collected_data.site.add(expected)
         SiteProfileFactory.create_batch(3)
-        form = IPTTReportFilterForm(*[request], **{'program':p})
+        form = IPTTReportFilterForm(*[request], **{'program': p})
 
         stuff = str(form)
         self.assertIn(expected.name, stuff)
@@ -36,6 +35,3 @@ class TestFilterForm(TestCase):
             self.assertIn(sectors[i].sector, stuff)
             self.assertIn(levels[i].name, stuff)
             self.assertIn(ind_types[i].indicator_type, stuff)
-
-
-

@@ -3,15 +3,12 @@ from unittest import skip
 from django.test import TestCase, RequestFactory
 
 from TolaActivity.factories import UserFactory
-from factories.indicators_models import (IndicatorTypeFactory,
-                                         ExternalServiceFactory)
-from factories.workflow_models import (CountryFactory, ProgramFactory,
-                                       TolaUserFactory)
+from factories.indicators_models import (IndicatorTypeFactory)
+from factories.workflow_models import (ProgramFactory, TolaUserFactory)
 from indicators.views.views_indicators import indicator_create
 
 
 class IndicatorCreateFunctionTests(TestCase):
-
     def setUp(self):
         self.user = UserFactory(first_name="Indicator", last_name="CreateTest")
         self.tola_user = TolaUserFactory(user=self.user)

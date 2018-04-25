@@ -51,7 +51,7 @@ class GeneratePeriodicTargetTests(TestCase):
 
         result = generate_periodic_target_single(tf, self.start_date,
                                                  self.nth_target_period,
-                                        target_frequency_custom='')
+                                                 target_frequency_custom='')
         self.assertDictEqual(expected, result)
 
     def test_semi_annual(self):
@@ -83,8 +83,8 @@ class GeneratePeriodicTargetTests(TestCase):
         tf = Indicator.QUARTERLY
 
         # TODO: Get clarification on the business rules for this function
-        expected = {'end_date': '2021-07-04', 
-                    'period': 'Quarter 11', 
+        expected = {'end_date': '2021-07-04',
+                    'period': 'Quarter 11',
                     'start_date': '2021-04-01'}
 
         result = generate_periodic_target_single(tf, self.start_date,
@@ -102,7 +102,7 @@ class GeneratePeriodicTargetTests(TestCase):
 
         result = generate_periodic_target_single(tf, self.start_date,
                                                  self.nth_target_period,
-                                        target_frequency_custom='')
+                                                 target_frequency_custom='')
         self.assertDictEqual(expected, result)
 
 
