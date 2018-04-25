@@ -12,6 +12,7 @@ from workflow.models import (
     Budget as BudgetM,
     Checklist as ChecklistM,
     CodedField as CodedFieldM,
+    Contact as ContactM,
     Country as CountryM,
     Documentation as DocumentationM,
     FundCode as FundCodeM,
@@ -75,6 +76,17 @@ class Country(DjangoModelFactory):
 
     country = 'Afghanistan'
     code = 'AF'
+
+
+class Contact(DjangoModelFactory):
+    class Meta:
+        model = ContactM
+
+    name = 'Aryana Sayeed'
+    city = 'Kabul'
+    email = lazy_attribute(lambda o: slugify(o.name) + "@external-contact.com")
+    phone = '+93 555444333'
+    country = SubFactory(Country)
 
 
 class Organization(DjangoModelFactory):

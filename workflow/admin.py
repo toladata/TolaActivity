@@ -12,7 +12,7 @@ from .models import (Country, Documentation, WorkflowLevel2,
                      WorkflowLevel2, WorkflowLevel2Sort, Documentation,
                      SiteProfile, ProjectType,  Budget,
                      ProfileType, WorkflowTeam, ChecklistItem, Checklist,
-                     Stakeholder, StakeholderType, TolaUser, TolaSites,
+                     Stakeholder, Contact, StakeholderType, TolaUser, TolaSites,
                      FormGuidance, TolaUserProxy, TolaBookmarks, Currency,
                      ApprovalWorkflow, ApprovalType, FundCode, RiskRegister,
                      IssueRegister, CodedField, WorkflowModules, Milestone,
@@ -186,6 +186,13 @@ class ProjectTypeAdmin(admin.ModelAdmin):
     display = 'Project Type'
 
 
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'create_date', 'edit_date')
+    display = 'Contact'
+    list_filter = ('create_date','country')
+    search_fields = ('name','country','title','city')
+
+
 class FundCodeAdmin(admin.ModelAdmin):
     list_display = ('name', 'create_date', 'edit_date')
     display = 'Fund Code'
@@ -298,6 +305,7 @@ admin.site.register(WorkflowTeam, WorkflowTeamAdmin)
 admin.site.register(ChecklistItem, ChecklistItemAdmin)
 admin.site.register(Checklist, ChecklistAdmin)
 admin.site.register(Stakeholder, StakeholderAdmin)
+admin.site.register(Contact, ContactAdmin)
 admin.site.register(StakeholderType)
 admin.site.register(TolaUser, TolaUserAdmin)
 admin.site.register(TolaSites, TolaSitesAdmin)
