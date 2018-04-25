@@ -24,6 +24,7 @@ class LoginPage extends Page {
     get gError() { return $('div.dEOOab.RxsGPe').getText(); }
 
     set gUsername(val) {
+        //FIXME: Replace pause with waiting for an element
         browser.pause(msecs);
         // Works on chrome and firefox
         browser.$('form').$('input#identifierId').setValue(val);
@@ -31,6 +32,7 @@ class LoginPage extends Page {
         browser.$('div#identifierNext').click();
     }
     set gPassword(val) {
+        //FIXME: Replace pause with waiting for an element
         browser.pause(msecs);
         // Works on chrome and firefox
         browser.$('input[name="password"]').setValue(val);

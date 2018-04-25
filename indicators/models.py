@@ -128,7 +128,7 @@ class Level(models.Model):
     name = models.CharField(_("Name"), max_length=135, blank=True)
     description = models.TextField(
         _("Description"), max_length=765, blank=True)
-    create_date = models.DateTimeField(_("Create date"), auto_now_add=True)
+    create_date = models.DateTimeField(_("Create date"), null=True, blank=True)
     edit_date = models.DateTimeField(_("Edit date"), null=True, blank=True)
 
     class Meta:
@@ -136,6 +136,11 @@ class Level(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def save(self):
+        if self.create_date is None:
+            self.create_date = timezone.now()
+        super(Level, self).save()
 
 
 class LevelAdmin(admin.ModelAdmin):

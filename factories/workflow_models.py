@@ -1,6 +1,6 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation, Sequence, RelatedFactory
+    SubFactory, post_generation, Sequence
 
 import random
 
@@ -50,12 +50,11 @@ class OrganizationFactory(DjangoModelFactory):
     name = 'MC Org'
 
 
-class SiteProfileFactory(DjangoModelFactory):
+class SiteProfile(DjangoModelFactory):
     class Meta:
         model = SiteProfileM
 
-    name = Sequence(lambda n: 'Site Profile {0}'.format(n))
-    country = SubFactory(CountryFactory, country='United States', code='US')
+    name = 'MC Site'
 
 
 class TolaUserFactory(DjangoModelFactory):
@@ -67,7 +66,6 @@ class TolaUserFactory(DjangoModelFactory):
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
     organization = SubFactory(OrganizationFactory)
     country = SubFactory(CountryFactory, country='United States', code='US')
-    countries = RelatedFactory(CountryFactory, country='United States', code='US')
 
 
 class ProgramFactory(DjangoModelFactory):
@@ -76,7 +74,19 @@ class ProgramFactory(DjangoModelFactory):
 
     name = 'Health and Survival for Syrians in Affected Regions'
     gaitid = Sequence(lambda n: "%0030d" % n)
-    country = RelatedFactory(CountryFactory, country='United States', code='US')
+
+    @post_generation
+    def country(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if type(extracted) is list:
+            # A list of country were passed in, use them
+            for country in extracted:
+                self.country.add(country)
+        else:
+            self.country.add(CountryFactory(country='Syria', code='SY'))
 
 
 class Documentation(DjangoModelFactory):
@@ -87,11 +97,11 @@ class Documentation(DjangoModelFactory):
     program = SubFactory(ProgramFactory)
 
 
-class SectorFactory(DjangoModelFactory):
+class Sector(DjangoModelFactory):
     class Meta:
         model = SectorM
 
-    sector = Sequence(lambda n: 'Sector {0}'.format(n))
+    sector = 'Basic Needs'
 
 
 class Stakeholder(DjangoModelFactory):

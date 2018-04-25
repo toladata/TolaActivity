@@ -37,7 +37,8 @@ class IndicatorTestCase(TestCase):
         Tests summary values are accurate for various configurations of an
         Indicator
         """
-        indicator = factories.IndicatorFactory.create(program=self.program, source="TEST2")
+        indicator = factories.IndicatorFactory.create(
+            program=self.program, source="TEST2")
 
         url = reverse('collected_data_view',
                       kwargs={
@@ -51,7 +52,7 @@ class IndicatorTestCase(TestCase):
         self.indicator.target_frequency = Indicator.ANNUAL
         self.indicator.save()
         data = {
-            "program": self.program.id, "level": "1", "number": "1.1.2",
+            "program": "512", "level": "1", "number": "1.1.2",
             "indicator_type": "1",
             "unit_of_measure": "count", "unit_of_measure_type": "2",
             "lop_target": "44", "direction_of_change": "1", "baseline": "10",
