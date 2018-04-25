@@ -1,6 +1,8 @@
 from django.test import TestCase
 
-from TolaActivity.factories import (ProgramFactory, IndicatorFactory, CollectedDataFactory, SiteProfileFactory)
+from TolaActivity.factories import (
+    ProgramFactory, IndicatorFactory, CollectedDataFactory, SiteProfileFactory
+)
 from workflow.models import SiteProfile
 
 
@@ -8,9 +10,6 @@ class TestProgramMethods(TestCase):
 
     def test_get_sites(self):
         """It should return all and only the sites for a given program"""
-
-
-
         p = ProgramFactory()
         indicator = IndicatorFactory(program=p)
         IndicatorFactory.create_batch(3)

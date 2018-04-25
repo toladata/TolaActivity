@@ -36,5 +36,3 @@ class ImportIndicatorTests(TestCase):
         service = ExternalServiceFactory(name="Import Ind Test Service")
         result = import_indicator(service=service.id, deserialize='')
         self.assertIsInstance(result, mock_response)
-
-
