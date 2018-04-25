@@ -957,6 +957,41 @@ class SiteProfile(models.Model):
         return new_name
 
 
+class Contact(models.Model):
+    """
+    A contact is a person or entity who may be approached for information or assistance about a Site.
+
+    Example: Building Maintenance Manager at a Training Center.
+    """
+    name = models.CharField("Name", max_length=255, blank=True, null=True)
+    title = models.CharField("Title", max_length=255, blank=True, null=True)
+    city = models.CharField("City/Town", max_length=255, blank=True, null=True)
+    address = models.TextField("Address", max_length=255, blank=True, null=True)
+    email = models.CharField("Email", max_length=255, blank=True, null=True)
+    phone = models.CharField("Phone", max_length=255, blank=True, null=True)
+    country = models.ForeignKey(Country)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
+    create_date = models.DateTimeField(null=True, blank=True)
+    edit_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('name', 'country', 'title')
+        verbose_name_plural = "Contact"
+
+    # onsave add create date or update edit date
+    def save(self, *args, **kwargs):
+        if self.create_date == None:
+            self.create_date = timezone.now()
+        self.edit_date = timezone.now()
+        super(Contact, self).save()
+
+    def __unicode__(self):
+        if self.title:
+            return u"{}, {}".format(self.name, self.title)
+        else:
+            return unicode(self.name)
+
 class StakeholderType(models.Model):
     name = models.CharField("Stakeholder Type", max_length=255, blank=True, null=True)
     default_global = models.BooleanField(default=0)
@@ -980,7 +1015,7 @@ class StakeholderType(models.Model):
 
 class StakeholderManager(models.Manager):
     def get_queryset(self):
-        return super(StakeholderManager, self).get_queryset().prefetch_related('sectors').select_related(
+        return super(StakeholderManager, self).get_queryset().prefetch_related('contact', 'sectors').select_related(
             'country', 'type', 'formal_relationship_document', 'vetting_document')
 
 
@@ -1000,6 +1035,7 @@ class Stakeholder(models.Model):
     type = models.ForeignKey(StakeholderType, blank=True, null=True)
     role = models.CharField("Role", max_length=255, blank=True, null=True)
     contribution = models.CharField("Contribution", max_length=255, blank=True, null=True)
+    contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country, blank=True, null=True)
     organization = models.ForeignKey(Organization, default=1)
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
@@ -1035,6 +1071,7 @@ class Partner(models.Model):
     partners_uuid = models.CharField(max_length=255, verbose_name='Partner UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Partner/Organization Name", max_length=255, blank=True, null=True)
     type = models.ForeignKey(StakeholderType, blank=True, null=True, related_name="stakeholder_partner")
+    contact = models.ManyToManyField(Contact, max_length=255, blank=True)
     country = models.ForeignKey(Country, blank=True, null=True)
     sectors = models.ManyToManyField(Sector, blank=True)
     organization = models.ForeignKey(Organization, default=1)
