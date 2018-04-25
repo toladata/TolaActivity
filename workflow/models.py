@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from decimal import Decimal
-from datetime import datetime
 import uuid
 
 from django.conf import settings
@@ -14,6 +13,8 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from simple_history.models import HistoricalRecords
 from django.contrib.sessions.models import Session
+
+
 try:
     from django.utils import timezone
 except ImportError:
@@ -351,6 +352,27 @@ class Program(models.Model):
     # displayed in admin templates
     def __unicode__(self):
         return self.name
+
+    def get_sites(self):
+        """Fetch a query set of sites associated with a given program
+
+            Notes:
+                Programs are associated via proxy to particular site profiles. The mapping is as follows:
+
+                Program => Indicator => CollectedData => SiteProfile
+            Args:
+                self
+
+            Returns:
+                QuerySet (SiteProfile) a query set of SiteProfiles associated with this program via the proxy of
+                    indicators and collected data
+
+        """
+
+
+        indicator_ids = Indicator.objects.filter(program__in=[self.id]).values_list('id')
+        collecteddata = CollectedData.objects.filter(indicator__id__in=indicator_ids)
+        return SiteProfile.objects.filter(collecteddata__id__in=collecteddata)
 
 
 class ApprovalAuthority(models.Model):
@@ -1407,4 +1429,5 @@ def get_user_country(request):
         return response
 
 
-
+## Avoiding circular import
+from indicators.models import Indicator, CollectedData

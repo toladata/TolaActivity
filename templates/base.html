@@ -163,8 +163,11 @@
 
             </div>
         </nav>
-
+        {% if report_wide %}
+          <div>
+        {% else %}
         <div class="container mt-3">
+        {% endif %}
             <div id="id_div_breadcrumb">{% block bread_crumb %}{% endblock %}</div>
             <div id="alerts">
                 <!-- Any messages for users -->
