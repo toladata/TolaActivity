@@ -3,15 +3,16 @@ from functools import partial
 from django.db.models import Q
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-
-from indicators.models import (
-    Indicator, PeriodicTarget, CollectedData, Objective, StrategicObjective,
-    TolaTable, DisaggregationType
-)
 from workflow.models import (
-    Program, SiteProfile, Documentation, ProjectComplete, TolaUser
+    Program, SiteProfile, Documentation, ProjectComplete, TolaUser,
+    Sector
 )
 from tola.util import getCountry
+from indicators.models import (
+    Indicator, PeriodicTarget, CollectedData, Objective, StrategicObjective,
+    TolaTable, DisaggregationType,
+    Level, IndicatorType
+)
 
 
 class DatePicker(forms.DateInput):
@@ -180,7 +181,7 @@ class CollectedDataForm(forms.ModelForm):
         self.fields['date_collected'].help_text = ' '
 
 
-class IPTTReportQuickstartForm(forms.Form):
+class ReportFormCommon(forms.Form):
     prefix = 'timeperiods'
 
     EMPTY = 0
@@ -220,16 +221,41 @@ class IPTTReportQuickstartForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
-        prefix = kwargs.pop('prefix')
-        self.prefix = prefix if prefix is not None else self.prefix
         countries = getCountry(self.request.user)
-        super(IPTTReportQuickstartForm, self).__init__(*args, **kwargs)
-        self.fields['formprefix'].initial = self.prefix
-        self.fields['program'].queryset = Program.objects.filter(country__in=countries)
+        super(ReportFormCommon, self).__init__(*args, **kwargs)
         self.fields['program'].label = _("PROGRAM")
         self.fields['timeperiods'].label = _("TIME PERIODS")
         self.fields['numrecentperiods'].widget.attrs['placeholder'] = _("enter a number")
         self.fields['targetperiods'].label = _("TARGET PERIODS")
+        self.fields['program'].queryset = Program.objects.filter(country__in=countries).exclude(indicator=None)
         self.fields['timeframe'].initial = self.SHOW_ALL
 
 
+class IPTTReportQuickstartForm(ReportFormCommon):
+    prefix = 'timeperiods'
+    formprefix = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        prefix = kwargs.pop('prefix')
+        self.prefix = prefix if prefix is not None else self.prefix
+        super(IPTTReportQuickstartForm, self).__init__(*args, **kwargs)
+        self.fields['formprefix'].initial = self.prefix
+
+
+class IPTTReportFilterForm(ReportFormCommon):
+    level = forms.ModelChoiceField(queryset=Level.objects.none(), required=False, label='LEVEL')
+    ind_type = forms.ModelChoiceField(queryset=IndicatorType.objects.none(), required=False, label='TYPE')
+    sector = forms.ModelChoiceField(queryset=Sector.objects.none(), required=False, label='SECTOR')
+    site = forms.ModelChoiceField(queryset=SiteProfile.objects.none(), required=False, label='SITE')
+    indicators = forms.ModelChoiceField(queryset=Indicator.objects.none(), required=False, label='SELECT INDICATORS')
+    start_date = forms.DateField(label='START')
+    end_date = forms.DateField(label='END')
+
+    def __init__(self, *args, **kwargs):
+        program = kwargs.pop('program')
+        super(IPTTReportFilterForm, self).__init__(*args, **kwargs)
+        self.fields['sector'].queryset = Sector.objects.all()
+        self.fields['level'].queryset = Level.objects.all()
+        self.fields['ind_type'].queryset = IndicatorType.objects.all()
+        self.fields['site'].queryset = program.get_sites()
+        self.fields['indicators'].queryset = Indicator.objects.filter(program=program)

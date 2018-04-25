@@ -437,7 +437,11 @@
         return label;
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
-        show_hide_frequency_fields();
+      if ($("#id_target_frequency option:selected").text().indexOf("---") < 0) {
+        $("#id_target_frequency").removeClass('is-invalid');
+        $("#validation_id_target_frequency").text(" ");
+      }
+      show_hide_frequency_fields();
     });
 
 
@@ -485,12 +489,10 @@
 
         if (errMsg) {
             lop.addClass('is-invalid');
-            $("#div_id_lop_target").addClass("mb-3");
             $("#validation_id_lop_target").text(errMsg);
             return false;
         } else {
             lop.removeClass('is-invalid');
-            $("#div_id_lop_target").removeClass("mb-3");
             $("#validation_id_lop_target").text(" ");
             errMsg = undefined;
             return true;
@@ -550,6 +552,8 @@
 
         if (errMsg) {
             field.addClass('is-invalid');
+            $("#div_id_target_frequency_start").addClass('mb-5')
+            $("#div_id_target_frequency_start").removeClass('mb-3')
             $("#validation_" + fieldId).text(errMsg);
             return false;
         } else {
@@ -557,6 +561,8 @@
             field.val(val);
             errMsg = undefined;
             field.removeClass('is-invalid');
+            $("#div_id_target_frequency_start").addClass('mb-3')
+            $("#div_id_target_frequency_start").removeClass('mb-5')
             $("#validation_" + fieldId).text(" ");
             return true;
         }
@@ -626,8 +632,16 @@
         if (validateForEmptyField("id_unit_of_measure") == false ) {
             validationsTargetTab = false;
         }
-        if ($("#id_target_frequency_custom").is(":visible") && validateForEmptyField("id_target_frequency_custom") == false) {
+        if ($("#id_target_frequency_custom").is(":visible")){
+          if (validateForEmptyField("id_target_frequency_custom") == false) {
+            $("#div_id_target_frequency_custom").addClass('mb-5')
+            $("#div_id_target_frequency_custom").removeClass('mb-3')
             validationsTargetTab = false;
+          }
+          else {
+            $("#div_id_target_frequency_custom").addClass('mb-3')
+            $("#div_id_target_frequency_custom").removeClass('mb-5')
+          }
         }
         if ($("#id_target_frequency_start").is(":visible") && validateForEmptyField("id_target_frequency_start") == false) {
             validationsTargetTab = false;
@@ -732,7 +746,15 @@
     });
 
     $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_custom", function(e){
-        validateForEmptyField("id_target_frequency_custom");
+        var is_valid = validateForEmptyField("id_target_frequency_custom");
+        if (!is_valid) {
+          $("#div_id_target_frequency_custom").addClass('mb-5')
+          $("#div_id_target_frequency_custom").removeClass('mb-3')
+        }
+        else {
+          $("#div_id_target_frequency_custom").addClass('mb-3')
+          $("#div_id_target_frequency_custom").removeClass('mb-5')
+        }
     });
 
     $("#indicator_modal_content, #indicator_form").on("blur, change", "#id_target_frequency_start", function(e){

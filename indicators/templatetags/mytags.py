@@ -1,6 +1,8 @@
+import simplejson
 from datetime import datetime
-from django.template import Variable, VariableDoesNotExist
+from django.core.serializers import serialize
 from django import template
+from django.db.models import QuerySet
 from django.utils.translation import ugettext_lazy as _
 from indicators.models import Indicator
 
@@ -76,4 +78,3 @@ def hash(dic, attr):
         return dic.get(attr)
     except Exception:
         return None
-

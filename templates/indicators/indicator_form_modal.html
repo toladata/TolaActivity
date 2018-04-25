@@ -37,7 +37,7 @@
         <span id = "modalmessages" width="100%"></span>
         <h5 style="color:#94979c;">
             {% if indicator.levels %}
-                {{ indicator.levels }} indicator:
+                {{ indicator.levels }} {% trans "indicator:" %}"
             {% endif %}
             {{ indicator.name|truncatechars:300 }}
         </h5>

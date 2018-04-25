@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-18 09:32-0700\n"
+"POT-Creation-Date: 2018-04-20 08:52-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -470,19 +470,19 @@ msgstr "ID de Service Externe"
 msgid "Notes"
 msgstr "Commentaire"
 
-#: indicators/models.py:629
+#: indicators/models.py:629 indicators/templatetags/mytags.py:56
 msgid "#"
 msgstr "#"
 
-#: indicators/models.py:631
+#: indicators/models.py:631 indicators/templatetags/mytags.py:59
 msgid "%"
 msgstr "%"
 
-#: indicators/models.py:638
+#: indicators/models.py:638 indicators/templatetags/mytags.py:41
 msgid "-"
 msgstr "-"
 
-#: indicators/models.py:640
+#: indicators/models.py:640 indicators/templatetags/mytags.py:44
 msgid "+"
 msgstr "+"
 
@@ -564,6 +564,10 @@ msgstr ""
 "Souhaitez-vous mettre à jour le total atteint avec le nombre de lignes de "
 "TolaTables?"
 
+#: indicators/templatetags/mytags.py:46
+msgid "NA"
+msgstr ""
+
 #: templates/base.html:94
 msgid "Workflow"
 msgstr "Flux de travail"
@@ -593,6 +597,7 @@ msgstr "Les Parties Prenantes"
 #: templates/indicators/filter.html:97 templates/indicators/grid_report.html:5
 #: templates/indicators/home.html:5 templates/indicators/home.html:27
 #: templates/indicators/indicator_create.html:5
+#: templates/indicators/indicator_list.html:26
 #: templates/indicators/report.html:7 templates/indicators/tva_report.html:8
 msgid "Indicators"
 msgstr "Indicateurs"
@@ -604,7 +609,7 @@ msgstr "Rapports"
 
 #: templates/base.html:109 templates/indicators/iptt_quickstart.html:4
 #: templates/indicators/iptt_quickstart.html:5
-#: templates/indicators/iptt_report.html:13
+#: templates/indicators/iptt_report.html:14
 msgid "Indicator Performance Tracking Table"
 msgstr "Tableau de suivi des performances de l'indicateur"
 
@@ -836,17 +841,17 @@ msgid "TARGET PERIOD"
 msgstr "PÉRIODE CIBLE"
 
 #: templates/indicators/collected_data_table.html:21
-#: templates/indicators/iptt_report.html:24
+#: templates/indicators/iptt_report.html:25
 msgid "TARGET"
 msgstr "CIBLE"
 
 #: templates/indicators/collected_data_table.html:22
-#: templates/indicators/iptt_report.html:25
+#: templates/indicators/iptt_report.html:26
 msgid "ACTUAL"
 msgstr "RAPPORT RÉEL"
 
 #: templates/indicators/collected_data_table.html:23
-#: templates/indicators/iptt_report.html:26
+#: templates/indicators/iptt_report.html:27
 #, python-format
 msgid "%% MET"
 msgstr "%% ATTEINT"
@@ -862,13 +867,13 @@ msgstr "PREUVE"
 #: templates/indicators/collected_data_table.html:64
 #: templates/indicators/collected_data_table.html:249
 #: templates/indicators/indicatortargets.html:62
-#: templates/indicators/iptt_report.html:54
+#: templates/indicators/iptt_report.html:60
 msgid "Average"
 msgstr "Moyenne"
 
 #: templates/indicators/collected_data_table.html:64
 #: templates/indicators/collected_data_table.html:249
-#: templates/indicators/iptt_report.html:54
+#: templates/indicators/iptt_report.html:60
 msgid "avg."
 msgstr "moy."
 
@@ -1081,6 +1086,7 @@ msgstr "visible"
 #: templates/indicators/data_report.html:92
 #: templates/indicators/data_report.html:93
 #: templates/indicators/data_report.html:94
+#: templates/indicators/indicatortargets.html:8
 msgid "targets"
 msgstr "cibles"
 
@@ -1643,27 +1649,27 @@ msgstr ""
 "Voir les progrès vers les objectifs périodiques d'un programme en plus des "
 "objectifs de la vie du programme"
 
-#: templates/indicators/iptt_report.html:15
+#: templates/indicators/iptt_report.html:16
 msgid "NO."
 msgstr "NO"
 
-#: templates/indicators/iptt_report.html:16
+#: templates/indicators/iptt_report.html:17
 msgid "INDICATOR"
 msgstr "INDICATEUR"
 
-#: templates/indicators/iptt_report.html:18
+#: templates/indicators/iptt_report.html:19
 msgid "LEVEL"
 msgstr "NIVEAU"
 
-#: templates/indicators/iptt_report.html:19
+#: templates/indicators/iptt_report.html:20
 msgid "UNIT OF MEASURE"
 msgstr "UNITÉ DE MESURE"
 
-#: templates/indicators/iptt_report.html:20
+#: templates/indicators/iptt_report.html:21
 msgid "CHANGE"
 msgstr "CHANGEMENT"
 
-#: templates/indicators/iptt_report.html:23
+#: templates/indicators/iptt_report.html:24
 msgid "BASELINE"
 msgstr "BASE"
 
@@ -1718,7 +1724,7 @@ msgstr "District:"
 
 #: templates/indicators/tva_print.html:42
 #, fuzzy, python-format
-msgid "Indicator Target vs Actual Report for %%(program)s "
+msgid "Indicator Target vs Actual Report for %(program)s "
 msgstr "Indicateur Cible vs Rapport réel pour %%(programme)s"
 
 #: templates/indicators/tva_report.html:15
@@ -1742,20 +1748,20 @@ msgid "Submit"
 msgstr "Envoyer"
 
 #: tola/settings/base.py:89
+msgid "English"
+msgstr "Anglais"
+
+#: tola/settings/base.py:90
 msgid "French"
 msgstr "Français"
 
-#: tola/settings/base.py:90
+#: tola/settings/base.py:91
 msgid "Spanish"
 msgstr "Espanol"
 
-#: tola/settings/base.py:91
+#: tola/settings/base.py:92
 msgid "Arabic"
 msgstr "Arabe"
-
-#: tola/settings/base.py:92
-msgid "English"
-msgstr "Anglais"
 
 #: workflow/models.py:35
 msgid "Agency name"
@@ -2778,12 +2784,12 @@ msgstr "URL (lien vers le référentiel de documents ou de documents)"
 
 #: workflow/models.py:1204
 #, fuzzy, python-format
-msgid "%% complete"
+msgid "% complete"
 msgstr "%% terminé"
 
 #: workflow/models.py:1205
 #, fuzzy, python-format
-msgid "%% cumulative completion"
+msgid "% cumulative completion"
 msgstr "%% d'achèvement cumulé"
 
 #: workflow/models.py:1206
