@@ -1,5 +1,5 @@
 exports.config = {
-    // Specify Test Files
+    execArgv: ['--inspect'],
     specs: [
         './tests/**/*.js'
     ],
@@ -9,7 +9,7 @@ exports.config = {
     ],
     suites: {
         login: [
-            'test/specs/login.js'
+            'test/specs/00_login.js'
         ],
         dashboard: [
             'test/specs/dashboard.js'
@@ -81,11 +81,7 @@ exports.config = {
     },
     mochaOpts: {
         ui: 'bdd',
-        compilers: ['js:babel-register']
-        //require: ['babel-register']
-    },
-    onComplete: function(exitCode, config, capabilities) {
-        var proc = require('child_process');
-        proc.execSync('/bin/rm -rfv /tmp/tats');
+        compilers: ['js:babel-register'],
+        require: ['babel-register']
     }
 }

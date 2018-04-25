@@ -92,7 +92,7 @@ $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
     if (hash) {
-        $('.nav-tabs a[href='+hash+']').tab('show');
+        $('.nav-tabs a[href="'+hash+'"]').tab('show');
     }
 
     // Change hash for page-reload
@@ -410,7 +410,6 @@ $(document).ready(function() {
         $('.collapse').removeClass('in');
         $(location.hash + '.collapse').collapse('show');
         indicator_id = location.hash.split('-')
-        console.log(indicator_id)
         //loadIndicators(indicator_id[1])
     }
 });

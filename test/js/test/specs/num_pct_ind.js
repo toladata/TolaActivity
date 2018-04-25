@@ -3,14 +3,14 @@ import NavBar from '../pages/navbar.page';
 import IndPage from '../pages/indicators.page';
 import TargetsTab from '../pages/targets.page';
 import Util from '../lib/testutil';
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 'use strict';
 
 /**
  * General number and percentage indicator tests
- * Tests from mc/issues/114, mc/issues/117, ms/issues/144
+ * Tests from mc/issues/114, mc/issues/117, and mc/issues/144
  */
-describe('Number indicators config and display', function() {
+describe('Defining number and percent indicators', function() {
     before(function() {
         // Disable timeouts
         this.timeout(0);
@@ -31,18 +31,60 @@ describe('Number indicators config and display', function() {
         }
     });
 
-    it('should default to number indicators');
-    it('should default number indicators to non-cumulative indicators');
-    it('should default percentage indicators to cumulative indicators');
-    it('should add “%” to LoP target and Baseline text boxes');
+    it('should allow to set percentage indicators', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.setMeasureType('percent');
+        let indType = TargetsTab.getMeasureType();
+        expect(indType == 1);
+    });
+
+    it('should default to number indicators', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
+        let indType = TargetsTab.getMeasureType();
+        expect(indType == 0);
+    });
+
+    it('should default number indicators to non-cumulative indicators', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
+        TargetsTab.setUnitOfMeasure('Soup per spoon');
+        TargetsTab.setLoPTarget(55);
+        TargetsTab.setBaseline(56);
+        TargetsTab.setTargetFrequency('Annual');
+        TargetsTab.setFirstTargetPeriod();
+        TargetsTab.setNumTargetPeriods(2);
+        TargetsTab.saveIndicatorChanges();
+        expect(false == TargetsTab.getMeasureIsCumulative());
+    });
+
+    it('should default percentage indicators to cumulative indicators', function() {
+        NavBar.Indicators.click();
+        IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
+        TargetsTab.setUnitOfMeasure('Ticks per tail');
+        TargetsTab.setMeasureType('percent');
+        TargetsTab.setLoPTarget(69);
+        TargetsTab.setBaseline(70);
+        TargetsTab.setTargetFrequency('Annual');
+        TargetsTab.setFirstTargetPeriod();
+        TargetsTab.setNumTargetPeriods(2);
+        TargetsTab.saveIndicatorChanges();
+        expect(true == TargetsTab.getMeasureIsCumulative());
+
+    });
+
+    it('should add “%” to LoP target and Baseline fields of percentage indicators');
 
     it('should have direction of change option', function() {
-        TargetsTab.setDirectionOfChange('none');
-        expect(TargetsTab.getDirectionOfChange() == 'none');
-        TargetsTab.setDirectionOfChange('pos');
-        expect(TargetsTab.setDirectionOfChange() == 'pos');
-        TargetsTab.setDirectionOfChange('net');
-        expect(TargetsTab.setDirectionOfChange() == 'neg');
+        expect(TargetsTab.getDirectionOfChange() != undefined);
+        expect(TargetsTab.getDirectionOfChange() != null);
     });
-    it('should default to no direction of change');
-}); 
+
+    it('should default to no direction of change', function() {
+        expect(TargetsTab.getDirectionOfChange() == 'none');
+    });
+});

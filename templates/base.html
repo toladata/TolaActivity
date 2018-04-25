@@ -31,6 +31,7 @@
             crossorigin="anonymous">
 
         <!-- Custom CSS -->
+        <link href="{% static 'css/app_bootstrap_overrides.css' %}" rel="stylesheet" type="text/css">
         <link href="{% static 'css/app.css' %}" rel="stylesheet" type="text/css">
 
         <!--- Django Tables2 css -->
@@ -162,8 +163,11 @@
 
             </div>
         </nav>
-
+        {% if report_wide %}
+          <div>
+        {% else %}
         <div class="container mt-3">
+        {% endif %}
             <div id="id_div_breadcrumb">{% block bread_crumb %}{% endblock %}</div>
             <div id="alerts">
                 <!-- Any messages for users -->

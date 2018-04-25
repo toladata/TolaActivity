@@ -5,9 +5,6 @@ import NavBar from '../pages/navbar.page';
 import TargetsTab from '../pages/targets.page';
 import Util from '../lib/testutil';
 import DateMath from 'date-arithmetic';
-
-const msec = 1000;
-const delay = 10*msec;
 'use strict';
 
 describe('Adding target date ranges', function() {
@@ -31,9 +28,10 @@ describe('Adding target date ranges', function() {
       }
     });
 
-    it('to pre-existing annual periodic targets should produce valid data ranges', function() {
+    it('to pre-existing annual periodic targets should produce valid date ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Annual');
         // Set first period to current month
         TargetsTab.setFirstTargetPeriod();
@@ -52,7 +50,7 @@ describe('Adding target date ranges', function() {
         // Add a target and verify date ranges
         TargetsTab.addTarget();
         for (let dateRange of dateRanges) {
-            // Split dates into start and end data objects
+            // Split dates into start and end date objects
             rangeStart = new Date(dateRange.split(' - ')[0]);
             rangeEnd = new Date(dateRange.split(' - ')[1]);
             //FIXME: code smell
@@ -86,9 +84,10 @@ describe('Adding target date ranges', function() {
         TargetsTab.saveIndicatorChanges();
     });
 
-    it('to pre-existing semi-annual periodic targets should produce valid data ranges', function() {
+    it('to pre-existing semi-annual periodic targets should produce valid date ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Semi-annual');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(1);
@@ -127,9 +126,10 @@ describe('Adding target date ranges', function() {
         TargetsTab.saveIndicatorChanges();
     });
 
-    it('to pre-existing tri-annual periodic targets should produce valid data ranges', function() {
+    it('to pre-existing tri-annual periodic targets should produce valid date ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Tri-annual');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(1);
@@ -168,9 +168,10 @@ describe('Adding target date ranges', function() {
         TargetsTab.saveIndicatorChanges();
     });
 
-    it('to pre-existing quarterly periodic targets should produce valid data ranges', function() {
+    it('to pre-existing quarterly periodic targets should produce valid date ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Quarterly');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(1);
@@ -209,10 +210,11 @@ describe('Adding target date ranges', function() {
         TargetsTab.saveIndicatorChanges();
     });
 
-    it('to pre-existing monthly periodic targets should produce valid data ranges', function() {
+    it('to pre-existing monthly periodic targets should produce valid date ranges', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
-        TargetsTab.setTargetFrequency('Tri-annual');
+        TargetsTab.clickTargetsTab();
+        TargetsTab.setTargetFrequency('Monthly');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(1);
         TargetsTab.setUnitOfMeasure('Imps per invocation');
