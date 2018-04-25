@@ -1,9 +1,13 @@
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 
 <script>
     var validation_msgs = {};
+    var userLang = "{{ LANGUAGE_CODE }}";
+
 
     function setupPopupCalendar() {
+        $.datepicker.setDefaults($.datepicker.regional[userLang]);
         $('.monthPicker').datepicker({
             changeMonth: true,
             changeYear: true,
@@ -13,7 +17,7 @@
                 // move date picker popup div inside modal dialog(fix for firefox)
                 $(input).parent().append($('#ui-datepicker-div'));
                 $('#ui-datepicker-div').hide();
-            },
+            }
             /*
             onClose: function (dateText, inst) {
                 const field = $(this);
@@ -167,7 +171,7 @@
                     </td>
 
                     <td class="align-middle" align="right" width="150px">
-                        <input type="number" id="pt-${pt.id}" value="${parseFloat(pt.target).toFixed(2).replace(/[.,]00$/, "")}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control input-value">
+                        <input type="number" id="pt-${pt.id}" value="${parseFloat(pt.target).toFixed(2).replace(/[.,]00$/, "")}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="{% trans 'Enter target' %}" class="form-control input-value">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
                     </td>
                 </tr>
@@ -535,6 +539,7 @@
     function validatePeriodStartField() {
         const fieldId = "id_target_frequency_start";
         const field = $("#" + fieldId);
+
         let errMsg = undefined;
 
         if ($.isEmptyObject(field.val())) {
@@ -744,3 +749,14 @@
 
 
 </script>
+
+
+
+
+
+
+
+
+
+
+

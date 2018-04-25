@@ -77,7 +77,7 @@
             {{ hidden_field }}
         {% endfor %}
 
-        <legend>Collected Data</legend>
+        <legend>{%  trans 'Collected Data' %}</legend>
 
         <fieldset>
             <div class="form-row mb-2" id="div_id_program2">
@@ -184,7 +184,7 @@
                     {{ form.tola_table.label }}
                 </label>
                 <div class="col-sm-7">
-                    <a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>
+                    <a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">{% trans 'Import Evidence From Tola Tables' %}</a>
                     {% render_field form.tola_table class+="form-control" %}
                     <small id="hint_id_tola_table" class="form-text text-muted">
                         {{ form.tola_table.help_text }}
@@ -215,7 +215,7 @@
                         <table class="table table-sm table-hover table-striped">
                             <tr>
                                 <th>{% trans "Disaggregation Level" %}</th>
-                                <th>{% "Actuals" %}</th>
+                                <th>{% trans "Actuals" %}</th>
                             </tr>
                             {% for item in getDisaggregationLabelStandard %}
                                 <tr>

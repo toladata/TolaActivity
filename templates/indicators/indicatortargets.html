@@ -34,11 +34,11 @@
                                     type="number"
                                     id="pt-{{ pt.id }}"
                                     name="{{ pt.period }}"
-                                    value="{{ pt.target|floatformat:"-2" }}"
+                                    value="{{ pt.target|floatformat:"-2"}}"
                                     data-periodictarget="pt"
                                     data-start-date="{{pt.start_date|convert2dateobject|date:"M d, Y"|default:''}}"
                                     data-end-date="{{pt.end_date|convert2dateobject|date:"M d, Y"|default:''}}"
-                                    placeholder="Enter target"
+                                    placeholder="{% trans 'Enter target' %}"
                                     class="form-control input-value {% if indicator.unit_of_measure_type == 2 %} pr-4{% endif %}">
                             </span>
                             <span id="hint_id_pt_{{pt.pk}}" style="margin:0px;" class="help-block"> </span>
@@ -59,7 +59,7 @@
                             <td align="left" class="align-middle">
                                 <strong>
                                     <span id="id_span_label_targets_sum">
-                                        {% if indicator.unit_of_measure_type == 1%}Sum{% else %}{% trans "Average" %}{% endif %} {% trans "of targets" %}
+                                        {% if indicator.unit_of_measure_type == 1%}{% trans "Sum" %}{% else %}{% trans "Average" %}{% endif %} {% trans "of targets" %}
                                     </span>
                                 </strong>
                             </td>
@@ -91,7 +91,7 @@
                         <div class="m-2 pr-1">
                             <strong>
                                 <span id="id_span_loptarget">
-                                    {{indicator.lop_target|floatformat:"-2"}}
+                                    {{indicator.lop_target|floatformat:"-2" }}
                                     <span id="id_span_loptarget_percent_sign">
                                         {% if indicator.unit_of_measure_type == 2 %}%{% endif %}
                                     </span>
