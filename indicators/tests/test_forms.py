@@ -1,7 +1,8 @@
 from django.test import TestCase, RequestFactory
-
-from TolaActivity.factories import (IndicatorTypeFactory, IndicatorFactory, LevelFactory, SiteProfileFactory,
-                                    SectorFactory, ProgramFactory, CollectedDataFactory, UserFactory)
+from TolaActivity.factories import (
+    IndicatorTypeFactory, IndicatorFactory, LevelFactory, SiteProfileFactory,
+    SectorFactory, ProgramFactory, CollectedDataFactory, UserFactory
+)
 from indicators.forms import IPTTReportFilterForm
 
 

@@ -6,6 +6,17 @@
 {% block title %}Indicator Performance Tracking Table{% endblock %}
 
 {% block content %}
+<div class="row d-flex d-md-block flex-nowrap wrapper" style="margin-left: 0px">
+  <div class="float-left collapse width show" id="sidebar">
+    {% include 'indicators/iptt_filter_form.html' %}
+  </div>
+  <div class="row" style="margin-top:0px; margin-left:0px; background-color:#00A49F; padding-left: 3px;
+     color: #fff;">
+    <a href="#" data-target="#sidebar" data-toggle="collapse" style="color: white;">
+      <i class="fa fa-cog"></i>
+    </a>Options
+  </div>
+  <main class="col-md-9 float-left col px-5 pl-md-2 pt-2 main">
     <div id="id_div_top_iptt_report" class="table-responsive2">
         <span id="id_span_iptt_date_range">
           <strong>{{ start_date|date:"M d, Y" }} - {{ end_date|date:"M d, Y" }}</strong>
@@ -157,4 +168,6 @@
       </script>
 
     {% include 'indicators/indicator_form_common_js.html' %}
+  </main>
+</div>
 {% endblock content %}

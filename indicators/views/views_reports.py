@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from workflow.models import Program
 from ..models import Indicator, CollectedData, Level, PeriodicTarget
-from ..forms import IPTTReportQuickstartForm
+from ..forms import IPTTReportQuickstartForm, IPTTReportFilterForm
 
 
 class IPTTReportQuickstartView(FormView):
@@ -389,9 +389,27 @@ class IPTT_ReportView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+        context['form'] = IPTTReportFilterForm(request=request, program=context['program'])
+        context['report_wide'] = True
         if context.get('redirect', None):
             return HttpResponseRedirect(reverse_lazy('iptt_quickstart'))
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        pass
+        form = IPTTReportFilterForm(request.POST, request=request)
+        if form.is_valid():
+            return self.form_valid(form, request, **kwargs)
+        elif not form.is_valid():
+            return self.form_invalid(form, request, **kwargs)
+
+    def form_valid(self, form, request, **kwargs):
+        context = self._generate_context(request, **kwargs)
+        context['form'] = form
+        context['report_wide'] = True
+        return self.render_to_response(context=context)
+
+    def form_invalid(self, form, request, **kwargs):
+        context = self._generate_context(request, **kwargs)
+        context['form'] = form
+        context['report_wide'] = True
+        return self.render_to_response(context=context)
