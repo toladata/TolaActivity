@@ -82,17 +82,6 @@ class OfficeTest(TestCase):
 
 
 @tag('pkg')
-class ContactTest(TestCase):
-    def test_print_instance(self):
-        contact = factories.Contact.build(title="Title")
-        self.assertEqual(unicode(contact), u'Aryana Sayeed, Title')
-
-    def test_print_instance_without_title(self):
-        contact = factories.Contact.build()
-        self.assertEqual(unicode(contact), u'Aryana Sayeed')
-
-
-@tag('pkg')
 class WorkflowLevel2Test(TestCase):
     def test_print_instance(self):
         wflvl2 = factories.WorkflowLevel2.build()
