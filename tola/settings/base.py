@@ -123,45 +123,6 @@ FIXTURE_DIRS = (
 )
 ########## END FIXTURE CONFIGURATION
 
-
-########## TEMPLATE CONFIGURATION
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            normpath(join(SITE_ROOT, 'templates')),
-        ],
-        'OPTIONS': {
-            'context_processors': [
-                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
-                # list if you haven't customized them:
-                'django.contrib.auth.context_processors.auth',
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
-                'django.template.context_processors.debug',
-                'django.template.context_processors.i18n',
-                'django.template.context_processors.media',
-                'django.template.context_processors.static',
-                'django.template.context_processors.tz',
-                'django.template.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
-                'tola.processor.report_server_check',
-                'tola.processor.org_levels',
-                'tola.processor.google_analytics',
-
-            ],
-            'loaders':[
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-            ]
-        },
-    },
-]
-
-########## END TEMPLATE CONFIGURATION
-
-
 ########## MIDDLEWARE CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#middleware-classes
 MIDDLEWARE = (
