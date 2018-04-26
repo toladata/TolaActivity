@@ -10,8 +10,6 @@ python-dateutil==2.6.0
 requests==2.18.1
 django-ckeditor==5.2.2
 django-wysiwyg==0.8.0
--e git://github.com/toladata/social-core#egg=social-core
-social-auth-app-django==1.2.0
 simplejson==3.11.1
 pytz==2017.2
 psycopg2>=2.7,<=2.8

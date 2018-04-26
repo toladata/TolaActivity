@@ -234,7 +234,6 @@ THIRD_PARTY_APPS = (
     'simplejson',
     'simple_history',
     'guardian',
-    'social_django',
     'corsheaders',
     'django_filters',
     'oauth2_provider',
@@ -253,34 +252,8 @@ LOCAL_APPS = (
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 ########## END APP CONFIGURATION
 
-####### AUTHENTICATION BACKEND CONFIG ##################
-# https://github.com/django/django/blob/master/django/contrib/auth/backends.py
-AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.microsoft.MicrosoftOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
-    'oauth2_provider.backends.OAuth2Backend',
-)
-
-SOCIAL_AUTH_PIPELINE = (
-    'social_core.pipeline.social_auth.social_details',
-    'social_core.pipeline.social_auth.social_uid',
-    'tola.auth_pipeline.auth_allowed',
-    'social_core.pipeline.social_auth.social_user',
-    'tola.auth_pipeline.check_user',
-    'social_core.pipeline.social_auth.associate_user',
-    'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
-    'tola.auth_pipeline.redirect_after_login',
-)
-
-############ END OF AUTHENTICATION BACKEND ##############
-
 ########## Login redirect ###########
 LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_URL_NAMESPACE = 'social'
 
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
