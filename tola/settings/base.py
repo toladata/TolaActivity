@@ -139,11 +139,6 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-
-    'tola.middleware.TolaSecurityMiddleware',
-    'oauth2_provider.middleware.OAuth2TokenMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware',
-    'tola.middleware.TolaRedirectMiddleware',
 )
 ########## END MIDDLEWARE CONFIGURATION
 
