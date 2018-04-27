@@ -1,15 +1,16 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block bread_crumb %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/indicators/home/{{ getPrograms.all.0.id|default:0 }}/0/0/">Indicators</a></li>
-        <li class="breadcrumb-item active">Indicator Disaggregation Report</li>
+        <li class="breadcrumb-item"><a href="/indicators/home/{{ getPrograms.all.0.id|default:0 }}/0/0/">{% trans "Indicators" %}</a></li>
+        <li class="breadcrumb-item active">{% trans "Indicator Disaggregation Report" %}</li>
     </ol>
 </nav>
 {% endblock %}
 
-{% block page_title %} Indicator Disaggregation Report {% endblock %}
+{% block page_title %} {% trans "Indicator Disaggregation Report" %} {% endblock %}
 
 {% block content %}
     {% include "indicators/filter.html"%}
@@ -24,18 +25,18 @@
                 aria-describedby="Indicator_Disaggregation">
             <thead>
                 <tr>
-                    <th role="row" class="noExport" style="display:none;" rowspan="2">PID</th>
-                    <th role="row" class="noExport" style="display:none;" rowspan="2">IndicatorID</th>
-                    <th role="row" rowspan="2">Number</th>
-                    <th role="row" rowspan="2">Indicator</th>
-                    <th role="row" rowspan="2">LOP Target</th>
-                    <th role="row" rowspan="2">Actual Total</th>
-                    <th role="row" colspan="3" class="text-center">Disaggregation</th>
+                    <th role="row" class="noExport" style="display:none;" rowspan="2">{% trans "PID</th>
+                    <th role="row" class="noExport" style="display:none;" rowspan="2">{% trans "IndicatorID</th>
+                    <th role="row" rowspan="2">{% trans "Number" %}</th>
+                    <th role="row" rowspan="2">{% trans "Indicator" %}</th>
+                    <th role="row" rowspan="2">{% trans "LOP Target" %}</th>
+                    <th role="row" rowspan="2">{% trans "Actual Total" %}</th>
+                    <th role="row" colspan="3" class="text-center">{% trans "Disaggregation" %}</th>
                 </tr>
                 <tr>
-                    <th role="row">Type</th>
-                    <th role="row">Label</th>
-                    <th role="row">Value</th>
+                    <th role="row">{% trans "Type" %}</th>
+                    <th role="row">{% trans "Label" %}</th>
+                    <th role="row">{% trans "Value" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -60,7 +61,7 @@
                         <td>{{row.Indicator}}</td>
                         <td>{{row.LOP_Target|floatformat:"-2"|default_if_none:""}}</td>
                         <td>{{row.Overall|floatformat:"-2"|default_if_none:""}}</td>
-                        <td>No Disaggregation</td>
+                        <td>{% trans "No Disaggregation" %}</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -119,8 +120,8 @@
                 buttons: [
                     {
                         extend: 'csv',
-                        title: 'Indicator Disaggregation Report',
-                        text: 'Export to CSV',
+                        title: '{% trans "Indicator Disaggregation Report" %}',
+                        text: '{% trans "Export to CSV" %}',
                         exportOptions: { columns: "thead th:not(.noExport)" }
                     }
                 ]
@@ -144,7 +145,7 @@
             if (programId != undefined && programId > 0) {
                 window.location.href = "/indicators/disrepprint/" + programId + "/";
             } else {
-                alert("Select a program before exporting it to PDF");
+                alert("{% trans 'Select a program before exporting it to PDF' %}");
             }
         }
 

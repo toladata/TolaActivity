@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <script>
 
     // Intercept CollectedDataUpdate form submission and then use ajax to submit it.
@@ -12,7 +14,7 @@
         //     return false;
         // }
         if ($("#collecteddata_update_form div").hasClass('has-error')) {
-            createAlert("danger", "Please complete all required fields.", true, "#modalmessages");
+            createAlert("{% trans 'danger' %}", "{% trans 'Please complete all required fields.'%}", true, "#modalmessages");
             $('#indicator_collecteddata_div').animate({ scrollTop: 0 }, 'slow');
             return;
         }
@@ -29,16 +31,16 @@
         $.post(form_url, form_data,
                function(response, status, jqXHR) { // success callback
                     $("#modalmessages").empty();
-                    createAlert("success", "Success, form data saved.", true, "#modalmessages");
+                    createAlert("{% trans 'success, %}", "{% trans 'Success, form data saved.' %}", true, "#modalmessages");
                 })
             .fail(function(error){
-                createAlert("danger", "Could not save form. "  + error, true, "#modalmessages");
+                createAlert("{% trans 'danger' %}", "{% trans 'Could not save form.' %}"  + error, true, "#modalmessages");
             });
         $('#indicator_collecteddata_div').animate({ scrollTop: 0 }, 'slow');
     });
 
 
-    $("#indicator_collecteddata_div").on("change", "#id_date_collected", function(e){
+    $("#indicator_collecteddata_div").on("{% trans 'change' %}", "#id_date_collected", function(e){
         // only validate periodicTarget dropdown if it is an existing record
         // if( parseInt(`{{object.id|safe}}`) > 0 ){
             validatePeriodicTarget(onlyPeriodic = true);
@@ -46,11 +48,11 @@
         validateDateCollected();
     });
 
-    $("#indicator_collecteddata_div").on("change", "#id_periodic_target", function(e){
+    $("#indicator_collecteddata_div").on("{% trans 'change' %}", "#id_periodic_target", function(e){
         validatePeriodicTarget();
     });
 
-    $("#indicator_collecteddata_div").on("change", "#id_achieved", function(e){
+    $("#indicator_collecteddata_div").on("{% trans 'change' %}", "#id_achieved", function(e){
         validate_achieved();
     });
 
@@ -59,10 +61,10 @@
         if (setPeriodicTargetValue() == false) {
             // $("#id_periodic_target").val('');
             if ($("#id_periodic_target option").length <= 1) {
-                $("#hint_id_periodic_target").html("<small>Targets are not set up for this indicator. <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>Start by selecting a target frequency.</strong></a></small>");
+                $("#hint_id_periodic_target").html("<small>{% trans 'Targets are not set up for this indicator.' %} <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>{% trans 'Start by selecting a target frequency.' %}</strong></a></small>");
             } else {
                 if ($("#id_date_collected").val().length > 0){
-                $("#hint_id_periodic_target").html("<small>This date falls outside the range of your target periods. You can change the date or <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>create additional target periods.</strong></a></small>");
+                $("#hint_id_periodic_target").html("<small>{% trans 'This date falls outside the range of your target periods. You can change the date or' %} <a id='targetsTabLink' href='/indicators/indicator_update/" + $("#id_indicator").val() + "/'><strong>create additional target periods.</strong></a></small>");
                 }
             }
 
@@ -84,7 +86,7 @@
         var actual = $("#id_achieved");
         if (!actual.val() || !$.isNumeric(actual.val()) || actual.val() < 0) {
             $("#div_id_achieved").addClass('has-error');
-            $("#hint_id_achieved").text(" Please enter a number with no letters or symbols.");
+            $("#hint_id_achieved").text(" {% trans 'Please enter a number with no letters or symbols.' %}");
             return false;
         } else {
             $("#div_id_achieved").removeClass('has-error');
@@ -97,10 +99,10 @@
         var field = $("#id_date_collected").val();
         if ($.isEmptyObject(field)) {
             $("#div_id_date_collected").addClass('has-error');
-            $("#hint_id_date_collected").html("<small>Please complete this field.</small>");
+            $("#hint_id_date_collected").html("<small>{% trans 'Please complete this field.' %}</small>");
         }else if (!isDate(field)) {
             $("#div_id_date_collected").addClass('has-error');
-            $("#hint_id_date_collected").html("<small>Please enter a valid date.</small>");
+            $("#hint_id_date_collected").html("<small>{% trans 'Please enter a valid date.' %}</small>");
             return false;
         } else {
             var val = formatDate(field);

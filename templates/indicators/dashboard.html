@@ -1,7 +1,8 @@
 {% extends "base.html" %} 
-{% block page_title %}Dashboard{% endblock %} 
+{% load i18n %}
+{% block page_title %}{% trans "Dashboard" %}{% endblock %} 
 
 {% block content %}
-	<p>Dashboard report on indicator status by Country and Program</p>
+	<p>{% trans "Dashboard report on indicator status by Country and Program" %}</p>
 
 {% endblock content %}

@@ -1,7 +1,13 @@
+{% load i18n %}
+<!-- {% get_current_language as LANGUAGE_CODE %} -->
+
 <script>
     var validation_msgs = {};
+    var userLang = "{{ LANGUAGE_CODE }}";
+
 
     function setupPopupCalendar() {
+        // $.datepicker.setDefaults($.datepicker.regional[userLang]);
         $('.monthPicker').datepicker({
             changeMonth: true,
             changeYear: true,
@@ -11,7 +17,7 @@
                 // move date picker popup div inside modal dialog(fix for firefox)
                 $(input).parent().append($('#ui-datepicker-div'));
                 $('#ui-datepicker-div').hide();
-            },
+            }
             /*
             onClose: function (dateText, inst) {
                 const field = $(this);
@@ -66,7 +72,7 @@
         var currentRow = $(e.target).closest("tr");
         var dataCount = parseInt(currentRow.data("collectedCount"));
         if ( dataCount != NaN && dataCount > 0) {
-            if (!confirm(`Warning: This action cannot be undone. Removing this target means that ${dataCount} data record/s will no longer have targets associated with them. \n\nProceed anyway?`)) {
+            if (!confirm(`{% trans "Warning: This action cannot be undone. Removing this target means that" %} ${dataCount} {% trans "data record/s will no longer have targets associated with them. \n\nProceed anyway?" %}`)) {
                 dataCount = NaN;
                 return;
             }
@@ -165,7 +171,7 @@
                     </td>
 
                     <td class="align-middle" align="right" width="150px">
-                        <input type="number" id="pt-${pt.id}" value="${parseFloat(pt.target).toFixed(2).replace(/[.,]00$/, "")}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="Enter target" class="form-control input-value">
+                        <input type="number" id="pt-${pt.id}" value="${parseFloat(pt.target).toFixed(2).replace(/[.,]00$/, "")}" data-start-date="${formatDate(pt.start_date)}" data-end-date="${formatDate(pt.end_date)}" name="${pt.period}" placeholder="{% trans 'Enter target' %}" class="form-control input-value">
                             <span id="hint_id_pt_${pt.period}" style="margin:0px;" class="help-block"> </span>
                     </td>
                 </tr>
@@ -183,9 +189,9 @@
         var msg = '';
 
         if (typeof dataCountAttribute !== typeof undefined && dataCountAttribute !== false) {
-            msg = 'Warning: This action cannot be undone. Any data records assigned to a target will need to be reassigned.\n\n Are you sure you want to remove all targets?';
+            msg = '{% trans "Warning: This action cannot be undone. Any data records assigned to a target will need to be reassigned.\n\n Are you sure you want to remove all targets?" %}';
         } else {
-            msg = 'Warning: This action cannot be undone. Are you sure you want to remove all targets?';
+            msg = '{% trans "Warning: This action cannot be undone. Are you sure you want to remove all targets?" %}';
         }
         if (!confirm(msg)){
             return;
@@ -233,7 +239,7 @@
         // console.log("numDataPoints: ", numDataPoints, " initalTargetFrequency: ", initalTargetFrequency, " target_Frequency: ", target_frequency);
 
         if (numDataPoints > 0 && initalTargetFrequency == 1 && target_frequency != 1) {
-            if (!confirm(`Warning: This action cannot be undone. If we make these changes, ${numDataPoints} data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?`)) {
+            if (!confirm(`{% trans "Warning: This action cannot be undone. If we make these changes," %} ${numDataPoints} {% trans "data record/s will no longer be associated with the Life of Program target, and will need to be reassigned to new targets. \n\nProceed anyway?" %}`)) {
                 initalTargetFrequency = undefined;
                 return;
             }
@@ -285,7 +291,8 @@
             form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
         }
 
-        $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
+
+        $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>{% trans 'Saving form... please wait.' %}</span>");
         $.ajax({
             method: 'POST',
             url: form_url,
@@ -414,24 +421,28 @@
     function getNewTargetBtnLabel(index) {
         var label = '';
         if (index == 3 ) {
-            label += 'Add a year';
+            label += '{% trans "Add a year" %}';
         } else if (index == 4) {
-            label += 'Add a semi-annual period';
+            label += '{% trans "Add a semi-annual period" %}';
         } else if (index == 5) {
-            label += 'Add a tri-annual period';
+            label += '{% trans "Add a tri-annual period" %}';
         } else if (index == 6) {
-            label += 'Add a quarter';
+            label += '{% trans "Add a quarter" %}';
         } else if (index == 7) {
-            label += 'Add a month';
+            label += '{% trans "Add a month" %}';
         } else if (index == 8) {
-            label += 'Add an event';
+            label += '{% trans "Add an event" %}';
         } else {
-            label = 'Add a target';
+            label = '{% trans "Add a target" %}';
         }
         return label;
     }
     $("#indicator_modal_content, #indicator_form").on("change", "#id_target_frequency", function(e){
-        show_hide_frequency_fields();
+      if ($("#id_target_frequency option:selected").text().indexOf("---") < 0) {
+        $("#id_target_frequency").removeClass('is-invalid');
+        $("#validation_id_target_frequency").text(" ");
+      }
+      show_hide_frequency_fields();
     });
 
 
@@ -452,9 +463,9 @@
         }
 
         if (!baseline.val()) {
-            errMsg = "Please complete this field. Your baseline can be zero.";
+            errMsg = "{% trans 'Please complete this field. Your baseline can be zero.' %}";
         } else if (!$.isNumeric(baseline.val()) || baseline.val() < 0 ) {
-            errMsg = "Please complete this field. Your baseline can be zero.";
+            errMsg = "{% trans 'Please complete this field. Your baseline can be zero.' %}";
             return false;
         }
         if (errMsg){
@@ -472,19 +483,17 @@
         const lop = $("#id_lop_target");
         let errMsg = undefined;
         if (!lop.val()) {
-            errMsg = "Please enter a number larger than zero.";
+            errMsg = "{% trans 'Please enter a number larger than zero.' %}";
         } else if (!$.isNumeric(lop.val()) || lop.val() <= 0) {
-            errMsg = "Please enter a number larger than zero with no letters or symbols. If your target is a percentage, describe it in the unit of measure field.";
+            errMsg = "{% trans 'Please enter a number larger than zero with no letters or symbols. If your target is a percentage, describe it in the unit of measure field.' %}";
         }
 
         if (errMsg) {
             lop.addClass('is-invalid');
-            $("#div_id_lop_target").addClass("mb-3");
             $("#validation_id_lop_target").text(errMsg);
             return false;
         } else {
             lop.removeClass('is-invalid');
-            $("#div_id_lop_target").removeClass("mb-3");
             $("#validation_id_lop_target").text(" ");
             errMsg = undefined;
             return true;
@@ -495,7 +504,7 @@
         const field = $("#" + fieldName);
         if ($.isEmptyObject(field.val())) {
             $(field).addClass('is-invalid');
-            $("#validation_" + fieldName).text("Please complete this field.");
+            $("#validation_" + fieldName).text("{% trans 'Please complete this field.' %}");
             return false;
         } else {
             $(field).removeClass('is-invalid');
@@ -510,11 +519,11 @@
         let errMsg = undefined;
         if (numPeriodsField.is(":visible")) {
             if (numPeriodsField.val() > 12) {
-                errMsg = "You can start with up to 12 targets and add more later.";
+                errMsg = "{% trans 'You can start with up to 12 targets and add more later.' %}";
             } else if (!numPeriodsField.val()) {
-                errMsg = "Please complete this field.";
+                errMsg = "{% trans 'Please complete this field.' %}";
             } else if (numPeriodsField.val() < 0) {
-                errMsg = "Please enter a number larger than zero.";
+                errMsg = "{% trans 'Please enter a number larger than zero.' %}";
             }
 
             if (errMsg) {
@@ -533,23 +542,29 @@
     function validatePeriodStartField() {
         const fieldId = "id_target_frequency_start";
         const field = $("#" + fieldId);
+
         let errMsg = undefined;
 
         if ($.isEmptyObject(field.val())) {
-            errMsg = "Please complete this field.";
+            errMsg = "{% trans 'Please complete this field.' %}";
         } else if (!isDate(field.val())) {
-            errMsg = "Please enter a valid date.";
+            errMsg = "{% trans 'Please enter a valid date.' %}";
         }
 
         if (errMsg) {
             field.addClass('is-invalid');
+            $("#div_id_target_frequency_start").addClass('mb-5')
+            $("#div_id_target_frequency_start").removeClass('mb-3')
             $("#validation_" + fieldId).text(errMsg);
             return false;
         } else {
             var val = formatDate(field.val(), 1);
+            //var val = field.val();
             field.val(val);
             errMsg = undefined;
             field.removeClass('is-invalid');
+            $("#div_id_target_frequency_start").addClass('mb-3')
+            $("#div_id_target_frequency_start").removeClass('mb-5')
             $("#validation_" + fieldId).text(" ");
             return true;
         }
@@ -587,10 +602,10 @@
 
     function getPTMessage () {
         if ($("#periodic_targets_table input[type=text]").length > 0){
-            return ("Please enter a name and target number for every event. Your target value can be zero.");
+            return ("{% trans 'Please enter a name and target number for every event. Your target value can be zero.' %}");
         }
         else {
-            return ("Please enter a target value. Your target value can be zero.");
+            return ("{% trans 'Please enter a target value. Your target value can be zero.' %}");
         }
     }
 
@@ -619,8 +634,16 @@
         if (validateForEmptyField("id_unit_of_measure") == false ) {
             validationsTargetTab = false;
         }
-        if ($("#id_target_frequency_custom").is(":visible") && validateForEmptyField("id_target_frequency_custom") == false) {
+        if ($("#id_target_frequency_custom").is(":visible")){
+          if (validateForEmptyField("id_target_frequency_custom") == false) {
+            $("#div_id_target_frequency_custom").addClass('mb-5')
+            $("#div_id_target_frequency_custom").removeClass('mb-3')
             validationsTargetTab = false;
+          }
+          else {
+            $("#div_id_target_frequency_custom").addClass('mb-3')
+            $("#div_id_target_frequency_custom").removeClass('mb-5')
+          }
         }
         if ($("#id_target_frequency_start").is(":visible") && validateForEmptyField("id_target_frequency_start") == false) {
             validationsTargetTab = false;
@@ -646,7 +669,7 @@
         }
 
         if (validationsTargetTab == false) {
-            validation_msgs['target'] = 'Please complete all required fields in the Targets tab.';
+            validation_msgs['target'] = '{% trans "Please complete all required fields in the Targets tab." %}';
         } else {
             delete validation_msgs['target'];
         }
@@ -656,7 +679,7 @@
             validationsPerformanceTab = false
         }
         if (validationsPerformanceTab == false) {
-            validation_msgs['performance'] = 'Please complete all required fields in the Performance tab.';
+            validation_msgs['performance'] = '{% trans "Please complete all required fields in the Performance tab." %}';
         } else {
             delete validation_msgs['performance'];
         }
@@ -725,7 +748,15 @@
     });
 
     $("#indicator_modal_content, #indicator_form").on("blur", "#id_target_frequency_custom", function(e){
-        validateForEmptyField("id_target_frequency_custom");
+        var is_valid = validateForEmptyField("id_target_frequency_custom");
+        if (!is_valid) {
+          $("#div_id_target_frequency_custom").addClass('mb-5')
+          $("#div_id_target_frequency_custom").removeClass('mb-3')
+        }
+        else {
+          $("#div_id_target_frequency_custom").addClass('mb-3')
+          $("#div_id_target_frequency_custom").removeClass('mb-5')
+        }
     });
 
     $("#indicator_modal_content, #indicator_form").on("blur, change", "#id_target_frequency_start", function(e){
@@ -742,3 +773,15 @@
 
 
 </script>
+
+
+
+
+
+
+
+
+
+
+
+

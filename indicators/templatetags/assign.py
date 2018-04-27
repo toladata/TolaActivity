@@ -1,6 +1,7 @@
 from django import template
 register = template.Library()
 
+
 class AssignNode(template.Node):
     def __init__(self, name, value):
         self.name = name
@@ -9,6 +10,7 @@ class AssignNode(template.Node):
     def render(self, context):
         context[self.name] = self.value.resolve(context, True)
         return ''
+
 
 def do_assign(parser, token):
     """
@@ -25,5 +27,6 @@ def do_assign(parser, token):
         raise template.TemplateSyntaxError("'%s' tag takes two arguments" % bits[0])
     value = parser.compile_filter(bits[2])
     return AssignNode(bits[1], value)
+
 
 register.tag('assign', do_assign)

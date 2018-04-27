@@ -1,9 +1,8 @@
-import factory
-import faker
 from random import randint
-from django.utils import timezone
 
-from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy, lazy_attribute
+import faker
+from django.utils import timezone
+from factory import DjangoModelFactory, post_generation, SubFactory, lazy_attribute, Sequence
 
 from indicators.models import (
     CollectedData as CollectedDataM,
@@ -16,9 +15,10 @@ from indicators.models import (
     PeriodicTarget as PeriodicTargetM,
     StrategicObjective as StrategicObjectiveM,
 )
-from workflow.models import Organization, Program
+from workflow_models import OrganizationFactory, ProgramFactory
 
 FAKER = faker.Faker(locale='en_US')
+
 
 class ReportingFrequency(DjangoModelFactory):
     class Meta:
@@ -26,15 +26,16 @@ class ReportingFrequency(DjangoModelFactory):
 
     frequency = 'Bi-weekly'
     description = 'Every two weeks'
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
+
 
 class RandomIndicatorFactory(DjangoModelFactory):
-
     class Meta:
         model = IndicatorM
 
     name = lazy_attribute(lambda n: FAKER.sentence(nb_words=8))
-    number = lazy_attribute(lambda n: "%s.%s.%s" % (randint(1,2), randint(1,4), randint(1,5)))
+    number = lazy_attribute(
+        lambda n: "%s.%s.%s" % (randint(1, 2), randint(1, 4), randint(1, 5)))
     create_date = lazy_attribute(lambda t: timezone.now())
 
     @post_generation
@@ -53,11 +54,11 @@ class RandomIndicatorFactory(DjangoModelFactory):
             pass
 
 
-class Indicator(DjangoModelFactory):
+class IndicatorFactory(DjangoModelFactory):
     class Meta:
         model = IndicatorM
 
-    name = 'Building resilience in Mali'
+    name = Sequence(lambda n: 'Indicator {0}'.format(n))
 
     @post_generation
     def program(self, create, extracted, **kwargs):
@@ -65,12 +66,14 @@ class Indicator(DjangoModelFactory):
             # Simple build, do nothing.
             return
 
-        if type(extracted) is not list:
-            extracted = [extracted]
-
-        # A list of program were passed in, use them
-        for program in extracted:
-            self.program.add(program)
+        if type(extracted) is list:
+            # A list of program were passed in, use them
+            for program in extracted:
+                self.program.add(program)
+        elif extracted:
+            self.program.add(extracted)
+        else:
+            pass
 
 
 class Objective(DjangoModelFactory):
@@ -80,43 +83,42 @@ class Objective(DjangoModelFactory):
     name = 'Get Tola rocking!'
 
 
-class Level(DjangoModelFactory):
+class LevelFactory(DjangoModelFactory):
     class Meta:
         model = LevelM
 
-    name = 'Output'
-    program = SubFactory(Program)
+    name = Sequence(lambda n: 'Level: {0}'.format(n))
 
 
-class CollectedData(DjangoModelFactory):
+class CollectedDataFactory(DjangoModelFactory):
     class Meta:
         model = CollectedDataM
 
-    program = SubFactory(Program)
-    indicator = SubFactory(Indicator)
+    program = SubFactory(ProgramFactory)
+    indicator = SubFactory(IndicatorFactory)
+    achieved = 10
 
 
-class IndicatorType(DjangoModelFactory):
+class IndicatorTypeFactory(DjangoModelFactory):
     class Meta:
         model = IndicatorTypeM
         django_get_or_create = ('indicator_type',)
 
-    indicator_type = fuzzy.FuzzyText()
+    indicator_type = Sequence(lambda n: 'Indicator Type {0}'.format(n))
 
 
-class ExternalService(DjangoModelFactory):
+class ExternalServiceFactory(DjangoModelFactory):
     class Meta:
         model = ExternalServiceM
 
-    name = 'External Service A'
-    organization = SubFactory(Organization)
+    name = Sequence(lambda n: 'External Service {0}'.format(n))
 
 
 class StrategicObjective(DjangoModelFactory):
     class Meta:
         model = StrategicObjectiveM
 
-    name = 'Strategic Objective A'
+    name = Sequence(lambda n: 'Stratigic Objective {0}'.format(n))
 
 
 class PeriodicTarget(DjangoModelFactory):

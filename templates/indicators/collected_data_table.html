@@ -1,3 +1,4 @@
+
 <style>
     .disable-span {
         cursor: not-allowed;
@@ -282,9 +283,7 @@
                         {% endifequal %}
 
                         {% ifequal err 'Error_2' %}
-                            {% blocktrans %}
-                                This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.
-                            {% endblocktrans %}
+                                {% trans 'This record is not associated with a target. Open the data record and select an option from the "Measure against target" menu.' %}
                         {% endifequal %}
 
                         {% ifequal err 'Error_3' %}
@@ -302,7 +301,7 @@
                 <img src="/static/img/target.png" class="img-responsive center-block" height="85" width="85">
             </td>
             <td valign="top" style="padding-left:10px; padding-top: 38px; font-size: 1.375rem; color: #54585A;">
-                {% trans "Organize your data for this indicator." %} <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">Set a target frequency.</a>
+                {% trans "Organize your data for this indicator." %} <a href="{% url 'indicator_update' indicator.id %}" data-tab="#targets" class="indicator-link">{% trans "Set a target frequency." %}</a>
             </td>
         </tr>
     </table>

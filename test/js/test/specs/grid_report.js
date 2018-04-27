@@ -73,4 +73,6 @@ describe('Grid/Print Report page', function() {
         button.click();
         //IndPage.clickExportAllButton('myexportfile.csv');
     });
+    it('should be able to save reports as CSV');
+    it('should be able to save reports as PDF');
 });

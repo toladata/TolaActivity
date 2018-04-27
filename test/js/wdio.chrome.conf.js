@@ -1,14 +1,14 @@
 exports.config = {
     execArgv: ['--inspect'],
     specs: [
-        './test//specs/**/*.js'
+        './test/specs/**/*.js'
     ],
     exclude: [
         //'./test/specs/**/busticated_test.js'
     ],
     suites: {
         login: [
-            'test/specs/login.js'
+            'test/specs/00_login.js'
         ],
         dashboard: [
             'test/specs/dashboard.js'
@@ -81,4 +81,8 @@ exports.config = {
         compilers: ['js:babel-register'],
         require: 'babel-register'
     }
+//    onComplete: function(exitCode, config, capabilities) {
+//        var proc = require('child_process');
+//        proc.execSync('/bin/rm -rfv /tmp/tats');
+//    }
 }

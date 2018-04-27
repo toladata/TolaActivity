@@ -86,10 +86,10 @@ DATE_FORMAT = 'Y-n-d'
 
 # Add list of languages available for selection.
 LANGUAGES = [
+    ('en', _('English')),
     ('fr', _('French')),
     ('es', _('Spanish')),
     ('ar', _('Arabic')),
-    ('en', _('English')),
 ]
 
 ########## END GENERAL CONFIGURATION

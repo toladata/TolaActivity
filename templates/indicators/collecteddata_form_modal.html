@@ -1,4 +1,5 @@
 {% load widget_tweaks %}
+{% load i18n %}
 {% block content %}
     <script type="text/javascript">
         $(document).ready(function() {
@@ -76,7 +77,7 @@
             {{ hidden_field }}
         {% endfor %}
 
-        <legend>Collected Data</legend>
+        <legend>{%  trans 'Collected Data' %}</legend>
 
         <fieldset>
             <div class="form-row mb-2" id="div_id_program2">
@@ -154,7 +155,7 @@
             </div>
         </fieldset>
 
-        <legend>Evidence</legend>
+        <legend>{% trans "Evidence" %}</legend>
         <fieldset>
             <div class="form-row mb-2" id="div_id_complete">
                 <label for="id_complete" class="col-sm-4 col-form-label" align="right">
@@ -183,7 +184,7 @@
                     {{ form.tola_table.label }}
                 </label>
                 <div class="col-sm-7">
-                    <a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">Import Evidence From Tola Tables</a>
+                    <a class="output" data-toggle="modal" data-target="#tolatablemodal" href="/indicators/collecteddata_import/">{% trans 'Import Evidence From Tola Tables' %}</a>
                     {% render_field form.tola_table class+="form-control" %}
                     <small id="hint_id_tola_table" class="form-text text-muted">
                         {{ form.tola_table.help_text }}
@@ -208,13 +209,13 @@
                             data-target="#standardDisagg"
                             aria-expanded="false"
                             aria-controls="standardDisagg">
-                        Standard Disaggregations
+                        {% trans "Standard Disaggregations' %}
                     </div>
                     <div class="card-body collapse" id="standardDisagg">
                         <table class="table table-sm table-hover table-striped">
                             <tr>
-                                <th>Disaggregation Level</th>
-                                <th>Actuals</th>
+                                <th>{% trans "Disaggregation Level" %}</th>
+                                <th>{% trans "Actuals" %}</th>
                             </tr>
                             {% for item in getDisaggregationLabelStandard %}
                                 <tr>
@@ -232,8 +233,8 @@
                 </div>
             {% else %}
                 {% if not getDisaggregationValueStandard %}
-                    <h4>Standard Disaggregation Levels Not Entered</h4>
-                    <p>Standard disaggregations are entered by the administrator for the entire organizations.  If you are not seeing any here, please contact your system administrator.</p>
+                    <h4>{% trans "Standard Disaggregation Levels Not Entered" %}</h4>
+                    <p>{% trans "Standard disaggregations are entered by the administrator for the entire organizations.  If you are not seeing any here, please contact your system administrator." %}</p>
                 {% endif %}
             {% endif %}
             <br>
@@ -244,13 +245,13 @@
                             data-target="#newDisagg"
                             aria-expanded="false"
                             aria-controls="newDisagg">
-                        New Disaggregations
+                        {% trans "New Disaggregations" %}
                     </div>
                     <div class="card-body collapse" id="newDisagg">
                         <table class="table table-sm table-hover table-striped">
                             <tr>
-                                <th>Disaggregation Level</th>
-                                <th>Actuals</th>
+                                <th>{% trans "Disaggregation Level" %}</th>
+                                <th>{% trans "Actuals" %}</th>
                             </tr>
                         {% for item in getDisaggregationLabel %}
                             <tr>
@@ -267,8 +268,8 @@
                 </div>
             {% else %}
                 {% if not getDisaggregationValue %}
-                    <h4>Disaggregation Levels Not Entered For This Indicator</h4>
-                    <a href="/indicators/indicator_update/{{ indicator_id }}">Add a Disaggregation</a>
+                    <h4>{% trans "Disaggregation Levels Not Entered For This Indicator" %}</h4>
+                    <a href="/indicators/indicator_update/{{ indicator_id }}">{% trans "Add a Disaggregation" %}</a>
                 {% endif %}
             {% endif %}
 
@@ -280,13 +281,13 @@
                             data-target="#existingDisagg"
                             aria-expanded="false"
                             aria-controls="existingDisagg">
-                        Existing Disaggregations
+                        {% trans "Existing Disaggregations" %}
                     </div>
                     <div class="card-body collapse" id="existingDisagg">
                         <table class="table table-sm table-hover table-striped">
                             <tr>
-                                <th>Disaggregation Level</th>
-                                <th>Actuals</th>
+                                <th>{% trans "Disaggregation Level" %}</th>
+                                <th>{% trans "Actuals" %}</th>
                             </tr>
                             {% for item in getDisaggregationValue %}
                             <tr>
@@ -311,13 +312,13 @@
                             data-target="#existingStandardDisagg"
                             aria-expanded="false"
                             aria-controls="existingStandardDisagg">
-                        Existing Standard Disaggregations
+                        {% trans "Existing Standard Disaggregations" %}
                     </div>
                     <div class="card-body collapse" id="existingStandardDisagg">
                         <table class="table table-sm table-hover table-striped">
                             <tr>
-                                <th>Disaggregation Level</th>
-                                <th>Actuals</th>
+                                <th>{% trans "Disaggregation Level" %}</th>
+                                <th>{% trans "Actuals" %}</th>
                             </tr>
                             {% for item in getDisaggregationValueStandard %}
                             <tr>
@@ -336,8 +337,8 @@
         </fieldset>
         <div class="d-flex flex-row-reverse">
             <input type="reset"
-                class="btn btn-secondary btn-sm mb-5" value="Reset">
-            <input type="submit" name="submit" value="Save changes"
+                class="btn btn-secondary btn-sm mb-5" value="{% trans 'Reset' %}">
+            <input type="submit" name="submit" value="{% trans 'Save changes' %}"
                 class="btn btn-primary btn-sm mb-5" id="submit-id-submit">
         </div>
     </form>

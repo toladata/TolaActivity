@@ -11,7 +11,7 @@ describe('Program Indicators table', function() {
   before(function() {
       // Disable timeouts
       this.timeout(0);
-      //browser.windowHandleMaximize();
+      browser.windowHandleMaximize();
       let parms = Util.readConfig();
   
       LoginPage.open(parms.baseurl);
@@ -85,7 +85,7 @@ describe('Program Indicators table', function() {
             browser.waitForVisible('div#ajaxloading', delay, true);
         }
         let indicatorName = indicatorNameList[0];
-        TargetsTab.clickProgramIndicatorsButton(indicatorName);
+        IndPage.clickProgramIndicatorsButton(indicatorName);
     });
 
     it('should be able to create PI by clicking the New Indicator button', function() {

@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
 {% load i18n %}
-{% block page_title %}Indicator Performance Tracking Table{% endblock %}
-{% block title %}Indicator Performance Tracking Table{% endblock %}
+{% block page_title %}{% trans "Indicator Performance Tracking Table" %}{% endblock %}
+{% block title %}{% trans "Indicator Performance Tracking Table" %}{% endblock %}
 
 {% block content %}
     <div id="id_div_top_quickstart_iptt" >
@@ -10,10 +10,8 @@
             <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Program indicator overview</h5>
-                        <p class="card-subtitle text-muted mb-2">
-                            View progress toward Life of Program targets for all of a program’s indicators.
-                        </p>
+                        <h5 class="card-title">{% trans "Program indicator overview" %}</h5>
+                        <p class="card-subtitle text-muted mb-2">{% trans "View progress toward Life of Program targets for all of a program's indicators." %}</p>
                         <form
                             action="{% url 'iptt_quickstart' %}"
                             id="id_form_program_indicator_overview"
@@ -62,7 +60,7 @@
                                     type="submit"
                                     id="id_submit_timeperiods_button"
                                     class="btn btn-info"
-                                    style="width:100%;">View Report</button>
+                                    style="width:100%;">{% trans "View Report" %}</button>
                             </div>
                         </form>
                     </div>
@@ -71,10 +69,8 @@
             <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Program target overview</h5>
-                        <p class="card-subtitle text-muted mb-2">
-                            View progress toward a program’s periodic targets in addition to Life of Program targets.
-                        </p>
+                        <h5 class="card-title">{% trans "Program target overview" %}</h5>
+                        <p class="card-subtitle text-muted mb-2">{% trans "View progress toward a program's periodic targets in addition to Life of Program targets." %}</p>
                         <form
                             action="{% url 'iptt_quickstart' %}"
                             id="id_form_program_target_overview"
@@ -124,7 +120,7 @@
                                     type="submit"
                                     id="id_submit_targetperiods_button"
                                     class="btn btn-info"
-                                    style="width:100%;">View Report</button>
+                                    style="width:100%;">{% trans "View Report" %}</button>
                             </div>
                         </form>
                     </div>

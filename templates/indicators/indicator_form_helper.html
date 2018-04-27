@@ -1,5 +1,7 @@
 {% load widget_tweaks %}
+{% load i18n %}
 {% load mytags %}
+
     <form
         action="{% url 'indicator_update' indicator.id %}"
         id="indicator_update_form"
@@ -16,22 +18,22 @@
 
         <ul class="nav nav-tabs" id="indicatorTabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" href="#summaryTab" role="tab" data-toggle="tab">Summary</a>
+                <a class="nav-link active" href="#summaryTab" role="tab" data-toggle="tab">{% trans "Summary" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#performanceTab" role="tab" data-toggle="tab">Performance</a>
+                <a class="nav-link" href="#performanceTab" role="tab" data-toggle="tab">{% trans "Performance" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#targetsTab" role="tab" data-toggle="tab">Targets</a>
+                <a class="nav-link" href="#targetsTab" role="tab" data-toggle="tab">{% trans "Targets" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#dataAcquisitionTab" role="tab" data-toggle="tab">Data Acquisition</a>
+                <a class="nav-link" href="#dataAcquisitionTab" role="tab" data-toggle="tab">{% trans "Data Acquisition" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#analysisReportingTab" role="tab" data-toggle="tab">Analysis and Reporting</a>
+                <a class="nav-link" href="#analysisReportingTab" role="tab" data-toggle="tab">{% trans "Analysis and Reporting" %}</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#approvalTab" role="tab" data-toggle="tab">Approval</a>
+                <a class="nav-link" href="#approvalTab" role="tab" data-toggle="tab">{% trans "Approval" %}</a>
             </li>
         </ul>
 
@@ -39,9 +41,9 @@
             <div role="tabpanel" class="tab-pane active" id="summaryTab">
                 <br>
                 <fieldset>
-                    <div class="form-row mb-2" id="div_id_program">
+                    <div class="form-row mb-3" id="div_id_program">
                         <label for="id_program2" class="col-sm-4 col-form-label" align="right">{{ form.program.label }}</label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.program2 class+="form-control" %}
                             <small class="form-text text-muted">{{ form.program.help_text }}</small>
                             <span id="validation_id_program" class="has-error"></span>
@@ -50,33 +52,33 @@
 
                     <!-- <div class="form-row mb-2" id="div_id_program">
                         <label for="id_program" class="col-sm-4 col-form-label" align="right">{{ form.program.label }}</label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.program class+="form-control" %}
                             <small class="form-text text-muted">{{ form.program.help_text }}</small>
                         </div>
                     </div> -->
 
-                    <div class="form-row mb-2" id="div_id_sector">
+                    <div class="form-row mb-3" id="div_id_sector">
                         <label for="id_sector" class="col-sm-4 col-form-label" align="right">{{ form.sector.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.sector class+="form-control" %}
                             <small class="form-text text-muted">{{ form.sector.help_text }}</small>
                             <span id="validation_id_sector" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_objectives">
+                    <div class="form-row mb-3" id="div_id_objectives">
                         <label for="id_objectives" class="col-sm-4 col-form-label" align="right">{{ form.objectives.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.objectives class+="form-control" %}
                             <small class="form-text text-muted">{{ form.objectives.help_text }}</small>
                             <span id="validation_id_objectives" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_strategic_objectives">
+                    <div class="form-row mb-3" id="div_id_strategic_objectives">
                         <label for="id_strategic_objectives" class="col-sm-4 col-form-label" align="right">{{ form.strategic_objectives.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.strategic_objectives class+="form-control" %}
                             <small class="form-text text-muted">{{ form.strategic_objectives.help_text }}</small>
                             <span id="validation_id_strategic_objectives" class="has-error"></span>
@@ -88,81 +90,81 @@
             <div role="tabpanel" class="tab-pane" id="performanceTab" name="Performance tab">
                 <br>
                 <fieldset>
-                    <div class="form-row mb-2" id="div_id_name">
+                    <div class="form-row mb-3" id="div_id_name">
                         <label for="id_name" class="col-sm-4 col-form-label" align="right">{{ form.name.label }}* </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.name class+="form-control" %}
                             <small class="form-text text-muted">{{ form.name.help_text }}</small>
                             <span id="validation_id_name" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_level">
+                    <div class="form-row mb-3" id="div_id_level">
                         <label for="id_level" class="col-sm-4 col-form-label" align="right">{{ form.level.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.level class+="form-control" %}
                             <small class="form-text text-muted">{{ form.level.help_text }}</small>
                             <span id="validation_id_level" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_number">
+                    <div class="form-row mb-3" id="div_id_number">
                         <label for="id_number" class="col-sm-4 col-form-label" align="right">{{ form.number.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.number class+="form-control" %}
                             <small class="form-text text-muted">{{ form.number.help_text }}</small>
                             <span id="validation_id_number" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_source">
+                    <div class="form-row mb-3" id="div_id_source">
                         <label for="id_source" class="col-sm-4 col-form-label" align="right">{{ form.source.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.source class+="form-control" %}
                             <small class="form-text text-muted">{{ form.source.help_text }}</small>
                             <span id="validation_id_source" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_definition">
+                    <div class="form-row mb-3" id="div_id_definition">
                         <label for="id_definition" class="col-sm-4 col-form-label" align="right">{{ form.definition.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.definition class+="form-control" %}
                             <small class="form-text text-muted">{{ form.definition.help_text }}</small>
                             <span id="validation_id_definition" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_justification">
+                    <div class="form-row mb-3" id="div_id_justification">
                         <label for="id_justification" class="col-sm-4 col-form-label" align="right">{{ form.justification.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.justification class+="form-control" %}
                             <small class="form-text text-muted">{{ form.justification.help_text }}</small>
                             <span id="validation_id_justification" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_disaggregation">
+                    <div class="form-row mb-3" id="div_id_disaggregation">
                         <label for="id_disaggregation" class="col-sm-4 col-form-label" align="right">{{ form.disaggregation.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.disaggregation class+="form-control" %}
                             <small class="form-text text-muted">{{ form.disaggregation.help_text }}</small>
                             <span id="validation_id_disaggregation" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_indicator_type">
+                    <div class="form-row mb-3" id="div_id_indicator_type">
                         <label for="id_indicator_type" class="col-sm-4 col-form-label" align="right">{{ form.indicator_type.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.indicator_type class+="form-control" %}
                             <small class="form-text text-muted">{{ form.indicator_type.help_text }}</small>
                             <span id="validation_id_indicator_type" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_key_performance_indicator">
+                    <div class="form-row mb-3" id="div_id_key_performance_indicator">
                         <label for="id_key_performance_indicator" class="col-sm-4 col-form-label" align="right"></label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {{ form.key_performance_indicator }}
                             <label for="id_key_performance_indicator" class="col-form-label">{{ form.key_performance_indicator.label }}</label>
                             <small class="form-text text-muted">{{ form.key_performance_indicator.help_text }}</small>
@@ -175,9 +177,9 @@
             <div role="tabpanel" class="tab-pane" id="targetsTab" name="Targets tab">
                 <br>
                 <fieldset>
-                    <div class="form-row mb-1" id="parent_div_id_unit_of_measure">
+                    <div class="form-row mb-3" id="parent_div_id_unit_of_measure">
                         <label for="id_unit_of_measure" class="col-sm-4 col-form-label" align="right">{{ form.unit_of_measure.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             <div class="card inputs-in-a-box" id="fieldgroup_id_unit_of_measure">
                                 <div class="card-body p-2">
                                     <div id="div_id_unit_of_measure">
@@ -204,9 +206,9 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="parent_div_id_lop_target">
+                    <div class="form-row mb-3" id="parent_div_id_lop_target">
                         <label for="id_lop_target" class="col-sm-4 col-form-label" align="right">{{ form.lop_target.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             <div class="card inputs-in-a-box" id="fieldgroup_id_lop_target">
                                 <div class="card-body p-2">
                                     <div id="div_id_lop_target">
@@ -224,24 +226,24 @@
                                         <small class="form-text text-muted">{{ form.lop_target.help_text }}</small>
                                         <span id="validation_id_lop_target" class="has-error"></span>
                                     </div>
-                                    {% render_field form.direction_of_change class+="form-control" style="width:70%;" %}
+                                    {% render_field form.direction_of_change class+="form-control mt-2" style="width:70%;" %}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_rationale_for_target">
+                    <div class="form-row mb-3" id="div_id_rationale_for_target">
                         <label for="id_rationale_for_target" class="col-sm-4 col-form-label" align="right">{{ form.rationale_for_target.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.rationale_for_target class+="form-control" %}
                             <small class="form-text text-muted">{{ form.rationale_for_target.help_text }}</small>
                             <span id="validation_id_rationale_for_target" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_baseline">
+                    <div class="form-row mb-3" id="div_id_baseline">
                         <label for="id_baseline" class="col-sm-4 col-form-label" align="right">{{ form.baseline.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             <div class="card inputs-in-a-box"  id="groupfield_id_baseline">
                                 <div class="card-body p-2">
                                     <div id="div_id_baseline">
@@ -263,27 +265,29 @@
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_target_frequency">
+                    <div class="form-row mb-3" id="div_id_target_frequency">
                         <label for="id_target_frequency" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency.label }}* </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.target_frequency class+="form-control" %}
                             <small class="form-text text-muted">{{ form.target_frequency.help_text }}</small>
                             <span id="validation_id_target_frequency" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_target_frequency_start">
+
+                    <div class="form-row mb-3" id="div_id_target_frequency_start">
                         <label for="id_target_frequency_start" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_start.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.target_frequency_start class+="form-control" %}
                             <small class="form-text text-muted">{{ form.target_frequency_start.help_text }}</small>
                             <span id="validation_id_target_frequency_start" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_target_frequency_custom">
+
+                    <div class="form-row mb-3" id="div_id_target_frequency_custom">
                         <label for="id_target_frequency_custom" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_custom.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.target_frequency_custom class+="form-control" %}
                             <small class="form-text text-muted">{{ form.target_frequency_custom.help_text }}</small>
                             <span id="validation_id_target_frequency_custom" class="has-error"></span>
@@ -291,20 +295,20 @@
                     </div>
 
 
-                    <div class="form-row mb-2" id="div_id_target_frequency_num_periods">
+                    <div class="form-row mb-3" id="div_id_target_frequency_num_periods">
                         <label for="id_target_frequency_num_periods" class="col-sm-4 col-form-label" align="right">{{ form.target_frequency_num_periods.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.target_frequency_num_periods class+="form-control" %}
                             <small class="form-text text-muted">{{ form.target_frequency_num_periods.help_text }}</small>
                             <span id="validation_id_target_frequency_num_periods" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div id="div_id_create_targets_btn" class="form-row mb-2">
-                         <label for="id_create_targets_btn" class="col-sm-4 col-form-label"></label>
+                    <div id="div_id_create_targets_btn" class="form-row mb-3">
+                        <label for="id_create_targets_btn" class="col-sm-4 col-form-label"></label>
                         <div class="col-sm-7">
-                            <button type="button" id="id_create_targets_btn" class="btn btn-sm btn-primary">Create targets</button>
-                            <button type="button" id="id_delete_targets_btn" class="btn btn-sm btn-link">Remove all targets</button>
+                            <button type="button" id="id_create_targets_btn" class="btn btn-sm btn-primary">{% trans "Create targets" %}</button>
+                            <button type="button" id="id_delete_targets_btn" class="btn btn-sm btn-link">{% trans "Remove all targets" %}</button>
                         </div>
                     </div>
 
@@ -317,45 +321,45 @@
             <div role="tabpanel" class="tab-pane" id="dataAcquisitionTab">
                 <fieldset>
                     <br>
-                    <div class="form-row mb-2" id="div_id_means_of_verification">
+                    <div class="form-row mb-3" id="div_id_means_of_verification">
                         <label for="id_means_of_verification" class="col-sm-4 col-form-label" align="right">{{ form.means_of_verification.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.means_of_verification class+="form-control" %}
                             <small class="form-text text-muted">{{ form.means_of_verification.help_text }}</small>
                             <span id="validation_id_means_of_verification" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_data_collection_method">
+                    <div class="form-row mb-3" id="div_id_data_collection_method">
                         <label for="id_data_collection_method" class="col-sm-4 col-form-label" align="right">{{ form.data_collection_method.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.data_collection_method class+="form-control" %}
                             <small class="form-text text-muted">{{ form.data_collection_method.help_text }}</small>
                             <span id="validation_id_data_collection_method" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_data_collection_frequency">
+                    <div class="form-row mb-3" id="div_id_data_collection_frequency">
                         <label for="id_data_collection_frequency" class="col-sm-4 col-form-label" align="right">{{ form.data_collection_frequency.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.data_collection_frequency class+="form-control" %}
                             <small class="form-text text-muted">{{ form.data_collection_frequency.help_text }}</small>
                             <span id="validation_id_data_collection_frequency" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_data_points">
+                    <div class="form-row mb-3" id="div_id_data_points">
                         <label for="id_data_points" class="col-sm-4 col-form-label" align="right">{{ form.data_points.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.data_points class+="form-control" %}
                             <small class="form-text text-muted">{{ form.data_points.help_text }}</small>
                             <span id="validation_id_data_points" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_responsible_person">
+                    <div class="form-row mb-3" id="div_id_responsible_person">
                         <label for="id_responsible_person" class="col-sm-4 col-form-label" align="right">{{ form.responsible_person.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.responsible_person class+="form-control" %}
                             <small class="form-text text-muted">{{ form.responsible_person.help_text }}</small>
                             <span id="validation_id_responsible_person" class="has-error"></span>
@@ -367,72 +371,72 @@
             <div role="tabpanel" class="tab-pane" id="analysisReportingTab">
                 <br>
                 <fieldset>
-                    <div class="form-row mb-2" id="div_id_method_of_analysis">
+                    <div class="form-row mb-3" id="div_id_method_of_analysis">
                         <label for="id_method_of_analysis" class="col-sm-4 col-form-label" align="right">{{ form.method_of_analysis.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.method_of_analysis class+="form-control" %}
                             <small class="form-text text-muted">{{ form.method_of_analysis.help_text }}</small>
                             <span id="validation_id_method_of_analysis" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_information_use">
+                    <div class="form-row mb-3" id="div_id_information_use">
                         <label for="id_information_use" class="col-sm-4 col-form-label" align="right">{{ form.information_use.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.information_use class+="form-control" %}
                             <small class="form-text text-muted">{{ form.information_use.help_text }}</small>
                             <span id="validation_id_information_use" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_reporting_frequency">
+                    <div class="form-row mb-3" id="div_id_reporting_frequency">
                         <label for="id_reporting_frequency" class="col-sm-4 col-form-label" align="right">{{ form.reporting_frequency.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.reporting_frequency class+="form-control" %}
                             <small class="form-text text-muted">{{ form.reporting_frequency.help_text }}</small>
                             <span id="validation_id_reporting_frequency" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_quality_assurance">
+                    <div class="form-row mb-3" id="div_id_quality_assurance">
                         <label for="id_quality_assurance" class="col-sm-4 col-form-label" align="right">{{ form.quality_assurance.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.quality_assurance class+="form-control" %}
                             <small class="form-text text-muted">{{ form.quality_assurance.help_text }}</small>
                             <span id="validation_id_quality_assurance" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_data_issues">
+                    <div class="form-row mb-3" id="div_id_data_issues">
                         <label for="id_data_issues" class="col-sm-4 col-form-label" align="right">{{ form.data_issues.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.data_issues class+="form-control" %}
                             <small class="form-text text-muted">{{ form.data_issues.help_text }}</small>
                             <span id="validation_id_data_issues" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_indicator_changes">
+                    <div class="form-row mb-3" id="div_id_indicator_changes">
                         <label for="id_indicator_changes" class="col-sm-4 col-form-label" align="right">{{ form.indicator_changes.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.indicator_changes class+="form-control" %}
                             <small class="form-text text-muted">{{ form.indicator_changes.help_text }}</small>
                             <span id="validation_id_indicator_changes" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_comments">
+                    <div class="form-row mb-3" id="div_id_comments">
                         <label for="id_comments" class="col-sm-4 col-form-label" align="right">{{ form.comments.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.comments class+="form-control" %}
                             <small class="form-text text-muted">{{ form.comments.help_text }}</small>
                             <span id="validation_id_comments" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_notes">
+                    <div class="form-row mb-3" id="div_id_notes">
                         <label for="id_notes" class="col-sm-4 col-form-label" align="right">{{ form.notes.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.notes class+="form-control" %}
                             <small class="form-text text-muted">{{ form.notes.help_text }}</small>
                             <span id="validation_id_notes" class="has-error"></span>
@@ -445,18 +449,18 @@
                 <br>
                 <fieldset>
 
-                    <div class="form-row mb-2" id="div_id_approval_submitted_by">
+                    <div class="form-row mb-3" id="div_id_approval_submitted_by">
                         <label for="id_approval_submitted_by" class="col-sm-4 col-form-label" align="right">{{ form.approval_submitted_by.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.approval_submitted_by class+="form-control" %}
                             <small class="form-text text-muted">{{ form.approval_submitted_by.help_text }}</small>
                             <span id="validation_id_approval_submitted_by" class="has-error"></span>
                         </div>
                     </div>
 
-                    <div class="form-row mb-2" id="div_id_approved_by">
+                    <div class="form-row mb-3" id="div_id_approved_by">
                         <label for="id_approved_by" class="col-sm-4 col-form-label" align="right">{{ form.approved_by.label }} </label>
-                        <div class="col-sm-7">
+                        <div class=" col-sm-7 div-input-container">
                             {% render_field form.approved_by class+="form-control" %}
                             <small class="form-text text-muted">{{ form.approved_by.help_text }}</small>
                             <span id="validation_id_approved_by" class="has-error"></span>
@@ -467,11 +471,11 @@
         </div>
 
     </div> <!-- modal body -->
-    <div class="modal-footer justify-content-between" style="background-color: #d7d7d7;">
+    <div class="modal-footer justify-content-between p-4 mt-4" style="background-color: #DBDCDE;">
         <div>
             <!-- <input type="submit" class="btn btn-primary" value="Save changes"> -->
-            <input type="submit" name="submit" value="Save changes" class="btn btn-primary" id="submit-id-submit">
-            <input type="reset" class="btn btn-secondary" value="Reset">
+            <input type="submit" name="submit" value="{% trans "SAVE CHANGES" %}" class="btn btn-primary mx-1" id="submit-id-submit">
+            <input type="reset" class="btn btn-light mx-1" value="{% trans "RESET" %}">
         </div>
         <div class="text-muted">{% include "form_guidance.html" %}</div>
     </div>

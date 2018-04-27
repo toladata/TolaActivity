@@ -1,8 +1,10 @@
+{% load i18n %}
+
 <!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <title>Import from Tola Tables</title>
+  <title>{% trans "Import from Tola Tables" %}</title>
 </head>
 <body>
 <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
@@ -64,23 +66,23 @@
     <br/>
     <div class='jumbotron'>
 
-        <h4>Import Indicator Evidence from <a href="https://tola-tables.mercycorps.org" target="_new">Tola Tables</a>.</h4>
-        <p>Link one of your Tola Tables or a Table shared with you as your indicator evidence.</p>
+        <h4>{% trans "Import Indicator Evidence from" %}<a href="https://tola-tables.mercycorps.org" target="_new">{% trans "Tola Tables" %}</a>.</h4>
+        <p>{% trans "Link one of your Tola Tables or a Table shared with you as your indicator evidence." %}</p>
         <div class="panel-body">
             <form class="form-horizontal" method="post" enctype="multipart/form-data" id="importForm" name="most" action="/indicators/collecteddata_import/" role="form">
               {% csrf_token %}
               <div class="form-group">
-                  <label for="service_table">Tola Tables </label>
+                  <label for="service_table">{% trans "Tola Tables" %}</label>
                   <select name="service_table" id="service_table" class="form-control">
                       {% for table in getTables %}
                       <option value="{{ table.id }}"> {{ table.owner.username }} - {{ table.name }} </option>
                       {% endfor %}
                   </select>
-                  <span id="helpBlock" class="help-block">Type the name of the Table in the box above to search.</span>
+                  <span id="helpBlock" class="help-block">{% trans "Type the name of the Table in the box above to search." %}</span>
               </div>
 
               <br/>
-              <input type="submit" name="submit" value="save" class="btn btn-success">
+              <input type="submit" name="submit" value="(% trans 'save' %}" class="btn btn-success">
             </form>
         </div>
     </div>

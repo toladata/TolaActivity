@@ -5,16 +5,13 @@ import NavBar from '../pages/navbar.page';
 import TargetsTab from '../pages/targets.page';
 import Util from '../lib/testutil';
 import DateMath from 'date-arithmetic';
-
-const msec = 1000;
-const delay = 10*msec;
 'use strict';
 
 describe('Periodic target date ranges', function() {
     before(function() {
       // Disable timeouts
       this.timeout(0);
-      //browser.windowHandleMaximize();
+      browser.windowHandleMaximize();
       let parms = Util.readConfig();
                           
       LoginPage.open(parms.baseurl);
@@ -32,8 +29,9 @@ describe('Periodic target date ranges', function() {
     });
 
     it('for annual periodic targets should be correct', function() {
-        NavBar.Indicators.click();    
+        NavBar.Indicators.click();
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Annual');
         // Set first period to current month
         TargetsTab.setFirstTargetPeriod();
@@ -61,6 +59,7 @@ describe('Periodic target date ranges', function() {
     it('for semi-annual periodic targets should be correct', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Semi-annual');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(3);
@@ -85,6 +84,7 @@ describe('Periodic target date ranges', function() {
     it('for tri-annual periodic targets should be correct', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Tri-annual');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(4);
@@ -109,6 +109,7 @@ describe('Periodic target date ranges', function() {
     it('for quarterly periodic targets should be correct', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Quarterly');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(5);
@@ -133,6 +134,7 @@ describe('Periodic target date ranges', function() {
     it('for monthly periodic targets should be correct', function() {
         NavBar.Indicators.click();    
         IndPage.createBasicIndicator();
+        TargetsTab.clickTargetsTab();
         TargetsTab.setTargetFrequency('Tri-annual');
         TargetsTab.setFirstTargetPeriod();
         TargetsTab.setNumTargetPeriods(4);
@@ -154,4 +156,3 @@ describe('Periodic target date ranges', function() {
         }
     });
 });
-

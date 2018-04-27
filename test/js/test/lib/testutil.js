@@ -1,6 +1,6 @@
 /**
  * Hodgepodge of helper code that doesn't fit elsewhere
- * @module testutil
+ * @module TestUtil
  */
 
 /**

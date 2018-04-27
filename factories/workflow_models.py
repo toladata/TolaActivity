@@ -1,9 +1,7 @@
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
-    SubFactory, post_generation
-
-import random
-
+    SubFactory, post_generation, Sequence, RelatedFactory
+from .django_models import UserFactory, Site
 from workflow.models import (
     Contact as ContactM,
     Country as CountryM,
@@ -20,10 +18,9 @@ from workflow.models import (
     TolaUser as TolaUserM,
     Program as ProgramM,
 )
-from .django_models import User, Group, Site
 
 
-class Country(DjangoModelFactory):
+class CountryFactory(DjangoModelFactory):
     class Meta:
         model = CountryM
         django_get_or_create = ('code',)
@@ -40,54 +37,43 @@ class Contact(DjangoModelFactory):
     city = 'Kabul'
     email = lazy_attribute(lambda o: slugify(o.name) + "@external-contact.com")
     phone = '+93 555444333'
-    country = SubFactory(Country)
+    country = SubFactory(CountryFactory)
 
 
-class Organization(DjangoModelFactory):
+class OrganizationFactory(DjangoModelFactory):
     class Meta:
         model = OrganizationM
 
     name = 'MC Org'
 
 
-class SiteProfile(DjangoModelFactory):
+class SiteProfileFactory(DjangoModelFactory):
     class Meta:
         model = SiteProfileM
 
-    name = 'MC Site'
+    name = Sequence(lambda n: 'Site Profile {0}'.format(n))
+    country = SubFactory(CountryFactory, country='United States', code='US')
 
 
-class TolaUser(DjangoModelFactory):
+class TolaUserFactory(DjangoModelFactory):
     class Meta:
         model = TolaUserM
         django_get_or_create = ('user',)
 
-    user = SubFactory(User)
+    user = SubFactory(UserFactory)
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
-    organization = SubFactory(Organization)
-    country = SubFactory(Country, country='United States', code='US')
+    organization = SubFactory(OrganizationFactory)
+    country = SubFactory(CountryFactory, country='United States', code='US')
+    countries = RelatedFactory(CountryFactory, country='United States', code='US')
 
 
-
-
-class Program(DjangoModelFactory):
+class ProgramFactory(DjangoModelFactory):
     class Meta:
         model = ProgramM
 
     name = 'Health and Survival for Syrians in Affected Regions'
-
-    @post_generation
-    def country(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if type(extracted) is list:
-            # A list of country were passed in, use them
-            for country in extracted:
-                self.country.add(country)
-        else:
-            self.country.add(Country(country='Syria', code='SY'))
+    gaitid = Sequence(lambda n: "%0030d" % n)
+    country = RelatedFactory(CountryFactory, country='United States', code='US')
 
 
 class Documentation(DjangoModelFactory):
@@ -95,14 +81,14 @@ class Documentation(DjangoModelFactory):
         model = DocumentationM
 
     name = 'Strengthening access and demand in Mandera County'
-    program = SubFactory(Program)
+    program = SubFactory(ProgramFactory)
 
 
-class Sector(DjangoModelFactory):
+class SectorFactory(DjangoModelFactory):
     class Meta:
         model = SectorM
 
-    sector = 'Basic Needs'
+    sector = Sequence(lambda n: 'Sector {0}'.format(n))
 
 
 class Stakeholder(DjangoModelFactory):
@@ -110,7 +96,7 @@ class Stakeholder(DjangoModelFactory):
         model = StakeholderM
 
     name = 'Stakeholder A'
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
 
     @post_generation
     def program(self, create, extracted, **kwargs):
@@ -129,7 +115,7 @@ class FundCode(DjangoModelFactory):
         model = FundCodeM
 
     name = 'Fund Code A'
-    organization = SubFactory(Organization)
+    organization = SubFactory(OrganizationFactory)
 
 
 class ProjectType(DjangoModelFactory):
@@ -161,4 +147,3 @@ class TolaSites(DjangoModelFactory):
 
     name = 'MercyCorps'
     site = SubFactory(Site)
-

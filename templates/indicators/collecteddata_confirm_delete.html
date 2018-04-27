@@ -1,10 +1,12 @@
 {% extends "base.html" %}
-{% block page_title %}Collected Indicator Data Confirm Delete{% endblock %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Collected Indicator Data Confirm Delete" %}{% endblock %}
 
 {% block content %}
 
 <form action="" method="post">{% csrf_token %}
-    <p>Are you sure you want to delete the collected data ?</p>
+    <p>{% trans "Are you sure you want to delete the collected data?" %}</p>
     <input type="submit" value="Confirm" />
 </form>
 

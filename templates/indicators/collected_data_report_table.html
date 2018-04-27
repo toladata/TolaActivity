@@ -1,11 +1,11 @@
-
+{% load i18n %}
 
 <table class="table table-striped">
     <tr>
-        <th>Date Collected</th>
-        <th>Evidence</th>
-        <th>Target</th>
-        <th>Actual</th>
+        <th>{% trans "Date Collected" %}</th>
+        <th>{% trans "Evidence" %}</th>
+        <th>{% trans "Target" %}</th>
+        <th>{% trans "Actual" %}</th>
     </tr>
     {% for item in collected %}
     <tr>
@@ -16,7 +16,7 @@
     </tr>
     {% endfor %}
     <tr>
-        <td colspan="6"><span style="float: right;">Sum:</span></td>
+        <td colspan="6"><span style="float: right;">{% trans "Sum:" %}</span></td>
         <td>{{ collected_sum.targeted__sum|floatformat:"-2" }}</td>
         <td>{{ collected_sum.achieved__sum|floatformat:"-2" }}</td>
         <td>&nbsp;</td>

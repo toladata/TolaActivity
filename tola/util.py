@@ -109,7 +109,6 @@ def group_excluded(*group_names, **url):
                 return True
             raise PermissionDenied
         return False
-
     return user_passes_test(in_groups)
 
 

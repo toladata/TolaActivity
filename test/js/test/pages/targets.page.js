@@ -1,40 +1,56 @@
 /**
  * Page model for testing the Program Indicators screen.
- * @module targets
+ * @module Targets
  */
+import Util from '../lib/testutil';
+import IndPage from '../pages/indicators.page';
 'use strict';
 
-// Methods are listed in alphabetical order; please help
-// keep them that way. Thanks!
-var util = require('../lib/testutil.js');
-var dp = require('../lib/testutil.js').dp;
-var IndPage = require('../pages/indicators.page.js');
 const msec = 1000;
 
-var parms = util.readConfig();
+var parms = Util.readConfig();
 parms.baseurl += '/indicators/home/0/0/0';
 
 /**
- * Click the indicator name link for the specified indicator
- * to show its detail/edit screen
- * @param {string} indicatorName - The name of the indicator whose
- * detail screen you want to view
- * @returns Nothing
+ * Add num target periods to the targets list, or
+ * 1 target period if num not specified
+ * @param {integer} num The number of target periods
+ * to add
+ * @returns {integer} The total number of target periods
  */
-function clickProgramIndicator(indicatorName) {
-  let link = browser.$('=' + indicatorName);
-  link.click();
+function addTarget(num = 1) {
+    let link = browser.$('a#addNewPeriodicTarget');
+    let cnt = 0;
+
+    while (cnt < num) {
+        link.click();
+        cnt++;
+    }
+    return cnt;
 }
 
 /**
- * Click the specified program's indicators button to toggle the corresponding
- * table of indicators
- * @param {string} programName - The program name whose indicators button
- * you want to click
- * @returns Nothing
+ * Click the Direction of change dropdown
+ * @returns {Nothing}
  */
-function clickProgramIndicatorsButton(programName) {
-  IndPage.selectProgram(programName);
+function clickDirectionOfChange() {
+    $('select#id_direction_of_change').click();
+}
+
+/**
+ * Click the percent radio button to set an indicator as a percentage indicator
+ */
+function clickNumberType() {
+    let control = browser.$('div#div_id_unit_of_measure_type_0');
+    control.click();
+}
+
+/**
+ * Click the number radio button to set an indicator as a number indicator
+ */
+function clickPercentType() {
+    let control = browser.$('div#div_id_unit_of_measure_type_1');
+    control.click();
 }
 
 /***
@@ -53,6 +69,17 @@ function clickTargetsTab() {
   let targetsTab = browser.$('=Targets');
   targetsTab.click();
 }
+
+/**
+ * Return the Direction of change dropdown
+ */
+ function setDirectionOfChange(dir = 'none') {
+    let val;
+    if (dir == 'none') { val = 1};
+    if (dir == 'pos') { val = 2};
+    if (dir == 'neg') { val = 3};
+    $('select#id_direction_of_change').selectByValue(val);
+ }
 
 /**
  * Get the text of the current alert message, if any, and return it as a string
@@ -88,6 +115,22 @@ function getBaselineErrorHint() {
   return errorHint;
 }
 
+/**
+ * Get the direction of change fom the direction of change dropdown
+ * @returns String representation of value of the dropdown
+ */
+function getDirectionOfChange() {
+    let dropdown = $('select#id_direction_of_change');
+    let changeDir = dropdown.getValue();
+    if (changeDir == 1) { return 'none' };
+    if (changeDir == 2) { return 'pos' };
+    if (changeDir == 3) { return 'neg' };
+}
+
+/**
+ * Get the target date ranges created for given indicator
+ * @returns {Array<string>} an array of hyphen-separated start and end dates
+ */
 function getTargetDateRanges() {
     browser.pause(msec);
     browser.scroll('h5');
@@ -134,6 +177,17 @@ function getLoPTarget() {
   return val;
 }
 
+function getNumberType() {
+    let val = browser.$('div#div_id_unit_of_measure_type_0').getText();
+    return val;
+}
+
+function getPercentType() {
+    let val = browser.$('div#div_id_unit_of_measure_type_1').getText();
+    Util.dp('val='+val);
+    return val;
+}
+
 /**
  * Get the number of events specified for event-based targets
  * @returns {integer} The number of events specified
@@ -145,7 +199,7 @@ function getNumTargetEvents() {
 
 /**
  * Get the text, if any, from the error box beneath the number of
- * events text bo
+ * events text box
  * @returns {string} The error text as a string
  */
 function getNumTargetEventsErrorHint() {
@@ -177,7 +231,7 @@ function getNumTargetPeriodsErrorHint() {
 }
 
 /**
- * Get a list of the program indicator Delete buttons for the program 
+ * Get a list of the program indicator Delete buttons for the program
  * currently displayed in the program indicators table
  * @returns {Array<clickable>} An array of clickable program indicator
  * "Delete" button objects
@@ -194,7 +248,7 @@ function getProgramIndicatorDeleteButtons() {
 }
 
 /**
- * Get a list of the program indicators Edit buttons for the program 
+ * Get a list of the program indicators Edit buttons for the program
  * currently displayed in the program indicators table
  * @returns {Array<clickable>} An array of clickable program indicator
  * "Edit" button objects
@@ -326,6 +380,7 @@ function getTargetInputBoxes() {
     let inputBoxes = browser.$$('input#pt-undefined.form-control.input-value');
     return inputBoxes;
 }
+
 /**
  * Get the current error string, if any, from the target creation
  * screen on the Targets tab
@@ -344,6 +399,21 @@ function getTargetValueErrorHint() {
 function getUnitOfMeasure() {
   let val = $('input#id_unit_of_measure').getValue();
   return val;
+}
+
+function getMeasureIsCumulative() {
+    browser.pause(1000);
+    browser.scroll('input#submit-id-submit');
+
+    let val = $('input#id_is_cumulative_1').getValue();
+    if (val == 3) { return true; }
+    if (val == 4) { return false; }
+}
+
+function getMeasureType() {
+    let element = $('input[name="unit_of_measure_type"]');
+    let val = element.getValue();
+    return val;
 }
 
 /**
@@ -371,9 +441,9 @@ function pageName() {
  * @returns Nothing
  */
 function saveIndicatorChanges() {
-  browser.scroll('input[value="Save changes"]');
-  let saveChanges = $('input[value="Save changes"]');
-  saveChanges.click();
+  let elem = $('input#submit-id-submit');
+  browser.scroll('input#submit-id-submit');
+  browser.$('input#submit-id-submit').click();
 }
 
 /**
@@ -408,10 +478,10 @@ function setBaselineNA() {
  */
 function setEndlineTarget(value) {
   clickTargetsTab();
-  if (! browser.isVisible('div>input[name="Endline"]')) {
-    browser.waitForVisible('div>input[name="Endline"]');
+  if (! browser.isVisible('input[name="Endline"]')) {
+    browser.waitForVisible('input[name="Endline"]');
   }
-  let endline = $('div>input[name="Endline"]');
+  let endline = $('input[name="Endline"]');
   endline.setValue(value);
 }
 
@@ -437,7 +507,7 @@ function setFirstEventName(value) {
  */
 function setFirstTargetPeriod() {
   // Defaults to the current month
-  browser.scroll('input#id_target_frequency_start');
+  browser.scroll('input#submit-id-submit');
   browser.$('input#id_target_frequency_start').click();
   browser.$('button.ui-datepicker-close').click();
 }
@@ -471,6 +541,19 @@ function setLoPTarget(value) {
 }
 
 /**
+ * Set the type of the unit of measure (number or percent)
+ * @returns {Nothing}
+ */
+function setMeasureType(type) {
+  clickTargetsTab();
+  let element;
+  browser.pause(1000);
+  if (type == 'number') { element = browser.$('input#id_unit_of_measure_type_0'); }
+  if (type == 'percent') { element = browser.$('input#id_unit_of_measure_type_1'); }
+  element.click();
+}
+
+/**
  * Set the midline target on the targets detail screen to the
  * specifed value
  * @param {integer} value The value to set
@@ -478,10 +561,10 @@ function setLoPTarget(value) {
  */
 function setMidlineTarget(value) {
   clickTargetsTab();
-  if (! browser.isVisible('div>input[name="Midline"]')) {
-    browser.waitForVisible('div>input[name="Midline"]');
+  if (! browser.isVisible('input[name="Midline"]')) {
+    browser.waitForVisible('input[name="Midline"]');
   }
-  let midline = $('div>input[name="Midline"]');
+  let midline = $('input[name="Midline"]');
   midline.setValue(value);
 }
 
@@ -507,8 +590,6 @@ function setNumTargetEvents(value) {
  * @returns Nothing
  */
 function setNumTargetPeriods(value) {
-  let targetsTab = browser.$('=Targets');
-  targetsTab.click();
   browser.$('input#id_target_frequency_num_periods').setValue(value);
 }
 
@@ -519,13 +600,12 @@ function setNumTargetPeriods(value) {
  * @returns Nothing
  */
 function setTargetFrequency(freqName) {
-  clickTargetsTab();
-
   let frequencies = ['', 'Life of Program (LoP) only',
     'Midline and endline', 'Annual', 'Semi-annual',
     'Tri-annual', 'Quarterly', 'Monthly', 'Event'];
   let freqValue = frequencies.indexOf(freqName);
   let targetFreq = $('select#id_target_frequency');
+  browser.scroll('select#id_target_frequency');
   targetFreq.selectByValue(freqValue);
 }
 
@@ -541,16 +621,21 @@ function setUnitOfMeasure(unit) {
   bucket.setValue(unit);
 }
 
-exports.clickProgramIndicator = clickProgramIndicator;
-exports.clickProgramIndicatorsButton = clickProgramIndicatorsButton;
+exports.addTarget = addTarget;
+exports.clickNumberType = clickNumberType;
+exports.clickPercentType = clickPercentType;
 exports.clickResetButton = clickResetButton;
 exports.clickTargetsTab = clickTargetsTab;
+exports.clickDirectionOfChange = clickDirectionOfChange;
 exports.getAlertMsg = getAlertMsg;
 exports.getBaseline = getBaseline;
 exports.getBaselineErrorHint = getBaselineErrorHint;
+exports.getDirectionOfChange = getDirectionOfChange;
 exports.getIndicatorName = getIndicatorName;
 exports.getLoPErrorHint = getLoPErrorHint;
 exports.getLoPTarget = getLoPTarget;
+exports.getMeasureIsCumulative = getMeasureIsCumulative;
+exports.getMeasureType = getMeasureType;
 exports.getNumTargetEvents = getNumTargetEvents;
 exports.getNumTargetEventsErrorHint = getNumTargetEventsErrorHint;
 exports.getNumTargetPeriods = getNumTargetPeriods;
@@ -572,11 +657,13 @@ exports.pageName = pageName;
 exports.saveIndicatorChanges = saveIndicatorChanges;
 exports.setBaseline = setBaseline;
 exports.setBaselineNA = setBaselineNA;
+exports.setDirectionOfChange = setDirectionOfChange;
 exports.setEndlineTarget = setEndlineTarget;
 exports.setFirstEventName = setFirstEventName;
 exports.setFirstTargetPeriod = setFirstTargetPeriod;
 exports.setIndicatorName = setIndicatorName;
 exports.setLoPTarget = setLoPTarget;
+exports.setMeasureType = setMeasureType;
 exports.setMidlineTarget = setMidlineTarget;
 exports.setNumTargetEvents = setNumTargetEvents;
 exports.setNumTargetPeriods = setNumTargetPeriods;
