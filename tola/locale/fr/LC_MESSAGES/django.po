@@ -1424,7 +1424,7 @@ msgid ""
 "data record/s will no longer have targets associated with them. \\n"
 "\\nProceed anyway?"
 msgstr ""
-"Les enregistrements de données n`auront plus de cibles associées. \\ n"
+"Les enregistrements de données n'auront plus de cibles associées. \\ n"
 "\\nContinuer malgré tout?"
 
 #: templates/indicators/indicator_form_common_js.html:174
