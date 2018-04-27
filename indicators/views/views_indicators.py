@@ -19,6 +19,7 @@ from django.shortcuts import render, render_to_response
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 from django.views.generic.detail import View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -209,7 +210,7 @@ def indicator_create(request, id=0):
         node_id = request.POST['service_indicator']
         sector = None
         # add a temp name for custom indicators
-        name = "Temporary"
+        name = _("Temporary")
         source = None
         definition = None
         external_service_record = None

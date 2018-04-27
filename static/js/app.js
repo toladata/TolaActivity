@@ -45,55 +45,55 @@ function isDate(dateVal) {
     return true;
 }
 
-function formatDate(dateString, day=0) {
-    var months = new Array();
-    months[1] = "Jan";
-    months[2] = "Feb";
-    months[3] = "Mar";
-    months[4] = "Apr";
-    months[5] = "May";
-    months[6] = "Jun";
-    months[7] = "Jul";
-    months[8] = "Aug";
-    months[9] = "Sep";
-    months[10] = "Oct";
-    months[11] = "Nov";
-    months[12] = "Dec";
+// function formatDate(dateString, day=0) {
+//     var months = new Array();
+//     months[1] = "Jan";
+//     months[2] = "Feb";
+//     months[3] = "Mar";
+//     months[4] = "Apr";
+//     months[5] = "May";
+//     months[6] = "Jun";
+//     months[7] = "Jul";
+//     months[8] = "Aug";
+//     months[9] = "Sep";
+//     months[10] = "Oct";
+//     months[11] = "Nov";
+//     months[12] = "Dec";
 
 
-    if (dateString == null || dateString == undefined || dateString.length == 0 || dateString == 'undefined' || dateString == 'null' ) {
-        return '';
-    }
-    try {
-        var dateval = new Date(dateString);
-        tz = dateval.getTimezoneOffset();
-        hrs = dateval.getHours();
-        if (hrs > 0) {
-            // alert("offsetting timezone tz=" + tz + " hrs = " + hrs);
-            dateval.setMinutes(dateval.getMinutes() + tz);
-        }
-        var month = months[(dateval.getMonth() + 1)];
-        var ret = month.concat(' ').concat(day == 0 ? dateval.getDate() : day).concat(', ').concat(dateval.getFullYear());
-        return ret;
-    } catch (err) {
-        console.log(err);
-        try {
-            var dateArray = dateString.split('-');
-            var month = months[parseInt(dateArray[1])]
-            return month.concat(' ').concat(day == 0 ? dateArray[2] : day).concat(', ').concat(dateArray[0]);
-        }
-        catch (err) {
-            return dateString == null ? '' : dateString;
-        }
-    }
-}
+//     if (dateString == null || dateString == undefined || dateString.length == 0 || dateString == 'undefined' || dateString == 'null' ) {
+//         return '';
+//     }
+//     try {
+//         var dateval = new Date(dateString);
+//         tz = dateval.getTimezoneOffset();
+//         hrs = dateval.getHours();
+//         if (hrs > 0) {
+//             // alert("offsetting timezone tz=" + tz + " hrs = " + hrs);
+//             dateval.setMinutes(dateval.getMinutes() + tz);
+//         }
+//         var month = months[(dateval.getMonth() + 1)];
+//         var ret = month.concat(' ').concat(day == 0 ? dateval.getDate() : day).concat(', ').concat(dateval.getFullYear());
+//         return ret;
+//     } catch (err) {
+//         console.log(err);
+//         try {
+//             var dateArray = dateString.split('-');
+//             var month = months[parseInt(dateArray[1])]
+//             return month.concat(' ').concat(day == 0 ? dateArray[2] : day).concat(', ').concat(dateArray[0]);
+//         }
+//         catch (err) {
+//             return dateString == null ? '' : dateString;
+//         }
+//     }
+// }
 
 
 $(function() {
      // Javascript to enable link to tab
     var hash = document.location.hash;
     if (hash) {
-        $('.nav-tabs a[href="'+hash+'"]').tab('show');
+        $('.nav-tabs a[href='+hash+']').tab('show');
     }
 
     // Change hash for page-reload
@@ -411,6 +411,7 @@ $(document).ready(function() {
         $('.collapse').removeClass('in');
         $(location.hash + '.collapse').collapse('show');
         indicator_id = location.hash.split('-')
+        console.log(indicator_id)
         //loadIndicators(indicator_id[1])
     }
 });

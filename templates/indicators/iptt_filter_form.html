@@ -1,4 +1,5 @@
 {% load widget_tweaks %}
+{% load i18n %}
 
 <nav id="id_iptt_report_filter">
 
@@ -85,11 +86,11 @@
         type="submit"
         id="id_submit_form_filter"
         class="btn btn-primary"
-        style="width:50%; font-size: 50%; margin-left: 10px;">SAVE CHANGES
+        style="width:50%; font-size: 50%; margin-left: 10px;">{% trans "SAVE CHANGES" %}
       </button>
       <button type="reset"
               class="btn btn-secondary"
-              style="width: 25%; font-size: 50%">CANCEL
+              style="width: 25%; font-size: 50%">{% trans "CANCEL" %}
       </button>
     </div>
   </form>

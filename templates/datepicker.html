@@ -1,6 +1,6 @@
 {# datepicker.html #}
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
   $(document).ready(function() {
     var type = $('<input type="date" />').attr('type');
     if (type == 'text') { // No HTML5 support
@@ -10,5 +10,27 @@
       $('#{{ attrs.id }}').datepicker(options);
     }
   });
+</script> -->
+
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+
+<script type="text/javascript">
+
+	var userLang = "{{ LANGUAGE_CODE }}";
+
+  $(document).ready(function() {
+  	$.datepicker.setDefaults($.datepicker.regional[userLang]);
+    var type = $('<input type="date" />').attr('type');
+    if (type == 'text') { // No HTML5 support
+      var options = {
+        dateFormat: 'yy-mm-dd'
+      };
+      $('#{{ attrs.id }}').datepicker(options);
+    }
+  });
+
 </script>
+
 

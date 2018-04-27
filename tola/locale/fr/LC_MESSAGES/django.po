@@ -89,7 +89,7 @@ msgstr "PÉRIODES DE TEMPS"
 
 #: indicators/forms.py:231
 msgid "enter a number"
-msgstr "entrez un nombre"
+msgstr "entrez nombre"
 
 #: indicators/forms.py:232
 msgid "TARGET PERIODS"
@@ -1069,7 +1069,7 @@ msgstr "Tapez le nom de la Table dans la boîte ci-dessus pour rechercher."
 #: templates/indicators/collecteddata_list.html:9
 #: templates/indicators/collecteddata_list.html:160
 msgid "Collected Indicator Data Report"
-msgstr "Rapport de données d'indicateur collectées"
+msgstr "Rapport de données d`indicateur collectées"
 
 #: templates/indicators/collecteddata_list.html:118
 #: templates/indicators/collecteddata_list.html:119

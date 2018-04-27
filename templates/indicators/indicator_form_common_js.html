@@ -1,5 +1,5 @@
 {% load i18n %}
-{% get_current_language as LANGUAGE_CODE %}
+<!-- {% get_current_language as LANGUAGE_CODE %} -->
 
 <script>
     var validation_msgs = {};
@@ -7,12 +7,13 @@
 
 
     function setupPopupCalendar() {
-        $.datepicker.setDefaults($.datepicker.regional[userLang]);
+        // $.datepicker.setDefaults($.datepicker.regional[userLang]);
         $('.monthPicker').datepicker({
             changeMonth: true,
             changeYear: true,
             showButtonPanel: true,
-            dateFormat: 'M d, yy',
+            // dateFormat: 'mm/dd/yy',
+            // dateFormat: 'M d, yy',
             beforeShow(input, inst){
                 // move date picker popup div inside modal dialog(fix for firefox)
                 $(input).parent().append($('#ui-datepicker-div'));
@@ -291,7 +292,8 @@
             form_data += "&periodic_targets=" + JSON.stringify(periodic_targets);
         }
 
-        $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>Saving form... please wait.</span>");
+
+        $("#modalmessages").html("<img src='{{ STATIC_URL }}/img/ajax-loader.gif'>  <span>{% trans 'Saving form... please wait.' %}</span>");
         $.ajax({
             method: 'POST',
             url: form_url,
@@ -557,7 +559,8 @@
             $("#validation_" + fieldId).text(errMsg);
             return false;
         } else {
-            var val = formatDate(field.val(), 1);
+            // var val = formatDate(field.val(), 1);
+            var val = field.val()
             field.val(val);
             errMsg = undefined;
             field.removeClass('is-invalid');
@@ -771,6 +774,7 @@
 
 
 </script>
+
 
 
 

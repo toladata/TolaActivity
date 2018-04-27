@@ -1,4 +1,5 @@
 {% load widget_tweaks %}
+{% load i18n %}
 <script type="text/javascript">
     //Searchable select option for service indicator
     $(document).ready(function() {
@@ -36,8 +37,9 @@
     <div id="indicator_modal_header" style="width:100%" class="modal-title">
         <span id = "modalmessages" width="100%"></span>
         <h5 style="color:#94979c;">
+            {% trans "indicator:" as ind %}
             {% if indicator.levels %}
-                {{ indicator.levels }} {% trans "indicator:" %}"
+                {{ indicator.levels }} {{ ind }}
             {% endif %}
             {{ indicator.name|truncatechars:300 }}
         </h5>
