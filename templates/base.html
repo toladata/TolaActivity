@@ -239,20 +239,6 @@
 
         <script type="text/javascript" src="{{ STATIC_URL }}js/select2.min.js"></script>
 
-        <!-- Add JQuery UI language files and set default to current_language-->
-
-        <script type="text/javascript" src="{% static 'js/datepicker-fr.js' %}"></script>
-
-        {% get_current_language as LANGUAGE_CODE %}
-
-        <script type="text/javascript">
-            var userLang = "{{ LANGUAGE_CODE }}";
-            $(document).ready(function() {
-                $.datepicker.setDefaults( $.datepicker.regional[ userLang ] );
-            });
-        </script>
-        <!-- End JQuery UI language files and default-->
-
         
 
         {% if GOOGLE_ANALYTICS_PROPERTY_ID %}

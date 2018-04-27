@@ -98,7 +98,7 @@
                     { title: "{% trans 'IID' %}", class: "noExport", data: "id"},
                     { title: "{% trans 'ITID' %}", class: "noExport", data: "indicator_type__id"},
                     { title: "{% trans 'Program' %}", data: "program__name"},
-                    { title: "{% trans 'Indicator" %}, data: "{% trans 'name' %}",
+                    { title: "{% trans 'Indicator' %}", data: "{% trans 'name' %}",
                             "mRender": function (data, type, row) {
                                 return '<a class="collecteddata" name=' + row.id + ' href="/indicators/indicator_update/' + row.id + '/">' + row.name + '</a>';
                             }
@@ -122,8 +122,8 @@
                 buttons: [
                     {
                         extend: 'csv',
-                        title: 'Indicator Report',
-                        text: 'Export to CSV',
+                        title: '{% trans "Indicator Report" %}',
+                        text: '{% trans "Export to CSV" %}',
                         exportOptions: { columns: "thead th:not(.noExport)" }
                     }
                 ]

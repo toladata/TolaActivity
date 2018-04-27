@@ -12,8 +12,7 @@
             changeMonth: true,
             changeYear: true,
             showButtonPanel: true,
-            // dateFormat: 'mm/dd/yy',
-            // dateFormat: 'M d, yy',
+            dateFormat: 'M d, yy',
             beforeShow(input, inst){
                 // move date picker popup div inside modal dialog(fix for firefox)
                 $(input).parent().append($('#ui-datepicker-div'));
@@ -559,8 +558,7 @@
             $("#validation_" + fieldId).text(errMsg);
             return false;
         } else {
-            // var val = formatDate(field.val(), 1);
-            var val = field.val()
+            var val = formatDate(field.val(), 1);
             field.val(val);
             errMsg = undefined;
             field.removeClass('is-invalid');
