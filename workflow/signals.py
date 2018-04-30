@@ -7,10 +7,11 @@ try:
 except ImportError:
     pass
 from django.conf import settings
-from django.core.mail import EmailMessage
-from django.contrib.auth.models import Group
+from django.core.mail import EmailMultiAlternatives
+from django.contrib.auth.models import User, Group
 from django.db.models import signals
 from django.dispatch import receiver
+from django.template import loader
 
 from tola import DEMO_BRANCH, track_sync as tsync
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
@@ -27,12 +28,34 @@ def pre_save_handler(sender, instance, *args, **kwargs):
     instance.full_clean()
 
 
-def get_addon_by_id(addon_id, addons):
-    for addon in addons:
-        if addon.id == addon_id:
-            return addon
+def notify_excess_org_admin(organization, extra_context):
+    org_admins = User.objects.values_list(
+        'first_name', 'last_name', 'email').filter(
+        tola_user__organization=organization,
+        groups__name=ROLE_ORGANIZATION_ADMIN
+    )
 
-    return None
+    for org_admin in org_admins:
+        # create the used context for the E-mail templates
+        context = {
+            'org_admin_name': '{} {}'.format(org_admin[0], org_admin[1]),
+        }
+        context.update(extra_context)
+        text_content = loader.render_to_string(
+            'email/organization/exceed_seats.txt', context, using=None)
+        html_content = loader.render_to_string(
+            'email/organization/exceed_seats.html', context, using=None)
+
+        # send the invitation email
+        msg = EmailMultiAlternatives(
+            subject='Edit user exceeding notification',
+            body=text_content,
+            to=[org_admin[2]],
+            bcc=[settings.SALES_TEAM_EMAIL],
+            reply_to=[settings.DEFAULT_REPLY_TO]
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
 
 # TOLA USER SIGNALS
@@ -130,18 +153,12 @@ def check_seats_save_team(sender, instance, **kwargs):
         available_seats = subscription.plan_quantity
         used_seats = org.chargebee_used_seats
         if used_seats > available_seats:
-            user_email = instance.workflow_user.user.email
-            email = EmailMessage(
-                subject='Exceeded the number of editors',
-                body='The number of editors has exceeded the amount of '
-                     'users set in your Subscription. Please check it out!'
-                     '\nCurrent amount of editors: {}.\nSelected amount '
-                     'of editors: {}.'.format(
-                        org.chargebee_used_seats, available_seats),
-                to=[user_email],
-                reply_to=[settings.DEFAULT_REPLY_TO],
-            )
-            email.send()
+            extra_context = {
+                'used_seats': used_seats,
+                'available_seats': available_seats,
+                'payment_portal_url': settings.PAYMENT_PORTAL_URL
+            }
+            notify_excess_org_admin(org, extra_context)
 
 
 @receiver(signals.pre_delete, sender=WorkflowTeam)
@@ -227,18 +244,12 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
             available_seats = subscription.plan_quantity
             used_seats = org.chargebee_used_seats
             if used_seats > available_seats:
-                user_email = instance.email
-                email = EmailMessage(
-                    subject='Exceeded the number of editors',
-                    body='The  number of editors has exceeded the amount of '
-                         'users set in your Subscription. Please check it '
-                         'out!\nCurrent amount of editors: {}.\nSelected '
-                         'amount of editors: {}.'.format(
-                            org.chargebee_used_seats, available_seats),
-                    to=[user_email],
-                    reply_to=[settings.DEFAULT_REPLY_TO],
-                )
-                email.send()
+                extra_context = {
+                    'used_seats': used_seats,
+                    'available_seats': available_seats,
+                    'payment_portal_url': settings.PAYMENT_PORTAL_URL
+                }
+                notify_excess_org_admin(org, extra_context)
 
 
 # ORGANIZATION SIGNALS
