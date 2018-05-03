@@ -1,11 +1,8 @@
 import logging
 import os
 
-try:
-    from chargebee import APIError
-    from chargebee.models import Subscription
-except ImportError:
-    pass
+from chargebee import APIError
+from chargebee.models import Subscription
 from django.core import mail
 from django.test import TestCase, override_settings, tag
 from mock import Mock, patch
@@ -126,6 +123,7 @@ class CreateDefaultProgramTest(TestCase):
         self.assertEqual(WorkflowLevel1.objects.all().count(), 1)
 
 
+@tag('pkg')
 class CheckSeatsSaveWFTeamsTest(TestCase):
     class ExternalResponse:
         def __init__(self, values):
@@ -319,6 +317,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
 
+@tag('pkg')
 class CheckSeatsDeleteWFTeamsTest(TestCase):
     class ExternalResponse:
         def __init__(self, values):
@@ -400,6 +399,7 @@ class CheckSeatsDeleteWFTeamsTest(TestCase):
         self.assertEqual(organization.chargebee_used_seats, 1)
 
 
+@tag('pkg')
 class CheckSeatsSaveUserGroupTest(TestCase):
     class ExternalResponse:
         def __init__(self, values):
@@ -579,6 +579,7 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
 
+@tag('pkg')
 class SignalSyncTrackTest(TestCase):
     def setUp(self):
         factories.Group()
