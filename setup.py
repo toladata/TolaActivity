@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 from os.path import join, dirname, abspath
-from pkgutil import extend_path
-from setuptools import find_packages, setup
+from setuptools import setup
 from setuptools.command.install import install
 import shutil
 
@@ -34,6 +33,7 @@ setup(
         'formlibrary.migrations',
         'indicators.migrations',
         'search.migrations',
+        'workflow',
         'workflow.migrations',
     ],
     py_modules=[
@@ -64,11 +64,6 @@ setup(
         'tola.management.commands.__init__',
         'tola.management.commands.loadinitialdata',
         'tola.management.commands.synctrack',
-        # workflow
-        'workflow.admin',
-        'workflow.apps',
-        'workflow.models',
-        'workflow.signals',
     ],
     cmdclass={
         'install': InstallCommand,
