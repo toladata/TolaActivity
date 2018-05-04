@@ -6,12 +6,12 @@ from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
 import random
 
 from workflow.models import (
+    ApprovalWorkflow as ApprovalWorkflowM,
     ApprovalType as ApprovalTypeM,
     Award as AwardM,
     Budget as BudgetM,
     Checklist as ChecklistM,
     CodedField as CodedFieldM,
-    Contact as ContactM,
     Country as CountryM,
     Documentation as DocumentationM,
     FundCode as FundCodeM,
@@ -54,6 +54,13 @@ class ApprovalType(DjangoModelFactory):
     name = 'Approval Type A'
 
 
+class ApprovalWorkflow(DjangoModelFactory):
+    class Meta:
+        model = ApprovalWorkflowM
+
+    approval_type = SubFactory(ApprovalType)
+
+
 class Budget(DjangoModelFactory):
     class Meta:
         model = BudgetM
@@ -68,17 +75,6 @@ class Country(DjangoModelFactory):
 
     country = 'Afghanistan'
     code = 'AF'
-
-
-class Contact(DjangoModelFactory):
-    class Meta:
-        model = ContactM
-
-    name = 'Aryana Sayeed'
-    city = 'Kabul'
-    email = lazy_attribute(lambda o: slugify(o.name) + "@external-contact.com")
-    phone = '+93 555444333'
-    country = SubFactory(Country)
 
 
 class Organization(DjangoModelFactory):
