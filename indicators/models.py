@@ -8,6 +8,7 @@ from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
 from search.exceptions import ValueNotFoundError
+from search.utils import ElasticsearchIndexer
 from workflow.models import (WorkflowLevel1, Sector, SiteProfile,
                              WorkflowLevel2, Country, Documentation, TolaUser,
                              Organization)
@@ -210,6 +211,7 @@ class DisaggregationLabel(models.Model):
 
 class DisaggregationValue(models.Model):
     disaggregation_label = models.ForeignKey(DisaggregationLabel)
+    indicator = models.ForeignKey('indicators.Indicator', null=True, blank=True)
     value = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
@@ -323,8 +325,6 @@ class ExternalServiceRecordAdmin(admin.ModelAdmin):
 class IndicatorManager(models.Manager):
     def get_queryset(self):
         return super(IndicatorManager, self).get_queryset().prefetch_related('workflowlevel1').select_related('sector')
-
-from search.utils import ElasticsearchIndexer
 
 
 class Indicator(models.Model):

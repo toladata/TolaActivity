@@ -3,6 +3,8 @@ from factory import DjangoModelFactory, post_generation, SubFactory, fuzzy
 from indicators.models import (
     CollectedData as CollectedDataM,
     DisaggregationType as DisaggregationTypeM,
+    DisaggregationLabel as DisaggregationLabelM,
+    DisaggregationValue as DisaggregationValueM,
     ExternalService as ExternalServiceM,
     Frequency as FrequencyM,
     Indicator as IndicatorM,
@@ -20,7 +22,24 @@ class DisaggregationType(DjangoModelFactory):
         model = DisaggregationTypeM
         django_get_or_create = ('disaggregation_type',)
 
+    disaggregation_type = 'Type Test'
     organization = SubFactory(Organization)
+
+
+class DisaggregationLabel(DjangoModelFactory):
+    class Meta:
+        model = DisaggregationLabelM
+        django_get_or_create = ('label',)
+
+    label = 'Label Test'
+    disaggregation_type = SubFactory(DisaggregationType)
+
+
+class DisaggregationValue(DjangoModelFactory):
+    class Meta:
+        model = DisaggregationValueM
+
+    disaggregation_label = SubFactory(DisaggregationLabel)
 
 
 class Frequency(DjangoModelFactory):
