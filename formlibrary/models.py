@@ -215,6 +215,7 @@ class CustomForm(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='customforms', null=True, blank=True, on_delete=models.SET_NULL)
+    is_template = models.BooleanField(default=0)
 
     class Meta:
         ordering = ('name',)
