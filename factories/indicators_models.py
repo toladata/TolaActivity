@@ -68,6 +68,17 @@ class Indicator(DjangoModelFactory):
             for workflowlevel1 in extracted:
                 self.workflowlevel1.add(workflowlevel1)
 
+    @post_generation
+    def disaggregation(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of disaggregation were passed in, use them
+            for disaggregation in extracted:
+                self.disaggregation.add(disaggregation)
+
 
 class Objective(DjangoModelFactory):
     class Meta:

@@ -192,7 +192,7 @@ class DisaggregationTypeAdmin(admin.ModelAdmin):
 
 
 class DisaggregationLabel(models.Model):
-    disaggregation_type = models.ForeignKey(DisaggregationType)
+    disaggregation_type = models.ForeignKey(DisaggregationType, on_delete=models.deletion.PROTECT)
     label = models.CharField(max_length=765, blank=True)
     customsort = models.IntegerField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
@@ -210,7 +210,7 @@ class DisaggregationLabel(models.Model):
 
 
 class DisaggregationValue(models.Model):
-    disaggregation_label = models.ForeignKey(DisaggregationLabel)
+    disaggregation_label = models.ForeignKey(DisaggregationLabel, on_delete=models.deletion.PROTECT)
     indicator = models.ForeignKey('indicators.Indicator', null=True, blank=True)
     value = models.CharField(max_length=765, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
