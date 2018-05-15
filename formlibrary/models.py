@@ -193,12 +193,16 @@ class CustomFormFieldAdmin(admin.ModelAdmin):
 
 
 class CustomForm(models.Model):
+    STATUS_ARCHIVED = 'archived'
     STATUS_NEW = 'new'
     STATUS_PUBLISHED = 'published'
+    STATUS_UNPUBLISHED = 'unpublished'
 
     STATUS_CHOICES = (
+        (STATUS_ARCHIVED, 'Archived'),
         (STATUS_NEW, 'New'),
         (STATUS_PUBLISHED, 'Published'),
+        (STATUS_UNPUBLISHED, 'Unpublished'),
     )
 
     name = models.CharField(max_length=255, null=True, blank=True)
