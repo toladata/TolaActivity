@@ -20,14 +20,23 @@ class InstallCommand(install):
 with open(join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
-def load_requirements():
-    return open(join(dirname(__file__), 'requirements/pkg.txt')).readlines()
+
+def load_requirements(load_dependency_links=False):
+    lines = open(join(dirname(__file__), 'requirements/pkg.txt')).readlines()
+    requirements = []
+    for line in lines:
+        if 'https' in line and load_dependency_links:
+            requirements.append(line)
+        elif 'https' not in line and not load_dependency_links:
+            requirements.append(line)
+    return requirements
 
 
 setup(
     name='tola_activity',
     version='2.0',
     install_requires=load_requirements(),
+    dependency_links=load_requirements(load_dependency_links=True),
     packages=[
         'factories',
         'formlibrary.migrations',

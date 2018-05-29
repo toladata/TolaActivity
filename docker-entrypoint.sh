@@ -4,9 +4,6 @@ set -o xtrace
 echo "Migrate"
 python manage.py migrate
 
-echo "Collect static files"
-python manage.py collectstatic
-
 RESULT=$?
 
 nginx;
