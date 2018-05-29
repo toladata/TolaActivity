@@ -1,11 +1,8 @@
 import logging
 import os
 
-try:
-    from chargebee import APIError
-    from chargebee.models import Subscription
-except ImportError:
-    pass
+from chargebee import APIError
+from chargebee.models import Subscription
 from django.core import mail
 from django.test import TestCase, override_settings, tag
 from mock import Mock, patch
@@ -126,6 +123,7 @@ class CreateDefaultProgramTest(TestCase):
         self.assertEqual(WorkflowLevel1.objects.all().count(), 1)
 
 
+@tag('pkg')
 class CheckSeatsSaveWFTeamsTest(TestCase):
     class ExternalResponse:
         def __init__(self, values):
@@ -237,7 +235,9 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 1)
 
-    @override_settings(DEFAULT_REPLY_TO='noreply@test.com')
+    @override_settings(DEFAULT_REPLY_TO='noreply@example.com')
+    @override_settings(SALES_TEAM_EMAIL='sales@example.com')
+    @override_settings(PAYMENT_PORTAL_URL='example.com')
     def test_check_seats_save_team_exceed_notify(self):
         self.tola_user.user.groups.add(self.group_org_admin)
         self.tola_user.user.save()
@@ -256,14 +256,38 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 2)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('Exceeded the number of editors', mail.outbox[0].subject)
-        self.assertEqual(mail.outbox[0].to, [user.email])
-        self.assertEqual(mail.outbox[0].reply_to, ['noreply@test.com'])
-        self.assertEqual(mail.outbox[0].body,
-                         'The number of editors has exceeded the amount of '
-                         'users set in your Subscription. Please check it '
-                         'out!\nCurrent amount of editors: 2.\nSelected '
-                         'amount of editors: 1.')
+        self.assertIn('Edit user exceeding notification',
+                      mail.outbox[0].subject)
+        self.assertEqual(mail.outbox[0].to, [self.tola_user.user.email])
+        self.assertEqual(mail.outbox[0].reply_to, ['noreply@example.com'])
+        self.assertEqual(mail.outbox[0].bcc, ['sales@example.com'])
+
+        # Text body
+        org_admin_name = 'Hi {},'.format(self.tola_user.name)
+        self.assertIn(org_admin_name, mail.outbox[0].body)
+
+        available_seats = 'Purchased user seats: 1'
+        self.assertIn(available_seats, mail.outbox[0].body)
+
+        used_seats = 'Current edit users in the system: 2'
+        self.assertIn(used_seats, mail.outbox[0].body)
+
+        payment_portal_url = 'example.com'
+        self.assertIn(payment_portal_url, mail.outbox[0].body)
+
+        # HTML body
+        org_admin_name = '<br>Hi {},</span>'.format(self.tola_user.name)
+        self.assertIn(org_admin_name, mail.outbox[0].alternatives[0][0])
+
+        available_seats = 'Purchased user seats: <b>1</b>'
+        self.assertIn(available_seats, mail.outbox[0].alternatives[0][0])
+
+        used_seats = 'Current edit users in the system: <b>2</b>'
+        self.assertIn(used_seats, mail.outbox[0].alternatives[0][0])
+
+        payment_portal_url = '<a href="example.com" target="_blank">Payment ' \
+                             'portal</a>'
+        self.assertIn(payment_portal_url, mail.outbox[0].alternatives[0][0])
 
     def test_check_seats_save_team_retrieve_subscription_fails(self):
         """
@@ -293,6 +317,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
 
+@tag('pkg')
 class CheckSeatsDeleteWFTeamsTest(TestCase):
     class ExternalResponse:
         def __init__(self, values):
@@ -374,6 +399,7 @@ class CheckSeatsDeleteWFTeamsTest(TestCase):
         self.assertEqual(organization.chargebee_used_seats, 1)
 
 
+@tag('pkg')
 class CheckSeatsSaveUserGroupTest(TestCase):
     class ExternalResponse:
         def __init__(self, values):
@@ -462,7 +488,9 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 0)
 
-    @override_settings(DEFAULT_REPLY_TO='noreply@test.com')
+    @override_settings(DEFAULT_REPLY_TO='noreply@example.com')
+    @override_settings(SALES_TEAM_EMAIL='sales@example.com')
+    @override_settings(PAYMENT_PORTAL_URL='example.com')
     def test_check_seats_save_user_groups_exceed_notify(self):
         external_response = self.ExternalResponse(None)
         Subscription.retrieve = Mock(return_value=external_response)
@@ -478,15 +506,52 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         # It should notify the OrgAdmin
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 2)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('Exceeded the number of editors', mail.outbox[0].subject)
-        self.assertEqual(mail.outbox[0].to, [user.email])
-        self.assertEqual(mail.outbox[0].reply_to, ['noreply@test.com'])
-        self.assertEqual(mail.outbox[0].body,
-                         'The  number of editors has exceeded the amount of '
-                         'users set in your Subscription. Please check it '
-                         'out!\nCurrent amount of editors: 2.\nSelected '
-                         'amount of editors: 1.')
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertIn('Edit user exceeding notification',
+                      mail.outbox[0].subject)
+
+        for outbox in mail.outbox:
+            self.assertEqual(outbox.reply_to, ['noreply@example.com'])
+            self.assertEqual(outbox.bcc, ['sales@example.com'])
+            self.assertIn(outbox.to[0], [self.tola_user.user.email,
+                                         user.email])
+
+            # Text body
+            org_admin_name = ''
+            if outbox.to[0] == self.tola_user.user.email:
+                org_admin_name = 'Hi {},'.format(self.tola_user.name)
+            elif outbox.to[0] == user.email:
+                org_admin_name = 'Hi {},'.format(tolauser.name)
+
+            self.assertIn(org_admin_name, outbox.body)
+
+            available_seats = 'Purchased user seats: 1'
+            self.assertIn(available_seats, outbox.body)
+
+            used_seats = 'Current edit users in the system: 2'
+            self.assertIn(used_seats, outbox.body)
+
+            payment_portal_url = 'example.com'
+            self.assertIn(payment_portal_url, outbox.body)
+
+            # HTML body
+            org_admin_name = ''
+            if outbox.to[0] == self.tola_user.user.email:
+                org_admin_name = '<br>Hi {},</span>'.format(self.tola_user.name)
+            elif outbox.to[0] == user.email:
+                org_admin_name = '<br>Hi {},</span>'.format(tolauser.name)
+
+            self.assertIn(org_admin_name, outbox.alternatives[0][0])
+
+            available_seats = 'Purchased user seats: <b>1</b>'
+            self.assertIn(available_seats, outbox.alternatives[0][0])
+
+            used_seats = 'Current edit users in the system: <b>2</b>'
+            self.assertIn(used_seats, outbox.alternatives[0][0])
+
+            payment_portal_url = '<a href="example.com" target="_blank">' \
+                                 'Payment portal</a>'
+            self.assertIn(payment_portal_url, outbox.alternatives[0][0])
 
     def test_check_seats_save_user_groups_retrieve_subscription_fails(self):
         """
@@ -514,6 +579,7 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
 
+@tag('pkg')
 class SignalSyncTrackTest(TestCase):
     def setUp(self):
         factories.Group()

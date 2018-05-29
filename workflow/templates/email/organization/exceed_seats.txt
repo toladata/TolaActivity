@@ -1,0 +1,22 @@
+TolaData
+
+Hi {{ org_admin_name }},
+
+Your user numbers in our system don’t match 🤔
+
+Purchased user seats: {{ available_seats }}
+Current edit users in the system: {{ used_seats }}
+
+For all your edit users to continue using TolaData, please proceed to 
+our payment portal and add seats to your subscription plan.
+
+{{ payment_portal_url }}
+
+Thank you from all of us at TolaData!
+
+
+TolaData GmbH
+Wöhlerstraße 12-13, 10115 Berlin, Germany
+
+Have any questions or thoughts on TolaData?
+Reach us anytime at support@toladata.com
