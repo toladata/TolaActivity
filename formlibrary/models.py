@@ -193,6 +193,18 @@ class CustomFormFieldAdmin(admin.ModelAdmin):
 
 
 class CustomForm(models.Model):
+    STATUS_ARCHIVED = 'archived'
+    STATUS_NEW = 'new'
+    STATUS_PUBLISHED = 'published'
+    STATUS_UNPUBLISHED = 'unpublished'
+
+    STATUS_CHOICES = (
+        (STATUS_ARCHIVED, 'Archived'),
+        (STATUS_NEW, 'New'),
+        (STATUS_PUBLISHED, 'Published'),
+        (STATUS_UNPUBLISHED, 'Unpublished'),
+    )
+
     name = models.CharField(max_length=255, null=True, blank=True)
     form_uuid = models.CharField(max_length=255, verbose_name='CustomForm UUID', default=uuid.uuid4, unique=True)
     description = models.TextField(null=True, blank=True)
@@ -203,9 +215,11 @@ class CustomForm(models.Model):
     organization = models.ForeignKey(Organization, default=1)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
     silo_id = models.IntegerField(default=0)
+    status = models.CharField(blank=True, null=True, max_length=15, default=STATUS_NEW, choices=STATUS_CHOICES)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='customforms', null=True, blank=True, on_delete=models.SET_NULL)
+    is_template = models.BooleanField(default=0)
 
     class Meta:
         ordering = ('name',)

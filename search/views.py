@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import json
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.management import call_command
+from django.http import HttpResponse
+from elasticsearch import Elasticsearch
 from rest_framework.decorators import api_view
 
-from django.http import HttpResponse
-
-from elasticsearch import Elasticsearch
-import json
-from django.conf import settings
-from workflow.models import TolaUser, ROLE_ORGANIZATION_ADMIN
 from indicators.models import Indicator, CollectedData
-from tola.util import get_programs_user
-
+from workflow.models import TolaUser, WorkflowTeam, ROLE_ORGANIZATION_ADMIN
 
 if settings.ELASTICSEARCH_URL is not None:
     es = Elasticsearch([settings.ELASTICSEARCH_URL])
 else:
     es = None
+
 
 """
 @login_required(login_url='/accounts/login/')
@@ -26,6 +25,7 @@ def search_index(request):
     call_command('search-index', '_all')
     return HttpResponse("Index process done.")
 """
+
 
 @api_view(['GET'])
 def search(request, index, term):
@@ -87,7 +87,10 @@ def search(request, index, term):
         if not request.user.is_superuser \
             and ROLE_ORGANIZATION_ADMIN not in request.user.groups.values_list(
                     'name', flat=True):
-            allowed_wf1s = get_programs_user(request.user)
+
+            allowed_wf1s = WorkflowTeam.objects.filter(
+                workflow_user__user=request.user).values_list('workflowlevel1__id',
+                                                      flat=True)
 
             wf1_results = []
             for wf1 in results["workflowlevel1"]:

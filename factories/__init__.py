@@ -1,3 +1,4 @@
+# flake8: noqa
 from .django_models import *
 from .formlibrary_models import *
 from .indicators_models import *

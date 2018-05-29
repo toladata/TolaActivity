@@ -2,11 +2,11 @@ FROM python:2.7
 
 WORKDIR /code
 
-COPY ./requirements-pkg.txt requirements-pkg.txt
-COPY ./requirements.txt requirements.txt
-COPY ./requirements-dev.txt requirements-dev.txt
+COPY ./requirements/pkg.txt requirements/pkg.txt
+COPY ./requirements/base.txt requirements/base.txt
+COPY ./requirements/dev.txt requirements/dev.txt
 
-RUN pip install -r requirements-dev.txt
+RUN pip install -r requirements/dev.txt
 
 ADD . /code
 

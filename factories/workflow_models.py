@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.template.defaultfilters import slugify
 from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
     SubFactory, post_generation
@@ -5,12 +6,12 @@ from factory import DjangoModelFactory, lazy_attribute, LazyAttribute, \
 import random
 
 from workflow.models import (
+    ApprovalWorkflow as ApprovalWorkflowM,
     ApprovalType as ApprovalTypeM,
     Award as AwardM,
     Budget as BudgetM,
     Checklist as ChecklistM,
     CodedField as CodedFieldM,
-    Contact as ContactM,
     Country as CountryM,
     Documentation as DocumentationM,
     FundCode as FundCodeM,
@@ -18,6 +19,7 @@ from workflow.models import (
     Milestone as MilestoneM,
     Organization as OrganizationM,
     Portfolio as PortfolioM,
+    Product as ProductM,
     ProfileType as ProfileTypeM,
     ProjectType as ProjectTypeM,
     Sector as SectorM,
@@ -52,6 +54,13 @@ class ApprovalType(DjangoModelFactory):
     name = 'Approval Type A'
 
 
+class ApprovalWorkflow(DjangoModelFactory):
+    class Meta:
+        model = ApprovalWorkflowM
+
+    approval_type = SubFactory(ApprovalType)
+
+
 class Budget(DjangoModelFactory):
     class Meta:
         model = BudgetM
@@ -66,17 +75,6 @@ class Country(DjangoModelFactory):
 
     country = 'Afghanistan'
     code = 'AF'
-
-
-class Contact(DjangoModelFactory):
-    class Meta:
-        model = ContactM
-
-    name = 'Aryana Sayeed'
-    city = 'Kabul'
-    email = lazy_attribute(lambda o: slugify(o.name) + "@external-contact.com")
-    phone = '+93 555444333'
-    country = SubFactory(Country)
 
 
 class Organization(DjangoModelFactory):
@@ -108,10 +106,20 @@ class TolaUser(DjangoModelFactory):
 class Dashboard(DjangoModelFactory):
     class Meta:
         model = DashboardM
-        django_get_or_create = ('user',)
 
-    user = SubFactory(User)
+    user = SubFactory(TolaUser)
     name = "My crazy Dashboard"
+
+    @post_generation
+    def share(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if type(extracted) is list:
+            # A list of shared users were passed in, use them
+            for shared_user in extracted:
+                self.share.add(shared_user)
 
 
 class Widget(DjangoModelFactory):
@@ -121,18 +129,6 @@ class Widget(DjangoModelFactory):
 
     dashboard = SubFactory(Dashboard)
     name = "My Crazy Widget"
-
-
-class TolaUser(DjangoModelFactory):
-    class Meta:
-        model = TolaUserM
-        django_get_or_create = ('user',)
-
-    user = SubFactory(User)
-    name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
-    organization = SubFactory(Organization)
-    position_description = 'Chief of Operations'
-    country = SubFactory(Country, country='Germany', code='DE')
 
 
 class WorkflowLevel1(DjangoModelFactory):
@@ -178,6 +174,16 @@ class WorkflowLevel2(DjangoModelFactory):
     total_estimated_budget = 15000
     actual_cost = 2900
     workflowlevel1 = SubFactory(WorkflowLevel1)
+
+
+class Product(DjangoModelFactory):
+    class Meta:
+        model = ProductM
+
+    workflowlevel2 = SubFactory(WorkflowLevel2)
+    name = u'Próduct P'
+    type = u'Týpe'
+    reference_id = u'Rèference'
 
 
 class Documentation(DjangoModelFactory):
@@ -321,6 +327,7 @@ class Milestone(DjangoModelFactory):
 class TolaSites(DjangoModelFactory):
     class Meta:
         model = TolaSitesM
+        django_get_or_create = ('name',)
 
     name = 'TolaData'
     site = SubFactory(Site)

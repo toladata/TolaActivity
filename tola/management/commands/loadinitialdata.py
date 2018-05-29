@@ -4,14 +4,16 @@ import logging
 import os
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.contrib.sites.models import Site
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import transaction, IntegrityError, connection
 
 import factories
 from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
-                               CollectedData)
+                               CollectedData, SiteProfile)
 from workflow.models import (
     ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
     ROLE_PROGRAM_TEAM, Organization, Country, TolaUser, Group, Sector,
@@ -26,6 +28,7 @@ DEFAULT_WORKFLOW_LEVEL_1S = [  # tuple (id, name)
 DEFAULT_ORG = {
     'id': 1,
     'name': settings.DEFAULT_ORG,
+    'oauth_domains': settings.DEFAULT_OAUTH_DOMAINS.split(',')
 }
 DEFAULT_COUNTRY_CODES = ('DE', 'SY')
 
@@ -108,14 +111,19 @@ class Command(BaseCommand):
         Group.objects.all().delete()
         Country.objects.exclude(code__in=DEFAULT_COUNTRY_CODES).delete()
         Sector.objects.all().delete()
+        SiteProfile.history.all().delete()
+        SiteProfile.objects.all().delete()
         Stakeholder.objects.all().delete()
         Milestone.objects.all().delete()
         WorkflowLevel1.objects.all().delete()
+        WorkflowLevel2.history.all().delete()
         WorkflowLevel2.objects.all().delete()
         Level.objects.all().delete()
         Frequency.objects.all().delete()
+        Indicator.history.all().delete()
         Indicator.objects.all().delete()
         PeriodicTarget.objects.all().delete()
+        CollectedData.history.all().delete()
         CollectedData.objects.all().delete()
         WorkflowLevel1Sector.objects.all().delete()
         WorkflowTeam.objects.all().delete()
@@ -131,7 +139,16 @@ class Command(BaseCommand):
                 level_2_label="Project",
                 level_3_label="Activity",
                 level_4_label="Component",
+                oauth_domains=DEFAULT_ORG['oauth_domains'],
             )
+
+    def _create_site(self):
+        site = Site.objects.get(id=1)
+        site.domain='toladata.io'
+        site.name = 'API'
+        site.save()
+
+        factories.TolaSites(site=get_current_site(None))
 
     def _create_groups(self):
         self._groups.append(factories.Group(
@@ -1046,7 +1063,6 @@ class Command(BaseCommand):
         self._site_profiles.append(factories.SiteProfile(
             id=6,
             name="Paul Schule",
-            contact_leader="Direktor Paul Schule",
             country=self._country_germany,
             latitude="50.9692657293000000",
             longitude="6.9889383750000000",
@@ -1057,7 +1073,6 @@ class Command(BaseCommand):
         self._site_profiles.append(factories.SiteProfile(
             id=7,
             name="Peter Schule",
-            contact_leader="Direktor Peter Schule",
             country=self._country_germany,
             latitude="49.4507464458000000",
             longitude="11.0319071250000000",
@@ -1498,7 +1513,6 @@ class Command(BaseCommand):
             expected_start_date="2018-10-01T11:00:00Z",  # TODO
             expected_end_date="2018-09-30T11:00:00Z",  # TODO
             created_by=self._tolauser_ninette.user,  # 11
-            on_time=False,
             progress="tracking",
             status="yellow",
         ))
@@ -1511,7 +1525,6 @@ class Command(BaseCommand):
             expected_start_date="2018-10-01T11:00:00Z",  # TODO
             expected_end_date="2018-09-30T11:00:00Z",  # TODO
             created_by=self._tolauser_ninette.user,  # 11
-            on_time=False,
             progress="closed",
             status="yellow",
         ))
@@ -2926,6 +2939,7 @@ class Command(BaseCommand):
 
         self.stdout.write('Creating basic data')
         self._create_organization()
+        self._create_site()
         self._create_groups()
         self._create_countries()
         self._create_sectors()
@@ -2947,7 +2961,7 @@ class Command(BaseCommand):
                 self._create_collected_data()
                 self._create_workflowlevel1_sectors()
                 self._create_workflowteams()
-            except IntegrityError:
+            except (IntegrityError, ValidationError):
                 msg = ("Error: the data could not be populated in the "
                        "database. Check that the affected database tables are "
                        "empty.")

@@ -1,6 +1,12 @@
 from base import *
 import os
 from os.path import join, normpath
+try:
+    import chargebee
+except ImportError:
+    CHARGEBEE_ENABLED = False
+else:
+    CHARGEBEE_ENABLED = True
 
 try:
     DATABASES = {
@@ -82,6 +88,12 @@ CACHES = {
 }
 ########## END CACHE CONFIGURATION
 
+
+########## STATIC FILE CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#static-root
+STATIC_ROOT = '/static'
+########## END STATIC FILE CONFIGURATION
+
 ######## If report server then limit navigation and allow access to public dashboards
 REPORT_SERVER = False
 OFFLINE_MODE = False
@@ -143,6 +155,7 @@ TOLA_ACTIVITY_URL = os.getenv('TOLA_ACTIVITY_URL')  # frontend URL
 
 TOLA_TRACK_URL = os.getenv('TOLA_TRACK_URL')
 TOLA_TRACK_TOKEN = os.getenv('TOLA_TRACK_TOKEN')
+TOLA_TRACK_SYNC_ENABLED = False if os.getenv('TOLA_TRACK_SYNC_ENABLED') == 'False' else True
 
 ########## END CONFIGURATION
 
@@ -157,5 +170,21 @@ ELASTICSEARCH_INDEX_PREFIX = os.getenv('ELASTICSEARCH_INDEX_PREFIX')
 TOLAUSER_OBFUSCATED_NAME = os.getenv('TOLAUSER_OBFUSCATED_NAME')
 
 DEFAULT_ORG = os.getenv('DEFAULT_ORG')
+DEFAULT_OAUTH_DOMAINS = os.getenv('DEFAULT_OAUTH_DOMAINS', '')
+CREATE_DEFAULT_PROGRAM = True if os.getenv('CREATE_DEFAULT_PROGRAM') == 'True' else False
 
-CHARGEBEE_SIGNUP_ORG_URL = os.getenv('CHARGEBEE_SIGNUP_ORG_URL')
+########## CHARGEBEE CONFIGURATION
+
+PAYMENT_PORTAL_URL = os.getenv('PAYMENT_PORTAL_URL', '')
+if CHARGEBEE_ENABLED:
+    CHARGEBEE_SIGNUP_ORG_URL = os.getenv('CHARGEBEE_SIGNUP_ORG_URL')
+    chargebee.configure(os.getenv('CHARGEBEE_SITE_API_KEY'), os.getenv('CHARGEBEE_SITE'))
+
+########## END CHARGEBEE CONFIGURATION
+
+########## EMAIL CONFIGURATION
+
+DEFAULT_REPLY_TO = os.getenv('DEFAULT_REPLY_TO', '')
+SALES_TEAM_EMAIL = os.getenv('SALES_TEAM_EMAIL', '')
+
+########## END EMAIL CONFIGURATION
