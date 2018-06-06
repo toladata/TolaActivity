@@ -245,7 +245,6 @@ LOCAL_APPS = (
     'formlibrary',
     'tola',
     'indicators',
-    'reports',
     'gladmap',
     'search',
 )
