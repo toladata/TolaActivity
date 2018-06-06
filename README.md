@@ -21,11 +21,6 @@ Location of settings:
 
 Check the documentation on setting up search functionality in `search/Readme.md`
 
-## Deploy changes in activity servers
-
-Once all your changes have been commited to the repo, and before pushing them, run:
-`. travis.sh`
-
 
 ## Deploy locally via Docker
 
