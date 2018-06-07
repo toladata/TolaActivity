@@ -328,6 +328,30 @@ class IndicatorManager(models.Manager):
 
 
 class Indicator(models.Model):
+    CALC_TYPE_NUMERIC = 'numeric'
+    CALC_TYPE_PERCENTAGE = 'percentage'
+
+    CALCULATION_CHOICES = (
+        (CALC_TYPE_NUMERIC, 'Numeric'),
+        (CALC_TYPE_PERCENTAGE, 'Percentage'),
+    )
+
+    DIRECTION_INCREASING = 'increasing'
+    DIRECTION_DECREASING = 'decreasing'
+
+    DIRECTION_CHOICES = (
+        (DIRECTION_INCREASING, 'Increasing'),
+        (DIRECTION_DECREASING, 'Decreasing'),
+    )
+
+    ACTUAL_FORMULA_AVG = 'average'
+    ACTUAL_FORMULA_USER_DEFINED = 'user_defined'
+
+    ACTUAL_FORMULA_CHOICES = (
+        (ACTUAL_FORMULA_AVG, 'Average'),
+        (ACTUAL_FORMULA_USER_DEFINED, 'User defined'),
+    )
+
     indicator_uuid = models.CharField(max_length=255,verbose_name='Indicator UUID', default=uuid.uuid4, unique=True, blank=True)
     indicator_type = models.ManyToManyField(IndicatorType, blank=True, help_text="If indicator was pulled from a service select one here")
     level = models.ForeignKey(Level, null=True, blank=True, on_delete=models.SET_NULL, help_text="The results framework level goal, objective etc. for this indicator")
@@ -367,8 +391,10 @@ class Indicator(models.Model):
     history = HistoricalRecords()
     notes = models.TextField(max_length=500, null=True, blank=True, help_text="")
     created_by = models.ForeignKey('auth.User', related_name='indicators', null=True, blank=True, on_delete=models.SET_NULL)
-    #optimize query for class based views etc.
     objects = IndicatorManager()
+    calculation_type = models.CharField(blank=True, null=True, max_length=15, choices=CALCULATION_CHOICES)
+    direction = models.CharField(blank=True, null=True, max_length=15, choices=DIRECTION_CHOICES)
+    actual_formula = models.CharField(blank=True, null=True, max_length=15, choices=ACTUAL_FORMULA_CHOICES)
 
     class Meta:
         ordering = ('create_date',)
@@ -377,8 +403,8 @@ class Indicator(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        #onsave add create date or update edit date
-        if self.create_date == None:
+        # onsave add create date or update edit date
+        if self.create_date is None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
 
@@ -423,7 +449,6 @@ class Indicator(models.Model):
 
     @property
     def levels(self):
-        #return ', '.join([x.name for x in self.level.all()])
         if self.level:
             return self.level.name
         return None
@@ -434,7 +459,6 @@ class Indicator(models.Model):
 
     def __unicode__(self):
         return self.name
-
 
 
 class PeriodicTarget(models.Model):
