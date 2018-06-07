@@ -180,7 +180,6 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
 
     'tola.middleware.TolaSecurityMiddleware',
-    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'tola.middleware.TolaRedirectMiddleware',
 )
@@ -222,21 +221,8 @@ DJANGO_APPS = (
 
 THIRD_PARTY_APPS = (
     'admin_report',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'crispy_forms',
-    'django_extensions',
-    'mathfilters',
     'import_export',
-    'django_wysiwyg',
-    'ckeditor',
-    'ckeditor_uploader',
-    'simplejson',
     'simple_history',
-    'guardian',
-    'social_django',
-    'corsheaders',
-    'django_filters',
     'oauth2_provider',
 )
 

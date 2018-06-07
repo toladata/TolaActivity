@@ -1,6 +1,5 @@
 -r base.txt
 
-django-debug-toolbar==1.9
 flake8==3.5.0
 mock==2.0.0
 vulture==0.26
