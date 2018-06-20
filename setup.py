@@ -68,6 +68,7 @@ setup(
         # tola
         'tola.__init__',
         'tola.track_sync',
+        'tola.utils',
         # tola.management.commands
         'tola.management.__init__',
         'tola.management.commands.__init__',

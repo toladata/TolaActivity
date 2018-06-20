@@ -9,6 +9,7 @@ from workflow.models import Dashboard
 from .. import utils
 
 
+@tag('pkg')
 class TokenGeneratorTest(TestCase):
     def setUp(self):
         self.token_generator = utils.TokenGenerator()
