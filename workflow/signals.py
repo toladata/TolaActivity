@@ -13,10 +13,10 @@ from django.db.models import signals
 from django.dispatch import receiver
 from django.template import loader
 
-from tola import DEMO_BRANCH, track_sync as tsync
+from tola import DEMO_BRANCH, utils, track_sync as tsync
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
-from workflow.models import (Organization, TolaUser, WorkflowLevel1,
-                             WorkflowTeam, WorkflowLevel2,
+from workflow.models import (Dashboard, Organization, TolaUser,
+                             WorkflowLevel1, WorkflowTeam, WorkflowLevel2,
                              ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
                              ROLE_PROGRAM_TEAM, ROLE_VIEW_ONLY)
 
@@ -56,6 +56,29 @@ def notify_excess_org_admin(organization, extra_context):
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+
+
+def generate_public_url_token(instance):
+    token_generator = utils.TokenGenerator()
+    token = token_generator.make_token(
+        instance, Dashboard.PUBLIC_URL)
+    return token
+
+
+# DASHBOARD SIGNALS
+@receiver(signals.pre_save, sender=Dashboard)
+def add_public_url_token(sender, instance, **kwargs):
+    """
+    Create a new public URL token when the dashboard is set to PUBLIC_URL
+    or remove the token if it's not public via URL anymore
+    """
+    if (not instance.public_url_token and
+            instance.public == Dashboard.PUBLIC_URL):
+        public_url_token = generate_public_url_token(instance)
+        instance.public_url_token = public_url_token
+    elif (instance.public_url_token and
+          instance.public != Dashboard.PUBLIC_URL):
+        instance.public_url_token = None
 
 
 # TOLA USER SIGNALS

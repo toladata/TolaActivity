@@ -10,9 +10,9 @@ from mock import Mock, patch
 import factories
 from tola import DEMO_BRANCH
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
-from workflow.models import (Organization, WorkflowTeam, ROLE_PROGRAM_ADMIN,
-                             ROLE_ORGANIZATION_ADMIN, ROLE_VIEW_ONLY,
-                             WorkflowLevel1)
+from workflow.models import (Dashboard,Organization, WorkflowTeam,
+                             ROLE_PROGRAM_ADMIN, ROLE_ORGANIZATION_ADMIN,
+                             ROLE_VIEW_ONLY, WorkflowLevel1)
 
 
 @tag('pkg')
@@ -577,6 +577,45 @@ class CheckSeatsSaveUserGroupTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 2)
         self.assertEqual(len(mail.outbox), 0)
+
+
+@tag('pkg')
+class AddPublicUrlTokenTest(TestCase):
+    def test_add_public_url_token_create_not_public_url(self):
+        dashboard = factories.Dashboard()
+        self.assertNotEqual(dashboard.public, Dashboard.PUBLIC_URL)
+        self.assertIsNone(dashboard.public_url_token)
+
+    def test_add_public_url_token_create_public_url(self):
+        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
+        self.assertEqual(dashboard.public, Dashboard.PUBLIC_URL)
+        self.assertIsNotNone(dashboard.public_url_token)
+
+    def test_add_public_url_token_update_not_public_url(self):
+        dashboard = factories.Dashboard()
+        dashboard.public = Dashboard.PUBLIC_ALL
+        dashboard.save()
+
+        self.assertEqual(dashboard.public, Dashboard.PUBLIC_ALL)
+        self.assertIsNone(dashboard.public_url_token)
+
+    def test_add_public_url_token_update_public_url(self):
+        dashboard = factories.Dashboard()
+        dashboard.public = Dashboard.PUBLIC_URL
+        dashboard.save()
+
+        self.assertEqual(dashboard.public, Dashboard.PUBLIC_URL)
+        self.assertIsNotNone(dashboard.public_url_token)
+
+    def test_add_public_url_token_create_and_update(self):
+        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
+        self.assertEqual(dashboard.public, Dashboard.PUBLIC_URL)
+        self.assertIsNotNone(dashboard.public_url_token)
+
+        dashboard.public = Dashboard.PUBLIC_ALL
+        dashboard.save()
+        self.assertEqual(dashboard.public, Dashboard.PUBLIC_ALL)
+        self.assertIsNone(dashboard.public_url_token)
 
 
 @tag('pkg')
