@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='dashboard',
             name='dashboard_uuid',
-            field=models.UUIDField(default=None, verbose_name='Dashboard UUID'),
+            field=models.UUIDField(blank=True, null=True, default=None, verbose_name='Dashboard UUID'),
         ),
         migrations.AddField(
             model_name='dashboard',
