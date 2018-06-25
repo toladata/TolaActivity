@@ -151,6 +151,7 @@ class Organization(models.Model):
     default_currency = models.ForeignKey(Currency, blank=True, null=True)
     currency_format = models.CharField("Currency Format", max_length=50, blank=True, default="Commas")
     allow_budget_decimal = models.BooleanField("Allow Budget in Decimal", default=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         ordering = ('name',)
