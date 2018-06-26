@@ -107,3 +107,15 @@ class WorkflowLevel2Test(TestCase):
             'city': 'Berlin',
             'country': 'Germany',
         })
+
+
+@tag('pkg')
+class OrganizationTest(TestCase):
+    def test_print_instance(self):
+        organization = factories.Organization.build()
+        self.assertEqual(unicode(organization), u'Tola Org')
+
+    def test_save_phone(self):
+        organization = factories.Organization(phone="+49 123 456 111")
+        self.assertEqual(organization.phone, "+49 123 456 111")
+
