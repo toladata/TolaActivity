@@ -23,6 +23,7 @@ ROLE_ORGANIZATION_ADMIN = 'OrgAdmin'
 ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
 ROLE_PROGRAM_TEAM = 'ProgramTeam'
 ROLE_VIEW_ONLY = 'ViewOnly'
+DEFAULT_PROGRAM_NAME = 'Default program'
 
 
 class TolaSites(models.Model):
