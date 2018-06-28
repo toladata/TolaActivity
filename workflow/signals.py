@@ -18,7 +18,8 @@ from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Dashboard, Organization, TolaUser,
                              WorkflowLevel1, WorkflowTeam, WorkflowLevel2,
                              ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
-                             ROLE_PROGRAM_TEAM, ROLE_VIEW_ONLY)
+                             ROLE_PROGRAM_TEAM, ROLE_VIEW_ONLY,
+                             DEFAULT_PROGRAM_NAME)
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ def add_public_url_token(sender, instance, **kwargs):
 
 # TOLA USER SIGNALS
 @receiver(signals.post_save, sender=TolaUser)
-def add_users_to_default_wflvl1(sender, instance, **kwargs):
+def add_users_to_demo_default_wflvl1(sender, instance, **kwargs):
     """
     Demo-only feature: add new users to certain program as ViewOnly.
     """
@@ -114,6 +115,26 @@ def add_users_to_default_wflvl1(sender, instance, **kwargs):
                                     workflowlevel1=wflvl1_1)
 
 
+@receiver(signals.post_save, sender=TolaUser)
+def add_users_to_default_wflvl1(sender, instance, **kwargs):
+    if not settings.SET_PROGRAM_ADMIN_DEFAULT:
+        return
+
+    if (settings.SET_PROGRAM_ADMIN_DEFAULT and
+            not settings.CREATE_DEFAULT_PROGRAM):
+        logger.warning('SET_PROGRAM_ADMIN_DEFAULT is set to "True" but'
+                       'CREATE_DEFAULT_PROGRAM is set to "False"')
+        return
+
+    workflowlevel1 = WorkflowLevel1.objects.get(
+        organization=instance.organization,
+        name=DEFAULT_PROGRAM_NAME)
+    role = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
+    WorkflowTeam.objects.create(workflow_user=instance, role=role,
+                                workflowlevel1=workflowlevel1)
+
+
+# ORGANIZATION SIGNALS
 @receiver(signals.post_save, sender=Organization)
 def create_default_program(sender, instance, **kwargs):
     if not settings.CREATE_DEFAULT_PROGRAM:
@@ -123,7 +144,7 @@ def create_default_program(sender, instance, **kwargs):
         return
 
     WorkflowLevel1.objects.create(
-        name='Default program', organization=instance)
+        name=DEFAULT_PROGRAM_NAME, organization=instance)
 
 
 # WORKFLOWTEAM SIGNALS

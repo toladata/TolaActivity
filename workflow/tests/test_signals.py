@@ -10,9 +10,10 @@ from mock import Mock, patch
 import factories
 from tola import DEMO_BRANCH
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
-from workflow.models import (Dashboard,Organization, WorkflowTeam,
+from workflow.models import (Dashboard, Organization, WorkflowTeam,
                              ROLE_PROGRAM_ADMIN, ROLE_ORGANIZATION_ADMIN,
-                             ROLE_VIEW_ONLY, WorkflowLevel1)
+                             ROLE_VIEW_ONLY, WorkflowLevel1,
+                             DEFAULT_PROGRAM_NAME)
 
 
 @tag('pkg')
@@ -112,7 +113,7 @@ class CreateDefaultProgramTest(TestCase):
     @override_settings(CREATE_DEFAULT_PROGRAM=True)
     def test_activated(self):
         organization = factories.Organization()  # triggers the signal
-        WorkflowLevel1.objects.get(name='Default program',
+        WorkflowLevel1.objects.get(name=DEFAULT_PROGRAM_NAME,
                                    organization=organization)
 
     @override_settings(CREATE_DEFAULT_PROGRAM=True)
@@ -121,6 +122,36 @@ class CreateDefaultProgramTest(TestCase):
         organization.name = 'Name updated'
         organization.save()
         self.assertEqual(WorkflowLevel1.objects.all().count(), 1)
+
+
+@tag('pkg')
+class AddTolaUserAsProgramAdminTest(TestCase):
+    def setUp(self):
+        os.environ['APP_BRANCH'] = ''
+        logging.disable(logging.ERROR)
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
+
+    @override_settings(SET_PROGRAM_ADMIN_DEFAULT=False)
+    @override_settings(CREATE_DEFAULT_PROGRAM=False)
+    def test_deactivated(self):
+        factories.TolaUser()  # triggers the signal
+        self.assertEqual(WorkflowTeam.objects.all().count(), 0)
+
+    @override_settings(SET_PROGRAM_ADMIN_DEFAULT=True)
+    @override_settings(CREATE_DEFAULT_PROGRAM=False)
+    def test_activated_but_not_create_default_program(self):
+        factories.TolaUser()  # triggers the signal
+        self.assertEqual(WorkflowTeam.objects.all().count(), 0)
+
+    @override_settings(SET_PROGRAM_ADMIN_DEFAULT=True)
+    @override_settings(CREATE_DEFAULT_PROGRAM=True)
+    def test_activated(self):
+        role_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        tolauser = factories.TolaUser()  # triggers the signal
+        wft = WorkflowTeam.objects.get(workflow_user=tolauser)
+        self.assertEqual(wft.role, role_program_admin)
 
 
 @tag('pkg')
