@@ -677,7 +677,10 @@ class WorkflowLevel1(models.Model):
         return ', '.join([x.country for x in self.country.all()])
 
     def __unicode__(self):
-        return self.name
+        if self.organization:
+            return u"{} <{}>".format(self.name, self.organization.name)
+        else:
+            return self.name
 
 
 class WorkflowLevel1Sector(models.Model):

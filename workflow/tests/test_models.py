@@ -82,6 +82,19 @@ class OfficeTest(TestCase):
 
 
 @tag('pkg')
+class WorkflowLevel1Test(TestCase):
+    def test_print_instance_no_org(self):
+        wflvl1 = factories.WorkflowLevel1.build(name='ACME', organization=None)
+        self.assertEqual(unicode(wflvl1), u'ACME')
+
+    def test_print_instance_with_org(self):
+        organization = factories.Organization(name='ACME Org')
+        wflvl1 = factories.WorkflowLevel1.build(name='ACME',
+                                                organization=organization)
+        self.assertEqual(unicode(wflvl1), u'ACME <ACME Org>')
+
+
+@tag('pkg')
 class WorkflowLevel2Test(TestCase):
     def test_print_instance(self):
         wflvl2 = factories.WorkflowLevel2.build()
