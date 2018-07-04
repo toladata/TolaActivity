@@ -12,6 +12,7 @@ from indicators.models import (
     Level as LevelM,
     Objective as ObjectiveM,
     PeriodicTarget as PeriodicTargetM,
+    ReportingPeriod as ReportingPeriodM,
     StrategicObjective as StrategicObjectiveM,
 )
 from .workflow_models import (Organization, WorkflowLevel1)
@@ -117,6 +118,13 @@ class ExternalService(DjangoModelFactory):
 
     name = 'External Service A'
     organization = SubFactory(Organization)
+
+
+class ReportingPeriod(DjangoModelFactory):
+    class Meta:
+        model = ReportingPeriodM
+
+    period = 'Quarter 1/2018'
 
 
 class StrategicObjective(DjangoModelFactory):
