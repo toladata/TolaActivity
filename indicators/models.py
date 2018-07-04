@@ -253,17 +253,18 @@ class Frequency(models.Model):
 
 
 class ReportingPeriod(models.Model):
-    frequency = models.ForeignKey(Frequency)
-    organization = models.ForeignKey(Organization, default=1)
+    period = models.CharField(max_length=255, blank=True, null=True, help_text="Predefined reporting period for a workflowlevel1")
+    workflowlevel1 = models.ForeignKey(WorkflowLevel1, null=True, blank=True, help_text="Related workflowlevel1 or project/program etc.")
+    sort = models.IntegerField(blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.frequency
+        return self.period
 
     def save(self, *args, **kwargs):
         # onsave add create date or update edit date
-        if self.create_date == None:
+        if self.create_date is None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
         super(ReportingPeriod, self).save(*args, **kwargs)
