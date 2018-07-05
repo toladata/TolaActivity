@@ -259,11 +259,13 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
         # Update the amount of used seats
         org = tola_user.organization
         used_seats = org.chargebee_used_seats
+        user_gained_seats = False
 
         # If the user is an Org Admin, he's able to edit the program.
         # Therefore, he should have a seat in the subscription
         if count == 0 and ROLE_ORGANIZATION_ADMIN in changed_groups:
             if kwargs['action'] == 'post_add':
+                user_gained_seats = True
                 used_seats += 1
             elif kwargs['action'] == 'post_remove':
                 used_seats -= 1
@@ -286,8 +288,8 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
         else:
             # Validate the amount of available seats based on the subscription
             available_seats = subscription.plan_quantity
-            used_seats = org.chargebee_used_seats
-            if used_seats > available_seats:
+            if org.chargebee_used_seats > available_seats \
+                    and user_gained_seats:
                 extra_context = {
                     'used_seats': used_seats,
                     'available_seats': available_seats,
