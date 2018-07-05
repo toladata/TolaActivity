@@ -12,7 +12,7 @@ from tola import DEMO_BRANCH
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Dashboard, Organization, WorkflowTeam,
                              ROLE_PROGRAM_ADMIN, ROLE_ORGANIZATION_ADMIN,
-                             ROLE_VIEW_ONLY, WorkflowLevel1,
+                             ROLE_VIEW_ONLY,ROLE_PROGRAM_TEAM,  WorkflowLevel1,
                              DEFAULT_PROGRAM_NAME)
 
 
@@ -199,6 +199,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         logging.disable(logging.ERROR)
         self.group_org_admin = factories.Group(name=ROLE_ORGANIZATION_ADMIN)
         self.group_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        self.group_program_team = factories.Group(name=ROLE_PROGRAM_TEAM)
         self.group_view_only = factories.Group(name=ROLE_VIEW_ONLY)
         self.org = factories.Organization(chargebee_subscription_id='12345')
         self.tola_user = factories.TolaUser(organization=self.org)
@@ -378,6 +379,78 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 2)
         self.assertEqual(len(mail.outbox), 0)
+
+    @override_settings(DEFAULT_REPLY_TO='noreply@example.com')
+    @override_settings(SALES_TEAM_EMAIL='sales@example.com')
+    @override_settings(PAYMENT_PORTAL_URL='example.com')
+    def test_exceeded_seats_not_notify_when_role_changed(self):
+        """ If user is org admin and program admin and users orgadmin
+         role removed then org admin should not get notification because
+          user still has seat as program admin."""
+        external_response = self.ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        self.tola_user.user.groups.add(self.group_org_admin)
+        self.tola_user.user.save()
+        self.org = Organization.objects.get(pk=self.org.id)
+
+        user = factories.User(first_name='John', last_name='Lennon')
+        tolauser = factories.TolaUser(user=user, organization=self.org)
+        tolauser.user.save()
+        wflvl1_1 = factories.WorkflowLevel1(name='WorkflowLevel1_1')
+        wfl_team = factories.WorkflowTeam(workflow_user=tolauser,
+                                          workflowlevel1=wflvl1_1,
+                                          role=self.group_program_team)
+
+        # It should notify the OrgAdmin
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 2)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('Edit user exceeding notification',
+                      mail.outbox[0].subject)
+
+        # after role changed it should not notify
+        wfl_team.role = self.group_program_admin
+        wfl_team.save()
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 2)
+        self.assertEqual(len(mail.outbox), 1)
+
+    @override_settings(DEFAULT_REPLY_TO='noreply@example.com')
+    @override_settings(SALES_TEAM_EMAIL='sales@example.com')
+    @override_settings(PAYMENT_PORTAL_URL='example.com')
+    def test_exceeded_seats_not_notify_when_role_removed(self):
+        """ If user is org admin and program admin and users orgadmin
+         role removed then org admin should not get notification because
+          user still has seat as program admin."""
+        external_response = self.ExternalResponse(None)
+        Subscription.retrieve = Mock(return_value=external_response)
+        self.tola_user.user.groups.add(self.group_org_admin)
+        self.tola_user.user.save()
+        self.org = Organization.objects.get(pk=self.org.id)
+
+        user = factories.User(first_name='John', last_name='Lennon')
+        tolauser = factories.TolaUser(user=user, organization=self.org)
+        tolauser.user.save()
+        wflvl1_1 = factories.WorkflowLevel1(name='WorkflowLevel1_1')
+        wfl_team = factories.WorkflowTeam(workflow_user=tolauser,
+                                          workflowlevel1=wflvl1_1,
+                                          role=self.group_program_team)
+
+        # It should notify the OrgAdmin
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 2)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('Edit user exceeding notification',
+                      mail.outbox[0].subject)
+
+        # after role changed it should not notify
+        wfl_team.role = self.group_view_only
+        wfl_team.save()
+
+        organization = Organization.objects.get(pk=self.org.id)
+        self.assertEqual(organization.chargebee_used_seats, 1)
+        self.assertEqual(len(mail.outbox), 1)
 
 
 @tag('pkg')
