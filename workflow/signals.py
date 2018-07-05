@@ -128,10 +128,10 @@ def add_users_to_default_wflvl1(sender, instance, **kwargs):
 
     workflowlevel1 = WorkflowLevel1.objects.get(
         organization=instance.organization,
-        name=DEFAULT_PROGRAM_NAME)
+        name__icontains=DEFAULT_PROGRAM_NAME)
     role = Group.objects.get(name=ROLE_PROGRAM_ADMIN)
-    WorkflowTeam.objects.create(workflow_user=instance, role=role,
-                                workflowlevel1=workflowlevel1)
+    WorkflowTeam.objects.get_or_create(workflow_user=instance, role=role,
+                                       workflowlevel1=workflowlevel1)
 
 
 # ORGANIZATION SIGNALS

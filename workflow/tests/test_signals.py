@@ -153,6 +153,38 @@ class AddTolaUserAsProgramAdminTest(TestCase):
         wft = WorkflowTeam.objects.get(workflow_user=tolauser)
         self.assertEqual(wft.role, role_program_admin)
 
+    @override_settings(SET_PROGRAM_ADMIN_DEFAULT=True)
+    @override_settings(CREATE_DEFAULT_PROGRAM=True)
+    def test_activated_save_two_times(self):
+        """
+        When the TolaUser is saved, a WorkflowTeam object for that user and
+        the default program is created only once.
+        """
+        role_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        tolauser = factories.TolaUser()  # triggers the signal
+        tolauser.save()  # triggers the signal again
+        wft = WorkflowTeam.objects.get(workflow_user=tolauser)
+        self.assertEqual(wft.role, role_program_admin)
+
+    @override_settings(SET_PROGRAM_ADMIN_DEFAULT=True)
+    @override_settings(CREATE_DEFAULT_PROGRAM=True)
+    def test_activated_program_lowercase(self):
+        """
+        If the default program name is written in different case letters, the
+        signal does not crash.
+        """
+        role_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
+        tolauser = factories.TolaUser()  # triggers the signal
+        wflvl1 = WorkflowLevel1.objects.get(name=DEFAULT_PROGRAM_NAME)
+        wflvl1.name = DEFAULT_PROGRAM_NAME.lower()
+        wflvl1.save()
+        WorkflowTeam.objects.all().delete()
+
+        tolauser.name = 'Any'
+        tolauser.save()  # trigger again the signal
+        wft = WorkflowTeam.objects.get(workflow_user=tolauser)
+        self.assertEqual(wft.role, role_program_admin)
+
 
 @tag('pkg')
 class CheckSeatsSaveWFTeamsTest(TestCase):
