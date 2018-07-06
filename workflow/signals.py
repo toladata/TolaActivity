@@ -168,24 +168,25 @@ def check_seats_save_team(sender, instance, **kwargs):
         workflow_user=instance.workflow_user,
         role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
     ).count()
-
     sub_id = org.chargebee_subscription_id
     if not sub_id:
         logger.info('The organization {} does not have a '
                     'subscription'.format(org.name))
         return
 
+    user_gained_seat = False
+
     # If the user is a Program Admin or Member
     # They should have a seat in the subscription
     if count == 0 and instance.role.name in [ROLE_PROGRAM_ADMIN,
                                              ROLE_PROGRAM_TEAM]:
+        user_gained_seat = True
         used_seats += 1
     elif count == 1 and instance.role.name == ROLE_VIEW_ONLY:
         used_seats -= 1
 
     org.chargebee_used_seats = used_seats
     org.save()
-
     # Load subscription data from ChargeBee
     try:
         result = Subscription.retrieve(sub_id)
@@ -195,8 +196,7 @@ def check_seats_save_team(sender, instance, **kwargs):
     else:
         # Validate the amount of available seats based on the subscription
         available_seats = subscription.plan_quantity
-        used_seats = org.chargebee_used_seats
-        if used_seats > available_seats:
+        if org.chargebee_used_seats > available_seats and user_gained_seat:
             extra_context = {
                 'used_seats': used_seats,
                 'available_seats': available_seats,
