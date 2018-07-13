@@ -5,6 +5,7 @@ from chargebee import APIError
 from chargebee.models import Subscription
 from django.core import mail
 from django.test import TestCase, override_settings, tag
+from django.db.models import Sum
 from mock import Mock, patch
 
 import factories
@@ -12,8 +13,8 @@ from tola import DEMO_BRANCH
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Dashboard, Organization, WorkflowTeam,
                              ROLE_PROGRAM_ADMIN, ROLE_ORGANIZATION_ADMIN,
-                             ROLE_VIEW_ONLY,ROLE_PROGRAM_TEAM,  WorkflowLevel1,
-                             DEFAULT_PROGRAM_NAME)
+                             ROLE_VIEW_ONLY, ROLE_PROGRAM_TEAM,  WorkflowLevel1,
+                             WorkflowLevel2, DEFAULT_PROGRAM_NAME)
 
 
 @tag('pkg')
@@ -936,3 +937,38 @@ class SignalSyncTrackTest(TestCase):
 
         wfl1.delete()
         self.assertFalse(mock_tsync.delete_instance.called)
+
+
+@tag('pkg')
+class BudgetUpdateTest(TestCase):
+    def setUp(self):
+        self.organization = factories.Organization()
+        self.user = factories.User()
+        self.tola_user = factories.TolaUser(organization=self.organization)
+
+    def test_delete_budget_value_from_wfl2(self):
+        '''When budget deleted, then related wfl2s total_estimated_budget
+        should be updated'''
+
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1',
+                                          organization=self.organization)
+        wflvl2 = factories.WorkflowLevel2(name='WorkflowLevel2',
+                                          workflowlevel1=wflvl1,
+                                          total_estimated_budget=0,
+                                          actual_cost=0)
+        factories.Budget(proposed_value=100,
+                         actual_value=10,
+                         workflowlevel2=wflvl2)
+
+        budget_2 = factories.Budget(proposed_value=80,
+                                    actual_value=20,
+                                    workflowlevel2=wflvl2)
+
+        wflvl2 = WorkflowLevel2.objects.get(pk=wflvl2.pk)
+        self.assertEqual(wflvl2.total_estimated_budget, 180.00)
+        self.assertEqual(wflvl2.actual_cost, 30.00)
+
+        budget_2.delete()
+        wflvl2 = WorkflowLevel2.objects.get(pk=wflvl2.pk)
+        self.assertEqual(wflvl2.total_estimated_budget, 100.00)
+        self.assertEqual(wflvl2.actual_cost, 10.00)

@@ -15,7 +15,7 @@ from django.template import loader
 
 from tola import DEMO_BRANCH, utils, track_sync as tsync
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
-from workflow.models import (Dashboard, Organization, TolaUser,
+from workflow.models import (Dashboard, Organization, TolaUser, Budget,
                              WorkflowLevel1, WorkflowTeam, WorkflowLevel2,
                              ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
                              ROLE_PROGRAM_TEAM, ROLE_VIEW_ONLY,
@@ -328,3 +328,12 @@ def sync_save_track_workflowlevel1(sender, instance, **kwargs):
 def sync_delete_track_workflowlevel1(sender, instance, **kwargs):
     if settings.TOLA_TRACK_SYNC_ENABLED:
         tsync.delete_instance(instance)
+
+
+#BUDGET SIGNALS
+@receiver(signals.post_delete, sender=Budget)
+def delete_budget_value_from_wfl2(sender, instance, *args, **kwargs):
+    wflvl2 = instance.workflowlevel2
+    wflvl2.total_estimated_budget -= instance.proposed_value
+    wflvl2.actual_cost -= instance.actual_value
+    wflvl2.save()
