@@ -81,6 +81,18 @@ class DisaggregationLabelAdmin(admin.ModelAdmin):
     list_display = ('disaggregation_type', 'customsort', 'label',)
     display = 'Disaggregation Label'
     list_filter = ('disaggregation_type__disaggregation_type',)
+    
+
+class PeriodicTargetResource(resources.ModelResource):
+    class Meta:
+        model = PeriodicTarget
+
+
+class PeriodicTargetAdmin(ImportExportModelAdmin):
+    resource_class = PeriodicTargetResource
+    list_display = ('period', 'target', 'customsort',)
+    display = 'Indicator Periodic Target'
+    list_filter = ('period',)
 
 
 admin.site.register(IndicatorType)

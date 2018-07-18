@@ -475,12 +475,6 @@ class PeriodicTarget(models.Model):
         return "%s %s" % (self.period, self.target)
 
 
-class PeriodicTargetAdmin(admin.ModelAdmin):
-    list_display = ('period', 'target', 'customsort',)
-    display = 'Indicator Periodic Target'
-    list_filter = ('period',)
-
-
 class CollectedDataManager(models.Manager):
     def get_queryset(self):
         return super(CollectedDataManager, self).get_queryset().prefetch_related('site','disaggregation_value').select_related('workflowlevel1','indicator','workflowlevel2','evidence','tola_table')
