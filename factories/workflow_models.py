@@ -128,7 +128,7 @@ class Widget(DjangoModelFactory):
         django_get_or_create = ('dashboard',)
 
     dashboard = SubFactory(Dashboard)
-    name = "My Crazy Widget"
+    title = "My Crazy Widget"
 
 
 class WorkflowLevel1(DjangoModelFactory):
