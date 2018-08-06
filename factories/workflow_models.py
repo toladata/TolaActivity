@@ -15,6 +15,7 @@ from workflow.models import (
     Country as CountryM,
     Documentation as DocumentationM,
     FundCode as FundCodeM,
+    Internationalization as InternationalizationM,
     IssueRegister as IssueRegisterM,
     Milestone as MilestoneM,
     Organization as OrganizationM,
@@ -308,6 +309,15 @@ class CodedField(DjangoModelFactory):
             # A list of workflowlevel2 were passed in, use them
             for workflowlevel2 in extracted:
                 self.workflowlevel2.add(workflowlevel2)
+
+
+class Internationalization(DjangoModelFactory):
+    class Meta:
+        model = InternationalizationM
+        django_get_or_create = ('language',)
+
+    language = 'de-DE'
+    language_file = '{"name": "Name", "gender": "Geschlecht"}'
 
 
 class IssueRegister(DjangoModelFactory):
