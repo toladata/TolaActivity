@@ -200,7 +200,7 @@ class CustomForm(models.Model):
         (PUBLIC_ALL, 'ALL'),
         (PUBLIC_URL, 'URL'),
     )
-
+    
     STATUS_ARCHIVED = 'archived'
     STATUS_NEW = 'new'
     STATUS_PUBLISHED = 'published'
@@ -221,7 +221,6 @@ class CustomForm(models.Model):
     is_public = models.BooleanField(default=0)
     default_global = models.BooleanField(default=0)
     organization = models.ForeignKey(Organization, default=1)
-    public = models.CharField(choices=PUBLIC_CHOICES, max_length=5, blank=True, null=True)
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
     silo_id = models.IntegerField(default=0)
     status = models.CharField(blank=True, null=True, max_length=15, default=STATUS_NEW, choices=STATUS_CHOICES)
