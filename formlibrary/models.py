@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
+import json
 import uuid
 
 from django.db import models
 from django.contrib import admin
 from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import ValidationError
 from django.utils import timezone
+from voluptuous import Schema, Required
 
 from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, AdminLevelOne, Organization
 from indicators.models import DisaggregationValue, Indicator
@@ -193,13 +196,13 @@ class CustomFormFieldAdmin(admin.ModelAdmin):
 
 
 class CustomForm(models.Model):
-    PUBLIC_ALL = 'all'
-    PUBLIC_URL = 'url'
+    PUBLIC_ALL = 'all'  # deprecated
+    PUBLIC_URL = 'url'  # deprecated
 
-    PUBLIC_CHOICES = (
-        (PUBLIC_ALL, 'ALL'),
-        (PUBLIC_URL, 'URL'),
-    )
+    PUBLIC_CHOICES = (  # deprecated
+        (PUBLIC_ALL, 'ALL'),  # deprecated
+        (PUBLIC_URL, 'URL'),  # deprecated
+    )  # deprecated
     
     STATUS_ARCHIVED = 'archived'
     STATUS_NEW = 'new'
@@ -233,8 +236,24 @@ class CustomForm(models.Model):
     class Meta:
         ordering = ('name',)
 
+    def _validate_public(self, public):
+        schema = Schema({
+            Required('org'): bool,
+            Required('url'): bool
+        })
+        return schema(public)
+
+    def clean_fields(self, exclude=None):
+        super(CustomForm, self).clean_fields(exclude=exclude)
+        if not self.is_template and self.public is not None:
+            try:
+                self.public = self._validate_public(self.public)
+            except Exception as e:
+                raise ValidationError(e)
+
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
+        self.full_clean()
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()

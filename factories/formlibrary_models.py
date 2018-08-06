@@ -32,3 +32,4 @@ class CustomForm(DjangoModelFactory):
 
     name = 'Custom Form A'
     organization = SubFactory(Organization)
+    public = {'org': False, 'url': False}
