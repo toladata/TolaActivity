@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
+import json
 import uuid
 
 from django.db import models
 from django.contrib import admin
 from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import ValidationError
 from django.utils import timezone
+from voluptuous import Schema, Required
 
 from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, AdminLevelOne, Organization
 from indicators.models import DisaggregationValue, Indicator
@@ -193,14 +196,14 @@ class CustomFormFieldAdmin(admin.ModelAdmin):
 
 
 class CustomForm(models.Model):
-    PUBLIC_ALL = 'all'
-    PUBLIC_URL = 'url'
+    PUBLIC_ALL = 'all'  # deprecated
+    PUBLIC_URL = 'url'  # deprecated
 
-    PUBLIC_CHOICES = (
-        (PUBLIC_ALL, 'ALL'),
-        (PUBLIC_URL, 'URL'),
-    )
-
+    PUBLIC_CHOICES = (  # deprecated
+        (PUBLIC_ALL, 'ALL'),  # deprecated
+        (PUBLIC_URL, 'URL'),  # deprecated
+    )  # deprecated
+    
     STATUS_ARCHIVED = 'archived'
     STATUS_NEW = 'new'
     STATUS_PUBLISHED = 'published'
@@ -217,11 +220,11 @@ class CustomForm(models.Model):
     form_uuid = models.CharField(max_length=255, verbose_name='CustomForm UUID', default=uuid.uuid4, unique=True)
     description = models.TextField(null=True, blank=True)
     validations = models.CharField(max_length=500, null=True, blank=True)
-    fields = JSONField(null=True)
+    fields = JSONField(blank=True, null=True)
     is_public = models.BooleanField(default=0)
     default_global = models.BooleanField(default=0)
     organization = models.ForeignKey(Organization, default=1)
-    public = models.CharField(choices=PUBLIC_CHOICES, max_length=5, blank=True, null=True)
+    public = JSONField(blank=True, null=True, help_text="Public information with the structure:{org: (bool), url: (bool)}")
     workflowlevel1 = models.ForeignKey(WorkflowLevel1, blank=True, null=True)
     silo_id = models.IntegerField(default=0)
     status = models.CharField(blank=True, null=True, max_length=15, default=STATUS_NEW, choices=STATUS_CHOICES)
@@ -233,8 +236,24 @@ class CustomForm(models.Model):
     class Meta:
         ordering = ('name',)
 
+    def _validate_public(self, public):
+        schema = Schema({
+            Required('org'): bool,
+            Required('url'): bool
+        })
+        return schema(public)
+
+    def clean_fields(self, exclude=None):
+        super(CustomForm, self).clean_fields(exclude=exclude)
+        if not self.is_template and self.public is not None:
+            try:
+                self.public = self._validate_public(self.public)
+            except Exception as e:
+                raise ValidationError(e)
+
     # on save add create date or update edit date
     def save(self, *args, **kwargs):
+        self.full_clean()
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
