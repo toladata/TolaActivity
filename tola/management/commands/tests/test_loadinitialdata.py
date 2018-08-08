@@ -218,7 +218,7 @@ class LoadInitialDataTest(TestCase):
         organization = factories.Organization(name='Some org')
         country = factories.Country(country='Brazil', code='BR')
         factories.SiteProfile(organization=organization, country=country)
-        siteprofile_history_id = SiteProfile.history.get(organization=organization).id
+        siteprofile_history_id = SiteProfile.history.get(country=country).id
 
         args = ['--demo']
         opts = {}
