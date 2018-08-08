@@ -153,7 +153,6 @@ class Organization(models.Model):
     currency_format = models.CharField("Currency Format", max_length=50, blank=True, default="Commas")
     allow_budget_decimal = models.BooleanField("Allow Budget in Decimal", default=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
-    site = models.ForeignKey("SiteProfile", blank=True, null=True)
 
     class Meta:
         ordering = ('name',)
@@ -949,6 +948,7 @@ class SiteProfile(models.Model):
     approval = models.ManyToManyField(ApprovalWorkflow, blank=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    organization = models.ForeignKey(Organization, null=True, blank=True)
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='sites', null=True, blank=True)
     history = HistoricalRecords()

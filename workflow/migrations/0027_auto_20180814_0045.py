@@ -9,7 +9,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workflow', '0027_auto_20180810_0530'),
+        ('workflow', '0026_organization_phone'),
     ]
 
     operations = [
