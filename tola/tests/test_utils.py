@@ -28,14 +28,12 @@ class TokenGeneratorTest(TestCase):
 
     def test_make_hash_value_with_uuid_and_no_flag(self):
         tola_user = factories.TolaUser()
-        create_date = tola_user.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         expected_hash = (
-            six.text_type(tola_user.pk) + tola_user.tola_user_uuid.__str__() +
-            six.text_type(create_date) + six.text_type(timestamp)
+            six.text_type(tola_user.pk) + tola_user.tola_user_uuid.__str__()
+            + six.text_type(timestamp)
         )
 
         generated_hash = self.token_generator._make_hash_value(
@@ -44,14 +42,12 @@ class TokenGeneratorTest(TestCase):
 
     def test_make_hash_value_with_uuid_and_flag(self):
         tola_user = factories.TolaUser()
-        create_date = tola_user.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         expected_hash = (
-            six.text_type(True) + tola_user.tola_user_uuid.__str__() +
-            six.text_type(create_date) + six.text_type(timestamp)
+            six.text_type(True) + tola_user.tola_user_uuid.__str__()
+            + six.text_type(timestamp)
         )
 
         generated_hash = self.token_generator._make_hash_value(
@@ -60,14 +56,12 @@ class TokenGeneratorTest(TestCase):
 
     def test_make_token_with_timestamp(self):
         tola_user = factories.TolaUser()
-        create_date = tola_user.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         test_hash = (
-            six.text_type(True) + tola_user.tola_user_uuid.__str__() +
-            six.text_type(create_date) + six.text_type(timestamp)
+            six.text_type(True) + tola_user.tola_user_uuid.__str__()
+            + six.text_type(timestamp)
         )
 
         ts_b36 = int_to_base36(timestamp)
@@ -97,15 +91,13 @@ class TokenGeneratorTest(TestCase):
 
     def test_check_token_token_wrong_format(self):
         dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
-        create_date = dashboard.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         test_hash = (
                 six.text_type(dashboard.public) +
                 dashboard.dashboard_uuid.__str__() +
-                six.text_type(create_date) + six.text_type(timestamp)
+                six.text_type(timestamp)
         )
 
         ts_b36 = int_to_base36(timestamp)
@@ -119,15 +111,13 @@ class TokenGeneratorTest(TestCase):
 
     def test_check_token_invalid_timestamp_token(self):
         dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
-        create_date = dashboard.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         test_hash = (
                 six.text_type(dashboard.public) +
                 dashboard.dashboard_uuid.__str__() +
-                six.text_type(create_date) + six.text_type(timestamp)
+                six.text_type(timestamp)
         )
 
         hash = salted_hmac(self.token_generator.key_salt,
@@ -140,15 +130,13 @@ class TokenGeneratorTest(TestCase):
 
     def test_check_token_no_public(self):
         dashboard = factories.Dashboard()
-        create_date = dashboard.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         test_hash = (
                 six.text_type(dashboard.pk) +
                 dashboard.dashboard_uuid.__str__() +
-                six.text_type(create_date) + six.text_type(timestamp)
+                six.text_type(timestamp)
         )
 
         hash = salted_hmac(self.token_generator.key_salt,
@@ -160,14 +148,12 @@ class TokenGeneratorTest(TestCase):
 
     def test_check_token_invalid_token(self):
         dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
-        create_date = dashboard.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         test_hash = (
                 six.text_type(True) + dashboard.dashboard_uuid.__str__() +
-                six.text_type(create_date) + six.text_type(timestamp)
+                six.text_type(timestamp)
         )
 
         hash = salted_hmac(self.token_generator.key_salt,
@@ -179,15 +165,13 @@ class TokenGeneratorTest(TestCase):
 
     def test_check_token_success_with_flag(self):
         dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
-        create_date = dashboard.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         test_hash = (
                 six.text_type(dashboard.public) +
                 dashboard.dashboard_uuid.__str__() +
-                six.text_type(create_date) + six.text_type(timestamp)
+                six.text_type(timestamp)
         )
 
         ts_b36 = int_to_base36(timestamp)
@@ -201,15 +185,13 @@ class TokenGeneratorTest(TestCase):
 
     def test_check_token_success_without_flag(self):
         dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
-        create_date = dashboard.create_date.replace(
-            microsecond=0, tzinfo=None)
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
         test_hash = (
                 six.text_type(dashboard.pk) +
                 dashboard.dashboard_uuid.__str__() +
-                six.text_type(create_date) + six.text_type(timestamp)
+                six.text_type(timestamp)
         )
 
         ts_b36 = int_to_base36(timestamp)

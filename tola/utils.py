@@ -71,13 +71,10 @@ class TokenGenerator(object):
         # Ensure results are consistent across DB backends
         attr = self._get_attr_by_suffix(instance, 'uuid')
         attr = attr if attr else instance.__class__.__name__
-        instance_timestamp = instance.create_date.replace(
-            microsecond=0, tzinfo=None)
 
         return (
             six.text_type(flag if flag is not None else instance.pk) +
-            six.text_type(attr) + six.text_type(instance_timestamp) +
-            six.text_type(timestamp)
+            six.text_type(attr) + six.text_type(timestamp)
         )
 
     def _get_attr_by_suffix(self, instance, suffix):
