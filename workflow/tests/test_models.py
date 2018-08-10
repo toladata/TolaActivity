@@ -132,3 +132,9 @@ class OrganizationTest(TestCase):
         organization = factories.Organization(phone="+49 123 456 111")
         self.assertEqual(organization.phone, "+49 123 456 111")
 
+    def test_save_organization_with_siteprofile(self):
+        country = factories.Country(country='Germany')
+        siteprofile = factories.SiteProfile(name='Headquarter',
+                                            country=country)
+        organization = factories.Organization(site=siteprofile)
+        self.assertEqual(organization.site.name, 'Headquarter')
