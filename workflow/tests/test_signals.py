@@ -795,40 +795,53 @@ class CheckSeatsSaveUserGroupTest(TestCase):
 
 @tag('pkg')
 class AddPublicUrlTokenTest(TestCase):
+    def setUp(self):
+        self.tola_user = factories.TolaUser()
+
     def test_add_public_url_token_create_not_public_url(self):
-        dashboard = factories.Dashboard()
-        self.assertNotEqual(dashboard.public, Dashboard.PUBLIC_URL)
+        dashboard = Dashboard.objects.create(user=self.tola_user)
+        self.assertNotEqual(dashboard.public,
+                            {'all': False, 'org': False, 'url': False})
         self.assertIsNone(dashboard.public_url_token)
 
     def test_add_public_url_token_create_public_url(self):
-        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
-        self.assertEqual(dashboard.public, Dashboard.PUBLIC_URL)
+        dashboard = Dashboard.objects.create(
+            user=self.tola_user,
+            public={'all': False, 'org': False, 'url': True})
+        self.assertEqual(dashboard.public,
+                         {'all': False, 'org': False, 'url': True})
         self.assertIsNotNone(dashboard.public_url_token)
 
     def test_add_public_url_token_update_not_public_url(self):
-        dashboard = factories.Dashboard()
-        dashboard.public = Dashboard.PUBLIC_ALL
+        dashboard = Dashboard.objects.create(user=self.tola_user)
+        dashboard.public = {'all': True, 'org': False, 'url': False}
         dashboard.save()
 
-        self.assertEqual(dashboard.public, Dashboard.PUBLIC_ALL)
+        self.assertEqual(dashboard.public,
+                         {'all': True, 'org': False, 'url': False})
         self.assertIsNone(dashboard.public_url_token)
 
     def test_add_public_url_token_update_public_url(self):
-        dashboard = factories.Dashboard()
-        dashboard.public = Dashboard.PUBLIC_URL
+        dashboard = Dashboard.objects.create(user=self.tola_user)
+        dashboard.public = {'all': False, 'org': False, 'url': True}
         dashboard.save()
 
-        self.assertEqual(dashboard.public, Dashboard.PUBLIC_URL)
+        self.assertEqual(dashboard.public,
+                         {'all': False, 'org': False, 'url': True})
         self.assertIsNotNone(dashboard.public_url_token)
 
     def test_add_public_url_token_create_and_update(self):
-        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
-        self.assertEqual(dashboard.public, Dashboard.PUBLIC_URL)
+        dashboard = Dashboard.objects.create(
+            user=self.tola_user,
+            public={'all': False, 'org': False, 'url': True})
+        self.assertEqual(dashboard.public,
+                         {'all': False, 'org': False, 'url': True})
         self.assertIsNotNone(dashboard.public_url_token)
 
-        dashboard.public = Dashboard.PUBLIC_ALL
+        dashboard.public = {'all': True, 'org': False, 'url': False}
         dashboard.save()
-        self.assertEqual(dashboard.public, Dashboard.PUBLIC_ALL)
+        self.assertEqual(dashboard.public,
+                         {'all': True, 'org': False, 'url': False})
         self.assertIsNone(dashboard.public_url_token)
 
 
