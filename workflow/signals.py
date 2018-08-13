@@ -62,7 +62,7 @@ def notify_excess_org_admin(organization, extra_context):
 def generate_public_url_token(instance):
     token_generator = utils.TokenGenerator()
     token = token_generator.make_token(
-        instance, Dashboard.PUBLIC_URL)
+        instance, instance.public)
     return token
 
 
@@ -70,16 +70,15 @@ def generate_public_url_token(instance):
 @receiver(signals.pre_save, sender=Dashboard)
 def add_public_url_token(sender, instance, **kwargs):
     """
-    Create a new public URL token when the dashboard is set to PUBLIC_URL
+    Create a new public URL token when the dashboard is set to public url
     or remove the token if it's not public via URL anymore
     """
-    if (not instance.public_url_token and
-            instance.public == Dashboard.PUBLIC_URL):
-        public_url_token = generate_public_url_token(instance)
-        instance.public_url_token = public_url_token
-    elif (instance.public_url_token and
-          instance.public != Dashboard.PUBLIC_URL):
-        instance.public_url_token = None
+    if instance.public is not None:
+        if not instance.public_url_token and instance.public['url']:
+            public_url_token = generate_public_url_token(instance)
+            instance.public_url_token = public_url_token
+        elif instance.public_url_token and not instance.public['url']:
+            instance.public_url_token = None
 
 
 # TOLA USER SIGNALS

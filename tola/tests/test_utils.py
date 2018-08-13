@@ -90,7 +90,8 @@ class TokenGeneratorTest(TestCase):
         self.assertFalse(is_valid)
 
     def test_check_token_token_wrong_format(self):
-        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
+        dashboard = factories.Dashboard(
+            public={'all': False, 'org': False, 'url': True})
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
@@ -110,7 +111,8 @@ class TokenGeneratorTest(TestCase):
         self.assertFalse(is_valid)
 
     def test_check_token_invalid_timestamp_token(self):
-        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
+        dashboard = factories.Dashboard(
+            public={'all': False, 'org': False, 'url': True})
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
@@ -147,7 +149,8 @@ class TokenGeneratorTest(TestCase):
         self.assertFalse(is_valid)
 
     def test_check_token_invalid_token(self):
-        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
+        dashboard = factories.Dashboard(
+            public={'all': False, 'org': False, 'url': True})
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
@@ -164,7 +167,8 @@ class TokenGeneratorTest(TestCase):
         self.assertFalse(is_valid)
 
     def test_check_token_success_with_flag(self):
-        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
+        dashboard = factories.Dashboard(
+            public={'all': False, 'org': False, 'url': True})
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
@@ -184,7 +188,8 @@ class TokenGeneratorTest(TestCase):
         self.assertTrue(is_valid)
 
     def test_check_token_success_without_flag(self):
-        dashboard = factories.Dashboard(public=Dashboard.PUBLIC_URL)
+        dashboard = factories.Dashboard(
+            public={'all': False, 'org': False, 'url': True})
         timestamp = self.token_generator._num_days(
             self.token_generator._today())
 
