@@ -3,7 +3,56 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings, tag
 
 import factories
-from workflow.models import TolaUser, Office, ROLE_ORGANIZATION_ADMIN
+from workflow.models import (Dashboard, TolaUser, Office,
+                             ROLE_ORGANIZATION_ADMIN)
+
+
+@tag('pkg')
+class DashboardTest(TestCase):
+    def setUp(self):
+        self.tola_user = factories.TolaUser()
+
+    def test_save_without_public_info(self):
+        custom_form = Dashboard(
+            user=self.tola_user,
+            name="Humanitec's Dashboard",
+            public={}
+        )
+        self.assertRaises(ValidationError, custom_form.save)
+
+    def test_save_without_public_org_info(self):
+        custom_form = Dashboard(
+            user=self.tola_user,
+            name="Humanitec's Dashboard",
+            public={'url': True}
+        )
+        self.assertRaises(ValidationError, custom_form.save)
+
+    def test_save_without_public_url_info(self):
+        custom_form = Dashboard(
+            user=self.tola_user,
+            name="Humanitec's Dashboard",
+            public={'org': True}
+        )
+        self.assertRaises(ValidationError, custom_form.save)
+
+    def test_save_without_public_all_info(self):
+        custom_form = Dashboard(
+            user=self.tola_user,
+            name="Humanitec's Dashboard",
+            public={'org': True, 'url': True}
+        )
+        self.assertRaises(ValidationError, custom_form.save)
+
+    def test_save_with_public_info(self):
+        custom_form = Dashboard.objects.create(
+            user=self.tola_user,
+            name="Humanitec's Dashboard",
+            public={'all': False, 'org': True, 'url': True}
+        )
+        self.assertEqual(custom_form.name, "Humanitec's Dashboard")
+        self.assertEqual(custom_form.public,
+                         {'all': False, 'org': True, 'url': True})
 
 
 @tag('pkg')
