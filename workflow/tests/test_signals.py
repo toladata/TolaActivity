@@ -5,7 +5,6 @@ from chargebee import APIError
 from chargebee.models import Subscription
 from django.core import mail
 from django.test import TestCase, override_settings, tag
-from django.db.models import Sum
 from mock import Mock, patch
 
 import factories
@@ -953,15 +952,78 @@ class SignalSyncTrackTest(TestCase):
 
 
 @tag('pkg')
-class BudgetUpdateTest(TestCase):
+class BudgetSaveTest(TestCase):
+    def setUp(self):
+        self.organization = factories.Organization()
+        self.user = factories.User()
+        self.tola_user = factories.TolaUser(organization=self.organization)
+
+    def test_save_budget_value_without_wfl2_create(self):
+        """
+        When a budget is created without wfl2s, it's should work properly
+        """
+        budget = factories.Budget(proposed_value=100, actual_value=10)
+
+        self.assertEqual(budget.proposed_value, 100.00)
+        self.assertEqual(budget.actual_value, 10.00)
+
+    def test_save_budget_value_from_wfl2_create(self):
+        """
+        When a budget is created, the related wfl2s total_estimated_budget
+        should be updated
+        """
+
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1',
+                                          organization=self.organization)
+        wflvl2 = factories.WorkflowLevel2(name='WorkflowLevel2',
+                                          workflowlevel1=wflvl1,
+                                          total_estimated_budget=0,
+                                          actual_cost=0)
+        factories.Budget(proposed_value=100,
+                         actual_value=10,
+                         workflowlevel2=wflvl2)
+
+        wflvl2 = WorkflowLevel2.objects.get(pk=wflvl2.pk)
+        self.assertEqual(wflvl2.total_estimated_budget, 100.00)
+        self.assertEqual(wflvl2.actual_cost, 10.00)
+
+    def test_save_budget_value_from_wfl2_update(self):
+        """
+        When a budget is updated, the related wfl2s total_estimated_budget
+        should be updated
+        """
+
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1',
+                                          organization=self.organization)
+        wflvl2 = factories.WorkflowLevel2(name='WorkflowLevel2',
+                                          workflowlevel1=wflvl1,
+                                          total_estimated_budget=0,
+                                          actual_cost=0)
+        factories.Budget(proposed_value=100,
+                         actual_value=10,
+                         workflowlevel2=wflvl2)
+
+        factories.Budget(proposed_value=80,
+                         actual_value=20,
+                         workflowlevel2=wflvl2)
+
+        wflvl2 = WorkflowLevel2.objects.get(pk=wflvl2.pk)
+        self.assertEqual(wflvl2.total_estimated_budget, 180.00)
+        self.assertEqual(wflvl2.actual_cost, 30.00)
+
+
+@tag('pkg')
+class BudgetDeleteTest(TestCase):
     def setUp(self):
         self.organization = factories.Organization()
         self.user = factories.User()
         self.tola_user = factories.TolaUser(organization=self.organization)
 
     def test_delete_budget_value_from_wfl2(self):
-        '''When budget deleted, then related wfl2s total_estimated_budget
-        should be updated'''
+        """
+        When budget deleted, then related wfl2s total_estimated_budget
+        should be updated
+        """
 
         wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1',
                                           organization=self.organization)
