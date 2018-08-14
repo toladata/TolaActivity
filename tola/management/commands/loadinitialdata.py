@@ -1017,6 +1017,7 @@ class Command(BaseCommand):
             latitude="33.500",
             longitude="36.300",
             created_by=self._tolauser_ninette.user,  # 11
+            organization=self._organization,
         ))
 
         self._site_profiles.append(factories.SiteProfile(
@@ -1026,6 +1027,7 @@ class Command(BaseCommand):
             latitude="36.2130824982",
             longitude="37.1569335937",
             created_by=self._tolauser_ninette.user,  # 11
+            organization=self._organization,
         ))
 
         self._site_profiles.append(factories.SiteProfile(
@@ -1035,6 +1037,7 @@ class Command(BaseCommand):
             latitude="35.1421960686",
             longitude="36.7504394531",
             created_by=self._tolauser_ninette.user,  # 11
+            organization=self._organization,
         ))
 
         self._site_profiles.append(factories.SiteProfile(
@@ -1044,6 +1047,7 @@ class Command(BaseCommand):
             latitude="34.8959",
             longitude="35.8867",
             created_by=self._tolauser_ninette.user,  # 11
+            organization=self._organization,
         ))
 
         self._site_profiles.append(factories.SiteProfile(
@@ -1053,6 +1057,7 @@ class Command(BaseCommand):
             latitude="34.7369225399",
             longitude="36.7284667969",
             created_by=self._tolauser_ninette.user,  # 11
+            organization=self._organization,
         ))
 
         self._site_profiles.append(factories.SiteProfile(
@@ -1062,6 +1067,7 @@ class Command(BaseCommand):
             latitude="50.9692657293000000",
             longitude="6.9889383750000000",
             created_by=self._tolauser_ninette.user,
+            organization=self._organization,
         ))
 
         self._site_profiles.append(factories.SiteProfile(
@@ -1071,6 +1077,7 @@ class Command(BaseCommand):
             latitude="49.4507464458000000",
             longitude="11.0319071250000000",
             created_by=self._tolauser_ninette.user,
+            organization=self._organization,
         ))
 
     def _create_stakeholders(self):
