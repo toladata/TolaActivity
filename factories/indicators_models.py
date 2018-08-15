@@ -14,6 +14,7 @@ from indicators.models import (
     PeriodicTarget as PeriodicTargetM,
     ReportingPeriod as ReportingPeriodM,
     StrategicObjective as StrategicObjectiveM,
+    TolaTable as TolaTableM,
 )
 from .workflow_models import (Organization, WorkflowLevel1)
 
@@ -137,3 +138,33 @@ class StrategicObjective(DjangoModelFactory):
 class PeriodicTarget(DjangoModelFactory):
     class Meta:
         model = PeriodicTargetM
+
+
+class TolaTable(DjangoModelFactory):
+    class Meta:
+        model = TolaTableM
+
+    name = 'Table A'
+    organization = SubFactory(Organization)
+
+    @post_generation
+    def country(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of country were passed in, use them
+            for country in extracted:
+                self.country.add(country)
+
+    @post_generation
+    def workflowlevel1(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of workflowlevel1 were passed in, use them
+            for workflowlevel1 in extracted:
+                self.workflowlevel1.add(workflowlevel1)
