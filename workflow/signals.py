@@ -329,10 +329,29 @@ def sync_delete_track_workflowlevel1(sender, instance, **kwargs):
         tsync.delete_instance(instance)
 
 
-#BUDGET SIGNALS
+# BUDGET SIGNALS
+@receiver(signals.post_save, sender=Budget)
+def save_budget_value_from_wfl2(sender, instance, *args, **kwargs):
+    if instance.workflowlevel2 is not None:
+        wflvl2 = instance.workflowlevel2
+
+        if kwargs.get('created'):
+            # Sum the new values
+            wflvl2.total_estimated_budget += instance.proposed_value
+            wflvl2.actual_cost += instance.actual_value
+        else:
+            # Subtract the old values
+            old_budget = Budget.objects.get(id=instance.id)
+            wflvl2.total_estimated_budget -= old_budget.proposed_value
+            wflvl2.actual_cost -= old_budget.actual_value
+
+        wflvl2.save()
+
+
 @receiver(signals.post_delete, sender=Budget)
 def delete_budget_value_from_wfl2(sender, instance, *args, **kwargs):
-    wflvl2 = instance.workflowlevel2
-    wflvl2.total_estimated_budget -= instance.proposed_value
-    wflvl2.actual_cost -= instance.actual_value
-    wflvl2.save()
+    if instance.workflowlevel2 is not None:
+        wflvl2 = instance.workflowlevel2
+        wflvl2.total_estimated_budget -= instance.proposed_value
+        wflvl2.actual_cost -= instance.actual_value
+        wflvl2.save()

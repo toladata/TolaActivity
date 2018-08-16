@@ -1381,21 +1381,6 @@ class Budget(models.Model):
         if self.actual_value is None:
             self.actual_value = Decimal("0.00")
 
-        if self.workflowlevel2:
-            wflvl2 = self.workflowlevel2
-            try:
-                old_budget = self.__class__.objects.get(id=self.id)
-                # Subtract the old values
-                wflvl2.total_estimated_budget -= old_budget.proposed_value
-                wflvl2.actual_cost -= old_budget.actual_value
-            except Budget.DoesNotExist:
-                pass
-            finally:
-                # Sum the new values
-                wflvl2.total_estimated_budget += self.proposed_value
-                wflvl2.actual_cost += self.actual_value
-                wflvl2.save()
-
         super(Budget, self).save()
 
     def __unicode__(self):
