@@ -330,22 +330,22 @@ def sync_delete_track_workflowlevel1(sender, instance, **kwargs):
 
 
 # BUDGET SIGNALS
-@receiver(signals.post_save, sender=Budget)
+@receiver(signals.pre_save, sender=Budget)
 def save_budget_value_from_wfl2(sender, instance, *args, **kwargs):
     if instance.workflowlevel2 is not None:
         wflvl2 = instance.workflowlevel2
-
-        if kwargs.get('created'):
+        try:
+            old_budget = Budget.objects.get(id=instance.id)
+            # Subtract the old values
+            wflvl2.total_estimated_budget -= old_budget.proposed_value
+            wflvl2.actual_cost -= old_budget.actual_value
+        except Budget.DoesNotExist:
+            pass
+        finally:
             # Sum the new values
             wflvl2.total_estimated_budget += instance.proposed_value
             wflvl2.actual_cost += instance.actual_value
-        else:
-            # Subtract the old values
-            old_budget = Budget.objects.get(id=instance.id)
-            wflvl2.total_estimated_budget -= old_budget.proposed_value
-            wflvl2.actual_cost -= old_budget.actual_value
-
-        wflvl2.save()
+            wflvl2.save()
 
 
 @receiver(signals.post_delete, sender=Budget)
