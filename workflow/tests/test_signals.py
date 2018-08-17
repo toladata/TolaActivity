@@ -987,7 +987,7 @@ class BudgetSaveTest(TestCase):
         self.assertEqual(wflvl2.total_estimated_budget, 100.00)
         self.assertEqual(wflvl2.actual_cost, 10.00)
 
-    def test_save_budget_value_from_wfl2_update(self):
+    def test_save_budget_value_from_wfl2_create_more(self):
         """
         When a budget is updated, the related wfl2s total_estimated_budget
         should be updated
@@ -1010,6 +1010,30 @@ class BudgetSaveTest(TestCase):
         wflvl2 = WorkflowLevel2.objects.get(pk=wflvl2.pk)
         self.assertEqual(wflvl2.total_estimated_budget, 180.00)
         self.assertEqual(wflvl2.actual_cost, 30.00)
+
+    def test_save_budget_value_from_wfl2_update(self):
+        """
+        When a budget is updated, the related wfl2s total_estimated_budget
+        should be updated
+        """
+
+        wflvl1 = factories.WorkflowLevel1(name='WorkflowLevel1',
+                                          organization=self.organization)
+        wflvl2 = factories.WorkflowLevel2(name='WorkflowLevel2',
+                                          workflowlevel1=wflvl1,
+                                          total_estimated_budget=0,
+                                          actual_cost=0)
+        budget = factories.Budget(proposed_value=100,
+                                  actual_value=10,
+                                  workflowlevel2=wflvl2)
+
+        budget.proposed_value = 150
+        budget.actual_value = 50
+        budget.save()
+
+        wflvl2 = WorkflowLevel2.objects.get(pk=wflvl2.pk)
+        self.assertEqual(wflvl2.total_estimated_budget, 150.00)
+        self.assertEqual(wflvl2.actual_cost, 50.00)
 
 
 @tag('pkg')
