@@ -19,6 +19,7 @@ from voluptuous import Schema, All, Any, Length, Required
 
 from search.utils import ElasticsearchIndexer
 
+ROLE_SUPER_USER = 'SuperUser'
 ROLE_ORGANIZATION_ADMIN = 'OrgAdmin'
 ROLE_PROGRAM_ADMIN = 'ProgramAdmin'
 ROLE_PROGRAM_TEAM = 'ProgramTeam'
