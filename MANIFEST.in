@@ -1,1 +1,2 @@
 recursive-exclude tests *
+recursive-include workflow/templates *.txt *.html
