@@ -4,6 +4,7 @@ import uuid
 
 from django.db import models
 from django.contrib import admin
+from django.contrib.postgres.fields import JSONField
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
@@ -24,6 +25,7 @@ class TolaTable(models.Model):
     organization = models.ForeignKey(Organization, default=1)
     url = models.CharField(max_length=255, blank=True)
     unique_count = models.IntegerField(blank=True, null=True)
+    formula = JSONField(blank=True, null=True)
     count_column_name_1 = models.CharField(max_length=255,blank=True, null=True)
     count_column_name_2 = models.CharField(max_length=255,blank=True, null=True)
     column_sum = models.IntegerField(default=0 ,blank=True, null=True)
