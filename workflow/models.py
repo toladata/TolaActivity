@@ -6,7 +6,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.postgres import fields
 from django.contrib.auth.models import User, Group
-from django.contrib.postgres.fields import HStoreField, JSONField
+from django.contrib.postgres.fields import JSONField
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -15,7 +15,7 @@ try:
 except ImportError:
     from datetime import datetime as timezone
 from simple_history.models import HistoricalRecords
-from voluptuous import Schema, All, Any, Length, Required
+from voluptuous import Schema, Required
 
 from search.utils import ElasticsearchIndexer
 
@@ -1079,7 +1079,6 @@ class WorkflowLevel2(models.Model):
     actual_end_date = models.DateTimeField(blank=True, null=True)
     actual_duration = models.CharField(max_length=255, blank=True, null=True)
     actual_cost = models.DecimalField("Actual Cost", decimal_places=2, max_digits=20, default=Decimal("0.00"), blank=True, help_text="Cost to date calculated from Budget Module")
-    address = HStoreField(blank=True, null=True, help_text="Address object with the structure: street (string), house_number (string), postal_code: (string), city (string), country (string)")
     capacity_built = models.TextField("Describe how sustainability was ensured for this project?", max_length=755, blank=True, null=True, help_text="Descriptive, did this help increases internal or external capacity")
     description = models.TextField("Description", blank=True, null=True, help_text="Description of the overall effort")
     description_of_community_involvement = models.TextField(blank=True, null=True, help_text="Descriptive, what community orgs are groups are involved")
@@ -1163,24 +1162,6 @@ class WorkflowLevel2(models.Model):
         permissions = (
             ("can_approve", "Can approve initiation"),
         )
-
-    def _validate_address(self, address):
-        schema = Schema({
-            'street': All(Any(str, unicode), Length(max=100)),
-            'house_number': All(Any(str, unicode), Length(max=20)),
-            'postal_code': All(Any(str, unicode), Length(max=20)),
-            'city': All(Any(str, unicode), Length(max=85)),
-            'country': All(Any(str, unicode), Length(max=50)),
-        })
-        schema(address)
-
-    def clean_fields(self, exclude=None):
-        super(WorkflowLevel2, self).clean_fields(exclude=exclude)
-        if self.address:
-            try:
-                self._validate_address(self.address)
-            except Exception as error:
-                raise ValidationError(error)
 
     def save(self, *args, **kwargs):
         if self.create_date is None:

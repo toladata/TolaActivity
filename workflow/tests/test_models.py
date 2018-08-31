@@ -144,34 +144,6 @@ class WorkflowLevel1Test(TestCase):
 
 
 @tag('pkg')
-class WorkflowLevel2Test(TestCase):
-    def test_print_instance(self):
-        wflvl2 = factories.WorkflowLevel2.build()
-        self.assertEqual(unicode(wflvl2), u'Help Syrians')
-
-    def test_save_address_fail(self):
-        wflvl2 = factories.WorkflowLevel2()
-        wflvl2.address = {
-            'street': None,
-        }
-        self.assertRaises(ValidationError, wflvl2.save)
-
-        wflvl2.address = {
-            'house_number': 'a'*21,
-        }
-        self.assertRaises(ValidationError, wflvl2.save)
-
-    def test_save_address(self):
-        factories.WorkflowLevel2(address={
-            'street': 'Oderberger Straße',
-            'house_number': '16A',
-            'postal_code': '10435',
-            'city': 'Berlin',
-            'country': 'Germany',
-        })
-
-
-@tag('pkg')
 class OrganizationTest(TestCase):
     def test_print_instance(self):
         organization = factories.Organization.build()
