@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import logging
 import json
 
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.core.management import call_command
 from django.http import HttpResponse
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, exceptions
 from rest_framework.decorators import api_view
 
 from indicators.models import Indicator, CollectedData
@@ -17,6 +16,7 @@ if settings.ELASTICSEARCH_URL is not None:
 else:
     es = None
 
+logger = logging.getLogger(__name__)
 
 """
 @login_required(login_url='/accounts/login/')
@@ -35,18 +35,20 @@ def search(request, index, term):
         else:
             prefix = ''
 
-        user_org_uuid = TolaUser.objects.get(user=request.user).organization.organization_uuid
+        user_org_uuid = TolaUser.objects.values_list(
+            'organization__organization_uuid', flat=True).get(
+            user=request.user)
         prefix = prefix + str(user_org_uuid) + '_'
 
         index = index.lower().strip('_')  # replace leading _ that _all cannot be accessed directly
 
         allowed_indices = ['workflow_level1', 'workflow_level2', 'indicators', 'collected_data']
         if index.lower() == 'all':
-            index = prefix + 'workflow_level1,' + prefix + 'workflow_level2,' + prefix + 'indicators,' + prefix + 'collected_data'
+            index = ['{}{}'.format(prefix, i) for i in allowed_indices]
         elif not index in allowed_indices:
             raise Exception("Index not allowed to access")
         else:
-            index = prefix + index
+            index = [prefix + index]
 
         b = {
             "query": {
@@ -67,21 +69,41 @@ def search(request, index, term):
                         {"match": {"site.name": term}}
                     ]
                 }
-            }
+            },
+            "sort": [
+                {"create_date": "asc"},
+                {"id": "desc"}
+            ]
         }
-        response = es.search(index=index, body=b)
-        results = {"workflowlevel1": [], "workflowlevel2": [], "indicators": [], "collected_data": []}
 
-        # group result by type
-        for hit in response["hits"]["hits"]:
-            if "workflow_level1" in hit["_index"]:
-                results["workflowlevel1"].append(hit)
-            elif "workflow_level2" in hit["_index"]:
-                results["workflowlevel2"].append(hit)
-            elif "indicators" in hit["_index"]:
-                results["indicators"].append(hit)
-            elif "collected_data" in hit["_index"]:
-                results["collected_data"].append(hit)
+        search_after = request.GET.get('search_after', None)
+        if search_after is not None:
+            search_after = search_after.split(',')
+            b['search_after'] = search_after
+
+        results = {
+            "workflowlevel1": [],
+            "workflowlevel2": [],
+            "indicators": [],
+            "collected_data": []
+        }
+
+        for i in index:
+            try:
+                response = es.search(index=i, body=b)
+            except exceptions.NotFoundError as e:
+                logger.info(e)
+            else:
+                hits = response["hits"]["hits"]
+                if len(hits) > 0:
+                    if "workflow_level1" in hits[0]["_index"]:
+                        results["workflowlevel1"].extend(hits)
+                    elif "workflow_level2" in hits[0]["_index"]:
+                        results["workflowlevel2"].extend(hits)
+                    elif "indicators" in hits[0]["_index"]:
+                        results["indicators"].extend(hits)
+                    elif "collected_data" in hits[0]["_index"]:
+                        results["collected_data"].extend(hits)
 
         # check access
         if not request.user.is_superuser \
@@ -89,8 +111,7 @@ def search(request, index, term):
                     'name', flat=True):
 
             allowed_wf1s = WorkflowTeam.objects.filter(
-                workflow_user__user=request.user).values_list('workflowlevel1__id',
-                                                      flat=True)
+                workflow_user__user=request.user).values_list('workflowlevel1__id',flat=True)
 
             wf1_results = []
             for wf1 in results["workflowlevel1"]:
