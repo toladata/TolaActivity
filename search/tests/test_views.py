@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 from unittest import skipIf
 
 from django.conf import settings
@@ -21,8 +22,7 @@ class ElasticsearchSearchTest(TestCase):
     def setUp(self):
         logging.disable(logging.ERROR)
         settings.ELASTICSEARCH_ENABLED = True
-        self.org = Organization.objects.create(
-            organization_uuid="index-workflowlevel1-test")
+        self.org = factories.Organization()
         self.indexer = ElasticsearchIndexer()
         self.factory = APIRequestFactory()
         self.tola_user = factories.TolaUser(organization=self.org)
@@ -38,7 +38,7 @@ class ElasticsearchSearchTest(TestCase):
 
     def test_search_for_workflowlevel1(self):
         wflvl1s = factories.WorkflowLevel1.create_batch(
-            15, organization=self.org)
+            3, organization=self.org)
         role_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
 
         for wflvl1 in wflvl1s:
@@ -47,6 +47,10 @@ class ElasticsearchSearchTest(TestCase):
                 workflowlevel1=wflvl1,
                 role=role_program_admin
             )
+
+        # the test is too fast we need to wait for ES
+        # so it can create the indexes
+        time.sleep(1)
 
         # get data from all the indexes
         request = self.factory.get('')
@@ -75,6 +79,9 @@ class ElasticsearchSearchTest(TestCase):
         wflvl1_2 = content['workflowlevel1'][0]['_source']
         self.assertNotEqual(wflvl1_1['level1_uuid'], wflvl1_2['level1_uuid'])
 
+        for wflvl1 in wflvl1s:
+            self.indexer.delete_workflowlevel1(wflvl1)
+
     def test_search_for_workflowlevel2(self):
         role_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
         wflvl1 = factories.WorkflowLevel1(organization=self.org)
@@ -83,7 +90,12 @@ class ElasticsearchSearchTest(TestCase):
             workflowlevel1=wflvl1,
             role=role_program_admin
         )
-        factories.WorkflowLevel2.create_batch(15, workflowlevel1=wflvl1)
+        wflvl2s = factories.WorkflowLevel2.create_batch(
+            3, workflowlevel1=wflvl1)
+
+        # the test is too fast we need to wait for ES
+        # so it can create the indexes
+        time.sleep(1)
 
         # get data from all the indexes
         request = self.factory.get('')
@@ -112,6 +124,10 @@ class ElasticsearchSearchTest(TestCase):
         wflvl2_2 = content['workflowlevel2'][0]['_source']
         self.assertNotEqual(wflvl2_1['level2_uuid'], wflvl2_2['level2_uuid'])
 
+        self.indexer.delete_workflowlevel1(wflvl1)
+        for wflvl2 in wflvl2s:
+            self.indexer.delete_workflowlevel2(wflvl2)
+
     def test_search_for_indicator(self):
         role_program_admin = factories.Group(name=ROLE_PROGRAM_ADMIN)
         wflvl1 = factories.WorkflowLevel1(organization=self.org)
@@ -120,7 +136,12 @@ class ElasticsearchSearchTest(TestCase):
             workflowlevel1=wflvl1,
             role=role_program_admin
         )
-        factories.Indicator.create_batch(15, workflowlevel1=[wflvl1])
+        indicators = factories.Indicator.create_batch(
+            3, workflowlevel1=[wflvl1])
+
+        # the test is too fast we need to wait for ES
+        # so it can create the indexes
+        time.sleep(1)
 
         # get data from all the indexes
         request = self.factory.get('')
@@ -149,3 +170,7 @@ class ElasticsearchSearchTest(TestCase):
         indicator_2 = content['indicators'][0]['_source']
         self.assertNotEqual(indicator_1['indicator_uuid'],
                             indicator_2['indicator_uuid'])
+
+        self.indexer.delete_workflowlevel1(wflvl1)
+        for indicator in indicators:
+            self.indexer.delete_indicator(indicator)
