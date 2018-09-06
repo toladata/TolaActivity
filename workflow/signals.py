@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -13,7 +14,8 @@ from django.db.models import signals
 from django.dispatch import receiver
 from django.template import loader
 
-from tola import DEMO_BRANCH, utils, track_sync as tsync
+from tola import (DEMO_BRANCH, PRODUCTION_BRANCH, STAGING_BRANCH, utils,
+                  track_sync as tsync)
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Dashboard, Organization, TolaUser, Budget,
                              WorkflowLevel1, WorkflowTeam, WorkflowLevel2,
@@ -38,6 +40,14 @@ def notify_excess_org_admin(organization, extra_context):
 
     for org_admin in org_admins:
         # create the used context for the E-mail templates
+        header = {
+            'category': ['exceed_paid_plan']
+        }
+        if os.getenv('APP_BRANCH') == PRODUCTION_BRANCH:
+            header['category'].append('from_production_email')
+        elif os.getenv('APP_BRANCH') == STAGING_BRANCH:
+            header['category'].append('from_staging_email')
+
         context = {
             'org_admin_name': '{} {}'.format(org_admin[0], org_admin[1]),
         }
@@ -53,7 +63,8 @@ def notify_excess_org_admin(organization, extra_context):
             body=text_content,
             to=[org_admin[2]],
             bcc=[settings.SALES_TEAM_EMAIL],
-            reply_to=[settings.DEFAULT_REPLY_TO]
+            reply_to=[settings.DEFAULT_REPLY_TO],
+            headers={'X-SMTPAPI': json.dumps(header)}
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()

@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 
@@ -8,7 +9,7 @@ from django.test import TestCase, override_settings, tag
 from mock import Mock, patch
 
 import factories
-from tola import DEMO_BRANCH
+from tola import DEMO_BRANCH, PRODUCTION_BRANCH, STAGING_BRANCH
 from tola.management.commands.loadinitialdata import DEFAULT_WORKFLOW_LEVEL_1S
 from workflow.models import (Dashboard, Organization, WorkflowTeam,
                              ROLE_PROGRAM_ADMIN, ROLE_ORGANIZATION_ADMIN,
@@ -303,6 +304,10 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
     @override_settings(SALES_TEAM_EMAIL='sales@example.com')
     @override_settings(PAYMENT_PORTAL_URL='example.com')
     def test_check_seats_save_team_exceed_notify(self):
+        os.environ['APP_BRANCH'] = PRODUCTION_BRANCH
+        header = {'category': ['exceed_paid_plan', 'from_production_email']}
+        headers = {'X-SMTPAPI': json.dumps(header)}
+
         self.tola_user.user.groups.add(self.group_org_admin)
         self.tola_user.user.save()
         self.org = Organization.objects.get(pk=self.org.id)
@@ -325,6 +330,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         self.assertEqual(mail.outbox[0].to, [self.tola_user.user.email])
         self.assertEqual(mail.outbox[0].reply_to, ['noreply@example.com'])
         self.assertEqual(mail.outbox[0].bcc, ['sales@example.com'])
+        self.assertEqual(mail.outbox[0].extra_headers, headers)
 
         # Text body
         org_admin_name = 'Hi {},'.format(self.tola_user.name)
@@ -387,6 +393,10 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         """ If user is org admin and program admin and users orgadmin
          role removed then org admin should not get notification because
           user still has seat as program admin."""
+        os.environ['APP_BRANCH'] = STAGING_BRANCH
+        header = {'category': ['exceed_paid_plan', 'from_staging_email']}
+        headers = {'X-SMTPAPI': json.dumps(header)}
+
         external_response = self.ExternalResponse(None)
         Subscription.retrieve = Mock(return_value=external_response)
         self.tola_user.user.groups.add(self.group_org_admin)
@@ -415,6 +425,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         organization = Organization.objects.get(pk=self.org.id)
         self.assertEqual(organization.chargebee_used_seats, 2)
         self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].extra_headers, headers)
 
     @override_settings(DEFAULT_REPLY_TO='noreply@example.com')
     @override_settings(SALES_TEAM_EMAIL='sales@example.com')

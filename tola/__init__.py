@@ -1,1 +1,3 @@
+STAGING_BRANCH = 'staging'
 DEMO_BRANCH = 'demo'
+PRODUCTION_BRANCH = 'master'
