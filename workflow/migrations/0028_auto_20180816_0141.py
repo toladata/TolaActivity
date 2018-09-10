@@ -34,14 +34,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicalsiteprofile',
-            name='contact_leader',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsiteprofile',
-            name='contact_number',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsiteprofile',
             name='date_of_firstcontact',
         ),
         migrations.RemoveField(
@@ -70,15 +62,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='historicalsiteprofile',
-            name='office',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsiteprofile',
             name='populations_owning_land',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsiteprofile',
-            name='status',
         ),
         migrations.RemoveField(
             model_name='historicalsiteprofile',
@@ -142,14 +126,6 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='siteprofile',
-            name='contact_leader',
-        ),
-        migrations.RemoveField(
-            model_name='siteprofile',
-            name='contact_number',
-        ),
-        migrations.RemoveField(
-            model_name='siteprofile',
             name='date_of_firstcontact',
         ),
         migrations.RemoveField(
@@ -178,15 +154,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='siteprofile',
-            name='office',
-        ),
-        migrations.RemoveField(
-            model_name='siteprofile',
             name='populations_owning_land',
-        ),
-        migrations.RemoveField(
-            model_name='siteprofile',
-            name='status',
         ),
         migrations.RemoveField(
             model_name='siteprofile',
