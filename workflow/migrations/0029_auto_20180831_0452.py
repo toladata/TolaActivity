@@ -12,12 +12,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='historicalworkflowlevel2',
-            name='address',
-        ),
-        migrations.RemoveField(
-            model_name='workflowlevel2',
-            name='address',
-        ),
+        #migrations.RemoveField(
+        #    model_name='historicalworkflowlevel2',
+        #    name='address',
+        #),
+        #migrations.RemoveField(
+        #    model_name='workflowlevel2',
+        #    name='address',
+        #),
     ]
