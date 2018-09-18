@@ -160,7 +160,17 @@ class Organization(models.Model):
         verbose_name_plural = "Organizations"
         app_label = 'workflow'
 
+    def clean_fields(self, exclude=None):
+        super(Organization, self).clean_fields(exclude=exclude)
+        if self.oauth_domains:
+            if Organization.objects.filter(
+                    oauth_domains__overlap=self.oauth_domains
+            ).exclude(organization_uuid=self.organization_uuid).exists():
+                raise ValidationError(
+                    'Oauth Domain already used by another organization')
+
     def save(self, *args, **kwargs):
+        self.full_clean()
         if self.create_date == None:
             self.create_date = timezone.now()
         self.edit_date = timezone.now()
