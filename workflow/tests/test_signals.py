@@ -358,6 +358,7 @@ class CheckSeatsSaveWFTeamsTest(TestCase):
         payment_portal_url = '<a href="example.com" target="_blank">Payment ' \
                              'portal</a>'
         self.assertIn(payment_portal_url, mail.outbox[0].alternatives[0][0])
+        self.assertIn('Payment portal', mail.outbox[0].alternatives[0][0])
 
     def test_check_seats_save_team_retrieve_subscription_fails(self):
         """
