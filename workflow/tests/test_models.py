@@ -181,3 +181,10 @@ class OrganizationTest(TestCase):
         organization = factories.Organization(phone="+49 123 456 111")
         self.assertEqual(organization.phone, "+49 123 456 111")
 
+    def test_same_oauth_domain_fails_for_two_organization(self):
+        domain = 'example.com'
+        domain2 = 'test.com'
+        factories.Organization(oauth_domains=[domain, domain2])
+        org2 = factories.Organization()
+        org2.oauth_domains = [domain]
+        self.assertRaises(ValidationError, org2.save)
