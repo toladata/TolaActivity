@@ -1,3 +1,4 @@
+import json
 import logging
 import sys
 
@@ -6,6 +7,7 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
 from django.db import IntegrityError, connection
 from django.test import TestCase, override_settings, tag
+from mock import Mock, patch
 
 import factories
 from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
@@ -17,7 +19,7 @@ from workflow.models import (Country, Organization, Sector, ROLE_VIEW_ONLY,
                              ROLE_PROGRAM_TEAM, WorkflowLevel1, TolaUser, Group,
                              Sector, Stakeholder, Milestone, WorkflowLevel1,
                              WorkflowLevel2, WorkflowLevel1Sector, WorkflowTeam,
-                             SiteProfile)
+                             SiteProfile, Internationalization)
 
 
 class DevNull(object):
@@ -46,7 +48,6 @@ class LoadInitialDataTest(TestCase):
         with self.assertRaises(ImproperlyConfigured):
             call_command('loadinitialdata', *args, **opts)
 
-
     def test_load_basic_data(self):
         args = []
         opts = {}
@@ -74,6 +75,23 @@ class LoadInitialDataTest(TestCase):
             Group.objects.get(name=name)
         Country.objects.get(code="AF")
         Sector.objects.get(sector="Agriculture")
+
+    @override_settings(INTERNATIONALIZATION_RESOURCE_URL='http://example.com')
+    @patch('tola.management.commands.loadinitialdata.requests.get')
+    def test_load_internationalization_data(self, mock_requests_get):
+        mock_requests_get.return_value = Mock(
+            status_code=200,
+            content=json.dumps([{'language': 'de-DE',
+                                 'language_file': '{}'}]))
+        args = ['--demo']
+        opts = {}
+        call_command('loadinitialdata', *args, **opts)
+        self.assertEqual(Internationalization.objects.all().count(), 1)
+        self.assertEqual(Internationalization.objects.all()[0].language,
+                         'de-DE')
+        self.assertEqual(
+            Internationalization.objects.all()[0].language_file, '{}')
+
 
     def test_load_demo_data(self):
         args = ['--demo']

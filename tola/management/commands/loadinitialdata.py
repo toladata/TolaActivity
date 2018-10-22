@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from cStringIO import StringIO
+import json
 import logging
 import os
+from urlparse import urljoin
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -10,6 +12,7 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import transaction, IntegrityError, connection
+import requests
 
 import factories
 from indicators.models import (Level, Frequency, Indicator, PeriodicTarget,
@@ -18,7 +21,7 @@ from workflow.models import (
     ROLE_VIEW_ONLY, ROLE_ORGANIZATION_ADMIN, ROLE_PROGRAM_ADMIN,
     ROLE_PROGRAM_TEAM, Organization, Country, TolaUser, Group, Sector,
     Stakeholder, Milestone, WorkflowLevel1, WorkflowLevel2,
-    WorkflowLevel1Sector, WorkflowTeam)
+    WorkflowLevel1Sector, WorkflowTeam, Internationalization)
 
 logger = logging.getLogger(__name__)
 DEFAULT_WORKFLOW_LEVEL_1S = [  # tuple (id, name)
@@ -127,6 +130,7 @@ class Command(BaseCommand):
         CollectedData.objects.all().delete()
         WorkflowLevel1Sector.objects.all().delete()
         WorkflowTeam.objects.all().delete()
+        Internationalization.objects.all().delete()
 
     def _create_organization(self):
         try:
@@ -2869,6 +2873,22 @@ class Command(BaseCommand):
             role=self._groups[3],  # 3
         )
 
+    def _create_internationalizations(self):
+        if settings.INTERNATIONALIZATION_RESOURCE_URL:
+            url_subpath = '/api/internationalization/'
+            url = urljoin(settings.INTERNATIONALIZATION_RESOURCE_URL,
+                          url_subpath)
+
+            response = requests.get(url)
+            data = json.loads(response.content)
+            for translation_data in data:
+                factories.Internationalization(
+                    language=translation_data['language'],
+                    language_file=translation_data['language_file'],)
+        else:
+            logger.warn('Translations file could not fetch. '
+                        'INTERNATIONALIZATION_RESOURCE_URL is not set')
+
     def _reset_sql_sequences(self):
         """
         After adding to database all rows using hardcoded IDs, the primary key
@@ -2944,6 +2964,7 @@ class Command(BaseCommand):
         self._create_countries()
         self._create_sectors()
         self._create_indicator_types()
+        self._create_internationalizations()
 
         if options['demo'] or options['restore']:
             self.stdout.write('Creating demo data')
