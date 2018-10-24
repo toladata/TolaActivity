@@ -939,6 +939,7 @@ class SiteProfile(models.Model):
     province = models.ForeignKey(AdminLevelOne, verbose_name="Administrative Level 1", null=True, blank=True)
     district = models.ForeignKey(AdminLevelTwo, verbose_name="Administrative Level 2", null=True, blank=True)
     village = models.ForeignKey(AdminLevelThree, verbose_name="Administrative Level 4", null=True, blank=True)
+    city = models.CharField(max_length=85, null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     create_date = models.DateTimeField(null=True, blank=True)
