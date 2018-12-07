@@ -1,4 +1,4 @@
-Django==1.11.3
+Django==1.11.17
 djangorestframework==3.6.3
 psycopg2>=2.7,<=2.8
 git+https://github.com/toladata/social-core#egg=social-core
