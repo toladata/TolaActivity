@@ -948,6 +948,7 @@ class SiteProfile(models.Model):
     workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
     created_by = models.ForeignKey('auth.User', related_name='sites', null=True, blank=True)
     history = HistoricalRecords()
+    notes = models.TextField(blank=True)
     #optimize query
     objects = SiteProfileManager()
 
