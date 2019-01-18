@@ -397,7 +397,7 @@ class Indicator(models.Model):
     objects = IndicatorManager()
     calculation_type = models.CharField(blank=True, null=True, max_length=15, choices=CALCULATION_CHOICES)
     direction = models.CharField(blank=True, null=True, max_length=15, choices=DIRECTION_CHOICES)
-    actual_formula = models.CharField(blank=True, null=True, max_length=15, choices=ACTUAL_FORMULA_CHOICES)
+    actual_formula = models.CharField(blank=True, null=True, max_length=15)
     total_actual = models.ForeignKey('CollectedData', related_name='indicator_total_actual', on_delete=models.SET_NULL, verbose_name="Total Actual", blank=True, null=True, help_text="The collected data selected to be used in the actual formula")
 
     class Meta:
