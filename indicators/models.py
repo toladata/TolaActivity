@@ -509,6 +509,7 @@ class CollectedData(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     site = models.ManyToManyField(SiteProfile, blank=True, help_text="Geographic location for data source")
+    cell_value = models.CharField(max_length=24, blank=True, null=True)
     created_by = models.ForeignKey('auth.User', related_name='collecteddata', null=True, blank=True, on_delete=models.SET_NULL)
     history = HistoricalRecords()
     objects = CollectedDataManager()
