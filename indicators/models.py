@@ -499,6 +499,7 @@ class CollectedData(models.Model):
     date_collected = models.DateTimeField(null=True, blank=True, help_text="")
     comment = models.TextField("Comment/Explanation", max_length=255, blank=True, null=True)
     evidence = models.ForeignKey(Documentation, null=True, blank=True, verbose_name="Evidence Document or Link", help_text="Evidence Document or Link")
+    evidence_url = models.CharField(max_length=255, null=True, blank=True, verbose_name="Evidence Document url", help_text="Evidence Document url")
     approved_by = models.ForeignKey(TolaUser, blank=True, null=True, verbose_name="Approved By", related_name="approving_data", help_text="Who approved collection")
     tola_table = models.ForeignKey(TolaTable, blank=True, null=True, help_text="If Track table was used link to it here")
     update_count_tola_table = models.BooleanField("Would you like to update the achieved total with the row count from TolaTables?",default=False, help_text="Update the unique count from Table if linked when updated")
