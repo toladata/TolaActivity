@@ -203,16 +203,6 @@ def check_seats_save_team(sender, instance, **kwargs):
         subscription = result.subscription
     except APIError as e:
         logger.warn(e)
-    else:
-        # Validate the amount of available seats based on the subscription
-        available_seats = subscription.plan_quantity
-        if org.chargebee_used_seats > available_seats and user_gained_seat:
-            extra_context = {
-                'used_seats': used_seats,
-                'available_seats': available_seats,
-                'payment_portal_url': settings.PAYMENT_PORTAL_URL
-            }
-            notify_excess_org_admin(org, extra_context)
 
 
 @receiver(signals.pre_delete, sender=WorkflowTeam)
@@ -295,17 +285,6 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
             subscription = result.subscription
         except APIError as e:
             logger.warn(e)
-        else:
-            # Validate the amount of available seats based on the subscription
-            available_seats = subscription.plan_quantity
-            if org.chargebee_used_seats > available_seats \
-                    and user_gained_seats:
-                extra_context = {
-                    'used_seats': used_seats,
-                    'available_seats': available_seats,
-                    'payment_portal_url': settings.PAYMENT_PORTAL_URL
-                }
-                notify_excess_org_admin(org, extra_context)
 
 
 # ORGANIZATION SIGNALS
