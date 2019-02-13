@@ -549,7 +549,7 @@ class ApprovalType(models.Model):
 
 class ApprovalWorkflow(models.Model):
     note = models.TextField(null=True, blank=True)
-    approval_type = models.ForeignKey(ApprovalType, null=False, related_name="approval_type")
+    approval_type = models.ForeignKey(ApprovalType, null=True, related_name="approval_type", on_delete=models.SET_NULL)
     assigned_to = models.ForeignKey(TolaUser, null=False, related_name="to_approval")
     requested_from = models.ForeignKey(TolaUser, null=False, related_name="from_approval")
     date_assigned = models.DateTimeField(null=True, blank=True)
@@ -925,7 +925,7 @@ class SiteProfile(models.Model):
 
     site_uuid = models.CharField(max_length=255, verbose_name='Site UUID', default=uuid.uuid4, unique=True)
     name = models.CharField("Site Name", max_length=255, blank=False)
-    type = models.ForeignKey(ProfileType, blank=True, null=True)
+    type = models.ForeignKey(ProfileType, blank=True, null=True, on_delete=models.SET_NULL)
     office = models.ForeignKey(Office, blank=True, null=True)
     contact_leader = models.CharField("Contact Name", max_length=255, blank=True, null=True)
     contact_number = models.CharField("Contact Number", max_length=255, blank=True, null=True)
