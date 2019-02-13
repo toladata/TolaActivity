@@ -203,8 +203,6 @@ def check_seats_save_team(sender, instance, **kwargs):
         subscription = result.subscription
     except APIError as e:
         logger.warn(e)
-    else:
-        pass
 
 
 @receiver(signals.pre_delete, sender=WorkflowTeam)
@@ -287,8 +285,6 @@ def check_seats_save_user_groups(sender, instance, **kwargs):
             subscription = result.subscription
         except APIError as e:
             logger.warn(e)
-        else:
-            pass
 
 
 # ORGANIZATION SIGNALS
