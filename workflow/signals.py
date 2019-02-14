@@ -158,133 +158,133 @@ def create_default_program(sender, instance, **kwargs):
 
 
 # WORKFLOWTEAM SIGNALS
-@receiver(signals.pre_save, sender=WorkflowTeam)
-def check_seats_save_team(sender, instance, **kwargs):
-    """
-    Validate, increase or decrease the amount of used seats
-    based on the roles
-    """
-    instance.full_clean()
-    if os.getenv('APP_BRANCH') == DEMO_BRANCH:
-        return
-
-    user = instance.workflow_user.user
-    org = instance.workflow_user.organization
-    if ROLE_ORGANIZATION_ADMIN in user.groups.values_list('name', flat=True):
-        return
-
-    used_seats = org.chargebee_used_seats
-    count = WorkflowTeam.objects.filter(
-        workflow_user=instance.workflow_user,
-        role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
-    ).count()
-    sub_id = org.chargebee_subscription_id
-    if not sub_id:
-        logger.info('The organization {} does not have a '
-                    'subscription'.format(org.name))
-        return
-
-    user_gained_seat = False
-
-    # If the user is a Program Admin or Member
-    # They should have a seat in the subscription
-    if count == 0 and instance.role.name in [ROLE_PROGRAM_ADMIN,
-                                             ROLE_PROGRAM_TEAM]:
-        user_gained_seat = True
-        used_seats += 1
-    elif count == 1 and instance.role.name == ROLE_VIEW_ONLY:
-        used_seats -= 1
-
-    org.chargebee_used_seats = used_seats
-    org.save()
-    # Load subscription data from ChargeBee
-    try:
-        result = Subscription.retrieve(sub_id)
-        subscription = result.subscription
-    except APIError as e:
-        logger.warn(e)
-
-
-@receiver(signals.pre_delete, sender=WorkflowTeam)
-def check_seats_delete_team(sender, instance, **kwargs):
-    """
-    Validate, increase or decrease the amount of used seats
-    based on the roles
-    """
-    if os.getenv('APP_BRANCH') == DEMO_BRANCH:
-        return
-
-    user = instance.workflow_user.user
-    org = instance.workflow_user.organization
-    if ROLE_ORGANIZATION_ADMIN in user.groups.values_list('name', flat=True):
-        return
-
-    count = WorkflowTeam.objects.filter(
-        workflow_user=instance.workflow_user,
-        role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
-    ).count()
-
-    # If the user is a Program Admin or Member
-    # They should have a seat in the subscription
-    if count == 1 and instance.role.name in [ROLE_PROGRAM_ADMIN,
-                                             ROLE_PROGRAM_TEAM]:
-        org.chargebee_used_seats -= 1
-        org.save()
-
-
-# M2M SIGNALS
-@receiver(signals.m2m_changed)
-def check_seats_save_user_groups(sender, instance, **kwargs):
-    """
-    Validate, increase or decrease the amount of used seats
-    based on the roles
-    """
-    if (os.getenv('APP_BRANCH') == DEMO_BRANCH or
-            kwargs['action'] not in ['post_add', 'post_remove'] or
-            kwargs['model'] != Group):
-        return
-
-    try:
-        tola_user = TolaUser.objects.get(user=instance)
-    except TolaUser.DoesNotExist as e:
-        logger.info(e)
-    else:
-        changed_groups = Group.objects.values_list('name', flat=True).filter(
-            id__in=kwargs['pk_set'])
-        count = WorkflowTeam.objects.filter(
-            workflow_user=tola_user,
-            role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
-        ).count()
-
-        # Update the amount of used seats
-        org = tola_user.organization
-        used_seats = org.chargebee_used_seats
-        user_gained_seats = False
-
-        # If the user is an Org Admin, he's able to edit the program.
-        # Therefore, he should have a seat in the subscription
-        if count == 0 and ROLE_ORGANIZATION_ADMIN in changed_groups:
-            if kwargs['action'] == 'post_add':
-                user_gained_seats = True
-                used_seats += 1
-            elif kwargs['action'] == 'post_remove':
-                used_seats -= 1
-
-        org.chargebee_used_seats = used_seats
-        org.save()
-
-        # Load subscription data from ChargeBee
-        sub_id = org.chargebee_subscription_id
-        if not sub_id:
-            logger.info('The organization {} does not have a '
-                        'subscription'.format(tola_user.organization.name))
-            return
-
-        try:
-            result = Subscription.retrieve(sub_id)
-            subscription = result.subscription
-        except APIError as e:
-            logger.warn(e)
+# @receiver(signals.pre_save, sender=WorkflowTeam)
+# def check_seats_save_team(sender, instance, **kwargs):
+#     """
+#     Validate, increase or decrease the amount of used seats
+#     based on the roles
+#     """
+#     instance.full_clean()
+#     if os.getenv('APP_BRANCH') == DEMO_BRANCH:
+#         return
+#
+#     user = instance.workflow_user.user
+#     org = instance.workflow_user.organization
+#     if ROLE_ORGANIZATION_ADMIN in user.groups.values_list('name', flat=True):
+#         return
+#
+#     used_seats = org.chargebee_used_seats
+#     count = WorkflowTeam.objects.filter(
+#         workflow_user=instance.workflow_user,
+#         role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
+#     ).count()
+#     sub_id = org.chargebee_subscription_id
+#     if not sub_id:
+#         logger.info('The organization {} does not have a '
+#                     'subscription'.format(org.name))
+#         return
+#
+#     user_gained_seat = False
+#
+#     # If the user is a Program Admin or Member
+#     # They should have a seat in the subscription
+#     if count == 0 and instance.role.name in [ROLE_PROGRAM_ADMIN,
+#                                              ROLE_PROGRAM_TEAM]:
+#         user_gained_seat = True
+#         used_seats += 1
+#     elif count == 1 and instance.role.name == ROLE_VIEW_ONLY:
+#         used_seats -= 1
+#
+#     org.chargebee_used_seats = used_seats
+#     org.save()
+#     # Load subscription data from ChargeBee
+#     try:
+#         result = Subscription.retrieve(sub_id)
+#         subscription = result.subscription
+#     except APIError as e:
+#         logger.warn(e)
+#
+#
+# @receiver(signals.pre_delete, sender=WorkflowTeam)
+# def check_seats_delete_team(sender, instance, **kwargs):
+#     """
+#     Validate, increase or decrease the amount of used seats
+#     based on the roles
+#     """
+#     if os.getenv('APP_BRANCH') == DEMO_BRANCH:
+#         return
+#
+#     user = instance.workflow_user.user
+#     org = instance.workflow_user.organization
+#     if ROLE_ORGANIZATION_ADMIN in user.groups.values_list('name', flat=True):
+#         return
+#
+#     count = WorkflowTeam.objects.filter(
+#         workflow_user=instance.workflow_user,
+#         role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
+#     ).count()
+#
+#     # If the user is a Program Admin or Member
+#     # They should have a seat in the subscription
+#     if count == 1 and instance.role.name in [ROLE_PROGRAM_ADMIN,
+#                                              ROLE_PROGRAM_TEAM]:
+#         org.chargebee_used_seats -= 1
+#         org.save()
+#
+#
+# # M2M SIGNALS
+# @receiver(signals.m2m_changed)
+# def check_seats_save_user_groups(sender, instance, **kwargs):
+#     """
+#     Validate, increase or decrease the amount of used seats
+#     based on the roles
+#     """
+#     if (os.getenv('APP_BRANCH') == DEMO_BRANCH or
+#             kwargs['action'] not in ['post_add', 'post_remove'] or
+#             kwargs['model'] != Group):
+#         return
+#
+#     try:
+#         tola_user = TolaUser.objects.get(user=instance)
+#     except TolaUser.DoesNotExist as e:
+#         logger.info(e)
+#     else:
+#         changed_groups = Group.objects.values_list('name', flat=True).filter(
+#             id__in=kwargs['pk_set'])
+#         count = WorkflowTeam.objects.filter(
+#             workflow_user=tola_user,
+#             role__name__in=[ROLE_PROGRAM_ADMIN, ROLE_PROGRAM_TEAM]
+#         ).count()
+#
+#         # Update the amount of used seats
+#         org = tola_user.organization
+#         used_seats = org.chargebee_used_seats
+#         user_gained_seats = False
+#
+#         # If the user is an Org Admin, he's able to edit the program.
+#         # Therefore, he should have a seat in the subscription
+#         if count == 0 and ROLE_ORGANIZATION_ADMIN in changed_groups:
+#             if kwargs['action'] == 'post_add':
+#                 user_gained_seats = True
+#                 used_seats += 1
+#             elif kwargs['action'] == 'post_remove':
+#                 used_seats -= 1
+#
+#         org.chargebee_used_seats = used_seats
+#         org.save()
+#
+#         # Load subscription data from ChargeBee
+#         sub_id = org.chargebee_subscription_id
+#         if not sub_id:
+#             logger.info('The organization {} does not have a '
+#                         'subscription'.format(tola_user.organization.name))
+#             return
+#
+#         try:
+#             result = Subscription.retrieve(sub_id)
+#             subscription = result.subscription
+#         except APIError as e:
+#             logger.warn(e)
 
 
 # ORGANIZATION SIGNALS

@@ -104,12 +104,12 @@ class WorkflowTeamTest(TestCase):
                          (u'Thom Yorke - ProgramAdmin <Health and Survival '
                           u'for Syrians in Affected Regions>'))
 
-    def test_save_role_org_admin_fails(self):
-        wfteam = factories.WorkflowTeam.build(
-            role=factories.Group(name=ROLE_ORGANIZATION_ADMIN),
-            workflow_user=factories.TolaUser(),
-            workflowlevel1=factories.WorkflowLevel1())
-        self.assertRaises(ValidationError, wfteam.save)
+    # def test_save_role_org_admin_fails(self):
+    #     wfteam = factories.WorkflowTeam.build(
+    #         role=factories.Group(name=ROLE_ORGANIZATION_ADMIN),
+    #         workflow_user=factories.TolaUser(),
+    #         workflowlevel1=factories.WorkflowLevel1())
+    #     self.assertRaises(ValidationError, wfteam.save)
 
 
 @tag('pkg')
