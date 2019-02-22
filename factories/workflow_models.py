@@ -36,6 +36,7 @@ from workflow.models import (
     WorkflowLevel2Sort as WorkflowLevel2SortM,
     Dashboard as DashboardM,
     Widget as WidgetM,
+    Office as OfficeM,
 )
 from .django_models import User, Group, Site
 
@@ -83,6 +84,13 @@ class Organization(DjangoModelFactory):
         model = OrganizationM
 
     name = 'Tola Org'
+
+
+class Office(DjangoModelFactory):
+    class Meta:
+        model = OfficeM
+
+    name = 'Office'
 
 
 class SiteProfile(DjangoModelFactory):
@@ -348,3 +356,4 @@ class WorkflowLevel2Sort(DjangoModelFactory):
         model = WorkflowLevel2SortM
 
     workflowlevel2_id = random.randint(1, 9999)
+
