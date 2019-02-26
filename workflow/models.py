@@ -395,6 +395,7 @@ class Widget(models.Model):
 class Dashboard(models.Model):
     dashboard_uuid = models.UUIDField(editable=False, verbose_name='Dashboard UUID', default=uuid.uuid4, unique=True)
     user = models.ForeignKey(TolaUser, related_name='toladashboard')
+    tola_user_uuid = models.CharField(max_length=255, verbose_name='TolaUser UUID', blank=True, null=True)
     name = models.CharField(blank=True, null=True, max_length=255)
     widgets = models.ManyToManyField(Widget, blank=True)
     share = models.ManyToManyField(TolaUser, blank=True)
