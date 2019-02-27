@@ -857,6 +857,7 @@ class AdminLevelFour(models.Model):
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
     code = models.CharField("Office Code", max_length=255, blank=True)
+    organization = models.ForeignKey(Organization, blank=True, null=True, help_text='Related Org to associate with')
     country = models.ForeignKey(Country, verbose_name="Country")
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
