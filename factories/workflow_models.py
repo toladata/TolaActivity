@@ -86,13 +86,6 @@ class Organization(DjangoModelFactory):
     name = 'Tola Org'
 
 
-class Office(DjangoModelFactory):
-    class Meta:
-        model = OfficeM
-
-    name = 'Office'
-
-
 class SiteProfile(DjangoModelFactory):
     class Meta:
         model = SiteProfileM
@@ -286,6 +279,13 @@ class Checklist(DjangoModelFactory):
         model = ChecklistM
 
     name = 'Checklist A'
+
+
+class Office(DjangoModelFactory):
+    class Meta:
+        model = OfficeM
+
+    country = SubFactory(Country, country="Germany", code="DE")
 
 
 class CodedField(DjangoModelFactory):
