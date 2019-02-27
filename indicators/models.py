@@ -489,7 +489,7 @@ class CollectedDataManager(models.Manager):
 class CollectedData(models.Model):
     data_uuid = models.CharField(max_length=255,verbose_name='Data UUID', default=uuid.uuid4, unique=True, blank=True, help_text="")
     periodic_target = models.ForeignKey(PeriodicTarget, null=True, blank=True, help_text="Relate this collection to a periodic target")
-    #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    #targeted = models.DecimalField("Targeted", max_digits=20, decimal_places=4, default=Decimal('0.0000'))
     achieved = models.DecimalField("Achieved", max_digits=20, decimal_places=4, default=Decimal('0.0000'), help_text="Actual or total for this record")
     disaggregation_value = models.ManyToManyField(DisaggregationValue, blank=True, help_text="Values for each disaggregated field")
     description = models.TextField("Remarks/comments", blank=True, null=True, help_text="How was this data collected")
