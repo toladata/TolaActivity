@@ -99,34 +99,6 @@ class StateViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
-class DistrictViewSet(viewsets.ModelViewSet):
-    queryset = District.objects.only("code", "name", "country", "state")
-    serializer_class = DistrictListSerializer
-
-    def list(self, request):
-        """
-        List method of Api viewset. Lists should not contain geojson
-        :param request: 
-        :return: 
-        """
-        queryset = District.objects.only("code", "name", "country", "state")
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None):
-        """
-        Filter retrieve requests to include only the necessary
-        :param request: 
-        :param pk: The object id to retrieve 
-        :return: 
-        """
-        queryset = District.objects.all().filter(id=pk)
-        self.serializer_class = DistrictSerializer
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-
 @api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def read_detail(request, testparam):
     """
