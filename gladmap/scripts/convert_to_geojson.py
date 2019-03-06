@@ -5,7 +5,7 @@ Example command - ogr2ogr -f "GeoJSON" ../../AFG_adm2.json AFG_adm2.shp
 import os
 from dircache import listdir
 
-from gladmap.models import Boundary, Country, State, District
+from gladmap.models import Boundary, Country, State
 import django.db
 
 cursor = django.db.connection.cursor()
@@ -39,10 +39,6 @@ def split_geojson():
                     if level == 1:
                         State.objects.all().delete();
 
-                    if level == 2:
-                        District.objects.all().delete();
-
-
                     for feature in gj["features"]:
                         cname = feature["properties"]["ISO"]
                         clist = Country.objects.all().filter(code=cname)
@@ -69,20 +65,6 @@ def split_geojson():
                             print feature["properties"]["ISO"], feature["properties"]["NAME_2"], feature["properties"]["HASC_2"]
                             print len(feature["geometry"]["coordinates"])
 
-                            if feature["properties"]["HASC_2"] is not None:
-                                c = feature["properties"]["HASC_2"].split(".")
-                                statecode = c[0]+ "."+c[1]
-                                state = State.objects.all().filter(code=statecode)
-                                dists = District.objects.all().filter(code=feature["properties"]["HASC_2"])
-                                if len(state) != 0 and len(dists) == 0:
-                                    print state
-                                    district = District(country=country,
-                                                        state=state[0],
-                                                        code=feature["properties"]["HASC_2"],
-                                                        name=feature["properties"]["NAME_2"],
-                                                        boundary=feature["geometry"]["coordinates"]
-                                                        )
-                                    district.save()
 
                         #for i in range(0, len(feature["geometry"]["coordinates"])):
                         #    print "  "+str(len(feature["geometry"]["coordinates"][i]))

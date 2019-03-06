@@ -44,11 +44,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='distribution',
-            name='province',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.AdminLevelOne'),
-        ),
-        migrations.AddField(
-            model_name='distribution',
             name='workflowlevel1',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.WorkflowLevel1'),
         ),

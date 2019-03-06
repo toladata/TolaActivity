@@ -73,8 +73,6 @@
         <th>Profile Name</th>
         <th>Status</th>
         <th>Profile Type</th>
-        <th>Province</th>
-        <th>District</th>
         <th>&nbsp;</th>
     </tr>
     {% if getSiteProfile %}
@@ -89,8 +87,6 @@
         <td><a href="/workflow/siteprofile_update/{{ item.id }}"><span class="badge">Inactive</span></a></td>
         {%endif%}
         <td><a href="/workflow/siteprofile_update/{{ item.id }}">{{ item.type }}</a></td>
-        <td>{{ item.province }}</td>
-        <td>{{ item.district }}</td>
         <td>
             <a href="/workflow/siteprofile_delete/{{ item.id }}" class="btn btn-xs btn-danger">Delete Site Profile</a>
             <a href="/workflow/site_indicatordata/{{item.id}}/" class="btn btn-xs btn-default">Indicator Data</a>

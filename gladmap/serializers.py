@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from models import Boundary, Country, District, State
+from models import Boundary, Country, State
 
 
 class BoundarySerializer(serializers.HyperlinkedModelSerializer):

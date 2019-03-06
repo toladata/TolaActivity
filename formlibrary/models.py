@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from voluptuous import Schema, Required
 
-from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, AdminLevelOne, Organization
+from workflow.models import WorkflowLevel1, SiteProfile, WorkflowLevel2, Office, Organization
 from indicators.models import DisaggregationValue, Indicator
 
 
@@ -64,7 +64,6 @@ class Distribution(models.Model):
     distribution_indicator = models.ForeignKey(Indicator,blank=True,null=True)
     distribution_implementer = models.CharField(max_length=255, null=True, blank=True)
     reporting_period = models.CharField(max_length=255, null=True, blank=True)
-    province = models.ForeignKey(AdminLevelOne, null=True, blank=True)
     total_beneficiaries_received_input = models.IntegerField(null=True, blank=True)
     distribution_location = models.CharField(max_length=255, null=True, blank=True)
     input_type_distributed = models.CharField(max_length=255, null=True, blank=True)
