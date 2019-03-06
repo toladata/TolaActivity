@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from models import Boundary, Country, District, State
+from models import Boundary, Country, State
 
 
 class BoundarySerializer(serializers.HyperlinkedModelSerializer):
@@ -37,14 +37,3 @@ class StateListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = State
         fields = ('name', 'code', 'country', 'url')
-
-
-class DistrictSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = District
-        fields = '__all__'
-
-class DistrictListSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = District
-        fields = ('name', 'code', 'country', 'state','url')

@@ -33,16 +33,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='District',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('boundary', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('name', models.CharField(default='None', max_length=150)),
-                ('code', models.CharField(default='None', max_length=100, unique=True)),
-                ('country', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gladmap.Country')),
-            ],
-        ),
-        migrations.CreateModel(
             name='Feature',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -59,10 +49,5 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(default='None', max_length=100, unique=True)),
                 ('country', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gladmap.Country')),
             ],
-        ),
-        migrations.AddField(
-            model_name='district',
-            name='state',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='gladmap.State'),
-        ),
+        )
     ]

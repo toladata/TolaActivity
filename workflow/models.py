@@ -769,91 +769,6 @@ class WorkflowTeam(models.Model):
                                       self.workflowlevel1)
 
 
-class AdminLevelOne(models.Model):
-    name = models.CharField("Admin Boundary 1", max_length=255, blank=True)
-    country = models.ForeignKey(Country)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name',)
-        verbose_name = "Admin Boundary 1"
-        verbose_name_plural = "Admin Boundary 1"
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(AdminLevelOne, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-
-class AdminLevelTwo(models.Model):
-    name = models.CharField("Admin Boundary 2", max_length=255, blank=True)
-    adminlevelone = models.ForeignKey(AdminLevelOne,verbose_name="Admin Level 1")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name',)
-        verbose_name = "Admin Boundary 2"
-        verbose_name_plural = "Admin Boundary 2"
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(AdminLevelTwo, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-
-class AdminLevelThree(models.Model):
-    name = models.CharField("Admin Boundary 3", max_length=255, blank=True)
-    adminleveltwo = models.ForeignKey(AdminLevelTwo, null=True, blank=True, verbose_name="Admin Level 2")
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name',)
-        verbose_name = "Admin Boundary 3"
-        verbose_name_plural = "Admin Boundary 3"
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(AdminLevelThree, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-
-class AdminLevelFour(models.Model):
-    name = models.CharField("Admin Boundary 4", max_length=255, blank=True)
-    adminlevelthree = models.ForeignKey(AdminLevelThree,null=True,blank=True)
-    adminleveltwo = models.ForeignKey(AdminLevelTwo,verbose_name="Admin Boundary 3",null=True,blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name',)
-        verbose_name = "Admin Boundary 4"
-        verbose_name_plural = "Admin Boundary 4"
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(AdminLevelFour, self).save()
-
-    def __unicode__(self):
-        return self.name
-
-
 class Office(models.Model):
     name = models.CharField("Office Name", max_length=255, blank=True)
     code = models.CharField("Office Code", max_length=255, blank=True)
@@ -920,8 +835,7 @@ class LandType(models.Model):
 
 class SiteProfileManager(models.Manager):
     def get_queryset(self):
-        return super(SiteProfileManager, self).get_queryset().prefetch_related().select_related('country','province','district',
-                                                                                                'type')
+        return super(SiteProfileManager, self).get_queryset().prefetch_related().select_related('country', 'type')
 
 
 class SiteProfile(models.Model):
@@ -939,9 +853,6 @@ class SiteProfile(models.Model):
     address_line4 = models.CharField(max_length=255, null=True, blank=True)
     postcode = models.CharField(max_length=20, null=True, blank=True)
     country = models.ForeignKey(Country)
-    province = models.ForeignKey(AdminLevelOne, verbose_name="Administrative Level 1", null=True, blank=True)
-    district = models.ForeignKey(AdminLevelTwo, verbose_name="Administrative Level 2", null=True, blank=True)
-    village = models.ForeignKey(AdminLevelThree, verbose_name="Administrative Level 4", null=True, blank=True)
     city = models.CharField(max_length=85, null=True, blank=True)
     latitude = models.DecimalField("Latitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))
     longitude = models.DecimalField("Longitude (Decimal Coordinates)", decimal_places=16,max_digits=25, default=Decimal("0.00"))

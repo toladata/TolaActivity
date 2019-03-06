@@ -4,14 +4,6 @@ class Geo():
     """
     
     """
-    def find_district(self, point, geo_boundary):
-        for feature in geo_boundary["features"]:
-            for coords in feature["geometry"]["coordinates"]:
-                if self.in_coords(point, coords):
-                    return feature["properties"]
-        return False
-
-
     def in_boundary(self, point, geo_boundary):
         i=0
         for feature in geo_boundary["features"]:

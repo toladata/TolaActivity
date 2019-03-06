@@ -23,63 +23,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='AdminLevelFour',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, verbose_name='Admin Boundary 4')),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('edit_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'ordering': ('name',),
-                'verbose_name': 'Admin Boundary 4',
-                'verbose_name_plural': 'Admin Boundary 4',
-            },
-        ),
-        migrations.CreateModel(
-            name='AdminLevelOne',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, verbose_name='Admin Boundary 1')),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('edit_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'ordering': ('name',),
-                'verbose_name': 'Admin Boundary 1',
-                'verbose_name_plural': 'Admin Boundary 1',
-            },
-        ),
-        migrations.CreateModel(
-            name='AdminLevelThree',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, verbose_name='Admin Boundary 3')),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('edit_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'ordering': ('name',),
-                'verbose_name': 'Admin Boundary 3',
-                'verbose_name_plural': 'Admin Boundary 3',
-            },
-        ),
-        migrations.CreateModel(
-            name='AdminLevelTwo',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, verbose_name='Admin Boundary 2')),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('adminlevelone', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.AdminLevelOne', verbose_name='Admin Level 1')),
-            ],
-            options={
-                'ordering': ('name',),
-                'verbose_name': 'Admin Boundary 2',
-                'verbose_name_plural': 'Admin Boundary 2',
-            },
-        ),
-        migrations.CreateModel(
             name='ApprovalType',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -418,7 +361,6 @@ class Migration(migrations.Migration):
                 ('history_date', models.DateTimeField()),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
                 ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('admin_level_three', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.AdminLevelThree')),
             ],
             options={
                 'ordering': ('-history_date', '-history_id'),
@@ -738,15 +680,11 @@ class Migration(migrations.Migration):
                 ('status', models.BooleanField(default=True, verbose_name='Site Active')),
                 ('create_date', models.DateTimeField(blank=True, null=True)),
                 ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('admin_level_three', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='site_level3', to='workflow.AdminLevelThree', verbose_name='Administrative Level 3')),
                 ('approval', models.ManyToManyField(blank=True, to='workflow.ApprovalWorkflow')),
                 ('classify_land', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.LandType')),
                 ('country', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.Country')),
-                ('district', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.AdminLevelTwo', verbose_name='Administrative Level 2')),
                 ('office', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Office')),
-                ('province', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.AdminLevelOne', verbose_name='Administrative Level 1')),
                 ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.ProfileType')),
-                ('village', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.AdminLevelThree', verbose_name='Administrative Level 4')),
             ],
             options={
                 'ordering': ('name',),
@@ -1176,11 +1114,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='historicalsiteprofile',
-            name='district',
-            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.AdminLevelTwo'),
-        ),
-        migrations.AddField(
-            model_name='historicalsiteprofile',
             name='history_user',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL),
         ),
@@ -1191,18 +1124,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='historicalsiteprofile',
-            name='province',
-            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.AdminLevelOne'),
-        ),
-        migrations.AddField(
-            model_name='historicalsiteprofile',
             name='type',
             field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.ProfileType'),
-        ),
-        migrations.AddField(
-            model_name='historicalsiteprofile',
-            name='village',
-            field=models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='workflow.AdminLevelThree'),
         ),
         migrations.AddField(
             model_name='historicalriskregister',
@@ -1363,26 +1286,6 @@ class Migration(migrations.Migration):
             model_name='approvaltype',
             name='organization',
             field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='workflow.Organization'),
-        ),
-        migrations.AddField(
-            model_name='adminlevelthree',
-            name='adminleveltwo',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.AdminLevelTwo', verbose_name='Admin Level 2'),
-        ),
-        migrations.AddField(
-            model_name='adminlevelone',
-            name='country',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.Country'),
-        ),
-        migrations.AddField(
-            model_name='adminlevelfour',
-            name='adminlevelthree',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.AdminLevelThree'),
-        ),
-        migrations.AddField(
-            model_name='adminlevelfour',
-            name='adminleveltwo',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.AdminLevelTwo', verbose_name='Admin Boundary 3'),
         ),
         migrations.CreateModel(
             name='TolaUserProxy',

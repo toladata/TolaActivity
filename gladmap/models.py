@@ -33,22 +33,10 @@ class State(models.Model):
     def __str__(self):
         return self.name.encode('ascii', 'ignore').decode('ascii') + " " + self.code
 
-
-class District(models.Model):
-    boundary = JSONField()  # level 2 boundary geojson
-    name = models.CharField(max_length=150, default="None") # Main-Taunus-Kreis, Nirkh
-    code = models.CharField(max_length=100, default="None", unique=True) # DEU, USA, AFG etc
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    state = models.ForeignKey(State, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name.encode('ascii', 'ignore').decode('ascii') + " " + self.code
 """
 Notes on GeoJson GADM Files
 
 Level 0 - Country
-Level 1 - States/Provinces
-Level 2 - Districts
 
 
 

@@ -1,8 +1,8 @@
 from django.test import TestCase
 
 from formlibrary.models import TrainingAttendance, Distribution, Beneficiary
-from workflow.models import (WorkflowLevel1, Country, AdminLevelOne,
-                             WorkflowLevel2, Sector, SiteProfile, Office)
+from workflow.models import (WorkflowLevel1, Country, WorkflowLevel2,
+                            Sector, SiteProfile, Office)
 
 
 class TrainingAttendanceTestCase(TestCase):

@@ -14,10 +14,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='historicalsiteprofile',
-            name='admin_level_three',
-        ),
-        migrations.RemoveField(
-            model_name='historicalsiteprofile',
             name='animal_type',
         ),
         migrations.RemoveField(
@@ -99,10 +95,6 @@ class Migration(migrations.Migration):
         migrations.RemoveField(
             model_name='historicalsiteprofile',
             name='total_rainfed_land',
-        ),
-        migrations.RemoveField(
-            model_name='siteprofile',
-            name='admin_level_three',
         ),
         migrations.RemoveField(
             model_name='siteprofile',

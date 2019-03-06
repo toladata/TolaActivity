@@ -5,8 +5,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from serializers import BoundarySerializer, BoundaryListSerializer, CountryListSerializer, CountrySerializer, \
-    DistrictListSerializer, DistrictSerializer, StateListSerializer, StateSerializer
-from models import Boundary, Country, State, District
+    StateListSerializer, StateSerializer
+from models import Boundary, Country, State
 import json
 from geo import Geo
 
@@ -99,34 +99,6 @@ class StateViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-
-class DistrictViewSet(viewsets.ModelViewSet):
-    queryset = District.objects.only("code", "name", "country", "state")
-    serializer_class = DistrictListSerializer
-
-    def list(self, request):
-        """
-        List method of Api viewset. Lists should not contain geojson
-        :param request: 
-        :return: 
-        """
-        queryset = District.objects.only("code", "name", "country", "state")
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def retrieve(self, request, pk=None):
-        """
-        Filter retrieve requests to include only the necessary
-        :param request: 
-        :param pk: The object id to retrieve 
-        :return: 
-        """
-        queryset = District.objects.all().filter(id=pk)
-        self.serializer_class = DistrictSerializer
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-
 @api_view(['GET', 'PUT', 'DELETE', 'POST'])
 def read_detail(request, testparam):
     """
@@ -174,22 +146,3 @@ Should be Al-anbar Ar ruthbah
 curl -H "Authorization: Token a20447173155cd89f6cc5c6a1c41dc8b604824ec" -X GET 'http://localhost:8000/testapi/fetchcountry/IRQ?lon=43.172088623046932&lat=32.49156570434576'
 
 """
-@api_view(['GET'])
-def fetch_country_boundaries(request, country):
-    """
-    Fetch country boundaries
-    """
-    t1 = time.time()
-
-    if request.method == 'GET':
-        print(country)
-        gadm = Boundary.objects.all().filter(country=country)
-        #print type(gadm[0].geo_json)
-        gj = gadm[0].geo_json
-        #print(gj)
-        point = (float(request.query_params["lon"]), float(request.query_params["lat"]))
-        geo = Geo()
-        dist = geo.find_district(point, gj)
-        t2 = time.time()
-        print("%f seconds" % (t2-t1))
-        return Response(dist)
