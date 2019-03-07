@@ -85,40 +85,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='CodedField',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=255, null=True, verbose_name='Field Name')),
-                ('label', models.CharField(blank=True, max_length=255, null=True, verbose_name='Field Label')),
-                ('is_required', models.BooleanField(default=0, verbose_name='Required Field?')),
-                ('is_universal', models.BooleanField(default=0, verbose_name='Available in Every Level 2 Form?')),
-                ('type', models.CharField(blank=True, max_length=255, null=True, verbose_name='Field Type')),
-                ('default_value', models.CharField(blank=True, max_length=255, null=True, verbose_name='Field Default Value')),
-                ('api_url', models.CharField(blank=True, max_length=255, null=True, verbose_name='Associated API URL')),
-                ('api_token', models.CharField(blank=True, max_length=255, null=True, verbose_name='Associated API Token')),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('edit_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'ordering': ('name', 'type'),
-                'verbose_name_plural': 'CodedFields',
-            },
-        ),
-        migrations.CreateModel(
-            name='CodedFieldValues',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.CharField(blank=True, max_length=255, null=True, verbose_name='Value')),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('coded_field', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.CodedField')),
-            ],
-            options={
-                'ordering': ('value', 'coded_field', 'workflowlevel2__name'),
-                'verbose_name_plural': 'CodedFields',
-            },
-        ),
-        migrations.CreateModel(
             name='Contact',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -1163,26 +1129,6 @@ class Migration(migrations.Migration):
             model_name='contact',
             name='workflowlevel1',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.WorkflowLevel1'),
-        ),
-        migrations.AddField(
-            model_name='codedfieldvalues',
-            name='workflowlevel2',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.WorkflowLevel2'),
-        ),
-        migrations.AddField(
-            model_name='codedfield',
-            name='organization',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='workflow.Organization'),
-        ),
-        migrations.AddField(
-            model_name='codedfield',
-            name='workflowlevel1',
-            field=models.ManyToManyField(blank=True, to='workflow.WorkflowLevel1'),
-        ),
-        migrations.AddField(
-            model_name='codedfield',
-            name='workflowlevel2',
-            field=models.ManyToManyField(blank=True, to='workflow.WorkflowLevel2'),
         ),
         migrations.AddField(
             model_name='budget',
