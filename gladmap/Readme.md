@@ -17,11 +17,9 @@ companies.
 Several steps are open to make GLADMap a fully usable tool for Tola.
 
 * Re-evaluate data storage. PostGres JSON storage offers significant performance improvements compared to binary storage
-in postgres or mysql but it still lacks effiency when doing geographic calculations 
-(for example: find admin district for a certain point). Other systems like [PostGIS](http://postgis.net/) might offer
+in postgres or mysql but it still lacks effiency when doing geographic calculations. Other systems like [PostGIS](http://postgis.net/) might offer
 improvement.
-* Improve APIs. A first implementation for some geo calculations (Find district fitting coordinates, find point, 
-check coordinates) can be found in `geo.py`. This scripts need to be improved and extended for future applications as
+* Improve APIs. A first implementation for some geo calculations can be found in `geo.py`. This scripts need to be improved and extended for future applications as
 the performance is currently not optimized. There is also an API to create new boundaries from a leaflet drawing 
 which can be found in `views.py`. 
 * Check frontend. A first frontend for visualizing boundaries and drawing new shapes can be found under 

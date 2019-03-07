@@ -7,8 +7,7 @@ from import_export.widgets import ForeignKeyWidget
 from simple_history.admin import SimpleHistoryAdmin
 
 from .models import (Country, Documentation, WorkflowLevel2,
-                     Organization, AdminLevelOne, Office, AdminLevelTwo,
-                     AdminLevelThree, AdminLevelFour, WorkflowLevel1, Sector,
+                     Organization, Office, WorkflowLevel1, Sector,
                      WorkflowLevel2, WorkflowLevel2Sort, Documentation,
                      SiteProfile, ProjectType,  Budget,
                      ProfileType, WorkflowTeam,
@@ -72,9 +71,6 @@ class SiteProfileResource(resources.ModelResource):
     country = fields.Field(column_name='country', attribute='country', widget=ForeignKeyWidget(Country, 'country'))
     type = fields.Field(column_name='type', attribute='type', widget=ForeignKeyWidget(ProfileType, 'profile'))
     office = fields.Field(column_name='office', attribute='office', widget=ForeignKeyWidget(Office, 'code'))
-    adminlevelone = fields.Field(column_name='admin level 1', attribute='adminlevelone', widget=ForeignKeyWidget(AdminLevelOne, 'name'))
-    adminleveltwo = fields.Field(column_name='admin level 2', attribute='adminleveltwo', widget=ForeignKeyWidget(AdminLevelTwo, 'name'))
-    admin_level_three = fields.Field(column_name='admin level 3', attribute='admin_level_three', widget=ForeignKeyWidget(AdminLevelThree, 'name'))
 
     class Meta:
         model = SiteProfile
@@ -207,34 +203,6 @@ class ApprovalWorkflowAdmin(admin.ModelAdmin):
     display = 'Approval Workflow'
 
 
-class AdminLevelOneAdmin(admin.ModelAdmin):
-    list_display = ('name', 'country', 'create_date')
-    search_fields = ('name', 'country__country')
-    list_filter = ('create_date', 'country')
-    display = 'Admin Boundary 1'
-
-
-class AdminLevelTwoAdmin(admin.ModelAdmin):
-    list_display = ('name', 'adminlevelone', 'create_date')
-    search_fields = ('create_date', 'adminlevelone')
-    list_filter = ('adminlevelone__country__country', 'adminlevelone')
-    display = 'Admin Boundary 2'
-
-
-class AdminLevelThreeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'adminleveltwo', 'create_date')
-    search_fields = ('name', 'adminleveltwo__name')
-    list_filter = ('adminleveltwo__adminlevelone__country__country','name')
-    display = 'Admin Boundary 3'
-
-
-class AdminLevelFourAdmin(admin.ModelAdmin):
-    list_display = ('name', 'adminlevelthree', 'create_date')
-    search_fields = ('name', 'adminlevelthree__name')
-    list_filter = ('adminlevelthree__adminleveltwo__adminlevelone__country__country','name')
-    display = 'Admin Boundary 3'
-
-
 class OfficeAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'country', 'create_date', 'edit_date')
     search_fields = ('name', 'country__country', 'code')
@@ -270,11 +238,7 @@ class WorkflowLevel1SectorAdmin(admin.ModelAdmin):
 
 admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Country, CountryAdmin)
-admin.site.register(AdminLevelOne, AdminLevelOneAdmin)
 admin.site.register(Office, OfficeAdmin)
-admin.site.register(AdminLevelTwo, AdminLevelTwoAdmin)
-admin.site.register(AdminLevelThree, AdminLevelThreeAdmin)
-admin.site.register(AdminLevelFour, AdminLevelFourAdmin)
 admin.site.register(WorkflowLevel1, SimpleHistoryAdmin)
 admin.site.register(Sector)
 admin.site.register(WorkflowLevel2, SimpleHistoryAdmin)
