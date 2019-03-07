@@ -11,7 +11,6 @@ from workflow.models import (
     Award as AwardM,
     Budget as BudgetM,
     Checklist as ChecklistM,
-    CodedField as CodedFieldM,
     Country as CountryM,
     Documentation as DocumentationM,
     FundCode as FundCodeM,
@@ -286,37 +285,6 @@ class Office(DjangoModelFactory):
         model = OfficeM
 
     country = SubFactory(Country, country="Germany", code="DE")
-
-
-class CodedField(DjangoModelFactory):
-    class Meta:
-        model = CodedFieldM
-
-    name = 'coded_field_a'
-    label = 'CodedField A'
-    organization = SubFactory(Organization)
-
-    @post_generation
-    def workflowlevel1(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if type(extracted) is list:
-            # A list of workflowlevel1 were passed in, use them
-            for workflowlevel1 in extracted:
-                self.workflowlevel1.add(workflowlevel1)
-
-    @post_generation
-    def workflowlevel2(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            # A list of workflowlevel2 were passed in, use them
-            for workflowlevel2 in extracted:
-                self.workflowlevel2.add(workflowlevel2)
 
 
 class Internationalization(DjangoModelFactory):

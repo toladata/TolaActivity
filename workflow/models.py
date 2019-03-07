@@ -1274,56 +1274,6 @@ class Product(models.Model):
         return u'{} <{}>'.format(self.name, self.workflowlevel2)
 
 
-class CodedField(models.Model):
-    name = models.CharField("Field Name", max_length=255, blank=True, null=True)
-    label = models.CharField("Field Label", max_length=255, blank=True, null=True)
-    is_required = models.BooleanField("Required Field?", default=0)
-    is_universal = models.BooleanField("Available in Every Level 2 Form?", default=0)
-    type = models.CharField("Field Type", max_length=255, blank=True, null=True)
-    organization = models.ForeignKey(Organization, default=1)
-    default_value = models.CharField("Field Default Value", max_length=255, blank=True, null=True)
-    api_url = models.CharField("Associated API URL", max_length=255, blank=True, null=True)
-    api_token = models.CharField("Associated API Token", max_length=255, blank=True, null=True)
-    workflowlevel2 = models.ManyToManyField(WorkflowLevel2, blank=True)
-    workflowlevel1 = models.ManyToManyField(WorkflowLevel1, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name', 'type')
-        verbose_name_plural = "CodedFields"
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(CodedField, self).save()
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-
-class CodedFieldValues(models.Model):
-    value = models.CharField("Value", null=True, blank=True, max_length=255)
-    coded_field = models.ForeignKey(CodedField)
-    workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('value', 'coded_field', 'workflowlevel2__name')
-        verbose_name_plural = "CodedFields"
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(CodedFieldValues, self).save()
-
-    def __unicode__(self):
-        return unicode(self.value)
-
-
 class Documentation(models.Model):
     document_uuid = models.CharField(max_length=255, verbose_name='Document UUID', default=uuid.uuid4, unique=True, blank=True)
     name = models.CharField("Name of Document", max_length=255, blank=True, null=True)
