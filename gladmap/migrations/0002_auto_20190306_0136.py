@@ -11,16 +11,5 @@ class Migration(migrations.Migration):
         ('gladmap', '0001_initial'),
     ]
 
-    operations = [
-        migrations.RemoveField(
-            model_name='district',
-            name='country',
-        ),
-        migrations.RemoveField(
-            model_name='district',
-            name='state',
-        ),
-        migrations.DeleteModel(
-            name='District',
-        ),
-    ]
+    operations = []
+
