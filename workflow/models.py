@@ -1438,50 +1438,6 @@ class IssueRegister(models.Model):
         ordering = ('type','name')
 
 
-class Checklist(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True,default="Checklist")
-    workflowlevel2 = models.ForeignKey(WorkflowLevel2, null=True, blank=True, verbose_name="Project Initiation")
-    owner = models.ForeignKey(TolaUser, null=True, blank=True)
-    country = models.ForeignKey(Country,null=True,blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('workflowlevel2',)
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(Checklist, self).save()
-
-    def __unicode__(self):
-        return unicode(self.workflowlevel2)
-
-
-class ChecklistItem(models.Model):
-    item = models.CharField(max_length=255)
-    checklist = models.ForeignKey(Checklist)
-    in_file = models.BooleanField(default=False)
-    not_applicable = models.BooleanField(default=False)
-    global_item = models.BooleanField(default=False)
-    owner = models.ForeignKey(TolaUser, null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('item',)
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(ChecklistItem, self).save()
-
-    def __unicode__(self):
-        return unicode(self.item)
-
-
 class WorkflowModules(models.Model):
     workflowlevel2 = models.ForeignKey("WorkflowLevel2")
 
