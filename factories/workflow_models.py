@@ -10,7 +10,6 @@ from workflow.models import (
     ApprovalType as ApprovalTypeM,
     Award as AwardM,
     Budget as BudgetM,
-    Checklist as ChecklistM,
     CodedField as CodedFieldM,
     Country as CountryM,
     Documentation as DocumentationM,
@@ -272,13 +271,6 @@ class Portfolio(DjangoModelFactory):
                 self.country.add(country)
         else:
             self.country.add(Country(country='Syria', code='SY'))
-
-
-class Checklist(DjangoModelFactory):
-    class Meta:
-        model = ChecklistM
-
-    name = 'Checklist A'
 
 
 class Office(DjangoModelFactory):

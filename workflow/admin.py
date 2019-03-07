@@ -11,7 +11,7 @@ from .models import (Country, Documentation, WorkflowLevel2,
                      AdminLevelThree, AdminLevelFour, WorkflowLevel1, Sector,
                      WorkflowLevel2, WorkflowLevel2Sort, Documentation,
                      SiteProfile, ProjectType,  Budget,
-                     ProfileType, WorkflowTeam, ChecklistItem, Checklist,
+                     ProfileType, WorkflowTeam,
                      Stakeholder, StakeholderType, TolaUser, TolaSites,
                      FormGuidance, TolaUserProxy, TolaBookmarks, Currency,
                      ApprovalWorkflow, ApprovalType, FundCode, RiskRegister,
@@ -242,16 +242,6 @@ class OfficeAdmin(admin.ModelAdmin):
     display = 'Office'
 
 
-class ChecklistAdmin(admin.ModelAdmin):
-    list_display = ('name', 'country')
-    list_filter = ('country', 'workflowlevel2')
-
-
-class ChecklistItemAdmin(admin.ModelAdmin):
-    list_display = ('item', 'checklist', 'in_file')
-    list_filter = ('checklist', 'global_item')
-
-
 class WorkflowModulesAdmin(admin.ModelAdmin):
     list_display = ('workflowlevel2',)
     list_filter = ('workflowlevel2',)
@@ -295,8 +285,6 @@ admin.site.register(ProjectType, ProjectTypeAdmin)
 admin.site.register(Budget)
 admin.site.register(ProfileType)
 admin.site.register(WorkflowTeam, WorkflowTeamAdmin)
-admin.site.register(ChecklistItem, ChecklistItemAdmin)
-admin.site.register(Checklist, ChecklistAdmin)
 admin.site.register(Stakeholder, StakeholderAdmin)
 admin.site.register(StakeholderType)
 admin.site.register(TolaUser, TolaUserAdmin)

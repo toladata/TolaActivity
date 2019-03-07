@@ -142,34 +142,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Checklist',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, default='Checklist', max_length=255, null=True)),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('edit_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'ordering': ('workflowlevel2',),
-            },
-        ),
-        migrations.CreateModel(
-            name='ChecklistItem',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('item', models.CharField(max_length=255)),
-                ('in_file', models.BooleanField(default=False)),
-                ('not_applicable', models.BooleanField(default=False)),
-                ('global_item', models.BooleanField(default=False)),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-                ('edit_date', models.DateTimeField(blank=True, null=True)),
-                ('checklist', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflow.Checklist')),
-            ],
-            options={
-                'ordering': ('item',),
-            },
-        ),
-        migrations.CreateModel(
             name='CodedField',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -1288,26 +1260,6 @@ class Migration(migrations.Migration):
             model_name='codedfield',
             name='workflowlevel2',
             field=models.ManyToManyField(blank=True, to='workflow.WorkflowLevel2'),
-        ),
-        migrations.AddField(
-            model_name='checklistitem',
-            name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.TolaUser'),
-        ),
-        migrations.AddField(
-            model_name='checklist',
-            name='country',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.Country'),
-        ),
-        migrations.AddField(
-            model_name='checklist',
-            name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.TolaUser'),
-        ),
-        migrations.AddField(
-            model_name='checklist',
-            name='workflowlevel2',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='workflow.WorkflowLevel2', verbose_name='Project Initiation'),
         ),
         migrations.AddField(
             model_name='budget',
