@@ -3,8 +3,7 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase, override_settings, tag
 
 import factories
-from workflow.models import (Dashboard, TolaUser, Office,
-                             ROLE_ORGANIZATION_ADMIN)
+from workflow.models import (Dashboard, TolaUser, Office)
 
 
 @tag('pkg')
@@ -110,13 +109,6 @@ class WorkflowTeamTest(TestCase):
     #         workflow_user=factories.TolaUser(),
     #         workflowlevel1=factories.WorkflowLevel1())
     #     self.assertRaises(ValidationError, wfteam.save)
-
-
-@tag('pkg')
-class ProductTest(TestCase):
-    def test_print_instance(self):
-        product = factories.Product()
-        self.assertEqual(unicode(product), u'Próduct P <Help Syrians>')
 
 
 @tag('pkg')

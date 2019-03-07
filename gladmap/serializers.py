@@ -16,11 +16,11 @@ class BoundaryListSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url','country','level')
 
 
-
 class CountrySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Country
         fields = '__all__'
+
 
 class CountryListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -33,18 +33,9 @@ class StateSerializer(serializers.HyperlinkedModelSerializer):
         model = State
         fields = '__all__'
 
+
 class StateListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = State
         fields = ('name', 'code', 'country', 'url')
 
-
-class DistrictSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = District
-        fields = '__all__'
-
-class DistrictListSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = District
-        fields = ('name', 'code', 'country', 'state','url')

@@ -1262,18 +1262,6 @@ class WorkflowLevel2Sort(models.Model):
         return unicode(self.workflowlevel1)
 
 
-class Product(models.Model):
-    workflowlevel2 = models.ForeignKey(WorkflowLevel2, related_name="products")
-    name = models.CharField(max_length=255)
-    type = models.CharField(max_length=255, blank=True, null=True)
-    reference_id = models.CharField("Product identifier", max_length=255, blank=True, null=True)
-    create_date = models.DateTimeField(auto_now_add=True)
-    edit_date = models.DateTimeField(auto_now=True)
-
-    def __unicode__(self):
-        return u'{} <{}>'.format(self.name, self.workflowlevel2)
-
-
 class CodedField(models.Model):
     name = models.CharField("Field Name", max_length=255, blank=True, null=True)
     label = models.CharField("Field Label", max_length=255, blank=True, null=True)
