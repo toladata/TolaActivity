@@ -20,7 +20,6 @@
     {% if p_agreement%}
         <h4>{{p_agreement|truncatechars:150}}</h4>
     {% endif %}
-    {% include "form_guidance.html" %}
     {% if form.errors %}
         <div class="help-block">
         {% for field in form %}

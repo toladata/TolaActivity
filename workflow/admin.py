@@ -12,7 +12,7 @@ from .models import (Country, Documentation, WorkflowLevel2,
                      SiteProfile, ProjectType,  Budget,
                      ProfileType, WorkflowTeam,
                      Stakeholder, StakeholderType, TolaUser, TolaSites,
-                     FormGuidance, TolaUserProxy, TolaBookmarks, Currency,
+                     TolaUserProxy, TolaBookmarks, Currency,
                      ApprovalWorkflow, ApprovalType, FundCode, RiskRegister,
                      IssueRegister, CodedField, WorkflowModules, Milestone,
                      Portfolio, SectorRelated, WorkflowLevel1Sector)
@@ -172,11 +172,6 @@ class TolaUserAdmin(admin.ModelAdmin):
     search_fields = ('name', 'country__country', 'title')
 
 
-class FormGuidanceAdmin(admin.ModelAdmin):
-    list_display = ('form', 'guidance', 'guidance_link', 'create_date')
-    display = 'Form Guidance'
-
-
 class ProjectTypeAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'create_date', 'edit_date')
     display = 'Project Type'
@@ -253,7 +248,6 @@ admin.site.register(Stakeholder, StakeholderAdmin)
 admin.site.register(StakeholderType)
 admin.site.register(TolaUser, TolaUserAdmin)
 admin.site.register(TolaSites, TolaSitesAdmin)
-admin.site.register(FormGuidance, FormGuidanceAdmin)
 admin.site.register(TolaUserProxy, ReportTolaUserProxyAdmin)
 admin.site.register(TolaBookmarks, TolaBookmarksAdmin)
 admin.site.register(Currency, CurrencyAdmin)

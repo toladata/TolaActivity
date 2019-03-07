@@ -26,7 +26,7 @@ import requests
 
 from export import IndicatorResource, CollectedDataResource
 from .models import Indicator, PeriodicTarget, DisaggregationLabel, DisaggregationValue, CollectedData, IndicatorType, Level, ExternalServiceRecord, ExternalService, TolaTable
-from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaSites, TolaUser, FormGuidance
+from workflow.models import WorkflowLevel1, SiteProfile, Country, Sector, TolaSites, TolaUser
 from tola.util import getCountry, get_table
 from .forms import IndicatorForm, CollectedDataForm
 
@@ -267,10 +267,6 @@ class IndicatorUpdate(UpdateView):
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="Indicator")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
         return super(IndicatorUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -393,10 +389,6 @@ class CollectedDataCreate(CreateView):
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="CollectedData")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
         return super(CollectedDataCreate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -508,10 +500,6 @@ class CollectedDataUpdate(UpdateView):
 
     @method_decorator(group_excluded('ViewOnly', url='workflow/permission'))
     def dispatch(self, request, *args, **kwargs):
-        try:
-            self.guidance = FormGuidance.objects.get(form="CollectedData")
-        except FormGuidance.DoesNotExist:
-            self.guidance = None
         return super(CollectedDataUpdate, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

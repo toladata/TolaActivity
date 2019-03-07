@@ -188,20 +188,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='FormGuidance',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('form', models.CharField(blank=True, max_length=135, null=True)),
-                ('guidance_link', models.URLField(blank=True, null=True)),
-                ('guidance', models.TextField(blank=True, null=True)),
-                ('default_global', models.BooleanField(default=0)),
-                ('create_date', models.DateTimeField(blank=True, null=True)),
-            ],
-            options={
-                'ordering': ('create_date',),
-            },
-        ),
-        migrations.CreateModel(
             name='FundCode',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -1131,11 +1117,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='fundcode',
-            name='organization',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='workflow.Organization'),
-        ),
-        migrations.AddField(
-            model_name='formguidance',
             name='organization',
             field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='workflow.Organization'),
         ),
