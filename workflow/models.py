@@ -6,7 +6,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.postgres import fields
 from django.contrib.auth.models import User, Group
-from django.contrib.postgres.fields import HStoreField, JSONField
+from django.contrib.postgres.fields import HStoreField, JSONField, ArrayField
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -404,6 +404,8 @@ class Dashboard(models.Model):
     public_url_token = models.CharField(max_length=255, blank=True, null=True)
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
+    blacklist = ArrayField(models.CharField(max_length=255), blank=True, default=[])
+    shared_wfl1_uuids = ArrayField(models.CharField(max_length=255), blank=True, default=[])
 
     class Meta:
         ordering = ('name',)
