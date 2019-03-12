@@ -10,8 +10,6 @@ from models import Boundary, Country, State
 import json
 from geo import Geo
 
-import time
-
 # Create your views here.
 
 
@@ -129,20 +127,3 @@ def read_detail(request, testparam):
     elif request.method == 'DELETE':
         return Response("DELETE", status=status.HTTP_204_NO_CONTENT)
 
-
-
-"""
-
-should be something within alabama
-curl -H "Authorization: Token a20447173155cd89f6cc5c6a1c41dc8b604824ec" -X GET 'http://localhost:8000/testapi/fetchcountry/USA?lon=-86.91667938232422&lat=32.664310455322266'
-
-should be indianapolis
-curl -H "Authorization: Token a20447173155cd89f6cc5c6a1c41dc8b604824ec" -X GET 'http://localhost:8000/testapi/fetchcountry/USA?lat=39.715638&lon=-86.165771'
-
-should be Abu ghraib
-curl -H "Authorization: Token a20447173155cd89f6cc5c6a1c41dc8b604824ec" -X GET 'http://localhost:8000/testapi/fetchcountry/IRQ?lon=44.227119445800781&lat=33.137374877929801'
-
-Should be Al-anbar Ar ruthbah
-curl -H "Authorization: Token a20447173155cd89f6cc5c6a1c41dc8b604824ec" -X GET 'http://localhost:8000/testapi/fetchcountry/IRQ?lon=43.172088623046932&lat=32.49156570434576'
-
-"""

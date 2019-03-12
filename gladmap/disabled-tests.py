@@ -10,3 +10,4 @@ class GladmapTests(TestCase):
     def testFixtureIsLoaded(self):
         b = Boundary.objects.all()
         self.assertEqual(len(b), 1)
+
