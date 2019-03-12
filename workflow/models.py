@@ -467,27 +467,6 @@ class TolaUserProxy(TolaUser):
         proxy = True
 
 
-# Form Guidance
-class FormGuidance(models.Model):
-    form = models.CharField(max_length=135,null=True, blank=True)
-    guidance_link = models.URLField(max_length=200, null=True, blank=True)
-    guidance = models.TextField(null=True, blank=True)
-    default_global = models.BooleanField(default=0)
-    organization = models.ForeignKey(Organization, default=1)
-    create_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('create_date',)
-
-    def save(self):
-        if self.create_date is None:
-            self.create_date = timezone.now()
-        super(FormGuidance, self).save()
-
-    def __unicode__(self):
-        return unicode(self.form)
-
-
 class ProjectType(models.Model):
     name = models.CharField("Type of Activity", max_length=135)
     description = models.CharField(max_length=765)
