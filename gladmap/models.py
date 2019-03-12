@@ -11,10 +11,6 @@ class Boundary(models.Model):
     def __str__(self):
         return self.country+" "+str(self.level)
 
-class Feature(models.Model):
-    b_id = models.ForeignKey(Boundary)
-    geo_json = JSONField()
-
 
 class Country(models.Model):
     boundary = JSONField()  # level 0 boundary geojson

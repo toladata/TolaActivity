@@ -55,28 +55,7 @@ class TolaSites(models.Model):
         else:
             self.updated = timezone.now()
         return super(TolaSites, self).save(*args, **kwargs)
-
-
-class Industry(models.Model):
-    name = models.CharField("Industry Name", max_length=255, blank=True, default="TolaData")
-    description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
-    create_date = models.DateTimeField(null=True, blank=True)
-    edit_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ('name',)
-        verbose_name_plural = "Organizations"
-        app_label = 'workflow'
-
-    def save(self, *args, **kwargs):
-        if self.create_date == None:
-            self.create_date = timezone.now()
-        self.edit_date = timezone.now()
-        super(Industry, self).save()
-
-    def __unicode__(self):
-        return self.name
-
+        
 
 class Sector(models.Model):
     sector = models.CharField("Sector Name", max_length=255, blank=True)
@@ -138,7 +117,6 @@ class Organization(models.Model):
     name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
     description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
     organization_url = models.CharField(blank=True, null=True, max_length=255)
-    industry = models.ManyToManyField(Industry, blank=True)
     sector = models.ManyToManyField(Sector, blank=True, related_name="org_sector")
     level_1_label = models.CharField("Project/Program Organization Level 1 label", default="Program", max_length=255, blank=True)
     level_2_label = models.CharField("Project/Program Organization Level 2 label", default="Project", max_length=255, blank=True)
