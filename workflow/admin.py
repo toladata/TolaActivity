@@ -14,7 +14,7 @@ from .models import (Country, Documentation, WorkflowLevel2,
                      Stakeholder, StakeholderType, TolaUser, TolaSites,
                      TolaUserProxy, TolaBookmarks, Currency,
                      ApprovalWorkflow, ApprovalType, FundCode, RiskRegister,
-                     IssueRegister, CodedField, WorkflowModules, Milestone,
+                     IssueRegister, WorkflowModules, Milestone,
                      Portfolio, SectorRelated, WorkflowLevel1Sector)
 
 
@@ -103,12 +103,6 @@ class IssueRegisterAdmin(ImportExportModelAdmin):
     list_display = ('name', 'type', 'workflowlevel2')
     display = 'Issue Register'
     list_filter = ('workflowlevel2', 'type')
-
-
-class CodedFieldAdmin(ImportExportModelAdmin):
-    list_display = ('name', 'type','is_universal')
-    display = 'Coded Fields'
-    list_filter = ('type', 'is_universal')
 
 
 class TolaUserProxyResource(resources.ModelResource):
@@ -256,7 +250,6 @@ admin.site.register(ApprovalType, ApprovalTypeAdmin)
 admin.site.register(FundCode, FundCodeAdmin)
 admin.site.register(RiskRegister, RiskRegisterAdmin)
 admin.site.register(IssueRegister, IssueRegisterAdmin)
-admin.site.register(CodedField, CodedFieldAdmin)
 admin.site.register(WorkflowModules, WorkflowModulesAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(Portfolio, PortfolioAdmin)
