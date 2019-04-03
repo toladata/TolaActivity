@@ -214,7 +214,7 @@ class DisaggregationLabel(models.Model):
 class DisaggregationValue(models.Model):
     disaggregation_label = models.ForeignKey(DisaggregationLabel, on_delete=models.deletion.PROTECT)
     indicator = models.ForeignKey('indicators.Indicator', null=True, blank=True)
-    value = models.CharField(max_length=765, blank=True)
+    value = models.CharField(max_length=765, blank=True, null=True)
     table_uuid = models.CharField(max_length=36, blank=True)
     column_name = models.CharField(max_length=24, blank=True)
     column_value = models.CharField(max_length=24, blank=True)
