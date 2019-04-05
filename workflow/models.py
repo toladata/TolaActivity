@@ -114,7 +114,7 @@ class Currency(models.Model):
 
 class Organization(models.Model):
     organization_uuid = models.CharField(max_length=255, verbose_name='Organization UUID', default=uuid.uuid4, unique=True)
-    name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData")
+    name = models.CharField("Organization Name", max_length=255, blank=True, default="TolaData", unique=True)
     description = models.TextField("Description/Notes", max_length=765, null=True, blank=True)
     organization_url = models.CharField(blank=True, null=True, max_length=255)
     sector = models.ManyToManyField(Sector, blank=True, related_name="org_sector")
