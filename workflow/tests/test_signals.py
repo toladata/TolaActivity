@@ -589,7 +589,7 @@ class SignalSyncTrackTest(TestCase):
     def test_sync_save_create(self, mock_tsync):
         mock_tsync.create_instance.return_value = Mock()
 
-        org = factories.Organization()
+        org = factories.NewOrganization()
         mock_tsync.create_instance.assert_called_with(org)
 
         wfl1 = factories.WorkflowLevel1()

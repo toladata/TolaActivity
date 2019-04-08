@@ -77,10 +77,36 @@ class Country(DjangoModelFactory):
 
 
 class Organization(DjangoModelFactory):
+
+    class Meta:
+        model = OrganizationM
+        django_get_or_create = ('name', )
+
+    name = 'Tola Org'
+
+
+class NewOrganization(DjangoModelFactory):
+
     class Meta:
         model = OrganizationM
 
-    name = 'Tola Org'
+    name = 'Tola New Org'
+
+
+class SameDomainOrganization(DjangoModelFactory):
+
+    class Meta:
+        model = OrganizationM
+
+    name = 'Tola New Domain'
+
+
+class SameDomainOrganization2(DjangoModelFactory):
+
+    class Meta:
+        model = OrganizationM
+
+    name = 'Tola New Domain2'
 
 
 class SiteProfile(DjangoModelFactory):
@@ -93,7 +119,7 @@ class SiteProfile(DjangoModelFactory):
 class TolaUser(DjangoModelFactory):
     class Meta:
         model = TolaUserM
-        django_get_or_create = ('user',)
+        django_get_or_create = ('user', 'organization')
 
     user = SubFactory(User)
     name = LazyAttribute(lambda o: o.user.first_name + " " + o.user.last_name)
