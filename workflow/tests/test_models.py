@@ -177,6 +177,6 @@ class OrganizationTest(TestCase):
         domain = 'example.com'
         domain2 = 'test.com'
         factories.SameDomainOrganization(oauth_domains=[domain, domain2])
-        org2 = factories.SameDomainOrganization2(oauth_domains=[domain, domain2])
+        org2 = factories.SameDomainOrganization2()
         org2.oauth_domains = [domain]
         self.assertRaises(ValidationError, org2.save)
