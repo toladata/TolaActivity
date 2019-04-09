@@ -244,7 +244,7 @@ class Frequency(models.Model):
     create_date = models.DateTimeField(null=True, blank=True)
     edit_date = models.DateTimeField(null=True, blank=True)
     numdays = models.PositiveIntegerField(default=0, verbose_name="Frequency in number of days")
-    organization = models.ForeignKey(Organization, default=1)
+    organization = models.ForeignKey(Organization, blank=True, null=True)
 
     def __unicode__(self):
         return self.frequency
